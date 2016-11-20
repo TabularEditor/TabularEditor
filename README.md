@@ -4,13 +4,16 @@ Tabular Editor is a tool that lets you easily manipulate and manage measures, ca
 # Command Line usage
 TabularEditor.exe can be executed from the command line for automated deployment purposes. All deployment options that are available through the GUI, are also available through the command line.
 
-Examples:
+**Examples:**
 
 `TabularEditor.exe`
+
 Opens the Tabular Editor GUI.
 
 `TabularEditor.exe c:\Projects\Model.bim`
+
 Opens the Tabular Editor GUI and loads the specified Model.bim file.
 
 `TabularEditor.exe c:\Projects\Model.bim -deploy localhost AdventureWorks`
+
 Deploys the specified Model.bim file to the SSAS instance running on localhost, overwriting or creating the AdventureWorks database.
