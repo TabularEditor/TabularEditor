@@ -1,6 +1,13 @@
 # TabularEditor
 Tabular Editor is a tool that lets you easily manipulate and manage measures, calculated columns, display folders, perspectives and translations in SQL Server Analysis Services Tabular Models (from Compatibility Level 1200 and onwards). The tool is written entirely in .NET WinForms (C#).
 
+View the article on www.kapacity.dk/tabular-editor for a general presentation of the tool and the motivations behind it.
+
+## Features at a glance
+Tabular Editor has a lot of features that makes it easier to work with Tabular Models. The recommended workflow is to set up the tables and relationships using SSDT as normal, and then use Tabular Editor to do the rest. That is: Create calculated columns, measures, hierarchies, perspectives, translations, display folders, and every other kind of fine-tuning you can think of.
+
+![The main UI of Tabular Editor](https://raw.githubusercontent.com/otykier/TabularEditor/master/Documentation/Main%20UI.png)
+
 ## Command Line usage
 TabularEditor.exe can be executed from the command line for automated deployment purposes. All deployment options that are available through the GUI, are also available through the command line.
 
