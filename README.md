@@ -45,10 +45,10 @@ Similarly, leaving out "Deploy Table Partitions", will make sure that existing p
 
 When the "Deploy Roles" box is checked, the roles in the target database will be updated to reflect what you have in the loaded model, however if the "Deploy Role Members" is unchecked, the members of each role will be unchanged in the target database.
 
-## Command Line usage
+### Command Line usage
 You can use the command line for automated deployment. All deployment options that are available through the GUI, are also available through the command line.
 
-### Deployment Examples
+#### Deployment Examples
 
 `TabularEditor.exe c:\Projects\Model.bim`
 
@@ -58,7 +58,19 @@ Opens the Tabular Editor GUI and loads the specified Model.bim file (without dep
 
 Deploys the specified Model.bim file to the SSAS instance running on localhost, overwriting or creating the AdventureWorks database. The GUI will not be loaded.
 
-### Note
+#### Note
 Since TabularEditor.exe is a Windows Forms application, running it from the command line will execute the application in a different thread, returning control to the caller immediately. This may cause issues when running deployments as part of a batch job where you need to await succesful deployment before proceeding with the job. If you experience these issues, use the following command to execute the deployment:
 
 `start /wait TabularEditor.exe c:\Projects\Model.bim -deploy localhost AdventureWorks`
+
+## Advanced Scripting
+Tabular Editor lets you use C# to script changes to the loaded model. This is practical when you want to apply several changes to many objects at once. The Advanced Script editor has access to two objects:
+
+* `Selected` which represents all objects that are currently selected in the explorer tree.
+* `Model` which represents the entire Tabular Object Model tree.
+
+The Advanced Script editor has some limited IntelliSense functionality to get you started:
+
+![IntelliSense helps you create scripts for Tabular Editor](https://raw.githubusercontent.com/otykier/TabularEditor/master/Documentation/AdvancedEditor%20intellisense.png)
+
+More detailed documentation will be uploaded to GitHub soon.
