@@ -17,3 +17,5 @@
 /TOMWrapper/bin
 /TOMWrapper/obj
 /TOMWrapper/TOMWrapper.csproj.user
+/packages
+/.vs/TabularEditor/v14
