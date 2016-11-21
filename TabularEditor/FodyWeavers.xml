@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Weavers>
+  <Costura IncludeDebugSymbols ="false">
+    <IncludeAssemblies>
+      Antlr4.Runtime
+      Crad.Windows.Forms.Actions
+      FastColoredTextBox
+      TOMWrapper
+    </IncludeAssemblies>
+  </Costura>
+</Weavers>

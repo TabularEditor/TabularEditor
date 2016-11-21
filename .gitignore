@@ -3,3 +3,17 @@
 ################################################################################
 
 /AntlrGrammars/bin
+/AntlrGrammars/obj
+/AntlrGrammars/CSharpLexer.g4.cs
+/AntlrGrammars/DAXLexer.g4.cs
+/TabularEditor/bin
+/TabularEditor/obj
+/TabularEditor/TabularEditor.csproj.user
+/TabularEditorSetup/Debug
+/TabularEditorSetup/Release
+/TabularEditorTest/bin
+/TabularEditorTest/obj
+/TabularEditorTest/TabularEditorTest.csproj.user
+/TOMWrapper/bin
+/TOMWrapper/obj
+/TOMWrapper/TOMWrapper.csproj.user

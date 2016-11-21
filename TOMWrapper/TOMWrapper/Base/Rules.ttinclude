@@ -1,0 +1,197 @@
+﻿<#@ import namespace="System.Text.RegularExpressions"
+#><#+
+
+class Rules {
+
+	public static bool ShouldWrapProperty(PropertyInfo p, Type t)
+    {
+		return p.Name != "Name" && (
+				Aliases.ContainsKey(p.PropertyType) ||
+				(p.Name != "Table" && p.PropertyType.IsClass && ObjectTypes.ContainsKey(p.PropertyType)) ||
+				(p.Name != "ObjectType" && p.PropertyType.IsEnum)
+			);
+    }
+
+	public static bool ShouldWrapCollectionProperty(PropertyInfo p, Type t)
+    {
+		if(t == typeof(Level)) {
+			switch(p.Name) {
+				case "Ordinal":
+				case "Column":
+					return false;
+            }
+        }
+
+		return p.Name != "Name" && (
+				Aliases.ContainsKey(p.PropertyType) ||
+				(p.Name != "Table" && p.PropertyType.IsClass && ObjectTypes.ContainsKey(p.PropertyType)) ||
+				(p.Name != "ObjectType" && p.PropertyType.IsEnum)
+			) &&
+			p.SetMethod != null && p.SetMethod.IsPublic;
+    }
+
+	public static string PropertyType(PropertyInfo p)
+    {
+		if(Aliases.ContainsKey(p.PropertyType)) return Aliases[p.PropertyType];
+		if (p.PropertyType.IsEnum) return "TOM." + p.PropertyType.Name;
+		return p.PropertyType.Name;
+    }
+
+	public static string PropertySetter(PropertyInfo p)
+    {
+		if (p.SetMethod == null || !p.SetMethod.IsPublic) return "";
+		
+		return string.Format(@"set {{
+				var oldValue = {0};
+				if (oldValue{1} == value{1}) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(""{0}"", value, ref undoable, ref cancel);
+				if (cancel) return;
+				MetadataObject.{0} = value{1};
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, ""{0}"", oldValue, value));
+				OnPropertyChanged(""{0}"", oldValue, value);{2}{3}
+			}}", 
+			p.Name, 
+			p.PropertyType.IsClass && p.PropertyType != typeof(string) ? "?.MetadataObject" : "",
+			p.Name == "DisplayFolder" ? "\n\t\t\t\tHandler.UpdateFolders(Table);" : "",
+			p.Name == "IsHidden" ? "\n\t\t\t\tHandler.UpdateObject(this);" : "");
+    }
+
+	public static string PropertyGetter(PropertyInfo p)
+    {
+		if(p.PropertyType.IsClass && p.PropertyType != typeof(string)) {
+			return string.Format(@"get {{
+				if (MetadataObject.{0} == null) return null;
+			    return Handler.WrapperLookup[MetadataObject.{0}] as {1};
+            }}", p.Name, p.PropertyType.Name);
+        } 
+		else 
+		{
+			return string.Format(@"get {{
+			    return MetadataObject.{0};
+			}}", p.Name);
+        };
+    }
+
+	public static string SplitCamelCase(string str)
+    {
+        return Regex.Replace(
+            Regex.Replace(
+                str,
+                @"(\P{Ll})(\P{Ll}\p{Ll})",
+                "$1 $2"
+            ),
+            @"(\p{Ll})(\P{Ll})",
+            "$1 $2"
+        );
+    }
+
+	public static string GetDisplayName(string propertyName)
+    {
+		var result = propertyName;
+
+		if(result.StartsWith("Is")) result = result.Substring(2);
+
+		return SplitCamelCase(result);
+    }
+
+	public static string GetCategory(string propertyName)
+    {
+		switch(propertyName)
+        {
+			case "DisplayFolder":
+			case "Name":
+			case "IsHidden":
+			case "Description":
+				return "Basic";
+			case "Expression":
+			case "SortByColumn":
+				return "Options";
+			case "FormatString":
+			case "DataCategory":
+				return "Metadata";
+			default:
+				return "Other";
+        }
+    }
+
+	public static string GetOtherAttributes(string propertyName, string className)
+    {
+		if(propertyName == "SortByColumn") return "[TypeConverter(typeof(ColumnConverter))]";
+		if(className == "Level" && propertyName == "Hierarchy") return "[Browsable(false)]";
+		if(className == "Level" && propertyName == "Column") return "[TypeConverter(typeof(HierarchyColumnConverter)),NoMultiselect()]";
+		if(className == "Level" && propertyName == "Ordinal") return "[NoMultiselect()]";
+		if(className == "Model" && propertyName == "Culture") return "[TypeConverter(typeof(CultureConverter))]";
+
+		return "";
+    }
+
+	public static readonly Dictionary<Type, string> Aliases = new Dictionary<Type, string>()
+	{
+		{ typeof(byte), "byte" },
+		{ typeof(sbyte), "sbyte" },
+		{ typeof(short), "short" },
+		{ typeof(ushort), "ushort" },
+		{ typeof(int), "int" },
+		{ typeof(uint), "uint" },
+		{ typeof(long), "long" },
+		{ typeof(ulong), "ulong" },
+		{ typeof(float), "float" },
+		{ typeof(double), "double" },
+		{ typeof(decimal), "decimal" },
+		{ typeof(object), "object" },
+		{ typeof(bool), "bool" },
+		{ typeof(char), "char" },
+		{ typeof(string), "string" },
+		{ typeof(void), "void" }
+	};	
+
+	// List of types to generate wrapper for:
+	public static readonly Dictionary<Type, string> ObjectTypes = new Dictionary<Type,string>()
+	{ 
+       { typeof(Model), "TabularNamedObject" },
+	   { typeof(Table), "TabularNamedObject" },
+	   { typeof(Column), "TabularNamedObject" },
+	   { typeof(Measure), "TabularNamedObject" },
+	   { typeof(CalculatedColumn), "Column" },
+	   { typeof(DataColumn), "Column" },
+	   { typeof(CalculatedTableColumn), "Column" },
+	   { typeof(Hierarchy), "TabularNamedObject" },
+	   { typeof(Level), "TabularNamedObject" },
+	   { typeof(Culture), "TabularNamedObject" },
+	   { typeof(Perspective), "TabularNamedObject" },
+	   { typeof(KPI), "TabularObject" },
+	   { typeof(Relationship), "TabularNamedObject" },
+	   { typeof(SingleColumnRelationship), "Relationship" },
+	   { typeof(Partition), "TabularNamedObject" },
+	   { typeof(ModelRole), "TabularNamedObject" }
+   };
+
+   public static readonly Dictionary<Type, string> Collections = new Dictionary<Type,string>()
+   {
+       { typeof(Table), "Tables" },
+       { typeof(CalculatedColumn), "Columns" },
+       { typeof(CalculatedTableColumn), "Columns" },
+       { typeof(DataColumn), "Columns" },
+       { typeof(Level), "Levels" },
+       { typeof(Hierarchy), "Hierarchies" },
+       { typeof(Measure), "Measures" },
+       { typeof(Partition), "Partitions" },
+       { typeof(Perspective), "Perspectives" },
+       { typeof(Culture), "Cultures" }
+   };
+
+   public static readonly Dictionary<Type, string> CollectionParent = new Dictionary<Type,string>()
+   {
+       { typeof(Table), "Model" },
+       { typeof(Column), "Table" },
+       { typeof(Level), "Hierarchy" },
+       { typeof(Hierarchy), "Table" },
+       { typeof(Measure), "Table" },
+       { typeof(Partition), "Table" },
+       { typeof(Perspective), "Model" },
+       { typeof(Culture), "Model" }
+   };
+}
+#>

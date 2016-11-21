@@ -1,0 +1,185 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{19DDE9A0-227F-4E8B-849D-C91C25322826}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TabularEditor</RootNamespace>
+    <AssemblyName>TOMWrapper</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.AnalysisServices.Core, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft SQL Server\130\SDK\Assemblies\Microsoft.AnalysisServices.Core.DLL</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AnalysisServices.Tabular, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft SQL Server\130\SDK\Assemblies\Microsoft.AnalysisServices.Tabular.DLL</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AnalysisServices.Tabular.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft SQL Server\130\SDK\Assemblies\Microsoft.AnalysisServices.Tabular.Json.DLL</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="PropertyGridUI\RefreshGridCollectionEditor.cs" />
+    <Compile Include="PropertyGridUI\CultureCollectionEditor.cs" />
+    <Compile Include="PropertyGridUI\DictionaryProperty.cs" />
+    <Compile Include="PropertyGridUI\DynamicProperty.cs" />
+    <Compile Include="PropertyGridUI\NoMultiselectAttribute.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StringHelper.cs" />
+    <Compile Include="TOMWrapper\Base\CalculatedColumn.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TOMWrapper\Base\CalculatedTableColumn.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TOMWrapper\Base\Column.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TOMWrapper\Base\Culture.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TOMWrapper\Base\DataColumn.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TOMWrapper\Base\Hierarchy.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TOMWrapper\Base\KPI.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TOMWrapper\Base\Level.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TOMWrapper\Base\Measure.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TOMWrapper\Base\Model.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TOMWrapper\Base\ModelRole.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TOMWrapper\CalculatedColumn.cs" />
+    <Compile Include="TOMWrapper\CalculatedTable.cs" />
+    <Compile Include="TOMWrapper\Database.cs" />
+    <Compile Include="TOMWrapper\KPI.cs" />
+    <Compile Include="TOMWrapper\Partition.cs" />
+    <Compile Include="TOMWrapper\Base\Partition.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TOMWrapper\Base\Perspective.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TOMWrapper\Base\Relationship.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TOMWrapper\Base\SingleColumnRelationship.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TOMWrapper\Base\Table.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TOMWrapper\Base\WrapperBase.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="TOMWrapper\Column.cs" />
+    <Compile Include="TOMWrapper\Culture.cs" />
+    <Compile Include="TOMWrapper\Folder.cs" />
+    <Compile Include="TOMWrapper\FolderHelper.cs" />
+    <Compile Include="TOMWrapper\Hierarchy.cs" />
+    <Compile Include="TOMWrapper\Interfaces.cs" />
+    <Compile Include="TOMWrapper\Level.cs" />
+    <Compile Include="TOMWrapper\Measure.cs" />
+    <Compile Include="TOMWrapper\Model.cs" />
+    <Compile Include="TOMWrapper\Perspective.cs" />
+    <Compile Include="TOMWrapper\PerspectiveIndexer.cs" />
+    <Compile Include="TOMWrapper\Table.cs" />
+    <Compile Include="TOMWrapper\TabularCommonActions.cs" />
+    <Compile Include="TOMWrapper\TabularConnection.cs" />
+    <Compile Include="TOMWrapper\TabularDeployer.cs" />
+    <Compile Include="UndoFramework\IUndoAction.cs" />
+    <Compile Include="UndoFramework\UndoPropertyChangedAction.cs" />
+    <Compile Include="UndoFramework\UndoClearAction.cs" />
+    <Compile Include="UndoFramework\UndoBatchAction.cs" />
+    <Compile Include="UndoFramework\UndoAddRemoveAction.cs" />
+    <Compile Include="UndoFramework\UndoHierarchyLevelOrderAction.cs" />
+    <Compile Include="UndoFramework\UndoManager.cs" />
+    <Compile Include="TOMWrapper\TabularCollectionHelper.cs" />
+    <Compile Include="TOMWrapper\TabularCultureHelper.cs" />
+    <Compile Include="TOMWrapper\TabularLogicalTree.cs" />
+    <Compile Include="TOMWrapper\TabularModelHandler.cs" />
+    <Compile Include="TOMWrapper\TabularNamedObject.cs" />
+    <Compile Include="TOMWrapper\TabularObject.cs" />
+    <Compile Include="TOMWrapper\TabularObjectCollection.cs" />
+    <Compile Include="TOMWrapper\TabularObjectComparer.cs" />
+    <Compile Include="TOMWrapper\TabularObjectHelper.cs" />
+    <Compile Include="TOMWrapper\TranslationIndexer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="TOMWrapper\Base\Rules.ttinclude">
+      <LastGenOutput>Rules.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TOMWrapper\Base\WrapperBase.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>WrapperBase.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
