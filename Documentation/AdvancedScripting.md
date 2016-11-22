@@ -34,11 +34,11 @@ Many objects in the object model, are actually collections of multiple objects. 
 
 Below is a few examples of the most commonly used LINQ extension methods:
 
-`Collection.First([predicate])` Returns the first object in the collection satisfying the optional [predicate] condition.
-`Collection.Any([predicate])` Returns true if the collection contains any objects (optionally satisfying the [predicate] condition).
-`Collection.Where(predicate)` Returns a collection that is the original collection filtered by the predicate condition.
-`Collection.Select(map)` Projects each object in the collection into another object according to the specified map.
-`Collection.ForEach(action)` Performs the specified action on each element in the collection.
+* `Collection.First([predicate])` Returns the first object in the collection satisfying the optional [predicate] condition.
+* `Collection.Any([predicate])` Returns true if the collection contains any objects (optionally satisfying the [predicate] condition).
+* `Collection.Where(predicate)` Returns a collection that is the original collection filtered by the predicate condition.
+* `Collection.Select(map)` Projects each object in the collection into another object according to the specified map.
+* `Collection.ForEach(action)` Performs the specified action on each element in the collection.
 
 In the above examples, `predicate` is a lambda expression that takes a single object as input, and returns a boolean value as output. For example, if `Collection` is a collection of measures, a typical `predicate` could look like:
 
