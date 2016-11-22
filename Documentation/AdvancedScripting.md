@@ -59,14 +59,14 @@ Going back to the examples above, `map` is a lambda expression that takes a sing
 
 Use the IntelliSense functionality of the Advanced Script editor to see what other LINQ methods exist, or refer to the [LINQ-to-Objects documentation](https://msdn.microsoft.com/en-us/library/9eekhta0.aspx).
 
-## Working with **Model**
+## Working with the **Model** object
 To quickly reference any object in the currently loaded Tabular Model, you can drag and drop the object from the explorer tree and into the Advanced Scripting editor:
 
 ![Dragging and dropping an object into the Advanced Scripting editor](https://raw.githubusercontent.com/otykier/TabularEditor/master/Documentation/DragDropTOM.gif)
 
 Please refer to the [TOM documentation](https://msdn.microsoft.com/en-us/library/microsoft.analysisservices.tabular.model.aspx) for an overview of which properties exist on the Model and its descendant objects. Additionally, refer to ***Appendix A*** for a complete listing of the properties and methods exposed by the wrapper object.
 
-## Working with **Selected**
+## Working with the **Selected** object
 Being able to explicitly refer to any object in the Tabular Model is great for some workflows, but sometimes you want to cherry pick objects from the explorer tree, and then execute a script against only the selected objects. This is where the `Selected` object comes in handy.
 
 The `Selected` object provides a range of properties that make it easy to identify what is currently selected, as well as limiting the selection to objects of a particular type. When browsing with Display Folders, and one or more folders are selected in the explorer tree, all their child items are considered to be selected as well.
