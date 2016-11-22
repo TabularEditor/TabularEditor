@@ -69,20 +69,23 @@ If no measures are currently selected in the tree, the above code does nothing, 
 
 Although we cannot set the Name property of multiple objects at once, we still have some options available. If we just want to replace all occurrences of some character string with another, we can use the provided “Rename” method, like so:
 
-```Selected.Measures
+```cs
+Selected.Measures
         .Rename("Amount", "Value");
 ```
 
 This would replace any occurence of the word ”Amount” with the word ”Value” in the names of all currently selected measures.
 Alternatively, we may use the LINQ ForEach()-method, as described above, to include more advanced logic:
 
-```Selected.Measures
+```cs
+Selected.Measures
         .ForEach(m => if(m.Name.Contains("Reseller")) m.Name += " DEPRECATED");
 ```
 
 This example will prepend the text " DEPRECATED" to the names of all selected measures where the names contain the word "Reseller". Alternatively, we could use the LINQ extension method `Where()` to filter the collection before applying the `ForEach()` operation, which would yield exactly the same result:
 
-```Selected.Measures
+```cs
+Selected.Measures
         .Where(m => m.Name.Contains("Reseller"))
         .ForEach(m => m.Name += " DEPRECATED");
 ```
