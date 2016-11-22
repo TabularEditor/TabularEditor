@@ -85,7 +85,7 @@ The Advanced Script editor has some limited IntelliSense functionality to get yo
 
 ![IntelliSense helps you create scripts for Tabular Editor](https://raw.githubusercontent.com/otykier/TabularEditor/master/Documentation/AdvancedEditor%20intellisense.png)
 
-More detailed documentation will be uploaded to GitHub soon.
+More documentation and examples on Advanced Scripting, can be [found here](https://github.com/otykier/TabularEditor/blob/master/Documentation/AdvancedScripting.md).
 
 # Version History
 
