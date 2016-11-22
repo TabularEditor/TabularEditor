@@ -40,6 +40,23 @@ Below is a few examples of the most commonly used LINQ extension methods:
 `Collection.Select(map)` Projects each object in the collection into another object according to the specified map.
 `Collection.ForEach(action)` Performs the specified action on each element in the collection.
 
+In the above examples, `predicate` is a lambda expression that takes a single object as input, and returns a boolean value as output. For example, if `Collection` is a collection of measures, a typical `predicate` could look like:
+
+`m => m.Name.Contains("Reseller")`
+
+This predicate would return true only if the Name of the measure contains the character string "Reseller". Wrap the expression in curly braces and use the `return` keyword, if you need more advanced logic:
+
+```cs
+.Where(obj => {
+    if(obj.ObjectType == ObjectType.Column) {
+        return false;
+    }
+    return obj.Name.Contains("test");
+})
+```
+
+Going back to the examples above, `map` is a lambda expression that takes a single object as input, and returns any single object as output. `action` is a lambda expression that takes a single object as input, but does not return any value.
+
 Use the IntelliSense functionality of the Advanced Script editor to see what other LINQ methods exist, or refer to the [LINQ-to-Objects documentation](https://msdn.microsoft.com/en-us/library/9eekhta0.aspx).
 
 ## Working with **Model**
@@ -89,3 +106,5 @@ Selected.Measures
         .Where(m => m.Name.Contains("Reseller"))
         .ForEach(m => m.Name += " DEPRECATED");
 ```
+
+## Creating Custom Actions
