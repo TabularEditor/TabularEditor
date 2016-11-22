@@ -116,7 +116,7 @@ After you restart Tabular Editor, you will see that this action is now available
 
 ![Custom Actions show up directly in the context menu](https://raw.githubusercontent.com/otykier/TabularEditor/master/Documentation/InvokeCustomAction.png)
 
-Custom Actions are stored in the CustomActions.json file within %AppData‰\Local\TabularEditor. In the above example, the contents of this file will look like this:
+Custom Actions are stored in the CustomActions.json file within %AppData%\Local\TabularEditor. In the above example, the contents of this file will look like this:
 
 ```json
 {
