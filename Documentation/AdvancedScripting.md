@@ -48,7 +48,7 @@ This predicate would return true only if the Name of the measure contains the ch
 
 ```cs
 .Where(obj => {
-    if(obj.ObjectType == ObjectType.Column) {
+    if(obj is Column) {
         return false;
     }
     return obj.Name.Contains("test");
