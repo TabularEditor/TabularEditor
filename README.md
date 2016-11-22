@@ -94,10 +94,12 @@ More detailed documentation will be uploaded to GitHub soon.
 
 # Roadmap
 
-Below is a listing of features I'm currently working on:
+Below is a listing of features I'm currently working on for future releases:
 
 * IntelliSense in DAX expression editor
 * Formula fix-up (i.e. automatically fixing DAX expressions when renaming objects)
 * UI for showing object dependencies
 * Scripting changes from the command-line
-* Possibility to read/edit more object types in the Tabular Object Model
+* Possibility to read/edit more object types (tables, partitions, data columns, relationships, roles)
+* Split a Model.bim into multiple json files (for example, one file per table) for better integration into Source Control workflows.
+* Power BI compatibility
