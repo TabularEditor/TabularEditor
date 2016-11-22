@@ -108,3 +108,46 @@ Selected.Measures
 ```
 
 ## Creating Custom Actions
+Say you have created a useful script using the `Selected` object, and you want to be able to execute the script several times on different objects in the explorer tree. Instead of hitting the "Play" button whenever you want to execute the script, Tabular Editor lets you save it as a Custom Action:
+
+![Creating a Custom Action from a script](https://raw.githubusercontent.com/otykier/TabularEditor/master/Documentation/SaveCustomAction.png)
+
+After you restart Tabular Editor, you will see that this action is now available directly from the right-click context menu of the explorer tree, making it very easy to invoke the script on any objects selected in the tree. You can create as many custom actions as you want. Use backslashes (\) in the names to create a submenu structure within the context menu.
+
+![Custom Actions show up directly in the context menu](https://raw.githubusercontent.com/otykier/TabularEditor/master/Documentation/InvokeCustomAction.png)
+
+Custom Actions are stored in the CustomActions.json file within %AppData‰\Local\TabularEditor. In the above example, the contents of this file will look like this:
+
+```json
+{
+  "Actions": [
+    {
+      "Name": "Custom Formatting\\Number with 1 decimal",
+      "Enabled": "true",
+      "Execute": "Selected.Measures.ForEach(m => m.FormatString = \"0.0\");",
+      "Tooltip": "Sets the FormatString to 0.0"
+    }
+  ]
+}
+```
+
+As you can see, `Name` and `Tooltip` gets their values from whatever was specified when the action was saved. `Execute` is the actual script to be executed when the action is invoked. Note that any syntax errors in the CustomActions.json file will cause Tabular Editor to skip loading all Custom Actions entirely.
+
+By default, when saving a Custom Action through the UI, `Enabled` is set to "true". This means that the action will always be enabled, regardless of where you invoke the context menu in the explorer tree. For an action that uses the `ForEach()` LINQ method on any of the collections on the Selected object, this does not matter, since these collections would just be empty in cases where the user did not select any objects in the explorer tree, corresponding to the object type of the collection. The actions would still be available in the context menu, however.
+
+To change this behaviour, we can provide a custom expression as the `Enabled` value. This expression should return a boolean value of `true`, only when we want the action to be available. In the example above, if we want the action to only be available when one or more measures have been selected, we could change the code in the CustomActions.json file to:
+
+```json
+{
+  "Actions": [
+    {
+      "Name": "Custom Formatting\\Number with 1 decimal",
+      "Enabled": "Selected.Measures.Count > 0",
+      "Execute": "Selected.Measures.ForEach(m => m.FormatString = \"0.0\");",
+      "Tooltip": "Sets the FormatString to 0.0"
+    }
+  ]
+}
+```
+
+This will disable the context menu item, unless at least one measure has been selected in the tree.
