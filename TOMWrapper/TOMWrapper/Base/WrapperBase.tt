@@ -6,7 +6,7 @@
 <#@ import namespace="System.Reflection" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Microsoft.AnalysisServices.Tabular" #>
-<#@include file="$(SolutionDir)\Manager.ttinclude"#>
+<#@include file="Manager.ttinclude"#>
 <#@include file="Rules.ttinclude"#>
 <# 
 	var manager = Manager.Create(Host, GenerationEnvironment);

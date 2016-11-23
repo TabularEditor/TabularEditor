@@ -161,6 +161,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="TOMWrapper\Base\Manager.ttinclude" />
     <None Include="TOMWrapper\Base\Rules.ttinclude">
       <LastGenOutput>Rules.cs</LastGenOutput>
     </None>

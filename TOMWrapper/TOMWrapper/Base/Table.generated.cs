@@ -110,10 +110,7 @@ namespace TabularEditor.TOMWrapper
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
-                if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.Calculated)
-                    new CalculatedTable(handler, obj) { Collection = this };
-				else
-                    new Table(handler, obj) { Collection = this };
+				new Table(handler, obj) { Collection = this };
 			}
 		}
 
