@@ -266,7 +266,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders[Selected.Cult
             txtFilter.Focus();
         }
 
-        private void actSaveFile_Execute(object sender, EventArgs e)
+        private void actSave_Execute(object sender, EventArgs e)
         {
             UI.Save();
         }

@@ -54,14 +54,10 @@ namespace TabularEditor.TOMWrapper
 
         // TODO: Handle differently
         [TypeConverter(typeof(CollectionConverter))]
-        public List<string> Relationships { get
+        public List<SingleColumnRelationship> Relationships { get
             {
                 return MetadataObject.Relationships.OfType<TOM.SingleColumnRelationship>()
-                    .Select(r => string.Format("'{0}'[{1}] {4} '{2}'[{3}]{5}", 
-                    r.FromTable.Name, r.FromColumn.Name, r.ToTable.Name, r.ToColumn.Name,
-                    r.CrossFilteringBehavior == TOM.CrossFilteringBehavior.OneDirection ? "==>" : "<==>",
-                    r.IsActive ? "" : " (inactive)"
-                    )).ToList();
+                    .Select(r => new SingleColumnRelationship(Handler, r)).ToList();
             }
         }
 

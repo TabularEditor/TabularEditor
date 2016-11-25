@@ -163,7 +163,7 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                return GetTrans(culture)?.Value;
+                return GetTrans(culture)?.Value ?? string.Empty;
             }
             set
             {

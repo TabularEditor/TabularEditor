@@ -149,6 +149,7 @@ namespace TabularEditor.UI
 
             Cursor.Current = Cursors.Default;
             UI.PropertyGrid.Refresh();
+            UI.TreeView.Refresh();
         }
 
 

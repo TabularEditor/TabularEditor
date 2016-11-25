@@ -26,6 +26,12 @@ namespace TabularEditor.TOMWrapper
         where TT: TOM.NamedMetadataObject
         where TP: TOM.MetadataObject
     {
+        [IntelliSense("Provide a lambda statement that is executed once for each object in the collection.\nExample: .ForEach(obj => obj.Name += \" OLD\");")]
+        public void ForEach(Action<T> action)
+        {
+            this.ToList().ForEach(action);
+        }
+
         private int updateLocks = 0;
         private bool init = false;
         public TabularModelHandler Handler { get; private set; }

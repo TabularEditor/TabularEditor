@@ -170,7 +170,7 @@ namespace TabularEditor
             using (var compiler = new CSharpCodeProvider()) {
                 // Allowed assemblies:
                 var tom = Assembly.GetAssembly(typeof(Microsoft.AnalysisServices.Tabular.Database)).Location;
-                var includeAssemblies = new HashSet<string>(new[] { "system.dll", "system.core.dll", Assembly.GetExecutingAssembly().Location, WrapperDllPath });
+                var includeAssemblies = new HashSet<string>(new[] { "system.dll", "system.core.dll", Assembly.GetExecutingAssembly().Location, WrapperDllPath, tom });
                 var cp = new CompilerParameters(includeAssemblies.ToArray()) { GenerateInMemory = true, IncludeDebugInformation = true };
 
                 result = compiler.CompileAssemblyFromSource(cp, source);

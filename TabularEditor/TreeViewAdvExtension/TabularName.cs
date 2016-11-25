@@ -56,7 +56,7 @@ namespace TabularEditor.UI.Tree
             var ctr = base.CreateEditor(node) as TextBox;
             if(node?.Tag is Level)
             {
-                ctr.Text = (node.Tag as Level).Name;
+                ctr.Text = (node.Tag as Level).GetName(UI.Tree?.Culture);
             }
             return ctr;
         }

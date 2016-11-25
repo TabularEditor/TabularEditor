@@ -62,6 +62,7 @@ namespace TabularEditor.UI
             var res = UI.SaveBimDialog.ShowDialog();
             if (res == DialogResult.OK)
             {
+                UI.StatusLabel.Text = "Saving...";
                 Handler.SaveFile(UI.SaveBimDialog.FileName);
                 if (File_Current != null) File_Current = UI.SaveBimDialog.FileName;
                 UpdateUIText();
@@ -70,6 +71,7 @@ namespace TabularEditor.UI
 
         public void Save()
         {
+            UI.StatusLabel.Text = "Saving...";
             if(Handler.IsConnected)
             {
                 Database_Save();

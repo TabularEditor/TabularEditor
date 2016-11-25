@@ -137,6 +137,7 @@
     <Compile Include="TOMWrapper\Model.cs" />
     <Compile Include="TOMWrapper\Perspective.cs" />
     <Compile Include="TOMWrapper\PerspectiveIndexer.cs" />
+    <Compile Include="TOMWrapper\SingleColumnRelationship.cs" />
     <Compile Include="TOMWrapper\Table.cs" />
     <Compile Include="TOMWrapper\TabularCommonActions.cs" />
     <Compile Include="TOMWrapper\TabularConnection.cs" />

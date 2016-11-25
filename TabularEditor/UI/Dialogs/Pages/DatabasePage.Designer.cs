@@ -30,15 +30,15 @@
         {
             this.components = new System.ComponentModel.Container();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.DatabaseIcon = new System.Windows.Forms.DataGridViewImageColumn();
-            this.nameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.descriptionDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.lastUpdateDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.lastProcessedDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.databaseBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.pnlDatabaseID = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.txtDatabaseName = new System.Windows.Forms.TextBox();
+            this.DatabaseIcon = new System.Windows.Forms.DataGridViewImageColumn();
+            this.colID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colLastUpdate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colLastProcessed = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.databaseBindingSource)).BeginInit();
             this.pnlDatabaseID.SuspendLayout();
@@ -56,10 +56,10 @@
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.DatabaseIcon,
-            this.nameDataGridViewTextBoxColumn,
-            this.descriptionDataGridViewTextBoxColumn,
-            this.lastUpdateDataGridViewTextBoxColumn,
-            this.lastProcessedDataGridViewTextBoxColumn});
+            this.colID,
+            this.colDescription,
+            this.colLastUpdate,
+            this.colLastProcessed});
             this.dataGridView1.DataSource = this.databaseBindingSource;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
@@ -76,45 +76,7 @@
             this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellDoubleClick);
             this.dataGridView1.SelectionChanged += new System.EventHandler(this.dataGridView1_SelectionChanged_1);
             this.dataGridView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataGridView1_KeyDown);
-            // 
-            // DatabaseIcon
-            // 
-            this.DatabaseIcon.FillWeight = 20F;
-            this.DatabaseIcon.Frozen = true;
-            this.DatabaseIcon.HeaderText = "";
-            this.DatabaseIcon.Image = global::TabularEditor.Resources.DatabaseMethod_16x;
-            this.DatabaseIcon.Name = "DatabaseIcon";
-            this.DatabaseIcon.ReadOnly = true;
-            this.DatabaseIcon.Width = 20;
-            // 
-            // nameDataGridViewTextBoxColumn
-            // 
-            this.nameDataGridViewTextBoxColumn.DataPropertyName = "ID";
-            this.nameDataGridViewTextBoxColumn.HeaderText = "ID";
-            this.nameDataGridViewTextBoxColumn.Name = "nameDataGridViewTextBoxColumn";
-            this.nameDataGridViewTextBoxColumn.ReadOnly = true;
-            this.nameDataGridViewTextBoxColumn.Width = 200;
-            // 
-            // descriptionDataGridViewTextBoxColumn
-            // 
-            this.descriptionDataGridViewTextBoxColumn.DataPropertyName = "Description";
-            this.descriptionDataGridViewTextBoxColumn.HeaderText = "Description";
-            this.descriptionDataGridViewTextBoxColumn.Name = "descriptionDataGridViewTextBoxColumn";
-            this.descriptionDataGridViewTextBoxColumn.ReadOnly = true;
-            // 
-            // lastUpdateDataGridViewTextBoxColumn
-            // 
-            this.lastUpdateDataGridViewTextBoxColumn.DataPropertyName = "LastUpdate";
-            this.lastUpdateDataGridViewTextBoxColumn.HeaderText = "Last Update";
-            this.lastUpdateDataGridViewTextBoxColumn.Name = "lastUpdateDataGridViewTextBoxColumn";
-            this.lastUpdateDataGridViewTextBoxColumn.ReadOnly = true;
-            // 
-            // lastProcessedDataGridViewTextBoxColumn
-            // 
-            this.lastProcessedDataGridViewTextBoxColumn.DataPropertyName = "LastProcessed";
-            this.lastProcessedDataGridViewTextBoxColumn.HeaderText = "Last Processed";
-            this.lastProcessedDataGridViewTextBoxColumn.Name = "lastProcessedDataGridViewTextBoxColumn";
-            this.lastProcessedDataGridViewTextBoxColumn.ReadOnly = true;
+            this.dataGridView1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.dataGridView1_KeyPress);
             // 
             // databaseBindingSource
             // 
@@ -150,6 +112,45 @@
             this.txtDatabaseName.TabIndex = 0;
             this.txtDatabaseName.TextChanged += new System.EventHandler(this.txtDatabaseID_TextChanged);
             // 
+            // DatabaseIcon
+            // 
+            this.DatabaseIcon.FillWeight = 20F;
+            this.DatabaseIcon.Frozen = true;
+            this.DatabaseIcon.HeaderText = "";
+            this.DatabaseIcon.Image = global::TabularEditor.Resources.DatabaseMethod_16x;
+            this.DatabaseIcon.Name = "DatabaseIcon";
+            this.DatabaseIcon.ReadOnly = true;
+            this.DatabaseIcon.Width = 20;
+            // 
+            // colID
+            // 
+            this.colID.DataPropertyName = "ID";
+            this.colID.HeaderText = "ID";
+            this.colID.Name = "colID";
+            this.colID.ReadOnly = true;
+            this.colID.Width = 200;
+            // 
+            // colDescription
+            // 
+            this.colDescription.DataPropertyName = "Description";
+            this.colDescription.HeaderText = "Description";
+            this.colDescription.Name = "colDescription";
+            this.colDescription.ReadOnly = true;
+            // 
+            // colLastUpdate
+            // 
+            this.colLastUpdate.DataPropertyName = "LastUpdate";
+            this.colLastUpdate.HeaderText = "Last Update";
+            this.colLastUpdate.Name = "colLastUpdate";
+            this.colLastUpdate.ReadOnly = true;
+            // 
+            // colLastProcessed
+            // 
+            this.colLastProcessed.DataPropertyName = "LastProcessed";
+            this.colLastProcessed.HeaderText = "Last Processed";
+            this.colLastProcessed.Name = "colLastProcessed";
+            this.colLastProcessed.ReadOnly = true;
+            // 
             // DatabasePage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -174,9 +175,9 @@
         private System.Windows.Forms.TextBox txtDatabaseName;
         private System.Windows.Forms.BindingSource databaseBindingSource;
         private System.Windows.Forms.DataGridViewImageColumn DatabaseIcon;
-        private System.Windows.Forms.DataGridViewTextBoxColumn nameDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn descriptionDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn lastUpdateDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn lastProcessedDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colID;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colDescription;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colLastUpdate;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colLastProcessed;
     }
 }
