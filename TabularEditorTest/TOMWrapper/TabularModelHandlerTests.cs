@@ -304,8 +304,8 @@ namespace TabularEditor.TOMWrapper.Tests
             measure.DisplayFolder = "Test Folder";
 
             model.Cultures.Add(new Culture() { Name = "da-DK" });
-            Assert.IsNull(measure.TranslatedNames["da-DK"]);
-            Assert.IsNull(measure.TranslatedDisplayFolders["da-DK"]);
+            Assert.AreEqual("", measure.TranslatedNames["da-DK"]);
+            Assert.AreEqual("", measure.TranslatedDisplayFolders["da-DK"]);
 
             measure.TranslatedNames["da-DK"] = "Reseller Total Sales";
             Assert.AreEqual("Reseller Total Sales", measure.TranslatedNames["da-DK"]);
@@ -322,7 +322,7 @@ namespace TabularEditor.TOMWrapper.Tests
             measure.TranslatedNames.Reset();
             measure.TranslatedDisplayFolders.Reset();
             handler.SaveDB();
-            Assert.IsNull(measure.TranslatedNames["da-DK"]);
+            Assert.AreEqual("", measure.TranslatedNames["da-DK"]);
             Assert.AreEqual(measure.DisplayFolder, measure.TranslatedDisplayFolders["da-DK"]);
 
             handler.UndoManager.Rollback();

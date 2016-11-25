@@ -133,12 +133,15 @@ namespace TabularEditor.TextServices
             // TODO: This could be improved by filtering methods on those that have the exact number
             // and order of parameters, as the code that is being parsed. Is only a problem for overloaded
             // methods that return different types, so will rarely cause problems on the LINQ extension methods.
+            var methods = typeof(Enumerable).GetMethods();
+            var mx = methods.First();
+
             return typeof(Enumerable).GetMethods()
                         .Where(m => m.Name == name)
                         .FirstOrDefault(m =>
                         {
                             var par = m.GetParameters()[0].ParameterType;
-                            return par.IsGenericTypeDefinition && par.GetGenericTypeDefinition() == genericType;
+                            return par.IsGenericType && par.GetGenericTypeDefinition() == genericType;
                         });
         }
 
