@@ -9,6 +9,7 @@
 * Possibility to read/edit more object types (tables, partitions, data columns, relationships, roles)
 * Split a Model.bim into multiple json files (for example, one file per table) for better integration into Source Control workflows.
 * Power BI compatibility
+* Import/export translations
 
 
 ### Scripting objects into TMSL or DAX
@@ -31,3 +32,26 @@ When any model object is renamed, all DAX expressions refering that object shoul
 
 Right-clicking a measure or calculated column should display a dependency tree in a pop-up dialog. It should be possible to show either objects that depend on the chosen object, or objects on which the chosen object depend.
 
+### Scripting changes from the command-line
+
+Today, it is possible to deploy a model directly from the command-line. Similarly, it should be possible to pipe in a .cs file, containing a C# script to be executed on the model. After script execution, it should be possible to save or deploy the updated model. This requires a few changes to the current command-line options.
+
+### Possibility to read/edit more object types
+
+Tabular Editor currently only lets end-users read and edit a subset of the objects in the Tabular Object Model. It is desirable to allow all objects in the model tree, to be accessible in Tabular Editor: Relationships, KPIs, Calculated Tables and Roles should be directly editable. Data Sources, tables, data columns and table partitions should be editable with some constraints (for example, we should not expect Tabular Editor to be able to fetch data schemas from arbitrary data sources and queries).
+
+### Split a Model.bim into multiple json files
+
+The layout and structure of the Model.bim file, makes it horrible for purposes of source control and versioning. Not only is the entire Tabular Object Model written into just one file, the file also contains "ModifiedTime" information everywhere in the structure, making source control DIFF operations useless.
+
+For better release management workflows with Tabular Models, it would be interesting if Tabular Editor could save/load a Model.bim file as a folder structure with individual files for measures, calculated columns, etc. There should be command-line options available for exporting/importing Model.bim files from/to this format, and it should be possible to deploy directly from this format (in cases where you don't need the Model.bim file itself). These individual files should contain the same JSON as the Model.bim file, but without the "ModifiedTime" information, so that they can easily be used in Version Control software, allowing multiple developers to work on the same model at once.
+
+### Power BI Compatibility
+
+Today, it is already possible to connect Tabular Editor to a model hosted by Power BI Desktop. The approach is similar to what is [described here for Excel and SSMS](http://biinsight.com/connect-to-power-bi-desktop-model-from-excel-and-ssms/). Doing this, it is actually possible to add Display Folders to the Power BI Desktop model, and they actually stay in Power BI, even after saving and reopening the .pbix file. However, it seems that there are some compatibility level issues, which should be looked into before proceeding.
+
+When this is in place, consider providing a better connect UI for Power BI (perhaps it would even be possible to connect directly to a .pbix file?)
+
+### Import/Export translations
+
+This is a standard feature in SSDT, which would be useful to have in Tabular Editor as well.
