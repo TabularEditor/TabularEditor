@@ -95,12 +95,4 @@ More documentation and examples on Advanced Scripting, can be [found here](https
 
 # Roadmap
 
-Below is a listing of features I'm currently working on for future releases:
-
-* IntelliSense in DAX expression editor
-* Formula fix-up (i.e. automatically fixing DAX expressions when renaming objects)
-* UI for showing object dependencies
-* Scripting changes from the command-line
-* Possibility to read/edit more object types (tables, partitions, data columns, relationships, roles)
-* Split a Model.bim into multiple json files (for example, one file per table) for better integration into Source Control workflows.
-* Power BI compatibility
+View the full roadmap for upcoming features [here](https://github.com/otykier/TabularEditor/blob/master/Documentation/Roadmap.md).
