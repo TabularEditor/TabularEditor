@@ -18,8 +18,8 @@ namespace TabularEditor.Dax
         public string Dax { get; set; }
         public char ListSeparator { get; set; }
         public char DecimalSeparator { get; set; }
-        //public string CallerApp { get; set; }
-        //public string CallerVersion { get; set; }
+        public string CallerApp { get; set; }
+        public string CallerVersion { get; set; }
 
         public DaxFormatterRequest()
         {
@@ -28,8 +28,8 @@ namespace TabularEditor.Dax
 
             // Save caller app and version
             var assemblyName = System.Reflection.Assembly.GetEntryAssembly().GetName();
-            //this.CallerApp = assemblyName.Name;
-            //this.CallerVersion = assemblyName.Version.ToString();
+            this.CallerApp = assemblyName.Name;
+            this.CallerVersion = assemblyName.Version.ToString();
         }
     }
 
