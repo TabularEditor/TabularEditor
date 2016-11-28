@@ -196,6 +196,8 @@ namespace TabularEditor.UndoFramework
             return batchSizeCounter;
         }
 
+        public int BatchDepth { get { return batchDepth; } }
+
         public event EventHandler UndoStateChanged;
 
         /// <summary>

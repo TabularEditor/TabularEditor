@@ -121,7 +121,7 @@ namespace TabularEditor.UI
             try
             {
                 dyn.Invoke(Handler.Model, Selection);
-                var actionCount = Handler.EndUpdate();
+                var actionCount = Handler.EndUpdateAll();
                 UI.StatusExLabel.Text = string.Format("Script executed succesfully. {0} model change{1}.", actionCount, actionCount == 1 ? "" : "s");
                 UI.TreeView.Focus();
             }
@@ -141,10 +141,13 @@ namespace TabularEditor.UI
                         scriptEditorErrorsVisible = true;
                     }
                 }
-                var actionCount = Handler.EndUpdate(true, undoErrors);
+                var actionCount = Handler.EndUpdateAll(undoErrors);
 
                 MessageBox.Show(msg, "Error executing code", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 UI.StatusExLabel.Text = string.Format("Script execution failed. {0} model change{1}.", actionCount, actionCount == 1 ? "" : "s");
+            }
+            finally
+            {
             }
 
             Cursor.Current = Cursors.Default;

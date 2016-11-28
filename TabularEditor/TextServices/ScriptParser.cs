@@ -189,7 +189,7 @@ namespace TabularEditor.TextServices
                         continue;
                     }
                     // Instance method (this will likely fail in case of overloads):
-                    var methodInfo = type.GetMethod(p);
+                    var methodInfo = type.GetMethods().FirstOrDefault(m => m.Name == p);
                     if (methodInfo != null)
                     {
                         type = methodInfo.ReturnType;
@@ -202,7 +202,10 @@ namespace TabularEditor.TextServices
                         var exMethodInfo = GetLinqExtensionMethod(p, cType);
                         if (exMethodInfo != null)
                         {
-                            type = exMethodInfo.MakeGenericMethod(cType.GetGenericArguments()[0]).ReturnType;
+                            if(exMethodInfo.GetGenericArguments().Length == 1)
+                                type = exMethodInfo.MakeGenericMethod(cType.GetGenericArguments()[0]).ReturnType;
+                            else if (exMethodInfo.GetGenericArguments().Length == 2)
+                                type = exMethodInfo.MakeGenericMethod(cType.GetGenericArguments()[0], typeof(object)).ReturnType;
                             continue;
                         }
                     }
@@ -215,12 +218,18 @@ namespace TabularEditor.TextServices
 
         public Type GetTypeAtPos(int pos)
         {
-            var list = Ts.GetTokens().Where(t => t.Channel == 0).ToList();
+            try
+            {
+                var list = Ts.GetTokens().Where(t => t.Channel == 0).ToList();
 
-            localTypes.Clear();
-            var p = GetPropPathFrom(pos, list);
-            var type = GetPropPathType(p, list);
-            return type;
+                localTypes.Clear();
+                var p = GetPropPathFrom(pos, list);
+                var type = GetPropPathType(p, list);
+                return type;
+            } catch
+            {
+                return null;
+            }
         }
 
         private Type GetAssignmentType(IList<IToken> list, int identifierToken)
@@ -280,6 +289,7 @@ namespace TabularEditor.TextServices
                         var p = GetPropPathFrom(list[i - 1].StartIndex - 1, list); // <-- This must include variable assignments
                         if (p == null || p.Count == 0) break;
                         var pType = GetPropPathType(p, list);
+                        if (pType == null) break;
                         if (!pType.IsGenericType && pType.BaseType.IsGenericType) pType = pType.BaseType;
                         var lambdaType = pType.GetGenericArguments().FirstOrDefault();
                         if (lambdaType != null) localTypes.Add(lambdaArgs[0].Text, lambdaType);

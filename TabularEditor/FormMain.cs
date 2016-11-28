@@ -30,12 +30,12 @@ namespace TabularEditor
                     customActionsToolStripMenuItem.DropDownItems.Add(act.Name, null, (s, e) => { txtAdvanced.Text = act.Execute; });
                 }
             }
-            if(custActions == null || custActions.Actions.Length == 0)
+            if (custActions == null || custActions.Actions.Length == 0)
             {
                 var item = customActionsToolStripMenuItem.DropDownItems.Add("(No custom actions)");
                 item.Enabled = false;
             }
-            
+
             samplesMenu.DropDownItems.Add("Copy display folder to active translation", null, (s, e) =>
             {
                 txtAdvanced.Text =
@@ -43,7 +43,18 @@ namespace TabularEditor
 Selected.Columns.ForEach(item => item.TranslatedDisplayFolders[Selected.Culture] = item.DisplayFolder);
 Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders[Selected.Culture] = item.DisplayFolder);";
             });
+
+            samplesMenu.DropDownItems.Add("Copy display folder to all translations", null, (s, e) =>
+            {
+                txtAdvanced.Text =
+@"Selected.Measures.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.DisplayFolder));
+Selected.Columns.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.DisplayFolder));
+Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.DisplayFolder));";
+            });
+
         }
+
+
 
         CustomActionsJson custActions = null;
 

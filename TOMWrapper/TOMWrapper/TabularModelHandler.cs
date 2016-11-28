@@ -315,6 +315,15 @@ namespace TabularEditor.TOMWrapper
 
             return actionCount;
         }
+        public int EndUpdateAll(bool rollback = false)
+        {
+            var actionCount = 0;
+            while (UndoManager.BatchDepth > 0)
+            {
+                actionCount = UndoManager.EndBatch(rollback);
+            }
+            return actionCount;
+        }
 
 
         internal void UpdateObject(ITabularObject obj)
