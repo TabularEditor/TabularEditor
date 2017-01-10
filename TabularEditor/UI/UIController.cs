@@ -137,6 +137,7 @@ namespace TabularEditor.UI
 
                 UI.StatusLabel.Text = Handler.Status;
                 UI.ErrorLabel.Text = Handler?.Errors?.Count > 0 ? string.Format("{0} error{1}", Handler.Errors.Count, Handler.Errors.Count > 1 ? "s" : "") : "";
+                UI.ErrorLabel.IsLink = Handler?.Errors?.Count > 0;
             }
         }
 

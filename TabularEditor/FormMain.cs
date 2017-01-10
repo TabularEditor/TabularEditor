@@ -106,8 +106,9 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void lblErrors_Click(object sender, EventArgs e)
         {
-            if (UI.Handler.Errors == null) return;
+            if (UI.Handler?.Errors == null) return;
             var c = UI.Handler.Errors.Count;
+            if (c == 0) return;
             // TODO: Show error information
             MessageBox.Show((c > 25 ? c + " errors in total. Only 25 first errors shown:\n\n" : "") + string.Join("\n", UI.Handler.Errors.Select(t => t.Item1.Name + ": " + t.Item2).Take(25)), "Error messages returned from server", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
