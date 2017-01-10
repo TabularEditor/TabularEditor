@@ -91,15 +91,8 @@ More documentation and examples on Advanced Scripting, can be [found here](https
 
 * **2016-09-01** Version 1.0 released on Kapacity.dk
 * **2016-11-22** Version 2.0 and source code released on GitHub.com
+* **2016-11-28** Latest build: Version 2.0.6176
 
 # Roadmap
 
-Below is a listing of features I'm currently working on for future releases:
-
-* IntelliSense in DAX expression editor
-* Formula fix-up (i.e. automatically fixing DAX expressions when renaming objects)
-* UI for showing object dependencies
-* Scripting changes from the command-line
-* Possibility to read/edit more object types (tables, partitions, data columns, relationships, roles)
-* Split a Model.bim into multiple json files (for example, one file per table) for better integration into Source Control workflows.
-* Power BI compatibility
+View the full roadmap for upcoming features [here](https://github.com/otykier/TabularEditor/blob/master/Documentation/Roadmap.md).
