@@ -42,9 +42,9 @@ namespace TabularEditor.TOMWrapper
             Handler.BeginUpdate("duplicate calculated column");
             var tom = MetadataObject.Clone() as TOM.CalculatedColumn;
             tom.IsRemoved = false;
-            tom.Name = Table.Columns.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+            tom.Name = table.Columns.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
             var c = new CalculatedColumn(Handler, tom);
-            Table.Columns.Add(c);
+            table.Columns.Add(c);
 
             if (includeTranslations)
             {
