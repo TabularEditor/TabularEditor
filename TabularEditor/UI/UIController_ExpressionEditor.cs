@@ -97,7 +97,7 @@ namespace TabularEditor.UI
 
         private void ExpressionEditor_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
         {
-            if(!ExpressionEditor_IsEditing) ExpressionEditor_Edit(ExpressionEditor_Current);
+            if(!ExpressionEditor_IsEditing) ExpressionEditor_Edit(ExpressionEditor_Current, false);
 
             if (!string.IsNullOrEmpty(UI.ExpressionEditor.Text)) ExpressionParser.SyntaxHighlight(UI.ExpressionEditor);
 
@@ -133,14 +133,17 @@ namespace TabularEditor.UI
             } 
         }
 
-        private void ExpressionEditor_Edit(IExpressionObject obj)
+        private void ExpressionEditor_Edit(IExpressionObject obj, bool switchToTab = true)
         {
             if (obj is CalculatedTable) return;
 
             // Make sure the ExpressionEditor tab page is visible:
-            var page = UI.ExpressionEditor.Parent as TabPage;
-            if (page is TabPage)
-                (page.Parent as TabControl).SelectTab(page);
+            if (switchToTab)
+            {
+                var page = UI.ExpressionEditor.Parent as TabPage;
+                if (page is TabPage)
+                    (page.Parent as TabControl).SelectTab(page);
+            }
 
             // Accept any previous edits:
             if (ExpressionEditor_IsEditing) ExpressionEditor_AcceptEdit();
