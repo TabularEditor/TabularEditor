@@ -171,7 +171,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void actUndoRedo_Execute(object sender, EventArgs e)
         {
-            UI.ExpressionEditor_CancelEdit();
+            if(!txtExpression.Focused) UI.ExpressionEditor_CancelEdit();
             propertyGrid1.Refresh();
             tvModel.Refresh();
         }
