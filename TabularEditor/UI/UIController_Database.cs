@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
 using TabularEditor.UI.Dialogs;
+using TabularEditor.UIServices;
 
 namespace TabularEditor.UI
 {
@@ -19,7 +20,7 @@ namespace TabularEditor.UI
             var res = f.ShowDialog();
             if (res == DialogResult.Cancel) return;
 
-
+            Database_Backup();
             UI.FormMain.Cursor = Cursors.WaitCursor;
             UI.StatusLabel.Text = "Deploying...";
             Application.DoEvents();
@@ -51,6 +52,11 @@ namespace TabularEditor.UI
             if (ConnectForm.Show() == DialogResult.Cancel) return;
             if (SelectDatabaseForm.Show(ConnectForm.Server) == DialogResult.Cancel) return;
 
+            UI.StatusLabel.Text = "Opening Model from Database...";
+            ClearUI();
+            UpdateUIText();
+            Cursor.Current = Cursors.WaitCursor;
+
             var oldHandler = Handler;
 
             try
@@ -63,7 +69,20 @@ namespace TabularEditor.UI
             {
                 MessageBox.Show(ex.Message, "Error connecting to database", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Handler = oldHandler;
+                LoadTabularModelToUI();
             }
+
+            Cursor.Current = Cursors.Default;
+        }
+
+        private void Database_Backup()
+        {
+            if (Preferences.Current.BackupOnSave)
+            {
+                var backupFilename = string.Format("{0}\\Backup_{1}_{2}.zip", Preferences.Current.BackupLocation, Handler.Database.Name, DateTime.Now.ToString("yyyyMMddhhmmssfff"));
+                TabularDeployer.SaveModelMetadataBackup(Handler.Database.Server.ConnectionString, Handler.Database.ID, backupFilename);
+            }
+
         }
 
         private void Database_Save()
@@ -85,7 +104,7 @@ namespace TabularEditor.UI
             UI.StatusLabel.Text = "Saving changes to DB...";
             Application.DoEvents();
 
-            Handler.WriteZip(string.Format("{0}\\DeployedFiles\\deploy_{1}.zip", Application.UserAppDataPath, DateTime.Now.ToString("yyyyMMddhhmmss")));
+            Database_Backup();
             Handler.SaveDB();
 
             UI.TreeView.Refresh();

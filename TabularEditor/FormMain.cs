@@ -7,6 +7,7 @@ using TabularEditor.UI;
 using TabularEditor.UI.Extensions;
 using TabularEditor.UI.Actions;
 using TabularEditor.UI.Dialogs;
+using TabularEditor.UIServices;
 
 namespace TabularEditor
 {
@@ -51,7 +52,6 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders[Selected.Cult
 Selected.Columns.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.DisplayFolder));
 Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.DisplayFolder));";
             });
-
         }
 
 
@@ -334,6 +334,38 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void tvModel_Click(object sender, EventArgs e)
         {
 
+        }
+
+        PreferencesForm PreferencesForm = new PreferencesForm();
+
+
+        private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PreferencesForm.ShowDialog();
+        }
+
+        private void FormMain_Shown(object sender, EventArgs e)
+        {
+            // Various checks to be performed when the main form is shown
+
+            if(!Preferences.Current.IsLoaded)
+            {
+                // If IsLoaded is false, it means that this is the first time Tabular Editor is started (or that the Preferences.json file has been deleted)
+                // In this case, let's ask the user if he wants to enable automatic updates.
+
+                var res = MessageBox.Show("Do you want Tabular Editor to automatically check GitHub for updates on every startup?\n\nThis can be changed under File > Preferences.", "Enable automatic update check?", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                Preferences.Current.CheckForUpdates = res == DialogResult.Yes;
+                Preferences.Current.Save();
+            }
+
+            if(Preferences.Current.CheckForUpdates)
+            {
+                if(UpdateService.Check() ?? false)
+                {
+                    var res = MessageBox.Show("A new version of Tabular Editor is available. Would you like to open the download page now?\n\nYou can disable this check under File > Preferences.", "Tabular Editor update available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                    if (res == DialogResult.Yes) UpdateService.OpenDownloadPage();
+                }
+            }
         }
     }
 }

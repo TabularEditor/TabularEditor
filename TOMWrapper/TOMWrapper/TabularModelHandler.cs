@@ -2,10 +2,8 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using TabularEditor.UndoFramework;
 using TOM = Microsoft.AnalysisServices.Tabular;
-using System.IO.Compression;
 using Newtonsoft.Json.Linq;
 
 namespace TabularEditor.TOMWrapper
@@ -188,25 +186,6 @@ namespace TabularEditor.TOMWrapper
             if (!IsConnected) UndoManager.SetCheckpoint();
         }
 
-        public void WriteZip(string fileName)
-        {
-            var content = TOM.JsonSerializer.SerializeDatabase(database);
-
-            Directory.CreateDirectory(Path.GetDirectoryName(fileName));
-            using (var fileStream = new FileStream(fileName, FileMode.CreateNew))
-            {
-                using (var archive = new ZipArchive(fileStream, ZipArchiveMode.Create, false))
-                {
-                    var entry = archive.CreateEntry("Model.bim");
-                    using (var zipStream = entry.Open())
-                    {
-                        var buffer = Encoding.UTF8.GetBytes(content);
-                        zipStream.Write(buffer, 0, buffer.Length);
-                    }
-                }
-            }
-        }
-
         public IList<Tuple<TOM.NamedMetadataObject, string>> Errors { get; private set; }
 
         public struct ConflictInfo {
@@ -228,6 +207,11 @@ namespace TabularEditor.TOMWrapper
                 DatabaseLastUpdate = db.LastUpdate,
                 Conflict = db.Version != Version
             };
+        }
+
+        public void SaveBackup(string path)
+        {
+            
         }
 
         public void SaveDB()

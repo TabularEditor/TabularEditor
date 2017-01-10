@@ -50,11 +50,11 @@ namespace TabularEditor.UI.Dialogs.Pages
 
         private void dataGridView1_SelectionChanged_1(object sender, EventArgs e)
         {
-            if (dataGridView1.CurrentRow != null && !suspendEvent)
+            if (dataGridView1.SelectedRows.Count == 1 && !suspendEvent)
             {
                 suspendEvent = true;
 
-                txtDatabaseName.Text = (dataGridView1.CurrentRow.DataBoundItem as Database).ID;
+                txtDatabaseName.Text = (dataGridView1.SelectedRows[0].DataBoundItem as Database).ID;
                 OnValidation();
 
                 suspendEvent = false;
@@ -92,7 +92,8 @@ namespace TabularEditor.UI.Dialogs.Pages
 
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            Accept?.Invoke(this, new EventArgs());
+            if(e.RowIndex >= 0)
+                Accept?.Invoke(this, new EventArgs());
         }
 
         private void dataGridView1_KeyDown(object sender, KeyEventArgs e)

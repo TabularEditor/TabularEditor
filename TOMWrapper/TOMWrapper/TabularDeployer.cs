@@ -2,6 +2,8 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,8 +24,8 @@ namespace TabularEditor.TOMWrapper
 
             string result;
 
-            if (!server.Databases.Contains(targetDatabaseID)) result = DeployNew(db, server, targetDatabaseID, options);
-            else result = DeployExisting(db, server, targetDatabaseID, options);
+            if (!server.Databases.Contains(targetDatabaseID)) result = DeployNewTMSL(db, server, targetDatabaseID, options);
+            else result = DeployExistingTMSL(db, server, targetDatabaseID, options);
 
             return result;
         }
@@ -31,6 +33,33 @@ namespace TabularEditor.TOMWrapper
         public static void Deploy(TOM.Database db, string targetConnectionString, string targetDatabaseName)
         {
             Deploy(db, targetConnectionString, targetDatabaseName, DeploymentOptions.Default);
+        }
+
+        public static void SaveModelMetadataBackup(string connectionString, string targetDatabaseID, string backupFilePath)
+        {
+            var s = new TOM.Server();
+            s.Connect(connectionString);
+            var db = s.Databases[targetDatabaseID];
+
+            var dbcontent = TOM.JsonSerializer.SerializeDatabase(db);
+            WriteZip(backupFilePath, dbcontent);
+        }
+
+        public static void WriteZip(string fileName, string content)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+            using (var fileStream = new FileStream(fileName, FileMode.CreateNew))
+            {
+                using (var archive = new ZipArchive(fileStream, ZipArchiveMode.Create, false))
+                {
+                    var entry = archive.CreateEntry("Model.bim");
+                    using (var zipStream = entry.Open())
+                    {
+                        var buffer = Encoding.UTF8.GetBytes(content);
+                        zipStream.Write(buffer, 0, buffer.Length);
+                    }
+                }
+            }
         }
 
         public static void Deploy(TOM.Database db, string targetConnectionString, string targetDatabaseID, DeploymentOptions options)
@@ -47,7 +76,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        private static string DeployNew(TOM.Database db, TOM.Server server, string newDbID, DeploymentOptions options)
+        private static string DeployNewTMSL(TOM.Database db, TOM.Server server, string newDbID, DeploymentOptions options)
         {
             var rawScript = TOM.JsonScripter.ScriptCreate(db);
             var jObj = JObject.Parse(rawScript);
@@ -65,7 +94,7 @@ namespace TabularEditor.TOMWrapper
             return jObj.ToString();
         }
 
-        private static string DeployExisting(TOM.Database db, TOM.Server server, string dbId, DeploymentOptions options)
+        private static string DeployExistingTMSL(TOM.Database db, TOM.Server server, string dbId, DeploymentOptions options)
         {
             var orgDb = server.Databases[dbId];
 

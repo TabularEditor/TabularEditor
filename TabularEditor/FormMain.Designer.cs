@@ -101,6 +101,7 @@
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
@@ -153,6 +154,7 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator16 = new System.Windows.Forms.ToolStripSeparator();
@@ -487,6 +489,8 @@
             this.fromDBToolStripMenuItem.Image = global::TabularEditor.Resources.CubeOpen;
             this.fromDBToolStripMenuItem.Name = "fromDBToolStripMenuItem";
             this.fromDBToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+O";
+            this.fromDBToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.O)));
             this.fromDBToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
             this.fromDBToolStripMenuItem.Text = "From DB...";
             this.fromDBToolStripMenuItem.ToolTipText = "Open a Tabular Model from an existing database";
@@ -632,6 +636,7 @@
             this.saveToolStripMenuItem.Image = global::TabularEditor.Resources.Save;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+S";
+            this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.saveToolStripMenuItem.Text = "Save Model.bim";
             // 
@@ -919,6 +924,13 @@
             this.selectAllToolStripMenuItem.Text = "Select &All";
             this.selectAllToolStripMenuItem.ToolTipText = "Select All";
             // 
+            // preferencesToolStripMenuItem
+            // 
+            this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
+            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.preferencesToolStripMenuItem.Text = "Preferences...";
+            this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
+            // 
             // toolStrip2
             // 
             this.toolStrip2.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
@@ -936,7 +948,7 @@
             this.toolStripSeparator10});
             this.toolStrip2.Location = new System.Drawing.Point(0, 24);
             this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(1002, 25);
+            this.toolStrip2.Size = new System.Drawing.Size(1009, 25);
             this.toolStrip2.TabIndex = 13;
             this.toolStrip2.Text = "toolStrip2";
             // 
@@ -999,8 +1011,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(1002, 552);
-            this.splitContainer1.SplitterDistance = 383;
+            this.splitContainer1.Size = new System.Drawing.Size(1009, 552);
+            this.splitContainer1.SplitterDistance = 385;
             this.splitContainer1.TabIndex = 16;
             // 
             // tvModel
@@ -1032,7 +1044,7 @@
             this.tvModel.ShowLines = false;
             this.tvModel.ShowNodeToolTips = true;
             this.tvModel.ShowPlusMinus = false;
-            this.tvModel.Size = new System.Drawing.Size(383, 527);
+            this.tvModel.Size = new System.Drawing.Size(385, 527);
             this.tvModel.TabIndex = 19;
             this.tvModel.Text = "treeViewAdv1";
             this.tvModel.UseColumns = true;
@@ -1117,7 +1129,7 @@
             this.toolStripButton6});
             this.toolTreeView.Location = new System.Drawing.Point(0, 0);
             this.toolTreeView.Name = "toolTreeView";
-            this.toolTreeView.Size = new System.Drawing.Size(383, 25);
+            this.toolTreeView.Size = new System.Drawing.Size(385, 25);
             this.toolTreeView.Stretch = true;
             this.toolTreeView.TabIndex = 18;
             // 
@@ -1162,7 +1174,7 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.propertyGrid1);
-            this.splitContainer2.Size = new System.Drawing.Size(615, 552);
+            this.splitContainer2.Size = new System.Drawing.Size(620, 552);
             this.splitContainer2.SplitterDistance = 267;
             this.splitContainer2.TabIndex = 15;
             // 
@@ -1174,7 +1186,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(615, 267);
+            this.tabControl1.Size = new System.Drawing.Size(620, 267);
             this.tabControl1.TabIndex = 2;
             // 
             // tabPage1
@@ -1185,7 +1197,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(607, 241);
+            this.tabPage1.Size = new System.Drawing.Size(612, 241);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "DAX Editor";
             // 
@@ -1221,7 +1233,7 @@
             this.txtExpression.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
             this.txtExpression.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtExpression.ServiceColors")));
             this.txtExpression.ShowLineNumbers = false;
-            this.txtExpression.Size = new System.Drawing.Size(601, 192);
+            this.txtExpression.Size = new System.Drawing.Size(606, 192);
             this.txtExpression.TabIndex = 23;
             this.txtExpression.Zoom = 100;
             // 
@@ -1232,7 +1244,7 @@
             this.lblCurrentMeasure.Location = new System.Drawing.Point(3, 28);
             this.lblCurrentMeasure.Name = "lblCurrentMeasure";
             this.lblCurrentMeasure.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-            this.lblCurrentMeasure.Size = new System.Drawing.Size(601, 18);
+            this.lblCurrentMeasure.Size = new System.Drawing.Size(606, 18);
             this.lblCurrentMeasure.TabIndex = 24;
             this.lblCurrentMeasure.Visible = false;
             this.lblCurrentMeasure.Paint += new System.Windows.Forms.PaintEventHandler(this.lblCurrentMeasure_Paint);
@@ -1250,7 +1262,7 @@
             this.btnReplace});
             this.toolStrip3.Location = new System.Drawing.Point(3, 3);
             this.toolStrip3.Name = "toolStrip3";
-            this.toolStrip3.Size = new System.Drawing.Size(601, 25);
+            this.toolStrip3.Size = new System.Drawing.Size(606, 25);
             this.toolStrip3.TabIndex = 22;
             this.toolStrip3.Text = "toolStrip3";
             // 
@@ -1271,7 +1283,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(607, 241);
+            this.tabPage2.Size = new System.Drawing.Size(612, 241);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Advanced Scripting";
             // 
@@ -1310,7 +1322,7 @@
             this.txtAdvanced.RightBracket2 = '}';
             this.txtAdvanced.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
             this.txtAdvanced.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtAdvanced.ServiceColors")));
-            this.txtAdvanced.Size = new System.Drawing.Size(601, 210);
+            this.txtAdvanced.Size = new System.Drawing.Size(606, 210);
             this.txtAdvanced.TabIndex = 16;
             this.txtAdvanced.Zoom = 100;
             // 
@@ -1326,7 +1338,7 @@
             this.btnSaveCustomAction});
             this.toolStrip4.Location = new System.Drawing.Point(3, 3);
             this.toolStrip4.Name = "toolStrip4";
-            this.toolStrip4.Size = new System.Drawing.Size(601, 25);
+            this.toolStrip4.Size = new System.Drawing.Size(606, 25);
             this.toolStrip4.TabIndex = 15;
             this.toolStrip4.Text = "toolStrip4";
             // 
@@ -1380,7 +1392,7 @@
             this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(615, 281);
+            this.propertyGrid1.Size = new System.Drawing.Size(620, 281);
             this.propertyGrid1.TabIndex = 14;
             // 
             // tvMenu
@@ -1397,7 +1409,7 @@
             this.lblScriptStatus});
             this.statusStrip1.Location = new System.Drawing.Point(0, 601);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1002, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1009, 22);
             this.statusStrip1.TabIndex = 17;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -1433,7 +1445,7 @@
             | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
             this.lblScriptStatus.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
             this.lblScriptStatus.Name = "lblScriptStatus";
-            this.lblScriptStatus.Size = new System.Drawing.Size(687, 17);
+            this.lblScriptStatus.Size = new System.Drawing.Size(694, 17);
             this.lblScriptStatus.Spring = true;
             this.lblScriptStatus.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -1446,7 +1458,7 @@
             this.modelToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1002, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1009, 24);
             this.menuStrip1.TabIndex = 18;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -1457,6 +1469,8 @@
             this.toolStripMenuItem1,
             this.saveToolStripMenuItem,
             this.saveAsToolStripMenuItem,
+            this.toolStripMenuItem3,
+            this.preferencesToolStripMenuItem,
             this.toolStripMenuItem2,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -1476,6 +1490,11 @@
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(196, 6);
+            // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(196, 6);
             // 
             // toolStripMenuItem2
             // 
@@ -1689,7 +1708,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1002, 623);
+            this.ClientSize = new System.Drawing.Size(1009, 623);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.toolStrip2);
             this.Controls.Add(this.statusStrip1);
@@ -1701,6 +1720,7 @@
             this.Text = "Tabular Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.Load += new System.EventHandler(this.FormMain_Load);
+            this.Shown += new System.EventHandler(this.FormMain_Shown);
             ((System.ComponentModel.ISupportInitialize)(actionsMain)).EndInit();
             this.toolStrip2.ResumeLayout(false);
             this.toolStrip2.PerformLayout();
@@ -1787,6 +1807,7 @@
         private Crad.Windows.Forms.Actions.Action actExit;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem preferencesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deployToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem displayFoldersToolStripMenuItem;
@@ -1882,6 +1903,7 @@
         private TabularEditor.UI.Actions.PasteAction actPaste;
         private TabularEditor.UI.Actions.SelectAllAction actSelectAll;
         private TabularEditor.UI.Actions.CutAction actCut;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
     }
 }
 

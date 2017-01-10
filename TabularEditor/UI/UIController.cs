@@ -109,6 +109,15 @@ namespace TabularEditor.UI
             UI.StatusExLabel.Text = "";
         }
 
+        public void ClearUI()
+        {
+            UI.TreeView.SelectedNode = null;
+            UI.TreeView.Model = null;
+            UI.TreeView.Refresh();
+            TreeView_SelectionChanged(null, new EventArgs());
+            UI.PropertyGrid.Refresh();
+        }
+
         private void UpdateUIText()
         {
             var appName = Application.ProductName + " " + string.Join(".", Application.ProductVersion.Split('.').Take(2));
