@@ -132,7 +132,9 @@ namespace TabularEditor.UI
             else
             {
                 UI.FormMain.Text = string.Format("{0}{1} - {2}",
-                    Handler.IsConnected ? Handler.Database.Server.Name + "." + Handler.Database.Name : File_Current,
+                    Handler.IsConnected ? (
+                        string.IsNullOrEmpty(LocalInstanceName) ? Handler.Database.Server.Name + "." + Handler.Database.Name : LocalInstanceName
+                        ) : File_Current,
                     Handler.HasUnsavedChanges ? "*" : "", appName);
 
                 UI.StatusLabel.Text = Handler.Status;

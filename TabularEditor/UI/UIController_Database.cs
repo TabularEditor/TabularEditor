@@ -45,12 +45,23 @@ namespace TabularEditor.UI
             UI.FormMain.Cursor = Cursors.Default;
         }
 
+        private string LocalInstanceName = null;
+
         public void Database_Connect()
         {
             if (DiscardChangesCheck()) return;
 
             if (ConnectForm.Show() == DialogResult.Cancel) return;
-            if (SelectDatabaseForm.Show(ConnectForm.Server) == DialogResult.Cancel) return;
+            LocalInstanceName = ConnectForm.LocalInstanceName;
+            if (string.IsNullOrEmpty(LocalInstanceName))
+            {
+                if (SelectDatabaseForm.Show(ConnectForm.Server) == DialogResult.Cancel) return;
+            }
+            else
+            {
+                // embedded mode
+                // signal to open the first (and only) database in the list, and use the name provided from the ConnectForm
+            }
 
             UI.StatusLabel.Text = "Opening Model from Database...";
             ClearUI();
@@ -61,7 +72,7 @@ namespace TabularEditor.UI
 
             try
             {
-                Handler = new TabularModelHandler(ConnectForm.ConnectionString, SelectDatabaseForm.DatabaseName);
+                Handler = new TabularModelHandler(ConnectForm.ConnectionString, string.IsNullOrEmpty(LocalInstanceName) ? SelectDatabaseForm.DatabaseName : null);
                 LoadTabularModelToUI();
                 File_Current = null;
             }

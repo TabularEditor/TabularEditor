@@ -147,8 +147,16 @@ namespace TabularEditor.TOMWrapper
             server = new TOM.Server();
             server.Connect(serverName);
             
+            if(databaseName == null)
+            {
+                if (server.Databases.Count >= 1) database = server.Databases[0];
+                else throw new InvalidOperationException("This instance does not contain any databases, or the user does not have access.");
+            }
+            else
+            {
+                database = server.Databases[databaseName];
+            }
 
-            database = server.Databases[databaseName];
             if (database.CompatibilityLevel < 1200) throw new InvalidOperationException("Only databases with Compatibility Level 1200 or higher can be loaded in Tabular Editor.");
 
             Status = "Connected succesfully.";

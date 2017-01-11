@@ -11,10 +11,13 @@ namespace TabularEditor.UI.Dialogs
         public ConnectForm()
         {
             InitializeComponent();
+
+            connectPage.PopulateLocalInstances();
         }
 
         public static string ConnectionString { get; private set; }
         public static Server Server { get; private set; }
+        public static string LocalInstanceName { get; private set; }
 
         public static DialogResult Show(string caption = "Connect to Tabular Server")
         {
@@ -30,6 +33,7 @@ namespace TabularEditor.UI.Dialogs
             Cursor = Cursors.WaitCursor;
             ConnectionString = connectPage.GetConnectionString();
             Server = connectPage.GetServer();
+            LocalInstanceName = connectPage.LocalInstanceName;
             if (Server == null) e.Cancel = true;
             Cursor = Cursors.Default;
         }

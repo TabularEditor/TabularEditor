@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.AnalysisServices.Tabular;
 using TabularEditor.TOMWrapper;
+using TabularEditor.UIServices;
+using System.Drawing.Imaging;
 
 namespace TabularEditor.UI.Dialogs.Pages
 {
@@ -19,6 +21,14 @@ namespace TabularEditor.UI.Dialogs.Pages
         public ConnectPage()
         {
             InitializeComponent();
+        }
+
+        public void PopulateLocalInstances()
+        {
+            comboBox1.Items.Clear();
+            comboBox1.DisplayMember = "Name";
+            PowerBIHelper.Refresh();
+            comboBox1.Items.AddRange(PowerBIHelper.Instances.OrderBy(i => i.Name).ToArray());
         }
 
         public Server GetServer()
@@ -45,13 +55,59 @@ namespace TabularEditor.UI.Dialogs.Pages
 
         private void OnValidation()
         {
-            var valid = !string.IsNullOrEmpty(txtServer.Text)
+            var valid = (!string.IsNullOrWhiteSpace(txtServer.Text) || comboBox1.SelectedIndex >= 0)
                 && (rdbIntegrated.Checked || !string.IsNullOrEmpty(txtUsername.Text));
 
             Validation?.Invoke(this, new ValidationEventArgs(valid));
         }
 
-        public string ServerName { get { return txtServer.Text; } set { txtServer.Text = value; } }
+        public bool AllowLocalInstanceConnect
+        {
+            get { return comboBox1.Visible; }
+            set
+            {
+                comboBox1.Visible = value;
+                panel1.Top = value ? 54 : 26;
+                MinimumSize = new Size(MinimumSize.Width, value ? 151 : 123);
+            }
+        }
+
+
+        public string ServerName
+        {
+            get
+            {
+                var item = comboBox1.SelectedItem as PowerBIInstance;
+                if (item != null) return "localhost:" + item.Port;
+                return txtServer.Text;
+            }
+            set
+            {
+                txtServer.Text = value;
+            }
+        }
+
+        public string LocalInstanceName
+        {
+            get
+            {
+                return GetLocalInstanceName(comboBox1.SelectedIndex);
+            }
+        }
+
+        private string GetLocalInstanceName(int index)
+        {
+            if(index >= 0)
+            {
+                var item = comboBox1.Items[index] as PowerBIInstance;
+                if (item != null) return string.Format("{0}.{1}{2}",
+                    "localhost:" + item.Port,
+                    item.Name,
+                    item.Icon == EmbeddedSSASIcon.PowerBI ? ".pbix" : "");
+            }
+            return null;
+        }
+
         public bool IntegratedSecurity
         {
             get { return rdbIntegrated.Checked; }
@@ -68,6 +124,32 @@ namespace TabularEditor.UI.Dialogs.Pages
         {
             return IntegratedSecurity ? TabularConnection.GetConnectionString(ServerName)
                 : TabularConnection.GetConnectionString(ServerName, UserName, Password);
+        }
+
+        private void comboBox1_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            e.DrawBackground();
+            e.DrawFocusRectangle();
+
+            if (e.Index >= 0)
+            {
+                var item = comboBox1.Items[e.Index] as PowerBIInstance;
+
+                e.Graphics.DrawImage(imageList1.Images[(int)item.Icon], e.Bounds.Left + 2, e.Bounds.Top + 2);
+
+                e.Graphics.DrawString(GetLocalInstanceName(e.Index), e.Font, new SolidBrush(e.ForeColor), e.Bounds.Left + 24, e.Bounds.Top + 3);
+            }
+        }
+
+        private void txtServer_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            comboBox1.SelectedIndex = -1;
+        }
+
+        private void comboBox1_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            txtServer.Text = "";
+            ValidateUI(sender, e);
         }
     }
 }

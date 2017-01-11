@@ -46,9 +46,9 @@
             this.panel4 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
             this.pnlPage1 = new System.Windows.Forms.Panel();
-            this.page2 = new TabularEditor.UI.Dialogs.Pages.DatabasePage();
-            this.page1 = new TabularEditor.UI.Dialogs.Pages.ConnectPage();
+            this.lblHint = new System.Windows.Forms.Label();
             this.page4 = new System.Windows.Forms.Panel();
+            this.btnTMSL = new System.Windows.Forms.Button();
             this.tvSummary = new System.Windows.Forms.TreeView();
             this.page3 = new System.Windows.Forms.Panel();
             this.chkDeployStructure = new System.Windows.Forms.CheckBox();
@@ -56,8 +56,8 @@
             this.chkDeployRoleMembers = new System.Windows.Forms.CheckBox();
             this.chkDeployRoles = new System.Windows.Forms.CheckBox();
             this.chkDeployConnections = new System.Windows.Forms.CheckBox();
-            this.lblHint = new System.Windows.Forms.Label();
-            this.btnTMSL = new System.Windows.Forms.Button();
+            this.page2 = new TabularEditor.UI.Dialogs.Pages.DatabasePage();
+            this.page1 = new TabularEditor.UI.Dialogs.Pages.ConnectPage();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel2.SuspendLayout();
@@ -244,30 +244,16 @@
             this.pnlPage1.Size = new System.Drawing.Size(512, 307);
             this.pnlPage1.TabIndex = 0;
             // 
-            // page2
+            // lblHint
             // 
-            this.page2.AllowNew = true;
-            this.page2.Location = new System.Drawing.Point(15, 63);
-            this.page2.Name = "page2";
-            this.page2.Server = null;
-            this.page2.Size = new System.Drawing.Size(485, 232);
-            this.page2.TabIndex = 1;
-            this.page2.Visible = false;
-            this.page2.Validation += new TabularEditor.UI.Dialogs.ValidationEventHandler(this.Page_Validation);
-            this.page2.Accept += new System.EventHandler(this.page2_Accept);
-            // 
-            // page1
-            // 
-            this.page1.IntegratedSecurity = true;
-            this.page1.Location = new System.Drawing.Point(15, 63);
-            this.page1.MinimumSize = new System.Drawing.Size(232, 120);
-            this.page1.Name = "page1";
-            this.page1.Password = "";
-            this.page1.ServerName = "";
-            this.page1.Size = new System.Drawing.Size(485, 232);
-            this.page1.TabIndex = 0;
-            this.page1.UserName = "";
-            this.page1.Validation += new TabularEditor.UI.Dialogs.ValidationEventHandler(this.Page_Validation);
+            this.lblHint.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblHint.Location = new System.Drawing.Point(12, 19);
+            this.lblHint.Name = "lblHint";
+            this.lblHint.Size = new System.Drawing.Size(488, 41);
+            this.lblHint.TabIndex = 0;
+            this.lblHint.Text = "Enter the server name of the SQL Server 2016 Analysis Services (Tabular) instance" +
+    " you want to deploy to. For Azure Analysis Services, use \"asazure://<servername>" +
+    "\".";
             // 
             // page4
             // 
@@ -278,6 +264,16 @@
             this.page4.Size = new System.Drawing.Size(485, 232);
             this.page4.TabIndex = 3;
             this.page4.Visible = false;
+            // 
+            // btnTMSL
+            // 
+            this.btnTMSL.Location = new System.Drawing.Point(369, 209);
+            this.btnTMSL.Name = "btnTMSL";
+            this.btnTMSL.Size = new System.Drawing.Size(116, 23);
+            this.btnTMSL.TabIndex = 1;
+            this.btnTMSL.Text = "TMSL Script";
+            this.btnTMSL.UseVisualStyleBackColor = true;
+            this.btnTMSL.Click += new System.EventHandler(this.btnTMSL_Click);
             // 
             // tvSummary
             // 
@@ -355,26 +351,31 @@
             this.chkDeployConnections.Text = "Deploy Connections";
             this.chkDeployConnections.UseVisualStyleBackColor = true;
             // 
-            // lblHint
+            // page2
             // 
-            this.lblHint.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblHint.Location = new System.Drawing.Point(12, 19);
-            this.lblHint.Name = "lblHint";
-            this.lblHint.Size = new System.Drawing.Size(488, 41);
-            this.lblHint.TabIndex = 0;
-            this.lblHint.Text = "Enter the server name of the SQL Server 2016 Analysis Services (Tabular) instance" +
-    " you want to deploy to. For Azure Analysis Services, use \"asazure://<servername>" +
-    "\".";
+            this.page2.AllowNew = true;
+            this.page2.Location = new System.Drawing.Point(15, 63);
+            this.page2.Name = "page2";
+            this.page2.Server = null;
+            this.page2.Size = new System.Drawing.Size(485, 232);
+            this.page2.TabIndex = 1;
+            this.page2.Visible = false;
+            this.page2.Validation += new TabularEditor.UI.Dialogs.ValidationEventHandler(this.Page_Validation);
+            this.page2.Accept += new System.EventHandler(this.page2_Accept);
             // 
-            // btnTMSL
+            // page1
             // 
-            this.btnTMSL.Location = new System.Drawing.Point(369, 209);
-            this.btnTMSL.Name = "btnTMSL";
-            this.btnTMSL.Size = new System.Drawing.Size(116, 23);
-            this.btnTMSL.TabIndex = 1;
-            this.btnTMSL.Text = "TMSL Script";
-            this.btnTMSL.UseVisualStyleBackColor = true;
-            this.btnTMSL.Click += new System.EventHandler(this.btnTMSL_Click);
+            this.page1.AllowLocalInstanceConnect = false;
+            this.page1.IntegratedSecurity = true;
+            this.page1.Location = new System.Drawing.Point(15, 63);
+            this.page1.MinimumSize = new System.Drawing.Size(232, 123);
+            this.page1.Name = "page1";
+            this.page1.Password = "";
+            this.page1.ServerName = "";
+            this.page1.Size = new System.Drawing.Size(485, 232);
+            this.page1.TabIndex = 0;
+            this.page1.UserName = "";
+            this.page1.Validation += new TabularEditor.UI.Dialogs.ValidationEventHandler(this.Page_Validation);
             // 
             // DeployForm
             // 
