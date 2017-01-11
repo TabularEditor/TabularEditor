@@ -16,6 +16,8 @@ namespace TabularEditor.UI.Actions
         FastColoredTextBoxNS.FastColoredTextBox fc;
         bool isFc = false;
 
+        public Control Parent { get { return isFc ? fc.Parent : tb.Parent; } }
+
         public TextboxWrapper(TextBoxBase textBox)
         {
             tb = textBox;

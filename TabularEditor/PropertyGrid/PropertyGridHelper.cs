@@ -34,6 +34,18 @@ namespace TabularEditor
             return result;
         }
 
+        public static bool IsPropertyGridControl(Control control)
+        {
+            if (control is PropertyGrid) return true;
+            var p = control.Parent;
+            while(p != null)
+            {
+                if (p is PropertyGrid) return true;
+                p = p.Parent;
+            }
+            return false;
+        }
+
         private static void GetExpandedLabelsRecursive(GridItem item, IList<string> expandedLabels)
         {
             if(item.Expanded)

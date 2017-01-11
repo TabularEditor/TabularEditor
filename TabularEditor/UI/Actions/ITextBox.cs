@@ -1,4 +1,6 @@
-﻿namespace TabularEditor.UI.Actions
+﻿using System.Windows.Forms;
+
+namespace TabularEditor.UI.Actions
 {
     public interface ITextBox
     {
@@ -17,5 +19,6 @@
         void Redo();
         void SelectAll();
         void Undo();
+        Control Parent { get; }
     }
 }

@@ -23,8 +23,11 @@ namespace TabularEditor.UI.Actions
         {
             var ctr = UIHelper.GetFocusedControl(Application.OpenForms[0]);
             
-
-            if(ctr is FastColoredTextBoxNS.FastColoredTextBox)
+            if (ctr is TextBoxBase && PropertyGridHelper.IsPropertyGridControl(ctr) && (ctr as TextBoxBase).CanUndo)
+            {
+                // Property grids handle undo/redo on their own
+            }
+            else if(ctr is FastColoredTextBoxNS.FastColoredTextBox)
             {
                 if (Kind == UndoRedo.Undo) (ctr as FastColoredTextBoxNS.FastColoredTextBox).Undo();
                 else (ctr as FastColoredTextBoxNS.FastColoredTextBox).Redo();

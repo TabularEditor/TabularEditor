@@ -23,7 +23,12 @@ namespace TabularEditor.UI.Actions
 
         protected override void OnExecute(EventArgs e)
         {
-            if (ActiveTextBox != null) ActiveTextBox.Copy();
+            if (ActiveTextBox != null)
+            {
+                // PropertyGrids handle copy/paste on their own - below check fixes issue #20
+                if (!PropertyGridHelper.IsPropertyGridControl(ActiveTextBox.Parent))
+                    ActiveTextBox.Copy();
+            }
             base.OnExecute(e);
         }
 
