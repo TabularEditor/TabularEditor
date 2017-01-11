@@ -9,7 +9,10 @@ Tabular Editor uses the [Tabular Object Model](https://msdn.microsoft.com/en-us/
 ## Introduction
 View the article on www.kapacity.dk/tabular-editor for a general presentation of the tool and the motivations behind it.
 
-For more documentation, view the [wiki](https://github.com/otykier/TabularEditor/wiki).
+* [Getting Started](https://github.com/otykier/TabularEditor/wiki/Getting-Started)
+* [Features at a Glance](https://github.com/otykier/TabularEditor/wiki/Features-at-a-glance)
+* [Advanced Features](https://github.com/otykier/TabularEditor/wiki/Advanced-Features)
+* [FAQ](https://github.com/otykier/TabularEditor/wiki/FAQ)
 
 # Version History
 
