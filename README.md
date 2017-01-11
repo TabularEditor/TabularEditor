@@ -14,12 +14,12 @@ View the article on www.kapacity.dk/tabular-editor for a general presentation of
 * [Advanced Features](https://github.com/otykier/TabularEditor/wiki/Advanced-Features)
 * [FAQ](https://github.com/otykier/TabularEditor/wiki/FAQ)
 
-# Version History
+## Version History
 
 * **2016-09-01** Version 1.0 released on Kapacity.dk
 * **2016-11-22** Version 2.0 and source code released on GitHub.com
 * **2016-11-28** Latest build: Version 2.0.6176
 
-# Roadmap
+## Roadmap
 
 View the full roadmap for upcoming features [here](https://github.com/otykier/TabularEditor/blob/master/Documentation/Roadmap.md).
