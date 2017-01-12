@@ -33,8 +33,8 @@ namespace TabularEditor.TOMWrapper
 
         public virtual void Delete()
         {
-            TranslatedDescriptions.Clear();
-            TranslatedDisplayFolders.Clear();
+            if(!(this is Culture)) TranslatedDescriptions.Clear();
+            if(this is IDetailObject) TranslatedDisplayFolders.Clear();
             TranslatedNames.Clear();
 
             if (Collection == null)

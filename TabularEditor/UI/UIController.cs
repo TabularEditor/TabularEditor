@@ -45,6 +45,7 @@ namespace TabularEditor.UI
             Tree_Init();
             ExpressionEditor_Init();
             ScriptEditor_Init();
+            PropertyGrid_Init();
             Current = this;
 
             Actions = new ModelActionManager();

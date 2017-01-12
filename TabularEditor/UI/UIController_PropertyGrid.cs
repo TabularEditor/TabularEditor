@@ -5,11 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.ComponentModel.Com2Interop;
+using TabularEditor.PropertyGridUI;
 
 namespace TabularEditor.UI
 {
     public partial class UIController
     {
+        public void PropertyGrid_Init()
+        {
+            CustomEditors.RegisterEditor("Display Folder", new FormDisplayFolderSelect());
+        }
+
         public void PropertyGrid_UpdateFromSelection()
         {
             var expanded = UI.PropertyGrid.GetExpandedItemLabels();

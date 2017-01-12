@@ -61,6 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PropertyGridUI\CustomDialogEditor.cs" />
     <Compile Include="PropertyGridUI\RefreshGridCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CultureCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\DictionaryProperty.cs" />

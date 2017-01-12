@@ -5,6 +5,7 @@ using System.Linq;
 using TabularEditor.UndoFramework;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using Newtonsoft.Json.Linq;
+using TabularEditor.PropertyGridUI;
 
 namespace TabularEditor.TOMWrapper
 {

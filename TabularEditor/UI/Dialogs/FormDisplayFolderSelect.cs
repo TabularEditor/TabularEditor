@@ -7,10 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TabularEditor.PropertyGridUI;
+using TabularEditor.TOMWrapper;
 
 namespace TabularEditor
 {
-    public partial class FormDisplayFolderSelect : Form
+    public partial class FormDisplayFolderSelect : Form, ICustomEditor
     {
         public FormDisplayFolderSelect()
         {
@@ -18,18 +20,30 @@ namespace TabularEditor
         }
 
         public TreeNodeCollection FolderNodes { get { return treeFolders.Nodes; } }
-        public string SelectedFolder { get { return treeFolders.SelectedNode?.Tag?.ToString(); } }
+        public string SelectedFolder {
+            get { return string.Join("\\", treeFolders.SelectedNode?.FullPath.Split('\\').Skip(1)); }
+            set
+            {
+                
+            }
+        }
 
         private void treeFolders_AfterExpand(object sender, TreeViewEventArgs e)
         {
-            e.Node.ImageIndex = 1;
-            e.Node.SelectedImageIndex = 1;
+            if (e.Node != rootNode)
+            {
+                e.Node.ImageIndex = 1;
+                e.Node.SelectedImageIndex = 1;
+            }
         }
 
         private void treeFolders_AfterCollapse(object sender, TreeViewEventArgs e)
         {
-            e.Node.ImageIndex = 0;
-            e.Node.SelectedImageIndex = 0;
+            if (e.Node != rootNode)
+            {
+                e.Node.ImageIndex = 0;
+                e.Node.SelectedImageIndex = 0;
+            }
         }
 
         private void btnNewFolder_Click(object sender, EventArgs e)
@@ -71,6 +85,45 @@ namespace TabularEditor
         private void treeFolders_AfterSelect(object sender, TreeViewEventArgs e)
         {
             btnOK.Enabled = e.Node != null;
+        }
+
+        private TreeNode rootNode;
+
+        public object Edit(object instance, string property, object value, out bool cancel)
+        {
+            cancel = true;
+
+            if(instance is IDetailObject)
+            {
+                var table = (instance as IDetailObject).Table;
+                FolderNodes.Clear();
+
+                rootNode = FolderNodes.Add(table.Name, table.Name, 2, 2);
+
+                AddChildren(rootNode.Nodes, Folder.CreateFolder(table, "", true, null));
+
+                cancel = ShowDialog() == DialogResult.Cancel;
+                if (!cancel) value = SelectedFolder;
+            }
+
+            return value;
+        }
+
+        private void AddChildren(TreeNodeCollection parent, Folder folder)
+        {
+            var children = folder.GetChildrenByFolders().OfType<Folder>().OrderBy(f => f.Name).Select(f =>
+            {
+                var node = new TreeNode(f.Name);
+                AddChildren(node.Nodes, f);
+                return node;
+            });
+
+            parent.AddRange(children.ToArray());
+        }
+
+        private void treeFolders_BeforeLabelEdit(object sender, NodeLabelEditEventArgs e)
+        {
+            if(e.Node == rootNode) e.CancelEdit = true;
         }
     }
 }

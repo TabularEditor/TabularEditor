@@ -31,7 +31,7 @@ namespace TabularEditor.TOMWrapper
 
         public string ErrorMessage { get; private set; }
 
-        static public Folder CreateFolder(Table table, string path = "")
+        static public Folder CreateFolder(Table table, string path = "", bool useFixedCulture = false, Culture fixedCulture = null)
         {
             // Always attempt to re-use folders:
             var fullPath = table.Name.ConcatPath(path);
@@ -39,6 +39,11 @@ namespace TabularEditor.TOMWrapper
             if(!table.Handler.Tree.FolderTree.TryGetValue(fullPath, out result))
             {
                 result = new Folder(table, path);
+            }
+            if (useFixedCulture)
+            {
+                result.useFixedCulture = useFixedCulture;
+                result.fixedCulture = fixedCulture;
             }
             result.CheckChildrenErrors();
 
@@ -80,8 +85,12 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         private TabularTree Tree { get { return Handler.Tree; } }
         [Browsable(false)]
-        public Culture Culture { get { return Tree.Culture; } }
-        [Browsable(false)]
+        public Culture Culture { get { return useFixedCulture ? fixedCulture : Tree.Culture; } }
+
+        private bool useFixedCulture = false;
+        private Culture fixedCulture;
+        
+            [Browsable(false)]
         public Model Model { get { return Table.Model; } }
 
         public ObjectType ObjectType

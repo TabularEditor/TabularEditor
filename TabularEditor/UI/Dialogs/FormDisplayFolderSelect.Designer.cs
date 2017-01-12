@@ -50,6 +50,7 @@
             this.treeFolders.SelectedImageIndex = 0;
             this.treeFolders.Size = new System.Drawing.Size(316, 252);
             this.treeFolders.TabIndex = 0;
+            this.treeFolders.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeFolders_BeforeLabelEdit);
             this.treeFolders.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeFolders_AfterLabelEdit);
             this.treeFolders.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.treeFolders_AfterCollapse);
             this.treeFolders.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.treeFolders_AfterExpand);
@@ -62,6 +63,7 @@
             this.tabularTreeImages.TransparentColor = System.Drawing.Color.Transparent;
             this.tabularTreeImages.Images.SetKeyName(0, "folder");
             this.tabularTreeImages.Images.SetKeyName(1, "folderOpen");
+            this.tabularTreeImages.Images.SetKeyName(2, "Table_16x.png");
             // 
             // label1
             // 

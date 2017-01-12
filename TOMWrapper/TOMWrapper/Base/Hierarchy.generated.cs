@@ -93,7 +93,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the DisplayFolder of the Hierarchy.
         /// </summary>
 		[DisplayName("Display Folder")]
-		[Category("Basic"),IntelliSense("The Display Folder of this Hierarchy.")]
+		[Category("Basic"),IntelliSense("The Display Folder of this Hierarchy.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string DisplayFolder {
 			get {
 			    return MetadataObject.DisplayFolder;

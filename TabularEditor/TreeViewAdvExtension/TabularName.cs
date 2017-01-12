@@ -19,6 +19,14 @@ namespace TabularEditor.UI.Tree
     {
         private UIController UI;
 
+        protected override bool CanEdit(TreeNodeAdv node)
+        {
+            return node.Tag is ITabularNamedObject
+                && !(node.Tag is LogicalGroup)
+                && !(node.Tag is Culture)
+                && !(node.Tag is Relationship);
+        }
+
         public TabularNodeTextBox(UIController UI)
         {
             this.DrawText += TabularNodeTextBox_DrawText;

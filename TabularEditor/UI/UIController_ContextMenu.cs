@@ -19,7 +19,11 @@ namespace TabularEditor.UI
 
             var originalItems = menu.Items.OfType<ToolStripItem>().Where(item => !(item.Tag is IBaseAction)).ToArray();
             menu.Items.Clear();
-            if (originalItems.Length > 0) menu.Items.AddRange(originalItems);
+            if (originalItems.Length > 0)
+            {
+                menu.Items.AddRange(originalItems);
+                if(menu.Items.Count > 0 && !(menu.Items[menu.Items.Count - 1] is ToolStripSeparator)) menu.Items.Add(new ToolStripSeparator());
+            }
 
             ContextMenu_Populate(menu);
 
@@ -28,7 +32,6 @@ namespace TabularEditor.UI
 
         private void ContextMenu_Populate(ToolStripDropDown menu)
         {
-
             foreach (var action in Actions)
             {
                 if (action is IModelAction)
@@ -56,7 +59,7 @@ namespace TabularEditor.UI
                     var act = action as IModelMultiAction;
                     if (act.HideWhenDisabled && !act.Enabled(null)) continue;
 
-                    foreach(var argName in act.ArgNames)
+                    foreach (var argName in act.ArgNames)
                     {
                         var item = ContextMenu_AddFromAction(act.Path.ConcatPath(argName.Key), menu);
                         if (!string.IsNullOrEmpty(act.ToolTip)) item.ToolTipText = act.ToolTip;
@@ -71,6 +74,8 @@ namespace TabularEditor.UI
                     if (item != null) item.Tag = sep;
                 }
             }
+
+            if (menu.Items.Count > 0 && menu.Items[menu.Items.Count - 1] is ToolStripSeparator) menu.Items.RemoveAt(menu.Items.Count - 1);
         }
 
         private ToolStripItem ContextMenu_AddFromAction(string name, ToolStripDropDown menu)
@@ -95,6 +100,10 @@ namespace TabularEditor.UI
             }
             name = parts.Last();
             var item = name == "---" ? new ToolStripSeparator() : new ToolStripMenuItem(name) as ToolStripItem;
+
+            // Below code ensures that separators never appear at the very top of a menu, or in sequence:
+            var lastItem = parent.Items.Count > 0 ? parent.Items[parent.Items.Count - 1] : null;
+            if (item is ToolStripSeparator && (lastItem == null || lastItem is ToolStripSeparator)) return lastItem;
 
             parent.Items.Add(item);
 

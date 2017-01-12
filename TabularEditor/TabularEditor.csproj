@@ -177,6 +177,12 @@
     <Compile Include="UI\Dialogs\ClipForm.Designer.cs">
       <DependentUpon>ClipForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Dialogs\CultureSelectDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\CultureSelectDialog.Designer.cs">
+      <DependentUpon>CultureSelectDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Dialogs\DeployForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -403,6 +409,9 @@
     <Compile Include="UI\UIHelper.cs" />
     <Compile Include="UI\UISelectionList.cs" />
     <Compile Include="UI\UITreeSelection.cs" />
+    <EmbeddedResource Include="UI\Dialogs\CultureSelectDialog.resx">
+      <DependentUpon>CultureSelectDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\FormBatchRename.resx">
       <DependentUpon>FormBatchRename.cs</DependentUpon>
     </EmbeddedResource>

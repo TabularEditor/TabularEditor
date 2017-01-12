@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
+using TabularEditor.UI.Dialogs;
 
 namespace TabularEditor.UI.Actions
 {
@@ -19,20 +20,46 @@ namespace TabularEditor.UI.Actions
 
         public void CreateStandardActions()
         {
+            var csDialog = new CultureSelectDialog();
+            
             // Options to add a Measure or a Calculated Column will only be available when the current select consists of exactly
             // 1 item, which is either a Table or a Folder:
             Action.EnabledDelegate calcContext = (s, m) => s.DirectCount == 1 && s.Types.Has1(Types.Table | Types.Folder);
 
             // "Create New"
-            Add(new Action(calcContext, (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Measure"));
-            Add(new Action(calcContext, (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Calculated Column"));
+            Add(new Action(calcContext, (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Measure", true));
+            Add(new Action(calcContext, (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Calculated Column", true));
             Add(new Action((s, m) => calcContext(s,m) || s.Direct.OfType<Column>().Any(), 
                 (s, m) => s.Table.AddHierarchy(displayFolder: s.CurrentFolder, levels: s.Direct.OfType<Column>().ToArray()).Expand().Edit(), 
-                (s, m) => @"Create New\Hierarchy"));
+                (s, m) => @"Create New\Hierarchy", true));
+
+            Add(new Action((s, m) => s.Types.HasX(Types.Perspective | Types.Model) || s.Groups.Contains(m.GroupPerspectives), (s, m) => m.AddPerspective().Edit(), (s, m) => @"Create New\Perspective", true));
+            Add(new Action((s, m) => s.Types.HasX(Types.Role | Types.Model) || s.Groups.Contains(m.GroupRoles), (s, m) => m.AddRole().Edit(), (s, m) => @"Create New\Role", true));
+            Add(new Action((s, m) => s.Types.HasX(Types.Culture | Types.Model) || s.Groups.Contains(m.GroupTranslations), (s, m) => {
+                var res = csDialog.ShowDialog();
+                if (res == DialogResult.OK)
+                {
+                    m.AddTranslation(csDialog.SelectedCulture.Name).Edit();
+                }
+            }, (s, m) => @"Create New\Translation", true));
 
             // "Duplicate";
-            Add(new Action((s, m) => s.Types.HasX(Types.CalculatedColumn | Types.Measure) && s.Types.Has0(Types.DataColumn | Types.Hierarchy),
-                (s, m) => s.ForEach(i => i.Clone(null, true)),
+            Add(new Action((s, m) => (s.Types.HasX(Types.CalculatedColumn | Types.Measure) && s.Types.Has0(Types.DataColumn | Types.Hierarchy)) ||
+                (s.Count == 1 && s.Types.Has1(Types.Perspective | Types.Role | Types.Culture)),
+                (s, m) => s.ForEach(i =>
+                {
+                    if(i is Culture)
+                    {
+                        var res = csDialog.ShowDialog();
+                        if (res == DialogResult.OK) i.Clone(csDialog.SelectedCulture.Name, false).Edit();
+                    }
+                    else if(s.Count == 1)
+                    {
+                        i.Clone(null, true).Edit();
+                    }
+                    else
+                        i.Clone(null, true);
+                }),
                 (s, m) => "Duplicate " + s.Summary(), true));
 
             // "Add to Hierarchy..."
@@ -43,8 +70,8 @@ namespace TabularEditor.UI.Actions
                 (s, m) => s.Table.Hierarchies.AsEnumerable(), "Add to Hierarchy...", true));
 
             // Visibility and perspectives
-            Add(new Action((s, m) => s.OfType<IHideableObject>().Any(o => o.IsHidden), (s, m) => s.IsHidden = false, (s, m) => "Make visible"));
-            Add(new Action((s, m) => s.OfType<IHideableObject>().Any(o => !o.IsHidden), (s, m) => s.IsHidden = true, (s, m) => "Make invisible"));
+            Add(new Action((s, m) => s.OfType<IHideableObject>().Any(o => o.IsHidden), (s, m) => s.IsHidden = false, (s, m) => "Make visible", true));
+            Add(new Action((s, m) => s.OfType<IHideableObject>().Any(o => !o.IsHidden), (s, m) => s.IsHidden = true, (s, m) => "Make invisible", true));
             Add(new Action((s, m) => s.OfType<ITabularPerspectiveObject>().Any(), (s, m) => s.ShowInAllPerspectives(), (s, m) => @"Show in Perspectives\All Perspectives", true));
             Add(new Action((s, m) => s.OfType<ITabularPerspectiveObject>().Any(), (s, m) => s.HideInAllPerspectives(), (s, m) => @"Hide in Perspectives\All Perspectives", true));
 
@@ -88,11 +115,11 @@ namespace TabularEditor.UI.Actions
             { ToolTip = "Opens a dialog that lets you rename all children of the selected objects at once. Folders are not renamed, but objects inside folders are." });
 
             // Delete Action
-            Delete = new Action((s, m) => s.DirectCount >= 1 && !s.Types.HasFlag(Types.Model), 
+            Delete = new Action((s, m) => s.DirectCount >= 1 && s.Count >= 1 && !s.Types.HasFlag(Types.Model), 
                 (s, m) => {
                     if (MessageBox.Show("Are you sure you want to delete " + s.Summary() + "?", "Confirm deletion", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel) return;
                     s.Delete();
-                }, (s, m) => "Delete " + s.Summary() + "...");
+                }, (s, m) => "Delete " + s.Summary() + "...", true);
             Add(Delete);
         }
     }

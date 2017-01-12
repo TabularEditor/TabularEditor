@@ -6,11 +6,118 @@ using System.Globalization;
 using System.Linq;
 using System.Collections.Generic;
 using TOM = Microsoft.AnalysisServices.Tabular;
+using TabularEditor.UndoFramework;
 
 namespace TabularEditor.TOMWrapper
 {
     public partial class Culture: IDynamicPropertyObject
     {
+        #region Translation Statistics
+        [DisplayName("Translated Measure Names"),Browsable(true),Category("Translation Statistics")]
+        public string StatsMeasureCaptions
+        {
+            get
+            {
+                return string.Format("{0} of {1}",
+                    MetadataObject.ObjectTranslations.Count(o => o.Property == TranslatedProperty.Caption && o.Object is TOM.Measure && (o.Object as NamedMetadataObject).Name != o.Value && !string.IsNullOrEmpty(o.Value)),
+                    Model.Tables.SelectMany(t => t.Measures).Count());
+            }
+        }
+
+        [DisplayName("Translated Column Names"), Browsable(true), Category("Translation Statistics")]
+        public string StatsColumnCaptions
+        {
+            get
+            {
+                return string.Format("{0} of {1}",
+                    MetadataObject.ObjectTranslations.Count(o => o.Property == TranslatedProperty.Caption && o.Object is TOM.Column && (o.Object as NamedMetadataObject).Name != o.Value && !string.IsNullOrEmpty(o.Value)),
+                    Model.Tables.SelectMany(t => t.Columns).Count());
+            }
+        }
+
+        [DisplayName("Translated Hierarchy Names"), Browsable(true), Category("Translation Statistics")]
+        public string StatsHierarchyCaptions
+        {
+            get
+            {
+                return string.Format("{0} of {1}",
+                    MetadataObject.ObjectTranslations.Count(o => o.Property == TranslatedProperty.Caption && o.Object is TOM.Hierarchy && (o.Object as NamedMetadataObject).Name != o.Value && !string.IsNullOrEmpty(o.Value)),
+                    Model.Tables.SelectMany(t => t.Hierarchies).Count());
+            }
+        }
+
+        [DisplayName("Translated Level Names"), Browsable(true), Category("Translation Statistics")]
+        public string StatsLevelCaptions
+        {
+            get
+            {
+                return string.Format("{0} of {1}",
+                    MetadataObject.ObjectTranslations.Count(o => o.Property == TranslatedProperty.Caption && o.Object is TOM.Level && (o.Object as NamedMetadataObject).Name != o.Value && !string.IsNullOrEmpty(o.Value)),
+                    Model.Tables.SelectMany(t => t.Hierarchies.SelectMany(h => h.Levels)).Count());
+            }
+        }
+
+        [DisplayName("Translated Table Names"), Browsable(true), Category("Translation Statistics")]
+        public string StatsTableCaptions
+        {
+            get
+            {
+                return string.Format("{0} of {1}",
+                    MetadataObject.ObjectTranslations.Count(o => o.Property == TranslatedProperty.Caption && o.Object is TOM.Table && (o.Object as NamedMetadataObject).Name != o.Value && !string.IsNullOrEmpty(o.Value)),
+                    Model.Tables.Count());
+            }
+        }
+
+        [DisplayName("Translated Measure Folders"), Browsable(true), Category("Translation Statistics")]
+        public string StatsMeasureDisplayFolders
+        {
+            get
+            {
+                return string.Format("{0} of {1}",
+                    MetadataObject.ObjectTranslations.Count(o => o.Property == TranslatedProperty.DisplayFolder && o.Object is TOM.Measure && (o.Object as NamedMetadataObject).Name != o.Value),
+                    Model.Tables.SelectMany(t => t.Measures).Count());
+            }
+        }
+
+        [DisplayName("Translated Column Folders"), Browsable(true), Category("Translation Statistics")]
+        public string StatsColumnDisplayFolders
+        {
+            get
+            {
+                return string.Format("{0} of {1}",
+                    MetadataObject.ObjectTranslations.Count(o => o.Property == TranslatedProperty.DisplayFolder && o.Object is TOM.Column && (o.Object as NamedMetadataObject).Name != o.Value),
+                    Model.Tables.SelectMany(t => t.Columns).Count());
+            }
+        }
+
+        [DisplayName("Translated Hierarchy Folders"), Browsable(true), Category("Translation Statistics")]
+        public string StatsHierarchyDisplayFolders
+        {
+            get
+            {
+                return string.Format("{0} of {1}",
+                    MetadataObject.ObjectTranslations.Count(o => o.Property == TranslatedProperty.DisplayFolder && o.Object is TOM.Hierarchy && (o.Object as NamedMetadataObject).Name != o.Value),
+                    Model.Tables.SelectMany(t => t.Hierarchies).Count());
+            }
+        }
+
+        #endregion
+
+        public override TabularNamedObject Clone(string newName, bool includeTranslations)
+        {
+            Handler.BeginUpdate("duplicate translation");
+            var tom = MetadataObject.Clone();
+            tom.IsRemoved = false;
+            tom.Name = newName;
+            var c = new Culture(Handler, tom);
+            Model.Cultures.Add(c);
+
+            Handler.EndUpdate();
+
+            return c;
+        }
+
+
         internal override void Undelete(ITabularObjectCollection collection)
         {
             var tom = new TOM.Culture();
@@ -54,7 +161,7 @@ namespace TabularEditor.TOMWrapper
                 case "Name":
                 case "ObjectType":
                     return true;
-                default: return false;
+                default: return propertyName.StartsWith("Stats");
             }
             
         }
@@ -74,15 +181,21 @@ namespace TabularEditor.TOMWrapper
 
             set
             {
+                var oldValue = MetadataObject.Name;
+
                 Unassigned = false;
                 MetadataObject.Name = value;
                 UpdateDisplayName();
+
+                Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Name", oldValue, value));
+                Handler.UpdateObject(this);
+                OnPropertyChanged("Name", oldValue, value);
             }
         }
 
         private void UpdateDisplayName()
         {
-            _displayName = Unassigned ? Name : string.Format("{0} -- ({1})", CultureInfo.GetCultureInfo(Name).DisplayName, Name);
+            _displayName = Unassigned ? Name : string.Format("{0} -- ({1})", CultureInfo.GetCultureInfo(Name).DisplayName, Name);            
         }
     }
 

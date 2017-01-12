@@ -190,6 +190,7 @@ namespace TabularEditor.UI
             Tree_CurrentDragObject = new DataObject();
 
             draggedNodes = UI.TreeView.SelectedNodes.ToArray();
+            if (draggedNodes.Any(n => n.Tag is LogicalGroup)) return;
 
             var scriptableObjects = new HashSet<ObjectType>() { ObjectType.Table, ObjectType.Role, ObjectType.DataSource, ObjectType.Partition };
 

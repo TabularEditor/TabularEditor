@@ -81,7 +81,12 @@ namespace TabularEditor.UI
         DataColumn = 0x400,
         CalculatedTableColumn = 0x800,
         TableObject = Types.Hierarchy | Types.Measure | Types.Column | Types.Folder,
-        Folder = 0x1000
+        Folder = 0x1000,
+        Group = 0x2000,
+        Role = 0x4000,
+        Perspective = 0x8000,
+        Culture = 0x10000,
+        DataSource = 0x20000
     }
 
     public static class TypesHelper
@@ -162,10 +167,15 @@ namespace TabularEditor.UI
                                 break;
                             case ObjectType.Hierarchy: _Types |= Types.Hierarchy; break;
                             case ObjectType.Level: _Types |= Types.Level; break;
+                            case ObjectType.Perspective: _Types |= Types.Perspective; break;
+                            case ObjectType.Culture: _Types |= Types.Culture; break;
+                            case ObjectType.Role: _Types |= Types.Role; break;
+                            case ObjectType.DataSource: _Types |= Types.DataSource; break;
                         }
                         x++;
                     }
                     if (Folders.Any()) _Types |= Types.Folder;
+                    if (Groups.Any()) _Types |= Types.Group;
                 }
                 return _Types;
             }
@@ -177,6 +187,7 @@ namespace TabularEditor.UI
             _selectedNodes = selectedNodes;
 
             Folders = selectedNodes.Select(n => n.Tag).OfType<Folder>();
+            Groups = selectedNodes.Select(n => n.Tag).OfType<LogicalGroup>();
             Measures = new UISelectionList<Measure>(this.OfType<Measure>());
             Hierarchies = new UISelectionList<Hierarchy>(this.OfType<Hierarchy>());
             Levels = new UISelectionList<Level>(this.OfType<Level>());
@@ -294,6 +305,7 @@ namespace TabularEditor.UI
         public UISelectionList<ITabularNamedObject> Direct { get; private set; }
 
         internal IEnumerable<Folder> Folders { get; private set; }
+        internal IEnumerable<LogicalGroup> Groups { get; private set; }
         #endregion
 
         private static IEnumerable<TreeNodeAdv> GetDeep(IEnumerable<TreeNodeAdv> nodes)

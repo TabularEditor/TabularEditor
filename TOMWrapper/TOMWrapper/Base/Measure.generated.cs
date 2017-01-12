@@ -183,7 +183,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the DisplayFolder of the Measure.
         /// </summary>
 		[DisplayName("Display Folder")]
-		[Category("Basic"),IntelliSense("The Display Folder of this Measure.")]
+		[Category("Basic"),IntelliSense("The Display Folder of this Measure.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string DisplayFolder {
 			get {
 			    return MetadataObject.DisplayFolder;

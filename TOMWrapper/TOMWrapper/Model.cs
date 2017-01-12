@@ -13,6 +13,39 @@ namespace TabularEditor.TOMWrapper
 {
     partial class Model: ITabularObjectContainer
     {
+        #region Convenient methods
+        [IntelliSense("Adds a new perspective to the model.")]
+        public Perspective AddPerspective(string name = null)
+        {
+            Handler.BeginUpdate("add perspective");
+            var perspective = new Perspective(this);
+            if (!string.IsNullOrEmpty(name)) perspective.Name = name;
+            Handler.EndUpdate();
+            return perspective;
+        }
+
+        [IntelliSense("Adds a new translation to the model.")]
+        public Culture AddTranslation(string cultureId)
+        {
+            Handler.BeginUpdate("add translation");
+            var culture = new Culture() { Name = cultureId };
+            Cultures.Add(culture);
+            Handler.EndUpdate();
+            return culture;
+        }
+
+        [IntelliSense("Adds a new security role to the model.")]
+        public ModelRole AddRole(string name = null)
+        {
+            Handler.BeginUpdate("add role");
+            var role = new ModelRole(this);
+            role.InitRLSIndexer();
+            if (!string.IsNullOrEmpty(name)) role.Name = name;
+            Handler.EndUpdate();
+            return role;
+        }
+        #endregion
+
         [Browsable(false),IntelliSense("The collection of tables in this model.")]
         public TableCollection Tables { get; private set; }
 
@@ -28,8 +61,22 @@ namespace TabularEditor.TOMWrapper
         [Editor(typeof(TabularEditor.PropertyGridUI.RefreshGridCollectionEditor), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]
         public ModelRoleCollection Roles { get; private set; }
 
-        public readonly LogicalGroup[] LogicalChildGroups =
-            { new LogicalGroup("Data Sources"), new LogicalGroup("Tables"), new LogicalGroup("Perspectives"), new LogicalGroup("Relationships"), new LogicalGroup("Translations"), new LogicalGroup("Roles") };
+        public readonly LogicalGroup GroupTables = new LogicalGroup("Tables");
+        public readonly LogicalGroup GroupDataSources = new LogicalGroup("Data Sources");
+        public readonly LogicalGroup GroupPerspectives = new LogicalGroup("Perspectives");
+        public readonly LogicalGroup GroupRelationships = new LogicalGroup("Relationships");
+        public readonly LogicalGroup GroupTranslations = new LogicalGroup("Translations");
+        public readonly LogicalGroup GroupRoles = new LogicalGroup("Roles");
+
+        public IEnumerable<LogicalGroup> LogicalChildGroups { get
+            {
+                yield return GroupTables;
+                yield return GroupDataSources;
+                yield return GroupPerspectives;
+                yield return GroupRelationships;
+                yield return GroupTranslations;
+                yield return GroupRoles;
+            } }
 
         public IEnumerable<ITabularNamedObject> GetChildren()
         {
@@ -57,8 +104,10 @@ namespace TabularEditor.TOMWrapper
             Tables.ForEach(r => r.InitRLSIndexer());
             Roles.ForEach(r => r.InitRLSIndexer());
 
-            Tables.CollectionChanged += Tables_CollectionChanged;
-
+            Tables.CollectionChanged += Children_CollectionChanged;
+            Perspectives.CollectionChanged += Children_CollectionChanged;
+            Cultures.CollectionChanged += Children_CollectionChanged;
+            Roles.CollectionChanged += Children_CollectionChanged;
             
         }
 
@@ -82,7 +131,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        private void Tables_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void Children_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
                 Handler.Tree.OnNodesInserted(this, e.NewItems.Cast<ITabularObject>());

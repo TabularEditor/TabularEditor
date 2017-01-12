@@ -83,8 +83,8 @@ namespace TabularEditor.TOMWrapper
 
         public static string GetName(this ITabularNamedObject obj, Culture culture)
         {
-            // Folders are not culture aware:
-            if (culture == null || obj is Folder) return obj.Name;
+            // Folders, groups and cultures do not use TranslatedNames:
+            if (culture == null || obj is Folder || obj is LogicalGroup || obj is Culture) return obj.Name;
 
             // Other objects must take culture into account for their name:
             if (obj is TabularNamedObject)
@@ -100,7 +100,8 @@ namespace TabularEditor.TOMWrapper
 
         public static bool SetName(this ITabularNamedObject obj, string newName, Culture culture)
         {
-            if (culture == null || obj is Folder)
+            // Folders, groups and cultures do not use TranslatedNames:
+            if (culture == null || obj is Folder || obj is LogicalGroup || obj is Culture)
             {
                 if (string.IsNullOrEmpty(newName)) return false;
                 obj.Name = newName;

@@ -138,6 +138,23 @@ namespace TabularEditor
             var stack = new List<object>();
 
             stack.Add(Model);
+
+            if (Options.HasFlag(LogicalTreeOptions.AllObjectTypes) && item != Model)
+            {
+                // If "Show all object types" is enabled, we need to add the "group" of the item to the stack,
+                // to get the complete path. The group can be determined from the type of object:
+                switch (item.ObjectType)
+                {
+                    case ObjectType.Culture: stack.Add(Model.GroupTranslations); break;
+                    case ObjectType.Role: stack.Add(Model.GroupRoles); break;
+                    case ObjectType.Perspective: stack.Add(Model.GroupPerspectives); break;
+                    case ObjectType.DataSource: stack.Add(Model.GroupDataSources); break;
+                    case ObjectType.Relationship: stack.Add(Model.GroupRelationships); break;
+                    default:
+                        // All other object types should appear in the "Tables" group:
+                        stack.Add(Model.GroupTables); break;
+                }
+            }
             if (item is Table)
             {
                 stack.Add(item);

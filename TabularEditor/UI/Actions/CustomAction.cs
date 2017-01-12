@@ -8,7 +8,7 @@ namespace TabularEditor.UI.Actions
 {
     public class CustomAction : Action
     {
-        public CustomAction(EnabledDelegate enabled, ExecuteDelegate execute, string name, bool hideWhenDisabled = false) : base(enabled, execute, (a,b) => name, hideWhenDisabled)
+        public CustomAction(EnabledDelegate enabled, ExecuteDelegate execute, string name, bool hideWhenDisabled = true) : base(enabled, execute, (a,b) => name, hideWhenDisabled)
         {
         }
 

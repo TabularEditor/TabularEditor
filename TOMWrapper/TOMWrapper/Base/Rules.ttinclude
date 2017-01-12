@@ -123,6 +123,7 @@ class Rules {
 		if(className == "Level" && propertyName == "Column") return "[TypeConverter(typeof(HierarchyColumnConverter)),NoMultiselect()]";
 		if(className == "Level" && propertyName == "Ordinal") return "[NoMultiselect()]";
 		if(className == "Model" && propertyName == "Culture") return "[TypeConverter(typeof(CultureConverter))]";
+		if(propertyName == "DisplayFolder") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]";
 
 		return "";
     }
