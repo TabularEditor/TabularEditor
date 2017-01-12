@@ -28,7 +28,7 @@ namespace TabularEditor.TOMWrapper
         public Culture AddTranslation(string cultureId)
         {
             Handler.BeginUpdate("add translation");
-            var culture = new Culture() { Name = cultureId };
+            var culture = new Culture(cultureId);
             Cultures.Add(culture);
             Handler.EndUpdate();
             return culture;

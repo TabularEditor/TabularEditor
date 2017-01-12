@@ -136,6 +136,11 @@ namespace TabularEditor.TOMWrapper
             Unassigned = true;
         }
 
+        public Culture(string cultureId): base(TabularModelHandler.Singleton, new TOM.Culture() { Name = cultureId }, false)
+        {
+
+        }
+
         [Browsable(false)]
         public string DisplayName {
             get {

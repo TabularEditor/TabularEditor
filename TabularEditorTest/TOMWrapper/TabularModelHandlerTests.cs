@@ -303,7 +303,7 @@ namespace TabularEditor.TOMWrapper.Tests
             var measure = model.Tables["Reseller Sales"].Measures["Reseller Total Sales"];
             measure.DisplayFolder = "Test Folder";
 
-            model.Cultures.Add(new Culture() { Name = "da-DK" });
+            model.AddTranslation("da-DK");
             Assert.AreEqual("", measure.TranslatedNames["da-DK"]);
             Assert.AreEqual("", measure.TranslatedDisplayFolders["da-DK"]);
 
