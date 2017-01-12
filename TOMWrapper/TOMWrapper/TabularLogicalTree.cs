@@ -17,9 +17,9 @@ namespace TabularEditor.TOMWrapper
         Hierarchies = 0x10,
         Levels = 0x20,
         ShowHidden = 0x40,
-        GroupByType = 0x80,
+        AllObjectTypes = 0x80,
         ShowRoot = 0x100,
-        Default = DisplayFolders | Columns | Measures | KPIs | Hierarchies | Levels | ShowRoot
+        Default = DisplayFolders | Columns | Measures | KPIs | Hierarchies | Levels | ShowRoot | AllObjectTypes
     }
 
     /// <summary>
@@ -191,9 +191,22 @@ namespace TabularEditor.TOMWrapper
         {
             bool useDF = Options.HasFlag(LogicalTreeOptions.DisplayFolders);
 
-            if(tabularObject is Model)
+            if(tabularObject is LogicalGroup)
             {
-                return (tabularObject as Model).Tables.Where(t => VisibleInTree(t));
+                switch ((tabularObject as LogicalGroup).Name)
+                {
+                    case "Tables": return Model.Tables.Where(t => VisibleInTree(t));
+                    case "Roles": return Model.Roles;
+                    case "Perspectives": return Model.Perspectives;
+                    case "Translations": return Model.Cultures;
+                    case "Relationships": return Model.Relationships;
+                    case "Data Sources": return Model.DataSources;
+                }
+                return Enumerable.Empty<TabularNamedObject>();
+            }
+            if(tabularObject is Model && !Options.HasFlag(LogicalTreeOptions.AllObjectTypes))
+            {
+                return Model.Tables.Where(t => VisibleInTree(t));
             }
             if(tabularObject is Table)
             {
@@ -217,6 +230,10 @@ namespace TabularEditor.TOMWrapper
             {
                 var hier = tabularObject as Hierarchy;
                 return hier.Levels;
+            }
+            if(tabularObject is ITabularObjectContainer)
+            {
+                return (tabularObject as ITabularObjectContainer).GetChildren();
             }
             return Enumerable.Empty<TabularNamedObject>();
         }

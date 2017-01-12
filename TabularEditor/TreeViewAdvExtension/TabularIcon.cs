@@ -21,7 +21,12 @@ namespace TabularEditor.UI.Tree
             { ObjectType.Measure, TabularIcons.ICON_MEASURE },
             { ObjectType.KPI, TabularIcons.ICON_KPI },
             { ObjectType.Model, TabularIcons.ICON_CUBE },
-            { ObjectType.Level, TabularIcons.ICON_LEVEL1 }
+            { ObjectType.Level, TabularIcons.ICON_LEVEL1 },
+            { ObjectType.Culture, TabularIcons.ICON_CULTURE },
+            { ObjectType.Relationship, TabularIcons.ICON_LINK },
+            { ObjectType.Perspective, TabularIcons.ICON_PERSPECTIVE },
+            { ObjectType.Role, TabularIcons.ICON_ROLE },
+            { ObjectType.DataSource, TabularIcons.ICON_DATASOURCE }
         };
 
 
@@ -29,14 +34,17 @@ namespace TabularEditor.UI.Tree
 
         protected override Image GetIcon(TreeNodeAdv node)
         {
-            if (node.Tag is Folder)
+            if (node.Tag is Folder || node.Tag is LogicalGroup)
             {
                 return Images[node.IsExpanded ? TabularIcons.ICON_FOLDEROPEN : TabularIcons.ICON_FOLDER];
             }
             else if (node.Tag is TabularObject)
             {
                 if (node.Tag is CalculatedColumn) return Images[TabularIcons.ICON_CALCCOLUMN];
-                if (node.Tag is CalculatedTable) return Images[TabularIcons.ICON_CALCTABLE];
+                if (node.Tag is CalculatedTable)
+                {
+                    return Images[TabularIcons.ICON_CALCTABLE];
+                }
                 if (node.Tag is Level) return Images[TabularIcons.ICON_LEVEL1 + (node.Tag as Level).Ordinal];
 
                 int iconIndex;
@@ -105,6 +113,11 @@ namespace TabularEditor.UI.Tree
         public const int ICON_EXMETHOD = 29;
         public const int ICON_ENUM = 30;
         public const int ICON_CALCTABLE = 31;
+        public const int ICON_PERSPECTIVE = 32;
+        public const int ICON_TRANSLATION = 33;
+        public const int ICON_ROLE = 34;
+        public const int ICON_CULTURE = 35;
+        public const int ICON_DATASOURCE = 36;
     }
 
 }

@@ -51,13 +51,13 @@ namespace TabularEditor.TOMWrapper
         }
 
         /// <summary>
-        /// Scripts the table
+        /// Scripts the object
         /// </summary>
-        /// <param name="table"></param>
+        /// <param name="object"></param>
         /// <returns></returns>
-        public string ScriptCreateOrReplace(Table table)
+        public string ScriptCreateOrReplace(TabularNamedObject obj)
         {
-            return TOM.JsonScripter.ScriptCreateOrReplace(table.MetadataObject);
+            return TOM.JsonScripter.ScriptCreateOrReplace(obj.MetadataObject);
         }
 
         public string SerializeObjects(IEnumerable<TabularNamedObject> objects)

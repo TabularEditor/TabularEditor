@@ -18,6 +18,11 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.ModelRole MetadataObject { get { return base.MetadataObject as TOM.ModelRole; } internal set { base.MetadataObject = value; } }
 
+		public ModelRole(Model parent) : base(parent.Handler, new TOM.ModelRole(), false) {
+			MetadataObject.Name = parent.MetadataObject.Roles.GetNewName("New ModelRole");
+			parent.Roles.Add(this);
+			Init();
+		}
 
 		public ModelRole(TabularModelHandler handler, TOM.ModelRole modelroleMetadataObject) : base(handler, modelroleMetadataObject)
 		{
@@ -72,4 +77,41 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeModelPermission() { return false; }
     }
+
+	/// <summary>
+	/// Collection class for ModelRole. Provides convenient properties for setting a property on multiple objects at once.
+	/// </summary>
+	public partial class ModelRoleCollection: TabularObjectCollection<ModelRole, TOM.ModelRole, TOM.Model>
+	{
+		public ModelRoleCollection(TabularModelHandler handler, string collectionName, TOM.ModelRoleCollection metadataObjectCollection) : base(handler, collectionName, metadataObjectCollection)
+		{
+			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
+			foreach(var obj in MetadataObjectCollection) {
+				new ModelRole(handler, obj) { Collection = this };
+			}
+		}
+
+		[Description("Sets the Description property of all objects in the collection at once.")]
+		public string Description {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("Description"));
+				this.ToList().ForEach(item => { item.Description = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		[Description("Sets the ModelPermission property of all objects in the collection at once.")]
+		public TOM.ModelPermission ModelPermission {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("ModelPermission"));
+				this.ToList().ForEach(item => { item.ModelPermission = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+
+		public override string ToString() {
+			return string.Format("({0} {1})", Count, (Count == 1 ? "ModelRole" : "Roles").ToLower());
+		}
+	}
 }

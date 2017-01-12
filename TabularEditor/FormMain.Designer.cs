@@ -38,6 +38,7 @@
             this.actToggleHierarchies = new TabularEditor.UI.UIModelAction();
             this.actToggleInfoColumns = new TabularEditor.UI.UIModelAction();
             this.actToggleFilter = new TabularEditor.UI.UIModelAction();
+            this.actToggleAllObjectTypes = new TabularEditor.UI.UIModelAction();
             this.actExpressionAcceptEdit = new TabularEditor.UI.UIModelAction();
             this.actExpressionCancelEdit = new TabularEditor.UI.UIModelAction();
             this.actOpenFile = new Crad.Windows.Forms.Actions.Action();
@@ -123,6 +124,7 @@
             this.nodeTextBox3 = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeTextBox4 = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.toolTreeView = new System.Windows.Forms.ToolStrip();
+            this.toolStripButton11 = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.txtFilter = new System.Windows.Forms.ToolStripTextBox();
@@ -211,6 +213,7 @@
             actionsMain.Actions.Add(this.actToggleHierarchies);
             actionsMain.Actions.Add(this.actToggleInfoColumns);
             actionsMain.Actions.Add(this.actToggleFilter);
+            actionsMain.Actions.Add(this.actToggleAllObjectTypes);
             actionsMain.Actions.Add(this.actExpressionAcceptEdit);
             actionsMain.Actions.Add(this.actExpressionCancelEdit);
             actionsMain.Actions.Add(this.actOpenFile);
@@ -304,6 +307,18 @@
             this.actToggleFilter.ToolTipText = "Filter objects by name";
             this.actToggleFilter.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.actToggleFilter_UpdateEx);
             this.actToggleFilter.Execute += new System.EventHandler(this.actViewOptions_Execute);
+            // 
+            // actToggleAllObjectTypes
+            // 
+            this.actToggleAllObjectTypes.Checked = true;
+            this.actToggleAllObjectTypes.CheckOnClick = true;
+            this.actToggleAllObjectTypes.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.actToggleAllObjectTypes.Enabled = false;
+            this.actToggleAllObjectTypes.Image = global::TabularEditor.Resources.ShowDetails_16x;
+            this.actToggleAllObjectTypes.Text = "Show all object types";
+            this.actToggleAllObjectTypes.ToolTipText = "Show/hide all object types (perspectives, roles, data sources, etc.) in addition " +
+    "to tables";
+            this.actToggleAllObjectTypes.Execute += new System.EventHandler(this.actViewOptions_Execute);
             // 
             // actExpressionAcceptEdit
             // 
@@ -1112,6 +1127,7 @@
             this.toolTreeView.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton5,
             this.toolStripButton4,
+            this.toolStripButton11,
             this.toolStripSeparator1,
             this.toolStripButton3,
             this.toolStripButton2,
@@ -1126,6 +1142,23 @@
             this.toolTreeView.Size = new System.Drawing.Size(385, 25);
             this.toolTreeView.Stretch = true;
             this.toolTreeView.TabIndex = 18;
+            // 
+            // toolStripButton11
+            // 
+            actionsMain.SetAction(this.toolStripButton11, this.actToggleAllObjectTypes);
+            this.toolStripButton11.AutoToolTip = false;
+            this.toolStripButton11.Checked = true;
+            this.toolStripButton11.CheckOnClick = true;
+            this.toolStripButton11.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.toolStripButton11.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton11.Enabled = false;
+            this.toolStripButton11.Image = global::TabularEditor.Resources.ShowDetails_16x;
+            this.toolStripButton11.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton11.Name = "toolStripButton11";
+            this.toolStripButton11.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton11.Text = "Show all object types";
+            this.toolStripButton11.ToolTipText = "Show/hide all object types (perspectives, roles, data sources, etc.) in addition " +
+    "to tables";
             // 
             // toolStripSeparator1
             // 
@@ -1439,7 +1472,7 @@
             | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
             this.lblScriptStatus.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
             this.lblScriptStatus.Name = "lblScriptStatus";
-            this.lblScriptStatus.Size = new System.Drawing.Size(663, 17);
+            this.lblScriptStatus.Size = new System.Drawing.Size(694, 17);
             this.lblScriptStatus.Spring = true;
             this.lblScriptStatus.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -1650,6 +1683,11 @@
             this.tabularTreeImages.Images.SetKeyName(29, "exmethod");
             this.tabularTreeImages.Images.SetKeyName(30, "enum");
             this.tabularTreeImages.Images.SetKeyName(31, "calctable");
+            this.tabularTreeImages.Images.SetKeyName(32, "perspective");
+            this.tabularTreeImages.Images.SetKeyName(33, "translation");
+            this.tabularTreeImages.Images.SetKeyName(34, "role");
+            this.tabularTreeImages.Images.SetKeyName(35, "culture");
+            this.tabularTreeImages.Images.SetKeyName(36, "datasource");
             // 
             // saveBimFile
             // 
@@ -1898,6 +1936,8 @@
         private TabularEditor.UI.Actions.SelectAllAction actSelectAll;
         private TabularEditor.UI.Actions.CutAction actCut;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
+        private System.Windows.Forms.ToolStripButton toolStripButton11;
+        private UI.UIModelAction actToggleAllObjectTypes;
     }
 }
 

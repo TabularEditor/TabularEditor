@@ -22,11 +22,12 @@ namespace TabularEditor.TOMWrapper
     /// </summary>
     public interface ITabularObjectContainer
     {
-        IEnumerable<TabularNamedObject> GetChildren();
+        IEnumerable<ITabularNamedObject> GetChildren();
     }
 
     public enum ObjectType
     {
+        Group = -2,
         Folder = -1, 
         Model = 1,
         DataSource = 2,

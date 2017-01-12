@@ -91,7 +91,7 @@ class Rules {
     {
 		var result = propertyName;
 
-		if(result.StartsWith("Is")) result = result.Substring(2);
+		if(result.StartsWith("Is") && char.IsUpper(result[2])) result = result.Substring(2);
 
 		return SplitCamelCase(result);
     }
@@ -165,11 +165,14 @@ class Rules {
 	   { typeof(Relationship), "TabularNamedObject" },
 	   { typeof(SingleColumnRelationship), "Relationship" },
 	   { typeof(Partition), "TabularNamedObject" },
-	   { typeof(ModelRole), "TabularNamedObject" }
+	   { typeof(ModelRole), "TabularNamedObject" },
+       { typeof(DataSource), "TabularNamedObject" },
+       { typeof(ProviderDataSource), "DataSource" }
    };
 
    public static readonly Dictionary<Type, string> Collections = new Dictionary<Type,string>()
    {
+       { typeof(ModelRole), "Roles" },
        { typeof(Table), "Tables" },
        { typeof(CalculatedColumn), "Columns" },
        { typeof(CalculatedTableColumn), "Columns" },
@@ -184,6 +187,7 @@ class Rules {
 
    public static readonly Dictionary<Type, string> CollectionParent = new Dictionary<Type,string>()
    {
+       { typeof(ModelRole), "Model" },
        { typeof(Table), "Model" },
        { typeof(Column), "Table" },
        { typeof(Level), "Hierarchy" },

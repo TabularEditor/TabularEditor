@@ -191,9 +191,12 @@ namespace TabularEditor.UI
 
             draggedNodes = UI.TreeView.SelectedNodes.ToArray();
 
+            var scriptableObjects = new HashSet<ObjectType>() { ObjectType.Table, ObjectType.Role, ObjectType.DataSource, ObjectType.Partition };
+
             // Only generate TMSL script when dragging a single object:
             if (draggedNodes.Length == 1 && UI.TreeView.CurrentNode.Tag is Model) Tree_CurrentDragObject.SetData(Handler.ScriptCreateOrReplace());
-            else if (draggedNodes.Length == 1 && UI.TreeView.CurrentNode.Tag is Table) Tree_CurrentDragObject.SetData(Handler.ScriptCreateOrReplace(UI.TreeView.CurrentNode.Tag as Table));
+            else if (draggedNodes.Length == 1 && scriptableObjects.Contains((UI.TreeView.CurrentNode.Tag as TabularNamedObject).ObjectType))
+                Tree_CurrentDragObject.SetData(Handler.ScriptCreateOrReplace(UI.TreeView.CurrentNode.Tag as TabularNamedObject));
             else Tree_CurrentDragObject.SetData(Handler.SerializeObjects(Selection));
 
             Tree_CurrentDragObject.SetData(draggedNodes);
@@ -238,7 +241,8 @@ namespace TabularEditor.UI
             UI.PropertyGrid.Refresh();
         }
 
-        public void SetDisplayOptions(bool showHidden, bool showDisplayFolders, bool showColumns, bool showMeasures, bool showHierarchies, string filter = null)
+        public void SetDisplayOptions(bool showHidden, bool showDisplayFolders, bool showColumns, 
+            bool showMeasures, bool showHierarchies, bool showAllObjectTypes, string filter = null)
         {
             Tree.Options =
                       (showHidden ? LogicalTreeOptions.ShowHidden : 0) |
@@ -246,6 +250,7 @@ namespace TabularEditor.UI
                       (showColumns ? LogicalTreeOptions.Columns : 0) |
                       (showMeasures ? LogicalTreeOptions.Measures : 0) |
                       (showHierarchies ? LogicalTreeOptions.Hierarchies : 0) |
+                      (showAllObjectTypes ? LogicalTreeOptions.AllObjectTypes : 0) |
                       LogicalTreeOptions.ShowRoot;
             Tree.Filter = filter;
         }

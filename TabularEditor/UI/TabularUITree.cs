@@ -94,7 +94,7 @@ namespace TabularEditor
                 // Dragging measures and calculated columns between tables is also allowed:
                 if (sourceNodes.All(n => n.Tag is CalculatedColumn || n.Tag is Measure))
                 {
-                    if (targetNode.Tag is Table) return SetDropMode(DropMode.MoveObject);
+                    if (targetNode.Tag is Table && position == NodePosition.Inside) return SetDropMode(DropMode.MoveObject);
                 }
 
             }

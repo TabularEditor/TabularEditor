@@ -223,9 +223,9 @@ namespace TabularEditor.TOMWrapper
             return result;
         }
 
-        public IEnumerable<TabularNamedObject> GetChildren()
+        public IEnumerable<ITabularNamedObject> GetChildren()
         {
-            return GetChildrenByFolders(true).OfType<TabularNamedObject>();
+            return GetChildrenByFolders(true).OfType<ITabularNamedObject>();
         }
     }
 }

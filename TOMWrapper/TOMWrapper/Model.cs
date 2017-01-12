@@ -24,9 +24,16 @@ namespace TabularEditor.TOMWrapper
         [Editor(typeof(TabularEditor.PropertyGridUI.CultureCollectionEditor),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]
         public CultureCollection Cultures { get; private set; }
 
-        public IEnumerable<TabularNamedObject> GetChildren()
+        [Category("Security"), DisplayName("Model Roles")]
+        [Editor(typeof(TabularEditor.PropertyGridUI.RefreshGridCollectionEditor), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]
+        public ModelRoleCollection Roles { get; private set; }
+
+        public readonly LogicalGroup[] LogicalChildGroups =
+            { new LogicalGroup("Data Sources"), new LogicalGroup("Tables"), new LogicalGroup("Perspectives"), new LogicalGroup("Relationships"), new LogicalGroup("Translations"), new LogicalGroup("Roles") };
+
+        public IEnumerable<ITabularNamedObject> GetChildren()
         {
-            return Tables;
+            return LogicalChildGroups.AsEnumerable().Cast<ITabularNamedObject>();
         }
 
         protected override void Init()
@@ -46,6 +53,9 @@ namespace TabularEditor.TOMWrapper
             Perspectives = new PerspectiveCollection(Handler, "Model.Perspectives", MetadataObject.Perspectives);
             Cultures = new CultureCollection(Handler, "Model.Cultures", MetadataObject.Cultures);
             Tables = new TableCollection(Handler, "Model.Tables", MetadataObject.Tables);
+            Roles = new ModelRoleCollection(Handler, "Model.Roles", MetadataObject.Roles);
+            Tables.ForEach(r => r.InitRLSIndexer());
+            Roles.ForEach(r => r.InitRLSIndexer());
 
             Tables.CollectionChanged += Tables_CollectionChanged;
 
@@ -58,6 +68,17 @@ namespace TabularEditor.TOMWrapper
             {
                 return MetadataObject.Relationships.OfType<TOM.SingleColumnRelationship>()
                     .Select(r => new SingleColumnRelationship(Handler, r)).ToList();
+            }
+        }
+
+        // TODO: Handle differently
+        [TypeConverter(typeof(CollectionConverter))]
+        public List<ProviderDataSource> DataSources
+        {
+            get
+            {
+                return MetadataObject.DataSources.OfType<TOM.ProviderDataSource>()
+                    .Select(r => new ProviderDataSource(Handler, r)).ToList();
             }
         }
 

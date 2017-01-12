@@ -115,6 +115,11 @@ namespace TabularEditor.TOMWrapper
 					case TOM.ColumnType.CalculatedTableColumn: new CalculatedTableColumn(handler, obj as TOM.CalculatedTableColumn) { Collection = this }; break;
 					default: break;
 				}
+<# } else if (t.Name == "Table") { #>
+				switch(obj.GetSourceType()) {
+				    case TOM.PartitionSourceType.Calculated: new CalculatedTable(handler, obj) { Collection = this }; break;
+					default: new Table(handler, obj) { Collection = this }; break;
+				}
 <# } else { #>
 				new <#= t.Name #>(handler, obj) { Collection = this };
 <# } #>

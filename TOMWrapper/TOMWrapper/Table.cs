@@ -109,7 +109,7 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                return MetadataObject.Partitions.FirstOrDefault()?.SourceType ?? TOM.PartitionSourceType.None;
+                return MetadataObject.GetSourceType();
             }
         }
 
@@ -131,6 +131,9 @@ namespace TabularEditor.TOMWrapper
 
         [Browsable(true), DisplayName("Perspectives"), Category("Translations and Perspectives")]
         public PerspectiveIndexer InPerspective { get; private set; }
+
+        [Browsable(true), DisplayName("Row Level Filters"), Category("Security")]
+        public TableRLSIndexer RowLevelSecurity { get; private set; }
 
         [Browsable(false)]
         public string DaxObjectName
@@ -163,9 +166,9 @@ namespace TabularEditor.TOMWrapper
         /// Returns all columns, measures and hierarchies inside this table.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<TabularNamedObject> GetChildren()
+        public IEnumerable<ITabularNamedObject> GetChildren()
         {
-            return Columns.Concat<TabularNamedObject>(Measures).Concat(Hierarchies);
+            return Columns.Concat<ITabularNamedObject>(Measures).Concat(Hierarchies);
         }
 
         public IEnumerable<IDetailObject> GetChildrenByFolders(bool recursive)
@@ -175,10 +178,10 @@ namespace TabularEditor.TOMWrapper
 
         protected override void Init()
         {
+            InPerspective = new PerspectiveTableIndexer(this);
             Columns = new ColumnCollection(Handler, this.GetObjectPath() + ".Columns", MetadataObject.Columns);
             Measures = new MeasureCollection(Handler, this.GetObjectPath() + ".Measures", MetadataObject.Measures);
             Hierarchies = new HierarchyCollection(Handler, this.GetObjectPath() + ".Hierarchies", MetadataObject.Hierarchies);
-            InPerspective = new PerspectiveTableIndexer(this);
             Partitions = new PartitionCollection(Handler, this.GetObjectPath() + ".Partitions", MetadataObject.Partitions);
 
             Columns.CollectionChanged += Children_CollectionChanged;
@@ -187,6 +190,11 @@ namespace TabularEditor.TOMWrapper
             Partitions.CollectionChanged += Children_CollectionChanged;
 
             CheckChildrenErrors();
+        }
+
+        public void InitRLSIndexer()
+        {
+            RowLevelSecurity = new TableRLSIndexer(this);
         }
 
         public virtual string ErrorMessage { get; protected set; }
@@ -226,5 +234,13 @@ namespace TabularEditor.TOMWrapper
             '?', '"', '&', '%', '$' , '!', '+', '=', '(', ')',
             '[', ']', '{', '}', '<', '>'
         };
+    }
+
+    public static class TableExtension
+    {
+        public static TOM.PartitionSourceType GetSourceType(this TOM.Table table)
+        {
+            return table.Partitions.FirstOrDefault()?.SourceType ?? TOM.PartitionSourceType.None;
+        }
     }
 }

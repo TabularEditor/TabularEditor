@@ -74,7 +74,7 @@ namespace TabularEditor.TOMWrapper
         [Browsable(true), DisplayName("Perspectives"), Category("Translations and Perspectives")]
         public PerspectiveIndexer InPerspective { get; private set; }
 
-        public IEnumerable<TabularNamedObject> GetChildren()
+        public IEnumerable<ITabularNamedObject> GetChildren()
         {
             return Levels;
         }

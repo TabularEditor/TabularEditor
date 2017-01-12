@@ -139,6 +139,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 actToggleColumns.Checked,
                 actToggleMeasures.Checked,
                 actToggleHierarchies.Checked,
+                actToggleAllObjectTypes.Checked,
                 actToggleFilter.Checked ? txtFilter.Text : null
             );
         }

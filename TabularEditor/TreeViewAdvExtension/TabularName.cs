@@ -27,7 +27,13 @@ namespace TabularEditor.UI.Tree
 
         private void TabularNodeTextBox_DrawText(object sender, DrawEventArgs e)
         {
-            e.TextColor = ((e.Node.Tag as IHideableObject)?.IsHidden ?? false) ? Color.Gray : e.Node.Tree.ForeColor;
+            if(e.Node.Tag is IHideableObject)
+            {
+                e.TextColor = (e.Node.Tag as IHideableObject).IsHidden ? Color.Gray : e.Node.Tree.ForeColor;
+            } else if (e.Node.Tag is Relationship)
+            {
+                e.TextColor = !(e.Node.Tag as Relationship).IsActive ? Color.Gray : e.Node.Tree.ForeColor;
+            }  
         }
 
         public override string GetToolTip(TreeNodeAdv node)
