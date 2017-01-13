@@ -12,6 +12,7 @@ View the article on www.kapacity.dk/tabular-editor for a general presentation of
 * [Getting Started](https://github.com/otykier/TabularEditor/wiki/Getting-Started)
 * [Features at a Glance](https://github.com/otykier/TabularEditor/wiki/Features-at-a-glance)
 * [Advanced Features](https://github.com/otykier/TabularEditor/wiki/Advanced-Features)
+* [Advanced Scripting](https://github.com/otykier/TabularEditor/wiki/Advanced-Scripting)
 * [FAQ](https://github.com/otykier/TabularEditor/wiki/FAQ)
 
 ## Version History
