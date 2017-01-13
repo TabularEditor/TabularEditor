@@ -18,8 +18,6 @@ View the article on www.kapacity.dk/tabular-editor for a general presentation of
 
 * **2016-09-01** Version 1.0 released on Kapacity.dk
 * **2016-11-22** Version 2.0 and source code released on GitHub.com
-* **2016-11-28** New release: [Version 2.0.6176](https://github.com/otykier/TabularEditor/releases/tag/2.0.6176)
-* **2017-01-11** New release: [Version 2.0.6220](https://github.com/otykier/TabularEditor/releases/tag/2.0.6220)
 * **2017-01-13** [Version 2.1](https://github.com/otykier/TabularEditor/releases/tag/2.1.6222) released
 
 ## Roadmap
