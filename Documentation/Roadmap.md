@@ -6,9 +6,8 @@
 * Formula fix-up (i.e. automatically fixing DAX expressions when renaming objects)
 * UI for showing object dependencies
 * Scripting changes from the command-line
-* Possibility to read/edit more object types (tables, partitions, data columns, relationships, roles)
+* Possibility to read/edit more object types (tables, partitions, data columns)
 * Split a Model.bim into multiple json files (for example, one file per table) for better integration into Source Control workflows.
-* Power BI compatibility
 * Import/export translations
 
 
@@ -40,6 +39,8 @@ Today, it is possible to deploy a model directly from the command-line. Similarl
 
 Tabular Editor currently only lets end-users read and edit a subset of the objects in the Tabular Object Model. It is desirable to allow all objects in the model tree, to be accessible in Tabular Editor: Relationships, KPIs, Calculated Tables and Roles should be directly editable. Data Sources, tables, data columns and table partitions should be editable with some constraints (for example, we should not expect Tabular Editor to be able to fetch data schemas from arbitrary data sources and queries).
 
+**Update**: As of 2.1, many new object types are now visible directly in the Tree Explorer. Using the right-click menu, you can create, duplicate and delete many of these objects (roles, perspectives, translations). We're still lacking support for creating/deleting relationships and data sources, but this will come in a future release.
+
 ### Split a Model.bim into multiple json files
 
 The layout and structure of the Model.bim file, makes it horrible for purposes of source control and versioning. Not only is the entire Tabular Object Model written into just one file, the file also contains "ModifiedTime" information everywhere in the structure, making source control DIFF operations useless.
@@ -49,6 +50,8 @@ For better release management workflows with Tabular Models, it would be interes
 ### Power BI Compatibility
 
 Today, it is already possible to connect Tabular Editor to a model hosted by Power BI Desktop. The approach is similar to what is [described here for Excel and SSMS](http://biinsight.com/connect-to-power-bi-desktop-model-from-excel-and-ssms/). Doing this, it is actually possible to add Display Folders to the Power BI Desktop model, and they actually stay in Power BI, even after saving and reopening the .pbix file. However, it seems that there are some compatibility level issues, which should be looked into before proceeding.
+
+**Update**: As of 2.1, Tabular Editor now detects running instances of Power BI Desktop and Visual Studio Integrated Workspaces. You can connect to these instances and make changes as you would normal instances, although this approach of changing Power BI and Integrated Workspace models is not supported by Microsoft.
 
 When this is in place, consider providing a better connect UI for Power BI (perhaps it would even be possible to connect directly to a .pbix file?)
 
