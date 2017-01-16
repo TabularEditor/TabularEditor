@@ -146,6 +146,7 @@
     <Compile Include="TOMWrapper\Model.cs" />
     <Compile Include="TOMWrapper\Perspective.cs" />
     <Compile Include="TOMWrapper\RoleRLSIndexer.cs" />
+    <Compile Include="TOMWrapper\RolePermissionIndexer.cs" />
     <Compile Include="TOMWrapper\TableRLSIndexer.cs" />
     <Compile Include="TOMWrapper\PerspectiveIndexer.cs" />
     <Compile Include="TOMWrapper\SingleColumnRelationship.cs" />
