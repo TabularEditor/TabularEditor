@@ -29,7 +29,9 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                return (MetadataObject.Source as TOM.CalculatedPartitionSource)?.Expression;
+                return MetadataObject.SourceType == TOM.PartitionSourceType.Calculated ?
+                    (MetadataObject.Source as TOM.CalculatedPartitionSource)?.Expression :
+                    (MetadataObject.Source as TOM.MPartitionSource)?.Expression;
             }
         }
 

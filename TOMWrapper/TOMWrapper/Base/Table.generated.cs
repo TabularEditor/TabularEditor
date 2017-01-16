@@ -99,6 +99,28 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeIsHidden() { return false; }
+        /// <summary>
+        /// Gets or sets the DefaultDetailRowsExpression of the Table.
+        /// </summary>
+		[DisplayName("Default Detail Rows Expression")]
+		[Category("Other"),IntelliSense("The Default Detail Rows Expression of this Table.")]
+		public string DefaultDetailRowsExpression {
+			get {
+			    return MetadataObject.DefaultDetailRowsExpression;
+			}
+			set {
+				var oldValue = DefaultDetailRowsExpression;
+				if (oldValue == value) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging("DefaultDetailRowsExpression", value, ref undoable, ref cancel);
+				if (cancel) return;
+				MetadataObject.DefaultDetailRowsExpression = value;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "DefaultDetailRowsExpression", oldValue, value));
+				OnPropertyChanged("DefaultDetailRowsExpression", oldValue, value);
+			}
+		}
+		private bool ShouldSerializeDefaultDetailRowsExpression() { return false; }
     }
 
 	/// <summary>
@@ -141,6 +163,15 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("IsHidden"));
 				this.ToList().ForEach(item => { item.IsHidden = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		[Description("Sets the DefaultDetailRowsExpression property of all objects in the collection at once.")]
+		public string DefaultDetailRowsExpression {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("DefaultDetailRowsExpression"));
+				this.ToList().ForEach(item => { item.DefaultDetailRowsExpression = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}

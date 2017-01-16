@@ -1,6 +1,6 @@
 ﻿<#@ template debug="false" hostspecific="true" language="C#" #>
 <#@ assembly name="System.Core" #>
-<#@ assembly name="Microsoft.AnalysisServices.Tabular" #>
+<#@ assembly name="C:\Projects\Tabular14\Microsoft.AnalysisServices.Tabular.dll" version="14.0.0.0" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Reflection" #>

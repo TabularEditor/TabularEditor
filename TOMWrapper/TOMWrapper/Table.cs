@@ -120,6 +120,8 @@ namespace TabularEditor.TOMWrapper
                 case "Source":
                 case "Partitions":
                     return SourceType == TOM.PartitionSourceType.Query;
+                case "DefaultDetailRowsExpression":
+                    return Model.Database.CompatibilityLevel >= 1400;
                 default: return true;
             }
         }

@@ -207,6 +207,28 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         [Browsable(true),DisplayName("Display Folders"),Category("Translations and Perspectives")]
 	    public new TranslationIndexer TranslatedDisplayFolders { get { return base.TranslatedDisplayFolders; } }
+        /// <summary>
+        /// Gets or sets the DetailRowsExpression of the Measure.
+        /// </summary>
+		[DisplayName("Detail Rows Expression")]
+		[Category("Other"),IntelliSense("The Detail Rows Expression of this Measure.")]
+		public string DetailRowsExpression {
+			get {
+			    return MetadataObject.DetailRowsExpression;
+			}
+			set {
+				var oldValue = DetailRowsExpression;
+				if (oldValue == value) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging("DetailRowsExpression", value, ref undoable, ref cancel);
+				if (cancel) return;
+				MetadataObject.DetailRowsExpression = value;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "DetailRowsExpression", oldValue, value));
+				OnPropertyChanged("DetailRowsExpression", oldValue, value);
+			}
+		}
+		private bool ShouldSerializeDetailRowsExpression() { return false; }
 		[Browsable(false)]
 		public Table Table
 		{ 
@@ -304,6 +326,15 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("DisplayFolder"));
 				this.ToList().ForEach(item => { item.DisplayFolder = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		[Description("Sets the DetailRowsExpression property of all objects in the collection at once.")]
+		public string DetailRowsExpression {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("DetailRowsExpression"));
+				this.ToList().ForEach(item => { item.DetailRowsExpression = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}

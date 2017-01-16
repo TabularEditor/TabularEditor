@@ -17,13 +17,12 @@ namespace TabularEditor.TOMWrapper
         public Database(Microsoft.AnalysisServices.Core.Database tomDatabase)
         {
             var db = tomDatabase as TOM.Database;
-            if (db == null || db.Server == null) return;
             TOMDatabase = db;
         }
 
         public override string ToString()
         {
-            return TOMDatabase == null ? "(Metadata loaded from file)" : ServerName + "." + Name;
+            return TOMDatabase?.Server == null ? "(Metadata loaded from file)" : ServerName + "." + Name;
         }
 
         public string Name

@@ -84,6 +84,8 @@ namespace TabularEditor.TOMWrapper
         {
             switch (propertyName) {
                 case "FormatString": return DataType != TOM.DataType.String;
+                case "DetailRowsExpression":
+                    return Model.Database.CompatibilityLevel >= 1400;
                 default: return true;
             }
         }

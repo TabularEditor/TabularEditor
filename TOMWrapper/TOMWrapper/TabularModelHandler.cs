@@ -109,6 +109,7 @@ namespace TabularEditor.TOMWrapper
             UndoManager = new UndoFramework.UndoManager(this);
             Actions = new TabularCommonActions(this);
             Model = new Model(this, database.Model);
+            Model.Database = new Database(database);
             Model.LoadChildObjects();
             CheckErrors();
         }

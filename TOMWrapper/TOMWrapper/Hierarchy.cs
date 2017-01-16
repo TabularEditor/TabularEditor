@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using TabularEditor.PropertyGridUI;
 using TabularEditor.UndoFramework;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    partial class Hierarchy: ITabularObjectContainer, ITabularPerspectiveObject
+    partial class Hierarchy: ITabularObjectContainer, ITabularPerspectiveObject, IDynamicPropertyObject
     {
         public override void Delete()
         {
@@ -161,6 +162,22 @@ namespace TabularEditor.TOMWrapper
             }
 
             Handler.Tree.OnStructureChanged(this);
+        }
+
+        public bool Browsable(string propertyName)
+        {
+            switch(propertyName)
+            {
+                case "HideMembers":
+                    return Model.Database.CompatibilityLevel >= 1400;
+
+                default: return true;
+            }
+        }
+
+        public bool Editable(string propertyName)
+        {
+            return true;
         }
     }
 

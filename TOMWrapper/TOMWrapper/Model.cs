@@ -85,15 +85,10 @@ namespace TabularEditor.TOMWrapper
 
         protected override void Init()
         {
-            _database = new Database(MetadataObject.Database);
         }
 
-        private Database _database;
         [Category("Basic")]
-        public Database Database
-        {
-            get { return _database; }
-        }
+        public Database Database { get; internal set; }
 
         public void LoadChildObjects()
         {
