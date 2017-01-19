@@ -1,6 +1,8 @@
 # Tabular Editor
 Tabular Editor is a tool that lets you easily manipulate and manage measures, calculated columns, display folders, perspectives and translations in SQL Server Analysis Services Tabular Models (from Compatibility Level 1200 and onwards). The tool is written entirely in .NET WinForms (C#).
 
+![](https://raw.githubusercontent.com/otykier/TabularEditor/master/Documentation/Main%20UI%202_1.png)
+
 * [Download Tabular Editor v. 2.1 for SQL Server 2016](https://github.com/otykier/TabularEditor/releases/latest)
 * [Download Tabular Editor v. 2.1 for SQL Server vNext Preview](https://github.com/otykier/TabularEditor/releases/tag/2.1.6225)
 
