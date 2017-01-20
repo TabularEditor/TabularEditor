@@ -96,7 +96,7 @@ class Rules {
 		return SplitCamelCase(result);
     }
 
-	public static string GetCategory(string propertyName)
+	public static string GetCategory(string propertyName, Type objectType)
     {
 		switch(propertyName)
         {
@@ -107,11 +107,16 @@ class Rules {
 				return "Basic";
 			case "Expression":
 			case "SortByColumn":
-				return "Options";
 			case "FormatString":
+				return "Options";
 			case "DataCategory":
+			case "ErrorMessage":
+			case "DataType":
+			case "State":
 				return "Metadata";
 			default:
+				if(objectType == typeof(ProviderDataSource)) return "Connection Details";
+				if(objectType == typeof(ModelRole)) return "Security";
 				return "Other";
         }
     }

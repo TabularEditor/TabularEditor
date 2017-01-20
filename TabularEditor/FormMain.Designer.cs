@@ -103,6 +103,7 @@
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton11 = new System.Windows.Forms.ToolStripButton();
+            this.showAllObjectTypesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -156,6 +157,7 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.saveToFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -180,7 +182,6 @@
             this._dataType = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this._description = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.treeColumn1 = new Aga.Controls.Tree.TreeColumn();
-            this.showAllObjectTypesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             actionsMain = new Crad.Windows.Forms.Actions.ActionList();
             ((System.ComponentModel.ISupportInitialize)(actionsMain)).BeginInit();
             this.toolStrip2.SuspendLayout();
@@ -950,6 +951,20 @@
             this.toolStripButton11.ToolTipText = "Show/hide all object types (perspectives, roles, data sources, etc.) in addition " +
     "to tables";
             // 
+            // showAllObjectTypesToolStripMenuItem
+            // 
+            actionsMain.SetAction(this.showAllObjectTypesToolStripMenuItem, this.actToggleAllObjectTypes);
+            this.showAllObjectTypesToolStripMenuItem.Checked = true;
+            this.showAllObjectTypesToolStripMenuItem.CheckOnClick = true;
+            this.showAllObjectTypesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.showAllObjectTypesToolStripMenuItem.Enabled = false;
+            this.showAllObjectTypesToolStripMenuItem.Image = global::TabularEditor.Resources.ShowDetails_16x;
+            this.showAllObjectTypesToolStripMenuItem.Name = "showAllObjectTypesToolStripMenuItem";
+            this.showAllObjectTypesToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
+            this.showAllObjectTypesToolStripMenuItem.Text = "Show All Object Types";
+            this.showAllObjectTypesToolStripMenuItem.ToolTipText = "Show/hide all object types (perspectives, roles, data sources, etc.) in addition " +
+    "to tables";
+            // 
             // preferencesToolStripMenuItem
             // 
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
@@ -1496,6 +1511,7 @@
             this.toolStripMenuItem1,
             this.saveToolStripMenuItem,
             this.saveAsToolStripMenuItem,
+            this.saveToFolderToolStripMenuItem,
             this.toolStripMenuItem3,
             this.preferencesToolStripMenuItem,
             this.toolStripMenuItem2,
@@ -1517,6 +1533,14 @@
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(196, 6);
+            // 
+            // saveToFolderToolStripMenuItem
+            // 
+            this.saveToFolderToolStripMenuItem.Name = "saveToFolderToolStripMenuItem";
+            this.saveToFolderToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.saveToFolderToolStripMenuItem.Text = "Save to Folder...";
+            this.saveToFolderToolStripMenuItem.Visible = false;
+            this.saveToFolderToolStripMenuItem.Click += new System.EventHandler(this.saveToFolderToolStripMenuItem_Click);
             // 
             // toolStripMenuItem3
             // 
@@ -1731,20 +1755,6 @@
             this.treeColumn1.SortOrder = System.Windows.Forms.SortOrder.None;
             this.treeColumn1.TooltipText = null;
             // 
-            // showAllObjectTypesToolStripMenuItem
-            // 
-            actionsMain.SetAction(this.showAllObjectTypesToolStripMenuItem, this.actToggleAllObjectTypes);
-            this.showAllObjectTypesToolStripMenuItem.Checked = true;
-            this.showAllObjectTypesToolStripMenuItem.CheckOnClick = true;
-            this.showAllObjectTypesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.showAllObjectTypesToolStripMenuItem.Enabled = false;
-            this.showAllObjectTypesToolStripMenuItem.Image = global::TabularEditor.Resources.ShowDetails_16x;
-            this.showAllObjectTypesToolStripMenuItem.Name = "showAllObjectTypesToolStripMenuItem";
-            this.showAllObjectTypesToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
-            this.showAllObjectTypesToolStripMenuItem.Text = "Show All Object Types";
-            this.showAllObjectTypesToolStripMenuItem.ToolTipText = "Show/hide all object types (perspectives, roles, data sources, etc.) in addition " +
-    "to tables";
-            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1947,6 +1957,7 @@
         private System.Windows.Forms.ToolStripButton toolStripButton11;
         private UI.UIModelAction actToggleAllObjectTypes;
         private System.Windows.Forms.ToolStripMenuItem showAllObjectTypesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveToFolderToolStripMenuItem;
     }
 }
 

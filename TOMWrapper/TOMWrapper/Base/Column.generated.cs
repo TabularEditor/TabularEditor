@@ -26,7 +26,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the DataType of the Column.
         /// </summary>
 		[DisplayName("Data Type")]
-		[Category("Other"),IntelliSense("The Data Type of this Column.")]
+		[Category("Metadata"),IntelliSense("The Data Type of this Column.")]
 		public TOM.DataType DataType {
 			get {
 			    return MetadataObject.DataType;
@@ -120,7 +120,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the State of the Column.
         /// </summary>
 		[DisplayName("State")]
-		[Category("Other"),IntelliSense("The State of this Column.")]
+		[Category("Metadata"),IntelliSense("The State of this Column.")]
 		public TOM.ObjectState State {
 			get {
 			    return MetadataObject.State;
@@ -320,7 +320,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the FormatString of the Column.
         /// </summary>
 		[DisplayName("Format String")]
-		[Category("Metadata"),IntelliSense("The Format String of this Column.")]
+		[Category("Options"),IntelliSense("The Format String of this Column.")]
 		public string FormatString {
 			get {
 			    return MetadataObject.FormatString;
@@ -408,7 +408,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the ErrorMessage of the Column.
         /// </summary>
 		[DisplayName("Error Message")]
-		[Category("Other"),IntelliSense("The Error Message of this Column.")]
+		[Category("Metadata"),IntelliSense("The Error Message of this Column.")]
 		public string ErrorMessage {
 			get {
 			    return MetadataObject.ErrorMessage;

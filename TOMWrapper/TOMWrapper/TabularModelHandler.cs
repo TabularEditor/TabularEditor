@@ -129,10 +129,27 @@ namespace TabularEditor.TOMWrapper
             }
             catch
             {
-                throw new InvalidOperationException("This does not appear to be a valid Compatibility Level 1200 Model.bim file.");
+                throw new InvalidOperationException("This does not appear to be a valid Compatibility Level 1200 (or newer) Model.bim file.");
             }
             Status = "File loaded succesfully.";
 
+            Init();
+        }
+
+        public TabularModelHandler(string path, bool fromFolder)
+        {
+            Singleton = this;
+            server = null;
+            try
+            {
+                var s = CombineFolderJson(path);
+                database = TOM.JsonSerializer.DeserializeDatabase(s);
+            }
+            catch
+            {
+
+            }
+            Status = "File loaded succsefully.";
             Init();
         }
 
@@ -217,12 +234,7 @@ namespace TabularEditor.TOMWrapper
                 Conflict = db.Version != Version
             };
         }
-
-        public void SaveBackup(string path)
-        {
-            
-        }
-
+        
         public void SaveDB()
         {
             if (database?.Server == null || Version == -1)
@@ -241,6 +253,89 @@ namespace TabularEditor.TOMWrapper
 
             Status = "Changes saved.";
             CheckErrors();
+        }
+
+        private string CombineFolderJson(string path)
+        {
+            //var database = JObject.Parse()
+            return "";
+        }
+
+        public void SaveToFolder(string path)
+        {
+            var json = TOM.JsonSerializer.SerializeDatabase(database, new TOM.SerializeOptions() { IgnoreInferredObjects = true, IgnoreTimestamps = true, IgnoreInferredProperties = true });
+            var jobj = JObject.Parse(json);
+
+            var model = jobj["model"] as JObject;
+            var tables = PopArray(model, "tables");
+            var relationships = PopArray(model, "relationships");
+            var perspectives = PopArray(model, "perspectives");
+            var cultures = PopArray(model, "cultures");
+            var dataSources = PopArray(model, "dataSources");
+            var roles = PopArray(model, "roles");
+
+            WriteIfChanged(path + "\\database.json", jobj.ToString(Newtonsoft.Json.Formatting.Indented));
+
+            OutArray(path, "relationships", relationships);
+            OutArray(path, "perspectives", perspectives);
+            OutArray(path, "cultures", cultures);
+            OutArray(path, "dataSources", dataSources);
+            OutArray(path, "roles", roles);
+
+            foreach(JObject t in tables)
+            {
+                var measures = PopArray(t, "measures");
+                var columns = PopArray(t, "columns");
+                var hierarchies = PopArray(t, "hierarchies");
+                var partitions = PopArray(t, "partitions");
+
+                var tableName = t["name"].ToString().Replace("\\", "_").Replace("/", "_");
+                var p = path + "\\tables\\" + tableName + "\\" + tableName + ".json";
+                var fi = new FileInfo(p);
+                if (!fi.Directory.Exists) fi.Directory.Create();
+                WriteIfChanged(p, t.ToString(Newtonsoft.Json.Formatting.Indented));
+
+                var table = Model.Tables[t["name"].ToString()].MetadataObject;
+
+                if (measures != null) OutArray(path + "\\tables\\" + tableName, "measures", measures);
+                if (columns != null) OutArray(path + "\\tables\\" + tableName, "columns", columns);
+                if (hierarchies != null) OutArray(path + "\\tables\\" + tableName, "hierarchies", hierarchies);
+                if (partitions != null) OutArray(path + "\\tables\\" + tableName, "partitions", partitions);
+            }
+        }
+
+        /// <summary>
+        /// Writes textual data to a file, but only if the file does not already contain the exact same text.
+        /// Automatically creates a directory for the file, if it doesn't already exist.
+        /// </summary>
+        private void WriteIfChanged(string path, string content)
+        {
+            var fi = new FileInfo(path);
+            if (!fi.Directory.Exists) fi.Directory.Create();
+            else if(fi.Exists)
+            {
+                var s = File.ReadAllText(path);
+                if (content.Equals(s, StringComparison.InvariantCulture)) return;
+            }
+            File.WriteAllText(path, content);
+        }
+
+        private void OutArray(string path, string arrayName, JArray array)
+        {
+            foreach (var t in array)
+            {
+                var p = path + "\\" + arrayName + "\\" + t["name"].ToString().Replace("\\","_").Replace("/","_") + ".json";
+                var fi = new FileInfo(p);
+                if (!fi.Directory.Exists) fi.Directory.Create();
+                WriteIfChanged(p, t.ToString(Newtonsoft.Json.Formatting.Indented));
+            }
+        }
+
+        private JArray PopArray(JObject obj, string arrayName)
+        {
+            var result = obj[arrayName] as JArray;
+            obj.Remove(arrayName);
+            return result;
         }
 
         public IDetailObject Add(AddObjectType objectType, IDetailObjectContainer container)
@@ -296,12 +391,16 @@ namespace TabularEditor.TOMWrapper
 
         public void BeginUpdate(string undoName)
         {
+            Console.WriteLine("BeginUpdate");
+
             Tree.BeginUpdate();
             if(!string.IsNullOrEmpty(undoName)) UndoManager.BeginBatch(undoName);
         }
 
         public int EndUpdate(bool undoable = true, bool rollback = false)
         {
+            Console.WriteLine("EndUpdate");
+
             var actionCount = 0;
             if(undoable || rollback) actionCount = UndoManager.EndBatch(rollback);
             Tree.EndUpdate();
@@ -315,6 +414,7 @@ namespace TabularEditor.TOMWrapper
             {
                 actionCount = UndoManager.EndBatch(rollback);
             }
+            Tree.EndUpdate();
             return actionCount;
         }
 

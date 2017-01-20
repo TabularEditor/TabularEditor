@@ -1,6 +1,6 @@
 ﻿<#@ template debug="false" hostspecific="true" language="C#" #>
 <#@ assembly name="System.Core" #>
-<#@ assembly name="Microsoft.AnalysisServices.Tabular" #>
+<#@ assembly name="Microsoft.AnalysisServices.Tabular, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Reflection" #>
@@ -64,7 +64,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the <#= p.Name #> of the <#= t.Name #>.
         /// </summary>
 		[DisplayName("<#= Rules.GetDisplayName(p.Name) #>")]
-		[Category("<#= Rules.GetCategory(p.Name) #>"),IntelliSense("The <#= Rules.GetDisplayName(p.Name) #> of this <#= t.Name #>.")]<#= Rules.GetOtherAttributes(p.Name, t.Name) #>
+		[Category("<#= Rules.GetCategory(p.Name, t) #>"),IntelliSense("The <#= Rules.GetDisplayName(p.Name) #> of this <#= t.Name #>.")]<#= Rules.GetOtherAttributes(p.Name, t.Name) #>
 		public <#= Rules.PropertyType(p) #> <#= p.Name #> {
 			<#= Rules.PropertyGetter(p) #>
 			<#= Rules.PropertySetter(p) #>

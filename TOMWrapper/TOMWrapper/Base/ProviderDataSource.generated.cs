@@ -26,7 +26,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the ConnectionString of the ProviderDataSource.
         /// </summary>
 		[DisplayName("Connection String")]
-		[Category("Other"),IntelliSense("The Connection String of this ProviderDataSource.")]
+		[Category("Connection Details"),IntelliSense("The Connection String of this ProviderDataSource.")]
 		public string ConnectionString {
 			get {
 			    return MetadataObject.ConnectionString;
@@ -48,7 +48,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the ImpersonationMode of the ProviderDataSource.
         /// </summary>
 		[DisplayName("Impersonation Mode")]
-		[Category("Other"),IntelliSense("The Impersonation Mode of this ProviderDataSource.")]
+		[Category("Connection Details"),IntelliSense("The Impersonation Mode of this ProviderDataSource.")]
 		public TOM.ImpersonationMode ImpersonationMode {
 			get {
 			    return MetadataObject.ImpersonationMode;
@@ -70,7 +70,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the Account of the ProviderDataSource.
         /// </summary>
 		[DisplayName("Account")]
-		[Category("Other"),IntelliSense("The Account of this ProviderDataSource.")]
+		[Category("Connection Details"),IntelliSense("The Account of this ProviderDataSource.")]
 		public string Account {
 			get {
 			    return MetadataObject.Account;
@@ -92,7 +92,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the Password of the ProviderDataSource.
         /// </summary>
 		[DisplayName("Password")]
-		[Category("Other"),IntelliSense("The Password of this ProviderDataSource.")]
+		[Category("Connection Details"),IntelliSense("The Password of this ProviderDataSource.")]
 		public string Password {
 			get {
 			    return MetadataObject.Password;
@@ -114,7 +114,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the MaxConnections of the ProviderDataSource.
         /// </summary>
 		[DisplayName("Max Connections")]
-		[Category("Other"),IntelliSense("The Max Connections of this ProviderDataSource.")]
+		[Category("Connection Details"),IntelliSense("The Max Connections of this ProviderDataSource.")]
 		public int MaxConnections {
 			get {
 			    return MetadataObject.MaxConnections;
@@ -136,7 +136,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the Isolation of the ProviderDataSource.
         /// </summary>
 		[DisplayName("Isolation")]
-		[Category("Other"),IntelliSense("The Isolation of this ProviderDataSource.")]
+		[Category("Connection Details"),IntelliSense("The Isolation of this ProviderDataSource.")]
 		public TOM.DatasourceIsolation Isolation {
 			get {
 			    return MetadataObject.Isolation;
@@ -158,7 +158,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the Timeout of the ProviderDataSource.
         /// </summary>
 		[DisplayName("Timeout")]
-		[Category("Other"),IntelliSense("The Timeout of this ProviderDataSource.")]
+		[Category("Connection Details"),IntelliSense("The Timeout of this ProviderDataSource.")]
 		public int Timeout {
 			get {
 			    return MetadataObject.Timeout;
@@ -180,7 +180,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the Provider of the ProviderDataSource.
         /// </summary>
 		[DisplayName("Provider")]
-		[Category("Other"),IntelliSense("The Provider of this ProviderDataSource.")]
+		[Category("Connection Details"),IntelliSense("The Provider of this ProviderDataSource.")]
 		public string Provider {
 			get {
 			    return MetadataObject.Provider;

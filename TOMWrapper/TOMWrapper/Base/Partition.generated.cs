@@ -70,7 +70,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the State of the Partition.
         /// </summary>
 		[DisplayName("State")]
-		[Category("Other"),IntelliSense("The State of this Partition.")]
+		[Category("Metadata"),IntelliSense("The State of this Partition.")]
 		public TOM.ObjectState State {
 			get {
 			    return MetadataObject.State;
@@ -126,7 +126,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the ErrorMessage of the Partition.
         /// </summary>
 		[DisplayName("Error Message")]
-		[Category("Other"),IntelliSense("The Error Message of this Partition.")]
+		[Category("Metadata"),IntelliSense("The Error Message of this Partition.")]
 		public string ErrorMessage {
 			get {
 			    return MetadataObject.ErrorMessage;

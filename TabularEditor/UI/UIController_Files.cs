@@ -69,6 +69,20 @@ namespace TabularEditor.UI
             }
         }
 
+        public void File_SaveToFolder()
+        {
+            using (var fbd = new FolderBrowserDialog())
+            {
+                var res = fbd.ShowDialog();
+                if(res == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                {
+                    UI.StatusLabel.Text = "Saving...";
+                    Handler.SaveToFolder(fbd.SelectedPath);
+                    UpdateUIText();
+                }
+            }
+        }
+
         public void Save()
         {
             UI.StatusLabel.Text = "Saving...";
