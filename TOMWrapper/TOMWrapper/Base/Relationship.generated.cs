@@ -152,7 +152,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the State of the Relationship.
         /// </summary>
 		[DisplayName("State")]
-		[Category("Other"),IntelliSense("The State of this Relationship.")]
+		[Category("Metadata"),IntelliSense("The State of this Relationship.")]
 		public TOM.ObjectState State {
 			get {
 			    return MetadataObject.State;

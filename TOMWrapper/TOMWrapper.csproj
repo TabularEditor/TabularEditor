@@ -111,6 +111,7 @@
     <Compile Include="TOMWrapper\CalculatedColumn.cs" />
     <Compile Include="TOMWrapper\CalculatedTable.cs" />
     <Compile Include="TOMWrapper\Database.cs" />
+    <Compile Include="TOMWrapper\ProviderDataSource.cs" />
     <Compile Include="TOMWrapper\LogicalGroup.cs" />
     <Compile Include="TOMWrapper\KPI.cs" />
     <Compile Include="TOMWrapper\ModelRole.cs" />

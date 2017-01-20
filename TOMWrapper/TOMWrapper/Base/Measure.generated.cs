@@ -58,7 +58,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the DataType of the Measure.
         /// </summary>
 		[DisplayName("Data Type")]
-		[Category("Other"),IntelliSense("The Data Type of this Measure.")]
+		[Category("Metadata"),IntelliSense("The Data Type of this Measure.")]
 		public TOM.DataType DataType {
 			get {
 			    return MetadataObject.DataType;
@@ -92,7 +92,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the FormatString of the Measure.
         /// </summary>
 		[DisplayName("Format String")]
-		[Category("Metadata"),IntelliSense("The Format String of this Measure.")]
+		[Category("Options"),IntelliSense("The Format String of this Measure.")]
 		public string FormatString {
 			get {
 			    return MetadataObject.FormatString;
@@ -137,7 +137,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the State of the Measure.
         /// </summary>
 		[DisplayName("State")]
-		[Category("Other"),IntelliSense("The State of this Measure.")]
+		[Category("Metadata"),IntelliSense("The State of this Measure.")]
 		public TOM.ObjectState State {
 			get {
 			    return MetadataObject.State;
@@ -171,7 +171,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the ErrorMessage of the Measure.
         /// </summary>
 		[DisplayName("Error Message")]
-		[Category("Other"),IntelliSense("The Error Message of this Measure.")]
+		[Category("Metadata"),IntelliSense("The Error Message of this Measure.")]
 		public string ErrorMessage {
 			get {
 			    return MetadataObject.ErrorMessage;

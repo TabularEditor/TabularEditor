@@ -19,6 +19,7 @@ namespace TabularEditor.UI.Actions
         public void SaveToJson(string jsonPath)
         {
             var json = JsonConvert.SerializeObject(this, Formatting.Indented);
+            (new FileInfo(jsonPath)).Directory.Create();
             File.WriteAllText(jsonPath, json);
         }
 

@@ -101,7 +101,10 @@ namespace TabularEditor.TOMWrapper
         public string Source {
             get
             {
-                return (MetadataObject.Partitions.FirstOrDefault()?.Source as TOM.QueryPartitionSource)?.DataSource?.Name;
+                var ds = (MetadataObject.Partitions.FirstOrDefault().Source as TOM.QueryPartitionSource)?.DataSource;
+                string sourceName = null;
+                if (ds != null) sourceName = (Handler.WrapperLookup[ds] as DataSource)?.Name;
+                return sourceName ?? ds?.Name;
             }
         }
         [Category("Data Source"), DisplayName("Source Type")]
@@ -199,6 +202,8 @@ namespace TabularEditor.TOMWrapper
             RowLevelSecurity = new TableRLSIndexer(this);
         }
 
+
+        [Category("Metadata"),DisplayName("Error Message")]
         public virtual string ErrorMessage { get; protected set; }
 
         public virtual void CheckChildrenErrors()

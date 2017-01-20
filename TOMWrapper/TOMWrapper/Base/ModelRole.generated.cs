@@ -58,7 +58,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the ModelPermission of the ModelRole.
         /// </summary>
 		[DisplayName("Model Permission")]
-		[Category("Other"),IntelliSense("The Model Permission of this ModelRole.")]
+		[Category("Security"),IntelliSense("The Model Permission of this ModelRole.")]
 		public TOM.ModelPermission ModelPermission {
 			get {
 			    return MetadataObject.ModelPermission;

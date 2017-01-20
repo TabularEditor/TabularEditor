@@ -369,5 +369,10 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 }
             }
         }
+
+        private void saveToFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            UI.File_SaveToFolder();
+        }
     }
 }

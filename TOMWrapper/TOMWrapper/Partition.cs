@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TabularEditor.PropertyGridUI;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using System.Diagnostics;
+using System.ComponentModel;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -46,10 +47,17 @@ namespace TabularEditor.TOMWrapper
                 case "Mode":
                 case "Description":
                 case "Name":
+                case "RefreshedTime":
                     return true;
                 default:
                     return false;
             }
+        }
+
+        [Category("Metadata"),DisplayName("Last Processed")]
+        public DateTime RefreshedTime
+        {
+            get { return MetadataObject.RefreshedTime; }
         }
 
         public bool Editable(string propertyName)

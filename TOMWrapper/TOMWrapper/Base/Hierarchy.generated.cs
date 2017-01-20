@@ -81,7 +81,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the State of the Hierarchy.
         /// </summary>
 		[DisplayName("State")]
-		[Category("Other"),IntelliSense("The State of this Hierarchy.")]
+		[Category("Metadata"),IntelliSense("The State of this Hierarchy.")]
 		public TOM.ObjectState State {
 			get {
 			    return MetadataObject.State;
