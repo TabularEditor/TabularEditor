@@ -27,9 +27,13 @@ When writing DAX code in the expression editor, an autocompletebox should pop-up
 
 When any model object is renamed, all DAX expressions refering that object should be updated to reflect the changed name.
 
+**Update**: As of 2.2, this feature can now be toggled on under "File" > "Preferences".
+
 ### UI for showing object dependencies
 
 Right-clicking a measure or calculated column should display a dependency tree in a pop-up dialog. It should be possible to show either objects that depend on the chosen object, or objects on which the chosen object depend.
+
+**Update**: As of 2.2, this feature is available. Simply right-click an object and choose "Show dependencies...".
 
 ### Scripting changes from the command-line
 
@@ -41,11 +45,15 @@ Tabular Editor currently only lets end-users read and edit a subset of the objec
 
 **Update**: As of 2.1, many new object types are now visible directly in the Tree Explorer. Using the right-click menu, you can create, duplicate and delete many of these objects (roles, perspectives, translations). We're still lacking support for creating/deleting relationships and data sources, but this will come in a future release.
 
+**Update**: As of 2.2, we can now create and delete relationships. More object types comming later.
+
 ### Split a Model.bim into multiple json files
 
 The layout and structure of the Model.bim file, makes it horrible for purposes of source control and versioning. Not only is the entire Tabular Object Model written into just one file, the file also contains "ModifiedTime" information everywhere in the structure, making source control DIFF operations useless.
 
 For better release management workflows with Tabular Models, it would be interesting if Tabular Editor could save/load a Model.bim file as a folder structure with individual files for measures, calculated columns, etc. There should be command-line options available for exporting/importing Model.bim files from/to this format, and it should be possible to deploy directly from this format (in cases where you don't need the Model.bim file itself). These individual files should contain the same JSON as the Model.bim file, but without the "ModifiedTime" information, so that they can easily be used in Version Control software, allowing multiple developers to work on the same model at once.
+
+**Update**: [Available in 2.2](https://github.com/otykier/TabularEditor/wiki/Advanced-features#save-to-folder--open-from-folder-experimental).
 
 ### Power BI Compatibility
 
