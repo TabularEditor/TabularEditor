@@ -345,7 +345,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             PreferencesForm.ShowDialog();
-            UI.Handler.AutoFixup = Preferences.Current.FormulaFixup;
+            if(UI.Handler != null) UI.Handler.AutoFixup = Preferences.Current.FormulaFixup;
         }
 
         private void FormMain_Shown(object sender, EventArgs e)
