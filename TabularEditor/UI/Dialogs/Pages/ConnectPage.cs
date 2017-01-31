@@ -97,6 +97,13 @@ namespace TabularEditor.UI.Dialogs.Pages
                 return GetLocalInstanceName(comboBox1.SelectedIndex);
             }
         }
+        public EmbeddedInstanceType LocalInstanceType
+        {
+            get
+            {
+                return (comboBox1.SelectedItem as PowerBIInstance)?.Icon ?? EmbeddedInstanceType.None;
+            }
+        }
 
         private string GetLocalInstanceName(int index)
         {
@@ -106,7 +113,7 @@ namespace TabularEditor.UI.Dialogs.Pages
                 if (item != null) return string.Format("{0}.{1}{2}",
                     "localhost:" + item.Port,
                     item.Name,
-                    item.Icon == EmbeddedSSASIcon.PowerBI ? ".pbix" : "");
+                    item.Icon == EmbeddedInstanceType.PowerBI ? ".pbix" : "");
             }
             return null;
         }
@@ -138,7 +145,7 @@ namespace TabularEditor.UI.Dialogs.Pages
             {
                 var item = comboBox1.Items[e.Index] as PowerBIInstance;
 
-                e.Graphics.DrawImage(imageList1.Images[(int)item.Icon], e.Bounds.Left + 2, e.Bounds.Top + 2);
+                e.Graphics.DrawImage(imageList1.Images[(int)item.Icon - 1], e.Bounds.Left + 2, e.Bounds.Top + 2);
 
                 e.Graphics.DrawString(GetLocalInstanceName(e.Index), e.Font, new SolidBrush(e.ForeColor), e.Bounds.Left + 24, e.Bounds.Top + 3);
             }

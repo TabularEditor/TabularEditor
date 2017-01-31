@@ -308,40 +308,29 @@ namespace TabularEditor.TOMWrapper
         internal readonly Dictionary<TOM.MetadataObject, TabularObject> WrapperLookup = new Dictionary<TOM.MetadataObject, TabularObject>();
 
         /// <summary>
-        /// Loads an Analysis Services Tabular Model (Compatibility Level 1200) from a file.
+        /// Loads an Analysis Services tabular database (Compatibility Level 1200 or newer) from a file
+        /// or folder.
         /// </summary>
-        /// <param name="fileName"></param>
-        public TabularModelHandler(string fileName)
+        /// <param name="path"></param>
+        public TabularModelHandler(string path)
         {
             Singleton = this;
             server = null;
-            try
+
+            var fi = new FileInfo(path);
+            string data;
+            if (!fi.Exists || fi.Name == "database.json")
             {
-                database = TOM.JsonSerializer.DeserializeDatabase(File.ReadAllText(fileName));
-            }
-            catch
+                if (fi.Name == "database.json") data = CombineFolderJson(fi.DirectoryName);
+                else if (Directory.Exists(path)) data = CombineFolderJson(path);
+                else throw new FileNotFoundException();
+            } else
             {
-                throw new InvalidOperationException("This does not appear to be a valid Compatibility Level 1200 (or newer) Model.bim file.");
+                data = File.ReadAllText(path);
             }
+            database = TOM.JsonSerializer.DeserializeDatabase(data);
+
             Status = "File loaded succesfully.";
-
-            Init();
-        }
-
-        public TabularModelHandler(string path, bool fromFolder)
-        {
-            Singleton = this;
-            server = null;
-            try
-            {
-                var s = CombineFolderJson(path);
-                database = TOM.JsonSerializer.DeserializeDatabase(s);
-            }
-            catch
-            {
-
-            }
-            Status = "File loaded succsefully.";
             Init();
         }
 
@@ -451,9 +440,44 @@ namespace TabularEditor.TOMWrapper
 
         private string CombineFolderJson(string path)
         {
-            // TODO: Combine JSON from files, then load entire database
-            //var database = JObject.Parse()
-            return "";
+            if (!File.Exists(path + "\\database.json")) throw new FileNotFoundException("This folder does not contain a database.json file");
+
+            var jobj = JObject.Parse(File.ReadAllText(path + "\\database.json"));
+            var model = jobj["model"] as JObject;
+
+            InArray(path, "dataSources", model);
+            var tables = new JArray();
+            foreach (var tablePath in Directory.GetDirectories(path + "\\tables"))
+            {
+                var tableName = new DirectoryInfo(tablePath).Name;
+                var table = JObject.Parse(File.ReadAllText(string.Format("{0}\\{1}.json", tablePath, tableName)));
+                InArray(tablePath, "columns", table);
+                InArray(tablePath, "partitions", table);
+                InArray(tablePath, "measures", table);
+                InArray(tablePath, "hierarchies", table);
+                InArray(tablePath, "annotations", table);
+                tables.Add(table);
+            }
+            model.Add("tables", tables);
+            InArray(path, "relationships", model);
+            InArray(path, "cultures", model);
+            InArray(path, "perspectives", model);
+            InArray(path, "roles", model);
+
+            return jobj.ToString();
+        }
+
+        private void InArray(string path, string arrayName, JObject baseObject)
+        {
+            var array = new JArray();
+            if (Directory.Exists(path + "\\" + arrayName))
+            {
+                foreach (var file in Directory.GetFiles(path + "\\" + arrayName, "*.json"))
+                {
+                    array.Add(JObject.Parse(File.ReadAllText(file)));
+                }
+            }
+            baseObject.Add(arrayName, array);
         }
 
         public void SaveToFolder(string path)
@@ -462,11 +486,11 @@ namespace TabularEditor.TOMWrapper
             var jobj = JObject.Parse(json);
 
             var model = jobj["model"] as JObject;
+            var dataSources = PopArray(model, "dataSources");
             var tables = PopArray(model, "tables");
             var relationships = PopArray(model, "relationships");
-            var perspectives = PopArray(model, "perspectives");
             var cultures = PopArray(model, "cultures");
-            var dataSources = PopArray(model, "dataSources");
+            var perspectives = PopArray(model, "perspectives");
             var roles = PopArray(model, "roles");
 
             WriteIfChanged(path + "\\database.json", jobj.ToString(Newtonsoft.Json.Formatting.Indented));
@@ -479,10 +503,11 @@ namespace TabularEditor.TOMWrapper
 
             foreach(JObject t in tables)
             {
-                var measures = PopArray(t, "measures");
                 var columns = PopArray(t, "columns");
-                var hierarchies = PopArray(t, "hierarchies");
                 var partitions = PopArray(t, "partitions");
+                var measures = PopArray(t, "measures");
+                var hierarchies = PopArray(t, "hierarchies");
+                var annotations = PopArray(t, "annotations");
 
                 var tableName = t["name"].ToString().Replace("\\", "_").Replace("/", "_");
                 var p = path + "\\tables\\" + tableName + "\\" + tableName + ".json";
@@ -496,6 +521,7 @@ namespace TabularEditor.TOMWrapper
                 if (columns != null) OutArray(path + "\\tables\\" + tableName, "columns", columns);
                 if (hierarchies != null) OutArray(path + "\\tables\\" + tableName, "hierarchies", hierarchies);
                 if (partitions != null) OutArray(path + "\\tables\\" + tableName, "partitions", partitions);
+                if (annotations != null) OutArray(path + "\\tables\\" + tableName, "annotations", annotations);
             }
         }
 

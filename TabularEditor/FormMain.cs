@@ -165,7 +165,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         {
             // Auto-load the file specified as command line arguments:
             var args = Environment.GetCommandLineArgs();
-            if (args.Length == 2 && File.Exists(args[1]))
+            if (args.Length == 2 && (File.Exists(args[1]) || File.Exists(args[1] + "\\database.json")))
             {
                 UI.File_Open(args[1]);
             }
@@ -375,6 +375,11 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void saveToFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
             UI.File_SaveToFolder();
+        }
+
+        private void fromFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            UI.File_Open(true);
         }
     }
 }

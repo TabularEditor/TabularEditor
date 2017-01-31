@@ -156,6 +156,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.fromFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.saveToFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
@@ -1527,10 +1528,18 @@
             // 
             this.openToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem1,
-            this.fromDBToolStripMenuItem});
+            this.fromDBToolStripMenuItem,
+            this.fromFolderToolStripMenuItem});
             this.openToolStripMenuItem1.Name = "openToolStripMenuItem1";
             this.openToolStripMenuItem1.Size = new System.Drawing.Size(199, 22);
             this.openToolStripMenuItem1.Text = "Open";
+            // 
+            // fromFolderToolStripMenuItem
+            // 
+            this.fromFolderToolStripMenuItem.Name = "fromFolderToolStripMenuItem";
+            this.fromFolderToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
+            this.fromFolderToolStripMenuItem.Text = "From Folder...";
+            this.fromFolderToolStripMenuItem.Click += new System.EventHandler(this.fromFolderToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
@@ -1680,7 +1689,7 @@
             // toolStripMenuItem10
             // 
             this.toolStripMenuItem10.Name = "toolStripMenuItem10";
-            this.toolStripMenuItem10.Size = new System.Drawing.Size(149, 6);
+            this.toolStripMenuItem10.Size = new System.Drawing.Size(57, 6);
             // 
             // tabularTreeImages
             // 
@@ -1733,7 +1742,8 @@
             // openBimFile
             // 
             this.openBimFile.FileName = "Model.bim";
-            this.openBimFile.Filter = "Tabular Model Compatibility Level 1200 files|*.bim|All files|*.*";
+            this.openBimFile.Filter = "Tabular Model Compatibility Level 1200+ files|*.bim|Tabular Editor Folder Structu" +
+    "re|database.json|All files|*.*";
             // 
             // _type
             // 
@@ -1976,6 +1986,7 @@
         private System.Windows.Forms.ToolStripMenuItem saveToFolderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem10;
+        private System.Windows.Forms.ToolStripMenuItem fromFolderToolStripMenuItem;
     }
 }
 

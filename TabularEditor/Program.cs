@@ -19,6 +19,12 @@ namespace TabularEditor
             SetupLibraries();
 
             var args = Environment.GetCommandLineArgs();
+            if (args.Length > 1 && !File.Exists(args[1]) && !File.Exists(args[1] + "\\database.json"))
+            {
+                OutputUsage();
+                Application.Exit();
+                return;
+            }
             if (args.Length > 2 && HandleCommandLine(args))
             {
                 Application.Exit();
@@ -42,6 +48,14 @@ namespace TabularEditor
         [System.Runtime.InteropServices.DllImport("kernel32.dll")]
         private static extern bool AllocConsole();
 
+        public static void OutputUsage()
+        {
+            var cw = new GUIConsoleWriter();
+            cw.WriteLine("");
+            cw.WriteLine(Application.ProductName + " " + Application.ProductVersion);
+            cw.WriteLine("--------------------------------");
+            OutputUsage(cw);
+        }
 
         static bool HandleCommandLine(string[] args)
         {
@@ -50,7 +64,7 @@ namespace TabularEditor
             cw.WriteLine(Application.ProductName + " " + Application.ProductVersion);
             cw.WriteLine("--------------------------------");
 
-            if (!File.Exists(args[1]))
+            if (!File.Exists(args[1]) && !File.Exists(args[1] + "\\database.json"))
             {
                 cw.WriteLine("File not found: {0}", args[1]);
                 return true;
@@ -127,6 +141,7 @@ namespace TabularEditor
                 try
                 {
                     cw.WriteLine("Loading model...");
+                    
                     var h = new TOMWrapper.TabularModelHandler(fileName);
                     cw.WriteLine("Deploying...");
                     var cs = string.IsNullOrEmpty(userName) ? TOMWrapper.TabularConnection.GetConnectionString(serverName) :
@@ -151,7 +166,7 @@ namespace TabularEditor
 
 TABULAREDITOR file [-DEPLOY server database [-L username password] [-O [-C] [-P]] [-R [-M]]]
 
-file                Full path of the Model.bim file to load.
+file                Full path of the Model.bim file or database.json model folder to load.
 -D / -DEPLOY        Command-line deployment
   server            Name of server to deploy to.
   database          ID of the database to deploy (create/overwrite).

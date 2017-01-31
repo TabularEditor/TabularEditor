@@ -37,12 +37,18 @@ namespace TabularEditor.TOMWrapper
 
         public static void SaveModelMetadataBackup(string connectionString, string targetDatabaseID, string backupFilePath)
         {
-            var s = new TOM.Server();
-            s.Connect(connectionString);
-            var db = s.Databases[targetDatabaseID];
+            using (var s = new TOM.Server())
+            {
+                s.Connect(connectionString);
+                if (s.Databases.Contains(targetDatabaseID))
+                {
+                    var db = s.Databases[targetDatabaseID];
 
-            var dbcontent = TOM.JsonSerializer.SerializeDatabase(db);
-            WriteZip(backupFilePath, dbcontent);
+                    var dbcontent = TOM.JsonSerializer.SerializeDatabase(db);
+                    WriteZip(backupFilePath, dbcontent);
+                }
+                s.Disconnect();
+            }
         }
 
         public static void WriteZip(string fileName, string content)

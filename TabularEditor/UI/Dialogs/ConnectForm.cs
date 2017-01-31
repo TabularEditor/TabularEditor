@@ -1,6 +1,7 @@
 ﻿using Microsoft.AnalysisServices.Tabular;
 using System;
 using System.Windows.Forms;
+using TabularEditor.UIServices;
 
 namespace TabularEditor.UI.Dialogs
 {
@@ -16,6 +17,7 @@ namespace TabularEditor.UI.Dialogs
         public static string ConnectionString { get; private set; }
         public static Server Server { get; private set; }
         public static string LocalInstanceName { get; private set; }
+        public static EmbeddedInstanceType LocalInstanceType { get; private set; }
 
         public static DialogResult Show(string caption = "Connect to Tabular Server")
         {
@@ -29,9 +31,11 @@ namespace TabularEditor.UI.Dialogs
             if (DialogResult == DialogResult.Cancel) return;
 
             Cursor = Cursors.WaitCursor;
+
             ConnectionString = connectPage.GetConnectionString();
             Server = connectPage.GetServer();
             LocalInstanceName = connectPage.LocalInstanceName;
+            LocalInstanceType = connectPage.LocalInstanceType;
             if (Server == null) e.Cancel = true;
             Cursor = Cursors.Default;
         }

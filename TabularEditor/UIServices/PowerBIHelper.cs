@@ -79,17 +79,18 @@ using System.Management;
 
 namespace TabularEditor.UIServices
 {
-    public enum EmbeddedSSASIcon
+    public enum EmbeddedInstanceType
     {
-        Devenv = 0,
-        PowerBI = 1
+        None = 0,
+        Devenv = 1,
+        PowerBI = 2
     }
     public class PowerBIInstance
     {
-        public PowerBIInstance(string name, int port, EmbeddedSSASIcon icon)
+        public PowerBIInstance(string name, int port, EmbeddedInstanceType instanceType)
         {
             Port = port;
-            Icon = icon;
+            Icon = instanceType;
             try
             {
                 var dashPos = name.LastIndexOf(" - ");
@@ -108,7 +109,7 @@ namespace TabularEditor.UIServices
         public int Port { get; private set; }
         public string Name { get; private set; }
 
-        public EmbeddedSSASIcon Icon { get; private set; }
+        public EmbeddedInstanceType Icon { get; private set; }
     }
 
     public class PowerBIHelper
@@ -125,7 +126,7 @@ namespace TabularEditor.UIServices
             foreach (ManagementObject process in mgmtClass.GetInstances())
             {
                 int _port = 0;
-                EmbeddedSSASIcon _icon = EmbeddedSSASIcon.PowerBI;
+                EmbeddedInstanceType _icon = EmbeddedInstanceType.PowerBI;
 
                 string processName = process["Name"].ToString().ToLower();
                 if (processName == "msmdsrv.exe")
@@ -138,7 +139,7 @@ namespace TabularEditor.UIServices
                     if (parentPid > 0)
                     {
                         var parentProcess = Process.GetProcessById(parentPid);
-                        if (parentProcess.ProcessName == "devenv") _icon = EmbeddedSSASIcon.Devenv;
+                        if (parentProcess.ProcessName == "devenv") _icon = EmbeddedInstanceType.Devenv;
                         parentTitle = parentProcess.MainWindowTitle;
                         if (parentTitle.Length == 0)
                         {

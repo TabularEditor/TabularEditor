@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,26 +37,34 @@ namespace TabularEditor.UI
 
         string File_Current;
 
-        public void File_Open()
+        public void File_Open(bool fromFolder = false)
         {
             if (DiscardChangesCheck()) return;
 
             var oldFile = File_Current;
             var oldHandler = Handler;
 
-            var res = UI.OpenBimDialog.ShowDialog();
-            if (res == DialogResult.OK)
+            string fileName;
+            if(fromFolder)
             {
-                try
-                {
-                    File_Open(UI.OpenBimDialog.FileName);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error loading file", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Handler = oldHandler;
-                    File_Current = oldFile;
-                }
+                var dlg = new FolderBrowserDialog();
+                if (dlg.ShowDialog() == DialogResult.Cancel) return;
+                fileName = dlg.SelectedPath;
+            } else
+            {
+                if (UI.OpenBimDialog.ShowDialog() == DialogResult.Cancel) return;
+                fileName = UI.OpenBimDialog.FileName;
+            }
+
+            try
+            {
+                File_Open(fileName);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error loading Model from disk", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Handler = oldHandler;
+                File_Current = oldFile;
             }
         }
 

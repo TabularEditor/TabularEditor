@@ -52,7 +52,7 @@ namespace TabularEditor.UI
             UI.FormMain.Cursor = Cursors.Default;
         }
 
-        private string LocalInstanceName = null;
+        private string LocalInstanceName;
 
         public void Database_Connect()
         {
@@ -60,14 +60,18 @@ namespace TabularEditor.UI
 
             if (ConnectForm.Show() == DialogResult.Cancel) return;
             LocalInstanceName = ConnectForm.LocalInstanceName;
-            if (string.IsNullOrEmpty(LocalInstanceName))
+
+            switch(ConnectForm.LocalInstanceType)
             {
-                if (SelectDatabaseForm.Show(ConnectForm.Server) == DialogResult.Cancel) return;
-            }
-            else
-            {
-                // embedded mode
-                // signal to open the first (and only) database in the list, and use the name provided from the ConnectForm
+                case EmbeddedInstanceType.None:
+                    if (SelectDatabaseForm.Show(ConnectForm.Server) == DialogResult.Cancel) return;
+                    break;
+                case EmbeddedInstanceType.PowerBI:
+                    MessageBox.Show("Warning! You are connecting to an embedded Tabular model in Power BI Desktop.\n\nTabular Editor uses the TOM to make changes to the model, which is UNSUPPORTED and could corrupt your .pbix file. Proceed at your own risk.", "Connecting to embedded model", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                case EmbeddedInstanceType.Devenv:
+                    MessageBox.Show("Warning! You are connecting to an integrated workspace in Visual Studio.\n\nChanges made through Tabular Editor may not be properly persisted to the Tabular Project in Visual Studio and may corrupt your model file. Proceed at your own risk.", "Connecting to embedded model", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
             }
 
             UI.StatusLabel.Text = "Opening Model from Database...";
