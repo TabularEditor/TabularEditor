@@ -20,16 +20,17 @@ namespace TabularEditor.UIServices
         /// <summary>
         /// Checks online to see if an updated version is available.
         /// </summary>
+        /// <param name="displayErrors">Set to true to display an error message in case the update check fails</param>
         /// <returns>True if a newer version of Tabular Editor is available, false otherwise</returns>
-        public static bool? Check()
+        public static bool? Check(bool displayErrors = false)
         {
             Cursor.Current = Cursors.WaitCursor;
-            UpdateAvailable = InternalCheck();
+            UpdateAvailable = InternalCheck(displayErrors);
             Cursor.Current = Cursors.Default;
             return UpdateAvailable;
         }
 
-        private static bool? InternalCheck()
+        private static bool? InternalCheck(bool displayErrors)
         {
             try
             {
@@ -43,7 +44,7 @@ namespace TabularEditor.UIServices
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Unable to check for updated versions", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if(displayErrors) MessageBox.Show(ex.Message, "Unable to check for updated versions", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
             return false;

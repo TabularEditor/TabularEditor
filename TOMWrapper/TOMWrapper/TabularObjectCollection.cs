@@ -19,6 +19,7 @@ namespace TabularEditor.TOMWrapper
         bool Contains(object value);
         bool Contains(string key);
         string CollectionName { get; }
+        ITabularObjectCollection GetCurrentCollection();
     }
 
     public abstract class TabularObjectCollection<T, TT, TP> : IList, INotifyCollectionChanged, ICollection<T>, IList<T>, ITabularObjectCollection, IExpandableIndexer
@@ -30,6 +31,11 @@ namespace TabularEditor.TOMWrapper
         public void ForEach(Action<T> action)
         {
             this.ToList().ForEach(action);
+        }
+
+        public ITabularObjectCollection GetCurrentCollection()
+        {
+            return Handler.WrapperCollections[CollectionName];
         }
 
         private int updateLocks = 0;
@@ -136,6 +142,7 @@ namespace TabularEditor.TOMWrapper
             MetadataObjectCollection = metadataObjectCollection;
             Handler = handler;
             CollectionName = collectionName;
+            Handler.WrapperCollections[CollectionName] = this;
         }
 
         public T this[string name]

@@ -478,7 +478,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the SortByColumn of the Column.
         /// </summary>
 		[DisplayName("Sort By Column")]
-		[Category("Options"),IntelliSense("The Sort By Column of this Column.")][TypeConverter(typeof(ColumnConverter))]
+		[Category("Options"),IntelliSense("The Sort By Column of this Column.")][TypeConverter(typeof(TableColumnConverter))]
 		public Column SortByColumn {
 			get {
 				if (MetadataObject.SortByColumn == null) return null;

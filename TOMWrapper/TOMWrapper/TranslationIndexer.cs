@@ -167,6 +167,9 @@ namespace TabularEditor.TOMWrapper
             }
             set
             {
+                // TODO: Find a better way to avoid translations on objects that can't be translated
+                if (_tabularObject is ModelRole) return;
+
                 var oldValue = this[culture];
                 if (value == oldValue) return;
 

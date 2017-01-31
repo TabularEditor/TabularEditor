@@ -45,10 +45,10 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.<#= t.Name #> MetadataObject { get { return base.MetadataObject as TOM.<#= t.Name #>; } internal set { base.MetadataObject = value; } }
 
-<# if(Rules.Collections.ContainsKey(t)) { #>
+<# if((Rules.Collections.ContainsKey(t) || Rules.Collections.ContainsKey(t.BaseType) ) && !t.IsAbstract) { #>
 		public <#= t.Name #>(<#= Rules.CollectionParent.ContainsKey(t) ? Rules.CollectionParent[t] : Rules.CollectionParent[t.BaseType] #> parent) : base(parent.Handler, new TOM.<#= t.Name #>(), false) {
-			MetadataObject.Name = parent.MetadataObject.<#= Rules.Collections[t] #>.GetNewName("New <#= t.Name #>");
-			parent.<#= Rules.Collections[t] #>.Add(this);
+			MetadataObject.Name = parent.MetadataObject.<#= Rules.Collections.ContainsKey(t) ? Rules.Collections[t] : Rules.Collections[t.BaseType] #>.GetNewName("New <#= t.Name #>");
+			parent.<#= Rules.Collections.ContainsKey(t) ? Rules.Collections[t] : Rules.Collections[t.BaseType] #>.Add(this);
 			Init();
 		}
 <# } #>
@@ -119,6 +119,14 @@ namespace TabularEditor.TOMWrapper
 				switch(obj.GetSourceType()) {
 				    case TOM.PartitionSourceType.Calculated: new CalculatedTable(handler, obj) { Collection = this }; break;
 					default: new Table(handler, obj) { Collection = this }; break;
+				}
+<# } else if (t.Name == "Relationship") { #>
+				switch((obj as TOM.Relationship).Type) {
+					case TOM.RelationshipType.SingleColumn: new SingleColumnRelationship(handler, obj as TOM.SingleColumnRelationship) { Collection = this }; break;
+				}
+<# } else if (t.Name == "DataSource") { #>
+				switch((obj as TOM.DataSource).Type) {
+					case TOM.DataSourceType.Provider: new ProviderDataSource(handler, obj as TOM.ProviderDataSource) { Collection = this }; break;
 				}
 <# } else { #>
 				new <#= t.Name #>(handler, obj) { Collection = this };

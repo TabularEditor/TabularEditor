@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Drawing.Design;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
+using TabularEditor.TextServices;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -62,11 +63,19 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Deletes the table from the model.")]
         public override void Delete()
         {
-            var inRelationships = Model.MetadataObject.Relationships.Select(r => r.FromTable == this.MetadataObject || r.ToTable == this.MetadataObject).Any();
-            if(inRelationships)
-            {
-                throw new InvalidOperationException(string.Format("Cannot delete table '{0}' because it participates in one or more relationships.", Name));
-            }
+            Handler.BeginUpdate("Delete relationships and translations");
+
+            // First, remove the table from all perspectives:
+            InPerspective.None();
+
+            // Then, delete any relationships this table participates in:
+            Model.Relationships.Where(r => r.FromTable == this || r.ToTable == this).ToList().ForEach(r => r.Delete());
+
+            // Finally, delete any child objects:
+            GetChildren().Cast<ITabularTableObject>().ToList().ForEach(c => c.Delete());
+
+            Handler.EndUpdate();
+
 
             base.Delete();
         }
@@ -143,7 +152,7 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                return Name.Contains(" ") ? string.Format("'{0}'", Name) : Name;
+                return string.Format("'{0}'", Name);
             }
         }
 
@@ -232,6 +241,17 @@ namespace TabularEditor.TOMWrapper
                 if (value.IndexOfAny(InvalidTableNameChars) != -1) throw new ArgumentException("Table name cannot contain any of the following characters: " + string.Join(" ", InvalidTableNameChars));
                 base.Name = value;
             }
+        }
+
+        protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
+        {
+            if(propertyName == "Name" && Handler.AutoFixup) Handler.DoFixup(this, (string)newValue);
+            base.OnPropertyChanged(propertyName, oldValue, newValue);
+        }
+        protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
+        {
+            if (propertyName == "Name") Handler.BuildDependencyTree();
+            base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
         }
 
         public static readonly char[] InvalidTableNameChars = {

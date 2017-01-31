@@ -23,12 +23,15 @@ namespace TabularEditor.UI.Dialogs.Pages
             InitializeComponent();
         }
 
+        bool PowerBIInstancesLoaded = false;
+
         public void PopulateLocalInstances()
         {
             comboBox1.Items.Clear();
             comboBox1.DisplayMember = "Name";
             PowerBIHelper.Refresh();
             comboBox1.Items.AddRange(PowerBIHelper.Instances.OrderBy(i => i.Name).ToArray());
+            PowerBIInstancesLoaded = true;
         }
 
         public Server GetServer()
@@ -150,6 +153,11 @@ namespace TabularEditor.UI.Dialogs.Pages
         {
             txtServer.Text = "";
             ValidateUI(sender, e);
+        }
+
+        private void comboBox1_DropDown(object sender, EventArgs e)
+        {
+            if (!PowerBIInstancesLoaded) PopulateLocalInstances();
         }
     }
 }

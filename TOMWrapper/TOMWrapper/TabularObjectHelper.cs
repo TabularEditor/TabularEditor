@@ -67,6 +67,8 @@ namespace TabularEditor.TOMWrapper
 
         public static string GetTypeName(this ObjectType objType, bool plural = false)
         {
+            if (objType == ObjectType.Culture) return "Translation" + (plural ? "s" : "");
+
             var result = SplitCamelCase(objType.ToString());
             if (plural && result.EndsWith("chy")) result = result.Substring(0, result.Length - 3) + "chies";
             else if (plural && !result.EndsWith("data")) result = result + "s";

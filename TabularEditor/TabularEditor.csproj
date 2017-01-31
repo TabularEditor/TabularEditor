@@ -146,7 +146,6 @@
     <Compile Include="PropertyGrid\NavigatablePropertyGrid.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="TextServices\DAXLexer.cs" />
     <Compile Include="TextServices\CSharpLexer.cs" />
     <Compile Include="TextServices\ExpressionParser.cs" />
     <Compile Include="UI\Actions\SelectAllAction.cs">
@@ -195,6 +194,18 @@
     <Compile Include="UI\Dialogs\DeployingForm.Designer.cs">
       <DependentUpon>DeployingForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Dialogs\DependencyForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\DependencyForm.Designer.cs">
+      <DependentUpon>DependencyForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Dialogs\ImportTranslationsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\ImportTranslationsForm.Designer.cs">
+      <DependentUpon>ImportTranslationsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Dialogs\Pages\ConnectPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -240,6 +251,7 @@
     <Compile Include="UI\UIController_Files.cs" />
     <Compile Include="UI\UIController_PropertyGrid.cs" />
     <Compile Include="UI\UIController_ScriptEditor.cs" />
+    <Compile Include="UI\UIController_Translations.cs" />
     <Compile Include="UI\UIController_Tree.cs" />
     <Compile Include="UI\Dialogs\FormBatchRename.cs">
       <SubType>Form</SubType>
@@ -421,6 +433,9 @@
     <EmbeddedResource Include="UI\Dialogs\ConnectForm.resx">
       <DependentUpon>ConnectForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\DependencyForm.resx">
+      <DependentUpon>DependencyForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\FormDisplayFolderSelect.resx">
       <DependentUpon>FormDisplayFolderSelect.cs</DependentUpon>
     </EmbeddedResource>
@@ -451,6 +466,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\DeployingForm.resx">
       <DependentUpon>DeployingForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\ImportTranslationsForm.resx">
+      <DependentUpon>ImportTranslationsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\Pages\ConnectPage.resx">
       <DependentUpon>ConnectPage.cs</DependentUpon>

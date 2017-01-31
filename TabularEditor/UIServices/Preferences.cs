@@ -12,6 +12,7 @@ namespace TabularEditor.UIServices
     {
         #region Serializable properties
         public bool CheckForUpdates = false;
+        public bool FormulaFixup = false;
         public string BackupLocation = string.Empty;
         #endregion
 

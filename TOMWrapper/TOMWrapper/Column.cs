@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -11,6 +12,27 @@ namespace TabularEditor.TOMWrapper
         [Browsable(true),DisplayName("Perspectives"), Category("Translations and Perspectives")]
         public PerspectiveIndexer InPerspective { get; private set; }
 
+        [IntelliSense("Deletes the Column from the table.")]
+        public override void Delete()
+        {
+            InPerspective.None();
+            base.Delete();
+        }
+
+        internal override void Undelete(ITabularObjectCollection collection)
+        {
+            var tom = this is DataColumn ? (TOM.Column)new TOM.DataColumn() :
+                    this is CalculatedColumn ? (TOM.Column)new TOM.CalculatedColumn() :
+                    this is CalculatedTableColumn ? (TOM.Column)new TOM.CalculatedTableColumn() :
+                    null;
+
+            MetadataObject.CopyTo(tom);
+            tom.IsRemoved = false;
+            MetadataObject = tom;
+
+            base.Undelete(collection);
+        }
+
         protected override void Init()
         {
             InPerspective = new PerspectiveColumnIndexer(this);
@@ -18,6 +40,7 @@ namespace TabularEditor.TOMWrapper
 
         protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
         {
+            if (propertyName == "Name") Handler.BuildDependencyTree();
             if(propertyName == "IsKey" && (bool)newValue == true)
             {
                 // When the IsKey column is set to "true", all other columns must have their IsKey set to false.
@@ -37,6 +60,7 @@ namespace TabularEditor.TOMWrapper
             {
                 Handler.UndoManager.EndBatch();
             }
+            if (propertyName == "Name" && Handler.AutoFixup) Handler.DoFixup(this, (string)newValue);
             base.OnPropertyChanged(propertyName, oldValue, newValue);
         }
 
@@ -45,14 +69,17 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                return string.Format("{0}[{1}]", DaxTableName, DaxObjectName);
+                return string.Format("{0}{1}", DaxTableName, DaxObjectName);
             }
         }
 
         [Browsable(false)]
         public string DaxObjectName
         {
-            get { return Name.Replace("]", "]]"); }
+            get
+            {
+                return string.Format("[{0}]", Name.Replace("]", "]]"));
+            }
         }
 
         [Browsable(false)]
@@ -68,74 +95,6 @@ namespace TabularEditor.TOMWrapper
         public override IEnumerator<Column> GetEnumerator()
         {
             return MetadataObjectCollection.Where(c => c.Type != Microsoft.AnalysisServices.Tabular.ColumnType.RowNumber).Select(c => Handler.WrapperLookup[c] as Column).GetEnumerator();
-        }
-    }
-
-    public class ColumnConverter: TypeConverter
-    {
-        public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
-        {
-            return context.Instance is ITabularTableObject || context.Instance is ITabularNamedObject[];
-        }
-        public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
-        {
-            if(context.Instance is ITabularNamedObject[])
-            {
-                var cols = (context.Instance as ITabularNamedObject[]).Cast<Column>();
-                return new StandardValuesCollection(Table(context).Columns.Where(c => !cols.Contains(c)).OrderBy(c => c.Name).ToList());
-            } else
-            {
-                var col = (context.Instance as Column);
-                return new StandardValuesCollection(Table(context).Columns.Where(c => c != col).OrderBy(c => c.Name).ToList());
-            }
-        }
-
-        private Table Table(ITypeDescriptorContext context)
-        {
-            if (context.Instance is ITabularTableObject) return (context.Instance as ITabularTableObject).Table;
-            if (context.Instance is ITabularNamedObject[]) return ((context.Instance as ITabularNamedObject[]).First() as Column)?.Table;
-            return null;
-        }
-
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
-        {
-            if (sourceType == typeof(string))
-                return true;
-            else
-                return base.CanConvertFrom(context, sourceType);
-        }
-
-        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
-        {
-            if (value.GetType() == typeof(string))
-            {
-                var name = (string)value;
-                if (string.IsNullOrEmpty(name)) return null;
-
-                var table = Table(context);
-                if (!table.Columns.Contains(name)) throw new ArgumentException(string.Format("The table does not contain a column named \"{0}\"", name), context.PropertyDescriptor.Name);
-
-                return table.Columns[name];
-            }
-            else
-                return base.ConvertFrom(context, culture, value);
-        }
-
-        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
-        {
-            if (destinationType == typeof(string))
-                return true;
-            else
-                return base.CanConvertTo(context, destinationType);
-        }
-
-        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
-        {
-            if (destinationType == typeof(string))
-            {
-                return (value as Column)?.Name;
-            }
-            return base.ConvertTo(context, culture, value, destinationType);
         }
     }
 }

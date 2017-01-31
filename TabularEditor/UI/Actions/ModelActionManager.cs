@@ -24,56 +24,64 @@ namespace TabularEditor.UI.Actions
             
             // Options to add a Measure or a Calculated Column will only be available when the current select consists of exactly
             // 1 item, which is either a Table or a Folder:
-            Action.EnabledDelegate calcContext = (s, m) => s.DirectCount == 1 && s.Types.Has1(Types.Table | Types.Folder);
+            Action.EnabledDelegate calcContext = (s, m) => s.DirectCount == 1 && (s.Context == Context.Table || s.Types == Types.Folder);
 
             // "Create New"
-            Add(new Action(calcContext, (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Measure", true));
-            Add(new Action(calcContext, (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Calculated Column", true));
+            Add(new Action(calcContext, (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Measure", true, Context.Table | Context.TableObject));
+            Add(new Action(calcContext, (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Calculated Column", true, Context.Table | Context.TableObject));
             Add(new Action((s, m) => calcContext(s,m) || s.Direct.OfType<Column>().Any(), 
                 (s, m) => s.Table.AddHierarchy(displayFolder: s.CurrentFolder, levels: s.Direct.OfType<Column>().ToArray()).Expand().Edit(), 
-                (s, m) => @"Create New\Hierarchy", true));
+                (s, m) => @"Create New\Hierarchy", true, Context.Table | Context.TableObject));
 
-            Add(new Action((s, m) => s.Types.HasX(Types.Perspective | Types.Model) || s.Groups.Contains(m.GroupPerspectives), (s, m) => m.AddPerspective().Edit(), (s, m) => @"Create New\Perspective", true));
-            Add(new Action((s, m) => s.Types.HasX(Types.Role | Types.Model) || s.Groups.Contains(m.GroupRoles), (s, m) => m.AddRole().Edit(), (s, m) => @"Create New\Role", true));
-            Add(new Action((s, m) => s.Types.HasX(Types.Culture | Types.Model) || s.Groups.Contains(m.GroupTranslations), (s, m) => {
+            Add(new Action((s, m) => true, (s, m) => m.AddRelationship().Edit(), (s, m) => @"Create New\Relationship", true, Context.Relationship | Context.Relationships));
+            Add(new Action((s, m) => true, (s, m) => m.AddPerspective().Edit(), (s, m) => @"Create New\Perspective", true, Context.Model | Context.Perspectives | Context.Perspective));
+            Add(new Action((s, m) => true, (s, m) => m.AddRole().Edit(), (s, m) => @"Create New\Role", true, Context.Model | Context.Roles | Context.Role));
+            Add(new Action((s, m) => true, (s, m) => {
                 var res = csDialog.ShowDialog();
                 if (res == DialogResult.OK)
                 {
                     m.AddTranslation(csDialog.SelectedCulture.Name).Edit();
                 }
-            }, (s, m) => @"Create New\Translation", true));
+            }, (s, m) => @"Create New\Translation", true, Context.Model | Context.Translations | Context.Translation));
 
-            // "Duplicate";
-            Add(new Action((s, m) => (s.Types.HasX(Types.CalculatedColumn | Types.Measure) && s.Types.Has0(Types.DataColumn | Types.Hierarchy)) ||
-                (s.Count == 1 && s.Types.Has1(Types.Perspective | Types.Role | Types.Culture)),
+            // "Duplicate Table Object";
+            Add(new Action((s, m) => s.Types.HasX(Types.CalculatedColumn | Types.Measure) && s.Types.Has0(Types.DataColumn | Types.Hierarchy),
                 (s, m) => s.ForEach(i =>
                 {
-                    if(i is Culture)
-                    {
+                    var obj = i.Clone(null, true);
+                    if (s.Count == 1) obj.Edit(); // Focuses the cloned item in the tree, and lets the user edit its name
+                }),
+                (s, m) => "Duplicate " + s.Summary(), true, Context.TableObject));
+
+            Add(new Action((s, m) => s.DirectCount == 1 && s.Direct.First() is IDaxObject, (s, m) =>
+            {
+                UIController.Current.ShowDependencies(s.Direct.First() as IDaxObject);
+            }, (s, m) => @"Show dependencies...", true, Context.Table | Context.TableObject));
+
+            // "Duplicate Translation";
+            Add(new Action((s, m) => s.Count == 1,
+                (s, m) => s.ForEach(i =>
+                {
                         var res = csDialog.ShowDialog();
                         if (res == DialogResult.OK) i.Clone(csDialog.SelectedCulture.Name, false).Edit();
-                    }
-                    else if(s.Count == 1)
-                    {
-                        i.Clone(null, true).Edit();
-                    }
-                    else
-                        i.Clone(null, true);
                 }),
-                (s, m) => "Duplicate " + s.Summary(), true));
+                (s, m) => "Duplicate " + s.Summary(), true, Context.Translation));
+
+            // "Duplicate Role / Perspective":
+            Add(new Action((s, m) => s.Count == 1, (s, m) => s.ForEach(i => i.Clone(null, true).Edit()), (s, m) => "Duplicate " + s.Summary(), true, Context.Role | Context.Perspective));
 
             // "Add to Hierarchy..."
             Add(new Separator());
             Add(new MultiAction((s, m, p) => p == null ? s.Direct.OfType<Column>().Any() : !(p as Hierarchy).Levels.Select(l => l.Column).Intersect(s.Direct.OfType<Column>()).Any(),
                 (s, m, p) => (p as Hierarchy).AddLevels(s.Direct.OfType<Column>()),
                 (s, m, p) => (p as Hierarchy).Name,
-                (s, m) => s.Table.Hierarchies.AsEnumerable(), "Add to Hierarchy...", true));
+                (s, m) => s.Table.Hierarchies.AsEnumerable(), "Add to Hierarchy...", true, Context.TableObject | Context.Level));
 
             // Visibility and perspectives
-            Add(new Action((s, m) => s.OfType<IHideableObject>().Any(o => o.IsHidden), (s, m) => s.IsHidden = false, (s, m) => "Make visible", true));
-            Add(new Action((s, m) => s.OfType<IHideableObject>().Any(o => !o.IsHidden), (s, m) => s.IsHidden = true, (s, m) => "Make invisible", true));
-            Add(new Action((s, m) => s.OfType<ITabularPerspectiveObject>().Any(), (s, m) => s.ShowInAllPerspectives(), (s, m) => @"Show in Perspectives\All Perspectives", true));
-            Add(new Action((s, m) => s.OfType<ITabularPerspectiveObject>().Any(), (s, m) => s.HideInAllPerspectives(), (s, m) => @"Hide in Perspectives\All Perspectives", true));
+            Add(new Action((s, m) => s.OfType<IHideableObject>().Any(o => o.IsHidden), (s, m) => s.IsHidden = false, (s, m) => "Make visible", true, Context.TableObject | Context.Table));
+            Add(new Action((s, m) => s.OfType<IHideableObject>().Any(o => !o.IsHidden), (s, m) => s.IsHidden = true, (s, m) => "Make invisible", true, Context.TableObject | Context.Table));
+            Add(new Action((s, m) => s.OfType<ITabularPerspectiveObject>().Any(), (s, m) => s.ShowInAllPerspectives(), (s, m) => @"Show in Perspectives\All Perspectives", true, Context.TableObject | Context.Table));
+            Add(new Action((s, m) => s.OfType<ITabularPerspectiveObject>().Any(), (s, m) => s.HideInAllPerspectives(), (s, m) => @"Hide in Perspectives\All Perspectives", true, Context.TableObject | Context.Table));
 
             Add(new Separator(@"Show in Perspectives"));
             Add(new Separator(@"Hide in Perspectives"));
@@ -81,12 +89,12 @@ namespace TabularEditor.UI.Actions
             Add(new MultiAction((s, m, p) => s.OfType<ITabularPerspectiveObject>().Any(obj => p == null || !obj.InPerspective[p as Perspective]),
                 (s, m, p) => s.ShowInPerspective(p as Perspective),
                 (s, m, p) => (p as Perspective).Name,
-                (s, m) => m.Perspectives, "Show in Perspectives", true));
+                (s, m) => m.Perspectives, "Show in Perspectives", true, Context.TableObject | Context.Table));
 
             Add(new MultiAction((s, m, p) => s.OfType<ITabularPerspectiveObject>().Any(obj => p == null || obj.InPerspective[p as Perspective]),
                 (s, m, p) => s.HideInPerspective(p as Perspective),
                 (s, m, p) => (p as Perspective).Name,
-                (s, m) => m.Perspectives, "Hide in Perspectives", true));
+                (s, m) => m.Perspectives, "Hide in Perspectives", true, Context.TableObject | Context.Table));
 
             // Rename Dialogs
             Add(new Separator());
@@ -98,9 +106,9 @@ namespace TabularEditor.UI.Actions
                 if (res == DialogResult.Cancel) return;
                 // TODO: Add options for match case and whole word only
                 s.Rename(form.Pattern, form.ReplaceWith, form.RegEx, form.IncludeTranslations);
-            }, (s, m) => "Batch Rename...", true) { ToolTip = "Opens a dialog that lets you rename all the selected objects at once. Folders are not renamed, but objects inside folders are."});
+            }, (s, m) => "Batch Rename...", true, Context.Table | Context.TableObject | Context.Level) { ToolTip = "Opens a dialog that lets you rename all the selected objects at once. Folders are not renamed, but objects inside folders are."});
 
-            Add(new Action((s, m) => s.Types.Has1(Types.Table | Types.Hierarchy), (s, m) =>
+            Add(new Action((s, m) => true, (s, m) =>
             {
                 var form = Dialogs.ReplaceForm.Singleton;
                 var sel = new UISelectionList<ITabularNamedObject>(
@@ -111,16 +119,22 @@ namespace TabularEditor.UI.Actions
                 if (res == DialogResult.Cancel) return;
                 // TODO: Add options for match case and whole word only
                 sel.Rename(form.Pattern, form.ReplaceWith, form.RegEx, form.IncludeTranslations);
-            }, (s, m) => "Batch Rename Children...", true)
+            }, (s, m) => "Batch Rename Children...", true, Context.Table)
             { ToolTip = "Opens a dialog that lets you rename all children of the selected objects at once. Folders are not renamed, but objects inside folders are." });
 
             // Delete Action
-            Delete = new Action((s, m) => s.DirectCount >= 1 && s.Count >= 1 && !s.Types.HasFlag(Types.Model), 
+            Delete = new Action((s, m) => true, 
                 (s, m) => {
                     if (MessageBox.Show("Are you sure you want to delete " + s.Summary() + "?", "Confirm deletion", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel) return;
                     s.Delete();
-                }, (s, m) => "Delete " + s.Summary() + "...", true);
+                }, (s, m) => "Delete " + s.Summary() + "...", true, Context.SingularObjects);
             Add(Delete);
+
+            Add(new Separator());
+            Add(new Action((s, m) => m.Cultures.Count > 0, (s, m) => UIController.Current.Translations_ExportAll(), (s, m) => "Export translations...", false, Context.Translations));
+            Add(new Action((s, m) => true, (s, m) => UIController.Current.Translations_Import(), (s, m) => "Import translations...", true, Context.Translations));
+            Add(new Action((s, m) => true, (s, m) => UIController.Current.Translations_ExportSelected(), (s, m) => string.Format("Export {0} translation{1}...", s.Count, s.Count == 1 ? "" : "s"), true, Context.Translation));
+
         }
     }
 

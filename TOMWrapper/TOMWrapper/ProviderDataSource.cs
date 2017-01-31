@@ -71,6 +71,10 @@ namespace TabularEditor.TOMWrapper
                 case "MQuery":
                 case "SourceID":
                     return IsPowerBIMashup;
+                case "TranslatedNames":
+                case "TranslatedDisplayFolders":
+                case "TranslatedDescriptions":
+                    return false;
                 default: return true;
             }
         }

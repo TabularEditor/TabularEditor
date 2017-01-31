@@ -7,13 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TabularEditor.TOMWrapper;
+using static System.Windows.Forms.ImageList;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.UI.Tree
 {
     public class TabularIcon : Aga.Controls.Tree.NodeControls.NodeIcon
     {
-        public readonly Dictionary<ObjectType, int> IconMap = new Dictionary<ObjectType, int>()
+        public static readonly Dictionary<ObjectType, int> IconMap = new Dictionary<ObjectType, int>()
         {
             { ObjectType.Table, TabularIcons.ICON_TABLE },
             { ObjectType.Hierarchy, TabularIcons.ICON_HIERARCHY },
@@ -34,24 +35,29 @@ namespace TabularEditor.UI.Tree
 
         protected override Image GetIcon(TreeNodeAdv node)
         {
-            if (node.Tag is Folder || node.Tag is LogicalGroup)
+            var iconIndex = GetIconIndex(node.Tag as ITabularNamedObject);
+            if(node.Tag is Folder || node.Tag is LogicalGroup)
             {
-                return Images[node.IsExpanded ? TabularIcons.ICON_FOLDEROPEN : TabularIcons.ICON_FOLDER];
+                iconIndex = node.IsExpanded ? TabularIcons.ICON_FOLDEROPEN : TabularIcons.ICON_FOLDER;
             }
-            else if (node.Tag is TabularObject)
+            return iconIndex >= 0 ? Images[iconIndex] : base.GetIcon(node);
+        }
+
+        public static int GetIconIndex(ITabularNamedObject obj)
+        {
+            if (obj is TabularObject)
             {
-                if (node.Tag is CalculatedColumn) return Images[TabularIcons.ICON_CALCCOLUMN];
-                if (node.Tag is CalculatedTable)
+                if (obj is CalculatedColumn) return TabularIcons.ICON_CALCCOLUMN;
+                if (obj is CalculatedTable)
                 {
-                    return Images[TabularIcons.ICON_CALCTABLE];
+                    return TabularIcons.ICON_CALCTABLE;
                 }
-                if (node.Tag is Level) return Images[TabularIcons.ICON_LEVEL1 + (node.Tag as Level).Ordinal];
+                if (obj is Level) return TabularIcons.ICON_LEVEL1 + (obj as Level).Ordinal;
 
                 int iconIndex;
-                if (IconMap.TryGetValue((node.Tag as TabularObject).ObjectType, out iconIndex)) return Images[iconIndex];
+                if (IconMap.TryGetValue((obj as TabularObject).ObjectType, out iconIndex)) return iconIndex;
             }
-
-            return base.GetIcon(node);
+            return -1;
         }
 
         public override void Draw(TreeNodeAdv node, DrawContext context)

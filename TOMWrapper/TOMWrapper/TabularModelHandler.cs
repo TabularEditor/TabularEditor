@@ -6,6 +6,10 @@ using TabularEditor.UndoFramework;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using Newtonsoft.Json.Linq;
 using TabularEditor.PropertyGridUI;
+using TabularEditor.TextServices;
+using Antlr4.Runtime;
+using System.Diagnostics;
+using System.Text;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -23,6 +27,44 @@ namespace TabularEditor.TOMWrapper
         Hierarchy = 3
     }
 
+    public struct Dependency
+    {
+        public int from;
+        public int to;
+        public bool fullyQualified;
+
+    }
+
+    public static class DependencyHelper
+    {
+        static public void AddDep(this IExpressionObject target, IDaxObject dependsOn, int fromChar, int toChar, bool fullyQualified)
+        {
+            var dep = new Dependency { from = fromChar, to = toChar, fullyQualified = fullyQualified };
+            List<Dependency> depList;
+            if(!target.Dependencies.TryGetValue(dependsOn, out depList))
+            {
+                depList = new List<Dependency>();
+                target.Dependencies.Add(dependsOn, depList);
+            }
+            depList.Add(dep);
+        }
+
+        /// <summary>
+        /// Removes qualifiers such as ' ' and [ ] around a name.
+        /// </summary>
+        static public string NoQ(this string objectName, bool table = false)
+        {
+            if(table)
+            {
+                return objectName.StartsWith("'") ? objectName.Substring(1, objectName.Length - 2) : objectName;
+            }
+            else
+            {
+                return objectName.StartsWith("[") ? objectName.Substring(1, objectName.Length - 2) : objectName;
+            }
+        }
+    }
+
     /// <summary>
     /// 
     /// </summary>
@@ -32,6 +74,130 @@ namespace TabularEditor.TOMWrapper
         public const string PROP_ISCONNECTED = "IsConnected";
         public const string PROP_STATUS = "Status";
         public const string PROP_ERRORS = "Errors";
+
+        /// <summary>
+        /// Specifies whether object name changes (tables, column, measures) should result in 
+        /// automatic DAX expression updates to reflect the changed names. When set to true,
+        /// all expressions in the model are parsed, to build a dependency tree.
+        /// </summary>
+        public bool AutoFixup { get; set; }
+
+        public void DoFixup(IDaxObject obj, string newName)
+        {
+            foreach (var d in obj.Model.Tables.OfType<IExpressionObject>().Concat(obj.Model.Tables.SelectMany(t => t.GetChildren().OfType<IExpressionObject>())))
+            {
+                List<Dependency> depList;
+                if(d.Dependencies.TryGetValue(obj, out depList))
+                {
+                    var pos = 0;
+                    var sb = new StringBuilder();
+                    foreach(var dep in depList)
+                    {
+                        sb.Append(d.Expression.Substring(pos, dep.from - pos));
+                        sb.Append(dep.fullyQualified ? obj.DaxObjectFullName : obj.DaxObjectName);
+                        pos = dep.to + 1;
+                    }
+                    sb.Append(d.Expression.Substring(pos));
+                    d.Expression = sb.ToString();
+                }
+            }
+        }
+
+        public void BuildDependencyTree(IExpressionObject expressionObj)
+        {
+            expressionObj.Dependencies.Clear();
+
+            var tokens = new DAXLexer(new AntlrInputStream(expressionObj.Expression)).GetAllTokens();
+
+            IToken lastTableRef = null;
+
+            for (var i = 0; i < tokens.Count; i++)
+            {
+                // TODO: This parsing could be used to check for invalid object references, for example to use in syntax highlighting or validation of expressions
+
+                var tok = tokens[i];
+                switch (tok.Type)
+                {
+                    case DAXLexer.TABLE:
+                    case DAXLexer.TABLE_OR_VARIABLE:
+                        if (lastTableRef != null)
+                        {
+                            if (Model.Tables.Contains(lastTableRef.Text.NoQ(true))) expressionObj.AddDep(Model.Tables[lastTableRef.Text.NoQ(true)], lastTableRef.StartIndex, lastTableRef.StopIndex, true);
+                        }
+                        lastTableRef = tok;
+                        break;
+                    case DAXLexer.COLUMN_OR_MEASURE:
+                        var tableName = lastTableRef?.Text.NoQ(true);
+
+                        // Referencing a table just before the object reference
+                        if (tableName != null && Model.Tables.Contains(tableName))
+                        {
+                            var table = Model.Tables[tableName];
+                            // Referencing a column on a specific table
+                            if (table.Columns.Contains(tok.Text.NoQ()))
+                                expressionObj.AddDep(table.Columns[tok.Text.NoQ()], tok.StartIndex, tok.StopIndex, false);
+                            // Referencing a measure on a specific table
+                            else if (table.Measures.Contains(tok.Text.NoQ()))
+                                expressionObj.AddDep(table.Measures[tok.Text.NoQ()], tok.StartIndex, tok.StopIndex, false);
+                        }
+                        // No table reference before the object reference
+                        else
+                        {
+                            var table = (expressionObj as ITabularTableObject)?.Table;
+                            // Referencing a column without specifying a table (assume column in same table):
+                            if (table != null && table.Columns.Contains(tok.Text.NoQ()))
+                            {
+                                expressionObj.AddDep(table.Columns[tok.Text.NoQ()], tok.StartIndex, tok.StopIndex, false);
+                            }
+                            // Referencing a measure without specifying a table
+                            else
+                            {
+                                Measure m = null;
+                                if (table != null && table.Measures.Contains(tok.Text.NoQ())) m = table.Measures[tok.Text.NoQ()];
+                                else
+                                    m = Model.Tables.FirstOrDefault(t => t.Measures.Contains(tok.Text.NoQ()))?.Measures[tok.Text.NoQ()];
+
+                                if (m != null)
+                                    expressionObj.AddDep(m, tok.StartIndex, tok.StopIndex, false);
+                            }
+                        }
+                        break;
+                    case DAXLexer.WHITESPACES:
+                        break;
+                    default:
+                        if (lastTableRef != null)
+                        {
+                            if (Model.Tables.Contains(lastTableRef.Text.NoQ(true))) expressionObj.AddDep(Model.Tables[lastTableRef.Text.NoQ(true)], lastTableRef.StartIndex, lastTableRef.StopIndex, true);
+                            lastTableRef = null;
+                        }
+                        break;
+                }
+
+            }
+        }
+
+        public void BuildDependencyTree()
+        {
+            if (UndoManager.UndoInProgress)
+            {
+                DelayBuildDependencyTree = true;
+                UndoManager.RebuildDependencyTree = true;
+            }
+            if (DelayBuildDependencyTree) return;
+            var sw = new Stopwatch();
+            sw.Start();
+
+            foreach(var eo in Model.Tables.SelectMany(t => t.GetChildren()).Concat(Model.Tables).OfType<IExpressionObject>())
+            {
+                BuildDependencyTree(eo);
+            }
+
+            sw.Stop();
+
+            Console.WriteLine("Dependency tree built in {0} ms", sw.ElapsedMilliseconds);
+        }
+
+        public bool DelayBuildDependencyTree { get; set; } = false;
 
         public UndoManager UndoManager { get; private set; }
         public TabularCommonActions Actions { get; private set; }
@@ -65,6 +231,29 @@ namespace TabularEditor.TOMWrapper
         {
             var json = "[" + string.Join(",", objects.Select(obj => TOM.JsonSerializer.SerializeObject(obj.MetadataObject))) + "]";
             return json;
+        }
+
+        public string ScriptTranslations(IEnumerable<Culture> translations)
+        {
+            return "{ cultures: " + SerializeObjects(translations) + "}";
+        }
+
+        /// <summary>
+        /// Applys translation from a JSON string.
+        /// </summary>
+        /// <param name="culturesJson"></param>
+        /// <param name="overwriteExisting"></param>
+        /// <param name="ignoreInvalid"></param>
+        /// <returns>False if ignoreInvalid is set to false and an invalid object is encountered</returns>
+        public bool ImportTranslations(string culturesJson, bool overwriteExisting, bool ignoreInvalid)
+        {
+            BeginUpdate("Import translations");
+            var result = TabularCultureHelper.ImportTranslations(culturesJson, Model, overwriteExisting, !ignoreInvalid);
+
+            // Rolls back translation changes if an error were encountered
+            EndUpdate(true, !result);
+
+            return result;
         }
 
         public IList<TabularNamedObject> DeserializeObjects(string json)
@@ -111,8 +300,11 @@ namespace TabularEditor.TOMWrapper
             Model = new Model(this, database.Model);
             Model.LoadChildObjects();
             CheckErrors();
+
+            BuildDependencyTree();
         }
 
+        internal readonly Dictionary<string, ITabularObjectCollection> WrapperCollections = new Dictionary<string, ITabularObjectCollection>();
         internal readonly Dictionary<TOM.MetadataObject, TabularObject> WrapperLookup = new Dictionary<TOM.MetadataObject, TabularObject>();
 
         /// <summary>
@@ -235,6 +427,11 @@ namespace TabularEditor.TOMWrapper
             };
         }
         
+        /// <summary>
+        /// Saves the changes to the database. It is the users responsibility to check if changes were made
+        /// to the database since it was loaded to the TOMWrapper. You can use Handler.CheckConflicts() for
+        /// this purpose.
+        /// </summary>
         public void SaveDB()
         {
             if (database?.Server == null || Version == -1)
@@ -242,9 +439,6 @@ namespace TabularEditor.TOMWrapper
                 throw new InvalidOperationException("The model is currently not connected to any server. Please use Deploy() instead of SaveDB().");
             }
 
-            // TODO: Consider using Database.Update( ... ) instead of SaveChanges(), to handle conflicting situations. For example,
-            // if a measure was already added to the server, to avoid getting an exception, as SaveChanges will try to script "Create"
-            // the measure that was added in Tabular Editor.
             database.Model.SaveChanges();
 
             Version = CheckConflicts().DatabaseVersion;
@@ -257,6 +451,7 @@ namespace TabularEditor.TOMWrapper
 
         private string CombineFolderJson(string path)
         {
+            // TODO: Combine JSON from files, then load entire database
             //var database = JObject.Parse()
             return "";
         }
@@ -391,16 +586,12 @@ namespace TabularEditor.TOMWrapper
 
         public void BeginUpdate(string undoName)
         {
-            Console.WriteLine("BeginUpdate");
-
             Tree.BeginUpdate();
             if(!string.IsNullOrEmpty(undoName)) UndoManager.BeginBatch(undoName);
         }
 
         public int EndUpdate(bool undoable = true, bool rollback = false)
         {
-            Console.WriteLine("EndUpdate");
-
             var actionCount = 0;
             if(undoable || rollback) actionCount = UndoManager.EndBatch(rollback);
             Tree.EndUpdate();

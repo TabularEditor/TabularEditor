@@ -13,6 +13,13 @@ namespace TabularEditor.UI
 {
     public partial class UIController
     {
+        public void ShowDependencies(IDaxObject dependantObject)
+        {
+            var dlg = new DependencyForm();
+            dlg.RootObject = dependantObject;
+            dlg.ShowDialog();
+        }
+
         private IExpressionObject _expressionEditor_Current = null;
         public IExpressionObject ExpressionEditor_Current {
             get {

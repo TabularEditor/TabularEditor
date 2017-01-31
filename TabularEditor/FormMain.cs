@@ -80,7 +80,8 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 CurrentMeasureLabel = lblCurrentMeasure,
                 ModelMenu = modelToolStripMenuItem,
                 PerspectiveSelector = cmbPerspective,
-                TranslationSelector = cmbTranslation
+                TranslationSelector = cmbTranslation,
+                ToolsMenu = toolsToolStripMenuItem
             };
 
             // The UIController class sets up all bindings and event handlers needed for UI
@@ -344,6 +345,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             PreferencesForm.ShowDialog();
+            UI.Handler.AutoFixup = Preferences.Current.FormulaFixup;
         }
 
         private void FormMain_Shown(object sender, EventArgs e)
@@ -362,7 +364,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
             if(Preferences.Current.CheckForUpdates)
             {
-                if(UpdateService.Check() ?? false)
+                if(UpdateService.Check(false) ?? false)
                 {
                     var res = MessageBox.Show("A new version of Tabular Editor is available. Would you like to open the download page now?\n\nYou can disable this check under File > Preferences.", "Tabular Editor update available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                     if (res == DialogResult.Yes) UpdateService.OpenDownloadPage();

@@ -24,6 +24,14 @@ namespace TabularEditor.TOMWrapper
             return perspective;
         }
 
+        public SingleColumnRelationship AddRelationship()
+        {
+            Handler.BeginUpdate("add relationship");
+            var rel = new SingleColumnRelationship(this);
+            Handler.EndUpdate();
+            return rel;
+        }
+
         [IntelliSense("Adds a new translation to the model.")]
         public Culture AddTranslation(string cultureId)
         {
@@ -61,6 +69,12 @@ namespace TabularEditor.TOMWrapper
         [Editor(typeof(TabularEditor.PropertyGridUI.RefreshGridCollectionEditor), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]
         public ModelRoleCollection Roles { get; private set; }
 
+        [Browsable(false)]
+        public RelationshipCollection Relationships { get; private set; }
+
+        [Browsable(false)]
+        public DataSourceCollection DataSources { get; private set; }
+
         public readonly LogicalGroup GroupTables = new LogicalGroup("Tables");
         public readonly LogicalGroup GroupDataSources = new LogicalGroup("Data Sources");
         public readonly LogicalGroup GroupPerspectives = new LogicalGroup("Perspectives");
@@ -97,10 +111,13 @@ namespace TabularEditor.TOMWrapper
 
         public void LoadChildObjects()
         {
+            DataSources = new DataSourceCollection(Handler, "Model.DataSources", MetadataObject.DataSources);
             Perspectives = new PerspectiveCollection(Handler, "Model.Perspectives", MetadataObject.Perspectives);
             Cultures = new CultureCollection(Handler, "Model.Cultures", MetadataObject.Cultures);
             Tables = new TableCollection(Handler, "Model.Tables", MetadataObject.Tables);
+            Relationships = new RelationshipCollection(Handler, "Model.Relationships", MetadataObject.Relationships);
             Roles = new ModelRoleCollection(Handler, "Model.Roles", MetadataObject.Roles);
+
             Tables.ForEach(r => r.InitRLSIndexer());
             Roles.ForEach(r => r.InitRLSIndexer());
 
@@ -108,27 +125,9 @@ namespace TabularEditor.TOMWrapper
             Perspectives.CollectionChanged += Children_CollectionChanged;
             Cultures.CollectionChanged += Children_CollectionChanged;
             Roles.CollectionChanged += Children_CollectionChanged;
+            DataSources.CollectionChanged += Children_CollectionChanged;
+            Relationships.CollectionChanged += Children_CollectionChanged;
             
-        }
-
-        // TODO: Handle differently
-        [TypeConverter(typeof(CollectionConverter))]
-        public List<SingleColumnRelationship> Relationships { get
-            {
-                return MetadataObject.Relationships.OfType<TOM.SingleColumnRelationship>()
-                    .Select(r => new SingleColumnRelationship(Handler, r)).ToList();
-            }
-        }
-
-        // TODO: Handle differently
-        [TypeConverter(typeof(CollectionConverter))]
-        public List<ProviderDataSource> DataSources
-        {
-            get
-            {
-                return MetadataObject.DataSources.OfType<TOM.ProviderDataSource>()
-                    .Select(r => new ProviderDataSource(Handler, r)).ToList();
-            }
         }
 
         private void Children_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

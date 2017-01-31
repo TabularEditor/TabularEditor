@@ -62,4 +62,34 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeType() { return false; }
     }
+
+	/// <summary>
+	/// Collection class for DataSource. Provides convenient properties for setting a property on multiple objects at once.
+	/// </summary>
+	public partial class DataSourceCollection: TabularObjectCollection<DataSource, TOM.DataSource, TOM.Model>
+	{
+		public DataSourceCollection(TabularModelHandler handler, string collectionName, TOM.DataSourceCollection metadataObjectCollection) : base(handler, collectionName, metadataObjectCollection)
+		{
+			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
+			foreach(var obj in MetadataObjectCollection) {
+				switch((obj as TOM.DataSource).Type) {
+					case TOM.DataSourceType.Provider: new ProviderDataSource(handler, obj as TOM.ProviderDataSource) { Collection = this }; break;
+				}
+			}
+		}
+
+		[Description("Sets the Description property of all objects in the collection at once.")]
+		public string Description {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("Description"));
+				this.ToList().ForEach(item => { item.Description = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+
+		public override string ToString() {
+			return string.Format("({0} {1})", Count, (Count == 1 ? "DataSource" : "DataSources").ToLower());
+		}
+	}
 }

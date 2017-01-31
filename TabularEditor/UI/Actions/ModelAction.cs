@@ -14,6 +14,7 @@ namespace TabularEditor.UI.Actions
         bool HideWhenDisabled { get; }
         void Execute(object arg);
         string ToolTip { get; }
+        Context ValidContexts { get; }
     }
 
     public interface IModelAction: IBaseAction
@@ -33,6 +34,7 @@ namespace TabularEditor.UI.Actions
         public bool Enabled(object arg) { return true; }
         public void Execute(object arg) { }
         public bool HideWhenDisabled { get { return true; } }
+        public Context ValidContexts { get { return Context.Everywhere; } }
     }
 
     public class Separator: IBaseAction
@@ -46,6 +48,7 @@ namespace TabularEditor.UI.Actions
         public void Execute(object arg) { }
         public bool HideWhenDisabled { get { return true; } }
         public string Path { get; set; }
+        public Context ValidContexts { get { return Context.Everywhere; } }
     }
 
     public class Action: IModelAction
@@ -71,12 +74,13 @@ namespace TabularEditor.UI.Actions
         /// </summary>
         public TabularNamedObject ExpandObject { get; set; } = null;
 
-        public Action(EnabledDelegate enabled, ExecuteDelegate execute, NameDelegate name, bool hideWhenDisabled = false)
+        public Action(EnabledDelegate enabled, ExecuteDelegate execute, NameDelegate name, bool hideWhenDisabled = false, Context validContexts = Context.Everywhere)
         {
             _enabled = enabled;
             _execute = execute;
             _name = name;
             HideWhenDisabled = hideWhenDisabled;
+            ValidContexts = validContexts;
 
             ui = UIController.Current;
         }
@@ -87,7 +91,7 @@ namespace TabularEditor.UI.Actions
         {
             try
             {
-                return ui.Handler != null && _enabled(ui.Selection, ui.Handler.Model);
+                return ui.Handler != null /*&& ValidContexts.HasFlag(ui.Selection.Context)*/ && _enabled(ui.Selection, ui.Handler.Model);
             }
             catch (Exception ex)
             {
@@ -121,6 +125,8 @@ namespace TabularEditor.UI.Actions
             }
             ui.Refresh();
         }
+
+        public Context ValidContexts { get; set; }
 
         public virtual string Name
         {
@@ -169,13 +175,14 @@ namespace TabularEditor.UI.Actions
 
         public bool Enabled(object arg)
         {
-            return _enabled(ui.Selection, ui.Handler.Model, arg);
+            return ValidContexts.HasFlag(ui.Selection.Context) && _enabled(ui.Selection, ui.Handler.Model, arg);
         }
 
         public bool HideWhenDisabled { get; set; }
         public string Path { get; set; }
+        public Context ValidContexts { get; set; }
 
-        public MultiAction(EnabledParamDelegate enabled, ExecuteParamDelegate execute, NameParamDelegate name, ValidArgsDelegate validArgs, string path, bool hideWhenDisabled = false)
+        public MultiAction(EnabledParamDelegate enabled, ExecuteParamDelegate execute, NameParamDelegate name, ValidArgsDelegate validArgs, string path, bool hideWhenDisabled = false, Context validContexts = Context.Everywhere)
         {
             _enabled = enabled;
             _execute = execute;
@@ -183,6 +190,7 @@ namespace TabularEditor.UI.Actions
             _args = validArgs;
             Path = path;
             HideWhenDisabled = hideWhenDisabled;
+            ValidContexts = validContexts;
 
             ui = UIController.Current;
         }

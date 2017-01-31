@@ -79,13 +79,18 @@ namespace TabularEditor.TOMWrapper.Tests
             Assert.IsFalse(handler.Model.Tables["Internet Sales"].Measures.Contains("TestMeasure"));
         }
 
-        [TestMethod(),ExpectedException(typeof(InvalidOperationException), "Cannot delete table 'Currency' because it participates in one or more relationships.")]
+        [TestMethod()]
         public void DeleteTableTest()
         {
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
             handler.Tree = new MockTree(handler.Model);
             handler.Model.Tables["Currency"].Delete();
             handler.SaveDB();
+
+            handler.UndoManager.Rollback();
+
+            handler.SaveDB();
+            Assert.IsTrue(handler.Model.Tables.Contains("Currency"));
         }
 
         [TestMethod()]

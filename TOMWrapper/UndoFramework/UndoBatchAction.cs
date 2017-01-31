@@ -2,11 +2,14 @@
 {
     class UndoBatchAction : IUndoAction
     {
-        public UndoBatchAction(string batchName, bool begin)
+        public UndoBatchAction(string batchName, int depth, bool begin)
         {
             ActionName = batchName;
             Begin = begin;
+            Depth = depth;
         }
+
+        public int Depth { get; private set; }
 
         internal bool Begin { get; private set; }
 

@@ -20,7 +20,7 @@ namespace TabularEditor.UI.Dialogs
 
         private void btnVersionCheck_Click(object sender, EventArgs e)
         {
-            var newVersion = UpdateService.Check();
+            var newVersion = UpdateService.Check(true);
             if (!newVersion.HasValue) return;
             if(newVersion.Value)
             {
@@ -66,6 +66,7 @@ namespace TabularEditor.UI.Dialogs
             chkAutoBackup.Checked = Preferences.Current.BackupOnSave;
             txtBackupPath.Text = Preferences.Current.BackupLocation;
             chkAutoUpdate.Checked = Preferences.Current.CheckForUpdates;
+            chkFixup.Checked = Preferences.Current.FormulaFixup;
         }
 
         private void PreferencesForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -74,6 +75,7 @@ namespace TabularEditor.UI.Dialogs
             {
                 Preferences.Current.BackupLocation = chkAutoBackup.Checked ? txtBackupPath.Text : string.Empty;
                 Preferences.Current.CheckForUpdates = chkAutoUpdate.Checked;
+                Preferences.Current.FormulaFixup = chkFixup.Checked;
                 Preferences.Current.Save();
             }
         }

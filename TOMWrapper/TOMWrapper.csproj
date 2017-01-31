@@ -35,6 +35,9 @@
     <CodeAnalysisRuleSet />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Antlr4.Runtime">
+      <HintPath>..\packages\Antlr4.Runtime.4.5.3\lib\net45\Antlr4.Runtime.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AnalysisServices.Core, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files\Microsoft SQL Server\130\SDK\Assemblies\Microsoft.AnalysisServices.Core.DLL</HintPath>
@@ -65,10 +68,13 @@
     <Compile Include="PropertyGridUI\RefreshGridCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CultureCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\DictionaryProperty.cs" />
-    <Compile Include="PropertyGridUI\DynamicProperty.cs" />
+    <Compile Include="PropertyGridUI\DynamicPropertyObject.cs" />
     <Compile Include="PropertyGridUI\NoMultiselectAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyGridUI\AllColumnConverter.cs" />
+    <Compile Include="PropertyGridUI\TableColumnConverter.cs" />
     <Compile Include="StringHelper.cs" />
+    <Compile Include="TextServices\DAXLexer.cs" />
     <Compile Include="TOMWrapper\Base\CalculatedColumn.generated.cs">
       <DependentUpon>WrapperBase.tt</DependentUpon>
     </Compile>
@@ -111,6 +117,7 @@
     <Compile Include="TOMWrapper\CalculatedColumn.cs" />
     <Compile Include="TOMWrapper\CalculatedTable.cs" />
     <Compile Include="TOMWrapper\Database.cs" />
+    <Compile Include="TOMWrapper\MetadataObjectHelper.cs" />
     <Compile Include="TOMWrapper\ProviderDataSource.cs" />
     <Compile Include="TOMWrapper\LogicalGroup.cs" />
     <Compile Include="TOMWrapper\KPI.cs" />

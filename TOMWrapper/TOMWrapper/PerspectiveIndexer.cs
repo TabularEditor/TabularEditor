@@ -168,10 +168,13 @@ namespace TabularEditor.TOMWrapper
         protected override void SetInPerspective(Perspective perspective, bool included)
         {
             // Including/excluding a table from a perspective, is equivalent to including/excluding all child
-            // objects. The PerspectiveTable sometimes needs to be created, but it should never be deleted.
+            // objects. The PerspectiveTable will be created automatically if needed.
             Table.Measures.InPerspective(perspective, included);
             Table.Hierarchies.InPerspective(perspective, included);
             Table.Columns.InPerspective(perspective, included);
+
+            var pts = perspective.MetadataObject.PerspectiveTables;
+            if (!included && pts.Contains(Table.Name)) pts.Remove(Table.Name);
         }
 
         public override bool this[Perspective perspective]

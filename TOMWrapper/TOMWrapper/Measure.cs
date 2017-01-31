@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using TabularEditor.PropertyGridUI;
 using TOM = Microsoft.AnalysisServices.Tabular;
@@ -7,6 +8,9 @@ namespace TabularEditor.TOMWrapper
 {
     public partial class Measure : ITabularPerspectiveObject, IDaxObject, IDynamicPropertyObject, IClonableObject
     {
+        public Dictionary<IDaxObject, List<Dependency>> Dependencies { get; private set; } = new Dictionary<IDaxObject, List<Dependency>>();
+
+
         [Browsable(true), DisplayName("Perspectives"), Category("Translations and Perspectives")]
         public PerspectiveIndexer InPerspective { get; private set; }
 
@@ -72,14 +76,25 @@ namespace TabularEditor.TOMWrapper
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
-            if (propertyName == "Expression") NeedsValidation = true;
+            if (propertyName == "Expression")
+            {
+                NeedsValidation = true;
+                Handler.BuildDependencyTree(this);
+            }
+            if (propertyName == "Name" && Handler.AutoFixup) Handler.DoFixup(this, (string)newValue);
 
             base.OnPropertyChanged(propertyName, oldValue, newValue);
         }
 
+        protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
+        {
+            if (propertyName == "Name") Handler.BuildDependencyTree();
+            base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
+        }
+
         [Browsable(false)]
         public bool NeedsValidation { get; set; } = false;
-
+        
         public bool Browsable(string propertyName)
         {
             switch (propertyName) {

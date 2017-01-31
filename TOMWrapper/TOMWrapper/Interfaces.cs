@@ -63,6 +63,7 @@ namespace TabularEditor.TOMWrapper
     {
         string Expression { get; set; }
         bool NeedsValidation { get; set; }
+        Dictionary<IDaxObject, List<Dependency>> Dependencies { get; }
     }
 
     /// <summary>
@@ -71,6 +72,7 @@ namespace TabularEditor.TOMWrapper
     public interface ITabularTableObject : ITabularNamedObject
     {
         Table Table { get; }
+        void Delete();
     }
 
     public interface IDaxObject: ITabularNamedObject

@@ -279,11 +279,11 @@ namespace TabularEditor.TOMWrapper
             }
 
             // Always hide empty tabels
-            if (tabularObject is Table)
+            /*if (tabularObject is Table)
             {
                 var table = tabularObject as Table;
                 return table.GetChildren().Any(o => VisibleInTree(o));
-            }
+            }*/
 
             // All other objects should be visible by default:
             return true;

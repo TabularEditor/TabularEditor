@@ -46,6 +46,7 @@ namespace TabularEditor.UI
             ExpressionEditor_Init();
             ScriptEditor_Init();
             PropertyGrid_Init();
+            
             Current = this;
 
             Actions = new ModelActionManager();
@@ -97,6 +98,7 @@ namespace TabularEditor.UI
             TreeView_SelectionChanged(UI.TreeView, new EventArgs());
             UI.FormMain.modelToolStripMenuItem.Enabled = true;
             UI.ModelMenu.Enabled = true;
+            UI.ToolsMenu.Enabled = true;
         }
 
         protected void OnModelLoaded()
@@ -161,6 +163,7 @@ namespace TabularEditor.UI
         public FormMain FormMain;
         public ImageList TreeImages;
         public ToolStripDropDownItem ModelMenu;
+        public ToolStripDropDownItem ToolsMenu;
         public ToolStripComboBox TranslationSelector;
         public ToolStripComboBox PerspectiveSelector;
     }

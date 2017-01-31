@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using TabularEditor.UndoFramework;
 using TOM = Microsoft.AnalysisServices.Tabular;
+using TabularEditor.PropertyGridUI;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -164,7 +165,7 @@ namespace TabularEditor.TOMWrapper
         }
     }
 
-    public class HierarchyColumnConverter: ColumnConverter
+    public class HierarchyColumnConverter: TableColumnConverter
     {
         public override bool IsValid(ITypeDescriptorContext context, object value)
         {

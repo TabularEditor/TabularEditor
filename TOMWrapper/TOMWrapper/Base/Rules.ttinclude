@@ -114,6 +114,12 @@ class Rules {
 			case "DataType":
 			case "State":
 				return "Metadata";
+			case "FromColumn":
+			case "ToColumn":
+			case "SecurityFilteringBehavior":
+			case "CrossFilteringBehavior":
+			case "IsActive":
+				return "Relationship";
 			default:
 				if(objectType == typeof(ProviderDataSource)) return "Connection Details";
 				if(objectType == typeof(ModelRole)) return "Security";
@@ -123,7 +129,9 @@ class Rules {
 
 	public static string GetOtherAttributes(string propertyName, string className)
     {
-		if(propertyName == "SortByColumn") return "[TypeConverter(typeof(ColumnConverter))]";
+		if(propertyName == "SortByColumn") return "[TypeConverter(typeof(TableColumnConverter))]";
+		if(propertyName == "ToColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
+		if(propertyName == "FromColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
 		if(className == "Level" && propertyName == "Hierarchy") return "[Browsable(false)]";
 		if(className == "Level" && propertyName == "Column") return "[TypeConverter(typeof(HierarchyColumnConverter)),NoMultiselect()]";
 		if(className == "Level" && propertyName == "Ordinal") return "[NoMultiselect()]";
@@ -188,7 +196,9 @@ class Rules {
        { typeof(Measure), "Measures" },
        { typeof(Partition), "Partitions" },
        { typeof(Perspective), "Perspectives" },
-       { typeof(Culture), "Cultures" }
+       { typeof(Culture), "Cultures" },
+	   { typeof(Relationship), "Relationships" },
+	   { typeof(DataSource), "DataSources" }
    };
 
    public static readonly Dictionary<Type, string> CollectionParent = new Dictionary<Type,string>()
@@ -201,7 +211,9 @@ class Rules {
        { typeof(Measure), "Table" },
        { typeof(Partition), "Table" },
        { typeof(Perspective), "Model" },
-       { typeof(Culture), "Model" }
+       { typeof(Culture), "Model" },
+	   { typeof(Relationship), "Model" },
+	   { typeof(DataSource), "Model" }
    };
 }
 #>

@@ -20,7 +20,14 @@ namespace TabularEditor.UI
             var res = f.ShowDialog();
             if (res == DialogResult.Cancel) return;
 
-            Database_Backup();
+            // Backup database metadata
+            if (Preferences.Current.BackupOnSave)
+            {
+                var backupFilename = string.Format("{0}\\Backup_{1}_{2}.zip", Preferences.Current.BackupLocation, Handler.Database.Name, DateTime.Now.ToString("yyyyMMddhhmmssfff"));
+                TabularDeployer.SaveModelMetadataBackup(f.DeployTargetServer.ConnectionString, f.DeployTargetDatabaseID, backupFilename);
+            }
+
+
             UI.FormMain.Cursor = Cursors.WaitCursor;
             UI.StatusLabel.Text = "Deploying...";
             Application.DoEvents();
@@ -73,6 +80,7 @@ namespace TabularEditor.UI
             try
             {
                 Handler = new TabularModelHandler(ConnectForm.ConnectionString, string.IsNullOrEmpty(LocalInstanceName) ? SelectDatabaseForm.DatabaseName : null);
+                Handler.AutoFixup = Preferences.Current.FormulaFixup;
                 LoadTabularModelToUI();
                 File_Current = null;
             }
@@ -84,16 +92,6 @@ namespace TabularEditor.UI
             }
 
             Cursor.Current = Cursors.Default;
-        }
-
-        private void Database_Backup()
-        {
-            if (Preferences.Current.BackupOnSave)
-            {
-                var backupFilename = string.Format("{0}\\Backup_{1}_{2}.zip", Preferences.Current.BackupLocation, Handler.Database.Name, DateTime.Now.ToString("yyyyMMddhhmmssfff"));
-                TabularDeployer.SaveModelMetadataBackup(Handler.Database.Server.ConnectionString, Handler.Database.ID, backupFilename);
-            }
-
         }
 
         private void Database_Save()
@@ -115,7 +113,12 @@ namespace TabularEditor.UI
             UI.StatusLabel.Text = "Saving changes to DB...";
             Application.DoEvents();
 
-            Database_Backup();
+            if (Preferences.Current.BackupOnSave)
+            {
+                var backupFilename = string.Format("{0}\\Backup_{1}_{2}.zip", Preferences.Current.BackupLocation, Handler.Database.Name, DateTime.Now.ToString("yyyyMMddhhmmssfff"));
+                TabularDeployer.SaveModelMetadataBackup(Handler.Database.Server.ConnectionString, Handler.Database.ID, backupFilename);
+            }
+
             Handler.SaveDB();
 
             UI.TreeView.Refresh();

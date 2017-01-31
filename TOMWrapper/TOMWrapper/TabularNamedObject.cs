@@ -26,7 +26,7 @@ namespace TabularEditor.TOMWrapper
         /// <param name="collection"></param>
         internal virtual void Undelete(ITabularObjectCollection collection)
         {
-            Collection = collection;
+            Collection = collection.GetCurrentCollection();
             Collection.Add(this);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }

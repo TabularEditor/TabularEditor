@@ -11,6 +11,8 @@ namespace TabularEditor.TOMWrapper
 {
     public class CalculatedTable: Table, IExpressionObject
     {
+        public Dictionary<IDaxObject, List<Dependency>> Dependencies { get; private set; } = new Dictionary<IDaxObject, List<Dependency>>();
+
 
         public CalculatedTable(Model parent) : base(parent)
         {
@@ -19,6 +21,17 @@ namespace TabularEditor.TOMWrapper
         public CalculatedTable(TabularModelHandler handler, TOM.Table tableMetadataObject) : base(handler, tableMetadataObject)
         {
 
+        }
+
+        protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
+        {
+            if(propertyName == "Expression")
+            {
+                NeedsValidation = true;
+                Handler.BuildDependencyTree(this);
+            }
+
+            base.OnPropertyChanged(propertyName, oldValue, newValue);
         }
 
         public override void CheckChildrenErrors()

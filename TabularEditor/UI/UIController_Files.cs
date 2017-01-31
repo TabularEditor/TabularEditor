@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
+using TabularEditor.UIServices;
 
 namespace TabularEditor.UI
 {
@@ -14,6 +15,7 @@ namespace TabularEditor.UI
         {
             File_Current = fileName;
             Handler = new TabularModelHandler(fileName);
+            Handler.AutoFixup = Preferences.Current.FormulaFixup;
             LoadTabularModelToUI();
         }
 

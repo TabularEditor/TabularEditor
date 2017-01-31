@@ -11,8 +11,6 @@ namespace TabularEditor.UI.Dialogs
         public ConnectForm()
         {
             InitializeComponent();
-
-            connectPage.PopulateLocalInstances();
         }
 
         public static string ConnectionString { get; private set; }
