@@ -495,33 +495,36 @@ namespace TabularEditor.TOMWrapper
 
             WriteIfChanged(path + "\\database.json", jobj.ToString(Newtonsoft.Json.Formatting.Indented));
 
-            OutArray(path, "relationships", relationships);
-            OutArray(path, "perspectives", perspectives);
-            OutArray(path, "cultures", cultures);
-            OutArray(path, "dataSources", dataSources);
-            OutArray(path, "roles", roles);
+            if (relationships != null) OutArray(path, "relationships", relationships);
+            if (perspectives != null) OutArray(path, "perspectives", perspectives);
+            if (cultures != null) OutArray(path, "cultures", cultures);
+            if (dataSources != null) OutArray(path, "dataSources", dataSources);
+            if (roles != null) OutArray(path, "roles", roles);
 
-            foreach(JObject t in tables)
+            if (tables != null)
             {
-                var columns = PopArray(t, "columns");
-                var partitions = PopArray(t, "partitions");
-                var measures = PopArray(t, "measures");
-                var hierarchies = PopArray(t, "hierarchies");
-                var annotations = PopArray(t, "annotations");
+                foreach (JObject t in tables)
+                {
+                    var columns = PopArray(t, "columns");
+                    var partitions = PopArray(t, "partitions");
+                    var measures = PopArray(t, "measures");
+                    var hierarchies = PopArray(t, "hierarchies");
+                    var annotations = PopArray(t, "annotations");
 
-                var tableName = t["name"].ToString().Replace("\\", "_").Replace("/", "_");
-                var p = path + "\\tables\\" + tableName + "\\" + tableName + ".json";
-                var fi = new FileInfo(p);
-                if (!fi.Directory.Exists) fi.Directory.Create();
-                WriteIfChanged(p, t.ToString(Newtonsoft.Json.Formatting.Indented));
+                    var tableName = t["name"].ToString().Replace("\\", "_").Replace("/", "_");
+                    var p = path + "\\tables\\" + tableName + "\\" + tableName + ".json";
+                    var fi = new FileInfo(p);
+                    if (!fi.Directory.Exists) fi.Directory.Create();
+                    WriteIfChanged(p, t.ToString(Newtonsoft.Json.Formatting.Indented));
 
-                var table = Model.Tables[t["name"].ToString()].MetadataObject;
+                    var table = Model.Tables[t["name"].ToString()].MetadataObject;
 
-                if (measures != null) OutArray(path + "\\tables\\" + tableName, "measures", measures);
-                if (columns != null) OutArray(path + "\\tables\\" + tableName, "columns", columns);
-                if (hierarchies != null) OutArray(path + "\\tables\\" + tableName, "hierarchies", hierarchies);
-                if (partitions != null) OutArray(path + "\\tables\\" + tableName, "partitions", partitions);
-                if (annotations != null) OutArray(path + "\\tables\\" + tableName, "annotations", annotations);
+                    if (measures != null) OutArray(path + "\\tables\\" + tableName, "measures", measures);
+                    if (columns != null) OutArray(path + "\\tables\\" + tableName, "columns", columns);
+                    if (hierarchies != null) OutArray(path + "\\tables\\" + tableName, "hierarchies", hierarchies);
+                    if (partitions != null) OutArray(path + "\\tables\\" + tableName, "partitions", partitions);
+                    if (annotations != null) OutArray(path + "\\tables\\" + tableName, "annotations", annotations);
+                }
             }
         }
 
