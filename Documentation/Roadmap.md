@@ -66,3 +66,5 @@ When this is in place, consider providing a better connect UI for Power BI (perh
 ### Import/Export translations
 
 This is a standard feature in SSDT, which would be useful to have in Tabular Editor as well.
+
+**Update**: [Available in 2.2](https://github.com/otykier/TabularEditor/wiki/Advanced-features#importexport-translations).
