@@ -43,8 +43,8 @@
             this.chkAutoBackup = new System.Windows.Forms.CheckBox();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.chkFixup = new System.Windows.Forms.CheckBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -178,16 +178,6 @@
             this.chkAutoBackup.UseVisualStyleBackColor = true;
             this.chkAutoBackup.CheckedChanged += new System.EventHandler(this.chkAutoBackup_CheckedChanged);
             // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.chkFixup);
-            this.groupBox3.Location = new System.Drawing.Point(13, 106);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(382, 70);
-            this.groupBox3.TabIndex = 4;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Editing";
-            // 
             // chkFixup
             // 
             this.chkFixup.AutoSize = true;
@@ -199,6 +189,16 @@
             this.toolTip1.SetToolTip(this.chkFixup, "When this is checked, expressions of Measures, Calculated Columns and Calculated " +
         "Tables will automatically be updated, when an object name is changed.");
             this.chkFixup.UseVisualStyleBackColor = true;
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.chkFixup);
+            this.groupBox3.Location = new System.Drawing.Point(13, 106);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(382, 70);
+            this.groupBox3.TabIndex = 4;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Editing";
             // 
             // PreferencesForm
             // 

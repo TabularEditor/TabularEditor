@@ -47,6 +47,7 @@
             this.treeObjects.Location = new System.Drawing.Point(12, 64);
             this.treeObjects.Name = "treeObjects";
             this.treeObjects.SelectedImageIndex = 0;
+            this.treeObjects.ShowNodeToolTips = true;
             this.treeObjects.Size = new System.Drawing.Size(316, 221);
             this.treeObjects.TabIndex = 0;
             // 
@@ -102,6 +103,7 @@
             this.btnCancel.TabIndex = 3;
             this.btnCancel.Text = "Close";
             this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
             // radioButton1
             // 
@@ -130,12 +132,10 @@
             // 
             // DependencyForm
             // 
-            this.AcceptButton = this.btnCancel;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(340, 326);
-            this.ControlBox = false;
             this.Controls.Add(this.radioButton2);
             this.Controls.Add(this.radioButton1);
             this.Controls.Add(this.btnCancel);

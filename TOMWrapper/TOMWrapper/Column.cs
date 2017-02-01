@@ -9,6 +9,8 @@ namespace TabularEditor.TOMWrapper
 {
     public abstract partial class Column: ITabularPerspectiveObject, IDaxObject
     {
+        public HashSet<IExpressionObject> Dependants { get; private set; } = new HashSet<IExpressionObject>();
+
         [Browsable(true),DisplayName("Perspectives"), Category("Translations and Perspectives")]
         public PerspectiveIndexer InPerspective { get; private set; }
 

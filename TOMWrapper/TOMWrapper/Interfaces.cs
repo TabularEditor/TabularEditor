@@ -80,6 +80,7 @@ namespace TabularEditor.TOMWrapper
         string DaxObjectName { get; }
         string DaxObjectFullName { get; }
         string DaxTableName { get; }
+        HashSet<IExpressionObject> Dependants { get; }
     }
     #endregion
 

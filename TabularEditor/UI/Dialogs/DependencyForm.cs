@@ -39,20 +39,23 @@ namespace TabularEditor
         {
             var img = UI.Tree.TabularIcon.GetIconIndex(obj);
             var n = new TreeNode(obj.Name, img, img) { Tag = obj };
+            if(obj is IExpressionObject) n.ToolTipText = (obj as IExpressionObject).Expression;
 
             nodes.Add(n);
 
             if(obj is IExpressionObject)
             {
-                foreach(var d in ((IExpressionObject)obj).Dependencies.Keys.OrderBy(k => k.ObjectType))
+                foreach(var d in ((IExpressionObject)obj).Dependencies.OrderBy(k => k.Key.ObjectType))
                 {
                     currentDepth++;
-                    if (d == _rootObject)
+
+                    if (d.Key == _rootObject)
                     {
-                        var i = UI.Tree.TabularIcon.GetIconIndex(d);
-                        n.Nodes.Add(new TreeNode(d.Name + " (circular dependency)", i, i));
+                        var i = UI.Tree.TabularIcon.GetIconIndex(d.Key);
+                        var node = new TreeNode(d.Key.Name + " (circular dependency)", i, i);
+                        n.Nodes.Add(node);
                     }
-                    else if (currentDepth < MAX_LEVELS) RecursiveAdd(d, n.Nodes);
+                    else if (currentDepth < MAX_LEVELS) RecursiveAdd(d.Key, n.Nodes);
                     else n.Nodes.Add("(Infinite recursion)");
                     currentDepth--;
                 }
@@ -65,10 +68,12 @@ namespace TabularEditor
         {
             var img = UI.Tree.TabularIcon.GetIconIndex(obj);
             var n = new TreeNode(obj.Name, img, img) { Tag = obj };
+            if (obj is IExpressionObject) n.ToolTipText = (obj as IExpressionObject).Expression;
 
             nodes.Add(n);
 
-            foreach(var d in obj.Model.Tables.OfType<IExpressionObject>().Concat(obj.Model.Tables.SelectMany(t => t.GetChildren().OfType<IExpressionObject>())))
+            foreach(var d in obj.Dependants.OrderBy(o => o.ObjectType))
+            //foreach(var d in obj.Model.Tables.OfType<IExpressionObject>().Concat(obj.Model.Tables.SelectMany(t => t.GetChildren().OfType<IExpressionObject>())))
             {
                 if(d.Dependencies.ContainsKey(obj))
                 {
@@ -100,6 +105,11 @@ namespace TabularEditor
             {
                 InverseRecursiveAdd(RootObject, treeObjects.Nodes);
             }
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

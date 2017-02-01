@@ -125,7 +125,24 @@ namespace TabularEditor.UI.Actions
             // Delete Action
             Delete = new Action((s, m) => true, 
                 (s, m) => {
-                    if (MessageBox.Show("Are you sure you want to delete " + s.Summary() + "?", "Confirm deletion", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel) return;
+                    string refs = "";
+                    if (s.Count == 1)
+                    {
+                        
+
+                        var d = (s.FirstOrDefault() as IDaxObject);
+                        if (d != null && d.Dependants.Count > 0)
+                        {
+                            refs = "\n\nThis object is referenced by " + d.Dependants.First().DaxObjectFullName;
+                            if (d.Dependants.Count > 1) refs += string.Format(" and {0} other object{1}.", d.Dependants.Count - 1, d.Dependants.Count == 2 ? "" : "s");
+                        }
+                        else
+                        {
+                            refs = "\n\nThis object does not appear to be referenced by other objects.";
+                        }
+                    }
+
+                    if (MessageBox.Show(string.Format("Are you sure you want to delete {0}?{1}", s.Name, refs), "Confirm deletion", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel) return;
                     s.Delete();
                 }, (s, m) => "Delete " + s.Summary() + "...", true, Context.SingularObjects);
             Add(Delete);

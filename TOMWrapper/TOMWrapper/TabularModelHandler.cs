@@ -47,6 +47,7 @@ namespace TabularEditor.TOMWrapper
                 target.Dependencies.Add(dependsOn, depList);
             }
             depList.Add(dep);
+            if(!dependsOn.Dependants.Contains(target)) dependsOn.Dependants.Add(target);
         }
 
         /// <summary>
@@ -84,7 +85,8 @@ namespace TabularEditor.TOMWrapper
 
         public void DoFixup(IDaxObject obj, string newName)
         {
-            foreach (var d in obj.Model.Tables.OfType<IExpressionObject>().Concat(obj.Model.Tables.SelectMany(t => t.GetChildren().OfType<IExpressionObject>())))
+            //foreach (var d in obj.Model.Tables.OfType<IExpressionObject>().Concat(obj.Model.Tables.SelectMany(t => t.GetChildren().OfType<IExpressionObject>())))
+            foreach (var d in obj.Dependants.ToList())
             {
                 List<Dependency> depList;
                 if(d.Dependencies.TryGetValue(obj, out depList))
@@ -105,6 +107,7 @@ namespace TabularEditor.TOMWrapper
 
         public void BuildDependencyTree(IExpressionObject expressionObj)
         {
+            foreach (var d in expressionObj.Dependencies.Keys) d.Dependants.Remove(expressionObj);
             expressionObj.Dependencies.Clear();
 
             var tokens = new DAXLexer(new AntlrInputStream(expressionObj.Expression)).GetAllTokens();

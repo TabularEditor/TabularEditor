@@ -13,6 +13,8 @@ namespace TabularEditor.TOMWrapper
     partial class Table: ITabularObjectContainer, IDetailObjectContainer, ITabularPerspectiveObject, IDaxObject, IDynamicPropertyObject,
         IErrorMessageObject
     {
+        public HashSet<IExpressionObject> Dependants { get; private set; } = new HashSet<IExpressionObject>();
+
         #region Convenient methods
         [IntelliSense("Adds a new measure to the table.")]
         public Measure AddMeasure(string name = null, string expression = null, string displayFolder = null)
@@ -102,7 +104,7 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public HierarchyCollection Hierarchies { get; private set; }
 
-        [Category("Data Source"),TypeConverter(typeof(IndexerConverter)),NoMultiselect()]
+        [Category("Data Source"),NoMultiselect()]
         [Editor(typeof(RefreshGridCollectionEditor),typeof(UITypeEditor))]
         public PartitionCollection Partitions { get; private set; }
 
