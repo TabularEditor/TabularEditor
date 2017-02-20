@@ -91,7 +91,12 @@ namespace TabularEditor.TOMWrapper
 		{ 
 			get 
 			{ 
-				return MetadataObject?.Table == null ? null : Handler.WrapperLookup[MetadataObject.Table] as Table;
+				TabularObject t = null;
+				if(MetadataObject == null || MetadataObject.Table == null) return null;
+				if(!Handler.WrapperLookup.TryGetValue(MetadataObject.Table, out t)) {
+				    t = Model.Tables[MetadataObject.Table.Name];
+				}
+				return t as Table;
 			} 
 		}
 <#      }
@@ -104,8 +109,12 @@ namespace TabularEditor.TOMWrapper
 	/// </summary>
 	public partial class <#= t.Name #>Collection: TabularObjectCollection<<#= t.Name #>, TOM.<#= t.Name #>, TOM.<#= Rules.CollectionParent[t] #>>
 	{
-		public <#= t.Name #>Collection(TabularModelHandler handler, string collectionName, TOM.<#= t.Name #>Collection metadataObjectCollection) : base(handler, collectionName, metadataObjectCollection)
+		public <#= Rules.CollectionParent[t] #> Parent { get; private set; }
+
+		public <#= t.Name #>Collection(TabularModelHandler handler, string collectionName, TOM.<#= t.Name #>Collection metadataObjectCollection, <#= Rules.CollectionParent[t] #> parent) : base(handler, collectionName, metadataObjectCollection)
 		{
+			Parent = parent;
+
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 <# if(t.Name == "Column") { #>

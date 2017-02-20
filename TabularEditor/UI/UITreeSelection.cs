@@ -336,6 +336,7 @@ namespace TabularEditor.UI
             DataSources = new UISelectionList<DataSource>(this.OfType<DataSource>());
             Perspectives = new UISelectionList<Perspective>(this.OfType<Perspective>());
             CalculatedColumns = new UISelectionList<CalculatedColumn>(this.OfType<CalculatedColumn>());
+            CalculatedTableColumns = new UISelectionList<CalculatedTableColumn>(this.OfType<CalculatedTableColumn>());
             DataColumns = new UISelectionList<DataColumn>(this.OfType<DataColumn>());
             Tables = new UI.UISelectionList<Table>(this.OfType<Table>());
             Direct = new UISelectionList<ITabularNamedObject>(selectedNodes.Select(n => n.Tag).OfType<ITabularNamedObject>());
@@ -421,6 +422,9 @@ namespace TabularEditor.UI
 
         [IntelliSense("All currently selected calculated columns (including calculated columns within selected Display Folders).")]
         public UISelectionList<CalculatedColumn> CalculatedColumns { get; private set; }
+
+        [IntelliSense("All currently selected calculated table columns (including calculated table columns within selected Display Folders).")]
+        public UISelectionList<CalculatedTableColumn> CalculatedTableColumns { get; private set; }
 
         [IntelliSense("The currently selected data column (if exactly one data column is selected in the explorer tree).")]
         public DataColumn DataColumn { get { return One<DataColumn>(); } }

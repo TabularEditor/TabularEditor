@@ -435,7 +435,7 @@
             // actExecuteScript
             // 
             this.actExecuteScript.Image = global::TabularEditor.Resources.Run;
-            this.actExecuteScript.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.H)));
+            this.actExecuteScript.ShortcutKeys = System.Windows.Forms.Keys.F5;
             this.actExecuteScript.Text = "Replace";
             this.actExecuteScript.Execute += new System.EventHandler(this.actExecuteScript_Execute);
             // 
@@ -1345,9 +1345,10 @@
         '\"',
         '\'',
         '\''};
+            this.txtAdvanced.AutoIndentChars = false;
             this.txtAdvanced.AutoIndentCharsPatterns = "\r\n^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;]+);\r\n^\\s*(case|default)\\s*[^:]" +
     "*(?<range>:)\\s*(?<range>[^;]+);\r\n";
-            this.txtAdvanced.AutoScrollMinSize = new System.Drawing.Size(2, 14);
+            this.txtAdvanced.AutoScrollMinSize = new System.Drawing.Size(27, 14);
             this.txtAdvanced.BackBrush = null;
             this.txtAdvanced.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtAdvanced.BracketsHighlightStrategy = FastColoredTextBoxNS.BracketsHighlightStrategy.Strategy2;

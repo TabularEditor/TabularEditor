@@ -189,8 +189,12 @@ namespace TabularEditor.TOMWrapper
 	/// </summary>
 	public partial class RelationshipCollection: TabularObjectCollection<Relationship, TOM.Relationship, TOM.Model>
 	{
-		public RelationshipCollection(TabularModelHandler handler, string collectionName, TOM.RelationshipCollection metadataObjectCollection) : base(handler, collectionName, metadataObjectCollection)
+		public Model Parent { get; private set; }
+
+		public RelationshipCollection(TabularModelHandler handler, string collectionName, TOM.RelationshipCollection metadataObjectCollection, Model parent) : base(handler, collectionName, metadataObjectCollection)
 		{
+			Parent = parent;
+
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				switch((obj as TOM.Relationship).Type) {

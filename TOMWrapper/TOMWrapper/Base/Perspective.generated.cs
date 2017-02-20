@@ -61,8 +61,12 @@ namespace TabularEditor.TOMWrapper
 	/// </summary>
 	public partial class PerspectiveCollection: TabularObjectCollection<Perspective, TOM.Perspective, TOM.Model>
 	{
-		public PerspectiveCollection(TabularModelHandler handler, string collectionName, TOM.PerspectiveCollection metadataObjectCollection) : base(handler, collectionName, metadataObjectCollection)
+		public Model Parent { get; private set; }
+
+		public PerspectiveCollection(TabularModelHandler handler, string collectionName, TOM.PerspectiveCollection metadataObjectCollection, Model parent) : base(handler, collectionName, metadataObjectCollection)
 		{
+			Parent = parent;
+
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				new Perspective(handler, obj) { Collection = this };

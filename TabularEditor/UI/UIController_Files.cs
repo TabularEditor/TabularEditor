@@ -97,13 +97,22 @@ namespace TabularEditor.UI
         public void Save()
         {
             UI.StatusLabel.Text = "Saving...";
-            if(Handler.IsConnected)
+
+            if (Handler.IsConnected)
             {
                 Database_Save();
             }
             else
             {
-                Handler.SaveFile(File_Current);
+                try
+                {
+                    Handler.SaveFile(File_Current);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message, "Could not save metadata to file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                
             }
             UpdateUIText();
         }

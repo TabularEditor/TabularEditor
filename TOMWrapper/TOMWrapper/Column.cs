@@ -9,7 +9,18 @@ namespace TabularEditor.TOMWrapper
 {
     public abstract partial class Column: ITabularPerspectiveObject, IDaxObject
     {
+        [Browsable(false)]
         public HashSet<IExpressionObject> Dependants { get; private set; } = new HashSet<IExpressionObject>();
+
+        [Browsable(false)]
+        public IEnumerable<Hierarchy> UsedInHierarchies
+        {
+            get
+            {
+                return Table.Hierarchies.Where(h => h.Levels.Any(l => l.Column == this));
+            }
+
+        }
 
         [Browsable(true),DisplayName("Perspectives"), Category("Translations and Perspectives")]
         public PerspectiveIndexer InPerspective { get; private set; }
@@ -17,8 +28,32 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Deletes the Column from the table.")]
         public override void Delete()
         {
+            Handler.UndoManager.BeginBatch("Delete column");
+
+            var t = Table;
+
+            // Remove IsKey column property if set:
+            if (IsKey) IsKey = false;
+
+            // Remove any relationships this column participates in:
+            foreach (var r in Model.Relationships.OfType<SingleColumnRelationship>().Where(r => r.FromColumn == this || r.ToColumn == this)) r.Delete();
+
+            // Remove any hierarchy levels that use this column
+            foreach (var h in UsedInHierarchies) h.Levels.First(l => l.Column == this).Delete();
+
+            // Remove the column from other columns SortByColumn property:
+            if (SortByColumn != null) SortByColumn = null;
+            foreach (var c in Table.Columns.Where(c => c.SortByColumn == this))
+            {
+                c.SortByColumn = null;
+            }
+
             InPerspective.None();
             base.Delete();
+
+            t.MetadataObject.Columns.Remove(MetadataObject);
+
+            Handler.UndoManager.EndBatch();
         }
 
         internal override void Undelete(ITabularObjectCollection collection)
@@ -28,6 +63,7 @@ namespace TabularEditor.TOMWrapper
                     this is CalculatedTableColumn ? (TOM.Column)new TOM.CalculatedTableColumn() :
                     null;
 
+            MetadataObject.IsKey = false;
             MetadataObject.CopyTo(tom);
             tom.IsRemoved = false;
             MetadataObject = tom;
@@ -42,7 +78,14 @@ namespace TabularEditor.TOMWrapper
 
         protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
         {
-            if (propertyName == "Name") Handler.BuildDependencyTree();
+            if (propertyName == "Name")
+            {
+                Handler.BuildDependencyTree();
+
+                // When formula fixup is enabled, we need to begin a new batch of undo operations, as this
+                // name change could result in expression changes on multiple objects:
+                if (Handler.AutoFixup) Handler.UndoManager.BeginBatch("Name change");
+            }
             if(propertyName == "IsKey" && (bool)newValue == true)
             {
                 // When the IsKey column is set to "true", all other columns must have their IsKey set to false.
@@ -62,7 +105,11 @@ namespace TabularEditor.TOMWrapper
             {
                 Handler.UndoManager.EndBatch();
             }
-            if (propertyName == "Name" && Handler.AutoFixup) Handler.DoFixup(this, (string)newValue);
+            if (propertyName == "Name" && Handler.AutoFixup)
+            {
+                Handler.DoFixup(this, (string)newValue);
+                Handler.UndoManager.EndBatch();
+            }
             base.OnPropertyChanged(propertyName, oldValue, newValue);
         }
 

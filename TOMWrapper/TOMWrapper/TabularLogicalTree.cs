@@ -196,11 +196,11 @@ namespace TabularEditor.TOMWrapper
                 switch ((tabularObject as LogicalGroup).Name)
                 {
                     case "Tables": return Model.Tables.Where(t => VisibleInTree(t));
-                    case "Roles": return Model.Roles;
-                    case "Perspectives": return Model.Perspectives;
-                    case "Translations": return Model.Cultures;
-                    case "Relationships": return Model.Relationships;
-                    case "Data Sources": return Model.DataSources;
+                    case "Roles": return Model.Roles.Where(t => VisibleInTree(t));
+                    case "Perspectives": return Model.Perspectives.Where(t => VisibleInTree(t));
+                    case "Translations": return Model.Cultures.Where(t => VisibleInTree(t));
+                    case "Relationships": return Model.Relationships.Where(t => VisibleInTree(t));
+                    case "Data Sources": return Model.DataSources.Where(t => VisibleInTree(t));
                 }
                 return Enumerable.Empty<TabularNamedObject>();
             }
@@ -259,6 +259,11 @@ namespace TabularEditor.TOMWrapper
             {
                 switch (tabularObject.ObjectType)
                 {
+                    case ObjectType.Relationship:
+                    case ObjectType.DataSource:
+                    case ObjectType.Perspective:
+                    case ObjectType.Role:
+                    case ObjectType.Culture:
                     case ObjectType.Column:
                     case ObjectType.Hierarchy:
                     case ObjectType.Measure:
@@ -278,12 +283,12 @@ namespace TabularEditor.TOMWrapper
                     return (Options.HasFlag(LogicalTreeOptions.Hierarchies));
             }
 
-            // Always hide empty tabels
-            /*if (tabularObject is Table)
+            // Always hide empty tabels when filtering
+            if (tabularObject is Table)
             {
                 var table = tabularObject as Table;
-                return table.GetChildren().Any(o => VisibleInTree(o));
-            }*/
+                return string.IsNullOrEmpty(Filter) || table.GetChildren().Any(o => VisibleInTree(o));
+            }
 
             // All other objects should be visible by default:
             return true;

@@ -106,7 +106,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging("Column", value, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Column = value?.MetadataObject;
+				MetadataObject.Column = value == null ? null : Hierarchy.Table.Columns[value.MetadataObject.Name].MetadataObject;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Column", oldValue, value));
 				OnPropertyChanged("Column", oldValue, value);
 			}
@@ -119,8 +119,12 @@ namespace TabularEditor.TOMWrapper
 	/// </summary>
 	public partial class LevelCollection: TabularObjectCollection<Level, TOM.Level, TOM.Hierarchy>
 	{
-		public LevelCollection(TabularModelHandler handler, string collectionName, TOM.LevelCollection metadataObjectCollection) : base(handler, collectionName, metadataObjectCollection)
+		public Hierarchy Parent { get; private set; }
+
+		public LevelCollection(TabularModelHandler handler, string collectionName, TOM.LevelCollection metadataObjectCollection, Hierarchy parent) : base(handler, collectionName, metadataObjectCollection)
 		{
+			Parent = parent;
+
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				new Level(handler, obj) { Collection = this };

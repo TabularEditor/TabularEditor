@@ -10,6 +10,7 @@ namespace TabularEditor.TOMWrapper
 {
     public partial class CalculatedColumn
     {
+        [Browsable(false)]
         public Dictionary<IDaxObject, List<Dependency>> Dependencies { get; private set; } = new Dictionary<IDaxObject, List<Dependency>>();
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)

@@ -471,7 +471,12 @@ namespace TabularEditor.TOMWrapper
 		{ 
 			get 
 			{ 
-				return MetadataObject?.Table == null ? null : Handler.WrapperLookup[MetadataObject.Table] as Table;
+				TabularObject t = null;
+				if(MetadataObject == null || MetadataObject.Table == null) return null;
+				if(!Handler.WrapperLookup.TryGetValue(MetadataObject.Table, out t)) {
+				    t = Model.Tables[MetadataObject.Table.Name];
+				}
+				return t as Table;
 			} 
 		}
         /// <summary>
@@ -491,7 +496,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging("SortByColumn", value, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.SortByColumn = value?.MetadataObject;
+				MetadataObject.SortByColumn = value == null ? null : Table.Columns[value.MetadataObject.Name].MetadataObject;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "SortByColumn", oldValue, value));
 				OnPropertyChanged("SortByColumn", oldValue, value);
 			}
@@ -504,8 +509,12 @@ namespace TabularEditor.TOMWrapper
 	/// </summary>
 	public partial class ColumnCollection: TabularObjectCollection<Column, TOM.Column, TOM.Table>
 	{
-		public ColumnCollection(TabularModelHandler handler, string collectionName, TOM.ColumnCollection metadataObjectCollection) : base(handler, collectionName, metadataObjectCollection)
+		public Table Parent { get; private set; }
+
+		public ColumnCollection(TabularModelHandler handler, string collectionName, TOM.ColumnCollection metadataObjectCollection, Table parent) : base(handler, collectionName, metadataObjectCollection)
 		{
+			Parent = parent;
+
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				switch(obj.Type) {

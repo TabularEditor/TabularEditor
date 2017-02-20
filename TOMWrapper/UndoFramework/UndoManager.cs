@@ -13,6 +13,7 @@ namespace TabularEditor.UndoFramework
         Stack<IUndoAction> _RedoStack = new Stack<IUndoAction>();
 
         internal bool RebuildDependencyTree = false;
+        public bool Enabled { get; internal set; } = true;
 
         /// <summary>
         /// Rolls back all changes done to the model.
@@ -98,6 +99,7 @@ namespace TabularEditor.UndoFramework
 
         internal void XDo(bool redo, bool inversable)
         {
+            if (!Enabled) throw new InvalidOperationException("UndoManager is not enabled.");
             //if (undoDepth == -1 && batchDepth != 0) throw new InvalidOperationException("Cannot undo/redo while a batch is in progress.");
 
             _handler.BeginUpdate(null);
@@ -178,6 +180,8 @@ namespace TabularEditor.UndoFramework
         /// <param name="batchName">A descriptive name for the batch.</param>
         public void BeginBatch(string batchName)
         {
+            if (!Enabled) return;
+
             if (inProgress) return;
             if(batchDepth == 0) batchSizeCounter = 0;
 
@@ -194,6 +198,8 @@ namespace TabularEditor.UndoFramework
         /// <returns></returns>
         public int EndBatch(bool undo = false)
         {
+            if (!Enabled) return 0;
+
             if (inProgress) return 0;
             if (batchDepth == 0) throw new InvalidOperationException("EndBatch() called before BeginBatch().");
             batchDepth--;
@@ -237,6 +243,8 @@ namespace TabularEditor.UndoFramework
         /// <param name="action"></param>
         public void Add(IUndoAction action)
         {
+            if (!Enabled) return;
+
             if (inProgress) return;
             _UndoStack.Push(action);
             if (CanRedo) _RedoStack.Clear();

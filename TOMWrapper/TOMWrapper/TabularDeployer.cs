@@ -27,6 +27,9 @@ namespace TabularEditor.TOMWrapper
             if (!server.Databases.Contains(targetDatabaseID)) result = DeployNewTMSL(db, server, targetDatabaseID, options);
             else result = DeployExistingTMSL(db, server, targetDatabaseID, options);
 
+            // TODO: Check if invalid CalculatedTableColumn perspectives/translations can give us any issues here
+            // Should likely be handled similar to what we do in TabularModelHandler.SaveDB()
+
             return result;
         }
 

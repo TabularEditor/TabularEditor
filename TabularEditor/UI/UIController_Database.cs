@@ -120,10 +120,24 @@ namespace TabularEditor.UI
             if (Preferences.Current.BackupOnSave)
             {
                 var backupFilename = string.Format("{0}\\Backup_{1}_{2}.zip", Preferences.Current.BackupLocation, Handler.Database.Name, DateTime.Now.ToString("yyyyMMddhhmmssfff"));
-                TabularDeployer.SaveModelMetadataBackup(Handler.Database.Server.ConnectionString, Handler.Database.ID, backupFilename);
+                try
+                {
+                    TabularDeployer.SaveModelMetadataBackup(Handler.Database.Server.ConnectionString, Handler.Database.ID, backupFilename);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message, "Unable to save metadata backup", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
 
-            Handler.SaveDB();
+            try
+            {
+                Handler.SaveDB();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Could not save metadata changes to database", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
             UI.TreeView.Refresh();
 

@@ -40,6 +40,25 @@ class Rules {
 	public static string PropertySetter(PropertyInfo p)
     {
 		if (p.SetMethod == null || !p.SetMethod.IsPublic) return "";
+
+		string resolveObject = "value";
+		if(p.PropertyType.IsClass && p.PropertyType != typeof(string)) {
+			switch(p.Name) {
+				case "SortByColumn":
+					resolveObject = "value == null ? null : Table.Columns[value.MetadataObject.Name].MetadataObject";
+					break;
+				case "Column":
+					resolveObject = "value == null ? null : Hierarchy.Table.Columns[value.MetadataObject.Name].MetadataObject";
+					break;
+
+					// TODO: Fix this, so we can properly resolve below properties in case of deletions
+				case "FromColumn":
+				case "ToColumn":
+				case "KPI":
+					resolveObject = "value?.MetadataObject";
+					break;
+			}
+        }
 		
 		return string.Format(@"set {{
 				var oldValue = {0};
@@ -48,14 +67,15 @@ class Rules {
 				bool cancel = false;
 				OnPropertyChanging(""{0}"", value, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.{0} = value{1};
+				MetadataObject.{0} = {4};
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, ""{0}"", oldValue, value));
 				OnPropertyChanged(""{0}"", oldValue, value);{2}{3}
 			}}", 
 			p.Name, 
 			p.PropertyType.IsClass && p.PropertyType != typeof(string) ? "?.MetadataObject" : "",
 			p.Name == "DisplayFolder" ? "\n\t\t\t\tHandler.UpdateFolders(Table);" : "",
-			p.Name == "IsHidden" ? "\n\t\t\t\tHandler.UpdateObject(this);" : "");
+			p.Name == "IsHidden" ? "\n\t\t\t\tHandler.UpdateObject(this);" : "",
+			resolveObject);
     }
 
 	public static string PropertyGetter(PropertyInfo p)
@@ -108,6 +128,7 @@ class Rules {
 			case "Expression":
 			case "SortByColumn":
 			case "FormatString":
+			case "SourceColumn":
 				return "Options";
 			case "DataCategory":
 			case "ErrorMessage":
@@ -137,6 +158,7 @@ class Rules {
 		if(className == "Level" && propertyName == "Ordinal") return "[NoMultiselect()]";
 		if(className == "Model" && propertyName == "Culture") return "[TypeConverter(typeof(CultureConverter))]";
 		if(propertyName == "DisplayFolder") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]";
+		if(propertyName == "Expression") return "[Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]";
 
 		return "";
     }

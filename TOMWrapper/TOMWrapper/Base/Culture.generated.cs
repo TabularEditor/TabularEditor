@@ -34,8 +34,12 @@ namespace TabularEditor.TOMWrapper
 	/// </summary>
 	public partial class CultureCollection: TabularObjectCollection<Culture, TOM.Culture, TOM.Model>
 	{
-		public CultureCollection(TabularModelHandler handler, string collectionName, TOM.CultureCollection metadataObjectCollection) : base(handler, collectionName, metadataObjectCollection)
+		public Model Parent { get; private set; }
+
+		public CultureCollection(TabularModelHandler handler, string collectionName, TOM.CultureCollection metadataObjectCollection, Model parent) : base(handler, collectionName, metadataObjectCollection)
 		{
+			Parent = parent;
+
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				new Culture(handler, obj) { Collection = this };

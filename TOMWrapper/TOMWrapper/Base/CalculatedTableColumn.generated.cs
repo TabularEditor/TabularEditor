@@ -75,7 +75,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the SourceColumn of the CalculatedTableColumn.
         /// </summary>
 		[DisplayName("Source Column")]
-		[Category("Other"),IntelliSense("The Source Column of this CalculatedTableColumn.")]
+		[Category("Options"),IntelliSense("The Source Column of this CalculatedTableColumn.")]
 		public string SourceColumn {
 			get {
 			    return MetadataObject.SourceColumn;

@@ -68,8 +68,12 @@ namespace TabularEditor.TOMWrapper
 	/// </summary>
 	public partial class DataSourceCollection: TabularObjectCollection<DataSource, TOM.DataSource, TOM.Model>
 	{
-		public DataSourceCollection(TabularModelHandler handler, string collectionName, TOM.DataSourceCollection metadataObjectCollection) : base(handler, collectionName, metadataObjectCollection)
+		public Model Parent { get; private set; }
+
+		public DataSourceCollection(TabularModelHandler handler, string collectionName, TOM.DataSourceCollection metadataObjectCollection, Model parent) : base(handler, collectionName, metadataObjectCollection)
 		{
+			Parent = parent;
+
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				switch((obj as TOM.DataSource).Type) {

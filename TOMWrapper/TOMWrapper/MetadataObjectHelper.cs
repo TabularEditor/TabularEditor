@@ -94,7 +94,9 @@ namespace Microsoft.AnalysisServices.Tabular.Helper
 
                 // Automatically apply name change to translations (but only if the translation is identical to the old name):
                 var cultures = obj.Model?.Cultures;
-                if (cultures != null)
+
+                // TODO: Find a better way to avoid translations on objects that can't be translated
+                if (cultures != null && !(obj is ModelRole || obj is Partition || obj is Relationship))
                 {
                     foreach (var c in cultures)
                     {

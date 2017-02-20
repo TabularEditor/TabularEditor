@@ -83,8 +83,12 @@ namespace TabularEditor.TOMWrapper
 	/// </summary>
 	public partial class ModelRoleCollection: TabularObjectCollection<ModelRole, TOM.ModelRole, TOM.Model>
 	{
-		public ModelRoleCollection(TabularModelHandler handler, string collectionName, TOM.ModelRoleCollection metadataObjectCollection) : base(handler, collectionName, metadataObjectCollection)
+		public Model Parent { get; private set; }
+
+		public ModelRoleCollection(TabularModelHandler handler, string collectionName, TOM.ModelRoleCollection metadataObjectCollection, Model parent) : base(handler, collectionName, metadataObjectCollection)
 		{
+			Parent = parent;
+
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				new ModelRole(handler, obj) { Collection = this };

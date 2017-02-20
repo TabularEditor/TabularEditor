@@ -106,8 +106,12 @@ namespace TabularEditor.TOMWrapper
 	/// </summary>
 	public partial class TableCollection: TabularObjectCollection<Table, TOM.Table, TOM.Model>
 	{
-		public TableCollection(TabularModelHandler handler, string collectionName, TOM.TableCollection metadataObjectCollection) : base(handler, collectionName, metadataObjectCollection)
+		public Model Parent { get; private set; }
+
+		public TableCollection(TabularModelHandler handler, string collectionName, TOM.TableCollection metadataObjectCollection, Model parent) : base(handler, collectionName, metadataObjectCollection)
 		{
+			Parent = parent;
+
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				switch(obj.GetSourceType()) {

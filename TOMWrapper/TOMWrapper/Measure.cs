@@ -8,7 +8,9 @@ namespace TabularEditor.TOMWrapper
 {
     public partial class Measure : ITabularPerspectiveObject, IDaxObject, IDynamicPropertyObject, IClonableObject
     {
+        [Browsable(false)]
         public Dictionary<IDaxObject, List<Dependency>> Dependencies { get; private set; } = new Dictionary<IDaxObject, List<Dependency>>();
+        [Browsable(false)]
         public HashSet<IExpressionObject> Dependants { get; private set; } = new HashSet<IExpressionObject>();
 
 
@@ -82,14 +84,25 @@ namespace TabularEditor.TOMWrapper
                 NeedsValidation = true;
                 Handler.BuildDependencyTree(this);
             }
-            if (propertyName == "Name" && Handler.AutoFixup) Handler.DoFixup(this, (string)newValue);
+            if (propertyName == "Name" && Handler.AutoFixup)
+            {
+                Handler.DoFixup(this, (string)newValue);
+                Handler.UndoManager.EndBatch();
+            }
 
             base.OnPropertyChanged(propertyName, oldValue, newValue);
         }
 
         protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
         {
-            if (propertyName == "Name") Handler.BuildDependencyTree();
+            if (propertyName == "Name")
+            {
+                Handler.BuildDependencyTree();
+
+                // When formula fixup is enabled, we need to begin a new batch of undo operations, as this
+                // name change could result in expression changes on multiple objects:
+                if (Handler.AutoFixup) Handler.UndoManager.BeginBatch("Name change");
+            }
             base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
         }
 

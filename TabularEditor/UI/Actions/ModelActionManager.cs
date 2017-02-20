@@ -24,15 +24,17 @@ namespace TabularEditor.UI.Actions
             
             // Options to add a Measure or a Calculated Column will only be available when the current select consists of exactly
             // 1 item, which is either a Table or a Folder:
-            Action.EnabledDelegate calcContext = (s, m) => s.DirectCount == 1 && (s.Context == Context.Table || s.Types == Types.Folder);
+            Action.EnabledDelegate calcContext = (s, m) => s.DirectCount == 1 && ( s.Types == Types.Folder);
 
             // "Create New"
-            Add(new Action(calcContext, (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Measure", true, Context.Table | Context.TableObject));
-            Add(new Action(calcContext, (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Calculated Column", true, Context.Table | Context.TableObject));
-            Add(new Action((s, m) => calcContext(s,m) || s.Direct.OfType<Column>().Any(), 
+            Add(new Action((s, m) => true, (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Measure", true, Context.Table | Context.TableObject));
+            Add(new Action((s, m) => true, (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Calculated Column", true, Context.Table | Context.TableObject));
+            Add(new Action((s, m) => true, (s, m) => s.Table.AddDataColumn(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Data Column", true, Context.Table | Context.TableObject));
+            Add(new Action((s, m) => true || s.Direct.OfType<Column>().Any(), 
                 (s, m) => s.Table.AddHierarchy(displayFolder: s.CurrentFolder, levels: s.Direct.OfType<Column>().ToArray()).Expand().Edit(), 
                 (s, m) => @"Create New\Hierarchy", true, Context.Table | Context.TableObject));
-
+            Add(new Action((s, m) => true, (s, m) => m.AddCalculatedTable().Edit(), (s, m) => @"Create New\Calculated Table", true, Context.Tables));
+            Add(new Action((s, m) => true, (s, m) => m.AddTable().Edit(), (s, m) => @"Create New\Table", true, Context.Tables));
             Add(new Action((s, m) => true, (s, m) => m.AddRelationship().Edit(), (s, m) => @"Create New\Relationship", true, Context.Relationship | Context.Relationships));
             Add(new Action((s, m) => true, (s, m) => m.AddPerspective().Edit(), (s, m) => @"Create New\Perspective", true, Context.Model | Context.Perspectives | Context.Perspective));
             Add(new Action((s, m) => true, (s, m) => m.AddRole().Edit(), (s, m) => @"Create New\Role", true, Context.Model | Context.Roles | Context.Role));
@@ -123,22 +125,30 @@ namespace TabularEditor.UI.Actions
             { ToolTip = "Opens a dialog that lets you rename all children of the selected objects at once. Folders are not renamed, but objects inside folders are." });
 
             // Delete Action
-            Delete = new Action((s, m) => true, 
+            // TODO: Would be nice to have an IDeletable interface...
+            Delete = new Action((s, m) => !s.CalculatedTableColumns.Any() && s.Count(i => !(i is CalculatedTableColumn)) > 0, 
                 (s, m) => {
                     string refs = "";
                     if (s.Count == 1)
                     {
-                        
+                        if(s.FirstOrDefault() is Column)
+                        {
+                            var hCount = (s.FirstOrDefault() as Column).UsedInHierarchies.Count();
+                            if(hCount > 0)
+                            {
+                                refs += string.Format("\n\nThis column is used in {0} hierarch{1}. The corresponding level{2} will be removed from the hierarch{1}.", hCount, hCount == 1 ? "y" : "ies", hCount == 1 ? "" : "s");
+                            }
+                        }
 
                         var d = (s.FirstOrDefault() as IDaxObject);
                         if (d != null && d.Dependants.Count > 0)
                         {
-                            refs = "\n\nThis object is referenced by " + d.Dependants.First().DaxObjectFullName;
+                            refs += "\n\nThis object is directly referenced in the DAX expression on " + d.Dependants.First().DaxObjectFullName;
                             if (d.Dependants.Count > 1) refs += string.Format(" and {0} other object{1}.", d.Dependants.Count - 1, d.Dependants.Count == 2 ? "" : "s");
                         }
                         else
                         {
-                            refs = "\n\nThis object does not appear to be referenced by other objects.";
+                            refs += "\n\nThis object does not appear to be referenced in DAX expressions on other objects.";
                         }
                     }
 

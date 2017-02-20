@@ -27,7 +27,10 @@ namespace TabularEditor.TOMWrapper
 
         internal override void Undelete(ITabularObjectCollection collection)
         {
-            var tom = new TOM.Level() { Column = MetadataObject.Column, Name = MetadataObject.Name, Ordinal = MetadataObject.Ordinal };
+            // Since the original column could have been deleted since the level was deleted, let's find the column by name:
+            var c = (collection as LevelCollection).Parent.Table.Columns[MetadataObject.Column.Name].MetadataObject;
+
+            var tom = new TOM.Level() { Column = c, Name = MetadataObject.Name, Ordinal = MetadataObject.Ordinal };
             //MetadataObject.CopyTo(tom);
             //tom.IsRemoved = false;
             MetadataObject = tom;
@@ -86,25 +89,17 @@ namespace TabularEditor.TOMWrapper
 
     public partial class LevelCollection
     {
-        public Hierarchy Hierarchy
-        {
-            get
-            {
-                return Handler.WrapperLookup[MetadataObjectCollection.Parent] as Hierarchy;
-            }
-        }
-
         public override bool Remove(Level item)
         {
             var result = base.Remove(item);
-            Handler.UpdateLevels(Hierarchy);
+            Handler.UpdateLevels(Parent);
             return result;
         }
 
         public override void Add(Level item)
         {
             base.Add(item);
-            Handler.UpdateLevels(Hierarchy);
+            Handler.UpdateLevels(Parent);
         }
     }
 }

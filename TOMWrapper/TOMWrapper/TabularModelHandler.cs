@@ -110,7 +110,7 @@ namespace TabularEditor.TOMWrapper
             foreach (var d in expressionObj.Dependencies.Keys) d.Dependants.Remove(expressionObj);
             expressionObj.Dependencies.Clear();
 
-            var tokens = new DAXLexer(new AntlrInputStream(expressionObj.Expression)).GetAllTokens();
+            var tokens = new DAXLexer(new AntlrInputStream(expressionObj.Expression ?? "")).GetAllTokens();
 
             IToken lastTableRef = null;
 
@@ -431,7 +431,23 @@ namespace TabularEditor.TOMWrapper
                 throw new InvalidOperationException("The model is currently not connected to any server. Please use Deploy() instead of SaveDB().");
             }
 
-            database.Model.SaveChanges();
+            UndoManager.Enabled = false;
+            DetachCalculatedTableMetadata();
+            try
+            {
+                // TODO: Deleting a column with IsKey = true, then undoing, then saving causes an error... wWTF?!?
+                database.Model.SaveChanges();
+            }
+            catch(Exception ex)
+            {
+                Status = "Save to DB error!";
+                throw ex;
+            }
+            finally
+            {
+                AttachCalculatedTableMetadata();
+                UndoManager.Enabled = true;
+            }
 
             Version = CheckConflicts().DatabaseVersion;
 
@@ -439,6 +455,73 @@ namespace TabularEditor.TOMWrapper
 
             Status = "Changes saved.";
             CheckErrors();
+        }
+
+        /// <summary>
+        /// Temporarily removes all perspective and translation information from the CalculatedTableColumns of a
+        /// CalculatedTable that has had its expression changed (NeedsValidation = true). Otherwise, we may get
+        /// errors when deploying the model, if the CalculatedTable expression have changed such that one or more
+        /// of these columns are removed.
+        /// </summary>
+        private void DetachCalculatedTableMetadata()
+        {
+            CTCMetadataBackup = new List<CTCMetadata>();
+
+            foreach(var ctc in Model.Tables.OfType<CalculatedTable>().Where(ctc => ctc.NeedsValidation).SelectMany(t => t.Columns.OfType<CalculatedTableColumn>()))
+            {
+                CTCMetadataBackup.Add(new CTCMetadata(ctc));
+                ctc.InPerspective.None();
+                ctc.TranslatedNames.Clear();
+                ctc.TranslatedDisplayFolders.Clear();
+                ctc.TranslatedDescriptions.Clear();
+            }
+        }
+
+        private List<CTCMetadata> CTCMetadataBackup;
+
+        private class CTCMetadata {
+            public CTCMetadata(CalculatedTableColumn ctc)
+            {
+                TableName = ctc.Table.Name;
+                ColumnName = ctc.Name;
+
+                InPerspective = ctc.InPerspective.Copy();
+                TranslatedNames = ctc.TranslatedNames.Copy();
+                TranslatedDisplayFolders = ctc.TranslatedDisplayFolders.Copy();
+                TranslatedDescriptions = ctc.TranslatedDescriptions.Copy();
+            }
+
+            public string TableName;
+            public string ColumnName;
+            public Dictionary<string, bool> InPerspective;
+            public Dictionary<string, string> TranslatedNames;
+            public Dictionary<string, string> TranslatedDisplayFolders;
+            public Dictionary<string, string> TranslatedDescriptions;
+        }
+
+        /// <summary>
+        /// Reattaches any metadata removed from CalculatedTableColumns that are still present (by name) after
+        /// succesful deployment.
+        /// </summary>
+        private void AttachCalculatedTableMetadata()
+        {
+            foreach (var ct in Model.Tables.OfType<CalculatedTable>()) ct.ReinitColumns();
+
+            foreach(var ctcbackup in CTCMetadataBackup)
+            {
+                if(Model.Tables.Contains(ctcbackup.TableName))
+                {
+                    var t = Model.Tables[ctcbackup.TableName];
+                    if (t.Columns.Contains(ctcbackup.ColumnName))
+                    {
+                        var ctc = t.Columns[ctcbackup.ColumnName];
+                        ctc.InPerspective.CopyFrom(ctcbackup.InPerspective);
+                        ctc.TranslatedNames.CopyFrom(ctcbackup.TranslatedNames);
+                        ctc.TranslatedDisplayFolders.CopyFrom(ctcbackup.TranslatedDisplayFolders);
+                        ctc.TranslatedDescriptions.CopyFrom(ctcbackup.TranslatedDescriptions);
+                    }
+                }
+            }
         }
 
         private string CombineFolderJson(string path)

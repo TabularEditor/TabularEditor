@@ -24,6 +24,25 @@ namespace TabularEditor.TOMWrapper
             return perspective;
         }
 
+        public CalculatedTable AddCalculatedTable()
+        {
+            Handler.BeginUpdate("add calculated table");
+            var t = new CalculatedTable(this);
+            Handler.EndUpdate();
+            return t;
+        }
+
+        public Table AddTable()
+        {
+            Handler.BeginUpdate("add table");
+            var t = new Table(this);
+            var p = new Partition();
+            t.Partitions.Add(p);
+            
+            Handler.EndUpdate();
+            return t;
+        }
+
         public SingleColumnRelationship AddRelationship()
         {
             Handler.BeginUpdate("add relationship");
@@ -111,12 +130,12 @@ namespace TabularEditor.TOMWrapper
 
         public void LoadChildObjects()
         {
-            DataSources = new DataSourceCollection(Handler, "Model.DataSources", MetadataObject.DataSources);
-            Perspectives = new PerspectiveCollection(Handler, "Model.Perspectives", MetadataObject.Perspectives);
-            Cultures = new CultureCollection(Handler, "Model.Cultures", MetadataObject.Cultures);
-            Tables = new TableCollection(Handler, "Model.Tables", MetadataObject.Tables);
-            Relationships = new RelationshipCollection(Handler, "Model.Relationships", MetadataObject.Relationships);
-            Roles = new ModelRoleCollection(Handler, "Model.Roles", MetadataObject.Roles);
+            DataSources = new DataSourceCollection(Handler, "Model.DataSources", MetadataObject.DataSources, this);
+            Perspectives = new PerspectiveCollection(Handler, "Model.Perspectives", MetadataObject.Perspectives, this);
+            Cultures = new CultureCollection(Handler, "Model.Cultures", MetadataObject.Cultures, this);
+            Tables = new TableCollection(Handler, "Model.Tables", MetadataObject.Tables, this);
+            Relationships = new RelationshipCollection(Handler, "Model.Relationships", MetadataObject.Relationships, this);
+            Roles = new ModelRoleCollection(Handler, "Model.Roles", MetadataObject.Roles, this);
 
             Tables.ForEach(r => r.InitRLSIndexer());
             Roles.ForEach(r => r.InitRLSIndexer());

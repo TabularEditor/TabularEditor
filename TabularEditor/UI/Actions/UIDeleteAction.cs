@@ -8,6 +8,8 @@ using System.Windows.Forms;
 
 namespace TabularEditor.UI
 {
+    // TODO: Do we have duplicated Delete logic? The ModelActionManager also defines an action for deleting objects.
+
     [StandardAction]
     public class UIDeleteAction: UIModelAction
     {
@@ -27,11 +29,11 @@ namespace TabularEditor.UI
                     var d = (Selected.FirstOrDefault() as IDaxObject);
                     if (d != null && d.Dependants.Count > 0)
                     {
-                        refs = "\n\nThis object is referenced by " + d.Dependants.First().DaxObjectFullName;
+                        refs = "\n\nThis object is directly referenced in the DAX expression on " + d.Dependants.First().DaxObjectFullName;
                         if (d.Dependants.Count > 1) refs += string.Format(" and {0} other object{1}.", d.Dependants.Count - 1, d.Dependants.Count == 2 ? "" : "s");
                     } else
                     {
-                        refs = "\n\nThis object does not appear to be referenced by other objects.";
+                        refs = "\n\nThis object does not appear to be referenced in DAX expressions of other objects.";
                     }
                 }
 
@@ -69,7 +71,7 @@ namespace TabularEditor.UI
                 else
                 {
                     Text = "Delete " + UIController.Current.Selection.Name + "...";
-                    Enabled = true;
+                    Enabled = !UIController.Current.Selection.OfType<CalculatedTableColumn>().Any();
                     Visible = true;
                 }
             }

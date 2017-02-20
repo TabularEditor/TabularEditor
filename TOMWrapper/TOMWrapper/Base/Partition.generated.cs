@@ -139,7 +139,12 @@ namespace TabularEditor.TOMWrapper
 		{ 
 			get 
 			{ 
-				return MetadataObject?.Table == null ? null : Handler.WrapperLookup[MetadataObject.Table] as Table;
+				TabularObject t = null;
+				if(MetadataObject == null || MetadataObject.Table == null) return null;
+				if(!Handler.WrapperLookup.TryGetValue(MetadataObject.Table, out t)) {
+				    t = Model.Tables[MetadataObject.Table.Name];
+				}
+				return t as Table;
 			} 
 		}
     }
@@ -149,8 +154,12 @@ namespace TabularEditor.TOMWrapper
 	/// </summary>
 	public partial class PartitionCollection: TabularObjectCollection<Partition, TOM.Partition, TOM.Table>
 	{
-		public PartitionCollection(TabularModelHandler handler, string collectionName, TOM.PartitionCollection metadataObjectCollection) : base(handler, collectionName, metadataObjectCollection)
+		public Table Parent { get; private set; }
+
+		public PartitionCollection(TabularModelHandler handler, string collectionName, TOM.PartitionCollection metadataObjectCollection, Table parent) : base(handler, collectionName, metadataObjectCollection)
 		{
+			Parent = parent;
+
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				new Partition(handler, obj) { Collection = this };

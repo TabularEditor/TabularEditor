@@ -70,7 +70,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the Expression of the Measure.
         /// </summary>
 		[DisplayName("Expression")]
-		[Category("Options"),IntelliSense("The Expression of this Measure.")]
+		[Category("Options"),IntelliSense("The Expression of this Measure.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Expression {
 			get {
 			    return MetadataObject.Expression;
@@ -212,7 +212,12 @@ namespace TabularEditor.TOMWrapper
 		{ 
 			get 
 			{ 
-				return MetadataObject?.Table == null ? null : Handler.WrapperLookup[MetadataObject.Table] as Table;
+				TabularObject t = null;
+				if(MetadataObject == null || MetadataObject.Table == null) return null;
+				if(!Handler.WrapperLookup.TryGetValue(MetadataObject.Table, out t)) {
+				    t = Model.Tables[MetadataObject.Table.Name];
+				}
+				return t as Table;
 			} 
 		}
         /// <summary>
@@ -245,8 +250,12 @@ namespace TabularEditor.TOMWrapper
 	/// </summary>
 	public partial class MeasureCollection: TabularObjectCollection<Measure, TOM.Measure, TOM.Table>
 	{
-		public MeasureCollection(TabularModelHandler handler, string collectionName, TOM.MeasureCollection metadataObjectCollection) : base(handler, collectionName, metadataObjectCollection)
+		public Table Parent { get; private set; }
+
+		public MeasureCollection(TabularModelHandler handler, string collectionName, TOM.MeasureCollection metadataObjectCollection, Table parent) : base(handler, collectionName, metadataObjectCollection)
 		{
+			Parent = parent;
+
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				new Measure(handler, obj) { Collection = this };
