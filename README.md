@@ -25,7 +25,8 @@ View the article on www.kapacity.dk/tabular-editor for a general presentation of
 * **2017-01-13** [Version 2.1](https://github.com/otykier/TabularEditor/releases/tag/2.1.6229) released
 * **2017-01-16** [Version 2.1 for SQL Server vNext](https://github.com/otykier/TabularEditor/releases/tag/2.1.6229-vNext) released
 * **2017-01-20** Various bugfixes to [Version 2.1](https://github.com/otykier/TabularEditor/releases/tag/2.1.6229)
-* **2017-01-31** [Version 2.2](https://github.com/otykier/TabularEditor/releases/tag/2.2.6240) released
+* **2017-01-31** [Version 2.2](https://github.com/otykier/TabularEditor/releases/tag/2.2.6260) released
+* **2016-02-20** Various bugfixes and improvements to [Version 2.2](https://github.com/otykier/TabularEditor/releases/tag/2.2.6260)
 
 ## Roadmap
 
