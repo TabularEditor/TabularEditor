@@ -29,6 +29,7 @@ namespace TabularEditor.TOMWrapper
             Handler.BeginUpdate("add calculated table");
             var t = new CalculatedTable(this);
             Handler.EndUpdate();
+            t.InitRLSIndexer();
             return t;
         }
 
@@ -38,6 +39,7 @@ namespace TabularEditor.TOMWrapper
             var t = new Table(this);
             var p = new Partition();
             t.Partitions.Add(p);
+            t.InitRLSIndexer();
             
             Handler.EndUpdate();
             return t;
