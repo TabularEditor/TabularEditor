@@ -34,7 +34,6 @@
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.txtServer = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.rdbUsernamePassword = new System.Windows.Forms.RadioButton();
             this.rdbIntegrated = new System.Windows.Forms.RadioButton();
@@ -43,6 +42,7 @@
             this.txtPassword = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.txtUsername = new System.Windows.Forms.TextBox();
+            this.txtServer = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -66,6 +66,7 @@
             this.comboBox1.Size = new System.Drawing.Size(341, 26);
             this.comboBox1.TabIndex = 1;
             this.comboBox1.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.comboBox1_DrawItem);
+            this.comboBox1.DropDown += new System.EventHandler(this.comboBox1_DropDown);
             this.comboBox1.SelectionChangeCommitted += new System.EventHandler(this.comboBox1_SelectionChangeCommitted);
             // 
             // label1
@@ -85,17 +86,6 @@
             this.label2.Size = new System.Drawing.Size(41, 13);
             this.label2.TabIndex = 49;
             this.label2.Text = "Server:";
-            // 
-            // txtServer
-            // 
-            this.txtServer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtServer.Location = new System.Drawing.Point(90, 0);
-            this.txtServer.Name = "txtServer";
-            this.txtServer.Size = new System.Drawing.Size(341, 20);
-            this.txtServer.TabIndex = 0;
-            this.txtServer.TextChanged += new System.EventHandler(this.ValidateUI);
-            this.txtServer.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtServer_KeyPress);
             // 
             // panel1
             // 
@@ -117,7 +107,7 @@
             this.rdbUsernamePassword.Location = new System.Drawing.Point(90, 27);
             this.rdbUsernamePassword.Name = "rdbUsernamePassword";
             this.rdbUsernamePassword.Size = new System.Drawing.Size(143, 17);
-            this.rdbUsernamePassword.TabIndex = 54;
+            this.rdbUsernamePassword.TabIndex = 1;
             this.rdbUsernamePassword.Text = "Username and Password";
             this.rdbUsernamePassword.UseVisualStyleBackColor = true;
             // 
@@ -128,7 +118,7 @@
             this.rdbIntegrated.Location = new System.Drawing.Point(90, 4);
             this.rdbIntegrated.Name = "rdbIntegrated";
             this.rdbIntegrated.Size = new System.Drawing.Size(114, 17);
-            this.rdbIntegrated.TabIndex = 53;
+            this.rdbIntegrated.TabIndex = 0;
             this.rdbIntegrated.TabStop = true;
             this.rdbIntegrated.Text = "Integrated Security";
             this.rdbIntegrated.UseVisualStyleBackColor = true;
@@ -158,7 +148,7 @@
             this.txtPassword.MaximumSize = new System.Drawing.Size(180, 20);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.Size = new System.Drawing.Size(180, 20);
-            this.txtPassword.TabIndex = 56;
+            this.txtPassword.TabIndex = 3;
             this.txtPassword.UseSystemPasswordChar = true;
             // 
             // label3
@@ -177,20 +167,34 @@
             this.txtUsername.MaximumSize = new System.Drawing.Size(180, 20);
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.Size = new System.Drawing.Size(180, 20);
-            this.txtUsername.TabIndex = 55;
+            this.txtUsername.TabIndex = 2;
+            // 
+            // txtServer
+            // 
+            this.txtServer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtServer.FormattingEnabled = true;
+            this.txtServer.Location = new System.Drawing.Point(90, 0);
+            this.txtServer.Name = "txtServer";
+            this.txtServer.Size = new System.Drawing.Size(341, 21);
+            this.txtServer.TabIndex = 0;
+            this.txtServer.SelectionChangeCommitted += new System.EventHandler(this.txtServer_SelectionChangeCommitted);
+            this.txtServer.TextUpdate += new System.EventHandler(this.ValidateUI);
+            this.txtServer.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtServer_KeyPress);
             // 
             // ConnectPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.txtServer);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.txtServer);
             this.MinimumSize = new System.Drawing.Size(270, 151);
             this.Name = "ConnectPage";
             this.Size = new System.Drawing.Size(431, 151);
+            this.Load += new System.EventHandler(this.ConnectPage_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
@@ -203,7 +207,6 @@
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtServer;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.RadioButton rdbUsernamePassword;
         private System.Windows.Forms.RadioButton rdbIntegrated;
@@ -212,5 +215,6 @@
         private System.Windows.Forms.TextBox txtPassword;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtUsername;
+        private System.Windows.Forms.ComboBox txtServer;
     }
 }

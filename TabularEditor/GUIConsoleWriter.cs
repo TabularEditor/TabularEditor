@@ -38,7 +38,7 @@ namespace TabularEditor
             Console.WriteLine(line);
         }
 
-        public void WriteLine(string line, params string[] args)
+        public void WriteLine(string line, params object[] args)
         {
             WriteLine(string.Format(line, args));
         }

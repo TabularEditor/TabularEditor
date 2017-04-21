@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Measure
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Measure: TabularNamedObject, IDetailObject, IHideableObject, IErrorMessageObject, ITabularTableObject, IDescriptionObject, IExpressionObject
+	public partial class Measure: TabularNamedObject, IDetailObject, IHideableObject, IErrorMessageObject, ITabularTableObject, IDescriptionObject, IExpressionObject, IAnnotationObject
 	{
 	    protected internal new TOM.Measure MetadataObject { get { return base.MetadataObject as TOM.Measure; } internal set { base.MetadataObject = value; } }
 
@@ -27,7 +27,18 @@ namespace TabularEditor.TOMWrapper
 		public Measure(TabularModelHandler handler, TOM.Measure measureMetadataObject) : base(handler, measureMetadataObject)
 		{
 		}
-        /// <summary>
+		public string GetAnnotation(string name) {
+		    return MetadataObject.Annotations.Find(name)?.Value;
+		}
+		public void SetAnnotation(string name, string value, bool undoable = true) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				MetadataObject.Annotations[name].Value = value;
+			} else {
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+			}
+			if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value));
+		}
+		        /// <summary>
         /// Gets or sets the Description of the Measure.
         /// </summary>
 		[DisplayName("Description")]
@@ -70,7 +81,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the Expression of the Measure.
         /// </summary>
 		[DisplayName("Expression")]
-		[Category("Options"),IntelliSense("The Expression of this Measure.")]
+		[Category("Options"),IntelliSense("The Expression of this Measure.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Expression {
 			get {
 			    return MetadataObject.Expression;
@@ -234,7 +245,12 @@ namespace TabularEditor.TOMWrapper
 		{ 
 			get 
 			{ 
-				return MetadataObject?.Table == null ? null : Handler.WrapperLookup[MetadataObject.Table] as Table;
+				TabularObject t = null;
+				if(MetadataObject == null || MetadataObject.Table == null) return null;
+				if(!Handler.WrapperLookup.TryGetValue(MetadataObject.Table, out t)) {
+				    t = Model.Tables[MetadataObject.Table.Name];
+				}
+				return t as Table;
 			} 
 		}
         /// <summary>
@@ -267,8 +283,12 @@ namespace TabularEditor.TOMWrapper
 	/// </summary>
 	public partial class MeasureCollection: TabularObjectCollection<Measure, TOM.Measure, TOM.Table>
 	{
-		public MeasureCollection(TabularModelHandler handler, string collectionName, TOM.MeasureCollection metadataObjectCollection) : base(handler, collectionName, metadataObjectCollection)
+		public Table Parent { get; private set; }
+
+		public MeasureCollection(TabularModelHandler handler, string collectionName, TOM.MeasureCollection metadataObjectCollection, Table parent) : base(handler, collectionName, metadataObjectCollection)
 		{
+			Parent = parent;
+
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				new Measure(handler, obj) { Collection = this };

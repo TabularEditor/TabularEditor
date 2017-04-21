@@ -24,6 +24,35 @@ namespace TabularEditor.TOMWrapper
             return perspective;
         }
 
+        public CalculatedTable AddCalculatedTable()
+        {
+            Handler.BeginUpdate("add calculated table");
+            var t = new CalculatedTable(this);
+            Handler.EndUpdate();
+            t.InitRLSIndexer();
+            return t;
+        }
+
+        public Table AddTable()
+        {
+            Handler.BeginUpdate("add table");
+            var t = new Table(this);
+            var p = new Partition();
+            t.Partitions.Add(p);
+            t.InitRLSIndexer();
+            
+            Handler.EndUpdate();
+            return t;
+        }
+
+        public SingleColumnRelationship AddRelationship()
+        {
+            Handler.BeginUpdate("add relationship");
+            var rel = new SingleColumnRelationship(this);
+            Handler.EndUpdate();
+            return rel;
+        }
+
         [IntelliSense("Adds a new translation to the model.")]
         public Culture AddTranslation(string cultureId)
         {
@@ -61,6 +90,12 @@ namespace TabularEditor.TOMWrapper
         [Editor(typeof(TabularEditor.PropertyGridUI.RefreshGridCollectionEditor), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]
         public ModelRoleCollection Roles { get; private set; }
 
+        [Browsable(false)]
+        public RelationshipCollection2 Relationships { get; private set; }
+
+        [Browsable(false)]
+        public DataSourceCollection DataSources { get; private set; }
+
         public readonly LogicalGroup GroupTables = new LogicalGroup("Tables");
         public readonly LogicalGroup GroupDataSources = new LogicalGroup("Data Sources");
         public readonly LogicalGroup GroupPerspectives = new LogicalGroup("Perspectives");
@@ -92,10 +127,13 @@ namespace TabularEditor.TOMWrapper
 
         public void LoadChildObjects()
         {
-            Perspectives = new PerspectiveCollection(Handler, "Model.Perspectives", MetadataObject.Perspectives);
-            Cultures = new CultureCollection(Handler, "Model.Cultures", MetadataObject.Cultures);
-            Tables = new TableCollection(Handler, "Model.Tables", MetadataObject.Tables);
-            Roles = new ModelRoleCollection(Handler, "Model.Roles", MetadataObject.Roles);
+            DataSources = new DataSourceCollection(Handler, "Model.DataSources", MetadataObject.DataSources, this);
+            Perspectives = new PerspectiveCollection(Handler, "Model.Perspectives", MetadataObject.Perspectives, this);
+            Cultures = new CultureCollection(Handler, "Model.Cultures", MetadataObject.Cultures, this);
+            Tables = new TableCollection(Handler, "Model.Tables", MetadataObject.Tables, this);
+            Relationships = new RelationshipCollection2(Handler, "Model.Relationships", MetadataObject.Relationships, this);
+            Roles = new ModelRoleCollection(Handler, "Model.Roles", MetadataObject.Roles, this);
+
             Tables.ForEach(r => r.InitRLSIndexer());
             Roles.ForEach(r => r.InitRLSIndexer());
 
@@ -103,27 +141,9 @@ namespace TabularEditor.TOMWrapper
             Perspectives.CollectionChanged += Children_CollectionChanged;
             Cultures.CollectionChanged += Children_CollectionChanged;
             Roles.CollectionChanged += Children_CollectionChanged;
+            DataSources.CollectionChanged += Children_CollectionChanged;
+            Relationships.CollectionChanged += Children_CollectionChanged;
             
-        }
-
-        // TODO: Handle differently
-        [TypeConverter(typeof(CollectionConverter))]
-        public List<SingleColumnRelationship> Relationships { get
-            {
-                return MetadataObject.Relationships.OfType<TOM.SingleColumnRelationship>()
-                    .Select(r => new SingleColumnRelationship(Handler, r)).ToList();
-            }
-        }
-
-        // TODO: Handle differently
-        [TypeConverter(typeof(CollectionConverter))]
-        public List<ProviderDataSource> DataSources
-        {
-            get
-            {
-                return MetadataObject.DataSources.OfType<TOM.ProviderDataSource>()
-                    .Select(r => new ProviderDataSource(Handler, r)).ToList();
-            }
         }
 
         private void Children_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

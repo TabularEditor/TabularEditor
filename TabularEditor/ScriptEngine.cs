@@ -161,7 +161,7 @@ namespace TabularEditor
         private static CompilerResults Compile(string code)
         {
             // Allowed namespaces:
-            var includeUsings = new HashSet<string>(new[] { "System", "System.Linq", "TabularEditor.TOMWrapper", "TabularEditor.UI" });
+            var includeUsings = new HashSet<string>(new[] { "System", "System.Linq", "TabularEditor.TOMWrapper", "TabularEditor.UI", "TOM = Microsoft.AnalysisServices.Tabular" });
 
             CompilerResults result;
 

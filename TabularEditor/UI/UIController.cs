@@ -46,6 +46,7 @@ namespace TabularEditor.UI
             ExpressionEditor_Init();
             ScriptEditor_Init();
             PropertyGrid_Init();
+            
             Current = this;
 
             Actions = new ModelActionManager();
@@ -73,6 +74,7 @@ namespace TabularEditor.UI
         public void LoadTabularModelToUI()
         {
             Handler.UndoManager.UndoStateChanged += UndoManager_UndoActionAdded;
+            
 
             ShowSelectionStatus = false;
             Tree = new TabularUITree(Handler.Model) { Options = Tree?.Options ?? LogicalTreeOptions.Default };
@@ -161,6 +163,7 @@ namespace TabularEditor.UI
         public FormMain FormMain;
         public ImageList TreeImages;
         public ToolStripDropDownItem ModelMenu;
+        public ToolStripDropDownItem ToolsMenu;
         public ToolStripComboBox TranslationSelector;
         public ToolStripComboBox PerspectiveSelector;
     }

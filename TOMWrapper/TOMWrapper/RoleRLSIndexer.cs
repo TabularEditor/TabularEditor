@@ -118,6 +118,7 @@ namespace TabularEditor.TOMWrapper
         {
             var tps = Role.MetadataObject.TablePermissions;
             var tp = tps.Contains(table.Name) ? tps[table.Name] : null;
+            if (string.IsNullOrEmpty(filterExpression) && tp == null) return;
 
             if(string.IsNullOrEmpty(filterExpression) && tp != null)
             {

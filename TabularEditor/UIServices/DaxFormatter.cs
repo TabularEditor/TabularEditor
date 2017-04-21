@@ -81,6 +81,7 @@ namespace TabularEditor.Dax
                 //System.Net.ServicePointManager.Expect100Continue = false;
 
                 var wr = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(uri);
+                wr.Proxy = WebRequest.GetSystemWebProxy();
 
                 wr.Timeout = DaxFormatterRequestTimeout * 1000;
                 wr.ContentType = "application/json";

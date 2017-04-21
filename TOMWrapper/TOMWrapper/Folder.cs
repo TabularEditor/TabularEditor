@@ -189,7 +189,7 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                throw new InvalidOperationException();
+                return null;
             }
         }
         [Browsable(false)]
@@ -197,7 +197,7 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                throw new InvalidOperationException();
+                return null;
             }
         }
 

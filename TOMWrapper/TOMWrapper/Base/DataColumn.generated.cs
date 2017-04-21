@@ -31,7 +31,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the SourceColumn of the DataColumn.
         /// </summary>
 		[DisplayName("Source Column")]
-		[Category("Other"),IntelliSense("The Source Column of this DataColumn.")]
+		[Category("Options"),IntelliSense("The Source Column of this DataColumn.")]
 		public string SourceColumn {
 			get {
 			    return MetadataObject.SourceColumn;

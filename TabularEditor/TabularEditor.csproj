@@ -31,7 +31,7 @@
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>2.0.6178.21425</ApplicationVersion>
+    <ApplicationVersion>2.2.6271.15239</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -136,17 +136,33 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BestPracticeAnalyzer\Analyzer.cs" />
+    <Compile Include="BestPracticeAnalyzer\BestPracticeRule.cs" />
+    <Compile Include="BestPracticeAnalyzer\NodePanels\BaseNodePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="BestPracticeAnalyzer\CriteriaTreeBuilder.cs" />
+    <Compile Include="BestPracticeAnalyzer\MultiModeComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="BestPracticeAnalyzer\NodePanels\CriteriaNodePanel.cs" />
+    <Compile Include="BestPracticeAnalyzer\NodePanels\MultiNodePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="BestPracticeAnalyzer\Operator.cs" />
     <Compile Include="BindingHelper.cs" />
+    <Compile Include="Extensions\StringHelper.cs" />
+    <Compile Include="UIServices\DynamicLinq.cs" />
     <Compile Include="UIServices\PowerBIHelper.cs" />
     <Compile Include="UIServices\Preferences.cs" />
+    <Compile Include="UIServices\RecentFiles.cs" />
     <Compile Include="UIServices\UpdateService.cs" />
-    <Compile Include="UI\DaxFormatter.cs" />
+    <Compile Include="UIServices\DaxFormatter.cs" />
     <Compile Include="GUIConsoleWriter.cs" />
     <Compile Include="ScriptEngine.cs" />
     <Compile Include="PropertyGrid\NavigatablePropertyGrid.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="TextServices\DAXLexer.cs" />
     <Compile Include="TextServices\CSharpLexer.cs" />
     <Compile Include="TextServices\ExpressionParser.cs" />
     <Compile Include="UI\Actions\SelectAllAction.cs">
@@ -171,6 +187,19 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\Actions\TextBoxWrapper.cs" />
+    <Compile Include="BestPracticeAnalyzer\BPAEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BestPracticeAnalyzer\BPAEditorForm.Designer.cs">
+      <DependentUpon>BPAEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BestPracticeAnalyzer\BPAForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BestPracticeAnalyzer\BPAForm.Designer.cs">
+      <DependentUpon>BPAForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ControlHelper.cs" />
     <Compile Include="UI\Dialogs\ClipForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -194,6 +223,18 @@
     </Compile>
     <Compile Include="UI\Dialogs\DeployingForm.Designer.cs">
       <DependentUpon>DeployingForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Dialogs\DependencyForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\DependencyForm.Designer.cs">
+      <DependentUpon>DependencyForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Dialogs\ImportTranslationsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\ImportTranslationsForm.Designer.cs">
+      <DependentUpon>ImportTranslationsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Dialogs\Pages\ConnectPage.cs">
       <SubType>UserControl</SubType>
@@ -240,6 +281,7 @@
     <Compile Include="UI\UIController_Files.cs" />
     <Compile Include="UI\UIController_PropertyGrid.cs" />
     <Compile Include="UI\UIController_ScriptEditor.cs" />
+    <Compile Include="UI\UIController_Translations.cs" />
     <Compile Include="UI\UIController_Tree.cs" />
     <Compile Include="UI\Dialogs\FormBatchRename.cs">
       <SubType>Form</SubType>
@@ -409,6 +451,12 @@
     <Compile Include="UI\UIHelper.cs" />
     <Compile Include="UI\UISelectionList.cs" />
     <Compile Include="UI\UITreeSelection.cs" />
+    <EmbeddedResource Include="BestPracticeAnalyzer\BPAEditorForm.resx">
+      <DependentUpon>BPAEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BestPracticeAnalyzer\BPAForm.resx">
+      <DependentUpon>BPAForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\CultureSelectDialog.resx">
       <DependentUpon>CultureSelectDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -420,6 +468,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\ConnectForm.resx">
       <DependentUpon>ConnectForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\DependencyForm.resx">
+      <DependentUpon>DependencyForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\FormDisplayFolderSelect.resx">
       <DependentUpon>FormDisplayFolderSelect.cs</DependentUpon>
@@ -451,6 +502,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\DeployingForm.resx">
       <DependentUpon>DeployingForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\ImportTranslationsForm.resx">
+      <DependentUpon>ImportTranslationsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\Pages\ConnectPage.resx">
       <DependentUpon>ConnectPage.cs</DependentUpon>

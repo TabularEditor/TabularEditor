@@ -301,9 +301,6 @@ namespace TabularEditor.TextServices
                 token = list[i];
             }
 
-            Console.WriteLine("------");
-            Console.WriteLine(string.Join("->", propStack));
-
             return propStack;
 
         }

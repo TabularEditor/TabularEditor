@@ -10,26 +10,16 @@ namespace TabularEditor.TOMWrapper
 {
     public partial class CalculatedColumn
     {
-        [IntelliSense("Deletes the Calculated Column from the table.")]
-        public override void Delete()
-        {
-            InPerspective.None();
-            base.Delete();
-        }
-
-        internal override void Undelete(ITabularObjectCollection collection)
-        {
-            var tom = new TOM.CalculatedColumn();
-            MetadataObject.CopyTo(tom);
-            tom.IsRemoved = false;
-            MetadataObject = tom;
-
-            base.Undelete(collection);
-        }
+        [Browsable(false)]
+        public Dictionary<IDaxObject, List<Dependency>> Dependencies { get; internal set; } = new Dictionary<IDaxObject, List<Dependency>>();
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
-            if (propertyName == "Expression") NeedsValidation = true;
+            if (propertyName == "Expression")
+            {
+                NeedsValidation = true;
+                Handler.BuildDependencyTree(this);
+            }
 
             base.OnPropertyChanged(propertyName, oldValue, newValue);
         }

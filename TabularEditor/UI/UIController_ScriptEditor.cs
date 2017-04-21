@@ -100,11 +100,15 @@ namespace TabularEditor.UI
             Cursor.Current = Cursors.WaitCursor;
 
             System.CodeDom.Compiler.CompilerResults result;
-            var dyn = ScriptEngine.ScriptAction(UI.ScriptEditor.Text, out result);
+
+            var script = !string.IsNullOrEmpty(UI.ScriptEditor.SelectedText) ? UI.ScriptEditor.SelectedText : UI.ScriptEditor.Text;
+            var offset = (!string.IsNullOrEmpty(UI.ScriptEditor.SelectedText) ? UI.ScriptEditor.Selection.FromLine : 0);
+
+            var dyn = ScriptEngine.ScriptAction(script, out result);
             if (result.Errors.Count > 0) {
                 foreach(System.CodeDom.Compiler.CompilerError err in result.Errors)
                 {
-                    var line = err.Line - 11;
+                    var line = err.Line - 12 + offset;
 
                     if (line >= 0 && line < UI.ScriptEditor.LinesCount)
                     {
@@ -132,7 +136,7 @@ namespace TabularEditor.UI
                 if (st.FrameCount >= 2)
                 {
                     var frame = st.GetFrame(st.FrameCount - 2);
-                    var line = frame.GetFileLineNumber() - 11; // TODO: Correct this if changes are made to generated code!
+                    var line = frame.GetFileLineNumber() - 12 + offset; // TODO: Correct this if changes are made to generated code!
                     if (line >= 0 && line < UI.ScriptEditor.LinesCount)
                     {
                         msg = string.Format("Error on line {0}:\n{1}", line + 1, msg);

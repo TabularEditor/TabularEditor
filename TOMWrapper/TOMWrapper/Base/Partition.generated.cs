@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Partition
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Partition: TabularNamedObject, IErrorMessageObject, ITabularTableObject, IDescriptionObject
+	public partial class Partition: TabularNamedObject, IErrorMessageObject, ITabularTableObject, IDescriptionObject, IAnnotationObject
 	{
 	    protected internal new TOM.Partition MetadataObject { get { return base.MetadataObject as TOM.Partition; } internal set { base.MetadataObject = value; } }
 
@@ -39,7 +39,18 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeSourceType() { return false; }
-        /// <summary>
+		public string GetAnnotation(string name) {
+		    return MetadataObject.Annotations.Find(name)?.Value;
+		}
+		public void SetAnnotation(string name, string value, bool undoable = true) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				MetadataObject.Annotations[name].Value = value;
+			} else {
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+			}
+			if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value));
+		}
+		        /// <summary>
         /// Gets or sets the Description of the Partition.
         /// </summary>
 		[DisplayName("Description")]
@@ -139,7 +150,12 @@ namespace TabularEditor.TOMWrapper
 		{ 
 			get 
 			{ 
-				return MetadataObject?.Table == null ? null : Handler.WrapperLookup[MetadataObject.Table] as Table;
+				TabularObject t = null;
+				if(MetadataObject == null || MetadataObject.Table == null) return null;
+				if(!Handler.WrapperLookup.TryGetValue(MetadataObject.Table, out t)) {
+				    t = Model.Tables[MetadataObject.Table.Name];
+				}
+				return t as Table;
 			} 
 		}
     }
@@ -149,8 +165,12 @@ namespace TabularEditor.TOMWrapper
 	/// </summary>
 	public partial class PartitionCollection: TabularObjectCollection<Partition, TOM.Partition, TOM.Table>
 	{
-		public PartitionCollection(TabularModelHandler handler, string collectionName, TOM.PartitionCollection metadataObjectCollection) : base(handler, collectionName, metadataObjectCollection)
+		public Table Parent { get; private set; }
+
+		public PartitionCollection(TabularModelHandler handler, string collectionName, TOM.PartitionCollection metadataObjectCollection, Table parent) : base(handler, collectionName, metadataObjectCollection)
 		{
+			Parent = parent;
+
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				new Partition(handler, obj) { Collection = this };

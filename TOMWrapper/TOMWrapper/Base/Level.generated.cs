@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Level
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Level: TabularNamedObject, IDescriptionObject
+	public partial class Level: TabularNamedObject, IDescriptionObject, IAnnotationObject
 	{
 	    protected internal new TOM.Level MetadataObject { get { return base.MetadataObject as TOM.Level; } internal set { base.MetadataObject = value; } }
 
@@ -27,7 +27,18 @@ namespace TabularEditor.TOMWrapper
 		public Level(TabularModelHandler handler, TOM.Level levelMetadataObject) : base(handler, levelMetadataObject)
 		{
 		}
-        /// <summary>
+		public string GetAnnotation(string name) {
+		    return MetadataObject.Annotations.Find(name)?.Value;
+		}
+		public void SetAnnotation(string name, string value, bool undoable = true) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				MetadataObject.Annotations[name].Value = value;
+			} else {
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+			}
+			if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value));
+		}
+		        /// <summary>
         /// Gets or sets the Ordinal of the Level.
         /// </summary>
 		[DisplayName("Ordinal")]
@@ -106,7 +117,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging("Column", value, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Column = value?.MetadataObject;
+				MetadataObject.Column = value == null ? null : Hierarchy.Table.Columns[value.MetadataObject.Name].MetadataObject;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Column", oldValue, value));
 				OnPropertyChanged("Column", oldValue, value);
 			}
@@ -119,8 +130,12 @@ namespace TabularEditor.TOMWrapper
 	/// </summary>
 	public partial class LevelCollection: TabularObjectCollection<Level, TOM.Level, TOM.Hierarchy>
 	{
-		public LevelCollection(TabularModelHandler handler, string collectionName, TOM.LevelCollection metadataObjectCollection) : base(handler, collectionName, metadataObjectCollection)
+		public Hierarchy Parent { get; private set; }
+
+		public LevelCollection(TabularModelHandler handler, string collectionName, TOM.LevelCollection metadataObjectCollection, Hierarchy parent) : base(handler, collectionName, metadataObjectCollection)
 		{
+			Parent = parent;
+
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				new Level(handler, obj) { Collection = this };

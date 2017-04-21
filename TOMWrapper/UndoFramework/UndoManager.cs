@@ -12,11 +12,25 @@ namespace TabularEditor.UndoFramework
         Stack<IUndoAction> _UndoStack = new Stack<IUndoAction>();
         Stack<IUndoAction> _RedoStack = new Stack<IUndoAction>();
 
-        public void Rollback()
+        internal bool RebuildDependencyTree = false;
+        public bool Enabled { get; internal set; } = true;
+
+        /// <summary>
+        /// Rolls back all changes done to the model.
+        /// </summary>
+        /// <param name="toCheckPoint">If this is set to true, the model is only rolled back to the last set checkpoint (typically when the model was last saved).</param>
+        public void Rollback(bool toCheckPoint = false)
         {
-            while(_UndoStack.Count > 0)
+            while((toCheckPoint && !AtCheckpoint) || (!toCheckPoint && UndoSize > 0))
             {
-                Undo();
+                XDo(false, true);
+            }
+
+            if (RebuildDependencyTree)
+            {
+                _handler.DelayBuildDependencyTree = false;
+                RebuildDependencyTree = false;
+                _handler.BuildDependencyTree();
             }
         }
 
@@ -80,11 +94,13 @@ namespace TabularEditor.UndoFramework
             _handler = handler;
         }
 
+        public bool UndoInProgress { get { return inProgress; } }
         private bool inProgress = false;
 
         internal void XDo(bool redo, bool inversable)
         {
-            if (batchDepth != 0) throw new InvalidOperationException("Cannot undo/redo while a batch is in progress.");
+            if (!Enabled) throw new InvalidOperationException("UndoManager is not enabled.");
+            //if (undoDepth == -1 && batchDepth != 0) throw new InvalidOperationException("Cannot undo/redo while a batch is in progress.");
 
             _handler.BeginUpdate(null);
 
@@ -103,6 +119,8 @@ namespace TabularEditor.UndoFramework
 
                 if (item is UndoBatchAction)
                 {
+                    var batchDepth = (item as UndoBatchAction).Depth;
+
                     do
                     {
                         item = stack.Pop();
@@ -111,7 +129,7 @@ namespace TabularEditor.UndoFramework
 
                         if(inversable) inverseStack.Push(item);
                     }
-                    while (!(item is UndoBatchAction));
+                    while (!(item is UndoBatchAction) || (item as UndoBatchAction).Depth > batchDepth);
 
 
                 }
@@ -126,10 +144,22 @@ namespace TabularEditor.UndoFramework
         public void Undo()
         {
             XDo(false, true);
+            if (RebuildDependencyTree)
+            {
+                _handler.DelayBuildDependencyTree = false;
+                RebuildDependencyTree = false;
+                _handler.BuildDependencyTree();
+            }
         }
         public void Redo()
         {
             XDo(true, true);
+            if (RebuildDependencyTree)
+            {
+                _handler.DelayBuildDependencyTree = false;
+                RebuildDependencyTree = false;
+                _handler.BuildDependencyTree();
+            }
         }
         public void Clear()
         {
@@ -150,13 +180,14 @@ namespace TabularEditor.UndoFramework
         /// <param name="batchName">A descriptive name for the batch.</param>
         public void BeginBatch(string batchName)
         {
+            if (!Enabled) return;
+
             if (inProgress) return;
-            if(batchDepth == 0)
-            {
-                batchSizeCounter = 0;
-                batch = new UndoBatchAction(batchName, true);
-                _UndoStack.Push(batch);
-            }
+            if(batchDepth == 0) batchSizeCounter = 0;
+
+            batch = new UndoBatchAction(batchName, BatchDepth, true);
+            _UndoStack.Push(batch);
+
             batchDepth++;
         }
 
@@ -167,34 +198,40 @@ namespace TabularEditor.UndoFramework
         /// <returns></returns>
         public int EndBatch(bool undo = false)
         {
+            if (!Enabled) return 0;
+
             if (inProgress) return 0;
             if (batchDepth == 0) throw new InvalidOperationException("EndBatch() called before BeginBatch().");
             batchDepth--;
-            if(batchDepth == 0)
+
+            if ((_UndoStack.Peek() as UndoBatchAction)?.Begin ?? false)
             {
-                if (_UndoStack.Peek() is UndoBatchAction)
+                // If the last action on the stack is a begin-BatchAction, it means no actions was performed
+                // in this batch. Pop the last BatchAction to avoid having an empty batch on the stack.
+                var a = _UndoStack.Pop() as UndoBatchAction;
+
+                if (!a.Begin) throw new InvalidOperationException(); // should not happen
+
+                return 0;
+            }
+            else
+            {
+                var actionName = _UndoStack.OfType<UndoBatchAction>().First(uba => uba.Depth == batchDepth).ActionName;
+                _UndoStack.Push(new UndoBatchAction(actionName, batchDepth, false));
+                if (undo)
                 {
-                    // If the last action on the stack is also a BatchAction, it means no actions was performed
-                    // in this batch. Pop the last BatchAction to avoid having an empty batch on the stack.
-                    var a = _UndoStack.Pop() as UndoBatchAction;
-
-                    if (!a.Begin) throw new InvalidOperationException(); // should not happen
-
+                    XDo(false, false);
                     return 0;
                 }
-                else
-                {
-                    _UndoStack.Push(new UndoBatchAction(batch.ActionName, false));
-                    if (undo)
-                    {
-                        XDo(false, false);
-                        return 0;
-                    }
-                }
             }
+
             UndoStateChanged?.Invoke(this, new EventArgs());
             return batchSizeCounter;
         }
+
+        public int UndoSize { get { return _UndoStack.Count; } }
+        public int RedoSize { get { return _RedoStack.Count; } }
+
 
         public int BatchDepth { get { return batchDepth; } }
 
@@ -206,6 +243,8 @@ namespace TabularEditor.UndoFramework
         /// <param name="action"></param>
         public void Add(IUndoAction action)
         {
+            if (!Enabled) return;
+
             if (inProgress) return;
             _UndoStack.Push(action);
             if (CanRedo) _RedoStack.Clear();

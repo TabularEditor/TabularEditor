@@ -18,6 +18,11 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.SingleColumnRelationship MetadataObject { get { return base.MetadataObject as TOM.SingleColumnRelationship; } internal set { base.MetadataObject = value; } }
 
+		public SingleColumnRelationship(Model parent) : base(parent.Handler, new TOM.SingleColumnRelationship(), false) {
+			MetadataObject.Name = parent.MetadataObject.Relationships.GetNewName("New SingleColumnRelationship");
+			parent.Relationships.Add(this);
+			Init();
+		}
 
 		public SingleColumnRelationship(TabularModelHandler handler, TOM.SingleColumnRelationship singlecolumnrelationshipMetadataObject) : base(handler, singlecolumnrelationshipMetadataObject)
 		{
@@ -26,7 +31,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the FromColumn of the SingleColumnRelationship.
         /// </summary>
 		[DisplayName("From Column")]
-		[Category("Other"),IntelliSense("The From Column of this SingleColumnRelationship.")]
+		[Category("Relationship"),IntelliSense("The From Column of this SingleColumnRelationship.")][TypeConverter(typeof(AllColumnConverter))]
 		public Column FromColumn {
 			get {
 				if (MetadataObject.FromColumn == null) return null;
@@ -49,7 +54,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the ToColumn of the SingleColumnRelationship.
         /// </summary>
 		[DisplayName("To Column")]
-		[Category("Other"),IntelliSense("The To Column of this SingleColumnRelationship.")]
+		[Category("Relationship"),IntelliSense("The To Column of this SingleColumnRelationship.")][TypeConverter(typeof(AllColumnConverter))]
 		public Column ToColumn {
 			get {
 				if (MetadataObject.ToColumn == null) return null;

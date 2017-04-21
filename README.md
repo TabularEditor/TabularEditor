@@ -3,8 +3,8 @@ Tabular Editor is a tool that lets you easily manipulate and manage measures, ca
 
 ![](https://raw.githubusercontent.com/otykier/TabularEditor/master/Documentation/Main%20UI%202_1.png)
 
-* [Download Tabular Editor v. 2.1 for SQL Server 2016](https://github.com/otykier/TabularEditor/releases/latest)
-* [Download Tabular Editor v. 2.1 for SQL Server vNext Preview](https://github.com/otykier/TabularEditor/releases/tag/2.1.6225)
+* [Download Tabular Editor v. 2.2 for SQL Server 2016](https://github.com/otykier/TabularEditor/releases/latest)
+* [Download Tabular Editor v. 2.1 for SQL Server vNext Preview](https://github.com/otykier/TabularEditor/releases/tag/2.1.6229-vNext)
 
 ### Prerequisites
 Tabular Editor uses the [Tabular Object Model](https://msdn.microsoft.com/en-us/library/mt706505.aspx) to load and save metadata to and from Model.bim files or existing databases. For this reason, make sure you have the latest AMO libraries available before installing Tabular Editor. They can be downloaded from the [SQL Server 2016 Feature Pack](https://www.microsoft.com/en-us/download/details.aspx?id=52676) (Click "Download" and choose either "\X64\SQL_AS_AMO.msi" or "\X86\SQL_AS_AMO.msi").
@@ -22,8 +22,11 @@ View the article on www.kapacity.dk/tabular-editor for a general presentation of
 
 * **2016-09-01** Version 1.0 released on Kapacity.dk
 * **2016-11-22** Version 2.0 and source code released on GitHub.com
-* **2017-01-13** [Version 2.1](https://github.com/otykier/TabularEditor/releases/tag/2.1.6222) released
-* **2017-01-16** [Version 2.1 for SQL Server vNext](https://github.com/otykier/TabularEditor/releases/tag/2.1.6225-alpha) released
+* **2017-01-13** [Version 2.1](https://github.com/otykier/TabularEditor/releases/tag/2.1.6229) released
+* **2017-01-16** [Version 2.1 for SQL Server vNext](https://github.com/otykier/TabularEditor/releases/tag/2.1.6229-vNext) released
+* **2017-01-20** Various bugfixes to [Version 2.1](https://github.com/otykier/TabularEditor/releases/tag/2.1.6229)
+* **2017-01-31** [Version 2.2](https://github.com/otykier/TabularEditor/releases/tag/2.2.6260) released
+* **2016-02-20** Various bugfixes and improvements to [Version 2.2](https://github.com/otykier/TabularEditor/releases/tag/2.2.6260)
 
 ## Roadmap
 

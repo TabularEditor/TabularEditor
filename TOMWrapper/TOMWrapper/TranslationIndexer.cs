@@ -12,6 +12,11 @@ namespace TabularEditor.TOMWrapper
     [TypeConverter(typeof(IndexerConverter))]
     public class TranslationIndexer : IEnumerable<string>, IExpandableIndexer
     {
+        public Dictionary<string, string> Copy()
+        {
+            return Keys.ToDictionary(k => k, k => this[k]);
+        }
+
         [IntelliSense("Copy translations from another translation collection.")]
         public void CopyFrom(TranslationIndexer translations, Func<string,string> mutator = null)
         {
@@ -21,6 +26,14 @@ namespace TabularEditor.TOMWrapper
                 if (value == null) continue;
                 if (mutator != null) value = mutator(value);
                 this[key] = translations[key];
+            }
+        }
+
+        public void CopyFrom(IDictionary<string, string> source)
+        {
+            foreach(var kvp in source)
+            {
+                this[kvp.Key] = kvp.Value;
             }
         }
 
@@ -108,6 +121,14 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        public int TranslatedCount
+        {
+            get
+            {
+                return this.Count(t => t != DefaultValue && !string.IsNullOrEmpty(t));
+            }
+        }
+
         public IEnumerable<string> Keys
         {
             get
@@ -167,6 +188,9 @@ namespace TabularEditor.TOMWrapper
             }
             set
             {
+                // TODO: Find a better way to avoid translations on objects that can't be translated
+                if (_tabularObject is ModelRole || _tabularObject is Partition || _tabularObject is Relationship) return;
+
                 var oldValue = this[culture];
                 if (value == oldValue) return;
 
@@ -203,11 +227,12 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                return this[GetCulture(cultureName)];
+
+                return Cultures.Contains(cultureName) ? this[GetCulture(cultureName)] : null;
             }
             set
             {
-                this[GetCulture(cultureName)] = value;
+                if(Cultures.Contains(cultureName)) this[GetCulture(cultureName)] = value;
             }
         }
 

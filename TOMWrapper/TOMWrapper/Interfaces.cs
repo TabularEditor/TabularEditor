@@ -59,10 +59,17 @@ namespace TabularEditor.TOMWrapper
         string ErrorMessage { get; }
     }
 
+    public interface IAnnotationObject: ITabularObject
+    {
+        string GetAnnotation(string name);
+        void SetAnnotation(string name, string value, bool undoable = true);
+    }
+
     public interface IExpressionObject: IDaxObject
     {
         string Expression { get; set; }
         bool NeedsValidation { get; set; }
+        Dictionary<IDaxObject, List<Dependency>> Dependencies { get; }
     }
 
     /// <summary>
@@ -71,6 +78,7 @@ namespace TabularEditor.TOMWrapper
     public interface ITabularTableObject : ITabularNamedObject
     {
         Table Table { get; }
+        void Delete();
     }
 
     public interface IDaxObject: ITabularNamedObject
@@ -78,6 +86,7 @@ namespace TabularEditor.TOMWrapper
         string DaxObjectName { get; }
         string DaxObjectFullName { get; }
         string DaxTableName { get; }
+        HashSet<IExpressionObject> Dependants { get; }
     }
     #endregion
 

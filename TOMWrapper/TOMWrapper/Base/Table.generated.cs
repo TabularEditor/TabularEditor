@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Table
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Table: TabularNamedObject, IHideableObject, IDescriptionObject
+	public partial class Table: TabularNamedObject, IHideableObject, IDescriptionObject, IAnnotationObject
 	{
 	    protected internal new TOM.Table MetadataObject { get { return base.MetadataObject as TOM.Table; } internal set { base.MetadataObject = value; } }
 
@@ -27,7 +27,18 @@ namespace TabularEditor.TOMWrapper
 		public Table(TabularModelHandler handler, TOM.Table tableMetadataObject) : base(handler, tableMetadataObject)
 		{
 		}
-        /// <summary>
+		public string GetAnnotation(string name) {
+		    return MetadataObject.Annotations.Find(name)?.Value;
+		}
+		public void SetAnnotation(string name, string value, bool undoable = true) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				MetadataObject.Annotations[name].Value = value;
+			} else {
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+			}
+			if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value));
+		}
+		        /// <summary>
         /// Gets or sets the DataCategory of the Table.
         /// </summary>
 		[DisplayName("Data Category")]
@@ -128,8 +139,12 @@ namespace TabularEditor.TOMWrapper
 	/// </summary>
 	public partial class TableCollection: TabularObjectCollection<Table, TOM.Table, TOM.Model>
 	{
-		public TableCollection(TabularModelHandler handler, string collectionName, TOM.TableCollection metadataObjectCollection) : base(handler, collectionName, metadataObjectCollection)
+		public Model Parent { get; private set; }
+
+		public TableCollection(TabularModelHandler handler, string collectionName, TOM.TableCollection metadataObjectCollection, Model parent) : base(handler, collectionName, metadataObjectCollection)
 		{
+			Parent = parent;
+
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				switch(obj.GetSourceType()) {

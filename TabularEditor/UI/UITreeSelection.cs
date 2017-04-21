@@ -67,26 +67,21 @@ namespace TabularEditor.UI
         }
     }
 
+    /// <summary>
+    /// A bit mask of Table Object types that can be simultaneously selected in the Explorer Tree.
+    /// Only relevant when Context = TableObject.
+    /// </summary>
     [Flags]
     public enum Types
     {
-        None = 0x00,
-        Model = 0x01,
-        Table = 0x02, 
-        Hierarchy = 0x04,
-        Level = 0x08,
-        Measure = 0x10,
-        Column = 0x100,
-        CalculatedColumn = 0x200,
-        DataColumn = 0x400,
-        CalculatedTableColumn = 0x800,
-        TableObject = Types.Hierarchy | Types.Measure | Types.Column | Types.Folder,
-        Folder = 0x1000,
-        Group = 0x2000,
-        Role = 0x4000,
-        Perspective = 0x8000,
-        Culture = 0x10000,
-        DataSource = 0x20000
+        None = 0,
+        Folder =                1 << 0,
+        Hierarchy =             1 << 1,
+        Measure =               1 << 2,
+        Column =                1 << 3,
+        CalculatedColumn =      1 << 4,
+        DataColumn =            1 << 5,
+        CalculatedTableColumn = 1 << 6
     }
 
     public static class TypesHelper
@@ -130,6 +125,109 @@ namespace TabularEditor.UI
     }
 
     /// <summary>
+    /// Determines the context of the current selection in the Explorer Tree. Only one of the contexts
+    /// can be selected at a time. For example, it is not possible to simultaneously select a table and
+    /// a data source. Objects inside tables (columns, measures, hierarchies, folders) may be simultaneously
+    /// selected, and therefore the context when one or more of these objects are selected is simply
+    /// "TableObject".
+    /// 
+    /// While a given selection in the Explorer Tree can only have one context, it is possible for context
+    /// menu items to be visible under several contexts, which is why the enum is treated as Flags.
+    /// </summary>
+    [Flags]
+    public enum Context
+    {
+        /// <summary>
+        /// Nothing selected in the tree
+        /// </summary>
+        None = 0,
+
+        /// <summary>
+        /// Context menu opened on Model node
+        /// </summary>
+        Model = 1 << 0,
+
+        /// <summary>
+        /// Context menu opened on the "Tables" group node
+        /// </summary>
+        Tables = 1 << 1,
+
+        /// <summary>
+        /// Context menu opened on the "Data Sources" group node
+        /// </summary>
+        DataSources = 1 << 2,
+
+        /// <summary>
+        /// Context menu opened on the "Perspectives" group node
+        /// </summary>
+        Perspectives = 1 << 3,
+
+        /// <summary>
+        /// Context menu opened on the "Translations" group node
+        /// </summary>
+        Translations = 1 << 4,
+
+        /// <summary>
+        /// Context menu opened on the "Roles" group node
+        /// </summary>
+        Roles = 1 << 5,
+
+        /// <summary>
+        /// Context menu opened on the "Relationships" group node
+        /// </summary>
+        Relationships = 1 << 6,
+
+        /// <summary>
+        /// Context menu opened on one or more tables
+        /// </summary>
+        Table = 1 << 7,
+
+        /// <summary>
+        /// Context menu opened on one or more table objects (measures, columns, hierarchies or folders - use Selected.Types to determine type of objects)
+        /// </summary>
+        TableObject = 1 << 8,
+
+        /// <summary>
+        /// Context menu opened on one or more hierarchy levels
+        /// </summary>
+        Level = 1 << 9,
+
+        /// <summary>
+        /// Context menu opened on one or more table partitions
+        /// </summary>
+        Partition = 1 << 10,
+
+        /// <summary>
+        /// Context menu opened on one or more relationships
+        /// </summary>
+        Relationship = 1 << 11,
+
+        /// <summary>
+        /// Context menu opened on one or more data sources
+        /// </summary>
+        DataSource = 1 << 12,
+
+        /// <summary>
+        /// Context menu opened on one or more roles
+        /// </summary>
+        Role = 1 << 13,
+
+        /// <summary>
+        /// Context menu opened on one or more perspectives
+        /// </summary>
+        Perspective = 1 << 14,
+
+        /// <summary>
+        /// Context menu opened on one or more cultures
+        /// </summary>
+        Translation = 1 << 15,
+
+        Everywhere = 0xFFFFFF,
+        SingularObjects = Table | TableObject | Level | Partition | Relationship | DataSource | Role | Perspective | Translation,
+        Groups = Model | Tables | Relationships | DataSources | Roles | Perspectives | Translations
+    }
+
+    /// <summary>
     /// Provides a range of collections containing the TOM objects that are currently selected
     /// in the TreeView. Each collection is statically typed, making it very easy to work with
     /// the objects in the collection. A handful of convenient methods for adding, deleting,
@@ -145,40 +243,75 @@ namespace TabularEditor.UI
     {
         IReadOnlyCollection<TreeNodeAdv> _selectedNodes;
 
-        Types _Types = Types.None;
-        [IntelliSense("A bit mask specifiying which types are currently selected.\nExample: if(Selected.Types.HasFlag(Types.Measure)) { ... }")]
-        public Types Types {
-            get
+        [IntelliSense("Indicates where in the Explorer Tree the current selection has been made.")]
+        public Context Context { get; private set; } = Context.None;
+
+        [IntelliSense("A bit mask specifiying which TableObjects are currently selected.\nExample: if(Selected.Types.HasFlag(Types.Measure)) { ... }")]
+        public Types Types { get; private set; } = Types.None;
+
+        /// <summary>
+        /// Returns a bitmask of Table Object types present in the collection of Explorer Tree nodes
+        /// </summary>
+        /// <param name="nodes"></param>
+        /// <returns></returns>
+        static public Types GetNodeTypes(IReadOnlyCollection<TreeNodeAdv> nodes)
+        {
+            var result = Types.None;
+            foreach(var item in GetDeep(nodes).Select(n => n.Tag).OfType<TabularNamedObject>())
             {
-                if(_Types == Types.None)
+                switch(item.ObjectType)
                 {
-                    var x = 0;
-                    foreach(var item in this)
-                    {
-                        switch(item.ObjectType)
-                        {
-                            case ObjectType.Model: _Types |= Types.Model; break;
-                            case ObjectType.Table: _Types |= Types.Table; break;
-                            case ObjectType.Measure: _Types |= Types.Measure; break;
-                            case ObjectType.Column:
-                                _Types |= Types.Column;
-                                if (item is CalculatedColumn) _Types |= Types.CalculatedColumn;
-                                else if (item is DataColumn) _Types |= Types.DataColumn;
-                                break;
-                            case ObjectType.Hierarchy: _Types |= Types.Hierarchy; break;
-                            case ObjectType.Level: _Types |= Types.Level; break;
-                            case ObjectType.Perspective: _Types |= Types.Perspective; break;
-                            case ObjectType.Culture: _Types |= Types.Culture; break;
-                            case ObjectType.Role: _Types |= Types.Role; break;
-                            case ObjectType.DataSource: _Types |= Types.DataSource; break;
-                        }
-                        x++;
-                    }
-                    if (Folders.Any()) _Types |= Types.Folder;
-                    if (Groups.Any()) _Types |= Types.Group;
+                    case ObjectType.Measure: result |= Types.Measure; break;
+                    case ObjectType.Hierarchy: result |= Types.Hierarchy; break;
+                    case ObjectType.Folder: result |= Types.Folder; break;
+                    case ObjectType.Column:
+                        result |= Types.Column;
+                        if (item is CalculatedColumn) result |= Types.CalculatedColumn;
+                        else if (item is DataColumn) result |= Types.DataColumn;
+                        else if (item is CalculatedTableColumn) result |= Types.CalculatedTableColumn;
+                        break;
                 }
-                return _Types;
             }
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the "context" commonly associated with a given Explorer Tree node
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        static public Context GetNodeContext(TreeNodeAdv node)
+        {
+            var result = Context.None;
+            switch ((node.Tag as ITabularNamedObject).ObjectType)
+            {
+                case ObjectType.Model: result = Context.Model; break;
+                case ObjectType.Culture: result = Context.Translation; break;
+                case ObjectType.DataSource: result = Context.DataSource; break;
+                case ObjectType.Perspective: result = Context.Perspective; break;
+                case ObjectType.Partition: result = Context.Partition; break;
+                case ObjectType.Role: result = Context.Role; break;
+                case ObjectType.Relationship: result = Context.Relationship; break;
+                case ObjectType.Table: result = Context.Table; break;
+                case ObjectType.Level: result = Context.Level; break;
+                case ObjectType.Column:
+                case ObjectType.Measure:
+                case ObjectType.Hierarchy:
+                case ObjectType.Folder:
+                    result = Context.TableObject; break;
+                case ObjectType.Group:
+                    switch ((node.Tag as LogicalGroup).Name)
+                    {
+                        case "Tables": result = Context.Tables; break;
+                        case "Data Sources": result = Context.DataSources; break;
+                        case "Perspectives": result = Context.Perspectives; break;
+                        case "Roles": result = Context.Roles; break;
+                        case "Translations": result = Context.Translations; break;
+                        case "Relationships": result = Context.Relationships; break;
+                    }
+                    break;
+            }
+            return result;
         }
 
         public UITreeSelection(IReadOnlyCollection<TreeNodeAdv> selectedNodes) : 
@@ -186,13 +319,24 @@ namespace TabularEditor.UI
         {
             _selectedNodes = selectedNodes;
 
+            if (selectedNodes.Count > 0)
+            {
+                Context = GetNodeContext(selectedNodes.First());
+                if (Context == Context.TableObject) Types = GetNodeTypes(selectedNodes);
+            }
+
             Folders = selectedNodes.Select(n => n.Tag).OfType<Folder>();
             Groups = selectedNodes.Select(n => n.Tag).OfType<LogicalGroup>();
             Measures = new UISelectionList<Measure>(this.OfType<Measure>());
             Hierarchies = new UISelectionList<Hierarchy>(this.OfType<Hierarchy>());
             Levels = new UISelectionList<Level>(this.OfType<Level>());
             Columns = new UISelectionList<Column>(this.OfType<Column>());
+            Cultures = new UISelectionList<Culture>(this.OfType<Culture>());
+            Roles = new UISelectionList<ModelRole>(this.OfType<ModelRole>());
+            DataSources = new UISelectionList<DataSource>(this.OfType<DataSource>());
+            Perspectives = new UISelectionList<Perspective>(this.OfType<Perspective>());
             CalculatedColumns = new UISelectionList<CalculatedColumn>(this.OfType<CalculatedColumn>());
+            CalculatedTableColumns = new UISelectionList<CalculatedTableColumn>(this.OfType<CalculatedTableColumn>());
             DataColumns = new UISelectionList<DataColumn>(this.OfType<DataColumn>());
             Tables = new UI.UISelectionList<Table>(this.OfType<Table>());
             Direct = new UISelectionList<ITabularNamedObject>(selectedNodes.Select(n => n.Tag).OfType<ITabularNamedObject>());
@@ -206,6 +350,10 @@ namespace TabularEditor.UI
             else return obj;
         }
 
+        /// <summary>
+        /// The number of objects directly selected in the Explorer Tree (not counting any child objects).
+        /// </summary>
+        [IntelliSense("The number of objects directly selected in the Explorer Tree (not counting any child objects).")]
         public int DirectCount { get { return _selectedNodes.Count; } }
 
         #region Sub collections
@@ -257,11 +405,26 @@ namespace TabularEditor.UI
         [IntelliSense("All currently selected columns (including columns within selected Display Folders).")]
         public UISelectionList<Column> Columns { get; private set; }
 
+        [IntelliSense("All currently selected cultures.")]
+        public UISelectionList<Culture> Cultures { get; private set; }
+
+        [IntelliSense("All currently selected data sources.")]
+        public UISelectionList<DataSource> DataSources { get; private set; }
+
+        [IntelliSense("All currently selected roles.")]
+        public UISelectionList<ModelRole> Roles { get; private set; }
+
+        [IntelliSense("All currently selected perspectives.")]
+        public UISelectionList<Perspective> Perspectives { get; private set; }
+
         [IntelliSense("The currently selected calculated column (if exactly one calculated column is selected in the explorer tree).")]
         public CalculatedColumn CalculatedColumn { get { return One<CalculatedColumn>(); } }
 
         [IntelliSense("All currently selected calculated columns (including calculated columns within selected Display Folders).")]
         public UISelectionList<CalculatedColumn> CalculatedColumns { get; private set; }
+
+        [IntelliSense("All currently selected calculated table columns (including calculated table columns within selected Display Folders).")]
+        public UISelectionList<CalculatedTableColumn> CalculatedTableColumns { get; private set; }
 
         [IntelliSense("The currently selected data column (if exactly one data column is selected in the explorer tree).")]
         public DataColumn DataColumn { get { return One<DataColumn>(); } }

@@ -31,11 +31,11 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormDisplayFolderSelect));
             this.treeFolders = new System.Windows.Forms.TreeView();
-            this.tabularTreeImages = new System.Windows.Forms.ImageList(this.components);
             this.label1 = new System.Windows.Forms.Label();
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnNewFolder = new System.Windows.Forms.Button();
+            this.tabularTreeImages = new System.Windows.Forms.ImageList(this.components);
             this.SuspendLayout();
             // 
             // treeFolders
@@ -56,14 +56,6 @@
             this.treeFolders.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.treeFolders_AfterExpand);
             this.treeFolders.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeFolders_AfterSelect);
             this.treeFolders.MouseDown += new System.Windows.Forms.MouseEventHandler(this.treeFolders_MouseDown);
-            // 
-            // tabularTreeImages
-            // 
-            this.tabularTreeImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("tabularTreeImages.ImageStream")));
-            this.tabularTreeImages.TransparentColor = System.Drawing.Color.Transparent;
-            this.tabularTreeImages.Images.SetKeyName(0, "folder");
-            this.tabularTreeImages.Images.SetKeyName(1, "folderOpen");
-            this.tabularTreeImages.Images.SetKeyName(2, "Table_16x.png");
             // 
             // label1
             // 
@@ -105,6 +97,14 @@
             this.btnNewFolder.Text = "&Make New Folder";
             this.btnNewFolder.UseVisualStyleBackColor = true;
             this.btnNewFolder.Click += new System.EventHandler(this.btnNewFolder_Click);
+            // 
+            // tabularTreeImages
+            // 
+            this.tabularTreeImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("tabularTreeImages.ImageStream")));
+            this.tabularTreeImages.TransparentColor = System.Drawing.Color.Transparent;
+            this.tabularTreeImages.Images.SetKeyName(0, "folder");
+            this.tabularTreeImages.Images.SetKeyName(1, "folderOpen");
+            this.tabularTreeImages.Images.SetKeyName(2, "Table_16x.png");
             // 
             // FormDisplayFolderSelect
             // 

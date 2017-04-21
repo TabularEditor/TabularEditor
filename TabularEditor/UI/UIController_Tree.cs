@@ -39,6 +39,7 @@ namespace TabularEditor.UI
             UI.TreeView.Leave += TreeView_Leave;
             UI.TreeView.NodeMouseDoubleClick += TreeView_NodeMouseDoubleClick;
             UI.TreeView.KeyDown += TreeView_KeyDown;
+            UI.TreeView.BeforeMultiSelect += TreeView_BeforeMultiSelect;
 
             UI.TreeView.DragLeave += TreeView_DragLeave;
 
@@ -46,7 +47,13 @@ namespace TabularEditor.UI
             var menu = new ContextMenuStrip();
             menu.Opening += ContextMenu_Opening;
             UI.TreeView.ContextMenuStrip = menu;
+            UI.ToolsMenu.DropDown.Opening += ToolsMenu_Opening;
             UI.ModelMenu.DropDown.Opening += ContextMenu_Opening;
+        }
+
+        private void TreeView_BeforeMultiSelect(object sender, TreeViewAdvCancelEventArgs e)
+        {
+            if (e.Node.Tag is LogicalGroup) e.Cancel = true;
         }
 
         TreeNodeAdv[] draggedNodes = null;
@@ -190,13 +197,16 @@ namespace TabularEditor.UI
             Tree_CurrentDragObject = new DataObject();
 
             draggedNodes = UI.TreeView.SelectedNodes.ToArray();
-            if (draggedNodes.Any(n => n.Tag is LogicalGroup)) return;
 
             var scriptableObjects = new HashSet<ObjectType>() { ObjectType.Table, ObjectType.Role, ObjectType.DataSource, ObjectType.Partition };
 
             // Only generate TMSL script when dragging a single object:
             if (draggedNodes.Length == 1 && UI.TreeView.CurrentNode.Tag is Model) Tree_CurrentDragObject.SetData(Handler.ScriptCreateOrReplace());
-            else if (draggedNodes.Length == 1 && scriptableObjects.Contains((UI.TreeView.CurrentNode.Tag as TabularNamedObject).ObjectType))
+            else if (draggedNodes.Length == 1 && UI.TreeView.CurrentNode.Tag is LogicalGroup)
+            {
+                Tree_CurrentDragObject.SetData(Handler.SerializeObjects(UI.TreeView.CurrentNode.Children.Select(n => n.Tag).OfType<TabularNamedObject>()));
+            }
+            else if (draggedNodes.Length == 1 && UI.TreeView.CurrentNode.Tag is TabularNamedObject && scriptableObjects.Contains((UI.TreeView.CurrentNode.Tag as TabularNamedObject).ObjectType))
                 Tree_CurrentDragObject.SetData(Handler.ScriptCreateOrReplace(UI.TreeView.CurrentNode.Tag as TabularNamedObject));
             else Tree_CurrentDragObject.SetData(Handler.SerializeObjects(Selection));
 

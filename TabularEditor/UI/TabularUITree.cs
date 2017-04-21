@@ -189,7 +189,7 @@ namespace TabularEditor
         private int onStructureChangedRequests = 0;
         private HashSet<ITabularObject> updateReqs = new HashSet<ITabularObject>();
 
-        public override void OnStructureChanged(TabularNamedObject obj = null)
+        public override void OnStructureChanged(ITabularNamedObject obj = null)
         {
             if (obj == null)
                 OnStructureChanged(new TreePath(Model));

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
+using TabularEditor.UIServices;
 
 namespace TabularEditor.UI
 {
@@ -14,9 +16,17 @@ namespace TabularEditor.UI
         {
             File_Current = fileName;
             Handler = new TabularModelHandler(fileName);
+            Handler.AutoFixup = Preferences.Current.FormulaFixup;
             LoadTabularModelToUI();
+            RecentFiles.Add(fileName);
+            UI.FormMain.PopulateRecentFilesList();
         }
 
+        /// <summary>
+        /// Call this method before calling File_Open() or Database_Connect() to check whether the
+        /// currently loaded model has unsaved changes.
+        /// </summary>
+        /// <returns>True if the currently loaded model has unsaved changed.</returns>
         public bool DiscardChangesCheck()
         {
             if (Handler != null && Handler.HasUnsavedChanges)
@@ -34,26 +44,34 @@ namespace TabularEditor.UI
 
         string File_Current;
 
-        public void File_Open()
+        public void File_Open(bool fromFolder = false)
         {
             if (DiscardChangesCheck()) return;
 
             var oldFile = File_Current;
             var oldHandler = Handler;
 
-            var res = UI.OpenBimDialog.ShowDialog();
-            if (res == DialogResult.OK)
+            string fileName;
+            if(fromFolder)
             {
-                try
-                {
-                    File_Open(UI.OpenBimDialog.FileName);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error loading file", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Handler = oldHandler;
-                    File_Current = oldFile;
-                }
+                var dlg = new FolderBrowserDialog();
+                if (dlg.ShowDialog() == DialogResult.Cancel) return;
+                fileName = dlg.SelectedPath;
+            } else
+            {
+                if (UI.OpenBimDialog.ShowDialog() == DialogResult.Cancel) return;
+                fileName = UI.OpenBimDialog.FileName;
+            }
+
+            try
+            {
+                File_Open(fileName);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error loading Model from disk", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Handler = oldHandler;
+                File_Current = oldFile;
             }
         }
 
@@ -86,13 +104,25 @@ namespace TabularEditor.UI
         public void Save()
         {
             UI.StatusLabel.Text = "Saving...";
-            if(Handler.IsConnected)
+
+            if (Handler.IsConnected)
             {
                 Database_Save();
             }
             else
             {
-                Handler.SaveFile(File_Current);
+                try
+                {
+                    if (Directory.Exists(File_Current))
+                        Handler.SaveToFolder(File_Current);
+                    else
+                        Handler.SaveFile(File_Current);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message, "Could not save metadata to file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                
             }
             UpdateUIText();
         }

@@ -41,14 +41,15 @@ namespace TabularEditor.TOMWrapper
 #><#= props.Any(p => p.Name == "Table") ? ", ITabularTableObject" : ""
 #><#= props.Any(p => p.Name == "Description") ? ", IDescriptionObject" : ""
 #><#= props.Any(p => p.Name == "Expression") ? ", IExpressionObject" : ""
+#><#= props.Any(p => p.Name == "Annotations") ? ", IAnnotationObject" : ""
 #>
 	{
 	    protected internal new TOM.<#= t.Name #> MetadataObject { get { return base.MetadataObject as TOM.<#= t.Name #>; } internal set { base.MetadataObject = value; } }
 
-<# if(Rules.Collections.ContainsKey(t)) { #>
+<# if((Rules.Collections.ContainsKey(t) || Rules.Collections.ContainsKey(t.BaseType) ) && !t.IsAbstract) { #>
 		public <#= t.Name #>(<#= Rules.CollectionParent.ContainsKey(t) ? Rules.CollectionParent[t] : Rules.CollectionParent[t.BaseType] #> parent) : base(parent.Handler, new TOM.<#= t.Name #>(), false) {
-			MetadataObject.Name = parent.MetadataObject.<#= Rules.Collections[t] #>.GetNewName("New <#= t.Name #>");
-			parent.<#= Rules.Collections[t] #>.Add(this);
+			MetadataObject.Name = parent.MetadataObject.<#= Rules.Collections.ContainsKey(t) ? Rules.Collections[t] : Rules.Collections[t.BaseType] #>.GetNewName("New <#= t.Name #>");
+			parent.<#= Rules.Collections.ContainsKey(t) ? Rules.Collections[t] : Rules.Collections[t.BaseType] #>.Add(this);
 			Init();
 		}
 <# } #>
@@ -59,6 +60,20 @@ namespace TabularEditor.TOMWrapper
 <#
 	foreach(PropertyInfo p in props) 
 	{   
+		if (p.Name == "Annotations") { #>
+		public string GetAnnotation(string name) {
+		    return MetadataObject.Annotations.Find(name)?.Value;
+		}
+		public void SetAnnotation(string name, string value, bool undoable = true) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				MetadataObject.Annotations[name].Value = value;
+			} else {
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+			}
+			if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value));
+		}
+		<# }
+
 		if (Rules.ShouldWrapProperty(p, t)) { #>
         /// <summary>
         /// Gets or sets the <#= p.Name #> of the <#= t.Name #>.
@@ -91,7 +106,12 @@ namespace TabularEditor.TOMWrapper
 		{ 
 			get 
 			{ 
-				return MetadataObject?.Table == null ? null : Handler.WrapperLookup[MetadataObject.Table] as Table;
+				TabularObject t = null;
+				if(MetadataObject == null || MetadataObject.Table == null) return null;
+				if(!Handler.WrapperLookup.TryGetValue(MetadataObject.Table, out t)) {
+				    t = Model.Tables[MetadataObject.Table.Name];
+				}
+				return t as Table;
 			} 
 		}
 <#      }
@@ -104,8 +124,12 @@ namespace TabularEditor.TOMWrapper
 	/// </summary>
 	public partial class <#= t.Name #>Collection: TabularObjectCollection<<#= t.Name #>, TOM.<#= t.Name #>, TOM.<#= Rules.CollectionParent[t] #>>
 	{
-		public <#= t.Name #>Collection(TabularModelHandler handler, string collectionName, TOM.<#= t.Name #>Collection metadataObjectCollection) : base(handler, collectionName, metadataObjectCollection)
+		public <#= Rules.CollectionParent[t] #> Parent { get; private set; }
+
+		public <#= t.Name #>Collection(TabularModelHandler handler, string collectionName, TOM.<#= t.Name #>Collection metadataObjectCollection, <#= Rules.CollectionParent[t] #> parent) : base(handler, collectionName, metadataObjectCollection)
 		{
+			Parent = parent;
+
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 <# if(t.Name == "Column") { #>
@@ -119,6 +143,14 @@ namespace TabularEditor.TOMWrapper
 				switch(obj.GetSourceType()) {
 				    case TOM.PartitionSourceType.Calculated: new CalculatedTable(handler, obj) { Collection = this }; break;
 					default: new Table(handler, obj) { Collection = this }; break;
+				}
+<# } else if (t.Name == "Relationship") { #>
+				switch((obj as TOM.Relationship).Type) {
+					case TOM.RelationshipType.SingleColumn: new SingleColumnRelationship(handler, obj as TOM.SingleColumnRelationship) { Collection = this }; break;
+				}
+<# } else if (t.Name == "DataSource") { #>
+				switch((obj as TOM.DataSource).Type) {
+					case TOM.DataSourceType.Provider: new ProviderDataSource(handler, obj as TOM.ProviderDataSource) { Collection = this }; break;
 				}
 <# } else { #>
 				new <#= t.Name #>(handler, obj) { Collection = this };

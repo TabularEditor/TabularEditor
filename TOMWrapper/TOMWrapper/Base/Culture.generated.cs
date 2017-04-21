@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Culture
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Culture: TabularNamedObject
+	public partial class Culture: TabularNamedObject, IAnnotationObject
 	{
 	    protected internal new TOM.Culture MetadataObject { get { return base.MetadataObject as TOM.Culture; } internal set { base.MetadataObject = value; } }
 
@@ -27,15 +27,30 @@ namespace TabularEditor.TOMWrapper
 		public Culture(TabularModelHandler handler, TOM.Culture cultureMetadataObject) : base(handler, cultureMetadataObject)
 		{
 		}
-    }
+		public string GetAnnotation(string name) {
+		    return MetadataObject.Annotations.Find(name)?.Value;
+		}
+		public void SetAnnotation(string name, string value, bool undoable = true) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				MetadataObject.Annotations[name].Value = value;
+			} else {
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+			}
+			if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value));
+		}
+		    }
 
 	/// <summary>
 	/// Collection class for Culture. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
 	public partial class CultureCollection: TabularObjectCollection<Culture, TOM.Culture, TOM.Model>
 	{
-		public CultureCollection(TabularModelHandler handler, string collectionName, TOM.CultureCollection metadataObjectCollection) : base(handler, collectionName, metadataObjectCollection)
+		public Model Parent { get; private set; }
+
+		public CultureCollection(TabularModelHandler handler, string collectionName, TOM.CultureCollection metadataObjectCollection, Model parent) : base(handler, collectionName, metadataObjectCollection)
 		{
+			Parent = parent;
+
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				new Culture(handler, obj) { Collection = this };

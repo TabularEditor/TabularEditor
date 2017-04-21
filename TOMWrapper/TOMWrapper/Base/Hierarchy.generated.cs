@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Hierarchy
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Hierarchy: TabularNamedObject, IDetailObject, IHideableObject, ITabularTableObject, IDescriptionObject
+	public partial class Hierarchy: TabularNamedObject, IDetailObject, IHideableObject, ITabularTableObject, IDescriptionObject, IAnnotationObject
 	{
 	    protected internal new TOM.Hierarchy MetadataObject { get { return base.MetadataObject as TOM.Hierarchy; } internal set { base.MetadataObject = value; } }
 
@@ -27,7 +27,18 @@ namespace TabularEditor.TOMWrapper
 		public Hierarchy(TabularModelHandler handler, TOM.Hierarchy hierarchyMetadataObject) : base(handler, hierarchyMetadataObject)
 		{
 		}
-        /// <summary>
+		public string GetAnnotation(string name) {
+		    return MetadataObject.Annotations.Find(name)?.Value;
+		}
+		public void SetAnnotation(string name, string value, bool undoable = true) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				MetadataObject.Annotations[name].Value = value;
+			} else {
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+			}
+			if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value));
+		}
+		        /// <summary>
         /// Gets or sets the Description of the Hierarchy.
         /// </summary>
 		[DisplayName("Description")]
@@ -144,7 +155,12 @@ namespace TabularEditor.TOMWrapper
 		{ 
 			get 
 			{ 
-				return MetadataObject?.Table == null ? null : Handler.WrapperLookup[MetadataObject.Table] as Table;
+				TabularObject t = null;
+				if(MetadataObject == null || MetadataObject.Table == null) return null;
+				if(!Handler.WrapperLookup.TryGetValue(MetadataObject.Table, out t)) {
+				    t = Model.Tables[MetadataObject.Table.Name];
+				}
+				return t as Table;
 			} 
 		}
     }
@@ -154,8 +170,12 @@ namespace TabularEditor.TOMWrapper
 	/// </summary>
 	public partial class HierarchyCollection: TabularObjectCollection<Hierarchy, TOM.Hierarchy, TOM.Table>
 	{
-		public HierarchyCollection(TabularModelHandler handler, string collectionName, TOM.HierarchyCollection metadataObjectCollection) : base(handler, collectionName, metadataObjectCollection)
+		public Table Parent { get; private set; }
+
+		public HierarchyCollection(TabularModelHandler handler, string collectionName, TOM.HierarchyCollection metadataObjectCollection, Table parent) : base(handler, collectionName, metadataObjectCollection)
 		{
+			Parent = parent;
+
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				new Hierarchy(handler, obj) { Collection = this };

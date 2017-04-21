@@ -12,6 +12,35 @@ namespace TabularEditor.UI
 {
     public partial class UIController
     {
+        ToolStripItem[] originalItems = null;
+
+        private void ToolsMenu_Opening(object sender, CancelEventArgs e)
+        {
+            if (Handler == null) return;
+            var menu = (sender as ToolStripDropDown);
+
+            if(originalItems == null) originalItems = menu.Items.OfType<ToolStripItem>().ToArray();
+            menu.Items.Clear();
+            if (originalItems.Length > 0)
+            {
+                menu.Items.AddRange(originalItems);
+                if (menu.Items.Count > 0 && !(menu.Items[menu.Items.Count - 1] is ToolStripSeparator)) menu.Items.Add(new ToolStripSeparator());
+            }
+
+            bool first = true;
+            foreach (var act in Actions.OfType<IModelAction>())
+            {
+                if((act.ValidContexts & Context.Groups) > 0)
+                {
+                    var item = ContextMenu_AddFromAction(act.Name, menu);
+                    if (!string.IsNullOrEmpty(act.ToolTip)) item.ToolTipText = act.ToolTip;
+                    item.Tag = act;
+                    item.Enabled = act.Enabled(null);
+                    item.Click += ContextMenuItem_Click;
+                }
+            }
+        }
+
         private void ContextMenu_Opening(object sender, CancelEventArgs e)
         {
             if (Handler == null) return;
@@ -34,6 +63,8 @@ namespace TabularEditor.UI
         {
             foreach (var action in Actions)
             {
+                if (!action.ValidContexts.HasFlag(Selection.Context)) continue;
+
                 if (action is IModelAction)
                 {
                     var act = action as IModelAction;

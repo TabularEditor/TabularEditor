@@ -53,7 +53,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the Expression of the CalculatedColumn.
         /// </summary>
 		[DisplayName("Expression")]
-		[Category("Options"),IntelliSense("The Expression of this CalculatedColumn.")]
+		[Category("Options"),IntelliSense("The Expression of this CalculatedColumn.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Expression {
 			get {
 			    return MetadataObject.Expression;

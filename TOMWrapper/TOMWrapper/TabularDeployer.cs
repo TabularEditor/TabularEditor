@@ -20,12 +20,14 @@ namespace TabularEditor.TOMWrapper
             if (options.DeployRoleMembers && !options.DeployRoles) throw new ArgumentException("Cannot deploy Role Members when Role deployment is disabled.");
 
             if (server.Databases.Contains(targetDatabaseID) && options.DeployMode == DeploymentMode.CreateDatabase) throw new ArgumentException("The specified database already exists.");
-            if (!server.Databases.Contains(targetDatabaseID) && options.DeployMode == DeploymentMode.CreateOrAlter) throw new ArgumentException("The specified database does not exist.");
 
             string result;
 
             if (!server.Databases.Contains(targetDatabaseID)) result = DeployNewTMSL(db, server, targetDatabaseID, options);
             else result = DeployExistingTMSL(db, server, targetDatabaseID, options);
+
+            // TODO: Check if invalid CalculatedTableColumn perspectives/translations can give us any issues here
+            // Should likely be handled similar to what we do in TabularModelHandler.SaveDB()
 
             return result;
         }
@@ -37,12 +39,18 @@ namespace TabularEditor.TOMWrapper
 
         public static void SaveModelMetadataBackup(string connectionString, string targetDatabaseID, string backupFilePath)
         {
-            var s = new TOM.Server();
-            s.Connect(connectionString);
-            var db = s.Databases[targetDatabaseID];
+            using (var s = new TOM.Server())
+            {
+                s.Connect(connectionString);
+                if (s.Databases.Contains(targetDatabaseID))
+                {
+                    var db = s.Databases[targetDatabaseID];
 
-            var dbcontent = TOM.JsonSerializer.SerializeDatabase(db);
-            WriteZip(backupFilePath, dbcontent);
+                    var dbcontent = TOM.JsonSerializer.SerializeDatabase(db);
+                    WriteZip(backupFilePath, dbcontent);
+                }
+                s.Disconnect();
+            }
         }
 
         public static void WriteZip(string fileName, string content)
@@ -62,7 +70,16 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public static void Deploy(TOM.Database db, string targetConnectionString, string targetDatabaseID, DeploymentOptions options)
+        /// <summary>
+        /// Deploys the specified database to the specified target server and database ID, using the specified options.
+        /// Returns a list of DAX errors (if any) on objects inside the database, in case the deployment was succesful.
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="targetConnectionString"></param>
+        /// <param name="targetDatabaseID"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static DeploymentResult Deploy(TOM.Database db, string targetConnectionString, string targetDatabaseID, DeploymentOptions options)
         {
             if (string.IsNullOrWhiteSpace(targetConnectionString)) throw new ArgumentNullException("targetConnectionString");
             var s = new TOM.Server();
@@ -70,10 +87,29 @@ namespace TabularEditor.TOMWrapper
 
             var tmsl = GetTMSL(db, s, targetDatabaseID, options);
             var result = s.Execute(tmsl);
+
             if(result.ContainsErrors)
             {
                 throw new Exception(string.Join("\n", result.Cast<XmlaResult>().SelectMany(r => r.Messages.Cast<XmlaMessage>().Select(m => m.Description)).ToArray()));
             }
+
+            s.Refresh();
+            var deployedDB = s.Databases[targetDatabaseID];
+            return
+                new DeploymentResult(
+                    TabularModelHandler.CheckErrors(deployedDB).Select(t => string.Format("Error on {0}: {1}", GetName(t.Item1), t.Item2)),
+                    TabularModelHandler.CheckProcessingState(deployedDB).Select(t => string.Format("Warning! Unprocessed object: {0} ({1})", GetName(t.Item1), t.Item2.ToString()))
+                );
+        }
+
+        private static string GetName(TOM.NamedMetadataObject obj)
+        {
+            if (obj is TOM.Hierarchy) return string.Format("hierarchy {0}[{1}]", GetName((obj as TOM.Hierarchy).Table), obj.Name);
+            if (obj is TOM.Measure) return string.Format("measure {0}[{1}]", GetName((obj as TOM.Measure).Table), obj.Name);
+            if (obj is TOM.Column) return string.Format("column {0}[{1}]", GetName((obj as TOM.Column).Table), obj.Name);
+            if (obj is TOM.Partition) return string.Format("partition '{0}' on table {1}", obj.Name, GetName((obj as TOM.Partition).Table));
+            if (obj is TOM.Table) return string.Format("'{0}'", obj.Name);
+            else return string.Format("{0} '{1}'", ((ObjectType)obj.ObjectType).GetTypeName(), obj.Name);
         }
 
         private static string DeployNewTMSL(TOM.Database db, TOM.Server server, string newDbID, DeploymentOptions options)
@@ -160,6 +196,16 @@ namespace TabularEditor.TOMWrapper
         }
     }
 
+    public class DeploymentResult
+    {
+        public readonly IReadOnlyList<string> Issues;
+        public readonly IReadOnlyList<string> Warnings;
+        public DeploymentResult(IEnumerable<string> issues, IEnumerable<string> warnings)
+        {
+            Issues = issues.ToList();
+            Warnings = warnings.ToList();
+        }
+    }
     public class DeploymentOptions
     {
         public DeploymentMode DeployMode = DeploymentMode.CreateOrAlter;

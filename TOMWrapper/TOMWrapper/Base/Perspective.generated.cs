@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Perspective
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Perspective: TabularNamedObject, IDescriptionObject
+	public partial class Perspective: TabularNamedObject, IDescriptionObject, IAnnotationObject
 	{
 	    protected internal new TOM.Perspective MetadataObject { get { return base.MetadataObject as TOM.Perspective; } internal set { base.MetadataObject = value; } }
 
@@ -27,7 +27,18 @@ namespace TabularEditor.TOMWrapper
 		public Perspective(TabularModelHandler handler, TOM.Perspective perspectiveMetadataObject) : base(handler, perspectiveMetadataObject)
 		{
 		}
-        /// <summary>
+		public string GetAnnotation(string name) {
+		    return MetadataObject.Annotations.Find(name)?.Value;
+		}
+		public void SetAnnotation(string name, string value, bool undoable = true) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				MetadataObject.Annotations[name].Value = value;
+			} else {
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+			}
+			if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value));
+		}
+		        /// <summary>
         /// Gets or sets the Description of the Perspective.
         /// </summary>
 		[DisplayName("Description")]
@@ -61,8 +72,12 @@ namespace TabularEditor.TOMWrapper
 	/// </summary>
 	public partial class PerspectiveCollection: TabularObjectCollection<Perspective, TOM.Perspective, TOM.Model>
 	{
-		public PerspectiveCollection(TabularModelHandler handler, string collectionName, TOM.PerspectiveCollection metadataObjectCollection) : base(handler, collectionName, metadataObjectCollection)
+		public Model Parent { get; private set; }
+
+		public PerspectiveCollection(TabularModelHandler handler, string collectionName, TOM.PerspectiveCollection metadataObjectCollection, Model parent) : base(handler, collectionName, metadataObjectCollection)
 		{
+			Parent = parent;
+
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				new Perspective(handler, obj) { Collection = this };

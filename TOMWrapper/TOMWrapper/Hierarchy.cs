@@ -5,6 +5,7 @@ using System.Linq;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.UndoFramework;
 using TOM = Microsoft.AnalysisServices.Tabular;
+using TabularEditor.PropertyGridUI;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -82,7 +83,10 @@ namespace TabularEditor.TOMWrapper
 
         protected override void Init()
         {
-            Levels = new LevelCollection(Handler, this.GetObjectPath() + ".Levels", MetadataObject.Levels);
+            Levels = new LevelCollection(Handler, this.GetObjectPath() + ".Levels", MetadataObject.Levels, this);
+
+            // Loop through all levels, to make sure that they point to the current columns (i.e. not "deleted" columns):
+            foreach (var l in Levels) l.MetadataObject.Column = Table.Columns[l.MetadataObject.Column.Name].MetadataObject;
 
             InPerspective = new PerspectiveHierarchyIndexer(this);
         }
@@ -181,7 +185,7 @@ namespace TabularEditor.TOMWrapper
         }
     }
 
-    public class HierarchyColumnConverter: ColumnConverter
+    public class HierarchyColumnConverter: TableColumnConverter
     {
         public override bool IsValid(ITypeDescriptorContext context, object value)
         {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using TabularEditor.PropertyGridUI;
 using TOM = Microsoft.AnalysisServices.Tabular;
@@ -7,6 +8,12 @@ namespace TabularEditor.TOMWrapper
 {
     public partial class Measure : ITabularPerspectiveObject, IDaxObject, IDynamicPropertyObject, IClonableObject
     {
+        [Browsable(false)]
+        public Dictionary<IDaxObject, List<Dependency>> Dependencies { get; internal set; } = new Dictionary<IDaxObject, List<Dependency>>();
+        [Browsable(false)]
+        public HashSet<IExpressionObject> Dependants { get; private set; } = new HashSet<IExpressionObject>();
+
+
         [Browsable(true), DisplayName("Perspectives"), Category("Translations and Perspectives")]
         public PerspectiveIndexer InPerspective { get; private set; }
 
@@ -72,14 +79,36 @@ namespace TabularEditor.TOMWrapper
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
-            if (propertyName == "Expression") NeedsValidation = true;
+            if (propertyName == "Expression")
+            {
+                NeedsValidation = true;
+                Handler.BuildDependencyTree(this);
+            }
+            if (propertyName == "Name" && Handler.AutoFixup)
+            {
+                Handler.DoFixup(this, (string)newValue);
+                Handler.UndoManager.EndBatch();
+            }
 
             base.OnPropertyChanged(propertyName, oldValue, newValue);
         }
 
+        protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
+        {
+            if (propertyName == "Name")
+            {
+                Handler.BuildDependencyTree();
+
+                // When formula fixup is enabled, we need to begin a new batch of undo operations, as this
+                // name change could result in expression changes on multiple objects:
+                if (Handler.AutoFixup) Handler.UndoManager.BeginBatch("Name change");
+            }
+            base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
+        }
+
         [Browsable(false)]
         public bool NeedsValidation { get; set; } = false;
-
+        
         public bool Browsable(string propertyName)
         {
             switch (propertyName) {

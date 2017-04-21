@@ -181,7 +181,7 @@ namespace Aga.Controls.Tree
             else
                 canSelect = true;
 
-            if (canSelect) return Tree.OnBeforeMultiSelect(node);
+            if (canSelect && Tree.SelectionStart != null) return Tree.OnBeforeMultiSelect(node);
 
             return canSelect;
 		}
@@ -190,8 +190,6 @@ namespace Aga.Controls.Tree
 		{
 			if (Tree.SelectedNodes.Count == 1 && args.Node != null && args.Node.IsSelected)
 				return;
-
-            if (!Tree.OnBeforeMultiSelect(args.Node)) return;
 
 			Tree.SuspendSelectionEvent = true;
 			try

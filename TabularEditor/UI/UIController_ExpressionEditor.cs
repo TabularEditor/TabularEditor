@@ -13,6 +13,15 @@ namespace TabularEditor.UI
 {
     public partial class UIController
     {
+        DependencyForm DependencyForm = new DependencyForm();
+
+        public void ShowDependencies(IDaxObject dependantObject)
+        {
+            if (DependencyForm.IsDisposed) DependencyForm = new DependencyForm();
+            DependencyForm.RootObject = dependantObject;
+            DependencyForm.Show();
+        }
+
         private IExpressionObject _expressionEditor_Current = null;
         public IExpressionObject ExpressionEditor_Current {
             get {
@@ -44,9 +53,27 @@ namespace TabularEditor.UI
         private void ExpressionEditor_Init()
         {
             UI.ExpressionEditor.TextChanged += ExpressionEditor_TextChanged;
-            UI.ExpressionEditor.KeyUp += ExpressionEditor_KeyUp;
+            //UI.ExpressionEditor.KeyUp += ExpressionEditor_KeyUp;
+            UI.ExpressionEditor.KeyPress += ExpressionEditor_KeyPress;
             UI.ExpressionEditor.DragEnter += ExpressionEditor_DragEnter;
             UI.ExpressionEditor.DragLeave += ExpressionEditor_DragLeave;
+        }
+
+        private void ExpressionEditor_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (ExpressionEditor_IsEditing)
+            {
+                if (e.KeyChar == 27)
+                {
+                    ExpressionEditor_CancelEdit();
+                    e.Handled = true;
+                }
+                else if (e.KeyChar == 10)
+                {
+                    ExpressionEditor_AcceptEdit();
+                    e.Handled = true;
+                }
+            }
         }
 
         private string Tree_DragBackup;
@@ -83,16 +110,6 @@ namespace TabularEditor.UI
 
         private void ExpressionEditor_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            if (ExpressionEditor_IsEditing)
-            {
-                if (e.KeyCode == System.Windows.Forms.Keys.Escape)
-                {
-                    ExpressionEditor_CancelEdit();
-                } else if (e.KeyCode == Keys.S && e.Modifiers.HasFlag(Keys.Control))
-                {
-                    ExpressionEditor_AcceptEdit();
-                }
-            }
         }
 
         private void ExpressionEditor_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
@@ -128,15 +145,11 @@ namespace TabularEditor.UI
                 ExpressionEditor_Current = obj;
                 ExpressionEditor_SetText(obj != null);
                 UI.ExpressionEditor.Enabled = obj != null;
-
-                UI.ExpressionEditor.ReadOnly = obj is CalculatedTable;
             } 
         }
 
         private void ExpressionEditor_Edit(IExpressionObject obj, bool switchToTab = true)
         {
-            if (obj is CalculatedTable) return;
-
             // Make sure the ExpressionEditor tab page is visible:
             if (switchToTab)
             {

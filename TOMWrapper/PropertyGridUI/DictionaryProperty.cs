@@ -50,7 +50,7 @@ namespace TabularEditor.PropertyGridUI
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
         {
             if (context.Instance is object[]) return "Multiple objects selected.";
-            return (context.PropertyDescriptor.GetValue(context.Instance) as IExpandableIndexer).Summary;
+            return (context.PropertyDescriptor.GetValue(context.Instance) as IExpandableIndexer)?.Summary;
         }
     }
 

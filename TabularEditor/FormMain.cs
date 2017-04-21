@@ -8,6 +8,7 @@ using TabularEditor.UI.Extensions;
 using TabularEditor.UI.Actions;
 using TabularEditor.UI.Dialogs;
 using TabularEditor.UIServices;
+using System.Collections.Generic;
 
 namespace TabularEditor
 {
@@ -80,7 +81,8 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 CurrentMeasureLabel = lblCurrentMeasure,
                 ModelMenu = modelToolStripMenuItem,
                 PerspectiveSelector = cmbPerspective,
-                TranslationSelector = cmbTranslation
+                TranslationSelector = cmbTranslation,
+                ToolsMenu = toolsToolStripMenuItem
             };
 
             // The UIController class sets up all bindings and event handlers needed for UI
@@ -88,6 +90,12 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             // really a "loose coupling" between UI and model code, but it helps to keep the
             // code nicely separated.
             UI = new UIController(elements);
+            UI.ModelLoaded += UI_ModelLoaded;
+        }
+
+        private void UI_ModelLoaded(object sender, EventArgs e)
+        {
+            if (BPAForm != null && BPAForm.Visible) BPAForm.Hide();
         }
 
         // TODO: Handle below as actions
@@ -129,6 +137,8 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                     if (res == DialogResult.Cancel) e.Cancel = true;
                 }
             }
+
+            RecentFiles.Save();
         }
 
         private void actViewOptions_Execute(object sender, EventArgs e)
@@ -164,9 +174,31 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         {
             // Auto-load the file specified as command line arguments:
             var args = Environment.GetCommandLineArgs();
-            if (args.Length == 2 && File.Exists(args[1]))
+            if (args.Length == 2 && (File.Exists(args[1]) || File.Exists(args[1] + "\\database.json")))
             {
                 UI.File_Open(args[1]);
+            }
+
+            // Populate list of recent files...
+            PopulateRecentFilesList();
+        }
+
+        public void PopulateRecentFilesList()
+        {
+            recentFilesToolStripMenuItem.DropDown.Items.Clear();
+
+            if (RecentFiles.Current.RecentHistory.Count == 0)
+            {
+                recentFilesToolStripMenuItem.Enabled = false;
+            }
+            else
+            {
+                recentFilesToolStripMenuItem.DropDown.Items.AddRange(
+                    (RecentFiles.Current.RecentHistory as IEnumerable<string>).Reverse().Take(10).Select(f =>
+                        new ToolStripMenuItem(f, null, (s, ev) => {
+                            if (UI.DiscardChangesCheck()) return;
+                            UI.File_Open(f);
+                        })).ToArray());
             }
         }
 
@@ -344,6 +376,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             PreferencesForm.ShowDialog();
+            if(UI.Handler != null) UI.Handler.AutoFixup = Preferences.Current.FormulaFixup;
         }
 
         private void FormMain_Shown(object sender, EventArgs e)
@@ -362,7 +395,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
             if(Preferences.Current.CheckForUpdates)
             {
-                if(UpdateService.Check() ?? false)
+                if(UpdateService.Check(false) ?? false)
                 {
                     var res = MessageBox.Show("A new version of Tabular Editor is available. Would you like to open the download page now?\n\nYou can disable this check under File > Preferences.", "Tabular Editor update available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                     if (res == DialogResult.Yes) UpdateService.OpenDownloadPage();
@@ -370,9 +403,37 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             }
         }
 
+        public void UpdateTreeUIButtons()
+        {
+            var treeModel = (tvModel.Model as Aga.Controls.Tree.SortedTreeModel).InnerModel as TabularUITree;
+            tbShowDisplayFolders.Checked = treeModel.Options.HasFlag(TOMWrapper.LogicalTreeOptions.DisplayFolders);
+            tbShowHidden.Checked = treeModel.Options.HasFlag(TOMWrapper.LogicalTreeOptions.ShowHidden);
+            tbShowAllObjectTypes.Checked = treeModel.Options.HasFlag(TOMWrapper.LogicalTreeOptions.AllObjectTypes);
+            tbShowMeasures.Checked = treeModel.Options.HasFlag(TOMWrapper.LogicalTreeOptions.Measures);
+            tbShowColumns.Checked = treeModel.Options.HasFlag(TOMWrapper.LogicalTreeOptions.Columns);
+            tbShowHierarchies.Checked = treeModel.Options.HasFlag(TOMWrapper.LogicalTreeOptions.Hierarchies);
+            tbApplyFilter.Checked = !string.IsNullOrEmpty(treeModel.Filter);
+
+        }
+
         private void saveToFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
             UI.File_SaveToFolder();
         }
+
+        private void fromFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            UI.File_Open(true);
+        }
+
+        private void bestPracticeAnalyzerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            BPAForm.Model = UI.Handler?.Model;
+            BPAForm.ModelTree = tvModel;
+            BPAForm.FormMain = this;
+            BPAForm.Show();
+        }
+
+        private BPAForm BPAForm = new BPAForm();
     }
 }

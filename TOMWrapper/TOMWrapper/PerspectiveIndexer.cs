@@ -11,6 +11,11 @@ namespace TabularEditor.TOMWrapper
     [TypeConverter(typeof(IndexerConverter))]
     public abstract class PerspectiveIndexer : IEnumerable<bool>, IExpandableIndexer
     {
+        public Dictionary<string, bool> Copy()
+        {
+            return Keys.ToDictionary(k => k, k => this[k]);
+        }
+
         public virtual void Refresh()
         {
 
@@ -23,6 +28,14 @@ namespace TabularEditor.TOMWrapper
             {
                 var value = source[p];
                 this[p] = value;
+            }
+        }
+
+        public void CopyFrom(IDictionary<string, bool> source)
+        {
+            foreach(var kvp in source)
+            {
+                this[kvp.Key] = kvp.Value;
             }
         }
 
@@ -128,11 +141,19 @@ namespace TabularEditor.TOMWrapper
         public bool this[string perspective]
         {
             get {
-                return this[TabularObject.Model.Perspectives[perspective]];
+                return Perspectives.Contains(perspective) ? this[Perspectives[perspective]] : false;
             }
             set
             {
-                this[TabularObject.Model.Perspectives[perspective]] = value;
+                if(Perspectives.Contains(perspective)) this[Perspectives[perspective]] = value;
+            }
+        }
+
+        private PerspectiveCollection Perspectives
+        {
+            get
+            {
+                return TabularObject.Model.Perspectives;
             }
         }
 
@@ -168,10 +189,13 @@ namespace TabularEditor.TOMWrapper
         protected override void SetInPerspective(Perspective perspective, bool included)
         {
             // Including/excluding a table from a perspective, is equivalent to including/excluding all child
-            // objects. The PerspectiveTable sometimes needs to be created, but it should never be deleted.
+            // objects. The PerspectiveTable will be created automatically if needed.
             Table.Measures.InPerspective(perspective, included);
             Table.Hierarchies.InPerspective(perspective, included);
             Table.Columns.InPerspective(perspective, included);
+
+            var pts = perspective.MetadataObject.PerspectiveTables;
+            if (!included && pts.Contains(Table.Name)) pts.Remove(Table.Name);
         }
 
         public override bool this[Perspective perspective]
