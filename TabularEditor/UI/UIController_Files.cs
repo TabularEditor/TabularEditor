@@ -18,8 +18,15 @@ namespace TabularEditor.UI
             Handler = new TabularModelHandler(fileName);
             Handler.AutoFixup = Preferences.Current.FormulaFixup;
             LoadTabularModelToUI();
+            RecentFiles.Add(fileName);
+            UI.FormMain.PopulateRecentFilesList();
         }
 
+        /// <summary>
+        /// Call this method before calling File_Open() or Database_Connect() to check whether the
+        /// currently loaded model has unsaved changes.
+        /// </summary>
+        /// <returns>True if the currently loaded model has unsaved changed.</returns>
         public bool DiscardChangesCheck()
         {
             if (Handler != null && Handler.HasUnsavedChanges)
@@ -106,7 +113,10 @@ namespace TabularEditor.UI
             {
                 try
                 {
-                    Handler.SaveFile(File_Current);
+                    if (Directory.Exists(File_Current))
+                        Handler.SaveToFolder(File_Current);
+                    else
+                        Handler.SaveFile(File_Current);
                 }
                 catch (Exception e)
                 {

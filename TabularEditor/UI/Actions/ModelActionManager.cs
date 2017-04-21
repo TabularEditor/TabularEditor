@@ -60,6 +60,9 @@ namespace TabularEditor.UI.Actions
                 UIController.Current.ShowDependencies(s.Direct.First() as IDaxObject);
             }, (s, m) => @"Show dependencies...", true, Context.Table | Context.TableObject));
 
+            // "Duplicate Table";
+            Add(new Action((s, m) => s.Count == 1, (s, m) => s.Table.Clone().Edit(), (s, m) => "Duplicate Table", true, Context.Table));
+
             // "Duplicate Translation";
             Add(new Action((s, m) => s.Count == 1,
                 (s, m) => s.ForEach(i =>

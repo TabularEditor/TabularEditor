@@ -83,6 +83,11 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         public bool AutoFixup { get; set; }
 
+        /// <summary>
+        /// Changes all references to object "obj", to reflect "newName"
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="newName"></param>
         public void DoFixup(IDaxObject obj, string newName)
         {
             //foreach (var d in obj.Model.Tables.OfType<IExpressionObject>().Concat(obj.Model.Tables.SelectMany(t => t.GetChildren().OfType<IExpressionObject>())))
@@ -298,6 +303,8 @@ namespace TabularEditor.TOMWrapper
 
         private void Init()
         {
+            if (database.CompatibilityLevel > 1200) throw new InvalidOperationException("This version of Tabular Editor only supports Tabular databases of Compatibility Level 1200.\n\nTo edit databases of newer compatibility levels, please download Tabular Editor for SQL Server 2017.");
+            if (database.CompatibilityLevel < 1200) throw new InvalidOperationException("Tabular Databases of compatibility level 1100 or 1103 are not supported in Tabular Editor.");
             UndoManager = new UndoFramework.UndoManager(this);
             Actions = new TabularCommonActions(this);
             Model = new Model(this, database.Model);
@@ -566,6 +573,8 @@ namespace TabularEditor.TOMWrapper
             baseObject.Add(arrayName, array);
         }
 
+        private HashSet<string> CurrentFiles;
+
         public void SaveToFolder(string path)
         {
             var json = TOM.JsonSerializer.SerializeDatabase(database, new TOM.SerializeOptions() { IgnoreInferredObjects = true, IgnoreTimestamps = true, IgnoreInferredProperties = true });
@@ -579,6 +588,7 @@ namespace TabularEditor.TOMWrapper
             var perspectives = PopArray(model, "perspectives");
             var roles = PopArray(model, "roles");
 
+            CurrentFiles = new HashSet<string>();
             WriteIfChanged(path + "\\database.json", jobj.ToString(Newtonsoft.Json.Formatting.Indented));
 
             if (relationships != null) OutArray(path, "relationships", relationships);
@@ -612,7 +622,28 @@ namespace TabularEditor.TOMWrapper
                     if (annotations != null) OutArray(path + "\\tables\\" + tableName, "annotations", annotations);
                 }
             }
+
+            RemoveUnusedFiles(path);
+            Status = "Model saved.";
+            if (!IsConnected) UndoManager.SetCheckpoint();
+
         }
+
+        private void RemoveUnusedFiles(string path)
+        {
+            foreach (var f in Directory.GetFiles(path, "*.json"))
+            {
+                if (!CurrentFiles.Contains(f, StringComparer.InvariantCultureIgnoreCase))
+                    File.Delete(f);
+            }
+
+            foreach (var d in Directory.GetDirectories(path))
+            {
+                RemoveUnusedFiles(d);
+                if (!Directory.EnumerateFileSystemEntries(d).Any()) Directory.Delete(d);
+            }
+        }
+
 
         /// <summary>
         /// Writes textual data to a file, but only if the file does not already contain the exact same text.
@@ -620,6 +651,7 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         private void WriteIfChanged(string path, string content)
         {
+            CurrentFiles.Add(path);
             var fi = new FileInfo(path);
             if (!fi.Directory.Exists) fi.Directory.Create();
             else if(fi.Exists)
@@ -679,6 +711,37 @@ namespace TabularEditor.TOMWrapper
             return result;
         }
 
+        internal static List<Tuple<TOM.NamedMetadataObject, TOM.ObjectState>> CheckProcessingState(TOM.Database database)
+        {
+            var result = new List<Tuple<TOM.NamedMetadataObject, TOM.ObjectState>>();
+
+            // Find partitions that are not in the "Ready" state:
+            result.AddRange(
+                    database.Model.Tables.SelectMany(t => t.Partitions).Where(p => p.State != TOM.ObjectState.Ready && p.State != TOM.ObjectState.NoData)
+                    .Select(p => new Tuple<TOM.NamedMetadataObject, TOM.ObjectState>(p, p.State))
+                    );
+
+            // Find calculated columns that are not in the "Ready" state:
+            result.AddRange(
+                    database.Model.Tables.SelectMany(t => t.Columns.OfType<TOM.CalculatedColumn>()).Where(c => c.State != TOM.ObjectState.Ready && c.State != TOM.ObjectState.NoData)
+                    .Select(c => new Tuple<TOM.NamedMetadataObject, TOM.ObjectState>(c, c.State))
+                );
+
+            return result;
+        }
+
+        internal static List<Tuple<TOM.NamedMetadataObject, string>> CheckErrors(TOM.Database database)
+        {
+            var result = new List<Tuple<TOM.NamedMetadataObject, string>>();
+            foreach (var t in database.Model.Tables)
+            {
+                result.AddRange(t.Measures.Where(m => !string.IsNullOrEmpty(m.ErrorMessage)).Select(m => new Tuple<TOM.NamedMetadataObject, string>(m, m.ErrorMessage)));
+                result.AddRange(t.Columns.Where(c => !string.IsNullOrEmpty(c.ErrorMessage)).Select(c => new Tuple<TOM.NamedMetadataObject, string>(c, c.ErrorMessage)));
+                result.AddRange(t.Partitions.Where(p => !string.IsNullOrEmpty(p.ErrorMessage)).Select(p => new Tuple<TOM.NamedMetadataObject, string>(p, p.ErrorMessage)));
+            }
+            return result;
+        }
+
         private void CheckErrors()
         {
             var errorList = new List<Tuple<TOM.NamedMetadataObject, string>>();
@@ -687,6 +750,7 @@ namespace TabularEditor.TOMWrapper
             {
                 errorList.AddRange(t.Measures.Where(m => !string.IsNullOrEmpty(m.ErrorMessage)).Select(m => new Tuple<TOM.NamedMetadataObject, string>(m, m.ErrorMessage)));
                 errorList.AddRange(t.Columns.Where(c => !string.IsNullOrEmpty(c.ErrorMessage)).Select(c => new Tuple<TOM.NamedMetadataObject, string>(c, c.ErrorMessage)));
+                errorList.AddRange(t.Partitions.Where(p => !string.IsNullOrEmpty(p.ErrorMessage)).Select(p => new Tuple<TOM.NamedMetadataObject, string>(p, p.ErrorMessage)));
 
                 var table = (WrapperLookup[t] as Table);
                 
@@ -729,6 +793,14 @@ namespace TabularEditor.TOMWrapper
         {
 
             Tree.OnNodesChanged(obj);
+        }
+
+        internal void UpdateTables()
+        {
+            if (Tree.Options.HasFlag(LogicalTreeOptions.AllObjectTypes))
+                Tree.OnStructureChanged(Model.GroupTables);
+            else
+                Tree.OnStructureChanged(Model);
         }
 
         internal void UpdateFolders(Table table)

@@ -1,0 +1,394 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using TabularEditor.BestPracticeAnalyzer;
+using TabularEditor.TOMWrapper;
+using System.Linq.Dynamic;
+using Aga.Controls.Tree;
+
+namespace TabularEditor.UI.Dialogs
+{
+    public partial class BPAForm : Form
+    {
+        ListViewGroup lvgLocal;
+        ListViewGroup lvgGlobal;
+
+        Analyzer analyzer;
+
+        public Dictionary<string, BestPracticeRule> RuleIndex = new Dictionary<string, BestPracticeRule>();
+
+        public Model Model { get { return analyzer.Model; } set { SetModel(value); } }
+        public TreeViewAdv ModelTree { get; set; }
+        public FormMain FormMain { get; set; }
+
+        private void SetModel(Model model)
+        {
+            analyzer.Model = model;
+        }
+
+        public BPAForm()
+        {
+            InitializeComponent();
+
+            lvgGlobal = listView1.Groups.Add("global", "Global Best Practices");
+            lvgLocal = listView1.Groups.Add("local", "Model Specific Rules");
+
+            analyzer = new Analyzer();
+            analyzer.CollectionChanged += Analyzer_CollectionChanged;
+
+            button1.Enabled = Model != null;
+            button2.Enabled = Model != null;
+            button3.Enabled = Model != null;
+        }
+
+        private void Analyzer_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            PopulateListView();
+        }
+
+        public void PopulateListView()
+        {
+            RuleIndex = analyzer.GlobalRules.Concat(analyzer.LocalRules).ToDictionary(r => r.ID, r => r);
+
+            listView1.Items.Clear();
+            listView1.Items.AddRange(analyzer.GlobalRules.OrderBy(r => r.Name).Select(r =>
+            {
+                var lvi = new ListViewItem(new[] { null, r.Name, r.Scope.GetTypeName(), r.Severity.ToString(), r.Description }, lvgGlobal) { Name = r.ID, Checked = r.Enabled, Tag = r };
+                return lvi;
+            }).ToArray());
+            listView1.Items.AddRange(analyzer.LocalRules.OrderBy(r => r.Name).Select(r =>
+            {
+                var lvi = new ListViewItem(new[] { null, r.Name, r.Scope.GetTypeName(), r.Severity.ToString(), r.Description }, lvgLocal) { Name = r.ID, Checked = r.Enabled, Tag = r };
+                return lvi;
+            }).ToArray());
+
+            
+        }
+
+        BPAEditorForm editor = new BPAEditorForm();
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            Analyze();
+        }
+
+        private void listView2_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            var item = listView2.GetItemAt(e.X, e.Y);
+            if (item != null) Goto(item);
+        }
+
+        public void Goto(ListViewItem item)
+        {
+            var obj = item.Tag as TabularNamedObject;
+            var treeModel = (ModelTree.Model as SortedTreeModel).InnerModel as TabularUITree;
+            if (!treeModel.VisibleInTree(obj))
+            {
+                treeModel.BeginUpdate();
+                treeModel.Options = LogicalTreeOptions.Default | LogicalTreeOptions.ShowHidden;
+                treeModel.Filter = "";
+                FormMain.UpdateTreeUIButtons();
+                treeModel.EndUpdate();
+            }
+
+            var node = ModelTree.FindNodeByTag(item.Tag);
+            if (node != null)
+            {
+                ModelTree.EnsureVisible(node);
+                ModelTree.SelectedNode = node;
+                FormMain.Activate();
+                ModelTree.Focus();
+            }
+        }
+
+        private void listView1_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            if (e.IsSelected && e.Item != null)
+            {
+                Analyze(e.Item.Tag as BestPracticeRule);
+            }
+            UpdateUI();
+        }
+
+        private void UpdateUI()
+        {
+            var item = listView1.SelectedItems.Count == 1 ? listView1.SelectedItems[0] : null;
+
+            btnDelete.Enabled = item?.Group == lvgLocal;
+            btnMakeLocal.Text = item?.Group == lvgLocal ? "Make global" : "Make local";
+            btnMakeLocal.Enabled = Model != null && item != null;
+
+            button3.Enabled = item != null;
+            button2.Enabled = Model != null;
+        }
+
+        public void Analyze(IEnumerable<BestPracticeRule> rules)
+        {
+            if (Model != null)
+            {
+                listView2.Items.Clear();
+                var results = analyzer.Analyze(rules).ToList();
+                listView2.Items.AddRange(
+                    results.Where(r => !r.RuleHasError && !r.Ignored).Select(r => new ListViewItem(new[] { r.ObjectName, r.RuleName, r.Rule.ID }) { Tag = r.Object }).ToArray());
+
+                var oC = listView2.Items.Count;
+                var rC = rules.Count();
+                toolStripStatusLabel1.Text = string.Format("{0} object{1} in violation of the selected rule{2}.", oC, oC == 1 ? "" : "s", rC == 1 ? "" : "s");
+
+                var ruleWithError = results.FirstOrDefault(r => r.RuleHasError);
+                if (ruleWithError != null)
+                    toolStripStatusLabel1.Text = string.Format("Rule error: {0}", ruleWithError.RuleError);
+            }
+        }
+
+        public void Analyze(BestPracticeRule rule)
+        {
+            Analyze(Enumerable.Repeat(rule, 1));
+        }
+
+        public void Analyze()
+        {
+            Analyze(analyzer.GlobalRules.Concat(analyzer.LocalRules).Where(r => r.Enabled));
+        }
+
+        private void listView1_ItemChecked(object sender, ItemCheckedEventArgs e)
+        {
+            if (Model == null)
+            {
+                e.Item.Checked = false;
+            }
+            else
+            {
+                analyzer.IgnoreRule(e.Item.Tag as BestPracticeRule, !e.Item.Checked);
+            }
+            //(e.Item.Tag as BestPracticeRule).Enabled = e.Item.Checked;
+        }
+
+        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
+        {
+            if (listView2.SelectedItems.Count == 0) {
+                e.Cancel = true;
+                return;
+            }
+            var plural = listView2.SelectedItems.Count > 1;
+
+            // SubItems[2] contains the ID of the respective rule:
+            var rules = listView2.SelectedItems.Cast<ListViewItem>().Select(i => i.SubItems[2].Text).Distinct().Select(n => RuleIndex[n]).ToList();
+
+            bpaResultGoTo.Visible = !plural;
+            bpaResultGoToSep.Visible = !plural;
+
+            var p = "Selected object" + (plural ? "s" : "");
+            bpaResultIgnoreRule.Enabled = rules.Count == 1;
+            bpaResultIgnoreSelected.Text = p;
+            bpaResultScriptSelected.Text = p;
+            bpaResultFixSelected.Text = p;
+
+            var canFix = rules.Any(r => !string.IsNullOrEmpty(r.FixExpression));
+            bpaResultScript.Enabled = canFix;
+            bpaResultFix.Enabled = canFix;
+        }
+
+        private void bpaResultGoTo_Click(object sender, EventArgs e)
+        {
+            if(listView2.SelectedItems.Count == 1)
+            {
+                Goto(listView2.SelectedItems[0]);
+            }
+        }
+
+        private void bpaResultIgnoreSelected_Click(object sender, EventArgs e)
+        {
+            bool unsupported = false;
+
+            foreach (ListViewItem item in listView2.SelectedItems)
+            {
+                var rule = RuleIndex[item.SubItems[2].Text];
+                var obj = item.Tag as IAnnotationObject;
+
+                if (obj == null) unsupported = true;
+                else analyzer.IgnoreRule(rule, true, obj);
+            }
+
+            if (unsupported)
+            {
+                MessageBox.Show("One or more of the selected objects does not support annotations. For this reason, the rule cannot be ignored on these objects.", "Cannot ignore rule", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void bpaResultIgnoreRule_Click(object sender, EventArgs e)
+        {
+            var rules = listView2.SelectedItems.Cast<ListViewItem>().Select(i => i.SubItems[2].Text).Distinct().Select(n => RuleIndex[n]).ToList();
+
+            foreach (var rule in rules)
+            {
+                analyzer.IgnoreRule(rule);
+                listView1.Items[rule.ID].Checked = false;
+            }
+        }
+
+        private void bpaResultScriptSelected_Click(object sender, EventArgs e)
+        {
+            var script = string.Join("\n", listView2.SelectedItems.Cast<ListViewItem>().Select(
+                i =>
+                {
+                    var obj = i.Tag as TabularNamedObject;
+                    var rule = RuleIndex[i.SubItems[2].Text];
+                    if (string.IsNullOrEmpty(rule.FixExpression)) return string.Format("// No automatic fix for rule '{0}' on object {1}", i.SubItems[1], i.SubItems[0]);
+                    return obj.GetLinqPath() + "." + rule.FixExpression + ";";
+                }
+                ).ToArray());
+
+            Clipboard.SetText(script);
+            MessageBox.Show("Fix script copied to clipboard!\n\nPaste into Advanced Script Editor for review.", "Fix script generation", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            var newRule = editor.NewRule(analyzer.GetUniqueId("New Rule"));
+            if (newRule != null)
+            {
+                analyzer.AddRule(newRule);
+                analyzer.SaveLocalRulesToModel();
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 1)
+            {
+                var rule = listView1.SelectedItems[0].Tag as BestPracticeRule;
+                if(editor.EditRule(rule))
+                {
+                    if(analyzer.LocalRules.Contains(rule))
+                    {
+                        analyzer.SaveLocalRulesToModel();
+                    } else if(analyzer.GlobalRules.Contains(rule))
+                    {
+                        var bpc = new BestPracticeCollection();
+                        bpc.Add(rule);
+
+                        var globalRulesFile = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\BPARules.json";
+
+                        bpc.AddFromJsonFile(globalRulesFile);
+                        bpc.SaveToFile(globalRulesFile);
+                    }
+
+                    PopulateListView();
+                }
+            }
+        }
+
+        private void BPAForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // Hide the form instead of closing it:
+            Hide();
+            e.Cancel = true;
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            if(listView1.SelectedItems.Count == 1 && listView1.SelectedItems[0].Group == lvgLocal)
+            {
+                var item = listView1.SelectedItems[0];
+                var res = MessageBox.Show("Are you sure you want to delete this rule from the model?", "Delete rule?", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+                if (res == DialogResult.Cancel) return;
+
+                analyzer.LocalRules.Remove(item.Tag as BestPracticeRule);
+                analyzer.SaveLocalRulesToModel();
+                item.Remove();
+            }
+        }
+
+        private void LocalToGlobal()
+        {
+            // Convert a rule from local to global:
+            var item = listView1.SelectedItems[0];
+            var rule = item.Tag as BestPracticeRule;
+            analyzer.LocalRules.Remove(rule);
+            analyzer.GlobalRules.Add(rule);
+            item.Group = lvgGlobal;
+
+            analyzer.SaveLocalRulesToModel();
+
+            // Save global rules (adding the newly promoted rule):
+            var bpc = new BestPracticeCollection();
+            bpc.Add(rule);
+
+            var globalRulesFile = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\BPARules.json";
+
+            bpc.AddFromJsonFile(globalRulesFile);
+            bpc.SaveToFile(globalRulesFile);
+        }
+
+        private void GlobalToLocal()
+        {
+            // Convert a rule from global to local:
+            var item = listView1.SelectedItems[0];
+            var rule = item.Tag as BestPracticeRule;
+            analyzer.GlobalRules.Remove(rule);
+            analyzer.LocalRules.Add(rule);
+            item.Group = lvgLocal;
+
+            analyzer.SaveLocalRulesToModel();
+
+            // Save global rules (less the newly demoted rule):
+            var bpc = new BestPracticeCollection();
+            var globalRulesFile = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\BPARules.json";
+            bpc.AddFromJsonFile(globalRulesFile);
+            var deleteRule = bpc.FirstOrDefault(r => r.ID.Equals(rule.ID, StringComparison.InvariantCultureIgnoreCase));
+            if (deleteRule != null)
+            {
+                bpc.Remove(deleteRule);
+                bpc.SaveToFile(globalRulesFile);
+            }
+        }
+
+        private void btnMakeLocal_Click(object sender, EventArgs e)
+        {
+            if(listView1.SelectedItems.Count == 1 && listView1.SelectedItems[0].Group == lvgLocal)
+            {
+                LocalToGlobal();
+            }
+            else
+            if (listView1.SelectedItems.Count == 1 && listView1.SelectedItems[0].Group == lvgGlobal)
+            {
+                GlobalToLocal();
+            }
+
+            UpdateUI();
+        }
+
+        private void bpaResultScriptRule_Click(object sender, EventArgs e)
+        {
+            if(listView2.SelectedItems.Count == 1)
+            {
+                var item = listView2.SelectedItems[0];
+                var rule = RuleIndex[item.SubItems[2].Text];
+
+                if (string.IsNullOrEmpty(rule.FixExpression))
+                {
+                    MessageBox.Show("No automatic fix exists on this rule.", "No automatic fix", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                var script = string.Join("\n", analyzer.Analyze(rule).Select(
+                    ar =>
+                    {
+                        var obj = ar.Object;
+                        return obj.GetLinqPath() + "." + rule.FixExpression + ";";
+                    }
+                    ).ToArray());
+
+                Clipboard.SetText(script);
+                MessageBox.Show("Fix script copied to clipboard!\n\nPaste into Advanced Script Editor for review.", "Fix script generation", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            }
+        }
+    }
+}

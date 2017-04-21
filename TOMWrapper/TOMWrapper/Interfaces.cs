@@ -59,6 +59,12 @@ namespace TabularEditor.TOMWrapper
         string ErrorMessage { get; }
     }
 
+    public interface IAnnotationObject: ITabularObject
+    {
+        string GetAnnotation(string name);
+        void SetAnnotation(string name, string value, bool undoable = true);
+    }
+
     public interface IExpressionObject: IDaxObject
     {
         string Expression { get; set; }

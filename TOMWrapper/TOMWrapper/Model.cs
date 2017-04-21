@@ -91,7 +91,7 @@ namespace TabularEditor.TOMWrapper
         public ModelRoleCollection Roles { get; private set; }
 
         [Browsable(false)]
-        public RelationshipCollection Relationships { get; private set; }
+        public RelationshipCollection2 Relationships { get; private set; }
 
         [Browsable(false)]
         public DataSourceCollection DataSources { get; private set; }
@@ -136,7 +136,7 @@ namespace TabularEditor.TOMWrapper
             Perspectives = new PerspectiveCollection(Handler, "Model.Perspectives", MetadataObject.Perspectives, this);
             Cultures = new CultureCollection(Handler, "Model.Cultures", MetadataObject.Cultures, this);
             Tables = new TableCollection(Handler, "Model.Tables", MetadataObject.Tables, this);
-            Relationships = new RelationshipCollection(Handler, "Model.Relationships", MetadataObject.Relationships, this);
+            Relationships = new RelationshipCollection2(Handler, "Model.Relationships", MetadataObject.Relationships, this);
             Roles = new ModelRoleCollection(Handler, "Model.Roles", MetadataObject.Roles, this);
 
             Tables.ForEach(r => r.InitRLSIndexer());

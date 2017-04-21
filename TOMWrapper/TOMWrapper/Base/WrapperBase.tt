@@ -41,6 +41,7 @@ namespace TabularEditor.TOMWrapper
 #><#= props.Any(p => p.Name == "Table") ? ", ITabularTableObject" : ""
 #><#= props.Any(p => p.Name == "Description") ? ", IDescriptionObject" : ""
 #><#= props.Any(p => p.Name == "Expression") ? ", IExpressionObject" : ""
+#><#= props.Any(p => p.Name == "Annotations") ? ", IAnnotationObject" : ""
 #>
 	{
 	    protected internal new TOM.<#= t.Name #> MetadataObject { get { return base.MetadataObject as TOM.<#= t.Name #>; } internal set { base.MetadataObject = value; } }
@@ -59,6 +60,20 @@ namespace TabularEditor.TOMWrapper
 <#
 	foreach(PropertyInfo p in props) 
 	{   
+		if (p.Name == "Annotations") { #>
+		public string GetAnnotation(string name) {
+		    return MetadataObject.Annotations.Find(name)?.Value;
+		}
+		public void SetAnnotation(string name, string value, bool undoable = true) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				MetadataObject.Annotations[name].Value = value;
+			} else {
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+			}
+			if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value));
+		}
+		<# }
+
 		if (Rules.ShouldWrapProperty(p, t)) { #>
         /// <summary>
         /// Gets or sets the <#= p.Name #> of the <#= t.Name #>.

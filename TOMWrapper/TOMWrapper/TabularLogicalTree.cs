@@ -311,7 +311,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public abstract void OnStructureChanged(TabularNamedObject obj = null);
+        public abstract void OnStructureChanged(ITabularNamedObject obj = null);
 
         public abstract void OnNodesRemoved(ITabularObject parent, params ITabularObject[] children);
 

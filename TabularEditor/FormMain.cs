@@ -8,6 +8,7 @@ using TabularEditor.UI.Extensions;
 using TabularEditor.UI.Actions;
 using TabularEditor.UI.Dialogs;
 using TabularEditor.UIServices;
+using System.Collections.Generic;
 
 namespace TabularEditor
 {
@@ -89,6 +90,12 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             // really a "loose coupling" between UI and model code, but it helps to keep the
             // code nicely separated.
             UI = new UIController(elements);
+            UI.ModelLoaded += UI_ModelLoaded;
+        }
+
+        private void UI_ModelLoaded(object sender, EventArgs e)
+        {
+            if (BPAForm != null && BPAForm.Visible) BPAForm.Hide();
         }
 
         // TODO: Handle below as actions
@@ -130,6 +137,8 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                     if (res == DialogResult.Cancel) e.Cancel = true;
                 }
             }
+
+            RecentFiles.Save();
         }
 
         private void actViewOptions_Execute(object sender, EventArgs e)
@@ -168,6 +177,28 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             if (args.Length == 2 && (File.Exists(args[1]) || File.Exists(args[1] + "\\database.json")))
             {
                 UI.File_Open(args[1]);
+            }
+
+            // Populate list of recent files...
+            PopulateRecentFilesList();
+        }
+
+        public void PopulateRecentFilesList()
+        {
+            recentFilesToolStripMenuItem.DropDown.Items.Clear();
+
+            if (RecentFiles.Current.RecentHistory.Count == 0)
+            {
+                recentFilesToolStripMenuItem.Enabled = false;
+            }
+            else
+            {
+                recentFilesToolStripMenuItem.DropDown.Items.AddRange(
+                    (RecentFiles.Current.RecentHistory as IEnumerable<string>).Reverse().Take(10).Select(f =>
+                        new ToolStripMenuItem(f, null, (s, ev) => {
+                            if (UI.DiscardChangesCheck()) return;
+                            UI.File_Open(f);
+                        })).ToArray());
             }
         }
 
@@ -372,6 +403,19 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             }
         }
 
+        public void UpdateTreeUIButtons()
+        {
+            var treeModel = (tvModel.Model as Aga.Controls.Tree.SortedTreeModel).InnerModel as TabularUITree;
+            tbShowDisplayFolders.Checked = treeModel.Options.HasFlag(TOMWrapper.LogicalTreeOptions.DisplayFolders);
+            tbShowHidden.Checked = treeModel.Options.HasFlag(TOMWrapper.LogicalTreeOptions.ShowHidden);
+            tbShowAllObjectTypes.Checked = treeModel.Options.HasFlag(TOMWrapper.LogicalTreeOptions.AllObjectTypes);
+            tbShowMeasures.Checked = treeModel.Options.HasFlag(TOMWrapper.LogicalTreeOptions.Measures);
+            tbShowColumns.Checked = treeModel.Options.HasFlag(TOMWrapper.LogicalTreeOptions.Columns);
+            tbShowHierarchies.Checked = treeModel.Options.HasFlag(TOMWrapper.LogicalTreeOptions.Hierarchies);
+            tbApplyFilter.Checked = !string.IsNullOrEmpty(treeModel.Filter);
+
+        }
+
         private void saveToFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
             UI.File_SaveToFolder();
@@ -381,5 +425,15 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         {
             UI.File_Open(true);
         }
+
+        private void bestPracticeAnalyzerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            BPAForm.Model = UI.Handler?.Model;
+            BPAForm.ModelTree = tvModel;
+            BPAForm.FormMain = this;
+            BPAForm.Show();
+        }
+
+        private BPAForm BPAForm = new BPAForm();
     }
 }

@@ -12,13 +12,23 @@ namespace TabularEditor.UI
 {
     public partial class UIController
     {
+        ToolStripItem[] originalItems = null;
+
         private void ToolsMenu_Opening(object sender, CancelEventArgs e)
         {
             if (Handler == null) return;
             var menu = (sender as ToolStripDropDown);
 
+            if(originalItems == null) originalItems = menu.Items.OfType<ToolStripItem>().ToArray();
             menu.Items.Clear();
-            foreach(var act in Actions.OfType<IModelAction>())
+            if (originalItems.Length > 0)
+            {
+                menu.Items.AddRange(originalItems);
+                if (menu.Items.Count > 0 && !(menu.Items[menu.Items.Count - 1] is ToolStripSeparator)) menu.Items.Add(new ToolStripSeparator());
+            }
+
+            bool first = true;
+            foreach (var act in Actions.OfType<IModelAction>())
             {
                 if((act.ValidContexts & Context.Groups) > 0)
                 {

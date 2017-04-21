@@ -9,7 +9,7 @@ namespace TabularEditor.TOMWrapper
     public partial class Measure : ITabularPerspectiveObject, IDaxObject, IDynamicPropertyObject, IClonableObject
     {
         [Browsable(false)]
-        public Dictionary<IDaxObject, List<Dependency>> Dependencies { get; private set; } = new Dictionary<IDaxObject, List<Dependency>>();
+        public Dictionary<IDaxObject, List<Dependency>> Dependencies { get; internal set; } = new Dictionary<IDaxObject, List<Dependency>>();
         [Browsable(false)]
         public HashSet<IExpressionObject> Dependants { get; private set; } = new HashSet<IExpressionObject>();
 

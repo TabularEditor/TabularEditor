@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for KPI
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class KPI: TabularObject, IDescriptionObject
+	public partial class KPI: TabularObject, IDescriptionObject, IAnnotationObject
 	{
 	    protected internal new TOM.KPI MetadataObject { get { return base.MetadataObject as TOM.KPI; } internal set { base.MetadataObject = value; } }
 
@@ -22,7 +22,18 @@ namespace TabularEditor.TOMWrapper
 		public KPI(TabularModelHandler handler, TOM.KPI kpiMetadataObject) : base(handler, kpiMetadataObject)
 		{
 		}
-        /// <summary>
+		public string GetAnnotation(string name) {
+		    return MetadataObject.Annotations.Find(name)?.Value;
+		}
+		public void SetAnnotation(string name, string value, bool undoable = true) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				MetadataObject.Annotations[name].Value = value;
+			} else {
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+			}
+			if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value));
+		}
+		        /// <summary>
         /// Gets or sets the Description of the KPI.
         /// </summary>
 		[DisplayName("Description")]

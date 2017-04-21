@@ -146,6 +146,10 @@ namespace TabularEditor.TOMWrapper
             {
                 base.Name = value;
             }
+            get
+            {
+                return base.Name;
+            }
         }
 
         public bool Editable(string propertyName)

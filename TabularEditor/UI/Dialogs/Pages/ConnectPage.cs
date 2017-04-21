@@ -11,12 +11,24 @@ using Microsoft.AnalysisServices.Tabular;
 using TabularEditor.TOMWrapper;
 using TabularEditor.UIServices;
 using System.Drawing.Imaging;
+using System.IO;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace TabularEditor.UI.Dialogs.Pages
 {
     public partial class ConnectPage : UserControl
     {
+        public class RecentServersObject
+        {
+            public List<string> RecentHistory = new List<string>();
+            public string Recent;
+        }
+
         public event ValidationEventHandler Validation;
+
+        readonly string RecentServersFilePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\RecentServers.json";
+        RecentServersObject recentServers;
 
         public ConnectPage()
         {
@@ -40,6 +52,20 @@ namespace TabularEditor.UI.Dialogs.Pages
             try
             {
                 result.Connect(GetConnectionString());
+                if(result.ServerMode != Microsoft.AnalysisServices.ServerMode.Tabular)
+                {
+                    MessageBox.Show("Tabular Editor can only connect to Analysis Services instances running in Tabular mode.", "Unsupported instance", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    return null;
+                }
+                if (!string.IsNullOrWhiteSpace(txtServer.Text))
+                {
+                    var serverName = txtServer.Text;
+                    if (!recentServers.RecentHistory.Contains(serverName, StringComparer.InvariantCultureIgnoreCase))
+                        recentServers.RecentHistory.Add(serverName);
+                    recentServers.Recent = serverName;
+                    var json = JsonConvert.SerializeObject(recentServers, Formatting.Indented);
+                    File.WriteAllText(RecentServersFilePath, json);
+                }                
             }
             catch (Exception ex)
             {
@@ -165,6 +191,31 @@ namespace TabularEditor.UI.Dialogs.Pages
         private void comboBox1_DropDown(object sender, EventArgs e)
         {
             if (!PowerBIInstancesLoaded) PopulateLocalInstances();
+        }
+
+        private void ConnectPage_Load(object sender, EventArgs e)
+        {
+            if (File.Exists(RecentServersFilePath))
+            {
+                try
+                {
+                    recentServers = JsonConvert.DeserializeObject<RecentServersObject>(File.ReadAllText(RecentServersFilePath));
+                    txtServer.Items.AddRange(recentServers.RecentHistory.OrderBy(n => n).ToArray());
+                    txtServer.Text = recentServers.Recent;
+                    ValidateUI(null, null);
+                }
+                catch
+                {
+                    recentServers = new RecentServersObject();
+                }
+            }
+        }
+
+        private void txtServer_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            txtServer.Text = txtServer.SelectedItem.ToString();
+            comboBox1.SelectedIndex = -1;
+            ValidateUI(sender, e);
         }
     }
 }

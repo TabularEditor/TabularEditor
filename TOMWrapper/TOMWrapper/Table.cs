@@ -77,6 +77,40 @@ namespace TabularEditor.TOMWrapper
 
         #endregion
 
+        public override TabularNamedObject Clone(string newName = null, bool includeTranslations = false)
+        {
+            Handler.BeginUpdate("duplicate table");
+
+            var mt = MetadataObject.Clone();
+            mt.Name = !string.IsNullOrEmpty(newName) ? newName : Model.MetadataObject.Tables.GetNewName(mt.Name);
+
+            Table t;
+            if (mt.GetSourceType() == TOM.PartitionSourceType.Calculated) t = new CalculatedTable(Handler, mt);
+            else t = new Table(Handler, mt);
+            Model.Tables.Add(t);
+            t.InitRLSIndexer();
+
+            // Update dependencies and do fix-up of calculated columns and measures on the cloned table:
+            t.Dependants = new HashSet<IExpressionObject>(
+                Dependants
+                    .Where(eo => eo is CalculatedColumn && (eo as CalculatedColumn).Table == this)
+                    .Select(eo => t.Columns[eo.Name]).OfType<IExpressionObject>());
+            foreach(var eo in t.Columns.OfType<CalculatedColumn>())
+            {
+                eo.Dependencies = (Columns[eo.Name] as CalculatedColumn).Dependencies.ToDictionary(kvp => kvp.Key == this ? t : kvp.Key, kvp => kvp.Value);
+            }
+            foreach (var m in t.Measures)
+            {
+                m.Dependencies = Measures[m.Name].Dependencies.ToDictionary(kvp => kvp.Key == this ? t : kvp.Key, kvp => kvp.Value);
+            }
+            Handler.DoFixup(t, t.Name);
+
+            Handler.UpdateTables();
+            Handler.EndUpdate();
+
+            return t;
+        }
+
         [IntelliSense("Deletes the table from the model.")]
         public override void Delete()
         {
@@ -265,6 +299,7 @@ namespace TabularEditor.TOMWrapper
                 if (value.IndexOfAny(InvalidTableNameChars) != -1) throw new ArgumentException("Table name cannot contain any of the following characters: " + string.Join(" ", InvalidTableNameChars));
                 base.Name = value;
             }
+            get { return base.Name; }
         }
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)

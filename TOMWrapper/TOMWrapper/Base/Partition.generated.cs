@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Partition
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Partition: TabularNamedObject, IErrorMessageObject, ITabularTableObject, IDescriptionObject
+	public partial class Partition: TabularNamedObject, IErrorMessageObject, ITabularTableObject, IDescriptionObject, IAnnotationObject
 	{
 	    protected internal new TOM.Partition MetadataObject { get { return base.MetadataObject as TOM.Partition; } internal set { base.MetadataObject = value; } }
 
@@ -39,7 +39,18 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeSourceType() { return false; }
-        /// <summary>
+		public string GetAnnotation(string name) {
+		    return MetadataObject.Annotations.Find(name)?.Value;
+		}
+		public void SetAnnotation(string name, string value, bool undoable = true) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				MetadataObject.Annotations[name].Value = value;
+			} else {
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+			}
+			if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value));
+		}
+		        /// <summary>
         /// Gets or sets the Description of the Partition.
         /// </summary>
 		[DisplayName("Description")]

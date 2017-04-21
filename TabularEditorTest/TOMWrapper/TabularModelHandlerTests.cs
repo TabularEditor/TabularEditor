@@ -26,7 +26,7 @@ namespace TabularEditor.TOMWrapper.Tests
         {
         }
 
-        public override void OnStructureChanged(TabularNamedObject obj = null)
+        public override void OnStructureChanged(ITabularNamedObject obj = null)
         {
         }
     }

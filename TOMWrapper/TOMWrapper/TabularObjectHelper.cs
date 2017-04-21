@@ -12,17 +12,18 @@ namespace TabularEditor.TOMWrapper
     {
         public static string GetLinqPath(this TabularNamedObject obj)
         {
-            if(obj is Column || obj is Hierarchy || obj is Measure || obj is Partition)
-            {
-                var o = obj as ITabularTableObject;
-                var colType = obj.GetTypeName(true);
-                return string.Format("{0}.{1}[\"{2}\"]", o.Table.GetLinqPath(), colType, obj.Name);
-            }
-
             switch (obj.ObjectType)
             {
                 case ObjectType.Model:
                     return "Model";
+                case ObjectType.Column:
+                    return string.Format("({0}.Columns[\"{1}\"] as {2})", (obj as ITabularTableObject).Table.GetLinqPath(), obj.Name, obj.GetType().Name);
+                case ObjectType.Measure:
+                    return string.Format("{0}.Measures[\"{1}\"]", (obj as ITabularTableObject).Table.GetLinqPath(), obj.Name);
+                case ObjectType.Hierarchy:
+                    return string.Format("{0}.Hierarchies[\"{1}\"]", (obj as ITabularTableObject).Table.GetLinqPath(), obj.Name);
+                case ObjectType.Partition:
+                    return string.Format("({0}.Partitions[\"{1}\"] as {2})", (obj as ITabularTableObject).Table.GetLinqPath(), obj.Name, obj.GetType().Name);
                 case ObjectType.Table:
                     return string.Format("{0}.Tables[\"{1}\"]", obj.Model.GetLinqPath(), obj.Name);
                 case ObjectType.Level:

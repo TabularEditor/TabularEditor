@@ -120,6 +120,7 @@
     <Compile Include="TOMWrapper\CalculatedTableColumn.cs" />
     <Compile Include="TOMWrapper\Database.cs" />
     <Compile Include="TOMWrapper\MetadataObjectHelper.cs" />
+    <Compile Include="TOMWrapper\NullTree.cs" />
     <Compile Include="TOMWrapper\ProviderDataSource.cs" />
     <Compile Include="TOMWrapper\LogicalGroup.cs" />
     <Compile Include="TOMWrapper\KPI.cs" />
@@ -164,6 +165,7 @@
     <Compile Include="TOMWrapper\TabularConnection.cs" />
     <Compile Include="TOMWrapper\TabularDeployer.cs" />
     <Compile Include="UndoFramework\IUndoAction.cs" />
+    <Compile Include="UndoFramework\UndoAnnotationAction.cs" />
     <Compile Include="UndoFramework\UndoPropertyChangedAction.cs" />
     <Compile Include="UndoFramework\UndoClearAction.cs" />
     <Compile Include="UndoFramework\UndoBatchAction.cs" />

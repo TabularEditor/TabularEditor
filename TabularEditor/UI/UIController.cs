@@ -74,6 +74,7 @@ namespace TabularEditor.UI
         public void LoadTabularModelToUI()
         {
             Handler.UndoManager.UndoStateChanged += UndoManager_UndoActionAdded;
+            
 
             ShowSelectionStatus = false;
             Tree = new TabularUITree(Handler.Model) { Options = Tree?.Options ?? LogicalTreeOptions.Default };
@@ -98,7 +99,6 @@ namespace TabularEditor.UI
             TreeView_SelectionChanged(UI.TreeView, new EventArgs());
             UI.FormMain.modelToolStripMenuItem.Enabled = true;
             UI.ModelMenu.Enabled = true;
-            UI.ToolsMenu.Enabled = true;
         }
 
         protected void OnModelLoaded()
