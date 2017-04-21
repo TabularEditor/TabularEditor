@@ -32,7 +32,7 @@ namespace TabularEditor.TOMWrapper
 
             var tom = new TOM.Level() { Column = c, Name = MetadataObject.Name, Ordinal = MetadataObject.Ordinal };
             //MetadataObject.CopyTo(tom);
-            //tom.IsRemoved = false;
+            ////tom.IsRemoved = false;
             MetadataObject = tom;
 
             base.Undelete(hierarchyRef.Levels);

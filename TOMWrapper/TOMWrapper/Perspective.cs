@@ -18,7 +18,7 @@ namespace TabularEditor.TOMWrapper
         {
             Handler.BeginUpdate("duplicate perspective");
             var tom = MetadataObject.Clone();
-            tom.IsRemoved = false;
+            //tom.IsRemoved = false;
             tom.Name = Model.Perspectives.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
             var p = new Perspective(Handler, tom);
             Model.Perspectives.Add(p);
@@ -47,7 +47,7 @@ namespace TabularEditor.TOMWrapper
         {
             var tom = new TOM.Perspective();
             MetadataObject.CopyTo(tom);
-            tom.IsRemoved = false;
+            //tom.IsRemoved = false;
             MetadataObject = tom;
 
             base.Undelete(collection);

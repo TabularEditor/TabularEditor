@@ -78,8 +78,8 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Gets or sets the <#= p.Name #> of the <#= t.Name #>.
         /// </summary>
-		[DisplayName("<#= Rules.GetDisplayName(p.Name) #>")]
-		[Category("<#= Rules.GetCategory(p.Name, t) #>"),IntelliSense("The <#= Rules.GetDisplayName(p.Name) #> of this <#= t.Name #>.")]<#= Rules.GetOtherAttributes(p.Name, t.Name) #>
+		[DisplayName("<#= Rules.GetDisplayName(p.Name, t.Name) #>")]
+		[Category("<#= Rules.GetCategory(p.Name, t) #>"),IntelliSense("The <#= Rules.GetDisplayName(p.Name, t.Name) #> of this <#= t.Name #>.")]<#= Rules.GetOtherAttributes(p.Name, t.Name) #>
 		public <#= Rules.PropertyType(p) #> <#= p.Name #> {
 			<#= Rules.PropertyGetter(p) #>
 			<#= Rules.PropertySetter(p) #>
@@ -151,6 +151,7 @@ namespace TabularEditor.TOMWrapper
 <# } else if (t.Name == "DataSource") { #>
 				switch((obj as TOM.DataSource).Type) {
 					case TOM.DataSourceType.Provider: new ProviderDataSource(handler, obj as TOM.ProviderDataSource) { Collection = this }; break;
+					case TOM.DataSourceType.Structured: new StructuredDataSource(handler, obj as TOM.StructuredDataSource) { Collection = this }; break;
 				}
 <# } else { #>
 				new <#= t.Name #>(handler, obj) { Collection = this };

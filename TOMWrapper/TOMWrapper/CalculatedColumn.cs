@@ -31,10 +31,11 @@ namespace TabularEditor.TOMWrapper
         {
             Handler.BeginUpdate("duplicate calculated column");
             var tom = MetadataObject.Clone() as TOM.CalculatedColumn;
-            tom.IsRemoved = false;
+            //tom.IsRemoved = false;
             tom.Name = table.Columns.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
             var c = new CalculatedColumn(Handler, tom);
             table.Columns.Add(c);
+            c.InitOLSIndexer();
 
             if (includeTranslations)
             {

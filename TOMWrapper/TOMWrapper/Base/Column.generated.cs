@@ -477,6 +477,28 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         [Browsable(true),DisplayName("Display Folders"),Category("Translations and Perspectives")]
 	    public new TranslationIndexer TranslatedDisplayFolders { get { return base.TranslatedDisplayFolders; } }
+        /// <summary>
+        /// Gets or sets the EncodingHint of the Column.
+        /// </summary>
+		[DisplayName("Encoding Hint")]
+		[Category("Other"),IntelliSense("The Encoding Hint of this Column.")]
+		public TOM.EncodingHintType EncodingHint {
+			get {
+			    return MetadataObject.EncodingHint;
+			}
+			set {
+				var oldValue = EncodingHint;
+				if (oldValue == value) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging("EncodingHint", value, ref undoable, ref cancel);
+				if (cancel) return;
+				MetadataObject.EncodingHint = value;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "EncodingHint", oldValue, value));
+				OnPropertyChanged("EncodingHint", oldValue, value);
+			}
+		}
+		private bool ShouldSerializeEncodingHint() { return false; }
 		[Browsable(false)]
 		public Table Table
 		{ 
@@ -696,6 +718,15 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("DisplayFolder"));
 				this.ToList().ForEach(item => { item.DisplayFolder = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		[Description("Sets the EncodingHint property of all objects in the collection at once.")]
+		public TOM.EncodingHintType EncodingHint {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("EncodingHint"));
+				this.ToList().ForEach(item => { item.EncodingHint = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}

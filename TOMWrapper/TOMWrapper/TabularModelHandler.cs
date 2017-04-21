@@ -303,7 +303,6 @@ namespace TabularEditor.TOMWrapper
 
         private void Init()
         {
-            if (database.CompatibilityLevel > 1200) throw new InvalidOperationException("This version of Tabular Editor only supports Tabular databases of Compatibility Level 1200.\n\nTo edit databases of newer compatibility levels, please download Tabular Editor for SQL Server 2017.");
             if (database.CompatibilityLevel < 1200) throw new InvalidOperationException("Tabular Databases of compatibility level 1100 or 1103 are not supported in Tabular Editor.");
             UndoManager = new UndoFramework.UndoManager(this);
             Actions = new TabularCommonActions(this);

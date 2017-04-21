@@ -30,7 +30,13 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Provide a lambda statement that is executed once for each object in the collection.\nExample: .ForEach(obj => obj.Name += \" OLD\");")]
         public void ForEach(Action<T> action)
         {
-            this.ToList().ForEach(action);
+            if(this is ColumnCollection)
+            {
+                // When iterating column collections, make sure to not include the row number:
+                this.Where(obj => (obj as Column).Type != TOM.ColumnType.RowNumber).ToList().ForEach(action);
+            }
+            else
+                this.ToList().ForEach(action);
         }
 
         public ITabularObjectCollection GetCurrentCollection()
@@ -172,6 +178,12 @@ namespace TabularEditor.TOMWrapper
         {
             if(item.MetadataObject.Parent != null)
                 throw new ArgumentException("The item already belongs to a collection.");
+
+            // TODO: Ugly hack to prevent error when adding variations:
+            if(item is Variation && item.MetadataObject.IsRemoved)
+            {
+                (item as Variation).RenewMetadataObject();
+            }
 
             MetadataObjectCollection.Add(item.MetadataObject as TT);
             item.Collection = this;

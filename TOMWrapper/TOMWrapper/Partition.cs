@@ -17,7 +17,7 @@ namespace TabularEditor.TOMWrapper
         {
             var tom = new TOM.Partition();
             MetadataObject.CopyTo(tom);
-            tom.IsRemoved = false;
+            ////tom.IsRemoved = false;
             MetadataObject = tom;
 
             base.Undelete(collection);
@@ -29,30 +29,6 @@ namespace TabularEditor.TOMWrapper
             DataSource = Model.DataSources.FirstOrDefault();
         }
 
-        [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
-        public string Query
-        {
-            set
-            {
-                if (MetadataObject.Source is TOM.QueryPartitionSource)
-                {
-                    var oldValue = Query;
-                    if (oldValue == value) return;
-                    bool undoable = true;
-                    bool cancel = false;
-                    OnPropertyChanging("Query", value, ref undoable, ref cancel);
-                    if (cancel) return;
-                    (MetadataObject.Source as TOM.QueryPartitionSource).Query = value;
-                    if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Query", oldValue, value));
-                    OnPropertyChanged("Query", oldValue, value);
-                }
-            }
-            get
-            {
-                return (MetadataObject.Source as TOM.QueryPartitionSource)?.Query;
-            }
-        }
-
         public string Source
         {
             get
@@ -62,13 +38,23 @@ namespace TabularEditor.TOMWrapper
         }
 
         [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
+        public string Query { get { return Expression; } set { Expression = value; } }
+
+        [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
         public string Expression
         {
             get
             {
-                return MetadataObject.SourceType == TOM.PartitionSourceType.Calculated ?
-                    (MetadataObject.Source as TOM.CalculatedPartitionSource)?.Expression :
-                    (MetadataObject.Source as TOM.MPartitionSource)?.Expression;
+                switch(MetadataObject.SourceType)
+                {
+                    case TOM.PartitionSourceType.Calculated:
+                        return (MetadataObject.Source as TOM.CalculatedPartitionSource)?.Expression;
+                    case TOM.PartitionSourceType.Query:
+                        return (MetadataObject.Source as TOM.QueryPartitionSource)?.Query;
+                    case TOM.PartitionSourceType.M:
+                        return (MetadataObject.Source as TOM.MPartitionSource)?.Expression;
+                }
+                throw new NotSupportedException();
             }
             set
             {
@@ -80,7 +66,18 @@ namespace TabularEditor.TOMWrapper
                     bool cancel = false;
                     OnPropertyChanging("Expression", value, ref undoable, ref cancel);
                     if (cancel) return;
+
+                    switch (MetadataObject.SourceType)
+                    {
+                        case TOM.PartitionSourceType.Calculated:
+                            (MetadataObject.Source as TOM.CalculatedPartitionSource).Expression = value; break;
+                        case TOM.PartitionSourceType.Query:
+                            (MetadataObject.Source as TOM.QueryPartitionSource).Query = value; break;
+                        case TOM.PartitionSourceType.M:
+                            (MetadataObject.Source as TOM.MPartitionSource).Expression = value; break;
+                    }
                     (MetadataObject.Source as TOM.CalculatedPartitionSource).Expression = value;
+
                     if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Expression", oldValue, value));
                     OnPropertyChanged("Expression", oldValue, value);
                 }
@@ -125,7 +122,7 @@ namespace TabularEditor.TOMWrapper
                 case "Query":
                     return SourceType == TOM.PartitionSourceType.Query;
                 case "Expression":
-                    return SourceType == TOM.PartitionSourceType.Calculated;
+                    return SourceType == TOM.PartitionSourceType.Calculated || SourceType == TOM.PartitionSourceType.M;
                 case "Mode":
                 case "Description":
                 case "Name":
@@ -160,14 +157,21 @@ namespace TabularEditor.TOMWrapper
             {
                 case "Name":
                 case "Description":
-                    return true;
                 case "DataSource":
                 case "Query":
-                    if (MetadataObject.SourceType == TOM.PartitionSourceType.Query) return true;
-                    return false;
+                case "Expression":
+                    return true;
                 default:
                     return false;
             }
+        }
+    }
+
+    public class MPartition: Partition
+    {
+        public MPartition() : base(TabularModelHandler.Singleton, new TOM.Partition() { Source = new TOM.MPartitionSource() })
+        {
+
         }
     }
 }

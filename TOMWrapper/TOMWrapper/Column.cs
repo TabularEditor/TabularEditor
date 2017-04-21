@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using TabularEditor.PropertyGridUI;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    public abstract partial class Column: ITabularPerspectiveObject, IDaxObject
+    public abstract partial class Column: ITabularPerspectiveObject, IDaxObject, IDynamicPropertyObject
     {
         [Browsable(false)]
         public HashSet<IExpressionObject> Dependants { get; private set; } = new HashSet<IExpressionObject>();
@@ -65,15 +66,27 @@ namespace TabularEditor.TOMWrapper
 
             MetadataObject.IsKey = false;
             MetadataObject.CopyTo(tom);
-            tom.IsRemoved = false;
+            ////tom.IsRemoved = false;
             MetadataObject = tom;
 
             base.Undelete(collection);
         }
 
+        [Category("Options")]
+        public VariationCollection Variations { get; private set; }
+
         protected override void Init()
         {
             InPerspective = new PerspectiveColumnIndexer(this);
+            Variations = new VariationCollection(Handler, "Variations", MetadataObject.Variations, this);
+        }
+
+        [Browsable(true), DisplayName("Object Level Security"), Category("Security")]
+        public ColumnOLSIndexer ObjectLevelSecurity { get; private set; }
+
+        public void InitOLSIndexer()
+        {
+            ObjectLevelSecurity = new ColumnOLSIndexer(this);
         }
 
         protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
@@ -113,6 +126,21 @@ namespace TabularEditor.TOMWrapper
             base.OnPropertyChanged(propertyName, oldValue, newValue);
         }
 
+        public virtual bool Browsable(string propertyName)
+        {
+            switch (propertyName)
+            {
+                case "Variations":
+                    return Model.Database.CompatibilityLevel >= 1400;
+                default: return true;
+            }
+        }
+
+        public bool Editable(string propertyName)
+        {
+            return true;
+        }
+
         [Browsable(true), Category("Metadata"), DisplayName("DAX identifier")]
         public string DaxObjectFullName
         {
@@ -143,7 +171,8 @@ namespace TabularEditor.TOMWrapper
     {
         public override IEnumerator<Column> GetEnumerator()
         {
-            return MetadataObjectCollection.Where(c => c.Type != Microsoft.AnalysisServices.Tabular.ColumnType.RowNumber).Select(c => Handler.WrapperLookup[c] as Column).GetEnumerator();
+            return MetadataObjectCollection
+                .Where(c => c.Type != TOM.ColumnType.RowNumber).Select(c => Handler.WrapperLookup[c] as Column).GetEnumerator();
         }
     }
 }

@@ -47,6 +47,11 @@ class Rules {
 				case "SortByColumn":
 					resolveObject = "value == null ? null : Table.Columns[value.MetadataObject.Name].MetadataObject";
 					break;
+				case "DefaultColumn":
+				case "DefaultHierarchy":
+				case "Relationship":
+					resolveObject = "value == null ? null : value.MetadataObject";
+					break;
 				case "Column":
 					resolveObject = "value == null ? null : Hierarchy.Table.Columns[value.MetadataObject.Name].MetadataObject";
 					break;
@@ -57,6 +62,7 @@ class Rules {
 				case "KPI":
 					resolveObject = "value?.MetadataObject";
 					break;
+
 			}
         }
 		
@@ -107,11 +113,13 @@ class Rules {
         );
     }
 
-	public static string GetDisplayName(string propertyName)
+	public static string GetDisplayName(string propertyName, string className)
     {
 		var result = propertyName;
 
 		if(result.StartsWith("Is") && char.IsUpper(result[2])) result = result.Substring(2);
+
+		if(className == "Variation" && propertyName == "Column") return "Parent Column";
 
 		return SplitCamelCase(result);
     }
@@ -129,7 +137,17 @@ class Rules {
 			case "SortByColumn":
 			case "FormatString":
 			case "SourceColumn":
+			case "IsPrivate":
+			case "ShowAsVariationsOnly":
 				return "Options";
+			case "Column":
+				if(objectType == typeof(Variation)) return "Basic";
+				return "Other";
+			case "IsDefault":
+			case "DefaultColumn":
+			case "DefaultHierarchy":
+			case "Relationship":
+				return "Variation Options";
 			case "DataCategory":
 			case "ErrorMessage":
 			case "DataType":
@@ -150,7 +168,11 @@ class Rules {
 
 	public static string GetOtherAttributes(string propertyName, string className)
     {
+	    if(className == "Variation" && propertyName == "Column") return "[TypeConverter(typeof(TableColumnConverter)),ReadOnly(true)]";
 		if(propertyName == "SortByColumn") return "[TypeConverter(typeof(TableColumnConverter))]";
+		if(propertyName == "DefaultColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
+		if(propertyName == "DefaultHierarchy") return "[TypeConverter(typeof(AllHierarchyConverter))]";
+		if(propertyName == "Relationship") return "[TypeConverter(typeof(AllRelationshipConverter))]";
 		if(propertyName == "ToColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
 		if(propertyName == "FromColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
 		if(className == "Level" && propertyName == "Hierarchy") return "[Browsable(false)]";
@@ -159,7 +181,7 @@ class Rules {
 		if(className == "Model" && propertyName == "Culture") return "[TypeConverter(typeof(CultureConverter))]";
 		if(propertyName == "DisplayFolder") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]";
 		if(propertyName == "Expression") return "[Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]";
-
+		if(propertyName == "ContextExpression") return "[Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]";
 		return "";
     }
 
@@ -203,7 +225,9 @@ class Rules {
 	   { typeof(Partition), "TabularNamedObject" },
 	   { typeof(ModelRole), "TabularNamedObject" },
        { typeof(DataSource), "TabularNamedObject" },
-       { typeof(ProviderDataSource), "DataSource" }
+       { typeof(ProviderDataSource), "DataSource" },
+       { typeof(StructuredDataSource), "DataSource" },
+       { typeof(Variation), "TabularNamedObject" }
    };
 
    public static readonly Dictionary<Type, string> Collections = new Dictionary<Type,string>()
@@ -220,7 +244,8 @@ class Rules {
        { typeof(Perspective), "Perspectives" },
        { typeof(Culture), "Cultures" },
 	   { typeof(Relationship), "Relationships" },
-	   { typeof(DataSource), "DataSources" }
+	   { typeof(DataSource), "DataSources" },
+       { typeof(Variation), "Variations" }
    };
 
    public static readonly Dictionary<Type, string> CollectionParent = new Dictionary<Type,string>()
@@ -235,7 +260,8 @@ class Rules {
        { typeof(Perspective), "Model" },
        { typeof(Culture), "Model" },
 	   { typeof(Relationship), "Model" },
-	   { typeof(DataSource), "Model" }
+	   { typeof(DataSource), "Model" },
+       { typeof(Variation), "Column" }
    };
 }
 #>

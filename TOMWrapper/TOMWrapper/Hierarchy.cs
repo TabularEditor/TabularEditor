@@ -18,11 +18,16 @@ namespace TabularEditor.TOMWrapper
             base.Delete();
         }
 
+        public string DaxObjectFullName
+        {
+            get { return Table.DaxObjectFullName + "[" + Name + "]"; }
+        }
+
         internal override void Undelete(ITabularObjectCollection collection)
         {
             var tom = new TOM.Hierarchy();
             MetadataObject.CopyTo(tom);
-            tom.IsRemoved = false;
+            //////tom.IsRemoved = false;
             MetadataObject = tom;
 
             base.Undelete(collection);

@@ -28,7 +28,9 @@ namespace TabularEditor.TOMWrapper
     public enum ObjectType
     {
         Group = -2,
-        Folder = -1, 
+        Folder = -1,
+
+        Null = 0,
         Model = 1,
         DataSource = 2,
         Table = 3,
@@ -52,6 +54,10 @@ namespace TabularEditor.TOMWrapper
         Role = 34,
         RoleMembership = 35,
         TablePermission = 36,
+        Variation = 37,
+        Expression = 41,
+        ColumnPermission = 42,
+        DetailRowsDefinition = 43,
         Database = 1000
     }
 

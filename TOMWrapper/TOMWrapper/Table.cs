@@ -6,6 +6,7 @@ using System.Drawing.Design;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.TextServices;
+using TabularEditor.UndoFramework;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -37,6 +38,7 @@ namespace TabularEditor.TOMWrapper
             if (!string.IsNullOrEmpty(name)) column.Name = name;
             if (!string.IsNullOrEmpty(expression)) column.Expression = expression;
             if (!string.IsNullOrEmpty(displayFolder)) column.DisplayFolder = displayFolder;
+            column.InitOLSIndexer();
             Handler.EndUpdate();
             return column;
         }
@@ -50,6 +52,7 @@ namespace TabularEditor.TOMWrapper
             if (!string.IsNullOrEmpty(name)) column.Name = name;
             if (!string.IsNullOrEmpty(sourceColumn)) column.SourceColumn = sourceColumn;
             if (!string.IsNullOrEmpty(displayFolder)) column.DisplayFolder = displayFolder;
+            column.InitOLSIndexer();
             Handler.EndUpdate();
             return column;
         }
@@ -142,7 +145,7 @@ namespace TabularEditor.TOMWrapper
         {
             var tom = new TOM.Table();
             MetadataObject.CopyTo(tom);
-            tom.IsRemoved = false;
+            //tom.IsRemoved = false;
             MetadataObject = tom;
 
             base.Undelete(collection);
@@ -161,7 +164,7 @@ namespace TabularEditor.TOMWrapper
         public HierarchyCollection Hierarchies { get; private set; }
 
         [Category("Data Source"),NoMultiselect()]
-        [Editor(typeof(RefreshGridCollectionEditor),typeof(UITypeEditor))]
+        [Editor(typeof(PartitionCollectionEditor),typeof(UITypeEditor))]
         public PartitionCollection Partitions { get; private set; }
 
         [Category("Data Source")]
@@ -189,13 +192,17 @@ namespace TabularEditor.TOMWrapper
             {
                 case "Source":
                 case "Partitions":
-                    return SourceType == TOM.PartitionSourceType.Query;
+                    return SourceType == TOM.PartitionSourceType.Query || SourceType == TOM.PartitionSourceType.M;
+
+                // Compatibility Level 1400-specific properties:
                 case "DefaultDetailRowsExpression":
+                case "ShowAsVariationsOnly":
+                case "IsPrivate":
                     return Model.Database.CompatibilityLevel >= 1400;
                 default: return true;
             }
         }
-
+         
         public virtual bool Editable(string propertyName)
         {
             return true;
@@ -255,6 +262,8 @@ namespace TabularEditor.TOMWrapper
             Measures = new MeasureCollection(Handler, this.GetObjectPath() + ".Measures", MetadataObject.Measures, this);
             Hierarchies = new HierarchyCollection(Handler, this.GetObjectPath() + ".Hierarchies", MetadataObject.Hierarchies, this);
             Partitions = new PartitionCollection(Handler, this.GetObjectPath() + ".Partitions", MetadataObject.Partitions, this);
+
+            if(Model.Database.CompatibilityLevel >= 1400) Columns.ForEach(c => c.InitOLSIndexer());
 
             Columns.CollectionChanged += Children_CollectionChanged;
             Measures.CollectionChanged += Children_CollectionChanged;
@@ -331,6 +340,36 @@ namespace TabularEditor.TOMWrapper
             '?', '"', '&', '%', '$' , '!', '+', '=', '(', ')',
             '[', ']', '{', '}', '<', '>'
         };
+
+        [DisplayName("Default Detail Rows Expression")]
+        [Category("Options"), IntelliSense("A DAX expression specifying default detail rows for this table (drill-through in client tools).")]
+        [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        public string DetailRowsExpression
+        {
+            get
+            {
+                return MetadataObject.DefaultDetailRowsDefinition?.Expression;
+            }
+            set
+            {
+                var oldValue = DetailRowsExpression;
+
+                if (oldValue == value) return;
+
+                bool undoable = true;
+                bool cancel = false;
+                OnPropertyChanging("DefaultDetailRowsExpression", value, ref undoable, ref cancel);
+                if (cancel) return;
+
+                if (MetadataObject.DefaultDetailRowsDefinition == null) MetadataObject.DefaultDetailRowsDefinition = new TOM.DetailRowsDefinition();
+                MetadataObject.DefaultDetailRowsDefinition.Expression = value;
+                if (string.IsNullOrWhiteSpace(value)) MetadataObject.DefaultDetailRowsDefinition = null;
+
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "DefaultDetailRowsExpression", oldValue, value));
+                OnPropertyChanged("DefaultDetailRowsExpression", oldValue, value);
+            }
+        }
+
     }
 
     public static class TableExtension

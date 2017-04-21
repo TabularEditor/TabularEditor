@@ -129,10 +129,10 @@ namespace TabularEditor.TOMWrapper
         {
             DataSources = new DataSourceCollection(Handler, "Model.DataSources", MetadataObject.DataSources, this);
             Perspectives = new PerspectiveCollection(Handler, "Model.Perspectives", MetadataObject.Perspectives, this);
+            Roles = new ModelRoleCollection(Handler, "Model.Roles", MetadataObject.Roles, this);
             Cultures = new CultureCollection(Handler, "Model.Cultures", MetadataObject.Cultures, this);
             Tables = new TableCollection(Handler, "Model.Tables", MetadataObject.Tables, this);
             Relationships = new RelationshipCollection2(Handler, "Model.Relationships", MetadataObject.Relationships, this);
-            Roles = new ModelRoleCollection(Handler, "Model.Roles", MetadataObject.Roles, this);
 
             Tables.ForEach(r => r.InitRLSIndexer());
             Roles.ForEach(r => r.InitRLSIndexer());

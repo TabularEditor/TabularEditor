@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using TabularEditor.PropertyGridUI;
+using TabularEditor.UndoFramework;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -30,7 +31,7 @@ namespace TabularEditor.TOMWrapper
         {
             var tom = new TOM.Measure();
             MetadataObject.CopyTo(tom);
-            tom.IsRemoved = false;
+            //////tom.IsRemoved = false;
             MetadataObject = tom;
 
             if (MetadataObject.KPI != null)
@@ -45,7 +46,7 @@ namespace TabularEditor.TOMWrapper
         {
             Handler.BeginUpdate("duplicate measure");
             var tom = MetadataObject.Clone();
-            tom.IsRemoved = false;
+            ////tom.IsRemoved = false;
             tom.Name = table.Measures.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
             var m = new Measure(Handler, tom);
             table.Measures.Add(m);
@@ -116,6 +117,35 @@ namespace TabularEditor.TOMWrapper
                 case "DetailRowsExpression":
                     return Model.Database.CompatibilityLevel >= 1400;
                 default: return true;
+            }
+        }
+
+        [DisplayName("Detail Rows Expression")]
+        [Category("Options"), IntelliSense("A DAX expression specifying detail rows for this measure (drill-through in client tools).")]
+        [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        public string DetailRowsExpression
+        {
+            get
+            {
+                return MetadataObject.DetailRowsDefinition?.Expression;
+            }
+            set
+            {
+                var oldValue = DetailRowsExpression;
+
+                if (oldValue == value) return;
+
+                bool undoable = true;
+                bool cancel = false;
+                OnPropertyChanging("DetailRowsExpression", value, ref undoable, ref cancel);
+                if (cancel) return;
+
+                if (MetadataObject.DetailRowsDefinition == null) MetadataObject.DetailRowsDefinition = new TOM.DetailRowsDefinition();
+                MetadataObject.DetailRowsDefinition.Expression = value;
+                if (string.IsNullOrWhiteSpace(value)) MetadataObject.DetailRowsDefinition = null;
+
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "DetailRowsExpression", oldValue, value));
+                OnPropertyChanged("DetailRowsExpression", oldValue, value);
             }
         }
 

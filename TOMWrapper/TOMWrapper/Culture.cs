@@ -107,7 +107,7 @@ namespace TabularEditor.TOMWrapper
         {
             Handler.BeginUpdate("duplicate translation");
             var tom = MetadataObject.Clone();
-            tom.IsRemoved = false;
+            ////tom.IsRemoved = false;
             tom.Name = newName;
             var c = new Culture(Handler, tom);
             Model.Cultures.Add(c);
@@ -122,7 +122,7 @@ namespace TabularEditor.TOMWrapper
         {
             var tom = new TOM.Culture();
             MetadataObject.CopyTo(tom);
-            tom.IsRemoved = false;
+            ////tom.IsRemoved = false;
             MetadataObject = tom;
 
             base.Undelete(collection);

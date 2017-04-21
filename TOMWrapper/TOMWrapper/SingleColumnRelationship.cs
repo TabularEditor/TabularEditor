@@ -21,7 +21,7 @@ namespace TabularEditor.TOMWrapper
         {
             var tom = new TOM.SingleColumnRelationship();
             MetadataObject.CopyTo(tom);
-            tom.IsRemoved = false;
+            //tom.IsRemoved = false;
             MetadataObject = tom;
 
             // Restore from/to columns, as the related object could have been recreated in the TOM in the meantime:

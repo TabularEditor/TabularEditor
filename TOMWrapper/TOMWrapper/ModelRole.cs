@@ -27,7 +27,7 @@ namespace TabularEditor.TOMWrapper
         {
             Handler.BeginUpdate("duplicate role");
             var tom = MetadataObject.Clone();
-            tom.IsRemoved = false;
+            //tom.IsRemoved = false;
             tom.Name = Model.Roles.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
             var r = new ModelRole(Handler, tom);
             r.InitRLSIndexer();
@@ -52,7 +52,7 @@ namespace TabularEditor.TOMWrapper
         {
             var tom = new TOM.ModelRole();
             MetadataObject.CopyTo(tom);
-            tom.IsRemoved = false;
+            //tom.IsRemoved = false;
             MetadataObject = tom;
 
             base.Undelete(collection);

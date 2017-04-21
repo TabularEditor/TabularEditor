@@ -89,6 +89,7 @@ namespace TabularEditor.TOMWrapper
 			foreach(var obj in MetadataObjectCollection) {
 				switch((obj as TOM.DataSource).Type) {
 					case TOM.DataSourceType.Provider: new ProviderDataSource(handler, obj as TOM.ProviderDataSource) { Collection = this }; break;
+					case TOM.DataSourceType.Structured: new StructuredDataSource(handler, obj as TOM.StructuredDataSource) { Collection = this }; break;
 				}
 			}
 		}

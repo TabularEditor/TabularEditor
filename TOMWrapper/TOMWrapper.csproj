@@ -64,7 +64,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PropertyGridUI\AllRelationshipConverter.cs" />
+    <Compile Include="PropertyGridUI\AllHierarchyConverter.cs" />
     <Compile Include="PropertyGridUI\CustomDialogEditor.cs" />
+    <Compile Include="PropertyGridUI\PartitionCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\RefreshGridCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CultureCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\DictionaryProperty.cs" />
@@ -115,6 +118,12 @@
     <Compile Include="TOMWrapper\Base\ProviderDataSource.generated.cs">
       <DependentUpon>WrapperBase.tt</DependentUpon>
     </Compile>
+    <Compile Include="TOMWrapper\Base\StructuredDataSource.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TOMWrapper\Base\Variation.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
     <Compile Include="TOMWrapper\CalculatedColumn.cs" />
     <Compile Include="TOMWrapper\CalculatedTable.cs" />
     <Compile Include="TOMWrapper\CalculatedTableColumn.cs" />
@@ -158,6 +167,7 @@
     <Compile Include="TOMWrapper\Perspective.cs" />
     <Compile Include="TOMWrapper\RoleRLSIndexer.cs" />
     <Compile Include="TOMWrapper\RolePermissionIndexer.cs" />
+    <Compile Include="TOMWrapper\ColumnOLSIndexer.cs" />
     <Compile Include="TOMWrapper\TableRLSIndexer.cs" />
     <Compile Include="TOMWrapper\PerspectiveIndexer.cs" />
     <Compile Include="TOMWrapper\SingleColumnRelationship.cs" />
@@ -165,6 +175,7 @@
     <Compile Include="TOMWrapper\TabularCommonActions.cs" />
     <Compile Include="TOMWrapper\TabularConnection.cs" />
     <Compile Include="TOMWrapper\TabularDeployer.cs" />
+    <Compile Include="TOMWrapper\Variation.cs" />
     <Compile Include="UndoFramework\IUndoAction.cs" />
     <Compile Include="UndoFramework\UndoAnnotationAction.cs" />
     <Compile Include="UndoFramework\UndoPropertyChangedAction.cs" />

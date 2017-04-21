@@ -9,22 +9,21 @@ using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.PropertyGridUI
 {
-    public class DataSourceConverter : TypeConverter
+    public class AllHierarchyConverter : TypeConverter
     {
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
         {
-            return context.Instance is Partition || context.Instance is Partition[];
+            return true;
         }
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-            return new StandardValuesCollection(Model(context).DataSources.OfType<ProviderDataSource>().ToList());
+            return new StandardValuesCollection(GetModel(context).Tables.SelectMany(t => t.Hierarchies).OrderBy(h => h.DaxObjectFullName).ToList());
         }
 
-        private Model Model(ITypeDescriptorContext context)
+        private Model GetModel(ITypeDescriptorContext context)
         {
-            if (context.Instance is ITabularObject) return (context.Instance as ITabularObject).Model;
-            if (context.Instance is ITabularObject[]) return (context.Instance as ITabularObject[]).First()?.Model;
-            return null;
+            if (context.Instance is ITabularNamedObject[]) return (context.Instance as ITabularNamedObject[]).First().Model;
+            else return (context.Instance as ITabularNamedObject).Model;
         }
 
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
@@ -42,10 +41,17 @@ namespace TabularEditor.PropertyGridUI
                 var name = (string)value;
                 if (string.IsNullOrEmpty(name)) return null;
 
-                var model = Model(context);
-                if (!model.DataSources.Contains(name)) throw new ArgumentException(string.Format("The model does not contain a Data Source named \"{0}\"", name), context.PropertyDescriptor.Name);
+                var values = name.Split('[');
+                if (values.Length != 2) return null;
+                var tableName = values[0].StartsWith("'") ? values[0].Substring(1, values[0].Length - 2) : values[0];
+                var hierarchyName = values[1].Substring(0, values[1].Length - 1);
 
-                return model.DataSources[name];
+                var model = GetModel(context);
+                if (!model.Tables.Contains(tableName)) throw new ArgumentException(string.Format("The model does not contain a table named \"{0}\"", tableName), context.PropertyDescriptor.Name);
+                var table = model.Tables[tableName];
+                if (!table.Hierarchies.Contains(hierarchyName)) throw new ArgumentException(string.Format("The table does not contain a hierarchy named \"{0}\"", hierarchyName), context.PropertyDescriptor.Name);
+
+                return table.Hierarchies[hierarchyName];
             }
             else
                 return base.ConvertFrom(context, culture, value);
@@ -63,7 +69,7 @@ namespace TabularEditor.PropertyGridUI
         {
             if (destinationType == typeof(string))
             {
-                return (value as DataSource)?.Name;
+                return (value as Hierarchy)?.DaxObjectFullName;
             }
             return base.ConvertTo(context, culture, value, destinationType);
         }
