@@ -574,6 +574,22 @@ namespace TabularEditor.TOMWrapper
         }
 
         private HashSet<string> CurrentFiles;
+        private HashSet<char> InvalidFileChars = new HashSet<char>(Path.GetInvalidFileNameChars());
+
+        private string Sanitize(string fileName)
+        {
+            var sb = new StringBuilder();
+            foreach(var c in fileName)
+            {
+                if (InvalidFileChars.Contains(c))
+                {
+                    sb.Append("%");
+                    sb.Append(((byte)c).ToString("x2"));
+                }
+                else sb.Append(c);
+            }
+            return sb.ToString();
+        }
 
         public void SaveToFolder(string path)
         {
@@ -607,7 +623,7 @@ namespace TabularEditor.TOMWrapper
                     var hierarchies = PopArray(t, "hierarchies");
                     var annotations = PopArray(t, "annotations");
 
-                    var tableName = t["name"].ToString().Replace("\\", "_").Replace("/", "_");
+                    var tableName = Sanitize(t["name"].ToString());
                     var p = path + "\\tables\\" + tableName + "\\" + tableName + ".json";
                     var fi = new FileInfo(p);
                     if (!fi.Directory.Exists) fi.Directory.Create();
@@ -666,7 +682,7 @@ namespace TabularEditor.TOMWrapper
         {
             foreach (var t in array)
             {
-                var p = path + "\\" + arrayName + "\\" + t["name"].ToString().Replace("\\","_").Replace("/","_") + ".json";
+                var p = path + "\\" + arrayName + "\\" + Sanitize(t["name"].ToString()) + ".json";
                 var fi = new FileInfo(p);
                 if (!fi.Directory.Exists) fi.Directory.Create();
                 WriteIfChanged(p, t.ToString(Newtonsoft.Json.Formatting.Indented));
