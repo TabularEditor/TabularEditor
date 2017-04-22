@@ -131,6 +131,7 @@ namespace TabularEditor.BestPracticeAnalyzer
     {
         static public BestPracticeCollection LoadFromJsonFile(string filePath)
         {
+            if (!File.Exists(filePath)) return new BestPracticeCollection();
             return LoadFromJson(File.ReadAllText(filePath));
         }
 
@@ -153,6 +154,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         }
         public void SaveToFile(string filePath)
         {
+            (new FileInfo(filePath)).Directory.Create();
             File.WriteAllText(filePath, SerializeToJson());
         }
 
