@@ -20,6 +20,7 @@ namespace TabularEditor.UI
             if (res == DialogResult.Cancel) return;
 
             var fileName = Translation_SaveDlg.FileName;
+            (new FileInfo(fileName)).Directory.Create();
             File.WriteAllText(fileName, Handler.ScriptTranslations(Handler.Model.Cultures));
         }
         public void Translations_ExportSelected()

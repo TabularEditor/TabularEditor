@@ -187,7 +187,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         {
             recentFilesToolStripMenuItem.DropDown.Items.Clear();
 
-            if (RecentFiles.Current.RecentHistory.Count == 0)
+            if (RecentFiles.Current.RecentHistory == null || RecentFiles.Current.RecentHistory.Count == 0)
             {
                 recentFilesToolStripMenuItem.Enabled = false;
             }

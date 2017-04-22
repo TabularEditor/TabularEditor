@@ -32,9 +32,12 @@ namespace TabularEditor.UIServices
                 _current = new Preferences();
                 try
                 {
-                    var json = File.ReadAllText(PREFERENCES_PATH, Encoding.Default);
-                    _current = JsonConvert.DeserializeObject<Preferences>(json);
-                    _current.IsLoaded = true;
+                    if (File.Exists(PREFERENCES_PATH))
+                    {
+                        var json = File.ReadAllText(PREFERENCES_PATH, Encoding.Default);
+                        _current = JsonConvert.DeserializeObject<Preferences>(json);
+                        _current.IsLoaded = true;
+                    }
                 }
                 catch { }
                 return _current;
@@ -48,6 +51,7 @@ namespace TabularEditor.UIServices
         public void Save()
         {
             var json = JsonConvert.SerializeObject(this, Formatting.Indented);
+            (new FileInfo(PREFERENCES_PATH)).Directory.Create();
             File.WriteAllText(PREFERENCES_PATH, json, Encoding.Default);
             IsLoaded = true;
         }

@@ -20,7 +20,6 @@ namespace TabularEditor.UIServices
             get
             {
                 if (_current != null) return _current;
-                _current = new RecentFiles();
                 if (File.Exists(RECENTFILES_PATH))
                 {
                     try
@@ -30,6 +29,7 @@ namespace TabularEditor.UIServices
                     }
                     catch { }
                 }
+                if (_current == null) _current = new RecentFiles();
                 return _current;
             }
         }
@@ -37,6 +37,7 @@ namespace TabularEditor.UIServices
         public static void Save()
         {
             var json = JsonConvert.SerializeObject(Current, Formatting.Indented);
+            (new FileInfo(RECENTFILES_PATH)).Directory.Create();
             File.WriteAllText(RECENTFILES_PATH, json);
         }
 

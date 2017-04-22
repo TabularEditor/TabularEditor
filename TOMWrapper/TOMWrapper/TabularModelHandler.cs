@@ -397,6 +397,7 @@ namespace TabularEditor.TOMWrapper
         public void SaveFile(string fileName)
         {
             var dbcontent = TOM.JsonSerializer.SerializeDatabase(database);
+            (new FileInfo(fileName)).Directory.Create();
             File.WriteAllText(fileName, dbcontent);
 
             Status = "File saved.";

@@ -28,7 +28,7 @@ namespace TabularEditor.UI.Dialogs.Pages
         public event ValidationEventHandler Validation;
 
         readonly string RecentServersFilePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\RecentServers.json";
-        RecentServersObject recentServers;
+        RecentServersObject recentServers = new RecentServersObject();
 
         public ConnectPage()
         {
@@ -64,6 +64,7 @@ namespace TabularEditor.UI.Dialogs.Pages
                         recentServers.RecentHistory.Add(serverName);
                     recentServers.Recent = serverName;
                     var json = JsonConvert.SerializeObject(recentServers, Formatting.Indented);
+                    (new FileInfo(RecentServersFilePath)).Directory.Create();
                     File.WriteAllText(RecentServersFilePath, json);
                 }                
             }
