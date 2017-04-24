@@ -10,6 +10,7 @@ using TabularEditor.TextServices;
 using Antlr4.Runtime;
 using System.Diagnostics;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -33,6 +34,27 @@ namespace TabularEditor.TOMWrapper
         public int to;
         public bool fullyQualified;
 
+    }
+
+    public class SerializeOptions
+    {
+        public bool IgnoreInferredObjects = true;
+        public bool IgnoreInferredProperties = true;
+        public bool IgnoreTimestamps = true;
+        public bool SplitMultilineStrings = true;
+
+        public HashSet<string> Levels = new HashSet<string>() {
+            "Data Sources",
+            "Perspectives",
+            "Relationships",
+            "Roles",
+            "Tables",
+            "Tables/Columns",
+            "Tables/Hierarchies",
+            "Tables/Measures",
+            "Tables/Partitions",
+            "Translations"
+        };
     }
 
     public static class DependencyHelper
@@ -540,19 +562,22 @@ namespace TabularEditor.TOMWrapper
             var model = jobj["model"] as JObject;
 
             InArray(path, "dataSources", model);
-            var tables = new JArray();
-            foreach (var tablePath in Directory.GetDirectories(path + "\\tables"))
+            if (Directory.Exists(path + "\\tables"))
             {
-                var tableName = new DirectoryInfo(tablePath).Name;
-                var table = JObject.Parse(File.ReadAllText(string.Format("{0}\\{1}.json", tablePath, tableName)));
-                InArray(tablePath, "columns", table);
-                InArray(tablePath, "partitions", table);
-                InArray(tablePath, "measures", table);
-                InArray(tablePath, "hierarchies", table);
-                InArray(tablePath, "annotations", table);
-                tables.Add(table);
+                var tables = new JArray();
+                foreach (var tablePath in Directory.GetDirectories(path + "\\tables"))
+                {
+                    var tableName = new DirectoryInfo(tablePath).Name;
+                    var table = JObject.Parse(File.ReadAllText(string.Format("{0}\\{1}.json", tablePath, tableName)));
+                    InArray(tablePath, "columns", table);
+                    InArray(tablePath, "partitions", table);
+                    InArray(tablePath, "measures", table);
+                    InArray(tablePath, "hierarchies", table);
+                    InArray(tablePath, "annotations", table);
+                    tables.Add(table);
+                }
+                model.Add("tables", tables);
             }
-            model.Add("tables", tables);
             InArray(path, "relationships", model);
             InArray(path, "cultures", model);
             InArray(path, "perspectives", model);
@@ -570,8 +595,8 @@ namespace TabularEditor.TOMWrapper
                 {
                     array.Add(JObject.Parse(File.ReadAllText(file)));
                 }
+                baseObject.Add(arrayName, array);
             }
-            baseObject.Add(arrayName, array);
         }
 
         private HashSet<string> CurrentFiles;
@@ -592,18 +617,23 @@ namespace TabularEditor.TOMWrapper
             return sb.ToString();
         }
 
-        public void SaveToFolder(string path)
+        public void SaveToFolder(string path, SerializeOptions options)
         {
-            var json = TOM.JsonSerializer.SerializeDatabase(database, new TOM.SerializeOptions() { IgnoreInferredObjects = true, IgnoreTimestamps = true, IgnoreInferredProperties = true });
+            var json = TOM.JsonSerializer.SerializeDatabase(database, 
+                new TOM.SerializeOptions() {
+                    IgnoreInferredObjects = options.IgnoreInferredObjects,
+                    IgnoreTimestamps = options.IgnoreTimestamps,
+                    IgnoreInferredProperties = options.IgnoreInferredProperties, 
+                    SplitMultilineStrings = options.SplitMultilineStrings });
             var jobj = JObject.Parse(json);
 
             var model = jobj["model"] as JObject;
-            var dataSources = PopArray(model, "dataSources");
-            var tables = PopArray(model, "tables");
-            var relationships = PopArray(model, "relationships");
-            var cultures = PopArray(model, "cultures");
-            var perspectives = PopArray(model, "perspectives");
-            var roles = PopArray(model, "roles");
+            var dataSources = options.Levels.Contains("Data Sources") ? PopArray(model, "dataSources") : null;
+            var tables = options.Levels.Contains("Tables") ? PopArray(model, "tables") : null;
+            var relationships = options.Levels.Contains("Relationships") ? PopArray(model, "relationships") : null;
+            var cultures = options.Levels.Contains("Translations") ? PopArray(model, "cultures") : null;
+            var perspectives = options.Levels.Contains("Data Perspectives") ? PopArray(model, "perspectives") : null;
+            var roles = options.Levels.Contains("Roles") ? PopArray(model, "roles") : null;
 
             CurrentFiles = new HashSet<string>();
             WriteIfChanged(path + "\\database.json", jobj.ToString(Newtonsoft.Json.Formatting.Indented));
@@ -618,11 +648,11 @@ namespace TabularEditor.TOMWrapper
             {
                 foreach (JObject t in tables)
                 {
-                    var columns = PopArray(t, "columns");
-                    var partitions = PopArray(t, "partitions");
-                    var measures = PopArray(t, "measures");
-                    var hierarchies = PopArray(t, "hierarchies");
-                    var annotations = PopArray(t, "annotations");
+                    var columns = options.Levels.Contains("Tables/Columns") ? PopArray(t, "columns") : null;
+                    var partitions = options.Levels.Contains("Tables/Partitions") ? PopArray(t, "partitions") : null;
+                    var measures = options.Levels.Contains("Tables/Measures") ? PopArray(t, "measures") : null;
+                    var hierarchies = options.Levels.Contains("Tables/Hierarchies") ? PopArray(t, "hierarchies") : null;
+                    var annotations = options.Levels.Contains("Tables/Annotations") ? PopArray(t, "annotations") : null;
 
                     var tableName = Sanitize(t["name"].ToString());
                     var p = path + "\\tables\\" + tableName + "\\" + tableName + ".json";

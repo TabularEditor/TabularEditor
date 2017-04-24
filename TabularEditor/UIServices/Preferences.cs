@@ -12,11 +12,39 @@ namespace TabularEditor.UIServices
     {
         #region Serializable properties
         public bool CheckForUpdates = false;
-        public bool FormulaFixup = false;
+        public bool FormulaFixup = true;
         public string BackupLocation = string.Empty;
+
+        public bool SaveToFolder_IgnoreInferredObjects = true;
+        public bool SaveToFolder_IgnoreInferredProperties = true;
+        public bool SaveToFolder_IgnoreTimestamps = true;
+        public bool SaveToFolder_SplitMultilineStrings = true;
+
+        public HashSet<string> SaveToFolder_Levels = new HashSet<string>(); 
         #endregion
 
         #region Serialization functionality
+        public static Preferences Default
+        {
+            get {
+                var prefs = new Preferences();
+                prefs.SaveToFolder_Levels = new HashSet<string>() {
+                    "Data Sources",
+                    "Perspectives",
+                    "Relationships",
+                    "Roles",
+                    "Tables",
+                    "Tables/Columns",
+                    "Tables/Hierarchies",
+                    "Tables/Measures",
+                    "Tables/Partitions",
+                    "Translations"
+                };
+                return prefs;
+            }
+        }
+
+
         [JsonIgnore]
         public bool IsLoaded = false;
         [JsonIgnore]
@@ -29,7 +57,7 @@ namespace TabularEditor.UIServices
             get
             {
                 if (_current != null) return _current;
-                _current = new Preferences();
+                _current = Preferences.Default;
                 try
                 {
                     if (File.Exists(PREFERENCES_PATH))
@@ -56,5 +84,20 @@ namespace TabularEditor.UIServices
             IsLoaded = true;
         }
         #endregion
+    }
+
+    public static class PreferencesSerializerOptions
+    {
+        static public TabularEditor.TOMWrapper.SerializeOptions GetSerializeOptions(this Preferences value)
+        {
+            return new TOMWrapper.SerializeOptions
+            {
+                IgnoreInferredObjects = value.SaveToFolder_IgnoreInferredObjects,
+                IgnoreInferredProperties = value.SaveToFolder_IgnoreInferredProperties,
+                IgnoreTimestamps = value.SaveToFolder_IgnoreTimestamps,
+                SplitMultilineStrings = value.SaveToFolder_SplitMultilineStrings,
+                Levels = new HashSet<string>(value.SaveToFolder_Levels)
+            };
+        }
     }
 }
