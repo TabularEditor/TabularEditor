@@ -124,7 +124,7 @@ namespace TabularEditor.TOMWrapper
             {
                 // Remove roles if present
                 var roles = jObj.SelectToken("create.database.model.roles") as JArray;
-                roles.Clear();
+                if(roles != null) roles.Clear();
             }
 
             return jObj.ToString();
