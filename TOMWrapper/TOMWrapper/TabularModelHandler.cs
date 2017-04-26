@@ -591,7 +591,7 @@ namespace TabularEditor.TOMWrapper
             var array = new JArray();
             if (Directory.Exists(path + "\\" + arrayName))
             {
-                foreach (var file in Directory.GetFiles(path + "\\" + arrayName, "*.json"))
+                foreach (var file in Directory.GetFiles(path + "\\" + arrayName, "*.json").OrderBy(n => n))
                 {
                     array.Add(JObject.Parse(File.ReadAllText(file)));
                 }
