@@ -20,6 +20,7 @@ namespace TabularEditor.TOMWrapper
         bool Contains(string key);
         string CollectionName { get; }
         ITabularObjectCollection GetCurrentCollection();
+        int IndexOf(TabularNamedObject obj);
     }
 
     public abstract class TabularObjectCollection<T, TT, TP> : IList, INotifyCollectionChanged, ICollection<T>, IList<T>, ITabularObjectCollection, IExpandableIndexer
@@ -27,6 +28,11 @@ namespace TabularEditor.TOMWrapper
         where TT: TOM.NamedMetadataObject
         where TP: TOM.MetadataObject
     {
+        public int IndexOf(TabularNamedObject obj)
+        {
+            return MetadataObjectCollection?.IndexOf(obj.MetadataObject as TT) ?? -1;
+        }
+
         [IntelliSense("Provide a lambda statement that is executed once for each object in the collection.\nExample: .ForEach(obj => obj.Name += \" OLD\");")]
         public void ForEach(Action<T> action)
         {

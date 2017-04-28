@@ -50,40 +50,41 @@
             this.btnCancel = new System.Windows.Forms.Button();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.chkFixup = new System.Windows.Forms.CheckBox();
+            this.chkAutoBackup = new System.Windows.Forms.CheckBox();
+            this.chkIgnoreTimestamps = new System.Windows.Forms.CheckBox();
+            this.chkIgnoreInfObjects = new System.Windows.Forms.CheckBox();
+            this.chkIgnoreInfProps = new System.Windows.Forms.CheckBox();
+            this.chkSplitMultiline = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.chkFixup = new System.Windows.Forms.CheckBox();
             this.grpDeployment = new System.Windows.Forms.GroupBox();
             this.btnFolder = new System.Windows.Forms.Button();
             this.txtBackupPath = new System.Windows.Forms.TextBox();
-            this.chkAutoBackup = new System.Windows.Forms.CheckBox();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.label1 = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.chkAutoUpdate = new System.Windows.Forms.CheckBox();
             this.btnVersionCheck = new System.Windows.Forms.Button();
             this.lblAvailableVersion = new System.Windows.Forms.Label();
             this.lblCurrentVersion = new System.Windows.Forms.Label();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.chkIgnoreTimestamps = new System.Windows.Forms.CheckBox();
-            this.chkIgnoreInfObjects = new System.Windows.Forms.CheckBox();
-            this.chkIgnoreInfProps = new System.Windows.Forms.CheckBox();
-            this.chkSplitMultiline = new System.Windows.Forms.CheckBox();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.chkPrefixFiles = new System.Windows.Forms.CheckBox();
             this.groupBox3.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.grpDeployment.SuspendLayout();
+            this.tabPage4.SuspendLayout();
+            this.groupBox4.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
-            this.grpDeployment.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            this.tabPage4.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnOK
@@ -107,6 +108,76 @@
             this.btnCancel.TabIndex = 2;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
+            // 
+            // chkFixup
+            // 
+            this.chkFixup.AutoSize = true;
+            this.chkFixup.Location = new System.Drawing.Point(6, 19);
+            this.chkFixup.Name = "chkFixup";
+            this.chkFixup.Size = new System.Drawing.Size(138, 17);
+            this.chkFixup.TabIndex = 1;
+            this.chkFixup.Text = "Automatic formula fix-up";
+            this.toolTip1.SetToolTip(this.chkFixup, "When this is checked, expressions of Measures, Calculated Columns and Calculated " +
+        "Tables will automatically be updated, when an object name is changed.");
+            this.chkFixup.UseVisualStyleBackColor = true;
+            // 
+            // chkAutoBackup
+            // 
+            this.chkAutoBackup.AutoSize = true;
+            this.chkAutoBackup.Location = new System.Drawing.Point(6, 19);
+            this.chkAutoBackup.Name = "chkAutoBackup";
+            this.chkAutoBackup.Size = new System.Drawing.Size(168, 17);
+            this.chkAutoBackup.TabIndex = 6;
+            this.chkAutoBackup.Text = "Save Model.bim backup here:";
+            this.toolTip1.SetToolTip(this.chkAutoBackup, resources.GetString("chkAutoBackup.ToolTip"));
+            this.chkAutoBackup.UseVisualStyleBackColor = true;
+            // 
+            // chkIgnoreTimestamps
+            // 
+            this.chkIgnoreTimestamps.AutoSize = true;
+            this.chkIgnoreTimestamps.Location = new System.Drawing.Point(6, 42);
+            this.chkIgnoreTimestamps.Name = "chkIgnoreTimestamps";
+            this.chkIgnoreTimestamps.Size = new System.Drawing.Size(111, 17);
+            this.chkIgnoreTimestamps.TabIndex = 0;
+            this.chkIgnoreTimestamps.Text = "Ignore timestamps";
+            this.toolTip1.SetToolTip(this.chkIgnoreTimestamps, "If checked, editing timestamps are not serialized into the .json files");
+            this.chkIgnoreTimestamps.UseVisualStyleBackColor = true;
+            // 
+            // chkIgnoreInfObjects
+            // 
+            this.chkIgnoreInfObjects.AutoSize = true;
+            this.chkIgnoreInfObjects.Location = new System.Drawing.Point(6, 19);
+            this.chkIgnoreInfObjects.Name = "chkIgnoreInfObjects";
+            this.chkIgnoreInfObjects.Size = new System.Drawing.Size(131, 17);
+            this.chkIgnoreInfObjects.TabIndex = 1;
+            this.chkIgnoreInfObjects.Text = "Ignore inferred objects";
+            this.toolTip1.SetToolTip(this.chkIgnoreInfObjects, "If checked, objects whose lifetime is controlled by the server (RowNumber, attrib" +
+        "ute hierarchies, etc.) are not serialized into the .json files");
+            this.chkIgnoreInfObjects.UseVisualStyleBackColor = true;
+            // 
+            // chkIgnoreInfProps
+            // 
+            this.chkIgnoreInfProps.AutoSize = true;
+            this.chkIgnoreInfProps.Location = new System.Drawing.Point(143, 19);
+            this.chkIgnoreInfProps.Name = "chkIgnoreInfProps";
+            this.chkIgnoreInfProps.Size = new System.Drawing.Size(143, 17);
+            this.chkIgnoreInfProps.TabIndex = 2;
+            this.chkIgnoreInfProps.Text = "Ignore inferred properties";
+            this.toolTip1.SetToolTip(this.chkIgnoreInfProps, "If checked, objects whose value is controlled by the server (Column.State, etc.) " +
+        "are not serialized into the .json files");
+            this.chkIgnoreInfProps.UseVisualStyleBackColor = true;
+            // 
+            // chkSplitMultiline
+            // 
+            this.chkSplitMultiline.AutoSize = true;
+            this.chkSplitMultiline.Location = new System.Drawing.Point(143, 42);
+            this.chkSplitMultiline.Name = "chkSplitMultiline";
+            this.chkSplitMultiline.Size = new System.Drawing.Size(114, 17);
+            this.chkSplitMultiline.TabIndex = 3;
+            this.chkSplitMultiline.Text = "Split multiline string";
+            this.toolTip1.SetToolTip(this.chkSplitMultiline, "If checked, expressions and other multiline string properties are serialized as a" +
+        " JSON array.");
+            this.chkSplitMultiline.UseVisualStyleBackColor = true;
             // 
             // groupBox3
             // 
@@ -147,40 +218,6 @@
             this.tabPage1.Text = "Deployment";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.groupBox3);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(322, 298);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "DAX";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // tabPage3
-            // 
-            this.tabPage3.Controls.Add(this.groupBox1);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(322, 298);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "General";
-            this.tabPage3.UseVisualStyleBackColor = true;
-            // 
-            // chkFixup
-            // 
-            this.chkFixup.AutoSize = true;
-            this.chkFixup.Location = new System.Drawing.Point(6, 19);
-            this.chkFixup.Name = "chkFixup";
-            this.chkFixup.Size = new System.Drawing.Size(138, 17);
-            this.chkFixup.TabIndex = 1;
-            this.chkFixup.Text = "Automatic formula fix-up";
-            this.toolTip1.SetToolTip(this.chkFixup, "When this is checked, expressions of Measures, Calculated Columns and Calculated " +
-        "Tables will automatically be updated, when an object name is changed.");
-            this.chkFixup.UseVisualStyleBackColor = true;
-            // 
             // grpDeployment
             // 
             this.grpDeployment.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -217,16 +254,133 @@
             this.txtBackupPath.Size = new System.Drawing.Size(264, 20);
             this.txtBackupPath.TabIndex = 7;
             // 
-            // chkAutoBackup
+            // tabPage4
             // 
-            this.chkAutoBackup.AutoSize = true;
-            this.chkAutoBackup.Location = new System.Drawing.Point(6, 19);
-            this.chkAutoBackup.Name = "chkAutoBackup";
-            this.chkAutoBackup.Size = new System.Drawing.Size(168, 17);
-            this.chkAutoBackup.TabIndex = 6;
-            this.chkAutoBackup.Text = "Save Model.bim backup here:";
-            this.toolTip1.SetToolTip(this.chkAutoBackup, resources.GetString("chkAutoBackup.ToolTip"));
-            this.chkAutoBackup.UseVisualStyleBackColor = true;
+            this.tabPage4.Controls.Add(this.groupBox4);
+            this.tabPage4.Controls.Add(this.groupBox2);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(322, 298);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "Save to Folder";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox4.Controls.Add(this.treeView1);
+            this.groupBox4.Controls.Add(this.label1);
+            this.groupBox4.Location = new System.Drawing.Point(6, 100);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(310, 192);
+            this.groupBox4.TabIndex = 4;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Serialization Levels";
+            // 
+            // treeView1
+            // 
+            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.treeView1.CheckBoxes = true;
+            this.treeView1.Location = new System.Drawing.Point(6, 54);
+            this.treeView1.Name = "treeView1";
+            treeNode1.Checked = true;
+            treeNode1.Name = "Data Sources";
+            treeNode1.Text = "Data Sources";
+            treeNode2.Checked = true;
+            treeNode2.Name = "Perspectives";
+            treeNode2.Text = "Perspectives";
+            treeNode3.Checked = true;
+            treeNode3.Name = "Relationships";
+            treeNode3.Text = "Relationships";
+            treeNode4.Checked = true;
+            treeNode4.Name = "Roles";
+            treeNode4.Text = "Roles";
+            treeNode5.Name = "Annotations";
+            treeNode5.Text = "Annotations";
+            treeNode6.Checked = true;
+            treeNode6.Name = "Columns";
+            treeNode6.Text = "Columns";
+            treeNode7.Checked = true;
+            treeNode7.Name = "Hierarchies";
+            treeNode7.Text = "Hierarchies";
+            treeNode8.Checked = true;
+            treeNode8.Name = "Measures";
+            treeNode8.Text = "Measures";
+            treeNode9.Checked = true;
+            treeNode9.Name = "Partitions";
+            treeNode9.Text = "Partitions";
+            treeNode10.Checked = true;
+            treeNode10.Name = "Tables";
+            treeNode10.Text = "Tables";
+            treeNode11.Checked = true;
+            treeNode11.Name = "Translations";
+            treeNode11.Text = "Translations";
+            this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
+            treeNode1,
+            treeNode2,
+            treeNode3,
+            treeNode4,
+            treeNode10,
+            treeNode11});
+            this.treeView1.PathSeparator = "/";
+            this.treeView1.ShowLines = false;
+            this.treeView1.Size = new System.Drawing.Size(298, 132);
+            this.treeView1.TabIndex = 1;
+            this.treeView1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCheck);
+            // 
+            // label1
+            // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label1.Location = new System.Drawing.Point(7, 20);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(297, 31);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Check the type of objects you wish to serialize as individual files (unchecked ob" +
+    "jects are serialized in the parent object):";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.chkPrefixFiles);
+            this.groupBox2.Controls.Add(this.chkSplitMultiline);
+            this.groupBox2.Controls.Add(this.chkIgnoreInfProps);
+            this.groupBox2.Controls.Add(this.chkIgnoreInfObjects);
+            this.groupBox2.Controls.Add(this.chkIgnoreTimestamps);
+            this.groupBox2.Location = new System.Drawing.Point(6, 6);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(310, 88);
+            this.groupBox2.TabIndex = 0;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Serialization Options";
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.groupBox3);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(322, 298);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "DAX";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.groupBox1);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(322, 298);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "General";
+            this.tabPage3.UseVisualStyleBackColor = true;
             // 
             // groupBox1
             // 
@@ -284,157 +438,17 @@
             this.lblCurrentVersion.TabIndex = 1;
             this.lblCurrentVersion.Text = "Current version: 2.0.0.0";
             // 
-            // tabPage4
+            // chkPrefixFiles
             // 
-            this.tabPage4.Controls.Add(this.groupBox4);
-            this.tabPage4.Controls.Add(this.groupBox2);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(322, 298);
-            this.tabPage4.TabIndex = 3;
-            this.tabPage4.Text = "Save to Folder";
-            this.tabPage4.UseVisualStyleBackColor = true;
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox2.Controls.Add(this.chkSplitMultiline);
-            this.groupBox2.Controls.Add(this.chkIgnoreInfProps);
-            this.groupBox2.Controls.Add(this.chkIgnoreInfObjects);
-            this.groupBox2.Controls.Add(this.chkIgnoreTimestamps);
-            this.groupBox2.Location = new System.Drawing.Point(6, 6);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(310, 69);
-            this.groupBox2.TabIndex = 0;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Serialization Options";
-            // 
-            // chkIgnoreTimestamps
-            // 
-            this.chkIgnoreTimestamps.AutoSize = true;
-            this.chkIgnoreTimestamps.Location = new System.Drawing.Point(6, 42);
-            this.chkIgnoreTimestamps.Name = "chkIgnoreTimestamps";
-            this.chkIgnoreTimestamps.Size = new System.Drawing.Size(111, 17);
-            this.chkIgnoreTimestamps.TabIndex = 0;
-            this.chkIgnoreTimestamps.Text = "Ignore timestamps";
-            this.toolTip1.SetToolTip(this.chkIgnoreTimestamps, "If checked, editing timestamps are not serialized into the .json files");
-            this.chkIgnoreTimestamps.UseVisualStyleBackColor = true;
-            // 
-            // chkIgnoreInfObjects
-            // 
-            this.chkIgnoreInfObjects.AutoSize = true;
-            this.chkIgnoreInfObjects.Location = new System.Drawing.Point(6, 19);
-            this.chkIgnoreInfObjects.Name = "chkIgnoreInfObjects";
-            this.chkIgnoreInfObjects.Size = new System.Drawing.Size(131, 17);
-            this.chkIgnoreInfObjects.TabIndex = 1;
-            this.chkIgnoreInfObjects.Text = "Ignore inferred objects";
-            this.toolTip1.SetToolTip(this.chkIgnoreInfObjects, "If checked, objects whose lifetime is controlled by the server (RowNumber, attrib" +
-        "ute hierarchies, etc.) are not serialized into the .json files");
-            this.chkIgnoreInfObjects.UseVisualStyleBackColor = true;
-            // 
-            // chkIgnoreInfProps
-            // 
-            this.chkIgnoreInfProps.AutoSize = true;
-            this.chkIgnoreInfProps.Location = new System.Drawing.Point(143, 19);
-            this.chkIgnoreInfProps.Name = "chkIgnoreInfProps";
-            this.chkIgnoreInfProps.Size = new System.Drawing.Size(143, 17);
-            this.chkIgnoreInfProps.TabIndex = 2;
-            this.chkIgnoreInfProps.Text = "Ignore inferred properties";
-            this.toolTip1.SetToolTip(this.chkIgnoreInfProps, "If checked, objects whose value is controlled by the server (Column.State, etc.) " +
-        "are not serialized into the .json files");
-            this.chkIgnoreInfProps.UseVisualStyleBackColor = true;
-            // 
-            // chkSplitMultiline
-            // 
-            this.chkSplitMultiline.AutoSize = true;
-            this.chkSplitMultiline.Location = new System.Drawing.Point(143, 42);
-            this.chkSplitMultiline.Name = "chkSplitMultiline";
-            this.chkSplitMultiline.Size = new System.Drawing.Size(114, 17);
-            this.chkSplitMultiline.TabIndex = 3;
-            this.chkSplitMultiline.Text = "Split multiline string";
-            this.toolTip1.SetToolTip(this.chkSplitMultiline, "If checked, expressions and other multiline string properties are serialized as a" +
-        " JSON array.");
-            this.chkSplitMultiline.UseVisualStyleBackColor = true;
-            // 
-            // groupBox4
-            // 
-            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox4.Controls.Add(this.treeView1);
-            this.groupBox4.Controls.Add(this.label1);
-            this.groupBox4.Location = new System.Drawing.Point(6, 81);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(310, 211);
-            this.groupBox4.TabIndex = 4;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Serialization Levels";
-            // 
-            // label1
-            // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.label1.Location = new System.Drawing.Point(7, 20);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(297, 31);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Check the type of objects you wish to serialize as individual files (unchecked ob" +
-    "jects are serialized in the parent object):";
-            // 
-            // treeView1
-            // 
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.treeView1.CheckBoxes = true;
-            this.treeView1.Location = new System.Drawing.Point(6, 54);
-            this.treeView1.Name = "treeView1";
-            treeNode1.Checked = true;
-            treeNode1.Name = "Data Sources";
-            treeNode1.Text = "Data Sources";
-            treeNode2.Checked = true;
-            treeNode2.Name = "Perspectives";
-            treeNode2.Text = "Perspectives";
-            treeNode3.Checked = true;
-            treeNode3.Name = "Relationships";
-            treeNode3.Text = "Relationships";
-            treeNode4.Checked = true;
-            treeNode4.Name = "Roles";
-            treeNode4.Text = "Roles";
-            treeNode5.Name = "Annotations";
-            treeNode5.Text = "Annotations";
-            treeNode6.Checked = true;
-            treeNode6.Name = "Columns";
-            treeNode6.Text = "Columns";
-            treeNode7.Checked = true;
-            treeNode7.Name = "Hierarchies";
-            treeNode7.Text = "Hierarchies";
-            treeNode8.Checked = true;
-            treeNode8.Name = "Measures";
-            treeNode8.Text = "Measures";
-            treeNode9.Checked = true;
-            treeNode9.Name = "Partitions";
-            treeNode9.Text = "Partitions";
-            treeNode10.Checked = true;
-            treeNode10.Name = "Tables";
-            treeNode10.Text = "Tables";
-            treeNode11.Checked = true;
-            treeNode11.Name = "Translations";
-            treeNode11.Text = "Translations";
-            this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode1,
-            treeNode2,
-            treeNode3,
-            treeNode4,
-            treeNode10,
-            treeNode11});
-            this.treeView1.PathSeparator = "/";
-            this.treeView1.ShowLines = false;
-            this.treeView1.Size = new System.Drawing.Size(298, 151);
-            this.treeView1.TabIndex = 1;
-            this.treeView1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCheck);
+            this.chkPrefixFiles.AutoSize = true;
+            this.chkPrefixFiles.Location = new System.Drawing.Point(6, 65);
+            this.chkPrefixFiles.Name = "chkPrefixFiles";
+            this.chkPrefixFiles.Size = new System.Drawing.Size(99, 17);
+            this.chkPrefixFiles.TabIndex = 4;
+            this.chkPrefixFiles.Text = "Prefix filenames";
+            this.toolTip1.SetToolTip(this.chkPrefixFiles, "If checked, files and folders representing individual objects, will be prefixed b" +
+        "y a number indicating the object\'s order in the Model.bim metadata.");
+            this.chkPrefixFiles.UseVisualStyleBackColor = true;
             // 
             // PreferencesForm
             // 
@@ -461,16 +475,16 @@
             this.groupBox3.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
-            this.tabPage2.ResumeLayout(false);
-            this.tabPage3.ResumeLayout(false);
             this.grpDeployment.ResumeLayout(false);
             this.grpDeployment.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.tabPage4.ResumeLayout(false);
+            this.groupBox4.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBox4.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
+            this.tabPage3.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -504,5 +518,6 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.CheckBox chkPrefixFiles;
     }
 }

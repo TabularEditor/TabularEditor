@@ -150,6 +150,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 actToggleMeasures.Checked,
                 actToggleHierarchies.Checked,
                 actToggleAllObjectTypes.Checked,
+                actToggleMetadataOrder.Checked,
                 actToggleFilter.Checked ? txtFilter.Text : null
             );
         }
@@ -197,7 +198,18 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                     (RecentFiles.Current.RecentHistory as IEnumerable<string>).Reverse().Take(10).Select(f =>
                         new ToolStripMenuItem(f, null, (s, ev) => {
                             if (UI.DiscardChangesCheck()) return;
-                            UI.File_Open(f);
+                            if(File.Exists(f) || Directory.Exists(f))
+                            {
+                                UI.File_Open(f);
+                            } else
+                            {
+                                MessageBox.Show("This file seems to have been moved or deleted.", "Could not open file", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                var tsi = s as ToolStripMenuItem;
+                                tsi.GetCurrentParent().Items.Remove(tsi);
+                                RecentFiles.Current.RecentHistory.Remove(f);
+                                RecentFiles.Save();
+                                if (RecentFiles.Current.RecentHistory.Count == 0) recentFilesToolStripMenuItem.Enabled = false;
+                            }
                         })).ToArray());
             }
         }

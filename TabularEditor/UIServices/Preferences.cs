@@ -19,6 +19,7 @@ namespace TabularEditor.UIServices
         public bool SaveToFolder_IgnoreInferredProperties = true;
         public bool SaveToFolder_IgnoreTimestamps = true;
         public bool SaveToFolder_SplitMultilineStrings = true;
+        public bool SaveToFolder_PrefixFiles = false;
 
         public HashSet<string> SaveToFolder_Levels = new HashSet<string>(); 
         #endregion
@@ -50,7 +51,8 @@ namespace TabularEditor.UIServices
         [JsonIgnore]
         public bool BackupOnSave { get { return !string.IsNullOrWhiteSpace(BackupLocation); } }
 
-        public static readonly string PREFERENCES_PATH = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\TabularEditor\Preferences.json";
+        public static readonly string PREFERENCES_PATH = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\Preferences.json";
+        public static readonly string PREFERENCES_PATH_OLD = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\TabularEditor\Preferences.json";
         private static Preferences _current = null;
         public static Preferences Current
         {
@@ -63,6 +65,13 @@ namespace TabularEditor.UIServices
                     if (File.Exists(PREFERENCES_PATH))
                     {
                         var json = File.ReadAllText(PREFERENCES_PATH, Encoding.Default);
+                        _current = JsonConvert.DeserializeObject<Preferences>(json);
+                        _current.IsLoaded = true;
+                    }
+                    // Below for backwards compatibility with older versions of Tabular Editor, storing the preferences file in %ProgramData%:
+                    else if (File.Exists(PREFERENCES_PATH_OLD))
+                    {
+                        var json = File.ReadAllText(PREFERENCES_PATH_OLD, Encoding.Default);
                         _current = JsonConvert.DeserializeObject<Preferences>(json);
                         _current.IsLoaded = true;
                     }
@@ -96,6 +105,7 @@ namespace TabularEditor.UIServices
                 IgnoreInferredProperties = value.SaveToFolder_IgnoreInferredProperties,
                 IgnoreTimestamps = value.SaveToFolder_IgnoreTimestamps,
                 SplitMultilineStrings = value.SaveToFolder_SplitMultilineStrings,
+                PrefixFilenames = value.SaveToFolder_PrefixFiles,
                 Levels = new HashSet<string>(value.SaveToFolder_Levels)
             };
         }

@@ -75,6 +75,7 @@ namespace TabularEditor.UI.Dialogs
             chkIgnoreInfObjects.Checked = Preferences.Current.SaveToFolder_IgnoreInferredObjects;
             chkIgnoreInfProps.Checked = Preferences.Current.SaveToFolder_IgnoreInferredProperties;
             chkSplitMultiline.Checked = Preferences.Current.SaveToFolder_SplitMultilineStrings;
+            chkPrefixFiles.Checked = Preferences.Current.SaveToFolder_PrefixFiles;
         }
 
         private void PreferencesForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -88,6 +89,7 @@ namespace TabularEditor.UI.Dialogs
                 Preferences.Current.SaveToFolder_IgnoreInferredObjects = chkIgnoreInfObjects.Checked;
                 Preferences.Current.SaveToFolder_IgnoreInferredProperties = chkIgnoreInfProps.Checked;
                 Preferences.Current.SaveToFolder_SplitMultilineStrings = chkSplitMultiline.Checked;
+                Preferences.Current.SaveToFolder_PrefixFiles = chkPrefixFiles.Checked;
 
                 Preferences.Current.SaveToFolder_Levels = new HashSet<string>();
                 SaveCheckedNodes(treeView1.Nodes, Preferences.Current.SaveToFolder_Levels);

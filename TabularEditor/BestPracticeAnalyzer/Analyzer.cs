@@ -174,7 +174,7 @@ namespace TabularEditor.BestPracticeAnalyzer
             }
             catch { }
 
-            StandardBestPractices.GetStandardBestPractices().SaveToFile(@"c:\Projects\test.json");
+            //StandardBestPractices.GetStandardBestPractices().SaveToFile(@"c:\Projects\test.json");
         }
         public Analyzer(Model model)
         {

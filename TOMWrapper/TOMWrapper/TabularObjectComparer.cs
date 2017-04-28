@@ -9,13 +9,29 @@ using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.TOMWrapper
 {
+    public enum ObjectOrder
+    {
+        Alphabetical,
+        Metadata
+    }
+
     public class TabularObjectComparer : IComparer<ITabularNamedObject>, IComparer
     {
-        private TabularTree tree;
+        private TabularTree _tree;
+        private ObjectOrder _order;
+        public ObjectOrder Order {
+            get { return _order; }
+            set {
+                if (value == _order) return;
+                _order = value;
+                _tree.OnStructureChanged();
+            }
+        }
 
-        public TabularObjectComparer(TabularTree tree)
+        public TabularObjectComparer(TabularTree tree, ObjectOrder order)
         {
-            this.tree = tree;
+            _tree = tree;
+            _order = order;
         }
 
         public int Compare(object x, object y)
@@ -31,7 +47,14 @@ namespace TabularEditor.TOMWrapper
                 if (x.ObjectType == ObjectType.Level && y.ObjectType == ObjectType.Level)
                     return (x as Level).Ordinal.CompareTo((y as Level).Ordinal);
 
-                return string.Compare(x.GetName(tree.Culture), y.GetName(tree.Culture), true);
+                // Compare the metadata indices of the two objects:
+                var metadataComparison = x.MetadataIndex.CompareTo(y.MetadataIndex);
+
+                // If we're ordering by metadata, and objects don't have have the metadataindex, return the comparison:
+                if (_order == ObjectOrder.Metadata && metadataComparison != 0) return metadataComparison;
+
+                // ...in all other cases, use alphabetical ordering:
+                return string.Compare(x.GetName(_tree.Culture), y.GetName(_tree.Culture), true);
             }
             return c;
         }
