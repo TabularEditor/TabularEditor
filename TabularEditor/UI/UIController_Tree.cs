@@ -253,8 +253,14 @@ namespace TabularEditor.UI
         }
 
         public void SetDisplayOptions(bool showHidden, bool showDisplayFolders, bool showColumns, 
-            bool showMeasures, bool showHierarchies, bool showAllObjectTypes, string filter = null)
+            bool showMeasures, bool showHierarchies, bool showAllObjectTypes, bool alphabeticalSort, string filter = null)
         {
+            var cmp = (UI.TreeView.Model as SortedTreeModel)?.Comparer as TabularObjectComparer;
+            if(cmp != null)
+            {
+                cmp.Order = alphabeticalSort ? ObjectOrder.Alphabetical : ObjectOrder.Metadata;
+            }
+
             Tree.Options =
                       (showHidden ? LogicalTreeOptions.ShowHidden : 0) |
                       (showDisplayFolders ? LogicalTreeOptions.DisplayFolders : 0) |

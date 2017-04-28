@@ -25,6 +25,11 @@ namespace TabularEditor.TOMWrapper
             return Enumerable.Empty<ITabularNamedObject>();
         }
 
+        public int MetadataIndex {
+            get {
+                return -1;
+            }
+        }
 
         public LogicalGroup(string name)
         {

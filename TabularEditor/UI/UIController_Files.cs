@@ -95,7 +95,7 @@ namespace TabularEditor.UI
                 if(res == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
                 {
                     UI.StatusLabel.Text = "Saving...";
-                    Handler.SaveToFolder(fbd.SelectedPath);
+                    Handler.SaveToFolder(fbd.SelectedPath, Preferences.Current.GetSerializeOptions());
                     UpdateUIText();
                 }
             }
@@ -114,7 +114,7 @@ namespace TabularEditor.UI
                 try
                 {
                     if (Directory.Exists(File_Current))
-                        Handler.SaveToFolder(File_Current);
+                        Handler.SaveToFolder(File_Current, Preferences.Current.GetSerializeOptions());
                     else
                         Handler.SaveFile(File_Current);
                 }

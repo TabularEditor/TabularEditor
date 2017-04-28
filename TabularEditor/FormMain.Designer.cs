@@ -33,6 +33,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.actToggleDisplayFolders = new TabularEditor.UI.UIModelAction();
             this.actToggleHidden = new TabularEditor.UI.UIModelAction();
+            this.actToggleMetadataOrder = new TabularEditor.UI.UIModelAction();
             this.actToggleMeasures = new TabularEditor.UI.UIModelAction();
             this.actToggleColumns = new TabularEditor.UI.UIModelAction();
             this.actToggleHierarchies = new TabularEditor.UI.UIModelAction();
@@ -130,6 +131,7 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.txtFilter = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.tbSortAlphabetically = new System.Windows.Forms.ToolStripButton();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -187,6 +189,7 @@
             this._dataType = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this._description = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.treeColumn1 = new Aga.Controls.Tree.TreeColumn();
+            this.sortAlphabeticalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             actionsMain = new Crad.Windows.Forms.Actions.ActionList();
             ((System.ComponentModel.ISupportInitialize)(actionsMain)).BeginInit();
             this.toolStrip2.SuspendLayout();
@@ -214,6 +217,7 @@
             // 
             actionsMain.Actions.Add(this.actToggleDisplayFolders);
             actionsMain.Actions.Add(this.actToggleHidden);
+            actionsMain.Actions.Add(this.actToggleMetadataOrder);
             actionsMain.Actions.Add(this.actToggleMeasures);
             actionsMain.Actions.Add(this.actToggleColumns);
             actionsMain.Actions.Add(this.actToggleHierarchies);
@@ -263,6 +267,17 @@
             this.actToggleHidden.Text = "Hidden Objects";
             this.actToggleHidden.ToolTipText = "Show/hide hidden objects";
             this.actToggleHidden.Execute += new System.EventHandler(this.actViewOptions_Execute);
+            // 
+            // actToggleMetadataOrder
+            // 
+            this.actToggleMetadataOrder.Checked = true;
+            this.actToggleMetadataOrder.CheckOnClick = true;
+            this.actToggleMetadataOrder.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.actToggleMetadataOrder.Enabled = false;
+            this.actToggleMetadataOrder.Image = global::TabularEditor.Resources.SortAscending_16x;
+            this.actToggleMetadataOrder.Text = "Sort alphabetically";
+            this.actToggleMetadataOrder.ToolTipText = "Toggle alphabetical/metadata ordering of items";
+            this.actToggleMetadataOrder.Execute += new System.EventHandler(this.actViewOptions_Execute);
             // 
             // actToggleMeasures
             // 
@@ -1165,6 +1180,7 @@
             this.tbShowDisplayFolders,
             this.tbShowHidden,
             this.tbShowAllObjectTypes,
+            this.tbSortAlphabetically,
             this.toolStripSeparator1,
             this.tbShowMeasures,
             this.tbShowColumns,
@@ -1205,6 +1221,22 @@
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
             this.toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
+            // 
+            // tbSortAlphabetically
+            // 
+            actionsMain.SetAction(this.tbSortAlphabetically, this.actToggleMetadataOrder);
+            this.tbSortAlphabetically.AutoToolTip = false;
+            this.tbSortAlphabetically.Checked = true;
+            this.tbSortAlphabetically.CheckOnClick = true;
+            this.tbSortAlphabetically.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.tbSortAlphabetically.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbSortAlphabetically.Enabled = false;
+            this.tbSortAlphabetically.Image = global::TabularEditor.Resources.SortAscending_16x;
+            this.tbSortAlphabetically.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbSortAlphabetically.Name = "tbSortAlphabetically";
+            this.tbSortAlphabetically.Size = new System.Drawing.Size(23, 22);
+            this.tbSortAlphabetically.Text = "Sort alphabetically";
+            this.tbSortAlphabetically.ToolTipText = "Toggle alphabetical/metadata ordering of items";
             // 
             // splitContainer2
             // 
@@ -1656,6 +1688,7 @@
             this.displayFoldersToolStripMenuItem,
             this.hiddenObjectsToolStripMenuItem,
             this.showAllObjectTypesToolStripMenuItem,
+            this.sortAlphabeticalToolStripMenuItem,
             this.toolStripMenuItem4,
             this.mEasToolStripMenuItem,
             this.xToolStripMenuItem,
@@ -1749,6 +1782,7 @@
             this.tabularTreeImages.Images.SetKeyName(34, "role");
             this.tabularTreeImages.Images.SetKeyName(35, "culture");
             this.tabularTreeImages.Images.SetKeyName(36, "datasource");
+            this.tabularTreeImages.Images.SetKeyName(37, "sort");
             // 
             // saveBimFile
             // 
@@ -1797,6 +1831,19 @@
             this.treeColumn1.Header = "";
             this.treeColumn1.SortOrder = System.Windows.Forms.SortOrder.None;
             this.treeColumn1.TooltipText = null;
+            // 
+            // sortAlphabeticalToolStripMenuItem
+            // 
+            actionsMain.SetAction(this.sortAlphabeticalToolStripMenuItem, this.actToggleMetadataOrder);
+            this.sortAlphabeticalToolStripMenuItem.Checked = true;
+            this.sortAlphabeticalToolStripMenuItem.CheckOnClick = true;
+            this.sortAlphabeticalToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.sortAlphabeticalToolStripMenuItem.Enabled = false;
+            this.sortAlphabeticalToolStripMenuItem.Image = global::TabularEditor.Resources.SortAscending_16x;
+            this.sortAlphabeticalToolStripMenuItem.Name = "sortAlphabeticalToolStripMenuItem";
+            this.sortAlphabeticalToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
+            this.sortAlphabeticalToolStripMenuItem.Text = "Sort alphabetically";
+            this.sortAlphabeticalToolStripMenuItem.ToolTipText = "Toggle alphabetical/metadata ordering of items";
             // 
             // FormMain
             // 
@@ -1878,6 +1925,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
         private TabularEditor.UI.UIModelAction actToggleDisplayFolders;
         private TabularEditor.UI.UIModelAction actToggleHidden;
+        private TabularEditor.UI.UIModelAction actToggleMetadataOrder;
         private TabularEditor.UI.UIModelAction actToggleMeasures;
         private TabularEditor.UI.UIModelAction actToggleColumns;
         private TabularEditor.UI.UIModelAction actToggleHierarchies;
@@ -2006,6 +2054,8 @@
         private System.Windows.Forms.ToolStripMenuItem bestPracticeAnalyzerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem recentFilesToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator12;
+        private System.Windows.Forms.ToolStripButton tbSortAlphabetically;
+        private System.Windows.Forms.ToolStripMenuItem sortAlphabeticalToolStripMenuItem;
     }
 }
 

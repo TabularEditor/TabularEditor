@@ -80,7 +80,10 @@ namespace TabularEditor.UI
             Tree = new TabularUITree(Handler.Model) { Options = Tree?.Options ?? LogicalTreeOptions.Default };
 
             var sortedModel = new SortedTreeModel(Tree);
-            sortedModel.Comparer = new TabularObjectComparer(Tree);
+
+            var cmp = (UI.TreeView?.Model as SortedTreeModel)?.Comparer as TabularObjectComparer;
+
+            sortedModel.Comparer = new TabularObjectComparer(Tree, cmp == null ? ObjectOrder.Alphabetical : cmp.Order );
             UI.TreeView.Model = sortedModel;
             UI.TreeView.FindNode(new TreePath(Handler.Model))?.Expand();
 

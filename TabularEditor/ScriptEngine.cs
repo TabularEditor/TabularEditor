@@ -17,7 +17,7 @@ namespace TabularEditor
 {
     public static class ScriptEngine
     {
-        static readonly string WrapperDllPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\TabularEditor\TOMWrapper.dll";
+        static readonly string WrapperDllPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\TOMWrapper.dll";
         public static readonly string CustomActionsJsonPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\CustomActions.json";
 
         public static Action<Model, UITreeSelection> ScriptAction(string script, out CompilerResults compilerResults)

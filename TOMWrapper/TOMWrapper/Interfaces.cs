@@ -22,6 +22,7 @@ namespace TabularEditor.TOMWrapper
     {
         string Name { get; set; }
         TranslationIndexer TranslatedNames { get; }
+        int MetadataIndex { get; }
     }
 
 

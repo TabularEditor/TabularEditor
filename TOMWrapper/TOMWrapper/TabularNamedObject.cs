@@ -53,6 +53,18 @@ namespace TabularEditor.TOMWrapper
             TranslatedNames = new TranslationIndexer(this, TranslatedProperty.Caption);
         }
 
+        public int MetadataIndex
+        {
+            get
+            {
+                if (Collection != null)
+                {
+                    return Collection.IndexOf(this);
+                }
+                else return -1;
+            }
+        }
+
         protected override void Init()
         {
             

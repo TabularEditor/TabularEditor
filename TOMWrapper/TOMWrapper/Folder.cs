@@ -26,6 +26,14 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        public int MetadataIndex
+        {
+            get
+            {
+                return -1;
+            }
+        }
+
         [Browsable(false)]
         public Table ParentTable { get { return Table; } }
 

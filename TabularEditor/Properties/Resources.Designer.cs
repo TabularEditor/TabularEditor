@@ -363,6 +363,16 @@ namespace TabularEditor {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap SortAscending_16x {
+            get {
+                object obj = ResourceManager.GetObject("SortAscending_16x", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap spiffygif_64x64 {
             get {
                 object obj = ResourceManager.GetObject("spiffygif_64x64", resourceCulture);
