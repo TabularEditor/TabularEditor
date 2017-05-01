@@ -14,19 +14,10 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Measure
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Measure: TabularNamedObject, IDetailObject, IHideableObject, IErrorMessageObject, ITabularTableObject, IDescriptionObject, IExpressionObject, IAnnotationObject
+	public partial class Measure: TabularNamedObject, IDetailObject, IHideableObject, IErrorMessageObject, ITabularTableObject, IDescriptionObject, IExpressionObject, IAnnotationObject, ITranslatableObject
 	{
 	    protected internal new TOM.Measure MetadataObject { get { return base.MetadataObject as TOM.Measure; } internal set { base.MetadataObject = value; } }
 
-		public Measure(Table parent) : base(parent.Handler, new TOM.Measure(), false) {
-			MetadataObject.Name = parent.MetadataObject.Measures.GetNewName("New Measure");
-			parent.Measures.Add(this);
-			Init();
-		}
-
-		public Measure(TabularModelHandler handler, TOM.Measure measureMetadataObject) : base(handler, measureMetadataObject)
-		{
-		}
 		public string GetAnnotation(string name) {
 		    return MetadataObject.Annotations.Find(name)?.Value;
 		}
@@ -60,11 +51,6 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
-        /// <summary>
-        /// Collection of localized descriptions for this Measure.
-        /// </summary>
-        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
-	    public new TranslationIndexer TranslatedDescriptions { get { return base.TranslatedDescriptions; } }
         /// <summary>
         /// Gets or sets the DataType of the Measure.
         /// </summary>
@@ -217,7 +203,7 @@ namespace TabularEditor.TOMWrapper
         /// Collection of localized Display Folders for this Measure.
         /// </summary>
         [Browsable(true),DisplayName("Display Folders"),Category("Translations and Perspectives")]
-	    public new TranslationIndexer TranslatedDisplayFolders { get { return base.TranslatedDisplayFolders; } }
+	    public TranslationIndexer TranslatedDisplayFolders { private set; get; }
 		[Browsable(false)]
 		public Table Table
 		{ 
@@ -254,6 +240,64 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeKPI() { return false; }
+
+        /// <summary>
+        /// Collection of localized descriptions for this Measure.
+        /// </summary>
+        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
+	    public TranslationIndexer TranslatedDescriptions { private set; get; }
+        /// <summary>
+        /// Collection of localized names for this Measure.
+        /// </summary>
+        [Browsable(true),DisplayName("Names"),Category("Translations and Perspectives")]
+	    public TranslationIndexer TranslatedNames { private set; get; }
+
+
+
+		/// <summary>
+		/// Creates a new Measure and adds it to the parent Table.
+		/// </summary>
+		public Measure(Table parent) : base(new TOM.Measure()) {
+			MetadataObject.Name = parent.MetadataObject.Measures.GetNewName("New Measure");
+			parent.Measures.Add(this);
+			Init();
+		}
+	
+        internal override void RenewMetadataObject()
+        {
+            var tom = new TOM.Measure();
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject.CopyTo(tom);
+            MetadataObject = tom;
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+
+		public Table Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Table;
+			}
+		}
+
+		public Measure Clone(string newName = null, bool includeTranslations = true) {
+		    Handler.BeginUpdate("Clone Measure");
+
+				var tom = MetadataObject.Clone();
+				tom.Name = Parent.Measures.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new Measure(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		
+		/// <summary>
+		/// Creates a Measure object representing an existing TOM Measure.
+		/// </summary>
+		internal Measure(TOM.Measure metadataObject) : base(metadataObject)
+		{
+		}	
     }
 
 	/// <summary>
@@ -263,13 +307,13 @@ namespace TabularEditor.TOMWrapper
 	{
 		public Table Parent { get; private set; }
 
-		public MeasureCollection(TabularModelHandler handler, string collectionName, TOM.MeasureCollection metadataObjectCollection, Table parent) : base(handler, collectionName, metadataObjectCollection)
+		public MeasureCollection(string collectionName, TOM.MeasureCollection metadataObjectCollection, Table parent) : base(collectionName, metadataObjectCollection)
 		{
 			Parent = parent;
 
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
-				new Measure(handler, obj) { Collection = this };
+				new Measure(obj) { Collection = this };
 			}
 		}
 

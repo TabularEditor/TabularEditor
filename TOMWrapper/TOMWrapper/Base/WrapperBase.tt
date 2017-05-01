@@ -28,7 +28,6 @@ namespace TabularEditor.TOMWrapper
    foreach(var t in Rules.ObjectTypes.Keys) {
 	   manager.StartNewFile(t.Name + ".generated.cs");
 	   var props = t.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-	   var tomRef = t.Name.ToLower() + "MetadataObject";
 #>  
     /// <summary>
 	/// Base class declaration for <#= t.Name #>
@@ -42,21 +41,11 @@ namespace TabularEditor.TOMWrapper
 #><#= props.Any(p => p.Name == "Description") ? ", IDescriptionObject" : ""
 #><#= props.Any(p => p.Name == "Expression") ? ", IExpressionObject" : ""
 #><#= props.Any(p => p.Name == "Annotations") ? ", IAnnotationObject" : ""
+#><#= Rules.IsTranslatable(t) ? ", ITranslatableObject" : ""
 #>
 	{
 	    protected internal new TOM.<#= t.Name #> MetadataObject { get { return base.MetadataObject as TOM.<#= t.Name #>; } internal set { base.MetadataObject = value; } }
 
-<# if((Rules.Collections.ContainsKey(t) || Rules.Collections.ContainsKey(t.BaseType) ) && !t.IsAbstract) { #>
-		public <#= t.Name #>(<#= Rules.CollectionParent.ContainsKey(t) ? Rules.CollectionParent[t] : Rules.CollectionParent[t.BaseType] #> parent) : base(parent.Handler, new TOM.<#= t.Name #>(), false) {
-			MetadataObject.Name = parent.MetadataObject.<#= Rules.Collections.ContainsKey(t) ? Rules.Collections[t] : Rules.Collections[t.BaseType] #>.GetNewName("New <#= t.Name #>");
-			parent.<#= Rules.Collections.ContainsKey(t) ? Rules.Collections[t] : Rules.Collections[t.BaseType] #>.Add(this);
-			Init();
-		}
-<# } #>
-
-		public <#= t.Name #>(TabularModelHandler handler, TOM.<#= t.Name #> <#= tomRef #><# if(t.IsAbstract) { #>, bool autoInit = true <# } #>) : base(handler, <#= tomRef #><# if(t.IsAbstract) { #>, autoInit <# } #>)
-		{
-		}
 <#
 	foreach(PropertyInfo p in props) 
 	{   
@@ -86,19 +75,12 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerialize<#= p.Name #>() { return false; }
 <#		}
-		if (p.Name == "Description") { #>
-        /// <summary>
-        /// Collection of localized descriptions for this <#= t.Name #>.
-        /// </summary>
-        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
-	    public new TranslationIndexer TranslatedDescriptions { get { return base.TranslatedDescriptions; } }
-<#		}
 		if (p.Name == "DisplayFolder") { #>
         /// <summary>
         /// Collection of localized Display Folders for this <#= t.Name #>.
         /// </summary>
         [Browsable(true),DisplayName("Display Folders"),Category("Translations and Perspectives")]
-	    public new TranslationIndexer TranslatedDisplayFolders { get { return base.TranslatedDisplayFolders; } }
+	    public TranslationIndexer TranslatedDisplayFolders { private set; get; }
 <#		}
 		if (p.Name == "Table") { #>
 		[Browsable(false)]
@@ -116,6 +98,70 @@ namespace TabularEditor.TOMWrapper
 		}
 <#      }
 	}#>
+
+<# if (Rules.IsTranslatable(t)) { #>
+        /// <summary>
+        /// Collection of localized descriptions for this <#= t.Name #>.
+        /// </summary>
+        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
+	    public TranslationIndexer TranslatedDescriptions { private set; get; }
+        /// <summary>
+        /// Collection of localized names for this <#= t.Name #>.
+        /// </summary>
+        [Browsable(true),DisplayName("Names"),Category("Translations and Perspectives")]
+	    public TranslationIndexer TranslatedNames { private set; get; }
+
+<# } if (!t.IsAbstract) { #>
+
+<# if(Rules.InCollection(t)) { #>
+
+		/// <summary>
+		/// Creates a new <#= t.Name #> and adds it to the parent <#= Rules.GetParent(t) #>.
+		/// </summary>
+		public <#= t.Name #>(<#= Rules.GetParent(t) #> parent) : base(new TOM.<#= t.Name #>()) {
+			MetadataObject.Name = parent.MetadataObject.<#= Rules.GetCollection(t) #>.GetNewName("New <#= t.Name #>");
+			parent.<#= Rules.GetCollection(t) #>.Add(this);
+			Init();
+		}
+<# } #>
+	
+        internal override void RenewMetadataObject()
+        {
+            var tom = new TOM.<#= t.Name #>();
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject.CopyTo(tom);
+            MetadataObject = tom;
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+<# } if (Rules.InCollection(t)) { #>
+
+		public <#= Rules.GetParent(t) #> Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as <#= Rules.GetParent(t) #>;
+			}
+		}
+
+		public <#= t.Name #> Clone(string newName = null<#= Rules.IsTranslatable(t) ? ", bool includeTranslations = true" : "" #>) {
+		    Handler.BeginUpdate("Clone <#= t.Name #>");
+
+				var tom = MetadataObject.Clone();
+				tom.Name = Parent.<#= Rules.GetCollection(t) #>.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new <#= t.Name #>(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+<# } #>
+		
+		/// <summary>
+		/// Creates a <#= t.Name #> object representing an existing TOM <#= t.Name #>.
+		/// </summary>
+		internal <#= t.Name #>(TOM.<#= t.Name #> metadataObject) : base(metadataObject)
+		{
+		}	
     }
 <#  if (Rules.CollectionParent.ContainsKey(t)) { #>
 
@@ -126,35 +172,38 @@ namespace TabularEditor.TOMWrapper
 	{
 		public <#= Rules.CollectionParent[t] #> Parent { get; private set; }
 
-		public <#= t.Name #>Collection(TabularModelHandler handler, string collectionName, TOM.<#= t.Name #>Collection metadataObjectCollection, <#= Rules.CollectionParent[t] #> parent) : base(handler, collectionName, metadataObjectCollection)
+		public <#= t.Name #>Collection(string collectionName, TOM.<#= t.Name #>Collection metadataObjectCollection, <#= Rules.CollectionParent[t] #> parent) : base(collectionName, metadataObjectCollection)
 		{
 			Parent = parent;
 
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
-<# if(t.Name == "Column") { #>
+<# if(t.Name == "ModelRoleMember") { #>
+				if(obj is TOM.WindowsModelRoleMember) new WindowsModelRoleMember(obj as TOM.WindowsModelRoleMember) { Collection = this };
+				if(obj is TOM.ExternalModelRoleMember) new ExternalModelRoleMember(obj as TOM.ExternalModelRoleMember) { Collection = this };
+<# } else if(t.Name == "Column") { #>
 				switch(obj.Type) {
-				    case TOM.ColumnType.Data: new DataColumn(handler, obj as TOM.DataColumn) { Collection = this }; break;
-					case TOM.ColumnType.Calculated: new CalculatedColumn(handler, obj as TOM.CalculatedColumn) { Collection = this }; break;
-					case TOM.ColumnType.CalculatedTableColumn: new CalculatedTableColumn(handler, obj as TOM.CalculatedTableColumn) { Collection = this }; break;
+				    case TOM.ColumnType.Data: new DataColumn(obj as TOM.DataColumn) { Collection = this }; break;
+					case TOM.ColumnType.Calculated: new CalculatedColumn(obj as TOM.CalculatedColumn) { Collection = this }; break;
+					case TOM.ColumnType.CalculatedTableColumn: new CalculatedTableColumn(obj as TOM.CalculatedTableColumn) { Collection = this }; break;
 					default: break;
 				}
 <# } else if (t.Name == "Table") { #>
 				switch(obj.GetSourceType()) {
-				    case TOM.PartitionSourceType.Calculated: new CalculatedTable(handler, obj) { Collection = this }; break;
-					default: new Table(handler, obj) { Collection = this }; break;
+				    case TOM.PartitionSourceType.Calculated: new CalculatedTable(obj) { Collection = this }; break;
+					default: new Table(obj) { Collection = this }; break;
 				}
 <# } else if (t.Name == "Relationship") { #>
 				switch((obj as TOM.Relationship).Type) {
-					case TOM.RelationshipType.SingleColumn: new SingleColumnRelationship(handler, obj as TOM.SingleColumnRelationship) { Collection = this }; break;
+					case TOM.RelationshipType.SingleColumn: new SingleColumnRelationship(obj as TOM.SingleColumnRelationship) { Collection = this }; break;
 				}
 <# } else if (t.Name == "DataSource") { #>
 				switch((obj as TOM.DataSource).Type) {
-					case TOM.DataSourceType.Provider: new ProviderDataSource(handler, obj as TOM.ProviderDataSource) { Collection = this }; break;
-					case TOM.DataSourceType.Structured: new StructuredDataSource(handler, obj as TOM.StructuredDataSource) { Collection = this }; break;
+					case TOM.DataSourceType.Provider: new ProviderDataSource(obj as TOM.ProviderDataSource) { Collection = this }; break;
+					case TOM.DataSourceType.Structured: new StructuredDataSource(obj as TOM.StructuredDataSource) { Collection = this }; break;
 				}
 <# } else { #>
-				new <#= t.Name #>(handler, obj) { Collection = this };
+				new <#= t.Name #>(obj) { Collection = this };
 <# } #>
 			}
 		}

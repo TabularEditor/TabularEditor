@@ -18,15 +18,6 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.SingleColumnRelationship MetadataObject { get { return base.MetadataObject as TOM.SingleColumnRelationship; } internal set { base.MetadataObject = value; } }
 
-		public SingleColumnRelationship(Model parent) : base(parent.Handler, new TOM.SingleColumnRelationship(), false) {
-			MetadataObject.Name = parent.MetadataObject.Relationships.GetNewName("New SingleColumnRelationship");
-			parent.Relationships.Add(this);
-			Init();
-		}
-
-		public SingleColumnRelationship(TabularModelHandler handler, TOM.SingleColumnRelationship singlecolumnrelationshipMetadataObject) : base(handler, singlecolumnrelationshipMetadataObject)
-		{
-		}
         /// <summary>
         /// Gets or sets the FromColumn of the SingleColumnRelationship.
         /// </summary>
@@ -117,5 +108,52 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeToCardinality() { return false; }
+
+
+
+		/// <summary>
+		/// Creates a new SingleColumnRelationship and adds it to the parent Model.
+		/// </summary>
+		public SingleColumnRelationship(Model parent) : base(new TOM.SingleColumnRelationship()) {
+			MetadataObject.Name = parent.MetadataObject.Relationships.GetNewName("New SingleColumnRelationship");
+			parent.Relationships.Add(this);
+			Init();
+		}
+	
+        internal override void RenewMetadataObject()
+        {
+            var tom = new TOM.SingleColumnRelationship();
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject.CopyTo(tom);
+            MetadataObject = tom;
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+
+		public Model Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
+			}
+		}
+
+		public SingleColumnRelationship Clone(string newName = null) {
+		    Handler.BeginUpdate("Clone SingleColumnRelationship");
+
+				var tom = MetadataObject.Clone();
+				tom.Name = Parent.Relationships.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new SingleColumnRelationship(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		
+		/// <summary>
+		/// Creates a SingleColumnRelationship object representing an existing TOM SingleColumnRelationship.
+		/// </summary>
+		internal SingleColumnRelationship(TOM.SingleColumnRelationship metadataObject) : base(metadataObject)
+		{
+		}	
     }
 }

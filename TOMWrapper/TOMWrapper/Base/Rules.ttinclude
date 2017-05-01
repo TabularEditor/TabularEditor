@@ -2,6 +2,22 @@
 #><#+
 
 class Rules {
+	public static bool IsTranslatable(Type t) {
+		switch(t.Name) {
+			case "Model":
+			case "Role":
+			case "Perspective":
+			case "Table":
+			case "Level":
+			case "Column":
+			case "Hierarchy":
+			case "Measure":
+			case "KPI":
+				return true;
+			default:
+				return false;
+        }
+    }
 
 	public static bool ShouldWrapProperty(PropertyInfo p, Type t)
     {
@@ -208,30 +224,34 @@ class Rules {
 	// List of types to generate wrapper for:
 	public static readonly Dictionary<Type, string> ObjectTypes = new Dictionary<Type,string>()
 	{ 
-       { typeof(Model), "TabularNamedObject" },
-	   { typeof(Table), "TabularNamedObject" },
-	   { typeof(Column), "TabularNamedObject" },
-	   { typeof(Measure), "TabularNamedObject" },
-	   { typeof(CalculatedColumn), "Column" },
-	   { typeof(DataColumn), "Column" },
-	   { typeof(CalculatedTableColumn), "Column" },
-	   { typeof(Hierarchy), "TabularNamedObject" },
-	   { typeof(Level), "TabularNamedObject" },
-	   { typeof(Culture), "TabularNamedObject" },
-	   { typeof(Perspective), "TabularNamedObject" },
-	   { typeof(KPI), "TabularObject" },
-	   { typeof(Relationship), "TabularNamedObject" },
-	   { typeof(SingleColumnRelationship), "Relationship" },
-	   { typeof(Partition), "TabularNamedObject" },
-	   { typeof(ModelRole), "TabularNamedObject" },
+       { typeof(CalculatedColumn), "Column" },
+       { typeof(CalculatedTableColumn), "Column" },
+       { typeof(Column), "TabularNamedObject" },
+       { typeof(Culture), "TabularNamedObject" },
+       { typeof(DataColumn), "Column" },
        { typeof(DataSource), "TabularNamedObject" },
+       { typeof(ExternalModelRoleMember), "ModelRoleMember" },
+       { typeof(Hierarchy), "TabularNamedObject" },
+       { typeof(KPI), "TabularObject" },
+       { typeof(Level), "TabularNamedObject" },
+       { typeof(Measure), "TabularNamedObject" },
+       { typeof(Model), "TabularNamedObject" },
+       { typeof(ModelRole), "TabularNamedObject" },
+       { typeof(ModelRoleMember), "TabularNamedObject" },
+       { typeof(Partition), "TabularNamedObject" },
+       { typeof(Perspective), "TabularNamedObject" },
        { typeof(ProviderDataSource), "DataSource" },
+       { typeof(Relationship), "TabularNamedObject" },
+       { typeof(SingleColumnRelationship), "Relationship" },
        { typeof(StructuredDataSource), "DataSource" },
-       { typeof(Variation), "TabularNamedObject" }
+       { typeof(Table), "TabularNamedObject" },
+       { typeof(Variation), "TabularNamedObject" },
+       { typeof(WindowsModelRoleMember), "ModelRoleMember" }
    };
 
    public static readonly Dictionary<Type, string> Collections = new Dictionary<Type,string>()
    {
+       { typeof(ModelRoleMember), "Members" },
        { typeof(ModelRole), "Roles" },
        { typeof(Table), "Tables" },
        { typeof(CalculatedColumn), "Columns" },
@@ -250,6 +270,7 @@ class Rules {
 
    public static readonly Dictionary<Type, string> CollectionParent = new Dictionary<Type,string>()
    {
+       { typeof(ModelRoleMember), "ModelRole" },
        { typeof(ModelRole), "Model" },
        { typeof(Table), "Model" },
        { typeof(Column), "Table" },
@@ -263,5 +284,17 @@ class Rules {
 	   { typeof(DataSource), "Model" },
        { typeof(Variation), "Column" }
    };
+
+   public static string GetParent(Type t) {
+	   return Rules.CollectionParent.ContainsKey(t) ? 
+			Rules.CollectionParent[t] : Rules.CollectionParent[t.BaseType];
+   }
+   public static bool InCollection(Type t) {
+	   return Rules.Collections.ContainsKey(t) || Rules.Collections.ContainsKey(t.BaseType);
+   }
+   public static string GetCollection(Type t) {
+	   return Rules.Collections.ContainsKey(t) ? 
+			Rules.Collections[t] : Rules.Collections[t.BaseType];
+   }
 }
 #>

@@ -33,9 +33,9 @@ namespace TabularEditor.TOMWrapper
 
         public virtual void Delete()
         {
-            if(!(this is Culture)) TranslatedDescriptions.Clear();
-            if(this is IDetailObject) TranslatedDisplayFolders.Clear();
-            TranslatedNames.Clear();
+            //if(!(this is Culture)) TranslatedDescriptions.Clear();
+            //if(this is IDetailObject) TranslatedDisplayFolders.Clear();
+            //TranslatedNames.Clear();
 
             if (Collection == null)
                 throw new NotSupportedException("Object cannot be deleted since it does not belong to any collection.");
@@ -43,14 +43,8 @@ namespace TabularEditor.TOMWrapper
             Handler.WrapperLookup.Remove(MetadataObject);
         }
 
-        public virtual TabularNamedObject Clone(string newName, bool includeTranslations)
+        protected TabularNamedObject(NamedMetadataObject metadataObject) : base(metadataObject)
         {
-            throw new NotSupportedException("This object cannot be cloned.");
-        }
-
-        protected TabularNamedObject(TabularModelHandler handler, NamedMetadataObject metadataObject, bool autoInit = true) : base(handler, metadataObject, autoInit)
-        {
-            TranslatedNames = new TranslationIndexer(this, TranslatedProperty.Caption);
         }
 
         public int MetadataIndex
@@ -71,12 +65,6 @@ namespace TabularEditor.TOMWrapper
         }
 
         protected internal new NamedMetadataObject MetadataObject { get { return base.MetadataObject as NamedMetadataObject; } protected set { base.MetadataObject = value; } }
-
-        /// <summary>
-        /// Collection of localized names for this object.
-        /// </summary>
-        [Browsable(true),DisplayName("Captions"),Category("Translations and Perspectives"),IntelliSense("A collection with all translated names of the object. Access individual items using the Culture name.\nExample: Measure.TranslatedNames[\"en-GB\"] = \"English name\".")]
-        public TranslationIndexer TranslatedNames { get; private set; }
 
         private bool ShouldSerializeName() { return false; }
 

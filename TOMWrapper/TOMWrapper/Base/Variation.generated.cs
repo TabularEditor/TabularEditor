@@ -18,15 +18,6 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.Variation MetadataObject { get { return base.MetadataObject as TOM.Variation; } internal set { base.MetadataObject = value; } }
 
-		public Variation(Column parent) : base(parent.Handler, new TOM.Variation(), false) {
-			MetadataObject.Name = parent.MetadataObject.Variations.GetNewName("New Variation");
-			parent.Variations.Add(this);
-			Init();
-		}
-
-		public Variation(TabularModelHandler handler, TOM.Variation variationMetadataObject) : base(handler, variationMetadataObject)
-		{
-		}
 		public string GetAnnotation(string name) {
 		    return MetadataObject.Annotations.Find(name)?.Value;
 		}
@@ -60,11 +51,6 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
-        /// <summary>
-        /// Collection of localized descriptions for this Variation.
-        /// </summary>
-        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
-	    public new TranslationIndexer TranslatedDescriptions { get { return base.TranslatedDescriptions; } }
         /// <summary>
         /// Gets or sets the IsDefault of the Variation.
         /// </summary>
@@ -169,6 +155,53 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDefaultColumn() { return false; }
+
+
+
+		/// <summary>
+		/// Creates a new Variation and adds it to the parent Column.
+		/// </summary>
+		public Variation(Column parent) : base(new TOM.Variation()) {
+			MetadataObject.Name = parent.MetadataObject.Variations.GetNewName("New Variation");
+			parent.Variations.Add(this);
+			Init();
+		}
+	
+        internal override void RenewMetadataObject()
+        {
+            var tom = new TOM.Variation();
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject.CopyTo(tom);
+            MetadataObject = tom;
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+
+		public Column Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Column;
+			}
+		}
+
+		public Variation Clone(string newName = null) {
+		    Handler.BeginUpdate("Clone Variation");
+
+				var tom = MetadataObject.Clone();
+				tom.Name = Parent.Variations.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new Variation(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		
+		/// <summary>
+		/// Creates a Variation object representing an existing TOM Variation.
+		/// </summary>
+		internal Variation(TOM.Variation metadataObject) : base(metadataObject)
+		{
+		}	
     }
 
 	/// <summary>
@@ -178,13 +211,13 @@ namespace TabularEditor.TOMWrapper
 	{
 		public Column Parent { get; private set; }
 
-		public VariationCollection(TabularModelHandler handler, string collectionName, TOM.VariationCollection metadataObjectCollection, Column parent) : base(handler, collectionName, metadataObjectCollection)
+		public VariationCollection(string collectionName, TOM.VariationCollection metadataObjectCollection, Column parent) : base(collectionName, metadataObjectCollection)
 		{
 			Parent = parent;
 
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
-				new Variation(handler, obj) { Collection = this };
+				new Variation(obj) { Collection = this };
 			}
 		}
 

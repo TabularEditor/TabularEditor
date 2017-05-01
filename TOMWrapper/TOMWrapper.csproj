@@ -97,6 +97,9 @@
     <Compile Include="TOMWrapper\Base\DataSource.generated.cs">
       <DependentUpon>WrapperBase.tt</DependentUpon>
     </Compile>
+    <Compile Include="TOMWrapper\Base\ExternalModelRoleMember.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
     <Compile Include="TOMWrapper\Base\Hierarchy.generated.cs">
       <DependentUpon>WrapperBase.tt</DependentUpon>
     </Compile>
@@ -115,6 +118,9 @@
     <Compile Include="TOMWrapper\Base\ModelRole.generated.cs">
       <DependentUpon>WrapperBase.tt</DependentUpon>
     </Compile>
+    <Compile Include="TOMWrapper\Base\ModelRoleMember.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
     <Compile Include="TOMWrapper\Base\ProviderDataSource.generated.cs">
       <DependentUpon>WrapperBase.tt</DependentUpon>
     </Compile>
@@ -122,6 +128,9 @@
       <DependentUpon>WrapperBase.tt</DependentUpon>
     </Compile>
     <Compile Include="TOMWrapper\Base\Variation.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TOMWrapper\Base\WindowsModelRoleMember.generated.cs">
       <DependentUpon>WrapperBase.tt</DependentUpon>
     </Compile>
     <Compile Include="TOMWrapper\CalculatedColumn.cs" />

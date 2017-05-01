@@ -14,14 +14,10 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Model
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Model: TabularNamedObject, IDescriptionObject, IAnnotationObject
+	public partial class Model: TabularNamedObject, IDescriptionObject, IAnnotationObject, ITranslatableObject
 	{
 	    protected internal new TOM.Model MetadataObject { get { return base.MetadataObject as TOM.Model; } internal set { base.MetadataObject = value; } }
 
-
-		public Model(TabularModelHandler handler, TOM.Model modelMetadataObject) : base(handler, modelMetadataObject)
-		{
-		}
         /// <summary>
         /// Gets or sets the HasLocalChanges of the Model.
         /// </summary>
@@ -67,11 +63,6 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
-        /// <summary>
-        /// Collection of localized descriptions for this Model.
-        /// </summary>
-        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
-	    public new TranslationIndexer TranslatedDescriptions { get { return base.TranslatedDescriptions; } }
         /// <summary>
         /// Gets or sets the StorageLocation of the Model.
         /// </summary>
@@ -182,5 +173,35 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeCollation() { return false; }
+
+        /// <summary>
+        /// Collection of localized descriptions for this Model.
+        /// </summary>
+        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
+	    public TranslationIndexer TranslatedDescriptions { private set; get; }
+        /// <summary>
+        /// Collection of localized names for this Model.
+        /// </summary>
+        [Browsable(true),DisplayName("Names"),Category("Translations and Perspectives")]
+	    public TranslationIndexer TranslatedNames { private set; get; }
+
+
+	
+        internal override void RenewMetadataObject()
+        {
+            var tom = new TOM.Model();
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject.CopyTo(tom);
+            MetadataObject = tom;
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+		
+		/// <summary>
+		/// Creates a Model object representing an existing TOM Model.
+		/// </summary>
+		internal Model(TOM.Model metadataObject) : base(metadataObject)
+		{
+		}	
     }
 }

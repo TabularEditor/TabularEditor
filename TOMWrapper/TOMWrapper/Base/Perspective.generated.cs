@@ -14,19 +14,10 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Perspective
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Perspective: TabularNamedObject, IDescriptionObject, IAnnotationObject
+	public partial class Perspective: TabularNamedObject, IDescriptionObject, IAnnotationObject, ITranslatableObject
 	{
 	    protected internal new TOM.Perspective MetadataObject { get { return base.MetadataObject as TOM.Perspective; } internal set { base.MetadataObject = value; } }
 
-		public Perspective(Model parent) : base(parent.Handler, new TOM.Perspective(), false) {
-			MetadataObject.Name = parent.MetadataObject.Perspectives.GetNewName("New Perspective");
-			parent.Perspectives.Add(this);
-			Init();
-		}
-
-		public Perspective(TabularModelHandler handler, TOM.Perspective perspectiveMetadataObject) : base(handler, perspectiveMetadataObject)
-		{
-		}
 		public string GetAnnotation(string name) {
 		    return MetadataObject.Annotations.Find(name)?.Value;
 		}
@@ -60,11 +51,64 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
+
         /// <summary>
         /// Collection of localized descriptions for this Perspective.
         /// </summary>
         [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
-	    public new TranslationIndexer TranslatedDescriptions { get { return base.TranslatedDescriptions; } }
+	    public TranslationIndexer TranslatedDescriptions { private set; get; }
+        /// <summary>
+        /// Collection of localized names for this Perspective.
+        /// </summary>
+        [Browsable(true),DisplayName("Names"),Category("Translations and Perspectives")]
+	    public TranslationIndexer TranslatedNames { private set; get; }
+
+
+
+		/// <summary>
+		/// Creates a new Perspective and adds it to the parent Model.
+		/// </summary>
+		public Perspective(Model parent) : base(new TOM.Perspective()) {
+			MetadataObject.Name = parent.MetadataObject.Perspectives.GetNewName("New Perspective");
+			parent.Perspectives.Add(this);
+			Init();
+		}
+	
+        internal override void RenewMetadataObject()
+        {
+            var tom = new TOM.Perspective();
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject.CopyTo(tom);
+            MetadataObject = tom;
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+
+		public Model Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
+			}
+		}
+
+		public Perspective Clone(string newName = null, bool includeTranslations = true) {
+		    Handler.BeginUpdate("Clone Perspective");
+
+				var tom = MetadataObject.Clone();
+				tom.Name = Parent.Perspectives.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new Perspective(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		
+		/// <summary>
+		/// Creates a Perspective object representing an existing TOM Perspective.
+		/// </summary>
+		internal Perspective(TOM.Perspective metadataObject) : base(metadataObject)
+		{
+		}	
     }
 
 	/// <summary>
@@ -74,13 +118,13 @@ namespace TabularEditor.TOMWrapper
 	{
 		public Model Parent { get; private set; }
 
-		public PerspectiveCollection(TabularModelHandler handler, string collectionName, TOM.PerspectiveCollection metadataObjectCollection, Model parent) : base(handler, collectionName, metadataObjectCollection)
+		public PerspectiveCollection(string collectionName, TOM.PerspectiveCollection metadataObjectCollection, Model parent) : base(collectionName, metadataObjectCollection)
 		{
 			Parent = parent;
 
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
-				new Perspective(handler, obj) { Collection = this };
+				new Perspective(obj) { Collection = this };
 			}
 		}
 

@@ -14,14 +14,10 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Column
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public abstract partial class Column: TabularNamedObject, IDetailObject, IHideableObject, IErrorMessageObject, ITabularTableObject, IDescriptionObject, IAnnotationObject
+	public abstract partial class Column: TabularNamedObject, IDetailObject, IHideableObject, IErrorMessageObject, ITabularTableObject, IDescriptionObject, IAnnotationObject, ITranslatableObject
 	{
 	    protected internal new TOM.Column MetadataObject { get { return base.MetadataObject as TOM.Column; } internal set { base.MetadataObject = value; } }
 
-
-		public Column(TabularModelHandler handler, TOM.Column columnMetadataObject, bool autoInit = true ) : base(handler, columnMetadataObject, autoInit )
-		{
-		}
         /// <summary>
         /// Gets or sets the DataType of the Column.
         /// </summary>
@@ -99,11 +95,6 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
-        /// <summary>
-        /// Collection of localized descriptions for this Column.
-        /// </summary>
-        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
-	    public new TranslationIndexer TranslatedDescriptions { get { return base.TranslatedDescriptions; } }
         /// <summary>
         /// Gets or sets the IsHidden of the Column.
         /// </summary>
@@ -476,7 +467,7 @@ namespace TabularEditor.TOMWrapper
         /// Collection of localized Display Folders for this Column.
         /// </summary>
         [Browsable(true),DisplayName("Display Folders"),Category("Translations and Perspectives")]
-	    public new TranslationIndexer TranslatedDisplayFolders { get { return base.TranslatedDisplayFolders; } }
+	    public TranslationIndexer TranslatedDisplayFolders { private set; get; }
         /// <summary>
         /// Gets or sets the EncodingHint of the Column.
         /// </summary>
@@ -535,6 +526,25 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeSortByColumn() { return false; }
+
+        /// <summary>
+        /// Collection of localized descriptions for this Column.
+        /// </summary>
+        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
+	    public TranslationIndexer TranslatedDescriptions { private set; get; }
+        /// <summary>
+        /// Collection of localized names for this Column.
+        /// </summary>
+        [Browsable(true),DisplayName("Names"),Category("Translations and Perspectives")]
+	    public TranslationIndexer TranslatedNames { private set; get; }
+
+		
+		/// <summary>
+		/// Creates a Column object representing an existing TOM Column.
+		/// </summary>
+		internal Column(TOM.Column metadataObject) : base(metadataObject)
+		{
+		}	
     }
 
 	/// <summary>
@@ -544,16 +554,16 @@ namespace TabularEditor.TOMWrapper
 	{
 		public Table Parent { get; private set; }
 
-		public ColumnCollection(TabularModelHandler handler, string collectionName, TOM.ColumnCollection metadataObjectCollection, Table parent) : base(handler, collectionName, metadataObjectCollection)
+		public ColumnCollection(string collectionName, TOM.ColumnCollection metadataObjectCollection, Table parent) : base(collectionName, metadataObjectCollection)
 		{
 			Parent = parent;
 
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				switch(obj.Type) {
-				    case TOM.ColumnType.Data: new DataColumn(handler, obj as TOM.DataColumn) { Collection = this }; break;
-					case TOM.ColumnType.Calculated: new CalculatedColumn(handler, obj as TOM.CalculatedColumn) { Collection = this }; break;
-					case TOM.ColumnType.CalculatedTableColumn: new CalculatedTableColumn(handler, obj as TOM.CalculatedTableColumn) { Collection = this }; break;
+				    case TOM.ColumnType.Data: new DataColumn(obj as TOM.DataColumn) { Collection = this }; break;
+					case TOM.ColumnType.Calculated: new CalculatedColumn(obj as TOM.CalculatedColumn) { Collection = this }; break;
+					case TOM.ColumnType.CalculatedTableColumn: new CalculatedTableColumn(obj as TOM.CalculatedTableColumn) { Collection = this }; break;
 					default: break;
 				}
 			}

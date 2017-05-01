@@ -58,6 +58,14 @@ namespace TabularEditor.TOMWrapper
             base.Undelete(collection);
         }
 
+        public ModelRoleMemberCollection Members { get; private set; }
+        protected override void Init()
+        {
+            Members = new ModelRoleMemberCollection(Handler, this.GetObjectPath() + ".Members", MetadataObject.Members, this);
+            base.Init();
+        }
+
+
         public override void Delete()
         {
             base.Delete();

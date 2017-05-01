@@ -18,15 +18,6 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.ProviderDataSource MetadataObject { get { return base.MetadataObject as TOM.ProviderDataSource; } internal set { base.MetadataObject = value; } }
 
-		public ProviderDataSource(Model parent) : base(parent.Handler, new TOM.ProviderDataSource(), false) {
-			MetadataObject.Name = parent.MetadataObject.DataSources.GetNewName("New ProviderDataSource");
-			parent.DataSources.Add(this);
-			Init();
-		}
-
-		public ProviderDataSource(TabularModelHandler handler, TOM.ProviderDataSource providerdatasourceMetadataObject) : base(handler, providerdatasourceMetadataObject)
-		{
-		}
         /// <summary>
         /// Gets or sets the ConnectionString of the ProviderDataSource.
         /// </summary>
@@ -203,5 +194,52 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeProvider() { return false; }
+
+
+
+		/// <summary>
+		/// Creates a new ProviderDataSource and adds it to the parent Model.
+		/// </summary>
+		public ProviderDataSource(Model parent) : base(new TOM.ProviderDataSource()) {
+			MetadataObject.Name = parent.MetadataObject.DataSources.GetNewName("New ProviderDataSource");
+			parent.DataSources.Add(this);
+			Init();
+		}
+	
+        internal override void RenewMetadataObject()
+        {
+            var tom = new TOM.ProviderDataSource();
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject.CopyTo(tom);
+            MetadataObject = tom;
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+
+		public Model Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
+			}
+		}
+
+		public ProviderDataSource Clone(string newName = null) {
+		    Handler.BeginUpdate("Clone ProviderDataSource");
+
+				var tom = MetadataObject.Clone();
+				tom.Name = Parent.DataSources.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new ProviderDataSource(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		
+		/// <summary>
+		/// Creates a ProviderDataSource object representing an existing TOM ProviderDataSource.
+		/// </summary>
+		internal ProviderDataSource(TOM.ProviderDataSource metadataObject) : base(metadataObject)
+		{
+		}	
     }
 }

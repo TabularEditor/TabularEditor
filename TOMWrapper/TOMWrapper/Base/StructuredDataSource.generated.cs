@@ -18,15 +18,6 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.StructuredDataSource MetadataObject { get { return base.MetadataObject as TOM.StructuredDataSource; } internal set { base.MetadataObject = value; } }
 
-		public StructuredDataSource(Model parent) : base(parent.Handler, new TOM.StructuredDataSource(), false) {
-			MetadataObject.Name = parent.MetadataObject.DataSources.GetNewName("New StructuredDataSource");
-			parent.DataSources.Add(this);
-			Init();
-		}
-
-		public StructuredDataSource(TabularModelHandler handler, TOM.StructuredDataSource structureddatasourceMetadataObject) : base(handler, structureddatasourceMetadataObject)
-		{
-		}
         /// <summary>
         /// Gets or sets the ContextExpression of the StructuredDataSource.
         /// </summary>
@@ -49,5 +40,52 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeContextExpression() { return false; }
+
+
+
+		/// <summary>
+		/// Creates a new StructuredDataSource and adds it to the parent Model.
+		/// </summary>
+		public StructuredDataSource(Model parent) : base(new TOM.StructuredDataSource()) {
+			MetadataObject.Name = parent.MetadataObject.DataSources.GetNewName("New StructuredDataSource");
+			parent.DataSources.Add(this);
+			Init();
+		}
+	
+        internal override void RenewMetadataObject()
+        {
+            var tom = new TOM.StructuredDataSource();
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject.CopyTo(tom);
+            MetadataObject = tom;
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+
+		public Model Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
+			}
+		}
+
+		public StructuredDataSource Clone(string newName = null) {
+		    Handler.BeginUpdate("Clone StructuredDataSource");
+
+				var tom = MetadataObject.Clone();
+				tom.Name = Parent.DataSources.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new StructuredDataSource(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		
+		/// <summary>
+		/// Creates a StructuredDataSource object representing an existing TOM StructuredDataSource.
+		/// </summary>
+		internal StructuredDataSource(TOM.StructuredDataSource metadataObject) : base(metadataObject)
+		{
+		}	
     }
 }

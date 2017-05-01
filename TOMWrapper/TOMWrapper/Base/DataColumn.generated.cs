@@ -18,15 +18,6 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.DataColumn MetadataObject { get { return base.MetadataObject as TOM.DataColumn; } internal set { base.MetadataObject = value; } }
 
-		public DataColumn(Table parent) : base(parent.Handler, new TOM.DataColumn(), false) {
-			MetadataObject.Name = parent.MetadataObject.Columns.GetNewName("New DataColumn");
-			parent.Columns.Add(this);
-			Init();
-		}
-
-		public DataColumn(TabularModelHandler handler, TOM.DataColumn datacolumnMetadataObject) : base(handler, datacolumnMetadataObject)
-		{
-		}
         /// <summary>
         /// Gets or sets the SourceColumn of the DataColumn.
         /// </summary>
@@ -49,5 +40,52 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeSourceColumn() { return false; }
+
+
+
+		/// <summary>
+		/// Creates a new DataColumn and adds it to the parent Table.
+		/// </summary>
+		public DataColumn(Table parent) : base(new TOM.DataColumn()) {
+			MetadataObject.Name = parent.MetadataObject.Columns.GetNewName("New DataColumn");
+			parent.Columns.Add(this);
+			Init();
+		}
+	
+        internal override void RenewMetadataObject()
+        {
+            var tom = new TOM.DataColumn();
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject.CopyTo(tom);
+            MetadataObject = tom;
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+
+		public Table Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Table;
+			}
+		}
+
+		public DataColumn Clone(string newName = null) {
+		    Handler.BeginUpdate("Clone DataColumn");
+
+				var tom = MetadataObject.Clone();
+				tom.Name = Parent.Columns.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new DataColumn(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		
+		/// <summary>
+		/// Creates a DataColumn object representing an existing TOM DataColumn.
+		/// </summary>
+		internal DataColumn(TOM.DataColumn metadataObject) : base(metadataObject)
+		{
+		}	
     }
 }

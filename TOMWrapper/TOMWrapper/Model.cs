@@ -103,6 +103,15 @@ namespace TabularEditor.TOMWrapper
         public readonly LogicalGroup GroupTranslations = new LogicalGroup("Translations");
         public readonly LogicalGroup GroupRoles = new LogicalGroup("Roles");
 
+        #region Convenient getters
+        [Browsable(false), IntelliSense("A collection of all columns across all tables in this model.")]
+        public IEnumerable<Column> AllColumns { get { return Tables.SelectMany(t => t.Columns); }}
+        [Browsable(false), IntelliSense("A collection of all measures across all tables in this model.")]
+        public IEnumerable<Measure> AllMeasures { get { return Tables.SelectMany(t => t.Measures); } }
+        [Browsable(false), IntelliSense("A collection of all measures across all hierarchies in this model.")]
+        public IEnumerable<Hierarchy> AllHierarchies { get { return Tables.SelectMany(t => t.Hierarchies); } }
+        #endregion
+
         public IEnumerable<LogicalGroup> LogicalChildGroups { get
             {
                 yield return GroupTables;

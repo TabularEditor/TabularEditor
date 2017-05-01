@@ -50,7 +50,6 @@ namespace TabularEditor.TOMWrapper
             return Handler.WrapperCollections[CollectionName];
         }
 
-        private int updateLocks = 0;
         private bool init = false;
         public TabularModelHandler Handler { get; private set; }
         [IntelliSense("The name of this collection.")]
@@ -149,10 +148,10 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        protected TabularObjectCollection(TabularModelHandler handler, string collectionName, TOM.NamedMetadataObjectCollection<TT, TP> metadataObjectCollection)
+        protected TabularObjectCollection(string collectionName, TOM.NamedMetadataObjectCollection<TT, TP> metadataObjectCollection)
         {
             MetadataObjectCollection = metadataObjectCollection;
-            Handler = handler;
+            Handler = TabularModelHandler.Singleton;
             CollectionName = collectionName;
             Handler.WrapperCollections[CollectionName] = this;
         }
@@ -185,17 +184,13 @@ namespace TabularEditor.TOMWrapper
             if(item.MetadataObject.Parent != null)
                 throw new ArgumentException("The item already belongs to a collection.");
 
-            // TODO: Ugly hack to prevent error when adding variations:
-            if(item is Variation && item.MetadataObject.IsRemoved)
-            {
-                (item as Variation).RenewMetadataObject();
-            }
+            item.RenewMetadataObject();
 
             MetadataObjectCollection.Add(item.MetadataObject as TT);
             item.Collection = this;
 
             Handler.UndoManager.Add(new UndoAddRemoveAction(this, item, UndoAddRemoveActionType.Add));
-            if (updateLocks == 0) CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
         }
 
         public void Add(TabularNamedObject item)
@@ -217,7 +212,7 @@ namespace TabularEditor.TOMWrapper
             item.Collection = null;
 
             Handler.UndoManager.Add(new UndoAddRemoveAction(this, item, UndoAddRemoveActionType.Remove));
-            if (updateLocks == 0) CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
             return true;
         }
 

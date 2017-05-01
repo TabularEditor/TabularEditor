@@ -18,15 +18,6 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.CalculatedTableColumn MetadataObject { get { return base.MetadataObject as TOM.CalculatedTableColumn; } internal set { base.MetadataObject = value; } }
 
-		public CalculatedTableColumn(Table parent) : base(parent.Handler, new TOM.CalculatedTableColumn(), false) {
-			MetadataObject.Name = parent.MetadataObject.Columns.GetNewName("New CalculatedTableColumn");
-			parent.Columns.Add(this);
-			Init();
-		}
-
-		public CalculatedTableColumn(TabularModelHandler handler, TOM.CalculatedTableColumn calculatedtablecolumnMetadataObject) : base(handler, calculatedtablecolumnMetadataObject)
-		{
-		}
         /// <summary>
         /// Gets or sets the IsNameInferred of the CalculatedTableColumn.
         /// </summary>
@@ -106,5 +97,52 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeColumnOrigin() { return false; }
+
+
+
+		/// <summary>
+		/// Creates a new CalculatedTableColumn and adds it to the parent Table.
+		/// </summary>
+		public CalculatedTableColumn(Table parent) : base(new TOM.CalculatedTableColumn()) {
+			MetadataObject.Name = parent.MetadataObject.Columns.GetNewName("New CalculatedTableColumn");
+			parent.Columns.Add(this);
+			Init();
+		}
+	
+        internal override void RenewMetadataObject()
+        {
+            var tom = new TOM.CalculatedTableColumn();
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject.CopyTo(tom);
+            MetadataObject = tom;
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+
+		public Table Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Table;
+			}
+		}
+
+		public CalculatedTableColumn Clone(string newName = null) {
+		    Handler.BeginUpdate("Clone CalculatedTableColumn");
+
+				var tom = MetadataObject.Clone();
+				tom.Name = Parent.Columns.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new CalculatedTableColumn(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		
+		/// <summary>
+		/// Creates a CalculatedTableColumn object representing an existing TOM CalculatedTableColumn.
+		/// </summary>
+		internal CalculatedTableColumn(TOM.CalculatedTableColumn metadataObject) : base(metadataObject)
+		{
+		}	
     }
 }

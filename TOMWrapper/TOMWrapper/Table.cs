@@ -80,7 +80,7 @@ namespace TabularEditor.TOMWrapper
 
         #endregion
 
-        public override TabularNamedObject Clone(string newName = null, bool includeTranslations = false)
+        /*public override TabularNamedObject Clone(string newName = null, bool includeTranslations = false)
         {
             Handler.BeginUpdate("duplicate table");
 
@@ -112,7 +112,7 @@ namespace TabularEditor.TOMWrapper
             Handler.EndUpdate();
 
             return t;
-        }
+        }*/
 
         [IntelliSense("Deletes the table from the model.")]
         public override void Delete()

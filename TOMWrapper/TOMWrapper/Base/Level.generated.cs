@@ -14,19 +14,10 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Level
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Level: TabularNamedObject, IDescriptionObject, IAnnotationObject
+	public partial class Level: TabularNamedObject, IDescriptionObject, IAnnotationObject, ITranslatableObject
 	{
 	    protected internal new TOM.Level MetadataObject { get { return base.MetadataObject as TOM.Level; } internal set { base.MetadataObject = value; } }
 
-		public Level(Hierarchy parent) : base(parent.Handler, new TOM.Level(), false) {
-			MetadataObject.Name = parent.MetadataObject.Levels.GetNewName("New Level");
-			parent.Levels.Add(this);
-			Init();
-		}
-
-		public Level(TabularModelHandler handler, TOM.Level levelMetadataObject) : base(handler, levelMetadataObject)
-		{
-		}
 		public string GetAnnotation(string name) {
 		    return MetadataObject.Annotations.Find(name)?.Value;
 		}
@@ -83,11 +74,6 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeDescription() { return false; }
         /// <summary>
-        /// Collection of localized descriptions for this Level.
-        /// </summary>
-        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
-	    public new TranslationIndexer TranslatedDescriptions { get { return base.TranslatedDescriptions; } }
-        /// <summary>
         /// Gets or sets the Hierarchy of the Level.
         /// </summary>
 		[DisplayName("Hierarchy")]
@@ -123,6 +109,64 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeColumn() { return false; }
+
+        /// <summary>
+        /// Collection of localized descriptions for this Level.
+        /// </summary>
+        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
+	    public TranslationIndexer TranslatedDescriptions { private set; get; }
+        /// <summary>
+        /// Collection of localized names for this Level.
+        /// </summary>
+        [Browsable(true),DisplayName("Names"),Category("Translations and Perspectives")]
+	    public TranslationIndexer TranslatedNames { private set; get; }
+
+
+
+		/// <summary>
+		/// Creates a new Level and adds it to the parent Hierarchy.
+		/// </summary>
+		public Level(Hierarchy parent) : base(new TOM.Level()) {
+			MetadataObject.Name = parent.MetadataObject.Levels.GetNewName("New Level");
+			parent.Levels.Add(this);
+			Init();
+		}
+	
+        internal override void RenewMetadataObject()
+        {
+            var tom = new TOM.Level();
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject.CopyTo(tom);
+            MetadataObject = tom;
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+
+		public Hierarchy Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Hierarchy;
+			}
+		}
+
+		public Level Clone(string newName = null, bool includeTranslations = true) {
+		    Handler.BeginUpdate("Clone Level");
+
+				var tom = MetadataObject.Clone();
+				tom.Name = Parent.Levels.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new Level(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		
+		/// <summary>
+		/// Creates a Level object representing an existing TOM Level.
+		/// </summary>
+		internal Level(TOM.Level metadataObject) : base(metadataObject)
+		{
+		}	
     }
 
 	/// <summary>
@@ -132,13 +176,13 @@ namespace TabularEditor.TOMWrapper
 	{
 		public Hierarchy Parent { get; private set; }
 
-		public LevelCollection(TabularModelHandler handler, string collectionName, TOM.LevelCollection metadataObjectCollection, Hierarchy parent) : base(handler, collectionName, metadataObjectCollection)
+		public LevelCollection(string collectionName, TOM.LevelCollection metadataObjectCollection, Hierarchy parent) : base(collectionName, metadataObjectCollection)
 		{
 			Parent = parent;
 
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
-				new Level(handler, obj) { Collection = this };
+				new Level(obj) { Collection = this };
 			}
 		}
 

@@ -14,19 +14,10 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Table
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Table: TabularNamedObject, IHideableObject, IDescriptionObject, IAnnotationObject
+	public partial class Table: TabularNamedObject, IHideableObject, IDescriptionObject, IAnnotationObject, ITranslatableObject
 	{
 	    protected internal new TOM.Table MetadataObject { get { return base.MetadataObject as TOM.Table; } internal set { base.MetadataObject = value; } }
 
-		public Table(Model parent) : base(parent.Handler, new TOM.Table(), false) {
-			MetadataObject.Name = parent.MetadataObject.Tables.GetNewName("New Table");
-			parent.Tables.Add(this);
-			Init();
-		}
-
-		public Table(TabularModelHandler handler, TOM.Table tableMetadataObject) : base(handler, tableMetadataObject)
-		{
-		}
 		public string GetAnnotation(string name) {
 		    return MetadataObject.Annotations.Find(name)?.Value;
 		}
@@ -82,11 +73,6 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
-        /// <summary>
-        /// Collection of localized descriptions for this Table.
-        /// </summary>
-        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
-	    public new TranslationIndexer TranslatedDescriptions { get { return base.TranslatedDescriptions; } }
         /// <summary>
         /// Gets or sets the IsHidden of the Table.
         /// </summary>
@@ -154,6 +140,64 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeIsPrivate() { return false; }
+
+        /// <summary>
+        /// Collection of localized descriptions for this Table.
+        /// </summary>
+        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
+	    public TranslationIndexer TranslatedDescriptions { private set; get; }
+        /// <summary>
+        /// Collection of localized names for this Table.
+        /// </summary>
+        [Browsable(true),DisplayName("Names"),Category("Translations and Perspectives")]
+	    public TranslationIndexer TranslatedNames { private set; get; }
+
+
+
+		/// <summary>
+		/// Creates a new Table and adds it to the parent Model.
+		/// </summary>
+		public Table(Model parent) : base(new TOM.Table()) {
+			MetadataObject.Name = parent.MetadataObject.Tables.GetNewName("New Table");
+			parent.Tables.Add(this);
+			Init();
+		}
+	
+        internal override void RenewMetadataObject()
+        {
+            var tom = new TOM.Table();
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject.CopyTo(tom);
+            MetadataObject = tom;
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+
+		public Model Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
+			}
+		}
+
+		public Table Clone(string newName = null, bool includeTranslations = true) {
+		    Handler.BeginUpdate("Clone Table");
+
+				var tom = MetadataObject.Clone();
+				tom.Name = Parent.Tables.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new Table(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		
+		/// <summary>
+		/// Creates a Table object representing an existing TOM Table.
+		/// </summary>
+		internal Table(TOM.Table metadataObject) : base(metadataObject)
+		{
+		}	
     }
 
 	/// <summary>
@@ -163,15 +207,15 @@ namespace TabularEditor.TOMWrapper
 	{
 		public Model Parent { get; private set; }
 
-		public TableCollection(TabularModelHandler handler, string collectionName, TOM.TableCollection metadataObjectCollection, Model parent) : base(handler, collectionName, metadataObjectCollection)
+		public TableCollection(string collectionName, TOM.TableCollection metadataObjectCollection, Model parent) : base(collectionName, metadataObjectCollection)
 		{
 			Parent = parent;
 
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				switch(obj.GetSourceType()) {
-				    case TOM.PartitionSourceType.Calculated: new CalculatedTable(handler, obj) { Collection = this }; break;
-					default: new Table(handler, obj) { Collection = this }; break;
+				    case TOM.PartitionSourceType.Calculated: new CalculatedTable(obj) { Collection = this }; break;
+					default: new Table(obj) { Collection = this }; break;
 				}
 			}
 		}

@@ -13,7 +13,8 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public HashSet<IExpressionObject> Dependants { get; private set; } = new HashSet<IExpressionObject>();
 
-        [Browsable(false)]
+        #region Convenient getters
+        [Browsable(false), IntelliSense("The hierarchies in which the current column appears as a level")]
         public IEnumerable<Hierarchy> UsedInHierarchies
         {
             get
@@ -22,6 +23,9 @@ namespace TabularEditor.TOMWrapper
             }
 
         }
+        [Browsable(false), IntelliSense("The relationships in which the current column participates")]
+        public IEnumerable<Relationship> UsedInRelationships { get { return Model.Relationships.Where(r => r.FromColumn == this || r.ToColumn == this); } }
+        #endregion
 
         [Browsable(true),DisplayName("Perspectives"), Category("Translations and Perspectives")]
         public PerspectiveIndexer InPerspective { get; private set; }

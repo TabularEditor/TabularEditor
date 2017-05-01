@@ -103,21 +103,6 @@ namespace TabularEditor.TOMWrapper
 
         #endregion
 
-        public override TabularNamedObject Clone(string newName, bool includeTranslations)
-        {
-            Handler.BeginUpdate("duplicate translation");
-            var tom = MetadataObject.Clone();
-            ////tom.IsRemoved = false;
-            tom.Name = newName;
-            var c = new Culture(Handler, tom);
-            Model.Cultures.Add(c);
-
-            Handler.EndUpdate();
-
-            return c;
-        }
-
-
         internal override void Undelete(ITabularObjectCollection collection)
         {
             var tom = new TOM.Culture();

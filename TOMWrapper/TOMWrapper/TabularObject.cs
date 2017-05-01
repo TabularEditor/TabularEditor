@@ -18,7 +18,7 @@ namespace TabularEditor.TOMWrapper
     }
 
     /// <summary>
-    /// TabularObjects that can contain other objects should use this interface.
+    /// TabularObjects that can contain other objects should use this interface, to allow easy enumerator of child objects.
     /// </summary>
     public interface ITabularObjectContainer
     {
@@ -61,6 +61,13 @@ namespace TabularEditor.TOMWrapper
         Database = 1000
     }
 
+    /// <summary>
+    /// Base class for all TOM objects that are wrapped in the TOMWrapper. Supports INotifyPropertyChanged and INotifyPropertyChanging
+    /// and undo/redo functionality via the TabularModelHandler. Every TabularObject holds a reference to the corresponding TOM MetadataObject.
+    /// A TabularObject cannot exist without a corresponding TOM MetadataObject.
+    /// 
+    /// Protected constructor that takes a TOM MetadataObject as argument.
+    /// </summary>
     public abstract class TabularObject: ITabularObject, INotifyPropertyChanged, INotifyPropertyChanging
     {
         protected internal ITabularObjectCollection Collection;
@@ -81,6 +88,8 @@ namespace TabularEditor.TOMWrapper
             OnPropertyChanged(propertyName, oldValue, value);
             return true;
         }
+
+        internal abstract void RenewMetadataObject();
 
         protected virtual void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
@@ -110,19 +119,19 @@ namespace TabularEditor.TOMWrapper
         [DisplayName("Object Type"),IntelliSense("The type name of this object (\"Folder\", \"Measure\", \"Table\", etc.).")]
         public virtual string ObjectTypeName { get { return this.GetTypeName(); } }
 
-        protected TranslationIndexer TranslatedDescriptions { get; private set; }
-        protected TranslationIndexer TranslatedDisplayFolders { get; private set; }
-
-        protected TabularObject(TabularModelHandler handler, TOM.MetadataObject metadataObject, bool autoInit = true)
+        /// <summary>
+        /// Creates a TabularObject representing the provided TOM MetadataObject.
+        /// </summary>
+        /// <param name="metadataObject"></param>
+        protected TabularObject(TOM.MetadataObject metadataObject)
         {
+            if (metadataObject == null) throw new ArgumentNullException("metadataObject");
+
             _metadataObject = metadataObject;
-            Handler = handler;
+            Handler = TabularModelHandler.Singleton;
             Handler.WrapperLookup[metadataObject] = this;
 
-            TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
-            TranslatedDisplayFolders = new TranslationIndexer(this, TOM.TranslatedProperty.DisplayFolder);
-
-            if(autoInit) Init();
+            //if(autoInit) Init();
         }
 
         /// <summary>

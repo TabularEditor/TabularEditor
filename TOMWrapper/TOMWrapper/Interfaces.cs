@@ -18,10 +18,15 @@ namespace TabularEditor.TOMWrapper
         Model Model { get; }
     }
 
+    public interface ITranslatableObject
+    {
+        TranslationIndexer TranslatedNames { get; }
+        TranslationIndexer TranslatedDescriptions { get; }
+    }
+
     public interface ITabularNamedObject : ITabularObject
     {
         string Name { get; set; }
-        TranslationIndexer TranslatedNames { get; }
         int MetadataIndex { get; }
     }
 
@@ -49,7 +54,6 @@ namespace TabularEditor.TOMWrapper
     public interface IDescriptionObject
     {
         string Description { get; set; }
-        TranslationIndexer TranslatedDescriptions { get; }
     }
 
     /// <summary>

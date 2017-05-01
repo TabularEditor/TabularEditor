@@ -18,15 +18,6 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.Culture MetadataObject { get { return base.MetadataObject as TOM.Culture; } internal set { base.MetadataObject = value; } }
 
-		public Culture(Model parent) : base(parent.Handler, new TOM.Culture(), false) {
-			MetadataObject.Name = parent.MetadataObject.Cultures.GetNewName("New Culture");
-			parent.Cultures.Add(this);
-			Init();
-		}
-
-		public Culture(TabularModelHandler handler, TOM.Culture cultureMetadataObject) : base(handler, cultureMetadataObject)
-		{
-		}
 		public string GetAnnotation(string name) {
 		    return MetadataObject.Annotations.Find(name)?.Value;
 		}
@@ -38,7 +29,54 @@ namespace TabularEditor.TOMWrapper
 			}
 			if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value));
 		}
-		    }
+		
+
+
+		/// <summary>
+		/// Creates a new Culture and adds it to the parent Model.
+		/// </summary>
+		public Culture(Model parent) : base(new TOM.Culture()) {
+			MetadataObject.Name = parent.MetadataObject.Cultures.GetNewName("New Culture");
+			parent.Cultures.Add(this);
+			Init();
+		}
+	
+        internal override void RenewMetadataObject()
+        {
+            var tom = new TOM.Culture();
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject.CopyTo(tom);
+            MetadataObject = tom;
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+
+		public Model Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
+			}
+		}
+
+		public Culture Clone(string newName = null) {
+		    Handler.BeginUpdate("Clone Culture");
+
+				var tom = MetadataObject.Clone();
+				tom.Name = Parent.Cultures.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new Culture(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		
+		/// <summary>
+		/// Creates a Culture object representing an existing TOM Culture.
+		/// </summary>
+		internal Culture(TOM.Culture metadataObject) : base(metadataObject)
+		{
+		}	
+    }
 
 	/// <summary>
 	/// Collection class for Culture. Provides convenient properties for setting a property on multiple objects at once.
@@ -47,13 +85,13 @@ namespace TabularEditor.TOMWrapper
 	{
 		public Model Parent { get; private set; }
 
-		public CultureCollection(TabularModelHandler handler, string collectionName, TOM.CultureCollection metadataObjectCollection, Model parent) : base(handler, collectionName, metadataObjectCollection)
+		public CultureCollection(string collectionName, TOM.CultureCollection metadataObjectCollection, Model parent) : base(collectionName, metadataObjectCollection)
 		{
 			Parent = parent;
 
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
-				new Culture(handler, obj) { Collection = this };
+				new Culture(obj) { Collection = this };
 			}
 		}
 

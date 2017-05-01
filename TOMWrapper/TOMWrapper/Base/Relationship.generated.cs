@@ -18,10 +18,6 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.Relationship MetadataObject { get { return base.MetadataObject as TOM.Relationship; } internal set { base.MetadataObject = value; } }
 
-
-		public Relationship(TabularModelHandler handler, TOM.Relationship relationshipMetadataObject, bool autoInit = true ) : base(handler, relationshipMetadataObject, autoInit )
-		{
-		}
         /// <summary>
         /// Gets or sets the ToTable of the Relationship.
         /// </summary>
@@ -193,6 +189,33 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeSecurityFilteringBehavior() { return false; }
+
+
+		public Model Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
+			}
+		}
+
+		public Relationship Clone(string newName = null) {
+		    Handler.BeginUpdate("Clone Relationship");
+
+				var tom = MetadataObject.Clone();
+				tom.Name = Parent.Relationships.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new Relationship(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		
+		/// <summary>
+		/// Creates a Relationship object representing an existing TOM Relationship.
+		/// </summary>
+		internal Relationship(TOM.Relationship metadataObject) : base(metadataObject)
+		{
+		}	
     }
 
 	/// <summary>
@@ -202,14 +225,14 @@ namespace TabularEditor.TOMWrapper
 	{
 		public Model Parent { get; private set; }
 
-		public RelationshipCollection(TabularModelHandler handler, string collectionName, TOM.RelationshipCollection metadataObjectCollection, Model parent) : base(handler, collectionName, metadataObjectCollection)
+		public RelationshipCollection(string collectionName, TOM.RelationshipCollection metadataObjectCollection, Model parent) : base(collectionName, metadataObjectCollection)
 		{
 			Parent = parent;
 
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				switch((obj as TOM.Relationship).Type) {
-					case TOM.RelationshipType.SingleColumn: new SingleColumnRelationship(handler, obj as TOM.SingleColumnRelationship) { Collection = this }; break;
+					case TOM.RelationshipType.SingleColumn: new SingleColumnRelationship(obj as TOM.SingleColumnRelationship) { Collection = this }; break;
 				}
 			}
 		}

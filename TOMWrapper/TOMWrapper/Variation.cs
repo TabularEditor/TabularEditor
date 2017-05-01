@@ -19,14 +19,14 @@ namespace TabularEditor.TOMWrapper
         // TODO: Consider changing this into a generic pattern, and using it everywhere
         // It seems to be a better way to handle deletions of objects where the IsRemoved
         // property is set to TRUE on the metadataobject.
-        public void RenewMetadataObject()
+        /*public void RenewMetadataObject()
         {
             var tom = new TOM.Variation();
             Handler.WrapperLookup.Remove(MetadataObject);
             MetadataObject.CopyTo(tom);
             MetadataObject = tom;
             Handler.WrapperLookup.Add(MetadataObject, this);
-        }
+        }*/
 
         internal override void Undelete(ITabularObjectCollection collection)
         {

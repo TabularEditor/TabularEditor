@@ -18,10 +18,6 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.DataSource MetadataObject { get { return base.MetadataObject as TOM.DataSource; } internal set { base.MetadataObject = value; } }
 
-
-		public DataSource(TabularModelHandler handler, TOM.DataSource datasourceMetadataObject, bool autoInit = true ) : base(handler, datasourceMetadataObject, autoInit )
-		{
-		}
 		public string GetAnnotation(string name) {
 		    return MetadataObject.Annotations.Find(name)?.Value;
 		}
@@ -56,11 +52,6 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeDescription() { return false; }
         /// <summary>
-        /// Collection of localized descriptions for this DataSource.
-        /// </summary>
-        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
-	    public new TranslationIndexer TranslatedDescriptions { get { return base.TranslatedDescriptions; } }
-        /// <summary>
         /// Gets or sets the Type of the DataSource.
         /// </summary>
 		[DisplayName("Type")]
@@ -72,6 +63,33 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeType() { return false; }
+
+
+		public Model Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
+			}
+		}
+
+		public DataSource Clone(string newName = null) {
+		    Handler.BeginUpdate("Clone DataSource");
+
+				var tom = MetadataObject.Clone();
+				tom.Name = Parent.DataSources.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new DataSource(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		
+		/// <summary>
+		/// Creates a DataSource object representing an existing TOM DataSource.
+		/// </summary>
+		internal DataSource(TOM.DataSource metadataObject) : base(metadataObject)
+		{
+		}	
     }
 
 	/// <summary>
@@ -81,15 +99,15 @@ namespace TabularEditor.TOMWrapper
 	{
 		public Model Parent { get; private set; }
 
-		public DataSourceCollection(TabularModelHandler handler, string collectionName, TOM.DataSourceCollection metadataObjectCollection, Model parent) : base(handler, collectionName, metadataObjectCollection)
+		public DataSourceCollection(string collectionName, TOM.DataSourceCollection metadataObjectCollection, Model parent) : base(collectionName, metadataObjectCollection)
 		{
 			Parent = parent;
 
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				switch((obj as TOM.DataSource).Type) {
-					case TOM.DataSourceType.Provider: new ProviderDataSource(handler, obj as TOM.ProviderDataSource) { Collection = this }; break;
-					case TOM.DataSourceType.Structured: new StructuredDataSource(handler, obj as TOM.StructuredDataSource) { Collection = this }; break;
+					case TOM.DataSourceType.Provider: new ProviderDataSource(obj as TOM.ProviderDataSource) { Collection = this }; break;
+					case TOM.DataSourceType.Structured: new StructuredDataSource(obj as TOM.StructuredDataSource) { Collection = this }; break;
 				}
 			}
 		}
