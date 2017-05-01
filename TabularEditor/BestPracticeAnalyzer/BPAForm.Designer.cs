@@ -54,9 +54,9 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnMakeLocal = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnEdit = new System.Windows.Forms.Button();
+            this.btnAdd = new System.Windows.Forms.Button();
+            this.btnAnalyzeAll = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.contextMenuStrip1.SuspendLayout();
@@ -245,9 +245,9 @@
             // 
             this.panel1.Controls.Add(this.btnDelete);
             this.panel1.Controls.Add(this.btnMakeLocal);
-            this.panel1.Controls.Add(this.button3);
-            this.panel1.Controls.Add(this.button2);
-            this.panel1.Controls.Add(this.button1);
+            this.panel1.Controls.Add(this.btnEdit);
+            this.panel1.Controls.Add(this.btnAdd);
+            this.panel1.Controls.Add(this.btnAnalyzeAll);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
@@ -276,36 +276,36 @@
             this.btnMakeLocal.UseVisualStyleBackColor = true;
             this.btnMakeLocal.Click += new System.EventHandler(this.btnMakeLocal_Click);
             // 
-            // button3
+            // btnEdit
             // 
-            this.button3.Location = new System.Drawing.Point(93, 12);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
-            this.button3.TabIndex = 6;
-            this.button3.Text = "Edit rule...";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.btnEdit.Location = new System.Drawing.Point(93, 12);
+            this.btnEdit.Name = "btnEdit";
+            this.btnEdit.Size = new System.Drawing.Size(75, 23);
+            this.btnEdit.TabIndex = 6;
+            this.btnEdit.Text = "Edit rule...";
+            this.btnEdit.UseVisualStyleBackColor = true;
+            this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
             // 
-            // button2
+            // btnAdd
             // 
-            this.button2.Location = new System.Drawing.Point(12, 12);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 5;
-            this.button2.Text = "Add rule...";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.btnAdd.Location = new System.Drawing.Point(12, 12);
+            this.btnAdd.Name = "btnAdd";
+            this.btnAdd.Size = new System.Drawing.Size(75, 23);
+            this.btnAdd.TabIndex = 5;
+            this.btnAdd.Text = "Add rule...";
+            this.btnAdd.UseVisualStyleBackColor = true;
+            this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
             // 
-            // button1
+            // btnAnalyzeAll
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(599, 12);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 4;
-            this.button1.Text = "Analyze all";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click_1);
+            this.btnAnalyzeAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAnalyzeAll.Location = new System.Drawing.Point(599, 12);
+            this.btnAnalyzeAll.Name = "btnAnalyzeAll";
+            this.btnAnalyzeAll.Size = new System.Drawing.Size(75, 23);
+            this.btnAnalyzeAll.TabIndex = 4;
+            this.btnAnalyzeAll.Text = "Analyze all";
+            this.btnAnalyzeAll.UseVisualStyleBackColor = true;
+            this.btnAnalyzeAll.Click += new System.EventHandler(this.btnAnalyzeAll_Click);
             // 
             // statusStrip1
             // 
@@ -355,9 +355,9 @@
         private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.ListView listView2;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnEdit;
+        private System.Windows.Forms.Button btnAdd;
+        private System.Windows.Forms.Button btnAnalyzeAll;
         private System.Windows.Forms.ColumnHeader columnHeader6;
         private System.Windows.Forms.ColumnHeader columnHeader7;
         private System.Windows.Forms.StatusStrip statusStrip1;
