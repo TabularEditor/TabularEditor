@@ -201,7 +201,7 @@ namespace TabularEditor
             if(!string.IsNullOrEmpty(savePath))
             {
                 cw.WriteLine("Saving file...");
-                h.SaveFile(savePath);
+                h.SaveFile(savePath, TOMWrapper.SerializeOptions.Default);
             }
 
             var deploy = upperArgList.IndexOf("-DEPLOY");

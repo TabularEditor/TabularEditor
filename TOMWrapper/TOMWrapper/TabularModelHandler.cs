@@ -38,6 +38,13 @@ namespace TabularEditor.TOMWrapper
 
     public class SerializeOptions
     {
+        public static SerializeOptions Default
+        {
+            get
+            {
+                return new SerializeOptions();
+            }
+        }
         public bool IgnoreInferredObjects = true;
         public bool IgnoreInferredProperties = true;
         public bool IgnoreTimestamps = true;
@@ -417,9 +424,9 @@ namespace TabularEditor.TOMWrapper
             return this.Model;
         }
 
-        public void SaveFile(string fileName)
+        public void SaveFile(string fileName, SerializeOptions options)
         {
-            var dbcontent = TOM.JsonSerializer.SerializeDatabase(database);
+            var dbcontent = SerializeDB(options);
             (new FileInfo(fileName)).Directory.Create();
             File.WriteAllText(fileName, dbcontent);
 
@@ -623,14 +630,22 @@ namespace TabularEditor.TOMWrapper
             return sb.ToString();
         }
 
-        public void SaveToFolder(string path, SerializeOptions options)
+
+        private string SerializeDB(SerializeOptions options)
         {
-            var json = TOM.JsonSerializer.SerializeDatabase(database, 
-                new TOM.SerializeOptions() {
+            return TOM.JsonSerializer.SerializeDatabase(database,
+                new TOM.SerializeOptions()
+                {
                     IgnoreInferredObjects = options.IgnoreInferredObjects,
                     IgnoreTimestamps = options.IgnoreTimestamps,
-                    IgnoreInferredProperties = options.IgnoreInferredProperties, 
-                    SplitMultilineStrings = options.SplitMultilineStrings });
+                    IgnoreInferredProperties = options.IgnoreInferredProperties,
+                    SplitMultilineStrings = options.SplitMultilineStrings
+                });
+        }
+
+        public void SaveToFolder(string path, SerializeOptions options)
+        {
+            var json = SerializeDB(options);
             var jobj = JObject.Parse(json);
 
             var model = jobj["model"] as JObject;

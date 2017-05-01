@@ -56,6 +56,7 @@
             this.chkIgnoreInfObjects = new System.Windows.Forms.CheckBox();
             this.chkIgnoreInfProps = new System.Windows.Forms.CheckBox();
             this.chkSplitMultiline = new System.Windows.Forms.CheckBox();
+            this.chkPrefixFiles = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -74,7 +75,12 @@
             this.btnVersionCheck = new System.Windows.Forms.Button();
             this.lblAvailableVersion = new System.Windows.Forms.Label();
             this.lblCurrentVersion = new System.Windows.Forms.Label();
-            this.chkPrefixFiles = new System.Windows.Forms.CheckBox();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.chkSplitMultilineFile = new System.Windows.Forms.CheckBox();
+            this.chkIgnoreInfPropsFile = new System.Windows.Forms.CheckBox();
+            this.chkIgnoreInfObjectsFile = new System.Windows.Forms.CheckBox();
+            this.chkIgnoreTimestampsFile = new System.Windows.Forms.CheckBox();
             this.groupBox3.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -85,6 +91,8 @@
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.tabPage5.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnOK
@@ -179,6 +187,18 @@
         " JSON array.");
             this.chkSplitMultiline.UseVisualStyleBackColor = true;
             // 
+            // chkPrefixFiles
+            // 
+            this.chkPrefixFiles.AutoSize = true;
+            this.chkPrefixFiles.Location = new System.Drawing.Point(6, 65);
+            this.chkPrefixFiles.Name = "chkPrefixFiles";
+            this.chkPrefixFiles.Size = new System.Drawing.Size(99, 17);
+            this.chkPrefixFiles.TabIndex = 4;
+            this.chkPrefixFiles.Text = "Prefix filenames";
+            this.toolTip1.SetToolTip(this.chkPrefixFiles, "If checked, files and folders representing individual objects, will be prefixed b" +
+        "y a number indicating the object\'s order in the Model.bim metadata.");
+            this.chkPrefixFiles.UseVisualStyleBackColor = true;
+            // 
             // groupBox3
             // 
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -198,6 +218,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage5);
             this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
@@ -205,7 +226,7 @@
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(330, 324);
-            this.tabControl1.TabIndex = 5;
+            this.tabControl1.TabIndex = 2;
             // 
             // tabPage1
             // 
@@ -438,17 +459,78 @@
             this.lblCurrentVersion.TabIndex = 1;
             this.lblCurrentVersion.Text = "Current version: 2.0.0.0";
             // 
-            // chkPrefixFiles
+            // tabPage5
             // 
-            this.chkPrefixFiles.AutoSize = true;
-            this.chkPrefixFiles.Location = new System.Drawing.Point(6, 65);
-            this.chkPrefixFiles.Name = "chkPrefixFiles";
-            this.chkPrefixFiles.Size = new System.Drawing.Size(99, 17);
-            this.chkPrefixFiles.TabIndex = 4;
-            this.chkPrefixFiles.Text = "Prefix filenames";
-            this.toolTip1.SetToolTip(this.chkPrefixFiles, "If checked, files and folders representing individual objects, will be prefixed b" +
-        "y a number indicating the object\'s order in the Model.bim metadata.");
-            this.chkPrefixFiles.UseVisualStyleBackColor = true;
+            this.tabPage5.Controls.Add(this.groupBox5);
+            this.tabPage5.Location = new System.Drawing.Point(4, 22);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage5.Size = new System.Drawing.Size(322, 298);
+            this.tabPage5.TabIndex = 4;
+            this.tabPage5.Text = "Save to File";
+            this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox5.Controls.Add(this.chkSplitMultilineFile);
+            this.groupBox5.Controls.Add(this.chkIgnoreInfPropsFile);
+            this.groupBox5.Controls.Add(this.chkIgnoreInfObjectsFile);
+            this.groupBox5.Controls.Add(this.chkIgnoreTimestampsFile);
+            this.groupBox5.Location = new System.Drawing.Point(6, 6);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(310, 66);
+            this.groupBox5.TabIndex = 1;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Serialization Options";
+            // 
+            // chkSplitMultilineFile
+            // 
+            this.chkSplitMultilineFile.AutoSize = true;
+            this.chkSplitMultilineFile.Location = new System.Drawing.Point(143, 42);
+            this.chkSplitMultilineFile.Name = "chkSplitMultilineFile";
+            this.chkSplitMultilineFile.Size = new System.Drawing.Size(114, 17);
+            this.chkSplitMultilineFile.TabIndex = 3;
+            this.chkSplitMultilineFile.Text = "Split multiline string";
+            this.toolTip1.SetToolTip(this.chkSplitMultilineFile, "If checked, expressions and other multiline string properties are serialized as a" +
+        " JSON array.");
+            this.chkSplitMultilineFile.UseVisualStyleBackColor = true;
+            // 
+            // chkIgnoreInfPropsFile
+            // 
+            this.chkIgnoreInfPropsFile.AutoSize = true;
+            this.chkIgnoreInfPropsFile.Location = new System.Drawing.Point(143, 19);
+            this.chkIgnoreInfPropsFile.Name = "chkIgnoreInfPropsFile";
+            this.chkIgnoreInfPropsFile.Size = new System.Drawing.Size(143, 17);
+            this.chkIgnoreInfPropsFile.TabIndex = 2;
+            this.chkIgnoreInfPropsFile.Text = "Ignore inferred properties";
+            this.toolTip1.SetToolTip(this.chkIgnoreInfPropsFile, "If checked, objects whose value is controlled by the server (Column.State, etc.) " +
+        "are not serialized into the .json files");
+            this.chkIgnoreInfPropsFile.UseVisualStyleBackColor = true;
+            // 
+            // chkIgnoreInfObjectsFile
+            // 
+            this.chkIgnoreInfObjectsFile.AutoSize = true;
+            this.chkIgnoreInfObjectsFile.Location = new System.Drawing.Point(6, 19);
+            this.chkIgnoreInfObjectsFile.Name = "chkIgnoreInfObjectsFile";
+            this.chkIgnoreInfObjectsFile.Size = new System.Drawing.Size(131, 17);
+            this.chkIgnoreInfObjectsFile.TabIndex = 1;
+            this.chkIgnoreInfObjectsFile.Text = "Ignore inferred objects";
+            this.toolTip1.SetToolTip(this.chkIgnoreInfObjectsFile, "If checked, objects whose lifetime is controlled by the server (RowNumber, attrib" +
+        "ute hierarchies, etc.) are not serialized into the .json files");
+            this.chkIgnoreInfObjectsFile.UseVisualStyleBackColor = true;
+            // 
+            // chkIgnoreTimestampsFile
+            // 
+            this.chkIgnoreTimestampsFile.AutoSize = true;
+            this.chkIgnoreTimestampsFile.Location = new System.Drawing.Point(6, 42);
+            this.chkIgnoreTimestampsFile.Name = "chkIgnoreTimestampsFile";
+            this.chkIgnoreTimestampsFile.Size = new System.Drawing.Size(111, 17);
+            this.chkIgnoreTimestampsFile.TabIndex = 0;
+            this.chkIgnoreTimestampsFile.Text = "Ignore timestamps";
+            this.toolTip1.SetToolTip(this.chkIgnoreTimestampsFile, "If checked, editing timestamps are not serialized into the .json files");
+            this.chkIgnoreTimestampsFile.UseVisualStyleBackColor = true;
             // 
             // PreferencesForm
             // 
@@ -485,6 +567,9 @@
             this.tabPage3.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.tabPage5.ResumeLayout(false);
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -519,5 +604,11 @@
         private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox chkPrefixFiles;
+        private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.CheckBox chkSplitMultilineFile;
+        private System.Windows.Forms.CheckBox chkIgnoreInfPropsFile;
+        private System.Windows.Forms.CheckBox chkIgnoreInfObjectsFile;
+        private System.Windows.Forms.CheckBox chkIgnoreTimestampsFile;
     }
 }
