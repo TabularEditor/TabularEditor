@@ -793,14 +793,20 @@ namespace System.Linq.Dynamic
         static readonly string keywordIif = "iif";
         static readonly string keywordNew = "new";
         static readonly string keywordOuterIt = "outerIt";
+        static readonly string keywordCurrent = "current";
 
         static Dictionary<string, object> keywords;
 
         Dictionary<string, object> symbols;
         IDictionary<string, object> externals;
         Dictionary<Expression, string> literals;
-        ParameterExpression it;
-        ParameterExpression outerIt;
+
+        Stack<ParameterExpression> itStack = new Stack<ParameterExpression>();
+        ParameterExpression current;
+        ParameterExpression it { get { return itStack.Peek(); } }
+        ParameterExpression outerIt { get { return itStack.ElementAtOrDefault(1); } }
+        //ParameterExpression it;
+        //ParameterExpression outerIt;
 
         string text;
         int textPos;
@@ -820,6 +826,7 @@ namespace System.Linq.Dynamic
             textLen = text.Length;
             SetTextPos(0);
             NextToken();
+
         }
 
         void ProcessParameters(ParameterExpression[] parameters)
@@ -828,7 +835,10 @@ namespace System.Linq.Dynamic
                 if (!String.IsNullOrEmpty(pe.Name))
                     AddSymbol(pe.Name, pe);
             if (parameters.Length == 1 && String.IsNullOrEmpty(parameters[0].Name))
-                it = parameters[0];
+            {
+                current = parameters[0];
+                itStack.Push(current);
+            }
         }
 
         void ProcessValues(object[] values)
@@ -1260,6 +1270,7 @@ namespace System.Linq.Dynamic
             if (keywords.TryGetValue(token.text, out value))
             {
                 if (value is Type) return ParseTypeAccess((Type)value);
+                if (value == (object)keywordCurrent) return ParseCurrent();
                 if (value == (object)keywordIt) return ParseIt();
                 if (value == (object)keywordOuterIt) return ParseOuterIt();
                 if (value == (object)keywordIif) return ParseIif();
@@ -1293,6 +1304,14 @@ namespace System.Linq.Dynamic
                 throw ParseError(Res.NoItInScope);
             NextToken();
             return it;
+        }
+
+        Expression ParseCurrent()
+        {
+            if (current == null)
+                throw ParseError(Res.NoItInScope);
+            NextToken();
+            return current;
         }
 
         Expression ParseOuterIt()
@@ -1503,13 +1522,28 @@ namespace System.Linq.Dynamic
             return null;
         }
 
+        // do@kapacity.dk - 2017-05-02 - There's a bug here when parsing expressions with nested aggregates.
+        // We need a stack of references to the "it" object, so that we can properly obtain the base "it",
+        // once we're outside of the stack.
+        //
+        // For example, an expression such as this (iterated over a collection of Columns):
+        //
+        //    Table.Hierarchies.Any(Levels.Any(Column.Name = "xxx")) and IsHidden = false
+        //
+        // is translated into:
+        //
+        // {Param_0 => (Param_0.Table.Hierarchies.Any(Param_1 => Param_1.Levels.Any(Param_2 => (Param_2.Column == Param_0))) AndAlso (Param_1.IsHidden == False))}
+        //                                                                                                                            ^^^^^^^
+        // 
+        // The underlined Param_1 reference should refer to the outer object (Param_0).
+
         Expression ParseAggregate(Expression instance, Type elementType, string methodName, int errorPos)
         {
-            outerIt = it;
             ParameterExpression innerIt = Expression.Parameter(elementType, "");
-            it = innerIt;
+            itStack.Push(innerIt);
+            //it = innerIt;
             Expression[] args = ParseArgumentList();
-            it = outerIt;
+            //it = outerIt;
             MethodBase signature;
             if (FindMethod(typeof(IEnumerableSignatures), methodName, false, args, out signature) != 1)
                 throw ParseError(errorPos, Res.NoApplicableAggregate, methodName);
@@ -1535,6 +1569,8 @@ namespace System.Linq.Dynamic
                 else
                     args = new Expression[] { instance, Expression.Lambda(args[0], innerIt) };
             }
+
+            itStack.Pop();
 
             return Expression.Call(typeof(Enumerable), signature.Name, typeArgs, args);
         }
@@ -2436,6 +2472,7 @@ namespace System.Linq.Dynamic
             d.Add("null", nullLiteral);
             d.Add(keywordIt, keywordIt);
             d.Add(keywordOuterIt, keywordOuterIt);
+            d.Add(keywordCurrent, keywordCurrent);
             d.Add(keywordIif, keywordIif);
             d.Add(keywordNew, keywordNew);
             foreach (Type type in predefinedTypes) d.Add(type.Name, type);
