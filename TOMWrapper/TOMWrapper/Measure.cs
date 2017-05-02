@@ -120,6 +120,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+#if CL1400
         [DisplayName("Detail Rows Expression")]
         [Category("Options"), IntelliSense("A DAX expression specifying detail rows for this measure (drill-through in client tools).")]
         [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
@@ -148,6 +149,7 @@ namespace TabularEditor.TOMWrapper
                 OnPropertyChanged("DetailRowsExpression", oldValue, value);
             }
         }
+#endif
 
         public bool Editable(string propertyName)
         {

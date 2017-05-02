@@ -76,14 +76,9 @@ namespace TabularEditor.TOMWrapper
             base.Undelete(collection);
         }
 
+#if CL1400
         [Category("Options")]
         public VariationCollection Variations { get; private set; }
-
-        protected override void Init()
-        {
-            InPerspective = new PerspectiveColumnIndexer(this);
-            Variations = new VariationCollection("Variations", MetadataObject.Variations, this);
-        }
 
         [Browsable(true), DisplayName("Object Level Security"), Category("Security")]
         public ColumnOLSIndexer ObjectLevelSecurity { get; private set; }
@@ -91,6 +86,15 @@ namespace TabularEditor.TOMWrapper
         public void InitOLSIndexer()
         {
             ObjectLevelSecurity = new ColumnOLSIndexer(this);
+        }
+#endif
+        
+        protected override void Init()
+        {
+            InPerspective = new PerspectiveColumnIndexer(this);
+#if CL1400
+            Variations = new VariationCollection("Variations", MetadataObject.Variations, this);
+#endif
         }
 
         protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)

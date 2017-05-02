@@ -14,13 +14,17 @@ namespace TabularEditor.TOMWrapper
         [Browsable(true), DisplayName("Row Level Filters"), Category("Security")]
         public RoleRLSIndexer RowLevelSecurity { get; private set; }
 
+#if CL1400
         [Browsable(true), DisplayName("Metadata Permissions"), Category("Security")]
         public RolePermissionIndexer MetadataPermission { get; private set; }
+#endif
 
         public void InitRLSIndexer()
         {
             RowLevelSecurity = new RoleRLSIndexer(this);
+#if CL1400            
             MetadataPermission = new RolePermissionIndexer(this);
+#endif
         }
 
         /*public override TabularNamedObject Clone(string newName, bool includeTranslations)

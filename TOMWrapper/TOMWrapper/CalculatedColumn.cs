@@ -35,7 +35,10 @@ namespace TabularEditor.TOMWrapper
             tom.Name = table.Columns.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
             var c = new CalculatedColumn(tom);
             table.Columns.Add(c);
+
+#if CL1400
             c.InitOLSIndexer();
+#endif
 
             if (includeTranslations)
             {

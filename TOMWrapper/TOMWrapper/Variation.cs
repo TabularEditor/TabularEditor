@@ -8,6 +8,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
+#if CL1400
     public partial class Variation: IDynamicPropertyObject
     {
 
@@ -57,4 +58,5 @@ namespace TabularEditor.TOMWrapper
 
         }
     }
+#endif
 }

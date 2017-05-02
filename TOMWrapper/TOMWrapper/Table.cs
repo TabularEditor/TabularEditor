@@ -38,7 +38,6 @@ namespace TabularEditor.TOMWrapper
             if (!string.IsNullOrEmpty(name)) column.Name = name;
             if (!string.IsNullOrEmpty(expression)) column.Expression = expression;
             if (!string.IsNullOrEmpty(displayFolder)) column.DisplayFolder = displayFolder;
-            column.InitOLSIndexer();
             Handler.EndUpdate();
             return column;
         }
@@ -52,7 +51,6 @@ namespace TabularEditor.TOMWrapper
             if (!string.IsNullOrEmpty(name)) column.Name = name;
             if (!string.IsNullOrEmpty(sourceColumn)) column.SourceColumn = sourceColumn;
             if (!string.IsNullOrEmpty(displayFolder)) column.DisplayFolder = displayFolder;
-            column.InitOLSIndexer();
             Handler.EndUpdate();
             return column;
         }
@@ -196,8 +194,11 @@ namespace TabularEditor.TOMWrapper
             {
                 case "Source":
                 case "Partitions":
+#if CL1400
                     return SourceType == TOM.PartitionSourceType.Query || SourceType == TOM.PartitionSourceType.M;
-
+#else
+                    return SourceType == TOM.PartitionSourceType.Query;
+#endif
                 // Compatibility Level 1400-specific properties:
                 case "DefaultDetailRowsExpression":
                 case "ShowAsVariationsOnly":
@@ -266,8 +267,6 @@ namespace TabularEditor.TOMWrapper
             Measures = new MeasureCollection(this.GetObjectPath() + ".Measures", MetadataObject.Measures, this);
             Hierarchies = new HierarchyCollection(this.GetObjectPath() + ".Hierarchies", MetadataObject.Hierarchies, this);
             Partitions = new PartitionCollection(this.GetObjectPath() + ".Partitions", MetadataObject.Partitions, this);
-
-            if(Model.Database.CompatibilityLevel >= 1400) Columns.ForEach(c => c.InitOLSIndexer());
 
             Columns.CollectionChanged += Children_CollectionChanged;
             Measures.CollectionChanged += Children_CollectionChanged;
@@ -345,6 +344,7 @@ namespace TabularEditor.TOMWrapper
             '[', ']', '{', '}', '<', '>'
         };
 
+#if CL1400
         [DisplayName("Default Detail Rows Expression")]
         [Category("Options"), IntelliSense("A DAX expression specifying default detail rows for this table (drill-through in client tools).")]
         [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
@@ -373,7 +373,7 @@ namespace TabularEditor.TOMWrapper
                 OnPropertyChanged("DefaultDetailRowsExpression", oldValue, value);
             }
         }
-
+#endif
     }
 
     public static class TableExtension

@@ -114,28 +114,6 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         [Browsable(true),DisplayName("Display Folders"),Category("Translations and Perspectives")]
 	    public TranslationIndexer TranslatedDisplayFolders { private set; get; }
-        /// <summary>
-        /// Gets or sets the HideMembers of the Hierarchy.
-        /// </summary>
-		[DisplayName("Hide Members")]
-		[Category("Other"),IntelliSense("The Hide Members of this Hierarchy.")]
-		public TOM.HierarchyHideMembersType HideMembers {
-			get {
-			    return MetadataObject.HideMembers;
-			}
-			set {
-				var oldValue = HideMembers;
-				if (oldValue == value) return;
-				bool undoable = true;
-				bool cancel = false;
-				OnPropertyChanging("HideMembers", value, ref undoable, ref cancel);
-				if (cancel) return;
-				MetadataObject.HideMembers = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "HideMembers", oldValue, value));
-				OnPropertyChanged("HideMembers", oldValue, value);
-			}
-		}
-		private bool ShouldSerializeHideMembers() { return false; }
 		[Browsable(false)]
 		public Table Table
 		{ 
@@ -259,15 +237,6 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("DisplayFolder"));
 				this.ToList().ForEach(item => { item.DisplayFolder = value; });
-				Handler.UndoManager.EndBatch();
-			}
-		}
-		[Description("Sets the HideMembers property of all objects in the collection at once.")]
-		public TOM.HierarchyHideMembersType HideMembers {
-			set {
-				if(Handler == null) return;
-				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("HideMembers"));
-				this.ToList().ForEach(item => { item.HideMembers = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}

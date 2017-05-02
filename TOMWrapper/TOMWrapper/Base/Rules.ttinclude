@@ -161,7 +161,9 @@ class Rules {
 			case "ShowAsVariationsOnly":
 				return "Options";
 			case "Column":
+#if CL1400
 				if(objectType == typeof(Variation)) return "Basic";
+#endif
 				return "Other";
 			case "IsDefault":
 			case "DefaultColumn":
@@ -228,6 +230,10 @@ class Rules {
 	// List of types to generate wrapper for:
 	public static readonly Dictionary<Type, string> ObjectTypes = new Dictionary<Type,string>()
 	{ 
+#if CL1400
+	   { typeof(StructuredDataSource), "DataSource" },
+       { typeof(Variation), "TabularNamedObject" },
+#endif
        { typeof(CalculatedColumn), "Column" },
        { typeof(CalculatedTableColumn), "Column" },
        { typeof(Column), "TabularNamedObject" },
@@ -247,14 +253,15 @@ class Rules {
        { typeof(ProviderDataSource), "DataSource" },
        { typeof(Relationship), "TabularNamedObject" },
        { typeof(SingleColumnRelationship), "Relationship" },
-       { typeof(StructuredDataSource), "DataSource" },
        { typeof(Table), "TabularNamedObject" },
-       { typeof(Variation), "TabularNamedObject" },
        { typeof(WindowsModelRoleMember), "ModelRoleMember" }
    };
 
    public static readonly Dictionary<Type, string> Collections = new Dictionary<Type,string>()
    {
+#if CL1400
+       { typeof(Variation), "Variations" },
+#endif
        { typeof(ModelRoleMember), "Members" },
        { typeof(ModelRole), "Roles" },
        { typeof(Table), "Tables" },
@@ -268,12 +275,14 @@ class Rules {
        { typeof(Perspective), "Perspectives" },
        { typeof(Culture), "Cultures" },
 	   { typeof(Relationship), "Relationships" },
-	   { typeof(DataSource), "DataSources" },
-       { typeof(Variation), "Variations" }
+	   { typeof(DataSource), "DataSources" }
    };
 
    public static readonly Dictionary<Type, string> CollectionParent = new Dictionary<Type,string>()
    {
+#if CL1400
+       { typeof(Variation), "Column" },
+#endif
        { typeof(ModelRoleMember), "ModelRole" },
        { typeof(ModelRole), "Model" },
        { typeof(Table), "Model" },
@@ -285,8 +294,7 @@ class Rules {
        { typeof(Perspective), "Model" },
        { typeof(Culture), "Model" },
 	   { typeof(Relationship), "Model" },
-	   { typeof(DataSource), "Model" },
-       { typeof(Variation), "Column" }
+	   { typeof(DataSource), "Model" }
    };
 
    public static string GetParent(Type t) {

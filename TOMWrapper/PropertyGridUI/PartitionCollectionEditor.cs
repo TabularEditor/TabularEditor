@@ -17,6 +17,7 @@ namespace TabularEditor.PropertyGridUI
 
         protected override Type[] CreateNewItemTypes()
         {
+#if CL1400
             if (TabularModelHandler.Singleton.Model.Database.CompatibilityLevel >= 1400)
             {
                 if (TabularModelHandler.Singleton.Model.DataSources.Any(ds => ds.Type == TOM.DataSourceType.Provider))
@@ -26,6 +27,9 @@ namespace TabularEditor.PropertyGridUI
             }
             else
                 return base.CreateNewItemTypes();
+#else
+            return base.CreateNewItemTypes();
+#endif
         }
     }
 }

@@ -8,6 +8,8 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
+
+#if CL1400
     /// <summary>
     /// The RolePermissionIndexer is used to browse all metadata permissions across all
     /// tables in the model, for one specific role.
@@ -155,4 +157,6 @@ namespace TabularEditor.TOMWrapper
             return key;
         }
     }
+
+#endif
 }

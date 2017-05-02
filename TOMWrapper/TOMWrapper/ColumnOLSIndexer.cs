@@ -8,6 +8,9 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
+
+#if CL1400
+
     /// <summary>
     /// The ColumnOLSIndexer is used to browse all filters defined on one specific table, across
     /// all roles in the model. This is in contrast to the RoleOLSIndexer, which browses the
@@ -175,4 +178,6 @@ namespace TabularEditor.TOMWrapper
             return key;
         }
     }
+
+#endif
 }

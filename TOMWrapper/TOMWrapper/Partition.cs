@@ -51,8 +51,10 @@ namespace TabularEditor.TOMWrapper
                         return (MetadataObject.Source as TOM.CalculatedPartitionSource)?.Expression;
                     case TOM.PartitionSourceType.Query:
                         return (MetadataObject.Source as TOM.QueryPartitionSource)?.Query;
+#if CL1400
                     case TOM.PartitionSourceType.M:
                         return (MetadataObject.Source as TOM.MPartitionSource)?.Expression;
+#endif
                 }
                 throw new NotSupportedException();
             }
@@ -73,8 +75,10 @@ namespace TabularEditor.TOMWrapper
                             (MetadataObject.Source as TOM.CalculatedPartitionSource).Expression = value; break;
                         case TOM.PartitionSourceType.Query:
                             (MetadataObject.Source as TOM.QueryPartitionSource).Query = value; break;
+#if CL1400
                         case TOM.PartitionSourceType.M:
                             (MetadataObject.Source as TOM.MPartitionSource).Expression = value; break;
+#endif
                     }
                     (MetadataObject.Source as TOM.CalculatedPartitionSource).Expression = value;
 
@@ -122,7 +126,11 @@ namespace TabularEditor.TOMWrapper
                 case "Query":
                     return SourceType == TOM.PartitionSourceType.Query;
                 case "Expression":
+#if CL1400
                     return SourceType == TOM.PartitionSourceType.Calculated || SourceType == TOM.PartitionSourceType.M;
+#else
+                    return SourceType == TOM.PartitionSourceType.Calculated;
+#endif
                 case "Mode":
                 case "Description":
                 case "Name":
@@ -167,6 +175,7 @@ namespace TabularEditor.TOMWrapper
         }
     }
 
+#if CL1400
     public class MPartition: Partition
     {
         public MPartition() : base(new TOM.Partition() { Source = new TOM.MPartitionSource() })
@@ -174,4 +183,5 @@ namespace TabularEditor.TOMWrapper
 
         }
     }
+#endif
 }
