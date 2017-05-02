@@ -58,5 +58,28 @@ namespace TabularEditor.TOMWrapper
             base.Delete();
         }
 
+        [Category("Security")]
+        [Description("Specify domain/usernames of the members in this role. One member per line.")]
+        [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        public string Members
+        {
+            get
+            {
+                return string.Join("\n", MetadataObject.Members.Select(m => m.MemberName));
+            }
+            set
+            {
+                if (MetadataObject.Members.Any(m => m is TOM.ExternalModelRoleMember))
+                    throw new InvalidOperationException("This role uses External Role Members. These role members are not supported in this version of Tabular Editor.");
+                if (Members == value) return;
+
+                Handler.UndoManager.Add(new UndoFramework.UndoPropertyChangedAction(this, "Members", Members, value));
+                MetadataObject.Members.Clear();
+                foreach (var member in value.Split('\n'))
+                {
+                    MetadataObject.Members.Add(new TOM.WindowsModelRoleMember() { MemberName = member });
+                }
+            }
+        }
     }
 }
