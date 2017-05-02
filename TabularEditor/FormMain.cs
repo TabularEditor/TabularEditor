@@ -373,8 +373,8 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void actSave_UpdateEx(object sender, UpdateExEventArgs e)
         {
             if (UI.Handler == null) return;
-            actSave.Text = UI.Handler.IsConnected ? "Save DB" : "Save Model.bim";
-            actSave.ToolTipText = UI.Handler.IsConnected ? "Saves the changes to the connected database" : "Saves the changes back to the Model.bim file";
+            actSave.Text = UI.Handler.IsConnected ? "Save changes" : "Save .bim file";
+            actSave.ToolTipText = UI.Handler.IsConnected ? "Saves the changes to the connected database" : "Saves the changes back to the currently loaded .bim file";
         }
 
         private void tvModel_Click(object sender, EventArgs e)
@@ -447,5 +447,20 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         }
 
         private BPAForm BPAForm = new BPAForm();
+
+        private void CanComment(object sender, EventArgs e)
+        {
+            (sender as Crad.Windows.Forms.Actions.Action).Enabled = txtExpression.Focused && txtExpression.Text != "";
+        }
+
+        private void actComment_Execute(object sender, EventArgs e)
+        {
+            txtExpression.InsertLinePrefix("//");
+        }
+
+        private void actUncomment_Execute(object sender, EventArgs e)
+        {
+            txtExpression.RemoveLinePrefix("//");
+        }
     }
 }

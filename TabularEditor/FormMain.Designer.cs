@@ -62,6 +62,8 @@
             this.actCopy = new TabularEditor.UI.Actions.CopyAction();
             this.actPaste = new TabularEditor.UI.Actions.PasteAction();
             this.actSelectAll = new TabularEditor.UI.Actions.SelectAllAction();
+            this.actComment = new Crad.Windows.Forms.Actions.Action();
+            this.actUncomment = new Crad.Windows.Forms.Actions.Action();
             this.toolStripButton8 = new System.Windows.Forms.ToolStripButton();
             this.fileToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.fromDBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -105,6 +107,10 @@
             this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tbShowAllObjectTypes = new System.Windows.Forms.ToolStripButton();
             this.showAllObjectTypesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbSortAlphabetically = new System.Windows.Forms.ToolStripButton();
+            this.sortAlphabeticalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -131,7 +137,6 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.txtFilter = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
-            this.tbSortAlphabetically = new System.Windows.Forms.ToolStripButton();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -140,6 +145,7 @@
             this.toolStrip3 = new System.Windows.Forms.ToolStrip();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.txtAdvanced = new FastColoredTextBoxNS.FastColoredTextBox();
             this.toolStrip4 = new System.Windows.Forms.ToolStrip();
@@ -189,7 +195,6 @@
             this._dataType = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this._description = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.treeColumn1 = new Aga.Controls.Tree.TreeColumn();
-            this.sortAlphabeticalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             actionsMain = new Crad.Windows.Forms.Actions.ActionList();
             ((System.ComponentModel.ISupportInitialize)(actionsMain)).BeginInit();
             this.toolStrip2.SuspendLayout();
@@ -246,6 +251,8 @@
             actionsMain.Actions.Add(this.actCopy);
             actionsMain.Actions.Add(this.actPaste);
             actionsMain.Actions.Add(this.actSelectAll);
+            actionsMain.Actions.Add(this.actComment);
+            actionsMain.Actions.Add(this.actUncomment);
             actionsMain.ContainerControl = this;
             // 
             // actToggleDisplayFolders
@@ -378,7 +385,7 @@
             // 
             this.actSave.Image = global::TabularEditor.Resources.Save;
             this.actSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.actSave.Text = "Save Model.bim";
+            this.actSave.Text = "Save .bim file";
             this.actSave.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.actSave_UpdateEx);
             this.actSave.Execute += new System.EventHandler(this.actSave_Execute);
             // 
@@ -497,6 +504,22 @@
             this.actSelectAll.Text = "Select &All";
             this.actSelectAll.ToolTipText = "Select All";
             // 
+            // actComment
+            // 
+            this.actComment.Image = global::TabularEditor.Resources.CommentCode_16x;
+            this.actComment.Text = "Comment lines";
+            this.actComment.ToolTipText = "Comment the selected lines";
+            this.actComment.Execute += new System.EventHandler(this.actComment_Execute);
+            this.actComment.Update += new System.EventHandler(this.CanComment);
+            // 
+            // actUncomment
+            // 
+            this.actUncomment.Image = global::TabularEditor.Resources.UncommentCode_16x;
+            this.actUncomment.Text = "Uncomment Lines";
+            this.actUncomment.ToolTipText = "Uncomment the selected lines";
+            this.actUncomment.Execute += new System.EventHandler(this.actUncomment_Execute);
+            this.actUncomment.Update += new System.EventHandler(this.CanComment);
+            // 
             // toolStripButton8
             // 
             actionsMain.SetAction(this.toolStripButton8, this.actOpenFile);
@@ -534,9 +557,10 @@
             // exitToolStripMenuItem
             // 
             actionsMain.SetAction(this.exitToolStripMenuItem, this.actExit);
+            this.exitToolStripMenuItem.AutoToolTip = true;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             // 
             // btnConnect
@@ -658,36 +682,34 @@
             // btnSave
             // 
             actionsMain.SetAction(this.btnSave, this.actSave);
-            this.btnSave.AutoToolTip = false;
             this.btnSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnSave.Image = global::TabularEditor.Resources.Save;
             this.btnSave.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(23, 22);
-            this.btnSave.Text = "Save Model.bim";
+            this.btnSave.Text = "Save .bim file";
             // 
             // saveToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveToolStripMenuItem, this.actSave);
-            this.saveToolStripMenuItem.AutoToolTip = true;
             this.saveToolStripMenuItem.Image = global::TabularEditor.Resources.Save;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+S";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.saveToolStripMenuItem.Text = "Save Model.bim";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.saveToolStripMenuItem.Text = "Save .bim file";
             // 
             // saveAsToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveAsToolStripMenuItem, this.actSaveAs);
-            this.saveAsToolStripMenuItem.AutoToolTip = true;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.saveAsToolStripMenuItem.Text = "Save As...";
             // 
             // undoToolStripMenuItem
             // 
             actionsMain.SetAction(this.undoToolStripMenuItem, this.actUndo);
+            this.undoToolStripMenuItem.AutoToolTip = true;
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Z";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
@@ -697,6 +719,7 @@
             // redoToolStripMenuItem
             // 
             actionsMain.SetAction(this.redoToolStripMenuItem, this.actRedo);
+            this.redoToolStripMenuItem.AutoToolTip = true;
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Y";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
@@ -790,6 +813,7 @@
             // expandAllToolStripMenuItem
             // 
             actionsMain.SetAction(this.expandAllToolStripMenuItem, this.actExpandAll);
+            this.expandAllToolStripMenuItem.AutoToolTip = true;
             this.expandAllToolStripMenuItem.Image = global::TabularEditor.Resources.ExpandAll;
             this.expandAllToolStripMenuItem.Name = "expandAllToolStripMenuItem";
             this.expandAllToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
@@ -798,6 +822,7 @@
             // collapseAllToolStripMenuItem
             // 
             actionsMain.SetAction(this.collapseAllToolStripMenuItem, this.actCollapseAll);
+            this.collapseAllToolStripMenuItem.AutoToolTip = true;
             this.collapseAllToolStripMenuItem.Image = global::TabularEditor.Resources.CollapseAll;
             this.collapseAllToolStripMenuItem.Name = "collapseAllToolStripMenuItem";
             this.collapseAllToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
@@ -830,6 +855,7 @@
             // btnFind
             // 
             actionsMain.SetAction(this.btnFind, this.actFind);
+            this.btnFind.AutoToolTip = false;
             this.btnFind.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnFind.Image = global::TabularEditor.Resources.Find;
             this.btnFind.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -840,6 +866,7 @@
             // btnReplace
             // 
             actionsMain.SetAction(this.btnReplace, this.actReplace);
+            this.btnReplace.AutoToolTip = false;
             this.btnReplace.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnReplace.Image = global::TabularEditor.Resources.Replace;
             this.btnReplace.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -850,6 +877,7 @@
             // findToolStripMenuItem
             // 
             actionsMain.SetAction(this.findToolStripMenuItem, this.actFind);
+            this.findToolStripMenuItem.AutoToolTip = true;
             this.findToolStripMenuItem.Image = global::TabularEditor.Resources.Find;
             this.findToolStripMenuItem.Name = "findToolStripMenuItem";
             this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
@@ -859,6 +887,7 @@
             // replaceToolStripMenuItem
             // 
             actionsMain.SetAction(this.replaceToolStripMenuItem, this.actReplace);
+            this.replaceToolStripMenuItem.AutoToolTip = true;
             this.replaceToolStripMenuItem.Image = global::TabularEditor.Resources.Replace;
             this.replaceToolStripMenuItem.Name = "replaceToolStripMenuItem";
             this.replaceToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.H)));
@@ -889,7 +918,6 @@
             // btnRun
             // 
             actionsMain.SetAction(this.btnRun, this.actExecuteScript);
-            this.btnRun.AutoToolTip = false;
             this.btnRun.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnRun.Image = global::TabularEditor.Resources.Run;
             this.btnRun.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -909,6 +937,7 @@
             // btnSaveCustomAction
             // 
             actionsMain.SetAction(this.btnSaveCustomAction, this.actSaveCustomAction);
+            this.btnSaveCustomAction.AutoToolTip = false;
             this.btnSaveCustomAction.Image = global::TabularEditor.Resources.action_add_16xLG;
             this.btnSaveCustomAction.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSaveCustomAction.Name = "btnSaveCustomAction";
@@ -985,10 +1014,63 @@
             this.showAllObjectTypesToolStripMenuItem.ToolTipText = "Show/hide all object types (perspectives, roles, data sources, etc.) in addition " +
     "to tables";
             // 
+            // tbSortAlphabetically
+            // 
+            actionsMain.SetAction(this.tbSortAlphabetically, this.actToggleMetadataOrder);
+            this.tbSortAlphabetically.AutoToolTip = false;
+            this.tbSortAlphabetically.Checked = true;
+            this.tbSortAlphabetically.CheckOnClick = true;
+            this.tbSortAlphabetically.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.tbSortAlphabetically.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbSortAlphabetically.Enabled = false;
+            this.tbSortAlphabetically.Image = global::TabularEditor.Resources.SortAscending_16x;
+            this.tbSortAlphabetically.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbSortAlphabetically.Name = "tbSortAlphabetically";
+            this.tbSortAlphabetically.Size = new System.Drawing.Size(23, 22);
+            this.tbSortAlphabetically.Text = "Sort alphabetically";
+            this.tbSortAlphabetically.ToolTipText = "Toggle alphabetical/metadata ordering of items";
+            // 
+            // sortAlphabeticalToolStripMenuItem
+            // 
+            actionsMain.SetAction(this.sortAlphabeticalToolStripMenuItem, this.actToggleMetadataOrder);
+            this.sortAlphabeticalToolStripMenuItem.Checked = true;
+            this.sortAlphabeticalToolStripMenuItem.CheckOnClick = true;
+            this.sortAlphabeticalToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.sortAlphabeticalToolStripMenuItem.Enabled = false;
+            this.sortAlphabeticalToolStripMenuItem.Image = global::TabularEditor.Resources.SortAscending_16x;
+            this.sortAlphabeticalToolStripMenuItem.Name = "sortAlphabeticalToolStripMenuItem";
+            this.sortAlphabeticalToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
+            this.sortAlphabeticalToolStripMenuItem.Text = "Sort alphabetically";
+            this.sortAlphabeticalToolStripMenuItem.ToolTipText = "Toggle alphabetical/metadata ordering of items";
+            // 
+            // toolStripButton1
+            // 
+            actionsMain.SetAction(this.toolStripButton1, this.actComment);
+            this.toolStripButton1.AutoToolTip = false;
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton1.Image = global::TabularEditor.Resources.CommentCode_16x;
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton1.Text = "Comment lines";
+            this.toolStripButton1.ToolTipText = "Comment the selected lines";
+            // 
+            // toolStripButton2
+            // 
+            actionsMain.SetAction(this.toolStripButton2, this.actUncomment);
+            this.toolStripButton2.AutoToolTip = false;
+            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton2.Image = global::TabularEditor.Resources.UncommentCode_16x;
+            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton2.Name = "toolStripButton2";
+            this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton2.Text = "Uncomment Lines";
+            this.toolStripButton2.ToolTipText = "Uncomment the selected lines";
+            // 
             // preferencesToolStripMenuItem
             // 
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
-            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.preferencesToolStripMenuItem.Text = "Preferences...";
             this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
             // 
@@ -1222,22 +1304,6 @@
             this.toolStripSeparator6.Name = "toolStripSeparator6";
             this.toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
             // 
-            // tbSortAlphabetically
-            // 
-            actionsMain.SetAction(this.tbSortAlphabetically, this.actToggleMetadataOrder);
-            this.tbSortAlphabetically.AutoToolTip = false;
-            this.tbSortAlphabetically.Checked = true;
-            this.tbSortAlphabetically.CheckOnClick = true;
-            this.tbSortAlphabetically.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.tbSortAlphabetically.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tbSortAlphabetically.Enabled = false;
-            this.tbSortAlphabetically.Image = global::TabularEditor.Resources.SortAscending_16x;
-            this.tbSortAlphabetically.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbSortAlphabetically.Name = "tbSortAlphabetically";
-            this.tbSortAlphabetically.Size = new System.Drawing.Size(23, 22);
-            this.tbSortAlphabetically.Text = "Sort alphabetically";
-            this.tbSortAlphabetically.ToolTipText = "Toggle alphabetical/metadata ordering of items";
-            // 
             // splitContainer2
             // 
             this.splitContainer2.BackColor = System.Drawing.SystemColors.Control;
@@ -1338,7 +1404,10 @@
             this.btnFormatDAX,
             this.toolStripSeparator8,
             this.btnFind,
-            this.btnReplace});
+            this.btnReplace,
+            this.toolStripSeparator13,
+            this.toolStripButton1,
+            this.toolStripButton2});
             this.toolStrip3.Location = new System.Drawing.Point(3, 3);
             this.toolStrip3.Name = "toolStrip3";
             this.toolStrip3.Size = new System.Drawing.Size(606, 25);
@@ -1354,6 +1423,11 @@
             // 
             this.toolStripSeparator8.Name = "toolStripSeparator8";
             this.toolStripSeparator8.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripSeparator13
+            // 
+            this.toolStripSeparator13.Name = "toolStripSeparator13";
+            this.toolStripSeparator13.Size = new System.Drawing.Size(6, 25);
             // 
             // tabPage2
             // 
@@ -1391,7 +1465,6 @@
             this.txtAdvanced.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtAdvanced.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
             this.txtAdvanced.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtAdvanced.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtAdvanced.IsReplaceMode = false;
             this.txtAdvanced.Language = FastColoredTextBoxNS.Language.CSharp;
             this.txtAdvanced.LeftBracket = '(';
@@ -1568,7 +1641,7 @@
             this.fromDBToolStripMenuItem,
             this.fromFolderToolStripMenuItem});
             this.openToolStripMenuItem1.Name = "openToolStripMenuItem1";
-            this.openToolStripMenuItem1.Size = new System.Drawing.Size(199, 22);
+            this.openToolStripMenuItem1.Size = new System.Drawing.Size(184, 22);
             this.openToolStripMenuItem1.Text = "Open";
             // 
             // fromFolderToolStripMenuItem
@@ -1581,35 +1654,35 @@
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(196, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(181, 6);
             // 
             // saveToFolderToolStripMenuItem
             // 
             this.saveToFolderToolStripMenuItem.Name = "saveToFolderToolStripMenuItem";
-            this.saveToFolderToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.saveToFolderToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.saveToFolderToolStripMenuItem.Text = "Save to Folder...";
             this.saveToFolderToolStripMenuItem.Click += new System.EventHandler(this.saveToFolderToolStripMenuItem_Click);
             // 
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(196, 6);
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(181, 6);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(196, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(181, 6);
             // 
             // recentFilesToolStripMenuItem
             // 
             this.recentFilesToolStripMenuItem.Name = "recentFilesToolStripMenuItem";
-            this.recentFilesToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.recentFilesToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.recentFilesToolStripMenuItem.Text = "Recent Files";
             // 
             // toolStripSeparator12
             // 
             this.toolStripSeparator12.Name = "toolStripSeparator12";
-            this.toolStripSeparator12.Size = new System.Drawing.Size(196, 6);
+            this.toolStripSeparator12.Size = new System.Drawing.Size(181, 6);
             // 
             // editToolStripMenuItem
             // 
@@ -1832,19 +1905,6 @@
             this.treeColumn1.SortOrder = System.Windows.Forms.SortOrder.None;
             this.treeColumn1.TooltipText = null;
             // 
-            // sortAlphabeticalToolStripMenuItem
-            // 
-            actionsMain.SetAction(this.sortAlphabeticalToolStripMenuItem, this.actToggleMetadataOrder);
-            this.sortAlphabeticalToolStripMenuItem.Checked = true;
-            this.sortAlphabeticalToolStripMenuItem.CheckOnClick = true;
-            this.sortAlphabeticalToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.sortAlphabeticalToolStripMenuItem.Enabled = false;
-            this.sortAlphabeticalToolStripMenuItem.Image = global::TabularEditor.Resources.SortAscending_16x;
-            this.sortAlphabeticalToolStripMenuItem.Name = "sortAlphabeticalToolStripMenuItem";
-            this.sortAlphabeticalToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
-            this.sortAlphabeticalToolStripMenuItem.Text = "Sort alphabetically";
-            this.sortAlphabeticalToolStripMenuItem.ToolTipText = "Toggle alphabetical/metadata ordering of items";
-            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2056,6 +2116,11 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator12;
         private System.Windows.Forms.ToolStripButton tbSortAlphabetically;
         private System.Windows.Forms.ToolStripMenuItem sortAlphabeticalToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator13;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private System.Windows.Forms.ToolStripButton toolStripButton2;
+        private Crad.Windows.Forms.Actions.Action actComment;
+        private Crad.Windows.Forms.Actions.Action actUncomment;
     }
 }
 
