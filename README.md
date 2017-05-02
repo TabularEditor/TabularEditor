@@ -3,7 +3,7 @@ Tabular Editor is a tool that lets you easily manipulate and manage measures, ca
 
 ![](https://raw.githubusercontent.com/otykier/TabularEditor/master/Documentation/Main%20UI%202_1.png)
 
-* [Download Tabular Editor v. 2.3 for SQL Server 2016](https://github.com/otykier/TabularEditor/releases/tag/2.3.6327)
+* [Download Tabular Editor v. 2.3 for SQL Server 2016](https://github.com/otykier/TabularEditor/releases/tag/2.3.6330)
 * [Download Tabular Editor v. 2.3 for SQL Server 2017](https://github.com/otykier/TabularEditor/releases/tag/2.3.6327-CL1400)
 
 ### Prerequisites
@@ -28,7 +28,7 @@ View the article on www.kapacity.dk/tabular-editor for a general presentation of
 * **2017-01-31** [Version 2.2](https://github.com/otykier/TabularEditor/releases/tag/2.2.6260) released
 * **2017-02-20** Various bugfixes and improvements to [Version 2.2](https://github.com/otykier/TabularEditor/releases/tag/2.2.6260)
 * **2017-04-22** [Version 2.3](https://github.com/otykier/TabularEditor/releases/tag/2.3.6320) released with support for [SQL Server 2017](https://github.com/otykier/TabularEditor/releases/tag/2.3.6320-CL1400).
-* **2017-04-28** Various bugfixes and improvements to [Version 2.3](https://github.com/otykier/TabularEditor/releases/tag/2.3.6327).
+* **2017-05-01** Various bugfixes and improvements to [Version 2.3](https://github.com/otykier/TabularEditor/releases/tag/2.3.6330).
 
 ## Roadmap
 
