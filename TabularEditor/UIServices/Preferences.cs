@@ -21,6 +21,11 @@ namespace TabularEditor.UIServices
         public bool SaveToFolder_SplitMultilineStrings = true;
         public bool SaveToFolder_PrefixFiles = false;
 
+        public bool SaveToFile_IgnoreInferredObjects = true;
+        public bool SaveToFile_IgnoreInferredProperties = true;
+        public bool SaveToFile_IgnoreTimestamps = true;
+        public bool SaveToFile_SplitMultilineStrings = true;
+
         public HashSet<string> SaveToFolder_Levels = new HashSet<string>(); 
         #endregion
 
@@ -97,17 +102,29 @@ namespace TabularEditor.UIServices
 
     public static class PreferencesSerializerOptions
     {
-        static public TabularEditor.TOMWrapper.SerializeOptions GetSerializeOptions(this Preferences value)
+        static public TabularEditor.TOMWrapper.SerializeOptions GetSerializeOptions(this Preferences value, bool SaveToFolder)
         {
-            return new TOMWrapper.SerializeOptions
+            if (SaveToFolder)
             {
-                IgnoreInferredObjects = value.SaveToFolder_IgnoreInferredObjects,
-                IgnoreInferredProperties = value.SaveToFolder_IgnoreInferredProperties,
-                IgnoreTimestamps = value.SaveToFolder_IgnoreTimestamps,
-                SplitMultilineStrings = value.SaveToFolder_SplitMultilineStrings,
-                PrefixFilenames = value.SaveToFolder_PrefixFiles,
-                Levels = new HashSet<string>(value.SaveToFolder_Levels)
-            };
+                return new TOMWrapper.SerializeOptions
+                {
+                    IgnoreInferredObjects = value.SaveToFolder_IgnoreInferredObjects,
+                    IgnoreInferredProperties = value.SaveToFolder_IgnoreInferredProperties,
+                    IgnoreTimestamps = value.SaveToFolder_IgnoreTimestamps,
+                    SplitMultilineStrings = value.SaveToFolder_SplitMultilineStrings,
+                    PrefixFilenames = value.SaveToFolder_PrefixFiles,
+                    Levels = new HashSet<string>(value.SaveToFolder_Levels)
+                };
+            } else
+            {
+                return new TOMWrapper.SerializeOptions
+                {
+                    IgnoreInferredObjects = value.SaveToFile_IgnoreInferredObjects,
+                    IgnoreInferredProperties = value.SaveToFile_IgnoreInferredProperties,
+                    IgnoreTimestamps = value.SaveToFile_IgnoreTimestamps,
+                    SplitMultilineStrings = value.SaveToFile_SplitMultilineStrings
+                };
+            }
         }
     }
 }

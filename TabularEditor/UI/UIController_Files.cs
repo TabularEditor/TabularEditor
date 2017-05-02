@@ -81,7 +81,7 @@ namespace TabularEditor.UI
             if (res == DialogResult.OK)
             {
                 UI.StatusLabel.Text = "Saving...";
-                Handler.SaveFile(UI.SaveBimDialog.FileName);
+                Handler.SaveFile(UI.SaveBimDialog.FileName, Preferences.Current.GetSerializeOptions(false));
                 if (File_Current != null) File_Current = UI.SaveBimDialog.FileName;
                 UpdateUIText();
             }
@@ -95,7 +95,7 @@ namespace TabularEditor.UI
                 if(res == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
                 {
                     UI.StatusLabel.Text = "Saving...";
-                    Handler.SaveToFolder(fbd.SelectedPath, Preferences.Current.GetSerializeOptions());
+                    Handler.SaveToFolder(fbd.SelectedPath, Preferences.Current.GetSerializeOptions(true));
                     UpdateUIText();
                 }
             }
@@ -114,9 +114,9 @@ namespace TabularEditor.UI
                 try
                 {
                     if (Directory.Exists(File_Current))
-                        Handler.SaveToFolder(File_Current, Preferences.Current.GetSerializeOptions());
+                        Handler.SaveToFolder(File_Current, Preferences.Current.GetSerializeOptions(true));
                     else
-                        Handler.SaveFile(File_Current);
+                        Handler.SaveFile(File_Current, Preferences.Current.GetSerializeOptions(false));
                 }
                 catch (Exception e)
                 {

@@ -13,17 +13,17 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public HashSet<IExpressionObject> Dependants { get; private set; } = new HashSet<IExpressionObject>();
 
-        #region Convenient getters
-        [Browsable(false), IntelliSense("The hierarchies in which the current column appears as a level")]
-        public IEnumerable<Hierarchy> UsedInHierarchies
-        {
-            get
-            {
-                return Table.Hierarchies.Where(h => h.Levels.Any(l => l.Column == this));
-            }
+        #region Convenient collections
+        /// <summary>
+        /// Enumerates all hierarchies in which this column is used as a level.
+        /// </summary>
+        [Browsable(false)]
+        public IEnumerable<Hierarchy> UsedInHierarchies { get { return Table.Hierarchies.Where(h => h.Levels.Any(l => l.Column == this)); } }
 
-        }
-        [Browsable(false), IntelliSense("The relationships in which the current column participates")]
+        /// <summary>
+        /// Enumerates all relationships in which this column participates (either as <see cref="SingleColumnRelationship.FromColumn">FromColumn</see> or <see cref="SingleColumnRelationship.ToColumn">ToColumn</see>).
+        /// </summary>
+        [Browsable(false)]
         public IEnumerable<Relationship> UsedInRelationships { get { return Model.Relationships.Where(r => r.FromColumn == this || r.ToColumn == this); } }
         #endregion
 

@@ -28,6 +28,8 @@ namespace TabularEditor.UI.Dialogs
 
         private void SetModel(Model model)
         {
+            btnAdd.Enabled = model != null;
+            btnAnalyzeAll.Enabled = model != null;
             analyzer.Model = model;
         }
 
@@ -41,9 +43,9 @@ namespace TabularEditor.UI.Dialogs
             analyzer = new Analyzer();
             analyzer.CollectionChanged += Analyzer_CollectionChanged;
 
-            button1.Enabled = Model != null;
-            button2.Enabled = Model != null;
-            button3.Enabled = Model != null;
+            btnAnalyzeAll.Enabled = Model != null;
+            btnAdd.Enabled = Model != null;
+            btnEdit.Enabled = Model != null;
         }
 
         private void Analyzer_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -72,7 +74,7 @@ namespace TabularEditor.UI.Dialogs
 
         BPAEditorForm editor = new BPAEditorForm();
 
-        private void button1_Click_1(object sender, EventArgs e)
+        private void btnAnalyzeAll_Click(object sender, EventArgs e)
         {
             Analyze();
         }
@@ -123,8 +125,8 @@ namespace TabularEditor.UI.Dialogs
             btnMakeLocal.Text = item?.Group == lvgLocal ? "Make global" : "Make local";
             btnMakeLocal.Enabled = Model != null && item != null;
 
-            button3.Enabled = item != null;
-            button2.Enabled = Model != null;
+            btnEdit.Enabled = item != null;
+            btnAdd.Enabled = Model != null;
         }
 
         public void Analyze(IEnumerable<BestPracticeRule> rules)
@@ -248,7 +250,7 @@ namespace TabularEditor.UI.Dialogs
             MessageBox.Show("Fix script copied to clipboard!\n\nPaste into Advanced Script Editor for review.", "Fix script generation", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void btnAdd_Click(object sender, EventArgs e)
         {
             var newRule = editor.NewRule(analyzer.GetUniqueId("New Rule"));
             if (newRule != null)
@@ -258,7 +260,7 @@ namespace TabularEditor.UI.Dialogs
             }
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void btnEdit_Click(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count == 1)
             {

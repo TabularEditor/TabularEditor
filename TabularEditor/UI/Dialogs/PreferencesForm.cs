@@ -76,6 +76,11 @@ namespace TabularEditor.UI.Dialogs
             chkIgnoreInfProps.Checked = Preferences.Current.SaveToFolder_IgnoreInferredProperties;
             chkSplitMultiline.Checked = Preferences.Current.SaveToFolder_SplitMultilineStrings;
             chkPrefixFiles.Checked = Preferences.Current.SaveToFolder_PrefixFiles;
+
+            chkIgnoreTimestampsFile.Checked = Preferences.Current.SaveToFile_IgnoreTimestamps;
+            chkIgnoreInfObjectsFile.Checked = Preferences.Current.SaveToFile_IgnoreInferredObjects;
+            chkIgnoreInfPropsFile.Checked = Preferences.Current.SaveToFile_IgnoreInferredProperties;
+            chkSplitMultilineFile.Checked = Preferences.Current.SaveToFile_SplitMultilineStrings;
         }
 
         private void PreferencesForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -90,6 +95,10 @@ namespace TabularEditor.UI.Dialogs
                 Preferences.Current.SaveToFolder_IgnoreInferredProperties = chkIgnoreInfProps.Checked;
                 Preferences.Current.SaveToFolder_SplitMultilineStrings = chkSplitMultiline.Checked;
                 Preferences.Current.SaveToFolder_PrefixFiles = chkPrefixFiles.Checked;
+                Preferences.Current.SaveToFile_IgnoreTimestamps = chkIgnoreTimestampsFile.Checked;
+                Preferences.Current.SaveToFile_IgnoreInferredObjects = chkIgnoreInfObjectsFile.Checked;
+                Preferences.Current.SaveToFile_IgnoreInferredProperties = chkIgnoreInfPropsFile.Checked;
+                Preferences.Current.SaveToFile_SplitMultilineStrings = chkSplitMultilineFile.Checked;
 
                 Preferences.Current.SaveToFolder_Levels = new HashSet<string>();
                 SaveCheckedNodes(treeView1.Nodes, Preferences.Current.SaveToFolder_Levels);

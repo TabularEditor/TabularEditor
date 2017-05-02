@@ -74,7 +74,9 @@ namespace TabularEditor.UI
         public void LoadTabularModelToUI()
         {
             Handler.UndoManager.UndoStateChanged += UndoManager_UndoActionAdded;
-            
+
+            ExpressionEditor_CancelEdit();
+            ExpressionEditor_Current = null;
 
             ShowSelectionStatus = false;
             Tree = new TabularUITree(Handler.Model) { Options = Tree?.Options ?? LogicalTreeOptions.Default };

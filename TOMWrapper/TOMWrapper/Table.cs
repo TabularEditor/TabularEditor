@@ -79,6 +79,10 @@ namespace TabularEditor.TOMWrapper
         }
 
         #endregion
+        #region Convenient Collections
+        [Browsable(false)]
+        public IEnumerable<Level> AllLevels { get { return Hierarchies.SelectMany(h => h.Levels); } }
+        #endregion
 
         /*public override TabularNamedObject Clone(string newName = null, bool includeTranslations = false)
         {

@@ -74,6 +74,16 @@ namespace TabularEditor.TOMWrapper
             return role;
         }
         #endregion
+        #region Convenient Collections
+        [Browsable(false)]
+        public IEnumerable<Hierarchy> AllHierarchies { get { return Tables.SelectMany(t => t.Hierarchies); } }
+        [Browsable(false)]
+        public IEnumerable<Column> AllColumns { get { return Tables.SelectMany(t => t.Columns); } }
+        [Browsable(false)]
+        public IEnumerable<Measure> AllMeasures { get { return Tables.SelectMany(t => t.Measures); } }
+        [Browsable(false)]
+        public IEnumerable<Level> AllLevels { get { return Tables.SelectMany(t => t.Hierarchies).SelectMany(h => h.Levels); } }
+        #endregion
 
         [Browsable(false),IntelliSense("The collection of tables in this model.")]
         public TableCollection Tables { get; private set; }
