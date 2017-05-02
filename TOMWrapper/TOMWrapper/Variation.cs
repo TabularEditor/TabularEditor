@@ -52,7 +52,7 @@ namespace TabularEditor.TOMWrapper
             return true;
         }
 
-        public Variation() : base(TabularModelHandler.Singleton, new TOM.Variation() )
+        public Variation() : base(new TOM.Variation() )
         {
 
         }

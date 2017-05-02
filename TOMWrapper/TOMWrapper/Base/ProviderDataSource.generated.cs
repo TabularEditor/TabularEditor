@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for ProviderDataSource
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class ProviderDataSource: DataSource
+	public partial class ProviderDataSource: DataSource, IClonableObject
 	{
 	    protected internal new TOM.ProviderDataSource MetadataObject { get { return base.MetadataObject as TOM.ProviderDataSource; } internal set { base.MetadataObject = value; } }
 
@@ -200,11 +200,32 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new ProviderDataSource and adds it to the parent Model.
 		/// </summary>
-		public ProviderDataSource(Model parent) : base(new TOM.ProviderDataSource()) {
+		public ProviderDataSource(Model parent) : this(new TOM.ProviderDataSource()) {
 			MetadataObject.Name = parent.MetadataObject.DataSources.GetNewName("New ProviderDataSource");
 			parent.DataSources.Add(this);
-			Init();
 		}
+
+		
+		public ProviderDataSource() : this(TabularModelHandler.Singleton.Model) { }
+
+
+		public ProviderDataSource Clone(string newName = null) {
+		    Handler.BeginUpdate("Clone ProviderDataSource");
+
+				var tom = MetadataObject.Clone() as TOM.ProviderDataSource;
+				tom.Name = Parent.DataSources.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new ProviderDataSource(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
+			if (includeTranslations) throw new ArgumentException("This object does not support translations.", "includeTranslations");
+			return Clone(newName);
+		}
+
 	
         internal override void RenewMetadataObject()
         {
@@ -221,25 +242,13 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
 			}
 		}
-
-		public ProviderDataSource Clone(string newName = null) {
-		    Handler.BeginUpdate("Clone ProviderDataSource");
-
-				var tom = MetadataObject.Clone();
-				tom.Name = Parent.DataSources.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-				var obj = new ProviderDataSource(tom);
-
-            Handler.EndUpdate();
-
-            return obj;
-		}
-
 		
 		/// <summary>
 		/// Creates a ProviderDataSource object representing an existing TOM ProviderDataSource.
 		/// </summary>
 		internal ProviderDataSource(TOM.ProviderDataSource metadataObject) : base(metadataObject)
 		{
+			
 		}	
     }
 }

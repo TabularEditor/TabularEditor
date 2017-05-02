@@ -7,7 +7,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class Measure : ITabularPerspectiveObject, IDaxObject, IDynamicPropertyObject, IClonableObject
+    public partial class Measure : ITabularPerspectiveObject, IDaxObject, IDynamicPropertyObject
     {
         [Browsable(false)]
         public Dictionary<IDaxObject, List<Dependency>> Dependencies { get; internal set; } = new Dictionary<IDaxObject, List<Dependency>>();
@@ -36,7 +36,7 @@ namespace TabularEditor.TOMWrapper
 
             if (MetadataObject.KPI != null)
             {
-                new KPI(Handler, MetadataObject.KPI);
+                new KPI(MetadataObject.KPI);
             }
 
             base.Undelete(collection);
@@ -48,7 +48,7 @@ namespace TabularEditor.TOMWrapper
             var tom = MetadataObject.Clone();
             ////tom.IsRemoved = false;
             tom.Name = table.Measures.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-            var m = new Measure(Handler, tom);
+            var m = new Measure(tom);
             table.Measures.Add(m);
 
             if (includeTranslations)
@@ -67,14 +67,14 @@ namespace TabularEditor.TOMWrapper
             return m;
         }
 
-        public override TabularNamedObject Clone(string newName = null, bool includeTranslations = true)
+        /*public override TabularNamedObject Clone(string newName = null, bool includeTranslations = true)
         {
             return CloneTo(Table, newName, includeTranslations);
-        }
+        }*/
 
         protected override void Init()
         {
-            if (MetadataObject.KPI != null) new KPI(Handler, MetadataObject.KPI);
+            if (MetadataObject.KPI != null) new KPI(MetadataObject.KPI);
             InPerspective = new PerspectiveMeasureIndexer(this);
         }
 

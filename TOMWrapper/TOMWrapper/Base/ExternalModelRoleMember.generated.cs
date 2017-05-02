@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for ExternalModelRoleMember
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class ExternalModelRoleMember: ModelRoleMember
+	public partial class ExternalModelRoleMember: ModelRoleMember, IClonableObject
 	{
 	    protected internal new TOM.ExternalModelRoleMember MetadataObject { get { return base.MetadataObject as TOM.ExternalModelRoleMember; } internal set { base.MetadataObject = value; } }
 
@@ -68,11 +68,29 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new ExternalModelRoleMember and adds it to the parent ModelRole.
 		/// </summary>
-		public ExternalModelRoleMember(ModelRole parent) : base(new TOM.ExternalModelRoleMember()) {
+		public ExternalModelRoleMember(ModelRole parent) : this(new TOM.ExternalModelRoleMember()) {
 			MetadataObject.Name = parent.MetadataObject.Members.GetNewName("New ExternalModelRoleMember");
 			parent.Members.Add(this);
-			Init();
 		}
+
+
+		public ExternalModelRoleMember Clone(string newName = null) {
+		    Handler.BeginUpdate("Clone ExternalModelRoleMember");
+
+				var tom = MetadataObject.Clone() as TOM.ExternalModelRoleMember;
+				tom.Name = Parent.Members.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new ExternalModelRoleMember(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
+			if (includeTranslations) throw new ArgumentException("This object does not support translations.", "includeTranslations");
+			return Clone(newName);
+		}
+
 	
         internal override void RenewMetadataObject()
         {
@@ -89,25 +107,13 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as ModelRole;
 			}
 		}
-
-		public ExternalModelRoleMember Clone(string newName = null) {
-		    Handler.BeginUpdate("Clone ExternalModelRoleMember");
-
-				var tom = MetadataObject.Clone();
-				tom.Name = Parent.Members.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-				var obj = new ExternalModelRoleMember(tom);
-
-            Handler.EndUpdate();
-
-            return obj;
-		}
-
 		
 		/// <summary>
 		/// Creates a ExternalModelRoleMember object representing an existing TOM ExternalModelRoleMember.
 		/// </summary>
 		internal ExternalModelRoleMember(TOM.ExternalModelRoleMember metadataObject) : base(metadataObject)
 		{
+			
 		}	
     }
 }

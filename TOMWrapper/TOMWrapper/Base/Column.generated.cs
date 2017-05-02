@@ -544,6 +544,10 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		internal Column(TOM.Column metadataObject) : base(metadataObject)
 		{
+			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
+			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
+			TranslatedDisplayFolders = new TranslationIndexer(this, TOM.TranslatedProperty.DisplayFolder);
+			
 		}	
     }
 

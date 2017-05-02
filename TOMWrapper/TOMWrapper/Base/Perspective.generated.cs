@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Perspective
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Perspective: TabularNamedObject, IDescriptionObject, IAnnotationObject, ITranslatableObject
+	public partial class Perspective: TabularNamedObject, IDescriptionObject, IAnnotationObject, ITranslatableObject, IClonableObject
 	{
 	    protected internal new TOM.Perspective MetadataObject { get { return base.MetadataObject as TOM.Perspective; } internal set { base.MetadataObject = value; } }
 
@@ -68,11 +68,32 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new Perspective and adds it to the parent Model.
 		/// </summary>
-		public Perspective(Model parent) : base(new TOM.Perspective()) {
+		public Perspective(Model parent) : this(new TOM.Perspective()) {
 			MetadataObject.Name = parent.MetadataObject.Perspectives.GetNewName("New Perspective");
 			parent.Perspectives.Add(this);
-			Init();
 		}
+
+		
+		public Perspective() : this(TabularModelHandler.Singleton.Model) { }
+
+
+		public Perspective Clone(string newName = null, bool includeTranslations = true) {
+		    Handler.BeginUpdate("Clone Perspective");
+
+				var tom = MetadataObject.Clone() as TOM.Perspective;
+				tom.Name = Parent.Perspectives.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new Perspective(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
+			
+			return Clone(newName, includeTranslations);
+		}
+
 	
         internal override void RenewMetadataObject()
         {
@@ -89,25 +110,15 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
 			}
 		}
-
-		public Perspective Clone(string newName = null, bool includeTranslations = true) {
-		    Handler.BeginUpdate("Clone Perspective");
-
-				var tom = MetadataObject.Clone();
-				tom.Name = Parent.Perspectives.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-				var obj = new Perspective(tom);
-
-            Handler.EndUpdate();
-
-            return obj;
-		}
-
 		
 		/// <summary>
 		/// Creates a Perspective object representing an existing TOM Perspective.
 		/// </summary>
 		internal Perspective(TOM.Perspective metadataObject) : base(metadataObject)
 		{
+			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
+			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
+			
 		}	
     }
 

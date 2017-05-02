@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for CalculatedColumn
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class CalculatedColumn: Column, IExpressionObject
+	public partial class CalculatedColumn: Column, IExpressionObject, IClonableObject
 	{
 	    protected internal new TOM.CalculatedColumn MetadataObject { get { return base.MetadataObject as TOM.CalculatedColumn; } internal set { base.MetadataObject = value; } }
 
@@ -68,11 +68,29 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new CalculatedColumn and adds it to the parent Table.
 		/// </summary>
-		public CalculatedColumn(Table parent) : base(new TOM.CalculatedColumn()) {
+		public CalculatedColumn(Table parent) : this(new TOM.CalculatedColumn()) {
 			MetadataObject.Name = parent.MetadataObject.Columns.GetNewName("New CalculatedColumn");
 			parent.Columns.Add(this);
-			Init();
 		}
+
+
+		public CalculatedColumn Clone(string newName = null) {
+		    Handler.BeginUpdate("Clone CalculatedColumn");
+
+				var tom = MetadataObject.Clone() as TOM.CalculatedColumn;
+				tom.Name = Parent.Columns.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new CalculatedColumn(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
+			if (includeTranslations) throw new ArgumentException("This object does not support translations.", "includeTranslations");
+			return Clone(newName);
+		}
+
 	
         internal override void RenewMetadataObject()
         {
@@ -89,25 +107,13 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Table;
 			}
 		}
-
-		public CalculatedColumn Clone(string newName = null) {
-		    Handler.BeginUpdate("Clone CalculatedColumn");
-
-				var tom = MetadataObject.Clone();
-				tom.Name = Parent.Columns.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-				var obj = new CalculatedColumn(tom);
-
-            Handler.EndUpdate();
-
-            return obj;
-		}
-
 		
 		/// <summary>
 		/// Creates a CalculatedColumn object representing an existing TOM CalculatedColumn.
 		/// </summary>
 		internal CalculatedColumn(TOM.CalculatedColumn metadataObject) : base(metadataObject)
 		{
+			
 		}	
     }
 }

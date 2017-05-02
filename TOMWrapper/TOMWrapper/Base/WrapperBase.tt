@@ -42,6 +42,7 @@ namespace TabularEditor.TOMWrapper
 #><#= props.Any(p => p.Name == "Expression") ? ", IExpressionObject" : ""
 #><#= props.Any(p => p.Name == "Annotations") ? ", IAnnotationObject" : ""
 #><#= Rules.IsTranslatable(t) ? ", ITranslatableObject" : ""
+#><#= Rules.InCollection(t) && !t.IsAbstract ? ", IClonableObject" : ""
 #>
 	{
 	    protected internal new TOM.<#= t.Name #> MetadataObject { get { return base.MetadataObject as TOM.<#= t.Name #>; } internal set { base.MetadataObject = value; } }
@@ -118,11 +119,35 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new <#= t.Name #> and adds it to the parent <#= Rules.GetParent(t) #>.
 		/// </summary>
-		public <#= t.Name #>(<#= Rules.GetParent(t) #> parent) : base(new TOM.<#= t.Name #>()) {
+		public <#= t.Name #>(<#= Rules.GetParent(t) #> parent) : this(new TOM.<#= t.Name #>()) {
 			MetadataObject.Name = parent.MetadataObject.<#= Rules.GetCollection(t) #>.GetNewName("New <#= t.Name #>");
 			parent.<#= Rules.GetCollection(t) #>.Add(this);
-			Init();
 		}
+
+<# // Create parameterless constructors for objects at Model scope (perspectives, roles, etc.)
+if(Rules.GetParent(t) == "Model") { #>
+		
+		public <#= t.Name #>() : this(TabularModelHandler.Singleton.Model) { }
+
+<# } #>
+
+		public <#= t.Name #> Clone(string newName = null<#= Rules.IsTranslatable(t) ? ", bool includeTranslations = true" : "" #>) {
+		    Handler.BeginUpdate("Clone <#= t.Name #>");
+
+				var tom = MetadataObject.Clone() as TOM.<#= t.Name #>;
+				tom.Name = Parent.<#= Rules.GetCollection(t) #>.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new <#= t.Name #>(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
+			<#= Rules.IsTranslatable(t) ? "" : "if (includeTranslations) throw new ArgumentException(\"This object does not support translations.\", \"includeTranslations\");" #>
+			return Clone(newName<#= Rules.IsTranslatable(t) ? ", includeTranslations" : "" #>);
+		}
+
 <# } #>
 	
         internal override void RenewMetadataObject()
@@ -141,19 +166,6 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as <#= Rules.GetParent(t) #>;
 			}
 		}
-
-		public <#= t.Name #> Clone(string newName = null<#= Rules.IsTranslatable(t) ? ", bool includeTranslations = true" : "" #>) {
-		    Handler.BeginUpdate("Clone <#= t.Name #>");
-
-				var tom = MetadataObject.Clone();
-				tom.Name = Parent.<#= Rules.GetCollection(t) #>.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-				var obj = new <#= t.Name #>(tom);
-
-            Handler.EndUpdate();
-
-            return obj;
-		}
-
 <# } #>
 		
 		/// <summary>
@@ -161,6 +173,13 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		internal <#= t.Name #>(TOM.<#= t.Name #> metadataObject) : base(metadataObject)
 		{
+<# if(Rules.IsTranslatable(t)) { #>
+			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
+			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
+<# } #>
+<# if(props.Any(p => p.Name == "DisplayFolder")) { #>
+			TranslatedDisplayFolders = new TranslationIndexer(this, TOM.TranslatedProperty.DisplayFolder);
+<# } #>			
 		}	
     }
 <#  if (Rules.CollectionParent.ContainsKey(t)) { #>

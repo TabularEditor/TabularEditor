@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Variation
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Variation: TabularNamedObject, IDescriptionObject, IAnnotationObject
+	public partial class Variation: TabularNamedObject, IDescriptionObject, IAnnotationObject, IClonableObject
 	{
 	    protected internal new TOM.Variation MetadataObject { get { return base.MetadataObject as TOM.Variation; } internal set { base.MetadataObject = value; } }
 
@@ -161,11 +161,29 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new Variation and adds it to the parent Column.
 		/// </summary>
-		public Variation(Column parent) : base(new TOM.Variation()) {
+		public Variation(Column parent) : this(new TOM.Variation()) {
 			MetadataObject.Name = parent.MetadataObject.Variations.GetNewName("New Variation");
 			parent.Variations.Add(this);
-			Init();
 		}
+
+
+		public Variation Clone(string newName = null) {
+		    Handler.BeginUpdate("Clone Variation");
+
+				var tom = MetadataObject.Clone() as TOM.Variation;
+				tom.Name = Parent.Variations.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new Variation(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
+			if (includeTranslations) throw new ArgumentException("This object does not support translations.", "includeTranslations");
+			return Clone(newName);
+		}
+
 	
         internal override void RenewMetadataObject()
         {
@@ -182,25 +200,13 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Column;
 			}
 		}
-
-		public Variation Clone(string newName = null) {
-		    Handler.BeginUpdate("Clone Variation");
-
-				var tom = MetadataObject.Clone();
-				tom.Name = Parent.Variations.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-				var obj = new Variation(tom);
-
-            Handler.EndUpdate();
-
-            return obj;
-		}
-
 		
 		/// <summary>
 		/// Creates a Variation object representing an existing TOM Variation.
 		/// </summary>
 		internal Variation(TOM.Variation metadataObject) : base(metadataObject)
 		{
+			
 		}	
     }
 

@@ -196,25 +196,13 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
 			}
 		}
-
-		public Relationship Clone(string newName = null) {
-		    Handler.BeginUpdate("Clone Relationship");
-
-				var tom = MetadataObject.Clone();
-				tom.Name = Parent.Relationships.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-				var obj = new Relationship(tom);
-
-            Handler.EndUpdate();
-
-            return obj;
-		}
-
 		
 		/// <summary>
 		/// Creates a Relationship object representing an existing TOM Relationship.
 		/// </summary>
 		internal Relationship(TOM.Relationship metadataObject) : base(metadataObject)
 		{
+			
 		}	
     }
 

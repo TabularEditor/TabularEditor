@@ -316,13 +316,13 @@ namespace TabularEditor.TOMWrapper
                 {
                     // Calculated column
                     var tom = TOM.JsonSerializer.DeserializeObject<TOM.CalculatedColumn>(jObj.ToString());
-                    obj = new CalculatedColumn(this, tom);
+                    obj = new CalculatedColumn(tom);
                 }
                 else if (jObj["expression"] != null)
                 {
                     // Measure
                     var tom = TOM.JsonSerializer.DeserializeObject<TOM.Measure>(jObj.ToString());
-                    obj = new Measure(this, tom);
+                    obj = new Measure(tom);
                 }
 
                 if(obj != null) result.Add(obj);
@@ -336,7 +336,7 @@ namespace TabularEditor.TOMWrapper
             if (database.CompatibilityLevel < 1200) throw new InvalidOperationException("Tabular Databases of compatibility level 1100 or 1103 are not supported in Tabular Editor.");
             UndoManager = new UndoFramework.UndoManager(this);
             Actions = new TabularCommonActions(this);
-            Model = new Model(this, database.Model);
+            Model = new Model(database.Model);
             Model.Database = new Database(database);
             Model.LoadChildObjects();
             CheckErrors();

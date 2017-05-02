@@ -124,7 +124,7 @@ namespace TabularEditor.TOMWrapper
     {
         public Model Parent { get; private set; }
 
-        public RelationshipCollection2(TabularModelHandler handler, string collectionName, TOM.RelationshipCollection metadataObjectCollection, Model parent) : base(handler, collectionName, metadataObjectCollection)
+        public RelationshipCollection2(string collectionName, TOM.RelationshipCollection metadataObjectCollection, Model parent) : base(collectionName, metadataObjectCollection)
         {
             Parent = parent;
 
@@ -133,7 +133,7 @@ namespace TabularEditor.TOMWrapper
             {
                 switch ((obj as TOM.Relationship).Type)
                 {
-                    case TOM.RelationshipType.SingleColumn: new SingleColumnRelationship(handler, obj as TOM.SingleColumnRelationship) { Collection = this }; break;
+                    case TOM.RelationshipType.SingleColumn: new SingleColumnRelationship(obj as TOM.SingleColumnRelationship) { Collection = this }; break;
                 }
             }
         }

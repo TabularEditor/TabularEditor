@@ -131,7 +131,7 @@ namespace TabularEditor.TOMWrapper
             Handler = TabularModelHandler.Singleton;
             Handler.WrapperLookup[metadataObject] = this;
 
-            //if(autoInit) Init();
+            Init();
         }
 
         /// <summary>

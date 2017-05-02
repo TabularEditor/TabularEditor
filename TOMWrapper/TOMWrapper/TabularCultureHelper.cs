@@ -7,17 +7,13 @@ namespace TabularEditor.TOMWrapper
     public static class TabularCultureHelper
     {
 
-        private static void ApplyTrans(string cultureName, TabularNamedObject obj, JToken trans, bool overwrite)
+        private static void ApplyTrans(string cultureName, ITranslatableObject obj, JToken trans, bool overwrite)
         {
             if (overwrite || string.IsNullOrEmpty(obj.TranslatedNames[cultureName]))
                 obj.TranslatedNames[cultureName] = trans.Value<string>("translatedCaption");
 
-            if (obj is IDescriptionObject)
-            {
-                var o = obj as IDescriptionObject;
-                if (overwrite || string.IsNullOrEmpty(o.TranslatedDescriptions[cultureName]))
-                    o.TranslatedDescriptions[cultureName] = trans.Value<string>("translatedDescription");
-            }
+            if (overwrite || string.IsNullOrEmpty(obj.TranslatedDescriptions[cultureName]))
+                obj.TranslatedDescriptions[cultureName] = trans.Value<string>("translatedDescription");
 
             if (obj is IDetailObject)
             {

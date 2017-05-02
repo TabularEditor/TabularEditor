@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for ModelRole
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class ModelRole: TabularNamedObject, IDescriptionObject, IAnnotationObject
+	public partial class ModelRole: TabularNamedObject, IDescriptionObject, IAnnotationObject, ITranslatableObject, IClonableObject
 	{
 	    protected internal new TOM.ModelRole MetadataObject { get { return base.MetadataObject as TOM.ModelRole; } internal set { base.MetadataObject = value; } }
 
@@ -74,16 +74,48 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeModelPermission() { return false; }
 
+        /// <summary>
+        /// Collection of localized descriptions for this ModelRole.
+        /// </summary>
+        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
+	    public TranslationIndexer TranslatedDescriptions { private set; get; }
+        /// <summary>
+        /// Collection of localized names for this ModelRole.
+        /// </summary>
+        [Browsable(true),DisplayName("Names"),Category("Translations and Perspectives")]
+	    public TranslationIndexer TranslatedNames { private set; get; }
+
 
 
 		/// <summary>
 		/// Creates a new ModelRole and adds it to the parent Model.
 		/// </summary>
-		public ModelRole(Model parent) : base(new TOM.ModelRole()) {
+		public ModelRole(Model parent) : this(new TOM.ModelRole()) {
 			MetadataObject.Name = parent.MetadataObject.Roles.GetNewName("New ModelRole");
 			parent.Roles.Add(this);
-			Init();
 		}
+
+		
+		public ModelRole() : this(TabularModelHandler.Singleton.Model) { }
+
+
+		public ModelRole Clone(string newName = null, bool includeTranslations = true) {
+		    Handler.BeginUpdate("Clone ModelRole");
+
+				var tom = MetadataObject.Clone() as TOM.ModelRole;
+				tom.Name = Parent.Roles.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new ModelRole(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
+			
+			return Clone(newName, includeTranslations);
+		}
+
 	
         internal override void RenewMetadataObject()
         {
@@ -100,25 +132,15 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
 			}
 		}
-
-		public ModelRole Clone(string newName = null) {
-		    Handler.BeginUpdate("Clone ModelRole");
-
-				var tom = MetadataObject.Clone();
-				tom.Name = Parent.Roles.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-				var obj = new ModelRole(tom);
-
-            Handler.EndUpdate();
-
-            return obj;
-		}
-
 		
 		/// <summary>
 		/// Creates a ModelRole object representing an existing TOM ModelRole.
 		/// </summary>
 		internal ModelRole(TOM.ModelRole metadataObject) : base(metadataObject)
 		{
+			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
+			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
+			
 		}	
     }
 

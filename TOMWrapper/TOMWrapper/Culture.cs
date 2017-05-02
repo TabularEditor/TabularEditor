@@ -114,16 +114,11 @@ namespace TabularEditor.TOMWrapper
         }
 
         [Browsable(false)]
-        public bool Unassigned { get; private set; } = false;
+        public bool Unassigned { get; private set; } = true;
 
-        public Culture() : base(TabularModelHandler.Singleton, new Microsoft.AnalysisServices.Tabular.Culture() { Name = TabularModelHandler.Singleton.Model.Cultures.MetadataObjectCollection.GetNewName("Culture") }, false)
+        public Culture(string cultureId): base(new TOM.Culture() { Name = cultureId })
         {
-            Unassigned = true;
-        }
-
-        public Culture(string cultureId): base(TabularModelHandler.Singleton, new TOM.Culture() { Name = cultureId }, false)
-        {
-
+            Unassigned = false;
         }
 
         [Browsable(false)]

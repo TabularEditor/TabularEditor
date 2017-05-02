@@ -41,7 +41,7 @@ namespace TabularEditor.TOMWrapper
         }
 
         public Level(Column column, Hierarchy hierarchy, string name) : 
-            this(column.Handler, new TOM.Level()
+            this(new TOM.Level()
             {
                 Name = name ?? hierarchy.Levels.MetadataObjectCollection.GetNewName(column.Name),
                 Column = column.MetadataObject

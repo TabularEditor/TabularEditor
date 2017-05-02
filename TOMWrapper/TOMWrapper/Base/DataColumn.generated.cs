@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for DataColumn
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class DataColumn: Column
+	public partial class DataColumn: Column, IClonableObject
 	{
 	    protected internal new TOM.DataColumn MetadataObject { get { return base.MetadataObject as TOM.DataColumn; } internal set { base.MetadataObject = value; } }
 
@@ -46,11 +46,29 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new DataColumn and adds it to the parent Table.
 		/// </summary>
-		public DataColumn(Table parent) : base(new TOM.DataColumn()) {
+		public DataColumn(Table parent) : this(new TOM.DataColumn()) {
 			MetadataObject.Name = parent.MetadataObject.Columns.GetNewName("New DataColumn");
 			parent.Columns.Add(this);
-			Init();
 		}
+
+
+		public DataColumn Clone(string newName = null) {
+		    Handler.BeginUpdate("Clone DataColumn");
+
+				var tom = MetadataObject.Clone() as TOM.DataColumn;
+				tom.Name = Parent.Columns.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new DataColumn(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
+			if (includeTranslations) throw new ArgumentException("This object does not support translations.", "includeTranslations");
+			return Clone(newName);
+		}
+
 	
         internal override void RenewMetadataObject()
         {
@@ -67,25 +85,13 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Table;
 			}
 		}
-
-		public DataColumn Clone(string newName = null) {
-		    Handler.BeginUpdate("Clone DataColumn");
-
-				var tom = MetadataObject.Clone();
-				tom.Name = Parent.Columns.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-				var obj = new DataColumn(tom);
-
-            Handler.EndUpdate();
-
-            return obj;
-		}
-
 		
 		/// <summary>
 		/// Creates a DataColumn object representing an existing TOM DataColumn.
 		/// </summary>
 		internal DataColumn(TOM.DataColumn metadataObject) : base(metadataObject)
 		{
+			
 		}	
     }
 }

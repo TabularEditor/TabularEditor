@@ -93,25 +93,13 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as ModelRole;
 			}
 		}
-
-		public ModelRoleMember Clone(string newName = null) {
-		    Handler.BeginUpdate("Clone ModelRoleMember");
-
-				var tom = MetadataObject.Clone();
-				tom.Name = Parent.Members.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-				var obj = new ModelRoleMember(tom);
-
-            Handler.EndUpdate();
-
-            return obj;
-		}
-
 		
 		/// <summary>
 		/// Creates a ModelRoleMember object representing an existing TOM ModelRoleMember.
 		/// </summary>
 		internal ModelRoleMember(TOM.ModelRoleMember metadataObject) : base(metadataObject)
 		{
+			
 		}	
     }
 

@@ -262,10 +262,10 @@ namespace TabularEditor.TOMWrapper
         protected override void Init()
         {
             InPerspective = new PerspectiveTableIndexer(this);
-            Columns = new ColumnCollection(Handler, this.GetObjectPath() + ".Columns", MetadataObject.Columns, this);
-            Measures = new MeasureCollection(Handler, this.GetObjectPath() + ".Measures", MetadataObject.Measures, this);
-            Hierarchies = new HierarchyCollection(Handler, this.GetObjectPath() + ".Hierarchies", MetadataObject.Hierarchies, this);
-            Partitions = new PartitionCollection(Handler, this.GetObjectPath() + ".Partitions", MetadataObject.Partitions, this);
+            Columns = new ColumnCollection(this.GetObjectPath() + ".Columns", MetadataObject.Columns, this);
+            Measures = new MeasureCollection(this.GetObjectPath() + ".Measures", MetadataObject.Measures, this);
+            Hierarchies = new HierarchyCollection(this.GetObjectPath() + ".Hierarchies", MetadataObject.Hierarchies, this);
+            Partitions = new PartitionCollection(this.GetObjectPath() + ".Partitions", MetadataObject.Partitions, this);
 
             if(Model.Database.CompatibilityLevel >= 1400) Columns.ForEach(c => c.InitOLSIndexer());
 

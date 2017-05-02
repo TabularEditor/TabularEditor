@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Partition
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Partition: TabularNamedObject, IErrorMessageObject, ITabularTableObject, IDescriptionObject, IAnnotationObject
+	public partial class Partition: TabularNamedObject, IErrorMessageObject, ITabularTableObject, IDescriptionObject, IAnnotationObject, IClonableObject
 	{
 	    protected internal new TOM.Partition MetadataObject { get { return base.MetadataObject as TOM.Partition; } internal set { base.MetadataObject = value; } }
 
@@ -172,11 +172,29 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new Partition and adds it to the parent Table.
 		/// </summary>
-		public Partition(Table parent) : base(new TOM.Partition()) {
+		public Partition(Table parent) : this(new TOM.Partition()) {
 			MetadataObject.Name = parent.MetadataObject.Partitions.GetNewName("New Partition");
 			parent.Partitions.Add(this);
-			Init();
 		}
+
+
+		public Partition Clone(string newName = null) {
+		    Handler.BeginUpdate("Clone Partition");
+
+				var tom = MetadataObject.Clone() as TOM.Partition;
+				tom.Name = Parent.Partitions.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new Partition(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
+			if (includeTranslations) throw new ArgumentException("This object does not support translations.", "includeTranslations");
+			return Clone(newName);
+		}
+
 	
         internal override void RenewMetadataObject()
         {
@@ -193,25 +211,13 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Table;
 			}
 		}
-
-		public Partition Clone(string newName = null) {
-		    Handler.BeginUpdate("Clone Partition");
-
-				var tom = MetadataObject.Clone();
-				tom.Name = Parent.Partitions.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-				var obj = new Partition(tom);
-
-            Handler.EndUpdate();
-
-            return obj;
-		}
-
 		
 		/// <summary>
 		/// Creates a Partition object representing an existing TOM Partition.
 		/// </summary>
 		internal Partition(TOM.Partition metadataObject) : base(metadataObject)
 		{
+			
 		}	
     }
 

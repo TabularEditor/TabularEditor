@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Table
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Table: TabularNamedObject, IHideableObject, IDescriptionObject, IAnnotationObject, ITranslatableObject
+	public partial class Table: TabularNamedObject, IHideableObject, IDescriptionObject, IAnnotationObject, ITranslatableObject, IClonableObject
 	{
 	    protected internal new TOM.Table MetadataObject { get { return base.MetadataObject as TOM.Table; } internal set { base.MetadataObject = value; } }
 
@@ -157,11 +157,32 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new Table and adds it to the parent Model.
 		/// </summary>
-		public Table(Model parent) : base(new TOM.Table()) {
+		public Table(Model parent) : this(new TOM.Table()) {
 			MetadataObject.Name = parent.MetadataObject.Tables.GetNewName("New Table");
 			parent.Tables.Add(this);
-			Init();
 		}
+
+		
+		public Table() : this(TabularModelHandler.Singleton.Model) { }
+
+
+		public Table Clone(string newName = null, bool includeTranslations = true) {
+		    Handler.BeginUpdate("Clone Table");
+
+				var tom = MetadataObject.Clone() as TOM.Table;
+				tom.Name = Parent.Tables.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new Table(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
+			
+			return Clone(newName, includeTranslations);
+		}
+
 	
         internal override void RenewMetadataObject()
         {
@@ -178,25 +199,15 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
 			}
 		}
-
-		public Table Clone(string newName = null, bool includeTranslations = true) {
-		    Handler.BeginUpdate("Clone Table");
-
-				var tom = MetadataObject.Clone();
-				tom.Name = Parent.Tables.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-				var obj = new Table(tom);
-
-            Handler.EndUpdate();
-
-            return obj;
-		}
-
 		
 		/// <summary>
 		/// Creates a Table object representing an existing TOM Table.
 		/// </summary>
 		internal Table(TOM.Table metadataObject) : base(metadataObject)
 		{
+			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
+			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
+			
 		}	
     }
 

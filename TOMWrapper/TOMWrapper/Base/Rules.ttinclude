@@ -5,7 +5,7 @@ class Rules {
 	public static bool IsTranslatable(Type t) {
 		switch(t.Name) {
 			case "Model":
-			case "Role":
+			case "ModelRole":
 			case "Perspective":
 			case "Table":
 			case "Level":
@@ -17,6 +17,10 @@ class Rules {
 			default:
 				return false;
         }
+    }
+
+	public static void CreateConstructor(StringBuilder codeOutput) {
+
     }
 
 	public static bool ShouldWrapProperty(PropertyInfo p, Type t)

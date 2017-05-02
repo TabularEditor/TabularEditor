@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for SingleColumnRelationship
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class SingleColumnRelationship: Relationship
+	public partial class SingleColumnRelationship: Relationship, IClonableObject
 	{
 	    protected internal new TOM.SingleColumnRelationship MetadataObject { get { return base.MetadataObject as TOM.SingleColumnRelationship; } internal set { base.MetadataObject = value; } }
 
@@ -114,11 +114,32 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new SingleColumnRelationship and adds it to the parent Model.
 		/// </summary>
-		public SingleColumnRelationship(Model parent) : base(new TOM.SingleColumnRelationship()) {
+		public SingleColumnRelationship(Model parent) : this(new TOM.SingleColumnRelationship()) {
 			MetadataObject.Name = parent.MetadataObject.Relationships.GetNewName("New SingleColumnRelationship");
 			parent.Relationships.Add(this);
-			Init();
 		}
+
+		
+		public SingleColumnRelationship() : this(TabularModelHandler.Singleton.Model) { }
+
+
+		public SingleColumnRelationship Clone(string newName = null) {
+		    Handler.BeginUpdate("Clone SingleColumnRelationship");
+
+				var tom = MetadataObject.Clone() as TOM.SingleColumnRelationship;
+				tom.Name = Parent.Relationships.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new SingleColumnRelationship(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
+			if (includeTranslations) throw new ArgumentException("This object does not support translations.", "includeTranslations");
+			return Clone(newName);
+		}
+
 	
         internal override void RenewMetadataObject()
         {
@@ -135,25 +156,13 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
 			}
 		}
-
-		public SingleColumnRelationship Clone(string newName = null) {
-		    Handler.BeginUpdate("Clone SingleColumnRelationship");
-
-				var tom = MetadataObject.Clone();
-				tom.Name = Parent.Relationships.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-				var obj = new SingleColumnRelationship(tom);
-
-            Handler.EndUpdate();
-
-            return obj;
-		}
-
 		
 		/// <summary>
 		/// Creates a SingleColumnRelationship object representing an existing TOM SingleColumnRelationship.
 		/// </summary>
 		internal SingleColumnRelationship(TOM.SingleColumnRelationship metadataObject) : base(metadataObject)
 		{
+			
 		}	
     }
 }

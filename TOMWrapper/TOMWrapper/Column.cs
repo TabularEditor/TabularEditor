@@ -82,7 +82,7 @@ namespace TabularEditor.TOMWrapper
         protected override void Init()
         {
             InPerspective = new PerspectiveColumnIndexer(this);
-            Variations = new VariationCollection(Handler, "Variations", MetadataObject.Variations, this);
+            Variations = new VariationCollection("Variations", MetadataObject.Variations, this);
         }
 
         [Browsable(true), DisplayName("Object Level Security"), Category("Security")]

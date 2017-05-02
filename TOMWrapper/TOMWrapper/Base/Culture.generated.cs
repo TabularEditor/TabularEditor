@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Culture
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Culture: TabularNamedObject, IAnnotationObject
+	public partial class Culture: TabularNamedObject, IAnnotationObject, IClonableObject
 	{
 	    protected internal new TOM.Culture MetadataObject { get { return base.MetadataObject as TOM.Culture; } internal set { base.MetadataObject = value; } }
 
@@ -35,11 +35,32 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new Culture and adds it to the parent Model.
 		/// </summary>
-		public Culture(Model parent) : base(new TOM.Culture()) {
+		public Culture(Model parent) : this(new TOM.Culture()) {
 			MetadataObject.Name = parent.MetadataObject.Cultures.GetNewName("New Culture");
 			parent.Cultures.Add(this);
-			Init();
 		}
+
+		
+		public Culture() : this(TabularModelHandler.Singleton.Model) { }
+
+
+		public Culture Clone(string newName = null) {
+		    Handler.BeginUpdate("Clone Culture");
+
+				var tom = MetadataObject.Clone() as TOM.Culture;
+				tom.Name = Parent.Cultures.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new Culture(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
+			if (includeTranslations) throw new ArgumentException("This object does not support translations.", "includeTranslations");
+			return Clone(newName);
+		}
+
 	
         internal override void RenewMetadataObject()
         {
@@ -56,25 +77,13 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
 			}
 		}
-
-		public Culture Clone(string newName = null) {
-		    Handler.BeginUpdate("Clone Culture");
-
-				var tom = MetadataObject.Clone();
-				tom.Name = Parent.Cultures.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-				var obj = new Culture(tom);
-
-            Handler.EndUpdate();
-
-            return obj;
-		}
-
 		
 		/// <summary>
 		/// Creates a Culture object representing an existing TOM Culture.
 		/// </summary>
 		internal Culture(TOM.Culture metadataObject) : base(metadataObject)
 		{
+			
 		}	
     }
 

@@ -23,7 +23,7 @@ namespace TabularEditor.TOMWrapper
             MetadataPermission = new RolePermissionIndexer(this);
         }
 
-        public override TabularNamedObject Clone(string newName, bool includeTranslations)
+        /*public override TabularNamedObject Clone(string newName, bool includeTranslations)
         {
             Handler.BeginUpdate("duplicate role");
             var tom = MetadataObject.Clone();
@@ -46,7 +46,7 @@ namespace TabularEditor.TOMWrapper
             Handler.EndUpdate();
 
             return r;
-        }
+        }*/
 
         internal override void Undelete(ITabularObjectCollection collection)
         {
@@ -61,7 +61,7 @@ namespace TabularEditor.TOMWrapper
         public ModelRoleMemberCollection Members { get; private set; }
         protected override void Init()
         {
-            Members = new ModelRoleMemberCollection(Handler, this.GetObjectPath() + ".Members", MetadataObject.Members, this);
+            Members = new ModelRoleMemberCollection(this.GetObjectPath() + ".Members", MetadataObject.Members, this);
             base.Init();
         }
 
@@ -71,7 +71,7 @@ namespace TabularEditor.TOMWrapper
             base.Delete();
         }
 
-        [Category("Security")]
+        /*[Category("Security")]
         [Description("Specify domain/usernames of the members in this role. One member per line.")]
         [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public string Members
@@ -93,7 +93,7 @@ namespace TabularEditor.TOMWrapper
                     MetadataObject.Members.Add(new TOM.WindowsModelRoleMember() { MemberName = member });
                 }
             }
-        }
+        }*/
         public bool Browsable(string propertyName)
         {
             switch (propertyName) {

@@ -70,25 +70,13 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
 			}
 		}
-
-		public DataSource Clone(string newName = null) {
-		    Handler.BeginUpdate("Clone DataSource");
-
-				var tom = MetadataObject.Clone();
-				tom.Name = Parent.DataSources.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-				var obj = new DataSource(tom);
-
-            Handler.EndUpdate();
-
-            return obj;
-		}
-
 		
 		/// <summary>
 		/// Creates a DataSource object representing an existing TOM DataSource.
 		/// </summary>
 		internal DataSource(TOM.DataSource metadataObject) : base(metadataObject)
 		{
+			
 		}	
     }
 

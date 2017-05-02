@@ -23,7 +23,7 @@ namespace TabularEditor.TOMWrapper
             base.Undelete(collection);
         }
 
-        public Partition(): this(TabularModelHandler.Singleton, new TOM.Partition() { Source = new TOM.QueryPartitionSource() })
+        public Partition(): this(new TOM.Partition() { Source = new TOM.QueryPartitionSource() })
         {
             if (Model.DataSources.Count == 0) throw new Exception("Unable to create partitions on a model with no data sources.");
             DataSource = Model.DataSources.FirstOrDefault();
@@ -169,7 +169,7 @@ namespace TabularEditor.TOMWrapper
 
     public class MPartition: Partition
     {
-        public MPartition() : base(TabularModelHandler.Singleton, new TOM.Partition() { Source = new TOM.MPartitionSource() })
+        public MPartition() : base(new TOM.Partition() { Source = new TOM.MPartitionSource() })
         {
 
         }

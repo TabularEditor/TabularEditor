@@ -27,13 +27,13 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public bool NeedsValidation { get; set; }
 
-        /*public TabularNamedObject CloneTo(Table table, string newName = null, bool includeTranslations = true)
+        public TabularNamedObject CloneTo(Table table, string newName = null, bool includeTranslations = true)
         {
             Handler.BeginUpdate("duplicate calculated column");
             var tom = MetadataObject.Clone() as TOM.CalculatedColumn;
             //tom.IsRemoved = false;
             tom.Name = table.Columns.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-            var c = new CalculatedColumn(Handler, tom);
+            var c = new CalculatedColumn(tom);
             table.Columns.Add(c);
             c.InitOLSIndexer();
 
@@ -51,7 +51,7 @@ namespace TabularEditor.TOMWrapper
             Handler.EndUpdate();
 
             return c;
-        }*/
+        }
 
         /*public override TabularNamedObject Clone(string newName = null, bool includeTranslations = true)
         {

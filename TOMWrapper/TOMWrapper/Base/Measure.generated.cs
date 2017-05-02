@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Measure
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Measure: TabularNamedObject, IDetailObject, IHideableObject, IErrorMessageObject, ITabularTableObject, IDescriptionObject, IExpressionObject, IAnnotationObject, ITranslatableObject
+	public partial class Measure: TabularNamedObject, IDetailObject, IHideableObject, IErrorMessageObject, ITabularTableObject, IDescriptionObject, IExpressionObject, IAnnotationObject, ITranslatableObject, IClonableObject
 	{
 	    protected internal new TOM.Measure MetadataObject { get { return base.MetadataObject as TOM.Measure; } internal set { base.MetadataObject = value; } }
 
@@ -257,11 +257,29 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new Measure and adds it to the parent Table.
 		/// </summary>
-		public Measure(Table parent) : base(new TOM.Measure()) {
+		public Measure(Table parent) : this(new TOM.Measure()) {
 			MetadataObject.Name = parent.MetadataObject.Measures.GetNewName("New Measure");
 			parent.Measures.Add(this);
-			Init();
 		}
+
+
+		public Measure Clone(string newName = null, bool includeTranslations = true) {
+		    Handler.BeginUpdate("Clone Measure");
+
+				var tom = MetadataObject.Clone() as TOM.Measure;
+				tom.Name = Parent.Measures.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new Measure(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
+			
+			return Clone(newName, includeTranslations);
+		}
+
 	
         internal override void RenewMetadataObject()
         {
@@ -278,25 +296,16 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Table;
 			}
 		}
-
-		public Measure Clone(string newName = null, bool includeTranslations = true) {
-		    Handler.BeginUpdate("Clone Measure");
-
-				var tom = MetadataObject.Clone();
-				tom.Name = Parent.Measures.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-				var obj = new Measure(tom);
-
-            Handler.EndUpdate();
-
-            return obj;
-		}
-
 		
 		/// <summary>
 		/// Creates a Measure object representing an existing TOM Measure.
 		/// </summary>
 		internal Measure(TOM.Measure metadataObject) : base(metadataObject)
 		{
+			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
+			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
+			TranslatedDisplayFolders = new TranslationIndexer(this, TOM.TranslatedProperty.DisplayFolder);
+			
 		}	
     }
 

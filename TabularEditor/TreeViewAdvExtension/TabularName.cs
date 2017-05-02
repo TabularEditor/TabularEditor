@@ -35,7 +35,7 @@ namespace TabularEditor.UI.Tree
 
         private void TabularNodeTextBox_DrawText(object sender, DrawEventArgs e)
         {
-            bool hasTrans = ((e.Node.Tag as ITabularNamedObject)?.TranslatedNames?.TranslatedCount > 0);
+            bool hasTrans = ((e.Node.Tag as ITranslatableObject)?.TranslatedNames?.TranslatedCount > 0);
 
             if (e.Node.Tag is IHideableObject)
             {

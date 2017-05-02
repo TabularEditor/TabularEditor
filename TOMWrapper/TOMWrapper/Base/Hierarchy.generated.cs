@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Hierarchy
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Hierarchy: TabularNamedObject, IDetailObject, IHideableObject, ITabularTableObject, IDescriptionObject, IAnnotationObject, ITranslatableObject
+	public partial class Hierarchy: TabularNamedObject, IDetailObject, IHideableObject, ITabularTableObject, IDescriptionObject, IAnnotationObject, ITranslatableObject, IClonableObject
 	{
 	    protected internal new TOM.Hierarchy MetadataObject { get { return base.MetadataObject as TOM.Hierarchy; } internal set { base.MetadataObject = value; } }
 
@@ -166,11 +166,29 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new Hierarchy and adds it to the parent Table.
 		/// </summary>
-		public Hierarchy(Table parent) : base(new TOM.Hierarchy()) {
+		public Hierarchy(Table parent) : this(new TOM.Hierarchy()) {
 			MetadataObject.Name = parent.MetadataObject.Hierarchies.GetNewName("New Hierarchy");
 			parent.Hierarchies.Add(this);
-			Init();
 		}
+
+
+		public Hierarchy Clone(string newName = null, bool includeTranslations = true) {
+		    Handler.BeginUpdate("Clone Hierarchy");
+
+				var tom = MetadataObject.Clone() as TOM.Hierarchy;
+				tom.Name = Parent.Hierarchies.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new Hierarchy(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
+			
+			return Clone(newName, includeTranslations);
+		}
+
 	
         internal override void RenewMetadataObject()
         {
@@ -187,25 +205,16 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Table;
 			}
 		}
-
-		public Hierarchy Clone(string newName = null, bool includeTranslations = true) {
-		    Handler.BeginUpdate("Clone Hierarchy");
-
-				var tom = MetadataObject.Clone();
-				tom.Name = Parent.Hierarchies.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-				var obj = new Hierarchy(tom);
-
-            Handler.EndUpdate();
-
-            return obj;
-		}
-
 		
 		/// <summary>
 		/// Creates a Hierarchy object representing an existing TOM Hierarchy.
 		/// </summary>
 		internal Hierarchy(TOM.Hierarchy metadataObject) : base(metadataObject)
 		{
+			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
+			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
+			TranslatedDisplayFolders = new TranslationIndexer(this, TOM.TranslatedProperty.DisplayFolder);
+			
 		}	
     }
 

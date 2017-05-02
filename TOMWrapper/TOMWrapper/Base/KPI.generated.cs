@@ -291,6 +291,9 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		internal KPI(TOM.KPI metadataObject) : base(metadataObject)
 		{
+			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
+			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
+			
 		}	
     }
 }

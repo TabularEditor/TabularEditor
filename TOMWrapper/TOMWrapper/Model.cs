@@ -113,15 +113,6 @@ namespace TabularEditor.TOMWrapper
         public readonly LogicalGroup GroupTranslations = new LogicalGroup("Translations");
         public readonly LogicalGroup GroupRoles = new LogicalGroup("Roles");
 
-        #region Convenient getters
-        [Browsable(false), IntelliSense("A collection of all columns across all tables in this model.")]
-        public IEnumerable<Column> AllColumns { get { return Tables.SelectMany(t => t.Columns); }}
-        [Browsable(false), IntelliSense("A collection of all measures across all tables in this model.")]
-        public IEnumerable<Measure> AllMeasures { get { return Tables.SelectMany(t => t.Measures); } }
-        [Browsable(false), IntelliSense("A collection of all measures across all hierarchies in this model.")]
-        public IEnumerable<Hierarchy> AllHierarchies { get { return Tables.SelectMany(t => t.Hierarchies); } }
-        #endregion
-
         public IEnumerable<LogicalGroup> LogicalChildGroups { get
             {
                 yield return GroupTables;
@@ -146,12 +137,12 @@ namespace TabularEditor.TOMWrapper
 
         public void LoadChildObjects()
         {
-            DataSources = new DataSourceCollection(Handler, "Model.DataSources", MetadataObject.DataSources, this);
-            Perspectives = new PerspectiveCollection(Handler, "Model.Perspectives", MetadataObject.Perspectives, this);
-            Roles = new ModelRoleCollection(Handler, "Model.Roles", MetadataObject.Roles, this);
-            Cultures = new CultureCollection(Handler, "Model.Cultures", MetadataObject.Cultures, this);
-            Tables = new TableCollection(Handler, "Model.Tables", MetadataObject.Tables, this);
-            Relationships = new RelationshipCollection2(Handler, "Model.Relationships", MetadataObject.Relationships, this);
+            DataSources = new DataSourceCollection("Model.DataSources", MetadataObject.DataSources, this);
+            Perspectives = new PerspectiveCollection("Model.Perspectives", MetadataObject.Perspectives, this);
+            Roles = new ModelRoleCollection("Model.Roles", MetadataObject.Roles, this);
+            Cultures = new CultureCollection("Model.Cultures", MetadataObject.Cultures, this);
+            Tables = new TableCollection("Model.Tables", MetadataObject.Tables, this);
+            Relationships = new RelationshipCollection2("Model.Relationships", MetadataObject.Relationships, this);
 
             Tables.ForEach(r => r.InitRLSIndexer());
             Roles.ForEach(r => r.InitRLSIndexer());

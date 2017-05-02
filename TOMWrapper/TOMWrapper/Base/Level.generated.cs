@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Level
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Level: TabularNamedObject, IDescriptionObject, IAnnotationObject, ITranslatableObject
+	public partial class Level: TabularNamedObject, IDescriptionObject, IAnnotationObject, ITranslatableObject, IClonableObject
 	{
 	    protected internal new TOM.Level MetadataObject { get { return base.MetadataObject as TOM.Level; } internal set { base.MetadataObject = value; } }
 
@@ -126,11 +126,29 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new Level and adds it to the parent Hierarchy.
 		/// </summary>
-		public Level(Hierarchy parent) : base(new TOM.Level()) {
+		public Level(Hierarchy parent) : this(new TOM.Level()) {
 			MetadataObject.Name = parent.MetadataObject.Levels.GetNewName("New Level");
 			parent.Levels.Add(this);
-			Init();
 		}
+
+
+		public Level Clone(string newName = null, bool includeTranslations = true) {
+		    Handler.BeginUpdate("Clone Level");
+
+				var tom = MetadataObject.Clone() as TOM.Level;
+				tom.Name = Parent.Levels.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new Level(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
+			
+			return Clone(newName, includeTranslations);
+		}
+
 	
         internal override void RenewMetadataObject()
         {
@@ -147,25 +165,15 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Hierarchy;
 			}
 		}
-
-		public Level Clone(string newName = null, bool includeTranslations = true) {
-		    Handler.BeginUpdate("Clone Level");
-
-				var tom = MetadataObject.Clone();
-				tom.Name = Parent.Levels.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-				var obj = new Level(tom);
-
-            Handler.EndUpdate();
-
-            return obj;
-		}
-
 		
 		/// <summary>
 		/// Creates a Level object representing an existing TOM Level.
 		/// </summary>
 		internal Level(TOM.Level metadataObject) : base(metadataObject)
 		{
+			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
+			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
+			
 		}	
     }
 

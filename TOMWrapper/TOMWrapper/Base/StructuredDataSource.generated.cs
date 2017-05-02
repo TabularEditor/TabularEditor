@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for StructuredDataSource
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class StructuredDataSource: DataSource
+	public partial class StructuredDataSource: DataSource, IClonableObject
 	{
 	    protected internal new TOM.StructuredDataSource MetadataObject { get { return base.MetadataObject as TOM.StructuredDataSource; } internal set { base.MetadataObject = value; } }
 
@@ -46,11 +46,32 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new StructuredDataSource and adds it to the parent Model.
 		/// </summary>
-		public StructuredDataSource(Model parent) : base(new TOM.StructuredDataSource()) {
+		public StructuredDataSource(Model parent) : this(new TOM.StructuredDataSource()) {
 			MetadataObject.Name = parent.MetadataObject.DataSources.GetNewName("New StructuredDataSource");
 			parent.DataSources.Add(this);
-			Init();
 		}
+
+		
+		public StructuredDataSource() : this(TabularModelHandler.Singleton.Model) { }
+
+
+		public StructuredDataSource Clone(string newName = null) {
+		    Handler.BeginUpdate("Clone StructuredDataSource");
+
+				var tom = MetadataObject.Clone() as TOM.StructuredDataSource;
+				tom.Name = Parent.DataSources.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				var obj = new StructuredDataSource(tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
+			if (includeTranslations) throw new ArgumentException("This object does not support translations.", "includeTranslations");
+			return Clone(newName);
+		}
+
 	
         internal override void RenewMetadataObject()
         {
@@ -67,25 +88,13 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
 			}
 		}
-
-		public StructuredDataSource Clone(string newName = null) {
-		    Handler.BeginUpdate("Clone StructuredDataSource");
-
-				var tom = MetadataObject.Clone();
-				tom.Name = Parent.DataSources.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-				var obj = new StructuredDataSource(tom);
-
-            Handler.EndUpdate();
-
-            return obj;
-		}
-
 		
 		/// <summary>
 		/// Creates a StructuredDataSource object representing an existing TOM StructuredDataSource.
 		/// </summary>
 		internal StructuredDataSource(TOM.StructuredDataSource metadataObject) : base(metadataObject)
 		{
+			
 		}	
     }
 }
