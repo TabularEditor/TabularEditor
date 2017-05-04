@@ -14,7 +14,10 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Model
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Model: TabularNamedObject, IDescriptionObject, IAnnotationObject, ITranslatableObject
+	public partial class Model: TabularNamedObject
+			, IDescriptionObject
+			, IAnnotationObject
+			, ITranslatableObject
 	{
 	    protected internal new TOM.Model MetadataObject { get { return base.MetadataObject as TOM.Model; } internal set { base.MetadataObject = value; } }
 
@@ -196,7 +199,7 @@ namespace TabularEditor.TOMWrapper
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
-		
+
 		/// <summary>
 		/// Creates a Model object representing an existing TOM Model.
 		/// </summary>
@@ -204,7 +207,21 @@ namespace TabularEditor.TOMWrapper
 		{
 			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
 			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
-			
 		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				
+				// Hides translation properties in the grid, unless the model actually contains translations:
+				case "TranslatedNames":
+				case "TranslatedDescriptions":
+					return Model.Cultures.Any();
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 }

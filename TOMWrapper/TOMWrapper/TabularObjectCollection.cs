@@ -184,7 +184,7 @@ namespace TabularEditor.TOMWrapper
             if(item.MetadataObject.Parent != null)
                 throw new ArgumentException("The item already belongs to a collection.");
 
-            item.RenewMetadataObject();
+            //item.RenewMetadataObject();
 
             MetadataObjectCollection.Add(item.MetadataObject as TT);
             item.Collection = this;

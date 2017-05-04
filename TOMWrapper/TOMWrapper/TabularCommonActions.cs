@@ -103,8 +103,8 @@ namespace TabularEditor.TOMWrapper
                 {
                     var name = obj.Name;
                     TabularNamedObject newObj = null;
-                    if (obj is Measure) { newObj = (obj as Measure).CloneTo(newTable); }
-                    if (obj is CalculatedColumn) { newObj = (obj as CalculatedColumn).CloneTo(newTable); }
+                    if (obj is Measure) { newObj = (obj as Measure).Clone(newParent: newTable); }
+                    if (obj is CalculatedColumn) { newObj = (obj as CalculatedColumn).Clone(newParent: newTable); }
 
                     (obj as TabularNamedObject).Delete();
                     newObj.Name = name;

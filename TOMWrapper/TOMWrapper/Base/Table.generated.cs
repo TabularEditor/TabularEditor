@@ -14,7 +14,13 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Table
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Table: TabularNamedObject, IHideableObject, IDescriptionObject, IAnnotationObject, ITranslatableObject, IClonableObject
+	public partial class Table: TabularNamedObject
+			, IHideableObject
+			, IDescriptionObject
+			, IAnnotationObject
+			, ITabularPerspectiveObject
+			, ITranslatableObject
+			, IClonableObject
 	{
 	    protected internal new TOM.Table MetadataObject { get { return base.MetadataObject as TOM.Table; } internal set { base.MetadataObject = value; } }
 
@@ -97,6 +103,11 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeIsHidden() { return false; }
 
+        /// <Summary>
+		/// Collection of perspectives in which this Table is visible.
+		/// </Summary>
+		[Browsable(true),DisplayName("Perspectives"), Category("Translations and Perspectives")]
+        public PerspectiveIndexer InPerspective { get; private set; }
         /// <summary>
         /// Collection of localized descriptions for this Table.
         /// </summary>
@@ -113,8 +124,10 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new Table and adds it to the parent Model.
 		/// </summary>
-		public Table(Model parent) : this(new TOM.Table()) {
-			MetadataObject.Name = parent.MetadataObject.Tables.GetNewName("New Table");
+		public Table(Model parent, string name = null) : this(new TOM.Table()) {
+			
+			MetadataObject.Name = GetNewName(parent.MetadataObject.Tables, string.IsNullOrWhiteSpace(name) ? "New Table" : name);
+
 			parent.Tables.Add(this);
 		}
 
@@ -122,20 +135,43 @@ namespace TabularEditor.TOMWrapper
 		public Table() : this(TabularModelHandler.Singleton.Model) { }
 
 
+		/// <summary>
+		/// Creates an exact copy of this Table object.
+		/// </summary>
+		/// 
 		public Table Clone(string newName = null, bool includeTranslations = true) {
 		    Handler.BeginUpdate("Clone Table");
 
+				// Create a clone of the underlying metadataobject:
 				var tom = MetadataObject.Clone() as TOM.Table;
+
+				// Assign a new, unique name:
 				tom.Name = Parent.Tables.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				
+				// Create the TOM Wrapper object, representing the metadataobject:
 				var obj = new Table(tom);
+
+				// Add the object to the parent collection:
+				Parent.Tables.Add(obj);
+
+				// Copy translations, if applicable:
+				if(includeTranslations) {
+					obj.TranslatedNames.CopyFrom(TranslatedNames);
+					obj.TranslatedDescriptions.CopyFrom(TranslatedDescriptions);
+				}
+				
+				// Copy perspectives:
+				obj.InPerspective.CopyFrom(InPerspective);
+
 
             Handler.EndUpdate();
 
             return obj;
 		}
 
-		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
-			
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
+			if (newParent != null) throw new ArgumentException("This object can not be cloned to another parent. Argument newParent should be left as null.", "newParent");
 			return Clone(newName, includeTranslations);
 		}
 
@@ -155,7 +191,7 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
 			}
 		}
-		
+
 		/// <summary>
 		/// Creates a Table object representing an existing TOM Table.
 		/// </summary>
@@ -163,9 +199,30 @@ namespace TabularEditor.TOMWrapper
 		{
 			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
 			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
-			
+			InPerspective = new PerspectiveTableIndexer(this);
 		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				case "Parent":
+					return false;
+				
+				// Hides translation properties in the grid, unless the model actually contains translations:
+				case "TranslatedNames":
+				case "TranslatedDescriptions":
+					return Model.Cultures.Any();
+				
+				// Hides the perspective property in the grid, unless the model actually contains perspectives:
+				case "InPerspective":
+					return Model.Perspectives.Any();
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 
 	/// <summary>
 	/// Collection class for Table. Provides convenient properties for setting a property on multiple objects at once.

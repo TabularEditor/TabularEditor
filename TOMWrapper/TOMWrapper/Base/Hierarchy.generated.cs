@@ -14,7 +14,15 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Hierarchy
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Hierarchy: TabularNamedObject, IDetailObject, IHideableObject, ITabularTableObject, IDescriptionObject, IAnnotationObject, ITranslatableObject, IClonableObject
+	public partial class Hierarchy: TabularNamedObject
+			, IDetailObject
+			, IHideableObject
+			, ITabularTableObject
+			, IDescriptionObject
+			, IAnnotationObject
+			, ITabularPerspectiveObject
+			, ITranslatableObject
+			, IClonableObject
 	{
 	    protected internal new TOM.Hierarchy MetadataObject { get { return base.MetadataObject as TOM.Hierarchy; } internal set { base.MetadataObject = value; } }
 
@@ -128,6 +136,11 @@ namespace TabularEditor.TOMWrapper
 			} 
 		}
 
+        /// <Summary>
+		/// Collection of perspectives in which this Hierarchy is visible.
+		/// </Summary>
+		[Browsable(true),DisplayName("Perspectives"), Category("Translations and Perspectives")]
+        public PerspectiveIndexer InPerspective { get; private set; }
         /// <summary>
         /// Collection of localized descriptions for this Hierarchy.
         /// </summary>
@@ -144,26 +157,54 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new Hierarchy and adds it to the parent Table.
 		/// </summary>
-		public Hierarchy(Table parent) : this(new TOM.Hierarchy()) {
-			MetadataObject.Name = parent.MetadataObject.Hierarchies.GetNewName("New Hierarchy");
+		public Hierarchy(Table parent, string name = null) : this(new TOM.Hierarchy()) {
+			
+			MetadataObject.Name = GetNewName(parent.MetadataObject.Hierarchies, string.IsNullOrWhiteSpace(name) ? "New Hierarchy" : name);
+
 			parent.Hierarchies.Add(this);
 		}
 
 
-		public Hierarchy Clone(string newName = null, bool includeTranslations = true) {
+		/// <summary>
+		/// Creates an exact copy of this Hierarchy object.
+		/// </summary>
+		/// 
+		public Hierarchy Clone(string newName = null, bool includeTranslations = true, Table newParent = null) {
 		    Handler.BeginUpdate("Clone Hierarchy");
 
+				// Create a clone of the underlying metadataobject:
 				var tom = MetadataObject.Clone() as TOM.Hierarchy;
+
+				// Assign a new, unique name:
 				tom.Name = Parent.Hierarchies.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				
+				// Create the TOM Wrapper object, representing the metadataobject:
 				var obj = new Hierarchy(tom);
+
+				// Add the object to the parent collection:
+				if(newParent != null) 
+					newParent.Hierarchies.Add(obj);
+				else
+    				Parent.Hierarchies.Add(obj);
+
+				// Copy translations, if applicable:
+				if(includeTranslations) {
+					obj.TranslatedNames.CopyFrom(TranslatedNames);
+					obj.TranslatedDescriptions.CopyFrom(TranslatedDescriptions);
+					obj.TranslatedDisplayFolders.CopyFrom(TranslatedDisplayFolders);
+				}
+				
+				// Copy perspectives:
+				obj.InPerspective.CopyFrom(InPerspective);
+
 
             Handler.EndUpdate();
 
             return obj;
 		}
 
-		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
-			
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
 			return Clone(newName, includeTranslations);
 		}
 
@@ -183,7 +224,7 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Table;
 			}
 		}
-		
+
 		/// <summary>
 		/// Creates a Hierarchy object representing an existing TOM Hierarchy.
 		/// </summary>
@@ -192,9 +233,31 @@ namespace TabularEditor.TOMWrapper
 			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
 			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
 			TranslatedDisplayFolders = new TranslationIndexer(this, TOM.TranslatedProperty.DisplayFolder);
-			
+			InPerspective = new PerspectiveHierarchyIndexer(this);
 		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				case "Parent":
+					return false;
+				
+				// Hides translation properties in the grid, unless the model actually contains translations:
+				case "TranslatedNames":
+				case "TranslatedDescriptions":
+				case "TranslatedDisplayFolders":
+					return Model.Cultures.Any();
+				
+				// Hides the perspective property in the grid, unless the model actually contains perspectives:
+				case "InPerspective":
+					return Model.Perspectives.Any();
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 
 	/// <summary>
 	/// Collection class for Hierarchy. Provides convenient properties for setting a property on multiple objects at once.

@@ -10,44 +10,27 @@ namespace TabularEditor.TOMWrapper
 {
     public partial class Level: ITabularTableObject
     {
-        Hierarchy hierarchyRef;
-
-        /// <summary>
-        /// Deletes the level from the hierarchy.
-        /// </summary>
-        [IntelliSense("Deletes the level from the hierarchy.")]
-        public override void Delete()
+        protected override void Cleanup()
         {
-            hierarchyRef = Hierarchy;
+            // Keep a reference to the parent hierarchy:
+            var hierRef = Hierarchy;
 
-            base.Delete();
+            // Level is removed from the hierarchy during the call to base.Cleanup():
+            base.Cleanup();
 
-            hierarchyRef.CompactLevelOrdinals();
+            // Compact the hierarchy levels now that this level has been removed:
+            hierRef.CompactLevelOrdinals();
         }
 
         internal override void Undelete(ITabularObjectCollection collection)
         {
+            base.Undelete(collection);
+
             // Since the original column could have been deleted since the level was deleted, let's find the column by name:
             var c = (collection as LevelCollection).Parent.Table.Columns[MetadataObject.Column.Name].MetadataObject;
-
-            var tom = new TOM.Level() { Column = c, Name = MetadataObject.Name, Ordinal = MetadataObject.Ordinal };
-            //MetadataObject.CopyTo(tom);
-            ////tom.IsRemoved = false;
-            MetadataObject = tom;
-
-            base.Undelete(hierarchyRef.Levels);
+            MetadataObject.Column = c;
 
             Hierarchy.FixLevelOrder(this, this.Ordinal);
-        }
-
-        public Level(Column column, Hierarchy hierarchy, string name) : 
-            this(new TOM.Level()
-            {
-                Name = name ?? hierarchy.Levels.MetadataObjectCollection.GetNewName(column.Name),
-                Column = column.MetadataObject
-            })
-        {
-            hierarchy.Levels.Add(this);
         }
 
         [Browsable(false)]
@@ -70,7 +53,7 @@ namespace TabularEditor.TOMWrapper
             }
             if (propertyName == "Column")
             {
-                if (newValue == null) throw new ArgumentNullException("Column");
+                if (newValue == null && !Handler.UndoManager.UndoInProgress) throw new ArgumentNullException("Column");
                 if (Hierarchy.Levels.Where(l => l != this).Any(l => l.Column == newValue))
                     throw new ArgumentException(string.Format("Another level in this hierarchy is already based on column \"{0}\"", (newValue as Column).Name), "Column");
             }

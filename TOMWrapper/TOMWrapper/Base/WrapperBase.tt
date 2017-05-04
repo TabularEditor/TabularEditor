@@ -34,15 +34,16 @@ namespace TabularEditor.TOMWrapper
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public <#= t.IsAbstract ? "abstract " : "" #>partial class <#= t.Name #>: <#= Rules.ObjectTypes[t]
-#><#= props.Any(p => p.Name == "DisplayFolder") ? ", IDetailObject" : ""
-#><#= props.Any(p => p.Name == "IsHidden") ? ", IHideableObject" : ""
-#><#= props.Any(p => p.Name == "ErrorMessage") ? ", IErrorMessageObject" : ""
-#><#= props.Any(p => p.Name == "Table") ? ", ITabularTableObject" : ""
-#><#= props.Any(p => p.Name == "Description") ? ", IDescriptionObject" : ""
-#><#= props.Any(p => p.Name == "Expression") ? ", IExpressionObject" : ""
-#><#= props.Any(p => p.Name == "Annotations") ? ", IAnnotationObject" : ""
-#><#= Rules.IsTranslatable(t) ? ", ITranslatableObject" : ""
-#><#= Rules.InCollection(t) && !t.IsAbstract ? ", IClonableObject" : ""
+#><#= props.Any(p => p.Name == "DisplayFolder") ? "\n\t\t\t, IDetailObject" : ""
+#><#= props.Any(p => p.Name == "IsHidden") ? "\n\t\t\t, IHideableObject" : ""
+#><#= props.Any(p => p.Name == "ErrorMessage") ? "\n\t\t\t, IErrorMessageObject" : ""
+#><#= props.Any(p => p.Name == "Table") ? "\n\t\t\t, ITabularTableObject" : ""
+#><#= props.Any(p => p.Name == "Description") ? "\n\t\t\t, IDescriptionObject" : ""
+#><#= props.Any(p => p.Name == "Expression") ? "\n\t\t\t, IExpressionObject" : ""
+#><#= props.Any(p => p.Name == "Annotations") ? "\n\t\t\t, IAnnotationObject" : ""
+#><#= Rules.IsPerspectiveObject(t) ? "\n\t\t\t, ITabularPerspectiveObject" : ""
+#><#= Rules.IsTranslatable(t) ? "\n\t\t\t, ITranslatableObject" : ""
+#><#= Rules.InCollection(t) && !t.IsAbstract ? "\n\t\t\t, IClonableObject" : ""
 #>
 	{
 	    protected internal new TOM.<#= t.Name #> MetadataObject { get { return base.MetadataObject as TOM.<#= t.Name #>; } internal set { base.MetadataObject = value; } }
@@ -100,7 +101,13 @@ namespace TabularEditor.TOMWrapper
 <#      }
 	}#>
 
-<# if (Rules.IsTranslatable(t)) { #>
+<# if (Rules.IsPerspectiveObject(t)) { #>
+        /// <Summary>
+		/// Collection of perspectives in which this <#= t.Name #> is visible.
+		/// </Summary>
+		[Browsable(true),DisplayName("Perspectives"), Category("Translations and Perspectives")]
+        public PerspectiveIndexer InPerspective { get; private set; }
+<# } if (Rules.IsTranslatable(t)) { #>
         /// <summary>
         /// Collection of localized descriptions for this <#= t.Name #>.
         /// </summary>
@@ -119,8 +126,10 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new <#= t.Name #> and adds it to the parent <#= Rules.GetParent(t) #>.
 		/// </summary>
-		public <#= t.Name #>(<#= Rules.GetParent(t) #> parent) : this(new TOM.<#= t.Name #>()) {
-			MetadataObject.Name = parent.MetadataObject.<#= Rules.GetCollection(t) #>.GetNewName("New <#= t.Name #>");
+		public <#= t.Name #>(<#= Rules.GetParent(t) #> parent, string name = null) : this(new TOM.<#= t.Name #>()) {
+			
+			MetadataObject.Name = GetNewName(parent.MetadataObject.<#= Rules.GetCollection(t) #>, string.IsNullOrWhiteSpace(name) ? "New <#= t.Name #>" : name);
+
 			parent.<#= Rules.GetCollection(t) #>.Add(this);
 		}
 
@@ -131,20 +140,59 @@ if(Rules.GetParent(t) == "Model") { #>
 
 <# } #>
 
-		public <#= t.Name #> Clone(string newName = null<#= Rules.IsTranslatable(t) ? ", bool includeTranslations = true" : "" #>) {
+		/// <summary>
+		/// Creates an exact copy of this <#= t.Name #> object.
+		/// </summary>
+		/// 
+		public <#= t.Name #> Clone(string newName = null<#= 
+Rules.IsTranslatable(t, true) ? ", bool includeTranslations = true" : "" #><#=
+Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" : "" #>) {
 		    Handler.BeginUpdate("Clone <#= t.Name #>");
 
+				// Create a clone of the underlying metadataobject:
 				var tom = MetadataObject.Clone() as TOM.<#= t.Name #>;
+
+				// Assign a new, unique name:
 				tom.Name = Parent.<#= Rules.GetCollection(t) #>.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				
+				// Create the TOM Wrapper object, representing the metadataobject:
 				var obj = new <#= t.Name #>(tom);
+
+				// Add the object to the parent collection:
+<# if (Rules.GetParent(t) != "Model") { #>
+				if(newParent != null) 
+					newParent.<#= Rules.GetCollection(t)#>.Add(obj);
+				else
+    <# } #>				Parent.<#= Rules.GetCollection(t)#>.Add(obj);
+
+<# if (Rules.IsTranslatable(t, true)) { #>
+				// Copy translations, if applicable:
+				if(includeTranslations) {
+					obj.TranslatedNames.CopyFrom(TranslatedNames);
+					obj.TranslatedDescriptions.CopyFrom(TranslatedDescriptions);
+<#     if (Rules.HasDisplayFolder(t)) { #>
+					obj.TranslatedDisplayFolders.CopyFrom(TranslatedDisplayFolders);
+<#     } #>
+				}
+<# } if (Rules.IsPerspectiveObject(t, true)) { #>
+				
+				// Copy perspectives:
+				obj.InPerspective.CopyFrom(InPerspective);
+<# } #>
+
 
             Handler.EndUpdate();
 
             return obj;
 		}
 
-		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
-			<#= Rules.IsTranslatable(t) ? "" : "if (includeTranslations) throw new ArgumentException(\"This object does not support translations.\", \"includeTranslations\");" #>
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
+<# if (!Rules.IsTranslatable(t, true)) { #>
+			if (includeTranslations) throw new ArgumentException("This object does not support translations", "includeTranslations");
+<# } if (Rules.GetParent(t) == "Model") { #>
+			if (newParent != null) throw new ArgumentException("This object can not be cloned to another parent. Argument newParent should be left as null.", "newParent");
+<# } #>
 			return Clone(newName<#= Rules.IsTranslatable(t) ? ", includeTranslations" : "" #>);
 		}
 
@@ -167,7 +215,7 @@ if(Rules.GetParent(t) == "Model") { #>
 			}
 		}
 <# } #>
-		
+
 		/// <summary>
 		/// Creates a <#= t.Name #> object representing an existing TOM <#= t.Name #>.
 		/// </summary>
@@ -176,12 +224,41 @@ if(Rules.GetParent(t) == "Model") { #>
 <# if(Rules.IsTranslatable(t)) { #>
 			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
 			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
-<# } #>
-<# if(props.Any(p => p.Name == "DisplayFolder")) { #>
+<# } if(props.Any(p => p.Name == "DisplayFolder")) { #>
 			TranslatedDisplayFolders = new TranslationIndexer(this, TOM.TranslatedProperty.DisplayFolder);
-<# } #>			
+<# } if(Rules.IsPerspectiveObject(t)) { #>
+			InPerspective = new Perspective<#= t.Name #>Indexer(this);
+<# }#>
 		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+<# if(Rules.InCollection(t)) { #>
+				case "Parent":
+					return false;
+<# } if(Rules.IsTranslatable(t)) { #>
+				
+				// Hides translation properties in the grid, unless the model actually contains translations:
+				case "TranslatedNames":
+				case "TranslatedDescriptions":
+<#     if(Rules.HasDisplayFolder(t)) { #>
+				case "TranslatedDisplayFolders":
+<#     } #>
+					return Model.Cultures.Any();
+<# } if(Rules.IsPerspectiveObject(t)) { #>
+				
+				// Hides the perspective property in the grid, unless the model actually contains perspectives:
+				case "InPerspective":
+					return Model.Perspectives.Any();
+<# } #>
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 <#  if (Rules.CollectionParent.ContainsKey(t)) { #>
 
 	/// <summary>

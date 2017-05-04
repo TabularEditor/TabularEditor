@@ -14,7 +14,15 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Column
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public abstract partial class Column: TabularNamedObject, IDetailObject, IHideableObject, IErrorMessageObject, ITabularTableObject, IDescriptionObject, IAnnotationObject, ITranslatableObject
+	public abstract partial class Column: TabularNamedObject
+			, IDetailObject
+			, IHideableObject
+			, IErrorMessageObject
+			, ITabularTableObject
+			, IDescriptionObject
+			, IAnnotationObject
+			, ITabularPerspectiveObject
+			, ITranslatableObject
 	{
 	    protected internal new TOM.Column MetadataObject { get { return base.MetadataObject as TOM.Column; } internal set { base.MetadataObject = value; } }
 
@@ -505,6 +513,11 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeSortByColumn() { return false; }
 
+        /// <Summary>
+		/// Collection of perspectives in which this Column is visible.
+		/// </Summary>
+		[Browsable(true),DisplayName("Perspectives"), Category("Translations and Perspectives")]
+        public PerspectiveIndexer InPerspective { get; private set; }
         /// <summary>
         /// Collection of localized descriptions for this Column.
         /// </summary>
@@ -516,7 +529,7 @@ namespace TabularEditor.TOMWrapper
         [Browsable(true),DisplayName("Names"),Category("Translations and Perspectives")]
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
-		
+
 		/// <summary>
 		/// Creates a Column object representing an existing TOM Column.
 		/// </summary>
@@ -525,9 +538,29 @@ namespace TabularEditor.TOMWrapper
 			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
 			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
 			TranslatedDisplayFolders = new TranslationIndexer(this, TOM.TranslatedProperty.DisplayFolder);
-			
+			InPerspective = new PerspectiveColumnIndexer(this);
 		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				
+				// Hides translation properties in the grid, unless the model actually contains translations:
+				case "TranslatedNames":
+				case "TranslatedDescriptions":
+				case "TranslatedDisplayFolders":
+					return Model.Cultures.Any();
+				
+				// Hides the perspective property in the grid, unless the model actually contains perspectives:
+				case "InPerspective":
+					return Model.Perspectives.Any();
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 
 	/// <summary>
 	/// Collection class for Column. Provides convenient properties for setting a property on multiple objects at once.

@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using TabularEditor.UndoFramework;
 using System;
+using TabularEditor.PropertyGridUI;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -68,8 +69,30 @@ namespace TabularEditor.TOMWrapper
     /// 
     /// Protected constructor that takes a TOM MetadataObject as argument.
     /// </summary>
-    public abstract class TabularObject: ITabularObject, INotifyPropertyChanged, INotifyPropertyChanging
+    public abstract class TabularObject: ITabularObject, INotifyPropertyChanged, INotifyPropertyChanging, IDynamicPropertyObject
     {
+        public void Delete()
+        {
+            Handler.UndoManager.BeginBatch("Delete " + this.GetTypeName());
+            Cleanup();
+
+            // Always remove the deleted object from the WrapperLookup:
+            Handler.WrapperLookup.Remove(MetadataObject);
+
+            Handler.UndoManager.EndBatch();
+        }
+ 
+        /// <summary>
+        /// Derived classes can override this method to clean up any references or dependent objects.
+        /// This method is called within an undo batch, whenever Delete() is called.
+        /// </summary>
+        protected virtual void Cleanup()
+        {
+            // TabularObjects can have translations for the description property, even though
+            // they might not be NamedTabularObjects (one example is KPI):
+            (this as ITranslatableObject)?.TranslatedDescriptions?.Clear();
+        }
+
         protected internal ITabularObjectCollection Collection;
 
         private TOM.MetadataObject _metadataObject;
@@ -140,6 +163,24 @@ namespace TabularEditor.TOMWrapper
         protected virtual void Init()
         {
 
+        }
+
+        public virtual bool Browsable(string propertyName)
+        {
+            return IsBrowsable(propertyName);
+        }
+        public virtual bool Editable(string propertyName)
+        {
+            return IsEditable(propertyName);
+        }
+
+        protected virtual bool IsBrowsable(string propertyName)
+        {
+            return true;
+        }
+        protected virtual bool IsEditable(string propertyName)
+        {
+            return true;
         }
     }
 }

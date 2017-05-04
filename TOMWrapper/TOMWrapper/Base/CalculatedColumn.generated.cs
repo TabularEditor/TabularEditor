@@ -14,7 +14,9 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for CalculatedColumn
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class CalculatedColumn: Column, IExpressionObject, IClonableObject
+	public partial class CalculatedColumn: Column
+			, IExpressionObject
+			, IClonableObject
 	{
 	    protected internal new TOM.CalculatedColumn MetadataObject { get { return base.MetadataObject as TOM.CalculatedColumn; } internal set { base.MetadataObject = value; } }
 
@@ -68,26 +70,54 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new CalculatedColumn and adds it to the parent Table.
 		/// </summary>
-		public CalculatedColumn(Table parent) : this(new TOM.CalculatedColumn()) {
-			MetadataObject.Name = parent.MetadataObject.Columns.GetNewName("New CalculatedColumn");
+		public CalculatedColumn(Table parent, string name = null) : this(new TOM.CalculatedColumn()) {
+			
+			MetadataObject.Name = GetNewName(parent.MetadataObject.Columns, string.IsNullOrWhiteSpace(name) ? "New CalculatedColumn" : name);
+
 			parent.Columns.Add(this);
 		}
 
 
-		public CalculatedColumn Clone(string newName = null) {
+		/// <summary>
+		/// Creates an exact copy of this CalculatedColumn object.
+		/// </summary>
+		/// 
+		public CalculatedColumn Clone(string newName = null, bool includeTranslations = true, Table newParent = null) {
 		    Handler.BeginUpdate("Clone CalculatedColumn");
 
+				// Create a clone of the underlying metadataobject:
 				var tom = MetadataObject.Clone() as TOM.CalculatedColumn;
+
+				// Assign a new, unique name:
 				tom.Name = Parent.Columns.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				
+				// Create the TOM Wrapper object, representing the metadataobject:
 				var obj = new CalculatedColumn(tom);
+
+				// Add the object to the parent collection:
+				if(newParent != null) 
+					newParent.Columns.Add(obj);
+				else
+    				Parent.Columns.Add(obj);
+
+				// Copy translations, if applicable:
+				if(includeTranslations) {
+					obj.TranslatedNames.CopyFrom(TranslatedNames);
+					obj.TranslatedDescriptions.CopyFrom(TranslatedDescriptions);
+					obj.TranslatedDisplayFolders.CopyFrom(TranslatedDisplayFolders);
+				}
+				
+				// Copy perspectives:
+				obj.InPerspective.CopyFrom(InPerspective);
+
 
             Handler.EndUpdate();
 
             return obj;
 		}
 
-		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
-			if (includeTranslations) throw new ArgumentException("This object does not support translations.", "includeTranslations");
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
 			return Clone(newName);
 		}
 
@@ -107,13 +137,24 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Table;
 			}
 		}
-		
+
 		/// <summary>
 		/// Creates a CalculatedColumn object representing an existing TOM CalculatedColumn.
 		/// </summary>
 		internal CalculatedColumn(TOM.CalculatedColumn metadataObject) : base(metadataObject)
 		{
-			
 		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				case "Parent":
+					return false;
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 }

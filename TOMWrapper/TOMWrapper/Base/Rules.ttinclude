@@ -2,7 +2,7 @@
 #><#+
 
 class Rules {
-	public static bool IsTranslatable(Type t) {
+	public static bool IsTranslatable(Type t, bool includeAncestors = false) {
 		switch(t.Name) {
 			case "Model":
 			case "ModelRole":
@@ -15,8 +15,24 @@ class Rules {
 			case "KPI":
 				return true;
 			default:
-				return false;
+				return includeAncestors && t.IsSubclassOf(typeof(MetadataObject)) ? IsTranslatable(t.BaseType, true) : false;
         }
+    }
+
+	public static bool IsPerspectiveObject(Type t, bool includeAncestors = false) {
+		switch(t.Name) {
+			case "Table":
+			case "Column":
+			case "Hierarchy":
+			case "Measure":
+				return true;
+			default:
+				return includeAncestors && t.IsSubclassOf(typeof(MetadataObject)) ? IsPerspectiveObject(t.BaseType, true) : false;
+        }
+    }
+
+	public static bool HasDisplayFolder(Type t) {
+		return t.GetMember("DisplayFolder").Length >= 1;
     }
 
 	public static void CreateConstructor(StringBuilder codeOutput) {

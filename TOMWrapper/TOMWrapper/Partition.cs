@@ -11,18 +11,8 @@ using System.Drawing.Design;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class Partition: IDynamicPropertyObject
+    public partial class Partition
     {
-        internal override void Undelete(ITabularObjectCollection collection)
-        {
-            var tom = new TOM.Partition();
-            MetadataObject.CopyTo(tom);
-            ////tom.IsRemoved = false;
-            MetadataObject = tom;
-
-            base.Undelete(collection);
-        }
-
         public Partition(): this(new TOM.Partition() { Source = new TOM.QueryPartitionSource() })
         {
             if (Model.DataSources.Count == 0) throw new Exception("Unable to create partitions on a model with no data sources.");
@@ -118,7 +108,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public bool Browsable(string propertyName)
+        protected override bool IsBrowsable(string propertyName)
         {
             switch(propertyName)
             {
@@ -159,7 +149,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public bool Editable(string propertyName)
+        protected override bool IsEditable(string propertyName)
         {
             switch(propertyName)
             {

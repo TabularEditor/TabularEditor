@@ -14,7 +14,10 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for KPI
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class KPI: TabularObject, IDescriptionObject, IAnnotationObject, ITranslatableObject
+	public partial class KPI: TabularObject
+			, IDescriptionObject
+			, IAnnotationObject
+			, ITranslatableObject
 	{
 	    protected internal new TOM.KPI MetadataObject { get { return base.MetadataObject as TOM.KPI; } internal set { base.MetadataObject = value; } }
 
@@ -285,7 +288,7 @@ namespace TabularEditor.TOMWrapper
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
-		
+
 		/// <summary>
 		/// Creates a KPI object representing an existing TOM KPI.
 		/// </summary>
@@ -293,7 +296,21 @@ namespace TabularEditor.TOMWrapper
 		{
 			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
 			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
-			
 		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				
+				// Hides translation properties in the grid, unless the model actually contains translations:
+				case "TranslatedNames":
+				case "TranslatedDescriptions":
+					return Model.Cultures.Any();
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 }

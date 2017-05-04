@@ -7,9 +7,9 @@ using TabularEditor.PropertyGridUI;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class KPI : IDynamicPropertyObject
+    public partial class KPI
     {
-        public bool Browsable(string propertyName)
+        protected override bool IsBrowsable(string propertyName)
         {
             switch(propertyName)
             {
@@ -18,7 +18,7 @@ namespace TabularEditor.TOMWrapper
             return true;
         }
 
-        public bool Editable(string propertyName)
+        protected override bool IsEditable(string propertyName)
         {
             return true;
         }

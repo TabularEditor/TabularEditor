@@ -14,7 +14,8 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for ModelRoleMember
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public abstract partial class ModelRoleMember: TabularNamedObject, IAnnotationObject
+	public abstract partial class ModelRoleMember: TabularNamedObject
+			, IAnnotationObject
 	{
 	    protected internal new TOM.ModelRoleMember MetadataObject { get { return base.MetadataObject as TOM.ModelRoleMember; } internal set { base.MetadataObject = value; } }
 
@@ -93,15 +94,26 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as ModelRole;
 			}
 		}
-		
+
 		/// <summary>
 		/// Creates a ModelRoleMember object representing an existing TOM ModelRoleMember.
 		/// </summary>
 		internal ModelRoleMember(TOM.ModelRoleMember metadataObject) : base(metadataObject)
 		{
-			
 		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				case "Parent":
+					return false;
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 
 	/// <summary>
 	/// Collection class for ModelRoleMember. Provides convenient properties for setting a property on multiple objects at once.

@@ -14,7 +14,8 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Relationship
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public abstract partial class Relationship: TabularNamedObject, IAnnotationObject
+	public abstract partial class Relationship: TabularNamedObject
+			, IAnnotationObject
 	{
 	    protected internal new TOM.Relationship MetadataObject { get { return base.MetadataObject as TOM.Relationship; } internal set { base.MetadataObject = value; } }
 
@@ -196,15 +197,26 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
 			}
 		}
-		
+
 		/// <summary>
 		/// Creates a Relationship object representing an existing TOM Relationship.
 		/// </summary>
 		internal Relationship(TOM.Relationship metadataObject) : base(metadataObject)
 		{
-			
 		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				case "Parent":
+					return false;
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 
 	/// <summary>
 	/// Collection class for Relationship. Provides convenient properties for setting a property on multiple objects at once.

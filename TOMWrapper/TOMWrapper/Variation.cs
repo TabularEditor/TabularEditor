@@ -9,7 +9,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
 #if CL1400
-    public partial class Variation: IDynamicPropertyObject
+    public partial class Variation
     {
 
         public override void Delete()
@@ -28,13 +28,6 @@ namespace TabularEditor.TOMWrapper
             MetadataObject = tom;
             Handler.WrapperLookup.Add(MetadataObject, this);
         }*/
-
-        internal override void Undelete(ITabularObjectCollection collection)
-        {
-            RenewMetadataObject();
-
-            base.Undelete(collection);
-        }
 
         public bool Browsable(string propertyName)
         {

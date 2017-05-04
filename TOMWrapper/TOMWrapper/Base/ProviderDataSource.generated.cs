@@ -14,7 +14,8 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for ProviderDataSource
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class ProviderDataSource: DataSource, IClonableObject
+	public partial class ProviderDataSource: DataSource
+			, IClonableObject
 	{
 	    protected internal new TOM.ProviderDataSource MetadataObject { get { return base.MetadataObject as TOM.ProviderDataSource; } internal set { base.MetadataObject = value; } }
 
@@ -200,8 +201,10 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new ProviderDataSource and adds it to the parent Model.
 		/// </summary>
-		public ProviderDataSource(Model parent) : this(new TOM.ProviderDataSource()) {
-			MetadataObject.Name = parent.MetadataObject.DataSources.GetNewName("New ProviderDataSource");
+		public ProviderDataSource(Model parent, string name = null) : this(new TOM.ProviderDataSource()) {
+			
+			MetadataObject.Name = GetNewName(parent.MetadataObject.DataSources, string.IsNullOrWhiteSpace(name) ? "New ProviderDataSource" : name);
+
 			parent.DataSources.Add(this);
 		}
 
@@ -209,20 +212,36 @@ namespace TabularEditor.TOMWrapper
 		public ProviderDataSource() : this(TabularModelHandler.Singleton.Model) { }
 
 
+		/// <summary>
+		/// Creates an exact copy of this ProviderDataSource object.
+		/// </summary>
+		/// 
 		public ProviderDataSource Clone(string newName = null) {
 		    Handler.BeginUpdate("Clone ProviderDataSource");
 
+				// Create a clone of the underlying metadataobject:
 				var tom = MetadataObject.Clone() as TOM.ProviderDataSource;
+
+				// Assign a new, unique name:
 				tom.Name = Parent.DataSources.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				
+				// Create the TOM Wrapper object, representing the metadataobject:
 				var obj = new ProviderDataSource(tom);
+
+				// Add the object to the parent collection:
+				Parent.DataSources.Add(obj);
+
+
 
             Handler.EndUpdate();
 
             return obj;
 		}
 
-		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
-			if (includeTranslations) throw new ArgumentException("This object does not support translations.", "includeTranslations");
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
+			if (includeTranslations) throw new ArgumentException("This object does not support translations", "includeTranslations");
+			if (newParent != null) throw new ArgumentException("This object can not be cloned to another parent. Argument newParent should be left as null.", "newParent");
 			return Clone(newName);
 		}
 
@@ -242,13 +261,24 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
 			}
 		}
-		
+
 		/// <summary>
 		/// Creates a ProviderDataSource object representing an existing TOM ProviderDataSource.
 		/// </summary>
 		internal ProviderDataSource(TOM.ProviderDataSource metadataObject) : base(metadataObject)
 		{
-			
 		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				case "Parent":
+					return false;
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 }

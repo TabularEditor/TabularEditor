@@ -14,7 +14,17 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Measure
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Measure: TabularNamedObject, IDetailObject, IHideableObject, IErrorMessageObject, ITabularTableObject, IDescriptionObject, IExpressionObject, IAnnotationObject, ITranslatableObject, IClonableObject
+	public partial class Measure: TabularNamedObject
+			, IDetailObject
+			, IHideableObject
+			, IErrorMessageObject
+			, ITabularTableObject
+			, IDescriptionObject
+			, IExpressionObject
+			, IAnnotationObject
+			, ITabularPerspectiveObject
+			, ITranslatableObject
+			, IClonableObject
 	{
 	    protected internal new TOM.Measure MetadataObject { get { return base.MetadataObject as TOM.Measure; } internal set { base.MetadataObject = value; } }
 
@@ -241,6 +251,11 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeKPI() { return false; }
 
+        /// <Summary>
+		/// Collection of perspectives in which this Measure is visible.
+		/// </Summary>
+		[Browsable(true),DisplayName("Perspectives"), Category("Translations and Perspectives")]
+        public PerspectiveIndexer InPerspective { get; private set; }
         /// <summary>
         /// Collection of localized descriptions for this Measure.
         /// </summary>
@@ -257,26 +272,54 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new Measure and adds it to the parent Table.
 		/// </summary>
-		public Measure(Table parent) : this(new TOM.Measure()) {
-			MetadataObject.Name = parent.MetadataObject.Measures.GetNewName("New Measure");
+		public Measure(Table parent, string name = null) : this(new TOM.Measure()) {
+			
+			MetadataObject.Name = GetNewName(parent.MetadataObject.Measures, string.IsNullOrWhiteSpace(name) ? "New Measure" : name);
+
 			parent.Measures.Add(this);
 		}
 
 
-		public Measure Clone(string newName = null, bool includeTranslations = true) {
+		/// <summary>
+		/// Creates an exact copy of this Measure object.
+		/// </summary>
+		/// 
+		public Measure Clone(string newName = null, bool includeTranslations = true, Table newParent = null) {
 		    Handler.BeginUpdate("Clone Measure");
 
+				// Create a clone of the underlying metadataobject:
 				var tom = MetadataObject.Clone() as TOM.Measure;
+
+				// Assign a new, unique name:
 				tom.Name = Parent.Measures.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				
+				// Create the TOM Wrapper object, representing the metadataobject:
 				var obj = new Measure(tom);
+
+				// Add the object to the parent collection:
+				if(newParent != null) 
+					newParent.Measures.Add(obj);
+				else
+    				Parent.Measures.Add(obj);
+
+				// Copy translations, if applicable:
+				if(includeTranslations) {
+					obj.TranslatedNames.CopyFrom(TranslatedNames);
+					obj.TranslatedDescriptions.CopyFrom(TranslatedDescriptions);
+					obj.TranslatedDisplayFolders.CopyFrom(TranslatedDisplayFolders);
+				}
+				
+				// Copy perspectives:
+				obj.InPerspective.CopyFrom(InPerspective);
+
 
             Handler.EndUpdate();
 
             return obj;
 		}
 
-		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
-			
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
 			return Clone(newName, includeTranslations);
 		}
 
@@ -296,7 +339,7 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Table;
 			}
 		}
-		
+
 		/// <summary>
 		/// Creates a Measure object representing an existing TOM Measure.
 		/// </summary>
@@ -305,9 +348,31 @@ namespace TabularEditor.TOMWrapper
 			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
 			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
 			TranslatedDisplayFolders = new TranslationIndexer(this, TOM.TranslatedProperty.DisplayFolder);
-			
+			InPerspective = new PerspectiveMeasureIndexer(this);
 		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				case "Parent":
+					return false;
+				
+				// Hides translation properties in the grid, unless the model actually contains translations:
+				case "TranslatedNames":
+				case "TranslatedDescriptions":
+				case "TranslatedDisplayFolders":
+					return Model.Cultures.Any();
+				
+				// Hides the perspective property in the grid, unless the model actually contains perspectives:
+				case "InPerspective":
+					return Model.Perspectives.Any();
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 
 	/// <summary>
 	/// Collection class for Measure. Provides convenient properties for setting a property on multiple objects at once.

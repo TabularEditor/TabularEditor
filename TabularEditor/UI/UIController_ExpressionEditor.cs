@@ -18,6 +18,7 @@ namespace TabularEditor.UI
         public void ShowDependencies(IDaxObject dependantObject)
         {
             if (DependencyForm.IsDisposed) DependencyForm = new DependencyForm();
+            DependencyForm.Owner = UI.FormMain;
             DependencyForm.RootObject = dependantObject;
             DependencyForm.Show();
         }

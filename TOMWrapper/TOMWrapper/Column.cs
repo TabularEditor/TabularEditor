@@ -8,7 +8,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    public abstract partial class Column: ITabularPerspectiveObject, IDaxObject, IDynamicPropertyObject
+    public abstract partial class Column: ITabularPerspectiveObject, IDaxObject
     {
         [Browsable(false)]
         public HashSet<IExpressionObject> Dependants { get; private set; } = new HashSet<IExpressionObject>();
@@ -19,7 +19,16 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         [Browsable(false)]
         public IEnumerable<Hierarchy> UsedInHierarchies { get { return Table.Hierarchies.Where(h => h.Levels.Any(l => l.Column == this)); } }
-
+        /// <summary>
+        /// Enumerates all hierarchy levels that are based on this column.
+        /// </summary>
+        [Browsable(false)]
+        public IEnumerable<Level> UsedInLevels { get { return Table.Hierarchies.SelectMany(h => h.Levels.Where(l => l.Column == this)); } }
+        /// <summary>
+        /// Enumerates all columns where this column is used as the SortBy column.
+        /// </summary>
+        [Browsable(false)]
+        public IEnumerable<Column> UsedInSortBy { get { return Table.Columns.Where(c => c.SortByColumn == this); } }
         /// <summary>
         /// Enumerates all relationships in which this column participates (either as <see cref="SingleColumnRelationship.FromColumn">FromColumn</see> or <see cref="SingleColumnRelationship.ToColumn">ToColumn</see>).
         /// </summary>
@@ -27,53 +36,22 @@ namespace TabularEditor.TOMWrapper
         public IEnumerable<Relationship> UsedInRelationships { get { return Model.Relationships.Where(r => r.FromColumn == this || r.ToColumn == this); } }
         #endregion
 
-        [Browsable(true),DisplayName("Perspectives"), Category("Translations and Perspectives")]
-        public PerspectiveIndexer InPerspective { get; private set; }
-
-        [IntelliSense("Deletes the Column from the table.")]
-        public override void Delete()
+        protected override void Cleanup()
         {
-            Handler.UndoManager.BeginBatch("Delete column");
-
-            var t = Table;
-
             // Remove IsKey column property if set:
             if (IsKey) IsKey = false;
 
             // Remove any relationships this column participates in:
-            foreach (var r in Model.Relationships.OfType<SingleColumnRelationship>().Where(r => r.FromColumn == this || r.ToColumn == this)) r.Delete();
+            UsedInRelationships.ToList().ForEach(r => r.Delete());
 
             // Remove any hierarchy levels that use this column
-            foreach (var h in UsedInHierarchies) h.Levels.First(l => l.Column == this).Delete();
+            UsedInLevels.ToList().ForEach(l => l.Delete());
 
             // Remove the column from other columns SortByColumn property:
+            UsedInSortBy.ToList().ForEach(c => c.SortByColumn = null);
             if (SortByColumn != null) SortByColumn = null;
-            foreach (var c in Table.Columns.Where(c => c.SortByColumn == this))
-            {
-                c.SortByColumn = null;
-            }
 
-            InPerspective.None();
-            base.Delete();
-
-            t.MetadataObject.Columns.Remove(MetadataObject);
-
-            Handler.UndoManager.EndBatch();
-        }
-
-        internal override void Undelete(ITabularObjectCollection collection)
-        {
-            var tom = this is DataColumn ? (TOM.Column)new TOM.DataColumn() :
-                    this is CalculatedColumn ? (TOM.Column)new TOM.CalculatedColumn() :
-                    this is CalculatedTableColumn ? (TOM.Column)new TOM.CalculatedTableColumn() :
-                    null;
-
-            MetadataObject.IsKey = false;
-            MetadataObject.CopyTo(tom);
-            ////tom.IsRemoved = false;
-            MetadataObject = tom;
-
-            base.Undelete(collection);
+            base.Cleanup();
         }
 
 #if CL1400
@@ -88,10 +66,9 @@ namespace TabularEditor.TOMWrapper
             ObjectLevelSecurity = new ColumnOLSIndexer(this);
         }
 #endif
-        
+
         protected override void Init()
         {
-            InPerspective = new PerspectiveColumnIndexer(this);
 #if CL1400
             Variations = new VariationCollection("Variations", MetadataObject.Variations, this);
 #endif
@@ -134,7 +111,7 @@ namespace TabularEditor.TOMWrapper
             base.OnPropertyChanged(propertyName, oldValue, newValue);
         }
 
-        public virtual bool Browsable(string propertyName)
+        protected override bool IsBrowsable(string propertyName)
         {
             switch (propertyName)
             {
@@ -142,11 +119,6 @@ namespace TabularEditor.TOMWrapper
                     return Model.Database.CompatibilityLevel >= 1400;
                 default: return true;
             }
-        }
-
-        public bool Editable(string propertyName)
-        {
-            return true;
         }
 
         [Browsable(true), Category("Metadata"), DisplayName("DAX identifier")]

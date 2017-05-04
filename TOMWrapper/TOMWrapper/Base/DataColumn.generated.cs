@@ -14,7 +14,8 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for DataColumn
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class DataColumn: Column, IClonableObject
+	public partial class DataColumn: Column
+			, IClonableObject
 	{
 	    protected internal new TOM.DataColumn MetadataObject { get { return base.MetadataObject as TOM.DataColumn; } internal set { base.MetadataObject = value; } }
 
@@ -46,26 +47,54 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new DataColumn and adds it to the parent Table.
 		/// </summary>
-		public DataColumn(Table parent) : this(new TOM.DataColumn()) {
-			MetadataObject.Name = parent.MetadataObject.Columns.GetNewName("New DataColumn");
+		public DataColumn(Table parent, string name = null) : this(new TOM.DataColumn()) {
+			
+			MetadataObject.Name = GetNewName(parent.MetadataObject.Columns, string.IsNullOrWhiteSpace(name) ? "New DataColumn" : name);
+
 			parent.Columns.Add(this);
 		}
 
 
-		public DataColumn Clone(string newName = null) {
+		/// <summary>
+		/// Creates an exact copy of this DataColumn object.
+		/// </summary>
+		/// 
+		public DataColumn Clone(string newName = null, bool includeTranslations = true, Table newParent = null) {
 		    Handler.BeginUpdate("Clone DataColumn");
 
+				// Create a clone of the underlying metadataobject:
 				var tom = MetadataObject.Clone() as TOM.DataColumn;
+
+				// Assign a new, unique name:
 				tom.Name = Parent.Columns.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				
+				// Create the TOM Wrapper object, representing the metadataobject:
 				var obj = new DataColumn(tom);
+
+				// Add the object to the parent collection:
+				if(newParent != null) 
+					newParent.Columns.Add(obj);
+				else
+    				Parent.Columns.Add(obj);
+
+				// Copy translations, if applicable:
+				if(includeTranslations) {
+					obj.TranslatedNames.CopyFrom(TranslatedNames);
+					obj.TranslatedDescriptions.CopyFrom(TranslatedDescriptions);
+					obj.TranslatedDisplayFolders.CopyFrom(TranslatedDisplayFolders);
+				}
+				
+				// Copy perspectives:
+				obj.InPerspective.CopyFrom(InPerspective);
+
 
             Handler.EndUpdate();
 
             return obj;
 		}
 
-		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
-			if (includeTranslations) throw new ArgumentException("This object does not support translations.", "includeTranslations");
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
 			return Clone(newName);
 		}
 
@@ -85,13 +114,24 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Table;
 			}
 		}
-		
+
 		/// <summary>
 		/// Creates a DataColumn object representing an existing TOM DataColumn.
 		/// </summary>
 		internal DataColumn(TOM.DataColumn metadataObject) : base(metadataObject)
 		{
-			
 		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				case "Parent":
+					return false;
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 }

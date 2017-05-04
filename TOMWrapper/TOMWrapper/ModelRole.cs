@@ -9,7 +9,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class ModelRole: IDynamicPropertyObject
+    public partial class ModelRole
     {
         [Browsable(true), DisplayName("Row Level Filters"), Category("Security")]
         public RoleRLSIndexer RowLevelSecurity { get; private set; }
@@ -52,27 +52,11 @@ namespace TabularEditor.TOMWrapper
             return r;
         }*/
 
-        internal override void Undelete(ITabularObjectCollection collection)
-        {
-            var tom = new TOM.ModelRole();
-            MetadataObject.CopyTo(tom);
-            //tom.IsRemoved = false;
-            MetadataObject = tom;
-
-            base.Undelete(collection);
-        }
-
         public ModelRoleMemberCollection Members { get; private set; }
         protected override void Init()
         {
             Members = new ModelRoleMemberCollection(this.GetObjectPath() + ".Members", MetadataObject.Members, this);
             base.Init();
-        }
-
-
-        public override void Delete()
-        {
-            base.Delete();
         }
 
         /*[Category("Security")]
@@ -98,17 +82,12 @@ namespace TabularEditor.TOMWrapper
                 }
             }
         }*/
-        public bool Browsable(string propertyName)
+        protected override bool IsBrowsable(string propertyName)
         {
             switch (propertyName) {
                 case "MetadataPermission": return Model.Database.CompatibilityLevel >= 1400;
                 default:  return true;
             }
-        }
-
-        public bool Editable(string propertyName)
-        {
-            return true;
         }
     }
 }

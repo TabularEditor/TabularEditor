@@ -14,7 +14,11 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Perspective
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Perspective: TabularNamedObject, IDescriptionObject, IAnnotationObject, ITranslatableObject, IClonableObject
+	public partial class Perspective: TabularNamedObject
+			, IDescriptionObject
+			, IAnnotationObject
+			, ITranslatableObject
+			, IClonableObject
 	{
 	    protected internal new TOM.Perspective MetadataObject { get { return base.MetadataObject as TOM.Perspective; } internal set { base.MetadataObject = value; } }
 
@@ -68,8 +72,10 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new Perspective and adds it to the parent Model.
 		/// </summary>
-		public Perspective(Model parent) : this(new TOM.Perspective()) {
-			MetadataObject.Name = parent.MetadataObject.Perspectives.GetNewName("New Perspective");
+		public Perspective(Model parent, string name = null) : this(new TOM.Perspective()) {
+			
+			MetadataObject.Name = GetNewName(parent.MetadataObject.Perspectives, string.IsNullOrWhiteSpace(name) ? "New Perspective" : name);
+
 			parent.Perspectives.Add(this);
 		}
 
@@ -77,20 +83,40 @@ namespace TabularEditor.TOMWrapper
 		public Perspective() : this(TabularModelHandler.Singleton.Model) { }
 
 
+		/// <summary>
+		/// Creates an exact copy of this Perspective object.
+		/// </summary>
+		/// 
 		public Perspective Clone(string newName = null, bool includeTranslations = true) {
 		    Handler.BeginUpdate("Clone Perspective");
 
+				// Create a clone of the underlying metadataobject:
 				var tom = MetadataObject.Clone() as TOM.Perspective;
+
+				// Assign a new, unique name:
 				tom.Name = Parent.Perspectives.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				
+				// Create the TOM Wrapper object, representing the metadataobject:
 				var obj = new Perspective(tom);
+
+				// Add the object to the parent collection:
+				Parent.Perspectives.Add(obj);
+
+				// Copy translations, if applicable:
+				if(includeTranslations) {
+					obj.TranslatedNames.CopyFrom(TranslatedNames);
+					obj.TranslatedDescriptions.CopyFrom(TranslatedDescriptions);
+				}
+
 
             Handler.EndUpdate();
 
             return obj;
 		}
 
-		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
-			
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
+			if (newParent != null) throw new ArgumentException("This object can not be cloned to another parent. Argument newParent should be left as null.", "newParent");
 			return Clone(newName, includeTranslations);
 		}
 
@@ -110,7 +136,7 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
 			}
 		}
-		
+
 		/// <summary>
 		/// Creates a Perspective object representing an existing TOM Perspective.
 		/// </summary>
@@ -118,9 +144,25 @@ namespace TabularEditor.TOMWrapper
 		{
 			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
 			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
-			
 		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				case "Parent":
+					return false;
+				
+				// Hides translation properties in the grid, unless the model actually contains translations:
+				case "TranslatedNames":
+				case "TranslatedDescriptions":
+					return Model.Cultures.Any();
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 
 	/// <summary>
 	/// Collection class for Perspective. Provides convenient properties for setting a property on multiple objects at once.

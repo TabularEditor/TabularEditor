@@ -10,7 +10,7 @@ using TabularEditor.UndoFramework;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class Culture: IDynamicPropertyObject
+    public partial class Culture
     {
         #region Translation Statistics
         [DisplayName("Translated Measure Names"),Browsable(true),Category("Translation Statistics")]
@@ -103,16 +103,6 @@ namespace TabularEditor.TOMWrapper
 
         #endregion
 
-        internal override void Undelete(ITabularObjectCollection collection)
-        {
-            var tom = new TOM.Culture();
-            MetadataObject.CopyTo(tom);
-            ////tom.IsRemoved = false;
-            MetadataObject = tom;
-
-            base.Undelete(collection);
-        }
-
         [Browsable(false)]
         public bool Unassigned { get; private set; } = true;
 
@@ -139,7 +129,7 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public ObjectTranslationCollection ObjectTranslations { get { return MetadataObject.ObjectTranslations; } }
 
-        public bool Browsable(string propertyName)
+        protected override bool IsBrowsable(string propertyName)
         {
             switch(propertyName)
             {
@@ -151,7 +141,7 @@ namespace TabularEditor.TOMWrapper
             
         }
 
-        public bool Editable(string propertyName)
+        protected override bool IsEditable(string propertyName)
         {
             return propertyName == "Name";
         }

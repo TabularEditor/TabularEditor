@@ -86,11 +86,8 @@ namespace TabularEditor.TOMWrapper
 
         public static string GetName(this ITabularNamedObject obj, Culture culture)
         {
-            // Folders, groups and cultures do not use TranslatedNames:
-            if (culture == null || obj is Folder || obj is LogicalGroup || obj is Culture) return obj.Name;
-
-            // Other objects must take culture into account for their name:
-            if (obj is ITranslatableObject)
+            // Translatable objects must take culture into account for their name:
+            if (obj is ITranslatableObject && culture != null)
             {
                 var name = (obj as ITranslatableObject).TranslatedNames[culture];
 
@@ -98,28 +95,24 @@ namespace TabularEditor.TOMWrapper
                 if (string.IsNullOrEmpty(name)) name = obj.Name;
                 return name;
             }
-            throw new ArgumentException("This object does not have a Name property.");
+
+            // Other objects simply use their name:
+            return obj.Name;
         }
 
         public static bool SetName(this ITabularNamedObject obj, string newName, Culture culture)
         {
-            // Folders, groups and cultures do not use TranslatedNames:
-            if (culture == null || obj is Folder || obj is LogicalGroup || obj is Culture)
-            {
-                if (string.IsNullOrEmpty(newName)) return false;
-                obj.Name = newName;
-                return true;
-            }
-            if (obj is ITranslatableObject)
+            if (obj is ITranslatableObject && culture != null)
             {
                 var tObj = obj as ITranslatableObject;
                 tObj.TranslatedNames[culture] = newName;
                 return true;
             }
-            throw new ArgumentException("This object does not have a Name property.");
-        }
 
-        
+            if (string.IsNullOrEmpty(newName)) return false;
+            obj.Name = newName;
+            return true;
+        }
     }
 
 }

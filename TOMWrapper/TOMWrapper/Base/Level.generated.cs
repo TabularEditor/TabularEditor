@@ -14,7 +14,11 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Level
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Level: TabularNamedObject, IDescriptionObject, IAnnotationObject, ITranslatableObject, IClonableObject
+	public partial class Level: TabularNamedObject
+			, IDescriptionObject
+			, IAnnotationObject
+			, ITranslatableObject
+			, IClonableObject
 	{
 	    protected internal new TOM.Level MetadataObject { get { return base.MetadataObject as TOM.Level; } internal set { base.MetadataObject = value; } }
 
@@ -126,26 +130,50 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new Level and adds it to the parent Hierarchy.
 		/// </summary>
-		public Level(Hierarchy parent) : this(new TOM.Level()) {
-			MetadataObject.Name = parent.MetadataObject.Levels.GetNewName("New Level");
+		public Level(Hierarchy parent, string name = null) : this(new TOM.Level()) {
+			
+			MetadataObject.Name = GetNewName(parent.MetadataObject.Levels, string.IsNullOrWhiteSpace(name) ? "New Level" : name);
+
 			parent.Levels.Add(this);
 		}
 
 
-		public Level Clone(string newName = null, bool includeTranslations = true) {
+		/// <summary>
+		/// Creates an exact copy of this Level object.
+		/// </summary>
+		/// 
+		public Level Clone(string newName = null, bool includeTranslations = true, Hierarchy newParent = null) {
 		    Handler.BeginUpdate("Clone Level");
 
+				// Create a clone of the underlying metadataobject:
 				var tom = MetadataObject.Clone() as TOM.Level;
+
+				// Assign a new, unique name:
 				tom.Name = Parent.Levels.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				
+				// Create the TOM Wrapper object, representing the metadataobject:
 				var obj = new Level(tom);
+
+				// Add the object to the parent collection:
+				if(newParent != null) 
+					newParent.Levels.Add(obj);
+				else
+    				Parent.Levels.Add(obj);
+
+				// Copy translations, if applicable:
+				if(includeTranslations) {
+					obj.TranslatedNames.CopyFrom(TranslatedNames);
+					obj.TranslatedDescriptions.CopyFrom(TranslatedDescriptions);
+				}
+
 
             Handler.EndUpdate();
 
             return obj;
 		}
 
-		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
-			
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
 			return Clone(newName, includeTranslations);
 		}
 
@@ -165,7 +193,7 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Hierarchy;
 			}
 		}
-		
+
 		/// <summary>
 		/// Creates a Level object representing an existing TOM Level.
 		/// </summary>
@@ -173,9 +201,25 @@ namespace TabularEditor.TOMWrapper
 		{
 			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
 			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
-			
 		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				case "Parent":
+					return false;
+				
+				// Hides translation properties in the grid, unless the model actually contains translations:
+				case "TranslatedNames":
+				case "TranslatedDescriptions":
+					return Model.Cultures.Any();
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 
 	/// <summary>
 	/// Collection class for Level. Provides convenient properties for setting a property on multiple objects at once.

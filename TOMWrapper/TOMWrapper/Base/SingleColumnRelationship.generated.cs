@@ -14,7 +14,8 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for SingleColumnRelationship
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class SingleColumnRelationship: Relationship, IClonableObject
+	public partial class SingleColumnRelationship: Relationship
+			, IClonableObject
 	{
 	    protected internal new TOM.SingleColumnRelationship MetadataObject { get { return base.MetadataObject as TOM.SingleColumnRelationship; } internal set { base.MetadataObject = value; } }
 
@@ -114,8 +115,10 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new SingleColumnRelationship and adds it to the parent Model.
 		/// </summary>
-		public SingleColumnRelationship(Model parent) : this(new TOM.SingleColumnRelationship()) {
-			MetadataObject.Name = parent.MetadataObject.Relationships.GetNewName("New SingleColumnRelationship");
+		public SingleColumnRelationship(Model parent, string name = null) : this(new TOM.SingleColumnRelationship()) {
+			
+			MetadataObject.Name = GetNewName(parent.MetadataObject.Relationships, string.IsNullOrWhiteSpace(name) ? "New SingleColumnRelationship" : name);
+
 			parent.Relationships.Add(this);
 		}
 
@@ -123,20 +126,36 @@ namespace TabularEditor.TOMWrapper
 		public SingleColumnRelationship() : this(TabularModelHandler.Singleton.Model) { }
 
 
+		/// <summary>
+		/// Creates an exact copy of this SingleColumnRelationship object.
+		/// </summary>
+		/// 
 		public SingleColumnRelationship Clone(string newName = null) {
 		    Handler.BeginUpdate("Clone SingleColumnRelationship");
 
+				// Create a clone of the underlying metadataobject:
 				var tom = MetadataObject.Clone() as TOM.SingleColumnRelationship;
+
+				// Assign a new, unique name:
 				tom.Name = Parent.Relationships.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				
+				// Create the TOM Wrapper object, representing the metadataobject:
 				var obj = new SingleColumnRelationship(tom);
+
+				// Add the object to the parent collection:
+				Parent.Relationships.Add(obj);
+
+
 
             Handler.EndUpdate();
 
             return obj;
 		}
 
-		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
-			if (includeTranslations) throw new ArgumentException("This object does not support translations.", "includeTranslations");
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
+			if (includeTranslations) throw new ArgumentException("This object does not support translations", "includeTranslations");
+			if (newParent != null) throw new ArgumentException("This object can not be cloned to another parent. Argument newParent should be left as null.", "newParent");
 			return Clone(newName);
 		}
 
@@ -156,13 +175,24 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
 			}
 		}
-		
+
 		/// <summary>
 		/// Creates a SingleColumnRelationship object representing an existing TOM SingleColumnRelationship.
 		/// </summary>
 		internal SingleColumnRelationship(TOM.SingleColumnRelationship metadataObject) : base(metadataObject)
 		{
-			
 		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				case "Parent":
+					return false;
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 }

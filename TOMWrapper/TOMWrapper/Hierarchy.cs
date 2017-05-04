@@ -9,30 +9,11 @@ using TabularEditor.PropertyGridUI;
 
 namespace TabularEditor.TOMWrapper
 {
-    partial class Hierarchy: ITabularObjectContainer, ITabularPerspectiveObject, IDynamicPropertyObject
+    partial class Hierarchy: ITabularObjectContainer, ITabularPerspectiveObject
     {
-        public override void Delete()
-        {
-            InPerspective.None();
-
-            base.Delete();
-        }
-
         public string DaxObjectFullName
         {
             get { return Table.DaxObjectFullName + "[" + Name + "]"; }
-        }
-
-        internal override void Undelete(ITabularObjectCollection collection)
-        {
-            var tom = new TOM.Hierarchy();
-            MetadataObject.CopyTo(tom);
-            //////tom.IsRemoved = false;
-            MetadataObject = tom;
-
-            base.Undelete(collection);
-
-            Init();
         }
 
         #region Convenient methods
@@ -64,7 +45,7 @@ namespace TabularEditor.TOMWrapper
                 throw new ArgumentException(string.Format("Column {0} already exists as a level in hierarchy {1}.", column.Name, Name));
 
             Handler.BeginUpdate("add level");
-            var level = new Level(column, this, levelName);
+            var level = new Level(this, levelName ?? column.Name) { Column = column };
             if (levelName == null) level.TranslatedNames.CopyFrom(column.TranslatedNames);
             level.Ordinal = ordinal == -1 ? this.Levels.Count - 1 : ordinal;
             Handler.EndUpdate();
@@ -78,9 +59,6 @@ namespace TabularEditor.TOMWrapper
         }
         #endregion
 
-        [Browsable(true), DisplayName("Perspectives"), Category("Translations and Perspectives")]
-        public PerspectiveIndexer InPerspective { get; private set; }
-
         public IEnumerable<ITabularNamedObject> GetChildren()
         {
             return Levels;
@@ -92,8 +70,6 @@ namespace TabularEditor.TOMWrapper
 
             // Loop through all levels, to make sure that they point to the current columns (i.e. not "deleted" columns):
             foreach (var l in Levels) l.MetadataObject.Column = Table.Columns[l.MetadataObject.Column.Name].MetadataObject;
-
-            InPerspective = new PerspectiveHierarchyIndexer(this);
         }
 
         [Browsable(false)]
@@ -173,7 +149,7 @@ namespace TabularEditor.TOMWrapper
             Handler.Tree.OnStructureChanged(this);
         }
 
-        public bool Browsable(string propertyName)
+        protected override bool IsBrowsable(string propertyName)
         {
             switch(propertyName)
             {
@@ -184,7 +160,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public bool Editable(string propertyName)
+        protected override bool IsEditable(string propertyName)
         {
             return true;
         }

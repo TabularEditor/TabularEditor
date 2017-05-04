@@ -14,7 +14,8 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for WindowsModelRoleMember
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class WindowsModelRoleMember: ModelRoleMember, IClonableObject
+	public partial class WindowsModelRoleMember: ModelRoleMember
+			, IClonableObject
 	{
 	    protected internal new TOM.WindowsModelRoleMember MetadataObject { get { return base.MetadataObject as TOM.WindowsModelRoleMember; } internal set { base.MetadataObject = value; } }
 
@@ -24,26 +25,46 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates a new WindowsModelRoleMember and adds it to the parent ModelRole.
 		/// </summary>
-		public WindowsModelRoleMember(ModelRole parent) : this(new TOM.WindowsModelRoleMember()) {
-			MetadataObject.Name = parent.MetadataObject.Members.GetNewName("New WindowsModelRoleMember");
+		public WindowsModelRoleMember(ModelRole parent, string name = null) : this(new TOM.WindowsModelRoleMember()) {
+			
+			MetadataObject.Name = GetNewName(parent.MetadataObject.Members, string.IsNullOrWhiteSpace(name) ? "New WindowsModelRoleMember" : name);
+
 			parent.Members.Add(this);
 		}
 
 
-		public WindowsModelRoleMember Clone(string newName = null) {
+		/// <summary>
+		/// Creates an exact copy of this WindowsModelRoleMember object.
+		/// </summary>
+		/// 
+		public WindowsModelRoleMember Clone(string newName = null, ModelRole newParent = null) {
 		    Handler.BeginUpdate("Clone WindowsModelRoleMember");
 
+				// Create a clone of the underlying metadataobject:
 				var tom = MetadataObject.Clone() as TOM.WindowsModelRoleMember;
+
+				// Assign a new, unique name:
 				tom.Name = Parent.Members.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				
+				// Create the TOM Wrapper object, representing the metadataobject:
 				var obj = new WindowsModelRoleMember(tom);
+
+				// Add the object to the parent collection:
+				if(newParent != null) 
+					newParent.Members.Add(obj);
+				else
+    				Parent.Members.Add(obj);
+
+
 
             Handler.EndUpdate();
 
             return obj;
 		}
 
-		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations) {
-			if (includeTranslations) throw new ArgumentException("This object does not support translations.", "includeTranslations");
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
+			if (includeTranslations) throw new ArgumentException("This object does not support translations", "includeTranslations");
 			return Clone(newName);
 		}
 
@@ -63,13 +84,24 @@ namespace TabularEditor.TOMWrapper
 				return Handler.WrapperLookup[MetadataObject.Parent] as ModelRole;
 			}
 		}
-		
+
 		/// <summary>
 		/// Creates a WindowsModelRoleMember object representing an existing TOM WindowsModelRoleMember.
 		/// </summary>
 		internal WindowsModelRoleMember(TOM.WindowsModelRoleMember metadataObject) : base(metadataObject)
 		{
-			
 		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				case "Parent":
+					return false;
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 }
