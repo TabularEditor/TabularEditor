@@ -1,15 +1,16 @@
 # Roadmap
 
 * Scripting objects into TMSL or DAX (compatible with DAX Editor)
-* Create plug-in for Visual Studio, to launch Tabular Editor
 * IntelliSense in DAX expression editor
+* Create plug-in for Visual Studio, to launch Tabular Editor
+* Tabular Editor plug-in architecture / public API for developers
+* Automated build, test, publishing and documentation using VSTS
 * [Done] Formula fix-up (i.e. automatically fixing DAX expressions when renaming objects)
 * [Done] UI for showing object dependencies
-* Scripting changes from the command-line
-* Possibility to read/edit more object types (tables, partitions, data columns)
+* [Done] Scripting changes from the command-line
+* [Done] Possibility to read/edit more object types (tables, partitions, data columns)
 * [Done] Split a Model.bim into multiple json files (for example, one file per table) for better integration into Source Control workflows.
 * [Done] Import/export translations
-
 
 ### Scripting objects into TMSL or DAX
 
@@ -22,6 +23,20 @@ A simple context menu extension to Visual Studio, that will simply ensure the Mo
 ### IntelliSense in DAX expression editor
 
 When writing DAX code in the expression editor, an autocompletebox should pop-up to help complete table names, column names, measure names or functions (and their arguments).
+
+### Tabular Editor plug-in architecture / public API for developers
+
+People who prefer to script tabular models using C# can already today use the TOMWrapper.dll instead of using the Analysis Services TOM API directly. This provides some benefits, for example, the TOMWrapper namespace makes it easier to work with perspectives and translations, thanks to the convenient methods and properties available.
+
+Taking this one step further, it would be interesting to expose more Tabular Editor functionality to developers:
+
+- Parsing of DAX objects
+- Accessing Best Practice Analyzer results
+- Tabular Editor UI (making it possible to create "plug-ins" for Tabular Editor with/without custom UI)
+
+### Automated build, test, publishing and documentation using VSTS
+
+DevOps using VSTS and general clean-up of Tabular Editor source code. Using xmldocs, we can auto-generate github wiki-pages to document the API.
 
 ### Formula fix-up
 
@@ -39,6 +54,8 @@ Right-clicking a measure or calculated column should display a dependency tree i
 
 Today, it is possible to deploy a model directly from the command-line. Similarly, it should be possible to pipe in a .cs file, containing a C# script to be executed on the model. After script execution, it should be possible to save or deploy the updated model. This requires a few changes to the current command-line options.
 
+**Update**: As of 2.3, scripts can be executed from the command-line, by using the "-S" switch. Deployment works as usual, but if you want to save the modified model as a .bim, you can use the "-B" switch.
+
 ### Possibility to read/edit more object types
 
 Tabular Editor currently only lets end-users read and edit a subset of the objects in the Tabular Object Model. It is desirable to allow all objects in the model tree, to be accessible in Tabular Editor: Relationships, KPIs, Calculated Tables and Roles should be directly editable. Data Sources, tables, data columns and table partitions should be editable with some constraints (for example, we should not expect Tabular Editor to be able to fetch data schemas from arbitrary data sources and queries).
@@ -46,6 +63,8 @@ Tabular Editor currently only lets end-users read and edit a subset of the objec
 **Update**: As of 2.1, many new object types are now visible directly in the Tree Explorer. Using the right-click menu, you can create, duplicate and delete many of these objects (roles, perspectives, translations). We're still lacking support for creating/deleting relationships and data sources, but this will come in a future release.
 
 **Update**: As of 2.2, we can now create and delete relationships. More object types comming later.
+
+**Update**: As of 2.3, tables, partitions and data columns can now be edited. Visual Studio is now only needed to create the blank model itself - everything else can be done in Tabular Editor.
 
 ### Split a Model.bim into multiple json files
 
