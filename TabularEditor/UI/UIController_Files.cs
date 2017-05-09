@@ -14,9 +14,11 @@ namespace TabularEditor.UI
     {
         public void File_Open(string fileName)
         {
-            File_Current = fileName;
             Handler = new TabularModelHandler(fileName);
             Handler.AutoFixup = Preferences.Current.FormulaFixup;
+            File_Current = Handler.Source;
+            File_SaveMode = Handler.SourceType;
+
             LoadTabularModelToUI();
             RecentFiles.Add(fileName);
             UI.FormMain.PopulateRecentFilesList();
@@ -44,6 +46,8 @@ namespace TabularEditor.UI
 
         string File_Current;
 
+        private FolderBrowserDialog OpenFolderDialog = new FolderBrowserDialog();
+
         public void File_Open(bool fromFolder = false)
         {
             if (DiscardChangesCheck()) return;
@@ -54,9 +58,8 @@ namespace TabularEditor.UI
             string fileName;
             if(fromFolder)
             {
-                var dlg = new FolderBrowserDialog();
-                if (dlg.ShowDialog() == DialogResult.Cancel) return;
-                fileName = dlg.SelectedPath;
+                if (OpenFolderDialog.ShowDialog() == DialogResult.Cancel) return;
+                fileName = OpenFolderDialog.SelectedPath;
             } else
             {
                 if (UI.OpenBimDialog.ShowDialog() == DialogResult.Cancel) return;
@@ -82,10 +85,22 @@ namespace TabularEditor.UI
             {
                 UI.StatusLabel.Text = "Saving...";
                 Handler.SaveFile(UI.SaveBimDialog.FileName, Preferences.Current.GetSerializeOptions(false));
-                if (File_Current != null) File_Current = UI.SaveBimDialog.FileName;
+
+                RecentFiles.Add(UI.SaveBimDialog.FileName);
+                UI.FormMain.PopulateRecentFilesList();
+
+                // If not connected to a database, change the current working file:
+                if (Handler.SourceType != ModelSourceType.Database)
+                {
+                    File_Current = UI.SaveBimDialog.FileName;
+                    File_SaveMode = ModelSourceType.File;
+                }
+
                 UpdateUIText();
             }
         }
+
+        public ModelSourceType File_SaveMode { get; private set; }
 
         public void File_SaveToFolder()
         {
@@ -96,6 +111,17 @@ namespace TabularEditor.UI
                 {
                     UI.StatusLabel.Text = "Saving...";
                     Handler.SaveToFolder(fbd.SelectedPath, Preferences.Current.GetSerializeOptions(true));
+
+                    RecentFiles.Add(fbd.SelectedPath);
+                    UI.FormMain.PopulateRecentFilesList();
+
+                    // If working with a file, change the current file pointer:
+                    if (Handler.SourceType != ModelSourceType.Database)
+                    {
+                        File_SaveMode = ModelSourceType.Folder;
+                        File_Current = fbd.SelectedPath;
+                    }
+
                     UpdateUIText();
                 }
             }
@@ -105,7 +131,7 @@ namespace TabularEditor.UI
         {
             UI.StatusLabel.Text = "Saving...";
 
-            if (Handler.IsConnected)
+            if (File_SaveMode == ModelSourceType.Database)
             {
                 Database_Save();
             }
@@ -113,10 +139,10 @@ namespace TabularEditor.UI
             {
                 try
                 {
-                    if (Directory.Exists(File_Current))
-                        Handler.SaveToFolder(File_Current, Preferences.Current.GetSerializeOptions(true));
+                    if (File_SaveMode == ModelSourceType.Folder)
+                        Handler.SaveToFolder(File_Current, Preferences.Current.GetSerializeOptions(true), true);
                     else
-                        Handler.SaveFile(File_Current, Preferences.Current.GetSerializeOptions(false));
+                        Handler.SaveFile(File_Current, Preferences.Current.GetSerializeOptions(false), true);
                 }
                 catch (Exception e)
                 {

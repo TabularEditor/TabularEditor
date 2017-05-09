@@ -87,6 +87,7 @@ namespace TabularEditor.UI
                 Handler.AutoFixup = Preferences.Current.FormulaFixup;
                 LoadTabularModelToUI();
                 File_Current = null;
+                File_SaveMode = ModelSourceType.Database;
             }
             catch (Exception ex)
             {

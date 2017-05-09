@@ -113,6 +113,7 @@ namespace TabularEditor
             }
 
             enableVSTS = upperArgList.IndexOf("-VSTS") > -1 || upperArgList.IndexOf("-V") > -1;
+            var warnOnUnprocessed = upperArgList.IndexOf("-WARN") > -1 || upperArgList.IndexOf("-W") > -1;
 
             if (!File.Exists(args[1]) && !File.Exists(args[1] + "\\database.json"))
             {
@@ -149,7 +150,7 @@ namespace TabularEditor
                 script = File.ReadAllText(scriptFile);
             }
 
-            string savePath = null;
+            string buildOutputPath = null;
 
             var doSave = upperArgList.IndexOf("-BUILD");
             if (doSave == -1) doSave = upperArgList.IndexOf("-B");
@@ -161,8 +162,8 @@ namespace TabularEditor
                     OutputUsage();
                     return true;
                 }
-                savePath = argList[doSave + 1];
-                var directoryName = new FileInfo(savePath).Directory.FullName;
+                buildOutputPath = argList[doSave + 1];
+                var directoryName = new FileInfo(buildOutputPath).Directory.FullName;
                 Directory.CreateDirectory(directoryName);
             }
 
@@ -198,10 +199,10 @@ namespace TabularEditor
                 }
             }
 
-            if(!string.IsNullOrEmpty(savePath))
+            if(!string.IsNullOrEmpty(buildOutputPath))
             {
                 cw.WriteLine("Saving file...");
-                h.SaveFile(savePath, TOMWrapper.SerializeOptions.Default);
+                h.SaveFile(buildOutputPath, TOMWrapper.SerializeOptions.Default);
             }
 
             var deploy = upperArgList.IndexOf("-DEPLOY");
@@ -280,6 +281,8 @@ namespace TabularEditor
                     cw.WriteLine("Deployment succeeded.");
                     foreach (var err in deploymentResult.Issues) Issue(err);
                     foreach (var err in deploymentResult.Warnings) Warning(err);
+                    foreach (var err in deploymentResult.Unprocessed)
+                        if (warnOnUnprocessed) Warning(err); else Console.WriteLine(err);
                 }
                 catch (Exception ex)
                 {
@@ -295,7 +298,8 @@ namespace TabularEditor
         {
             cw.WriteLine(@"Usage:
 
-TABULAREDITOR file [-S script] [-B output] [-D server database [-L username password] [-O [-C] [-P]] [-R [-M]]] [-V]
+TABULAREDITOR file [-S script] [-B output] [-D server database [-L username password]
+    [-O [-C] [-P]] [-R [-M]]] [-V] [-W]
 
 file                Full path of the Model.bim file or database.json model folder to load.
 -S / -SCRIPT        Execute the specified script on the model after loading.
@@ -313,7 +317,8 @@ file                Full path of the Model.bim file or database.json model folde
 -P / -PARTITIONS    Deploy (overwrite) existing table partitions in the model.
 -R / -ROLES         Deploy roles.
 -M / -MEMBERS       Deploy role members.
--V / -VSTS          Output Visual Studio Team Services logging commands.");
+-V / -VSTS          Output Visual Studio Team Services logging commands.
+-W / -WARN          Outputs information about unprocessed objects as warnings.");
 
         }
     }

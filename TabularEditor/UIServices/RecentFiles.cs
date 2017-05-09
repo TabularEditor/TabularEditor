@@ -43,8 +43,10 @@ namespace TabularEditor.UIServices
 
         public static void Add(string fileName)
         {
-            if(!Current.RecentHistory.Contains(fileName, StringComparer.InvariantCultureIgnoreCase))
-                Current.RecentHistory.Add(fileName);
+            if (Current.RecentHistory.Contains(fileName, StringComparer.InvariantCultureIgnoreCase))
+                Current.RecentHistory.Remove(fileName);
+
+            Current.RecentHistory.Add(fileName);
         }
     }
 }

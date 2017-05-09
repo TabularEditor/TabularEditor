@@ -98,7 +98,10 @@ namespace TabularEditor.TOMWrapper
             return
                 new DeploymentResult(
                     TabularModelHandler.CheckErrors(deployedDB).Select(t => string.Format("Error on {0}: {1}", GetName(t.Item1), t.Item2)),
-                    TabularModelHandler.CheckProcessingState(deployedDB).Select(t => string.Format("Warning! Unprocessed object: {0} ({1})", GetName(t.Item1), t.Item2.ToString()))
+                    TabularModelHandler.GetObjectsNotReady(deployedDB).Where(t => t.Item2 == TOM.ObjectState.DependencyError || t.Item2 == TOM.ObjectState.EvaluationError || t.Item2 == TOM.ObjectState.SemanticError)
+                        .Select(t => string.Format("Warning! Object not in \"Ready\"-state: {0} ({1})", GetName(t.Item1), t.Item2.ToString())),
+                    TabularModelHandler.GetObjectsNotReady(deployedDB).Where(t => t.Item2 == TOM.ObjectState.CalculationNeeded || t.Item2 == TOM.ObjectState.NoData)
+                        .Select(t => string.Format("Information: Unprocessed object: {0} ({1})", GetName(t.Item1), t.Item2.ToString()))
                 );
         }
 
@@ -200,10 +203,12 @@ namespace TabularEditor.TOMWrapper
     {
         public readonly IReadOnlyList<string> Issues;
         public readonly IReadOnlyList<string> Warnings;
-        public DeploymentResult(IEnumerable<string> issues, IEnumerable<string> warnings)
+        public readonly IReadOnlyList<string> Unprocessed;
+        public DeploymentResult(IEnumerable<string> issues, IEnumerable<string> warnings, IEnumerable<string> unprocessed)
         {
             Issues = issues.ToList();
             Warnings = warnings.ToList();
+            Unprocessed = unprocessed.ToList();
         }
     }
     public class DeploymentOptions

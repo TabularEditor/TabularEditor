@@ -75,7 +75,7 @@ namespace TabularEditor.TOMWrapper
 
                 Handler.UndoManager.Add(new UndoFramework.UndoPropertyChangedAction(this, "Members", Members, value));
                 MetadataObject.Members.Clear();
-                foreach (var member in value.Split('\n'))
+                foreach (var member in value.Replace("\r","").Split('\n'))
                 {
                     MetadataObject.Members.Add(new TOM.WindowsModelRoleMember() { MemberName = member });
                 }

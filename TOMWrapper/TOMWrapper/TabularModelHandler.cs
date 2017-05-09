@@ -36,6 +36,13 @@ namespace TabularEditor.TOMWrapper
 
     }
 
+    public enum ModelSourceType
+    {
+        Database,
+        File,
+        Folder
+    }
+
     public class SerializeOptions
     {
         public static SerializeOptions Default
@@ -347,6 +354,9 @@ namespace TabularEditor.TOMWrapper
         internal readonly Dictionary<string, ITabularObjectCollection> WrapperCollections = new Dictionary<string, ITabularObjectCollection>();
         internal readonly Dictionary<TOM.MetadataObject, TabularObject> WrapperLookup = new Dictionary<TOM.MetadataObject, TabularObject>();
 
+        public ModelSourceType SourceType { get; private set; }
+        public string Source { get; private set; }
+
         /// <summary>
         /// Loads an Analysis Services tabular database (Compatibility Level 1200 or newer) from a file
         /// or folder.
@@ -361,12 +371,18 @@ namespace TabularEditor.TOMWrapper
             string data;
             if (!fi.Exists || fi.Name == "database.json")
             {
-                if (fi.Name == "database.json") data = CombineFolderJson(fi.DirectoryName);
-                else if (Directory.Exists(path)) data = CombineFolderJson(path);
+                if (fi.Name == "database.json") path = fi.DirectoryName;
+
+                if (Directory.Exists(path)) data = CombineFolderJson(path);
                 else throw new FileNotFoundException();
+
+                SourceType = ModelSourceType.Folder;
+                Source = path;
             } else
             {
                 data = File.ReadAllText(path);
+                SourceType = ModelSourceType.File;
+                Source = path;
             }
             database = TOM.JsonSerializer.DeserializeDatabase(data);
 
@@ -398,6 +414,9 @@ namespace TabularEditor.TOMWrapper
 
             if (database.CompatibilityLevel < 1200) throw new InvalidOperationException("Only databases with Compatibility Level 1200 or higher can be loaded in Tabular Editor.");
 
+            SourceType = ModelSourceType.Database;
+            Source = database.Server.Name + "." + database.Name;
+
             Status = "Connected succesfully.";
             Version = database.Version;
             Init();
@@ -424,8 +443,18 @@ namespace TabularEditor.TOMWrapper
             return this.Model;
         }
 
-        public void SaveFile(string fileName, SerializeOptions options)
+        public void SaveFile(string fileName, SerializeOptions options, bool useAnnotatedSerializeOptions = false)
         {
+            if (useAnnotatedSerializeOptions)
+            {
+                var annotatedSerializeOptions = Model.GetAnnotation("TabularEditor_SerializeOptions");
+                if (annotatedSerializeOptions != null) options = JsonConvert.DeserializeObject<SerializeOptions>(annotatedSerializeOptions);
+            }
+
+            if (options == null) throw new ArgumentNullException("options");
+
+            Model.SetAnnotation("TabularEditor_SerializeOptions", JsonConvert.SerializeObject(options), false);
+
             var dbcontent = SerializeDB(options);
             (new FileInfo(fileName)).Directory.Create();
             File.WriteAllText(fileName, dbcontent);
@@ -643,8 +672,21 @@ namespace TabularEditor.TOMWrapper
                 });
         }
 
-        public void SaveToFolder(string path, SerializeOptions options)
+        /// <summary>
+        /// Saves the model to the specified folder using the specified serialize options.
+        /// </summary>
+        public void SaveToFolder(string path, SerializeOptions options, bool useAnnotatedSerializeOptions = false)
         {
+            if (useAnnotatedSerializeOptions)
+            {
+                var annotatedSerializeOptions = Model.GetAnnotation("TabularEditor_SerializeOptions");
+                if (annotatedSerializeOptions != null) options = JsonConvert.DeserializeObject<SerializeOptions>(annotatedSerializeOptions);
+            }
+
+            if (options == null) throw new ArgumentNullException("options");
+ 
+            Model.SetAnnotation("TabularEditor_SerializeOptions", JsonConvert.SerializeObject(options), false);
+
             var json = SerializeDB(options);
             var jobj = JObject.Parse(json);
 
@@ -653,7 +695,7 @@ namespace TabularEditor.TOMWrapper
             var tables = options.Levels.Contains("Tables") ? PopArray(model, "tables") : null;
             var relationships = options.Levels.Contains("Relationships") ? PopArray(model, "relationships") : null;
             var cultures = options.Levels.Contains("Translations") ? PopArray(model, "cultures") : null;
-            var perspectives = options.Levels.Contains("Data Perspectives") ? PopArray(model, "perspectives") : null;
+            var perspectives = options.Levels.Contains("Perspectives") ? PopArray(model, "perspectives") : null;
             var roles = options.Levels.Contains("Roles") ? PopArray(model, "roles") : null;
 
             CurrentFiles = new HashSet<string>();
@@ -786,19 +828,19 @@ namespace TabularEditor.TOMWrapper
             return result;
         }
 
-        internal static List<Tuple<TOM.NamedMetadataObject, TOM.ObjectState>> CheckProcessingState(TOM.Database database)
+        internal static List<Tuple<TOM.NamedMetadataObject, TOM.ObjectState>> GetObjectsNotReady(TOM.Database database)
         {
             var result = new List<Tuple<TOM.NamedMetadataObject, TOM.ObjectState>>();
 
             // Find partitions that are not in the "Ready" state:
             result.AddRange(
-                    database.Model.Tables.SelectMany(t => t.Partitions).Where(p => p.State != TOM.ObjectState.Ready && p.State != TOM.ObjectState.NoData)
+                    database.Model.Tables.SelectMany(t => t.Partitions).Where(p => p.State != TOM.ObjectState.Ready)
                     .Select(p => new Tuple<TOM.NamedMetadataObject, TOM.ObjectState>(p, p.State))
                     );
 
             // Find calculated columns that are not in the "Ready" state:
             result.AddRange(
-                    database.Model.Tables.SelectMany(t => t.Columns.OfType<TOM.CalculatedColumn>()).Where(c => c.State != TOM.ObjectState.Ready && c.State != TOM.ObjectState.NoData)
+                    database.Model.Tables.SelectMany(t => t.Columns.OfType<TOM.CalculatedColumn>()).Where(c => c.State != TOM.ObjectState.Ready)
                     .Select(c => new Tuple<TOM.NamedMetadataObject, TOM.ObjectState>(c, c.State))
                 );
 

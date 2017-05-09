@@ -10,7 +10,7 @@ namespace TabularEditor.UIServices
 {
     public class Preferences
     {
-        #region Serializable properties
+    #region Serializable properties
         public bool CheckForUpdates = false;
         public bool FormulaFixup = true;
         public string BackupLocation = string.Empty;
@@ -26,15 +26,7 @@ namespace TabularEditor.UIServices
         public bool SaveToFile_IgnoreTimestamps = true;
         public bool SaveToFile_SplitMultilineStrings = true;
 
-        public HashSet<string> SaveToFolder_Levels = new HashSet<string>(); 
-        #endregion
-
-        #region Serialization functionality
-        public static Preferences Default
-        {
-            get {
-                var prefs = new Preferences();
-                prefs.SaveToFolder_Levels = new HashSet<string>() {
+        public HashSet<string> SaveToFolder_Levels = new HashSet<string>() {
                     "Data Sources",
                     "Perspectives",
                     "Relationships",
@@ -46,7 +38,13 @@ namespace TabularEditor.UIServices
                     "Tables/Partitions",
                     "Translations"
                 };
-                return prefs;
+    #endregion
+
+    #region Serialization functionality
+    public static Preferences Default
+        {
+            get {
+                return new Preferences();
             }
         }
 
@@ -70,7 +68,7 @@ namespace TabularEditor.UIServices
                     if (File.Exists(PREFERENCES_PATH))
                     {
                         var json = File.ReadAllText(PREFERENCES_PATH, Encoding.Default);
-                        _current = JsonConvert.DeserializeObject<Preferences>(json);
+                        _current = JsonConvert.DeserializeObject<Preferences>(json, new JsonSerializerSettings() { ObjectCreationHandling = ObjectCreationHandling.Replace });
                         _current.IsLoaded = true;
                     }
                     // Below for backwards compatibility with older versions of Tabular Editor, storing the preferences file in %ProgramData%:

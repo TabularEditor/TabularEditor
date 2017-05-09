@@ -373,8 +373,21 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void actSave_UpdateEx(object sender, UpdateExEventArgs e)
         {
             if (UI.Handler == null) return;
-            actSave.Text = UI.Handler.IsConnected ? "Save changes" : "Save .bim file";
-            actSave.ToolTipText = UI.Handler.IsConnected ? "Saves the changes to the connected database" : "Saves the changes back to the currently loaded .bim file";
+            switch(UI.File_SaveMode)
+            {
+                case TOMWrapper.ModelSourceType.Database:
+                    actSave.Text = "Save";
+                    actSave.ToolTipText = "Saves the changes to the connected database";
+                    break;
+                case TOMWrapper.ModelSourceType.File:
+                    actSave.Text = "Save";
+                    actSave.ToolTipText = "Saves the changes back to the currently loaded .bim file";
+                    break;
+                case TOMWrapper.ModelSourceType.Folder:
+                    actSave.Text = "Save";
+                    actSave.ToolTipText = "Saves the changes back to the currently loaded model folder structure";
+                    break;
+            }
         }
 
         private void tvModel_Click(object sender, EventArgs e)
@@ -428,11 +441,6 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         }
 
-        private void saveToFolderToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            UI.File_SaveToFolder();
-        }
-
         private void fromFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
             UI.File_Open(true);
@@ -461,6 +469,11 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void actUncomment_Execute(object sender, EventArgs e)
         {
             txtExpression.RemoveLinePrefix("//");
+        }
+
+        private void actSaveToFolder_Execute(object sender, EventArgs e)
+        {
+            UI.File_SaveToFolder();
         }
     }
 }
