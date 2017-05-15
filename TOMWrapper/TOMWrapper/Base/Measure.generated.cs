@@ -18,12 +18,19 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.Measure MetadataObject { get { return base.MetadataObject as TOM.Measure; } internal set { base.MetadataObject = value; } }
 
+		/// <summary>
+		/// Creates a new Measure and adds it to the parent Table.
+		/// This constructor also creates the underlying metadataobject and adds it to the TOM.
+		/// </summary>
 		public Measure(Table parent) : base(parent.Handler, new TOM.Measure(), false) {
 			MetadataObject.Name = parent.MetadataObject.Measures.GetNewName("New Measure");
 			parent.Measures.Add(this);
 			Init();
 		}
 
+		/// <summary>
+		/// Constructs a wrapper for an existing Measure metadataobject in the TOM.
+		/// </summary>
 		public Measure(TabularModelHandler handler, TOM.Measure measureMetadataObject) : base(handler, measureMetadataObject)
 		{
 		}

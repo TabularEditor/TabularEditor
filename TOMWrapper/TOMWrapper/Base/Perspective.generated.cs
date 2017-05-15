@@ -18,12 +18,19 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.Perspective MetadataObject { get { return base.MetadataObject as TOM.Perspective; } internal set { base.MetadataObject = value; } }
 
+		/// <summary>
+		/// Creates a new Perspective and adds it to the parent Model.
+		/// This constructor also creates the underlying metadataobject and adds it to the TOM.
+		/// </summary>
 		public Perspective(Model parent) : base(parent.Handler, new TOM.Perspective(), false) {
 			MetadataObject.Name = parent.MetadataObject.Perspectives.GetNewName("New Perspective");
 			parent.Perspectives.Add(this);
 			Init();
 		}
 
+		/// <summary>
+		/// Constructs a wrapper for an existing Perspective metadataobject in the TOM.
+		/// </summary>
 		public Perspective(TabularModelHandler handler, TOM.Perspective perspectiveMetadataObject) : base(handler, perspectiveMetadataObject)
 		{
 		}

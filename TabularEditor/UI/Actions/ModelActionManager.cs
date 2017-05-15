@@ -33,11 +33,12 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => true || s.Direct.OfType<Column>().Any(), 
                 (s, m) => s.Table.AddHierarchy(displayFolder: s.CurrentFolder, levels: s.Direct.OfType<Column>().ToArray()).Expand().Edit(), 
                 (s, m) => @"Create New\Hierarchy", true, Context.Table | Context.TableObject));
-            Add(new Action((s, m) => true, (s, m) => m.AddCalculatedTable().Edit(), (s, m) => @"Create New\Calculated Table", true, Context.Tables));
-            Add(new Action((s, m) => true, (s, m) => m.AddTable().Edit(), (s, m) => @"Create New\Table", true, Context.Tables));
-            Add(new Action((s, m) => true, (s, m) => m.AddRelationship().Edit(), (s, m) => @"Create New\Relationship", true, Context.Relationship | Context.Relationships));
-            Add(new Action((s, m) => true, (s, m) => m.AddPerspective().Edit(), (s, m) => @"Create New\Perspective", true, Context.Model | Context.Perspectives | Context.Perspective));
-            Add(new Action((s, m) => true, (s, m) => m.AddRole().Edit(), (s, m) => @"Create New\Role", true, Context.Model | Context.Roles | Context.Role));
+            Add(new Action((s, m) => true, (s, m) => m.AddDataSource().Edit(), (s, m) => @"Create New\Data Source", false, Context.DataSources));
+            Add(new Action((s, m) => true, (s, m) => m.AddCalculatedTable().Edit(), (s, m) => @"Create New\Calculated Table", false, Context.Tables));
+            Add(new Action((s, m) => m.DataSources.Any(), (s, m) => m.AddTable().Edit(), (s, m) => @"Create New\Table", false, Context.Tables));
+            Add(new Action((s, m) => m.Tables.Count(t => t.Columns.Any()) >= 2, (s, m) => m.AddRelationship().Edit(), (s, m) => @"Create New\Relationship", false, Context.Relationship | Context.Relationships));
+            Add(new Action((s, m) => true, (s, m) => m.AddPerspective().Edit(), (s, m) => @"Create New\Perspective", false, Context.Model | Context.Perspectives | Context.Perspective));
+            Add(new Action((s, m) => true, (s, m) => m.AddRole().Edit(), (s, m) => @"Create New\Role", false, Context.Model | Context.Roles | Context.Role));
             Add(new Action((s, m) => true, (s, m) => {
                 var res = csDialog.ShowDialog();
                 if (res == DialogResult.OK)
@@ -47,7 +48,7 @@ namespace TabularEditor.UI.Actions
             }, (s, m) => @"Create New\Translation", true, Context.Model | Context.Translations | Context.Translation));
 
             // "Duplicate Table Object";
-            Add(new Action((s, m) => s.Types.HasX(Types.CalculatedColumn | Types.Measure) && s.Types.Has0(Types.DataColumn | Types.Hierarchy),
+            Add(new Action((s, m) => true,
                 (s, m) => s.ForEach(i =>
                 {
                     var obj = i.Clone(null, true);

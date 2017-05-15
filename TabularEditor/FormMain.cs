@@ -475,5 +475,10 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         {
             UI.File_SaveToFolder();
         }
+
+        private void actNewModel_Execute(object sender, EventArgs e)
+        {
+            UI.File_New();
+        }
     }
 }

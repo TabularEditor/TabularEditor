@@ -24,6 +24,16 @@ namespace TabularEditor.UI
             UI.FormMain.PopulateRecentFilesList();
         }
 
+        public void File_New()
+        {
+            Handler = new TabularModelHandler();
+            Handler.AutoFixup = Preferences.Current.FormulaFixup;
+            File_Current = Handler.Source;
+            File_SaveMode = Handler.SourceType;
+
+            LoadTabularModelToUI();
+        }
+
         /// <summary>
         /// Call this method before calling File_Open() or Database_Connect() to check whether the
         /// currently loaded model has unsaved changes.

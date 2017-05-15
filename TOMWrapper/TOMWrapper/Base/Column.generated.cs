@@ -19,6 +19,9 @@ namespace TabularEditor.TOMWrapper
 	    protected internal new TOM.Column MetadataObject { get { return base.MetadataObject as TOM.Column; } internal set { base.MetadataObject = value; } }
 
 
+		/// <summary>
+		/// Constructs a wrapper for an existing Column metadataobject in the TOM.
+		/// </summary>
 		public Column(TabularModelHandler handler, TOM.Column columnMetadataObject, bool autoInit = true ) : base(handler, columnMetadataObject, autoInit )
 		{
 		}

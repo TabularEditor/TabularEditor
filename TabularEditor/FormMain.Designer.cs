@@ -65,6 +65,7 @@
             this.actSelectAll = new TabularEditor.UI.Actions.SelectAllAction();
             this.actComment = new Crad.Windows.Forms.Actions.Action();
             this.actUncomment = new Crad.Windows.Forms.Actions.Action();
+            this.actNewModel = new Crad.Windows.Forms.Actions.Action();
             this.toolStripButton8 = new System.Windows.Forms.ToolStripButton();
             this.fileToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.fromDBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -113,6 +114,7 @@
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.saveToFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -255,6 +257,7 @@
             actionsMain.Actions.Add(this.actSelectAll);
             actionsMain.Actions.Add(this.actComment);
             actionsMain.Actions.Add(this.actUncomment);
+            actionsMain.Actions.Add(this.actNewModel);
             actionsMain.ContainerControl = this;
             // 
             // actToggleDisplayFolders
@@ -527,6 +530,12 @@
             this.actUncomment.Execute += new System.EventHandler(this.actUncomment_Execute);
             this.actUncomment.Update += new System.EventHandler(this.CanComment);
             // 
+            // actNewModel
+            // 
+            this.actNewModel.Text = "New model";
+            this.actNewModel.ToolTipText = "Creates a new blank Model.bim file";
+            this.actNewModel.Execute += new System.EventHandler(this.actNewModel_Execute);
+            // 
             // toolStripButton8
             // 
             actionsMain.SetAction(this.toolStripButton8, this.actOpenFile);
@@ -564,6 +573,7 @@
             // exitToolStripMenuItem
             // 
             actionsMain.SetAction(this.exitToolStripMenuItem, this.actExit);
+            this.exitToolStripMenuItem.AutoToolTip = true;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
@@ -688,7 +698,6 @@
             // btnSave
             // 
             actionsMain.SetAction(this.btnSave, this.actSave);
-            this.btnSave.AutoToolTip = false;
             this.btnSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnSave.Image = global::TabularEditor.Resources.Save;
             this.btnSave.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -699,7 +708,6 @@
             // saveToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveToolStripMenuItem, this.actSave);
-            this.saveToolStripMenuItem.AutoToolTip = true;
             this.saveToolStripMenuItem.Image = global::TabularEditor.Resources.Save;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+S";
@@ -710,7 +718,6 @@
             // saveAsToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveAsToolStripMenuItem, this.actSaveAs);
-            this.saveAsToolStripMenuItem.AutoToolTip = true;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.saveAsToolStripMenuItem.Text = "Save As...";
@@ -718,6 +725,7 @@
             // undoToolStripMenuItem
             // 
             actionsMain.SetAction(this.undoToolStripMenuItem, this.actUndo);
+            this.undoToolStripMenuItem.AutoToolTip = true;
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Z";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
@@ -727,6 +735,7 @@
             // redoToolStripMenuItem
             // 
             actionsMain.SetAction(this.redoToolStripMenuItem, this.actRedo);
+            this.redoToolStripMenuItem.AutoToolTip = true;
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Y";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
@@ -820,6 +829,7 @@
             // expandAllToolStripMenuItem
             // 
             actionsMain.SetAction(this.expandAllToolStripMenuItem, this.actExpandAll);
+            this.expandAllToolStripMenuItem.AutoToolTip = true;
             this.expandAllToolStripMenuItem.Image = global::TabularEditor.Resources.ExpandAll;
             this.expandAllToolStripMenuItem.Name = "expandAllToolStripMenuItem";
             this.expandAllToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
@@ -828,6 +838,7 @@
             // collapseAllToolStripMenuItem
             // 
             actionsMain.SetAction(this.collapseAllToolStripMenuItem, this.actCollapseAll);
+            this.collapseAllToolStripMenuItem.AutoToolTip = true;
             this.collapseAllToolStripMenuItem.Image = global::TabularEditor.Resources.CollapseAll;
             this.collapseAllToolStripMenuItem.Name = "collapseAllToolStripMenuItem";
             this.collapseAllToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
@@ -860,6 +871,7 @@
             // btnFind
             // 
             actionsMain.SetAction(this.btnFind, this.actFind);
+            this.btnFind.AutoToolTip = false;
             this.btnFind.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnFind.Image = global::TabularEditor.Resources.Find;
             this.btnFind.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -870,6 +882,7 @@
             // btnReplace
             // 
             actionsMain.SetAction(this.btnReplace, this.actReplace);
+            this.btnReplace.AutoToolTip = false;
             this.btnReplace.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnReplace.Image = global::TabularEditor.Resources.Replace;
             this.btnReplace.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -880,6 +893,7 @@
             // findToolStripMenuItem
             // 
             actionsMain.SetAction(this.findToolStripMenuItem, this.actFind);
+            this.findToolStripMenuItem.AutoToolTip = true;
             this.findToolStripMenuItem.Image = global::TabularEditor.Resources.Find;
             this.findToolStripMenuItem.Name = "findToolStripMenuItem";
             this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
@@ -889,6 +903,7 @@
             // replaceToolStripMenuItem
             // 
             actionsMain.SetAction(this.replaceToolStripMenuItem, this.actReplace);
+            this.replaceToolStripMenuItem.AutoToolTip = true;
             this.replaceToolStripMenuItem.Image = global::TabularEditor.Resources.Replace;
             this.replaceToolStripMenuItem.Name = "replaceToolStripMenuItem";
             this.replaceToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.H)));
@@ -919,12 +934,11 @@
             // btnRun
             // 
             actionsMain.SetAction(this.btnRun, this.actExecuteScript);
-            this.btnRun.AutoToolTip = false;
             this.btnRun.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnRun.Image = global::TabularEditor.Resources.Run;
             this.btnRun.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnRun.Name = "btnRun";
-            this.btnRun.Size = new System.Drawing.Size(23, 22);
+            this.btnRun.Size = new System.Drawing.Size(36, 36);
             this.btnRun.Text = "Replace";
             // 
             // deployToolStripMenuItem
@@ -939,10 +953,11 @@
             // btnSaveCustomAction
             // 
             actionsMain.SetAction(this.btnSaveCustomAction, this.actSaveCustomAction);
+            this.btnSaveCustomAction.AutoToolTip = false;
             this.btnSaveCustomAction.Image = global::TabularEditor.Resources.action_add_16xLG;
             this.btnSaveCustomAction.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSaveCustomAction.Name = "btnSaveCustomAction";
-            this.btnSaveCustomAction.Size = new System.Drawing.Size(157, 22);
+            this.btnSaveCustomAction.Size = new System.Drawing.Size(173, 36);
             this.btnSaveCustomAction.Text = "Save as Custom Action...";
             // 
             // cutToolStripMenuItem
@@ -1062,6 +1077,7 @@
             this.toolStripButton2.AutoToolTip = false;
             this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.toolStripButton2.Image = global::TabularEditor.Resources.UncommentCode_16x;
+            this.toolStripButton2.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton2.Name = "toolStripButton2";
             this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
@@ -1071,9 +1087,18 @@
             // saveToFolderToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveToFolderToolStripMenuItem, this.actSaveToFolder);
+            this.saveToFolderToolStripMenuItem.AutoToolTip = true;
             this.saveToFolderToolStripMenuItem.Name = "saveToFolderToolStripMenuItem";
             this.saveToFolderToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.saveToFolderToolStripMenuItem.Text = "Save to Folder...";
+            // 
+            // newModelToolStripMenuItem
+            // 
+            actionsMain.SetAction(this.newModelToolStripMenuItem, this.actNewModel);
+            this.newModelToolStripMenuItem.Name = "newModelToolStripMenuItem";
+            this.newModelToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.newModelToolStripMenuItem.Text = "New model";
+            this.newModelToolStripMenuItem.ToolTipText = "Creates a new blank Model.bim file";
             // 
             // preferencesToolStripMenuItem
             // 
@@ -1099,7 +1124,7 @@
             this.toolStripSeparator10});
             this.toolStrip2.Location = new System.Drawing.Point(0, 24);
             this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(1009, 25);
+            this.toolStrip2.Size = new System.Drawing.Size(748, 25);
             this.toolStrip2.TabIndex = 13;
             this.toolStrip2.Text = "toolStrip2";
             // 
@@ -1162,8 +1187,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(1009, 552);
-            this.splitContainer1.SplitterDistance = 385;
+            this.splitContainer1.Size = new System.Drawing.Size(748, 435);
+            this.splitContainer1.SplitterDistance = 285;
             this.splitContainer1.TabIndex = 16;
             // 
             // tvModel
@@ -1195,7 +1220,7 @@
             this.tvModel.ShowLines = false;
             this.tvModel.ShowNodeToolTips = true;
             this.tvModel.ShowPlusMinus = false;
-            this.tvModel.Size = new System.Drawing.Size(385, 527);
+            this.tvModel.Size = new System.Drawing.Size(285, 410);
             this.tvModel.TabIndex = 19;
             this.tvModel.Text = "treeViewAdv1";
             this.tvModel.UseColumns = true;
@@ -1282,7 +1307,7 @@
             this.toolStripButton6});
             this.toolTreeView.Location = new System.Drawing.Point(0, 0);
             this.toolTreeView.Name = "toolTreeView";
-            this.toolTreeView.Size = new System.Drawing.Size(385, 25);
+            this.toolTreeView.Size = new System.Drawing.Size(285, 25);
             this.toolTreeView.Stretch = true;
             this.toolTreeView.TabIndex = 18;
             // 
@@ -1302,7 +1327,7 @@
             this.txtFilter.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtFilter.MaxLength = 50;
             this.txtFilter.Name = "txtFilter";
-            this.txtFilter.Size = new System.Drawing.Size(100, 23);
+            this.txtFilter.Size = new System.Drawing.Size(51, 23);
             this.txtFilter.ToolTipText = "Only show measures, columns and hierarchies containing the filter text";
             this.txtFilter.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtFilter_KeyDown);
             this.txtFilter.TextChanged += new System.EventHandler(this.txtFilter_TextChanged);
@@ -1327,8 +1352,8 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.propertyGrid1);
-            this.splitContainer2.Size = new System.Drawing.Size(620, 552);
-            this.splitContainer2.SplitterDistance = 267;
+            this.splitContainer2.Size = new System.Drawing.Size(459, 435);
+            this.splitContainer2.SplitterDistance = 209;
             this.splitContainer2.TabIndex = 15;
             // 
             // tabControl1
@@ -1339,7 +1364,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(620, 267);
+            this.tabControl1.Size = new System.Drawing.Size(459, 209);
             this.tabControl1.TabIndex = 2;
             // 
             // tabPage1
@@ -1350,7 +1375,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(612, 241);
+            this.tabPage1.Size = new System.Drawing.Size(451, 183);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "DAX Editor";
             // 
@@ -1386,7 +1411,7 @@
             this.txtExpression.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
             this.txtExpression.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtExpression.ServiceColors")));
             this.txtExpression.ShowLineNumbers = false;
-            this.txtExpression.Size = new System.Drawing.Size(606, 192);
+            this.txtExpression.Size = new System.Drawing.Size(445, 134);
             this.txtExpression.TabIndex = 23;
             this.txtExpression.Zoom = 100;
             // 
@@ -1397,7 +1422,7 @@
             this.lblCurrentMeasure.Location = new System.Drawing.Point(3, 28);
             this.lblCurrentMeasure.Name = "lblCurrentMeasure";
             this.lblCurrentMeasure.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-            this.lblCurrentMeasure.Size = new System.Drawing.Size(606, 18);
+            this.lblCurrentMeasure.Size = new System.Drawing.Size(445, 18);
             this.lblCurrentMeasure.TabIndex = 24;
             this.lblCurrentMeasure.Visible = false;
             this.lblCurrentMeasure.Paint += new System.Windows.Forms.PaintEventHandler(this.lblCurrentMeasure_Paint);
@@ -1418,7 +1443,7 @@
             this.toolStripButton2});
             this.toolStrip3.Location = new System.Drawing.Point(3, 3);
             this.toolStrip3.Name = "toolStrip3";
-            this.toolStrip3.Size = new System.Drawing.Size(606, 25);
+            this.toolStrip3.Size = new System.Drawing.Size(445, 25);
             this.toolStrip3.TabIndex = 22;
             this.toolStrip3.Text = "toolStrip3";
             // 
@@ -1444,7 +1469,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(612, 241);
+            this.tabPage2.Size = new System.Drawing.Size(451, 183);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Advanced Scripting";
             // 
@@ -1464,7 +1489,7 @@
             this.txtAdvanced.AutoIndentChars = false;
             this.txtAdvanced.AutoIndentCharsPatterns = "\r\n^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;]+);\r\n^\\s*(case|default)\\s*[^:]" +
     "*(?<range>:)\\s*(?<range>[^;]+);\r\n";
-            this.txtAdvanced.AutoScrollMinSize = new System.Drawing.Size(2, 14);
+            this.txtAdvanced.AutoScrollMinSize = new System.Drawing.Size(27, 14);
             this.txtAdvanced.BackBrush = null;
             this.txtAdvanced.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtAdvanced.BracketsHighlightStrategy = FastColoredTextBoxNS.BracketsHighlightStrategy.Strategy2;
@@ -1473,19 +1498,18 @@
             this.txtAdvanced.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtAdvanced.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
             this.txtAdvanced.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtAdvanced.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtAdvanced.IsReplaceMode = false;
             this.txtAdvanced.Language = FastColoredTextBoxNS.Language.CSharp;
             this.txtAdvanced.LeftBracket = '(';
             this.txtAdvanced.LeftBracket2 = '{';
-            this.txtAdvanced.Location = new System.Drawing.Point(3, 28);
+            this.txtAdvanced.Location = new System.Drawing.Point(3, 42);
             this.txtAdvanced.Name = "txtAdvanced";
             this.txtAdvanced.Paddings = new System.Windows.Forms.Padding(0);
             this.txtAdvanced.RightBracket = ')';
             this.txtAdvanced.RightBracket2 = '}';
             this.txtAdvanced.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
             this.txtAdvanced.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtAdvanced.ServiceColors")));
-            this.txtAdvanced.Size = new System.Drawing.Size(606, 210);
+            this.txtAdvanced.Size = new System.Drawing.Size(445, 138);
             this.txtAdvanced.TabIndex = 16;
             this.txtAdvanced.Zoom = 100;
             // 
@@ -1501,7 +1525,7 @@
             this.btnSaveCustomAction});
             this.toolStrip4.Location = new System.Drawing.Point(3, 3);
             this.toolStrip4.Name = "toolStrip4";
-            this.toolStrip4.Size = new System.Drawing.Size(606, 25);
+            this.toolStrip4.Size = new System.Drawing.Size(445, 39);
             this.toolStrip4.TabIndex = 15;
             this.toolStrip4.Text = "toolStrip4";
             // 
@@ -1513,7 +1537,7 @@
             this.btnUndoErrors.Image = global::TabularEditor.Resources.Undo_grey_16x;
             this.btnUndoErrors.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnUndoErrors.Name = "btnUndoErrors";
-            this.btnUndoErrors.Size = new System.Drawing.Size(117, 22);
+            this.btnUndoErrors.Size = new System.Drawing.Size(133, 36);
             this.btnUndoErrors.Text = "Rollback on error";
             this.btnUndoErrors.ToolTipText = "When auto-undo is enabled, changes done by the script will be rolled back in case" +
     " of errors.";
@@ -1521,7 +1545,7 @@
             // toolStripSeparator11
             // 
             this.toolStripSeparator11.Name = "toolStripSeparator11";
-            this.toolStripSeparator11.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator11.Size = new System.Drawing.Size(6, 39);
             // 
             // samplesMenu
             // 
@@ -1531,7 +1555,7 @@
             this.toolStripSeparator17});
             this.samplesMenu.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.samplesMenu.Name = "samplesMenu";
-            this.samplesMenu.Size = new System.Drawing.Size(64, 22);
+            this.samplesMenu.Size = new System.Drawing.Size(64, 36);
             this.samplesMenu.Text = "Samples";
             // 
             // customActionsToolStripMenuItem
@@ -1548,31 +1572,34 @@
             // toolStripSeparator15
             // 
             this.toolStripSeparator15.Name = "toolStripSeparator15";
-            this.toolStripSeparator15.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator15.Size = new System.Drawing.Size(6, 39);
             // 
             // propertyGrid1
             // 
             this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGrid1.LineColor = System.Drawing.SystemColors.ControlDark;
             this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(620, 281);
+            this.propertyGrid1.Size = new System.Drawing.Size(459, 222);
             this.propertyGrid1.TabIndex = 14;
             // 
             // tvMenu
             // 
             this.tvMenu.Enabled = false;
+            this.tvMenu.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.tvMenu.Name = "tvMenu";
             this.tvMenu.Size = new System.Drawing.Size(61, 4);
             // 
             // statusStrip1
             // 
+            this.statusStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblStatus,
             this.lblErrors,
             this.lblScriptStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 601);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 484);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1009, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(748, 22);
             this.statusStrip1.TabIndex = 17;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -1607,7 +1634,7 @@
             | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
             this.lblScriptStatus.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
             this.lblScriptStatus.Name = "lblScriptStatus";
-            this.lblScriptStatus.Size = new System.Drawing.Size(694, 17);
+            this.lblScriptStatus.Size = new System.Drawing.Size(433, 17);
             this.lblScriptStatus.Spring = true;
             this.lblScriptStatus.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -1621,13 +1648,14 @@
             this.toolsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1009, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(748, 24);
             this.menuStrip1.TabIndex = 18;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newModelToolStripMenuItem,
             this.openToolStripMenuItem1,
             this.toolStripMenuItem1,
             this.saveToolStripMenuItem,
@@ -1909,9 +1937,9 @@
             // 
             // FormMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1009, 623);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.ClientSize = new System.Drawing.Size(748, 506);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.toolStrip2);
             this.Controls.Add(this.statusStrip1);
@@ -2124,6 +2152,8 @@
         private Crad.Windows.Forms.Actions.Action actComment;
         private Crad.Windows.Forms.Actions.Action actUncomment;
         private UI.UIModelAction actSaveToFolder;
+        private Crad.Windows.Forms.Actions.Action actNewModel;
+        private System.Windows.Forms.ToolStripMenuItem newModelToolStripMenuItem;
     }
 }
 

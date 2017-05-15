@@ -18,12 +18,19 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.CalculatedColumn MetadataObject { get { return base.MetadataObject as TOM.CalculatedColumn; } internal set { base.MetadataObject = value; } }
 
+		/// <summary>
+		/// Creates a new CalculatedColumn and adds it to the parent Table.
+		/// This constructor also creates the underlying metadataobject and adds it to the TOM.
+		/// </summary>
 		public CalculatedColumn(Table parent) : base(parent.Handler, new TOM.CalculatedColumn(), false) {
 			MetadataObject.Name = parent.MetadataObject.Columns.GetNewName("New CalculatedColumn");
 			parent.Columns.Add(this);
 			Init();
 		}
 
+		/// <summary>
+		/// Constructs a wrapper for an existing CalculatedColumn metadataobject in the TOM.
+		/// </summary>
 		public CalculatedColumn(TabularModelHandler handler, TOM.CalculatedColumn calculatedcolumnMetadataObject) : base(handler, calculatedcolumnMetadataObject)
 		{
 		}

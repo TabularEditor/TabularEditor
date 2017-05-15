@@ -18,12 +18,19 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.SingleColumnRelationship MetadataObject { get { return base.MetadataObject as TOM.SingleColumnRelationship; } internal set { base.MetadataObject = value; } }
 
+		/// <summary>
+		/// Creates a new SingleColumnRelationship and adds it to the parent Model.
+		/// This constructor also creates the underlying metadataobject and adds it to the TOM.
+		/// </summary>
 		public SingleColumnRelationship(Model parent) : base(parent.Handler, new TOM.SingleColumnRelationship(), false) {
 			MetadataObject.Name = parent.MetadataObject.Relationships.GetNewName("New SingleColumnRelationship");
 			parent.Relationships.Add(this);
 			Init();
 		}
 
+		/// <summary>
+		/// Constructs a wrapper for an existing SingleColumnRelationship metadataobject in the TOM.
+		/// </summary>
 		public SingleColumnRelationship(TabularModelHandler handler, TOM.SingleColumnRelationship singlecolumnrelationshipMetadataObject) : base(handler, singlecolumnrelationshipMetadataObject)
 		{
 		}

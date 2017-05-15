@@ -24,7 +24,7 @@ namespace TabularEditor.UI
                 if (Selected.Count == 0) return;
 
                 string refs = "";
-                if (Selected.Count == 1)
+                if (Selected.Count == 1 && Selected.Context.HasX(Context.DataObjects))
                 {
                     var d = (Selected.FirstOrDefault() as IDaxObject);
                     if (d != null && d.Dependants.Count > 0)
@@ -34,6 +34,16 @@ namespace TabularEditor.UI
                     } else
                     {
                         refs = "\n\nThis object does not appear to be referenced in DAX expressions of other objects.";
+                    }
+                }
+
+                if(Selected.Context.HasX(Context.DataSource))
+                {
+                    if(Selected.DataSources.Any(ds => ds.UsedByPartitions.Any()))
+                    {
+                        MessageBox.Show(string.Format("The selected data source{0} are used by one or more tables. Delete the tables before deleting the data source.", Selected.Count > 1 ? "s" : ""),
+                            "Object in use", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                        return;
                     }
                 }
 

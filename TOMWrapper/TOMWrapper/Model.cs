@@ -73,6 +73,16 @@ namespace TabularEditor.TOMWrapper
             Handler.EndUpdate();
             return role;
         }
+
+        public ProviderDataSource AddDataSource(string name = null)
+        {
+            Handler.BeginUpdate("add data source");
+            var ds = new ProviderDataSource(this);
+            if (!string.IsNullOrEmpty(name)) ds.Name = name;
+            Handler.EndUpdate();
+            return ds;
+
+        }
         #endregion
         #region Convenient Collections
         [Browsable(false)]

@@ -18,12 +18,19 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.Partition MetadataObject { get { return base.MetadataObject as TOM.Partition; } internal set { base.MetadataObject = value; } }
 
+		/// <summary>
+		/// Creates a new Partition and adds it to the parent Table.
+		/// This constructor also creates the underlying metadataobject and adds it to the TOM.
+		/// </summary>
 		public Partition(Table parent) : base(parent.Handler, new TOM.Partition(), false) {
 			MetadataObject.Name = parent.MetadataObject.Partitions.GetNewName("New Partition");
 			parent.Partitions.Add(this);
 			Init();
 		}
 
+		/// <summary>
+		/// Constructs a wrapper for an existing Partition metadataobject in the TOM.
+		/// </summary>
 		public Partition(TabularModelHandler handler, TOM.Partition partitionMetadataObject) : base(handler, partitionMetadataObject)
 		{
 		}

@@ -18,12 +18,19 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.Hierarchy MetadataObject { get { return base.MetadataObject as TOM.Hierarchy; } internal set { base.MetadataObject = value; } }
 
+		/// <summary>
+		/// Creates a new Hierarchy and adds it to the parent Table.
+		/// This constructor also creates the underlying metadataobject and adds it to the TOM.
+		/// </summary>
 		public Hierarchy(Table parent) : base(parent.Handler, new TOM.Hierarchy(), false) {
 			MetadataObject.Name = parent.MetadataObject.Hierarchies.GetNewName("New Hierarchy");
 			parent.Hierarchies.Add(this);
 			Init();
 		}
 
+		/// <summary>
+		/// Constructs a wrapper for an existing Hierarchy metadataobject in the TOM.
+		/// </summary>
 		public Hierarchy(TabularModelHandler handler, TOM.Hierarchy hierarchyMetadataObject) : base(handler, hierarchyMetadataObject)
 		{
 		}

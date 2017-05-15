@@ -103,6 +103,22 @@ namespace TabularEditor.UI
         }
 
         /// <summary>
+        /// Returns true if context contains one or more of the specified flags.
+        /// </summary>
+        public static bool HasX(this Context context, Context flags)
+        {
+            return (context & flags) != 0;
+        }
+        /// <summary>
+        /// Returns true if context contains exactly one of the specified flags.
+        /// </summary>
+        public static bool Has1(this Context context, Context flags)
+        {
+            var x = (context & flags);
+            return x != 0 && (x & (x - 1)) == 0;
+        }
+
+        /// <summary>
         /// Returns the number of flags set.
         /// </summary>
         public static int Count(this Types types)
@@ -224,7 +240,8 @@ namespace TabularEditor.UI
 
         Everywhere = 0xFFFFFF,
         SingularObjects = Table | TableObject | Level | Partition | Relationship | DataSource | Role | Perspective | Translation,
-        Groups = Model | Tables | Relationships | DataSources | Roles | Perspectives | Translations
+        Groups = Model | Tables | Relationships | DataSources | Roles | Perspectives | Translations,
+        DataObjects = Table | TableObject
     }
 
     /// <summary>

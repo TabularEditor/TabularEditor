@@ -18,12 +18,19 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.Table MetadataObject { get { return base.MetadataObject as TOM.Table; } internal set { base.MetadataObject = value; } }
 
+		/// <summary>
+		/// Creates a new Table and adds it to the parent Model.
+		/// This constructor also creates the underlying metadataobject and adds it to the TOM.
+		/// </summary>
 		public Table(Model parent) : base(parent.Handler, new TOM.Table(), false) {
 			MetadataObject.Name = parent.MetadataObject.Tables.GetNewName("New Table");
 			parent.Tables.Add(this);
 			Init();
 		}
 
+		/// <summary>
+		/// Constructs a wrapper for an existing Table metadataobject in the TOM.
+		/// </summary>
 		public Table(TabularModelHandler handler, TOM.Table tableMetadataObject) : base(handler, tableMetadataObject)
 		{
 		}

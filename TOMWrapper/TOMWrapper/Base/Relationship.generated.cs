@@ -19,6 +19,9 @@ namespace TabularEditor.TOMWrapper
 	    protected internal new TOM.Relationship MetadataObject { get { return base.MetadataObject as TOM.Relationship; } internal set { base.MetadataObject = value; } }
 
 
+		/// <summary>
+		/// Constructs a wrapper for an existing Relationship metadataobject in the TOM.
+		/// </summary>
 		public Relationship(TabularModelHandler handler, TOM.Relationship relationshipMetadataObject, bool autoInit = true ) : base(handler, relationshipMetadataObject, autoInit )
 		{
 		}

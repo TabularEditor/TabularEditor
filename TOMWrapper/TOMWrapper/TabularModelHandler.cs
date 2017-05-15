@@ -5,7 +5,6 @@ using System.Linq;
 using TabularEditor.UndoFramework;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using Newtonsoft.Json.Linq;
-using TabularEditor.PropertyGridUI;
 using TabularEditor.TextServices;
 using Antlr4.Runtime;
 using System.Diagnostics;
@@ -356,6 +355,25 @@ namespace TabularEditor.TOMWrapper
 
         public ModelSourceType SourceType { get; private set; }
         public string Source { get; private set; }
+
+        /// <summary>
+        /// Creates a new blank Tabular Model
+        /// </summary>
+        public TabularModelHandler()
+        {
+            Singleton = this;
+            server = null;
+
+            database = new TOM.Database("New Tabular Database");
+            database.Model = new TOM.Model();
+
+            SourceType = ModelSourceType.File;
+            Source = "Model.bim";
+
+            Status = "Succesfully created new model.";
+            Init();
+        }
+
 
         /// <summary>
         /// Loads an Analysis Services tabular database (Compatibility Level 1200 or newer) from a file

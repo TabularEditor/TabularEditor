@@ -19,6 +19,9 @@ namespace TabularEditor.TOMWrapper
 	    protected internal new TOM.KPI MetadataObject { get { return base.MetadataObject as TOM.KPI; } internal set { base.MetadataObject = value; } }
 
 
+		/// <summary>
+		/// Constructs a wrapper for an existing KPI metadataobject in the TOM.
+		/// </summary>
 		public KPI(TabularModelHandler handler, TOM.KPI kpiMetadataObject) : base(handler, kpiMetadataObject)
 		{
 		}

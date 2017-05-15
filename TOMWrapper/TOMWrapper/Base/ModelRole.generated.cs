@@ -18,12 +18,19 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.ModelRole MetadataObject { get { return base.MetadataObject as TOM.ModelRole; } internal set { base.MetadataObject = value; } }
 
+		/// <summary>
+		/// Creates a new ModelRole and adds it to the parent Model.
+		/// This constructor also creates the underlying metadataobject and adds it to the TOM.
+		/// </summary>
 		public ModelRole(Model parent) : base(parent.Handler, new TOM.ModelRole(), false) {
 			MetadataObject.Name = parent.MetadataObject.Roles.GetNewName("New ModelRole");
 			parent.Roles.Add(this);
 			Init();
 		}
 
+		/// <summary>
+		/// Constructs a wrapper for an existing ModelRole metadataobject in the TOM.
+		/// </summary>
 		public ModelRole(TabularModelHandler handler, TOM.ModelRole modelroleMetadataObject) : base(handler, modelroleMetadataObject)
 		{
 		}

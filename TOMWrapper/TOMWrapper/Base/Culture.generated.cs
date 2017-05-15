@@ -18,12 +18,19 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.Culture MetadataObject { get { return base.MetadataObject as TOM.Culture; } internal set { base.MetadataObject = value; } }
 
+		/// <summary>
+		/// Creates a new Culture and adds it to the parent Model.
+		/// This constructor also creates the underlying metadataobject and adds it to the TOM.
+		/// </summary>
 		public Culture(Model parent) : base(parent.Handler, new TOM.Culture(), false) {
 			MetadataObject.Name = parent.MetadataObject.Cultures.GetNewName("New Culture");
 			parent.Cultures.Add(this);
 			Init();
 		}
 
+		/// <summary>
+		/// Constructs a wrapper for an existing Culture metadataobject in the TOM.
+		/// </summary>
 		public Culture(TabularModelHandler handler, TOM.Culture cultureMetadataObject) : base(handler, cultureMetadataObject)
 		{
 		}

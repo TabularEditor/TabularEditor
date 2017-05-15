@@ -18,12 +18,19 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.ProviderDataSource MetadataObject { get { return base.MetadataObject as TOM.ProviderDataSource; } internal set { base.MetadataObject = value; } }
 
+		/// <summary>
+		/// Creates a new ProviderDataSource and adds it to the parent Model.
+		/// This constructor also creates the underlying metadataobject and adds it to the TOM.
+		/// </summary>
 		public ProviderDataSource(Model parent) : base(parent.Handler, new TOM.ProviderDataSource(), false) {
 			MetadataObject.Name = parent.MetadataObject.DataSources.GetNewName("New ProviderDataSource");
 			parent.DataSources.Add(this);
 			Init();
 		}
 
+		/// <summary>
+		/// Constructs a wrapper for an existing ProviderDataSource metadataobject in the TOM.
+		/// </summary>
 		public ProviderDataSource(TabularModelHandler handler, TOM.ProviderDataSource providerdatasourceMetadataObject) : base(handler, providerdatasourceMetadataObject)
 		{
 		}

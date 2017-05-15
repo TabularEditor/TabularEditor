@@ -18,12 +18,19 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.DataColumn MetadataObject { get { return base.MetadataObject as TOM.DataColumn; } internal set { base.MetadataObject = value; } }
 
+		/// <summary>
+		/// Creates a new DataColumn and adds it to the parent Table.
+		/// This constructor also creates the underlying metadataobject and adds it to the TOM.
+		/// </summary>
 		public DataColumn(Table parent) : base(parent.Handler, new TOM.DataColumn(), false) {
 			MetadataObject.Name = parent.MetadataObject.Columns.GetNewName("New DataColumn");
 			parent.Columns.Add(this);
 			Init();
 		}
 
+		/// <summary>
+		/// Constructs a wrapper for an existing DataColumn metadataobject in the TOM.
+		/// </summary>
 		public DataColumn(TabularModelHandler handler, TOM.DataColumn datacolumnMetadataObject) : base(handler, datacolumnMetadataObject)
 		{
 		}

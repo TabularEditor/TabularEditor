@@ -20,3 +20,6 @@
 /packages
 /.vs/TabularEditor/v14
 /TabularEditor/publish
+/.vs
+/.vs
+*.suo

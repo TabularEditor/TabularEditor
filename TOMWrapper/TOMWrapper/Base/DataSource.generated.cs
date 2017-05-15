@@ -19,6 +19,9 @@ namespace TabularEditor.TOMWrapper
 	    protected internal new TOM.DataSource MetadataObject { get { return base.MetadataObject as TOM.DataSource; } internal set { base.MetadataObject = value; } }
 
 
+		/// <summary>
+		/// Constructs a wrapper for an existing DataSource metadataobject in the TOM.
+		/// </summary>
 		public DataSource(TabularModelHandler handler, TOM.DataSource datasourceMetadataObject, bool autoInit = true ) : base(handler, datasourceMetadataObject, autoInit )
 		{
 		}

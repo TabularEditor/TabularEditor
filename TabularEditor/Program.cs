@@ -282,7 +282,7 @@ namespace TabularEditor
                     foreach (var err in deploymentResult.Issues) Issue(err);
                     foreach (var err in deploymentResult.Warnings) Warning(err);
                     foreach (var err in deploymentResult.Unprocessed)
-                        if (warnOnUnprocessed) Warning(err); else Console.WriteLine(err);
+                        if (warnOnUnprocessed) Warning(err); else cw.WriteLine(err);
                 }
                 catch (Exception ex)
                 {
