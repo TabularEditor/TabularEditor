@@ -7,9 +7,12 @@ using System.Threading.Tasks;
 
 namespace TabularEditor.TOMWrapper
 {
+    /// <summary>
+    /// Objects that can be cloned
+    /// </summary>
     public interface IClonableObject
     {
-        TabularNamedObject Clone(string newName, bool includeTranslations);
+        TabularNamedObject Clone(string newName, bool includeTranslations = false, TabularNamedObject newParent = null);
     }
 
     public interface ITabularObject: INotifyPropertyChanged
@@ -18,10 +21,18 @@ namespace TabularEditor.TOMWrapper
         Model Model { get; }
     }
 
+    /// <summary>
+    /// Objects whose name and description properties can be translated
+    /// </summary>
+    public interface ITranslatableObject
+    {
+        TranslationIndexer TranslatedNames { get; }
+        TranslationIndexer TranslatedDescriptions { get; }
+    }
+
     public interface ITabularNamedObject : ITabularObject
     {
         string Name { get; set; }
-        TranslationIndexer TranslatedNames { get; }
         int MetadataIndex { get; }
     }
 
@@ -49,7 +60,6 @@ namespace TabularEditor.TOMWrapper
     public interface IDescriptionObject
     {
         string Description { get; set; }
-        TranslationIndexer TranslatedDescriptions { get; }
     }
 
     /// <summary>
@@ -60,12 +70,18 @@ namespace TabularEditor.TOMWrapper
         string ErrorMessage { get; }
     }
 
+    /// <summary>
+    /// Objects that have annotations
+    /// </summary>
     public interface IAnnotationObject: ITabularObject
     {
         string GetAnnotation(string name);
         void SetAnnotation(string name, string value, bool undoable = true);
     }
 
+    /// <summary>
+    /// Objects that have a DAX expression (measure, calculated column, calculated table)
+    /// </summary>
     public interface IExpressionObject: IDaxObject
     {
         string Expression { get; set; }
@@ -82,6 +98,9 @@ namespace TabularEditor.TOMWrapper
         void Delete();
     }
 
+    /// <summary>
+    /// Objects that can be referenced in a DAX expression (table, column, measure)
+    /// </summary>
     public interface IDaxObject: ITabularNamedObject
     {
         string DaxObjectName { get; }

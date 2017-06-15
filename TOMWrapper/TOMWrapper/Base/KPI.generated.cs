@@ -14,17 +14,13 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for KPI
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class KPI: TabularObject, IDescriptionObject, IAnnotationObject
+	public partial class KPI: TabularObject
+			, IDescriptionObject
+			, IAnnotationObject
+			, ITranslatableObject
 	{
 	    protected internal new TOM.KPI MetadataObject { get { return base.MetadataObject as TOM.KPI; } internal set { base.MetadataObject = value; } }
 
-
-		/// <summary>
-		/// Constructs a wrapper for an existing KPI metadataobject in the TOM.
-		/// </summary>
-		public KPI(TabularModelHandler handler, TOM.KPI kpiMetadataObject) : base(handler, kpiMetadataObject)
-		{
-		}
 		public string GetAnnotation(string name) {
 		    return MetadataObject.Annotations.Find(name)?.Value;
 		}
@@ -58,11 +54,6 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
-        /// <summary>
-        /// Collection of localized descriptions for this KPI.
-        /// </summary>
-        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
-	    public new TranslationIndexer TranslatedDescriptions { get { return base.TranslatedDescriptions; } }
         /// <summary>
         /// Gets or sets the TargetDescription of the KPI.
         /// </summary>
@@ -274,5 +265,52 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeMeasure() { return false; }
+
+        /// <summary>
+        /// Collection of localized descriptions for this KPI.
+        /// </summary>
+        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
+	    public TranslationIndexer TranslatedDescriptions { private set; get; }
+        /// <summary>
+        /// Collection of localized names for this KPI.
+        /// </summary>
+        [Browsable(true),DisplayName("Names"),Category("Translations and Perspectives")]
+	    public TranslationIndexer TranslatedNames { private set; get; }
+
+
+	
+        internal override void RenewMetadataObject()
+        {
+            var tom = new TOM.KPI();
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject.CopyTo(tom);
+            MetadataObject = tom;
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+
+		/// <summary>
+		/// Creates a KPI object representing an existing TOM KPI.
+		/// </summary>
+		internal KPI(TOM.KPI metadataObject) : base(metadataObject)
+		{
+			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
+			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
+		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				
+				// Hides translation properties in the grid, unless the model actually contains translations:
+				case "TranslatedNames":
+				case "TranslatedDescriptions":
+					return Model.Cultures.Any();
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 }

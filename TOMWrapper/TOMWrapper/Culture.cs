@@ -10,7 +10,7 @@ using TabularEditor.UndoFramework;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class Culture: IDynamicPropertyObject
+    public partial class Culture
     {
         #region Translation Statistics
         [DisplayName("Translated Measure Names"),Browsable(true),Category("Translation Statistics")]
@@ -103,42 +103,12 @@ namespace TabularEditor.TOMWrapper
 
         #endregion
 
-        public override TabularNamedObject Clone(string newName, bool includeTranslations)
-        {
-            Handler.BeginUpdate("duplicate translation");
-            var tom = MetadataObject.Clone();
-            tom.IsRemoved = false;
-            tom.Name = newName;
-            var c = new Culture(Handler, tom);
-            Model.Cultures.Add(c);
-
-            Handler.EndUpdate();
-
-            return c;
-        }
-
-
-        internal override void Undelete(ITabularObjectCollection collection)
-        {
-            var tom = new TOM.Culture();
-            MetadataObject.CopyTo(tom);
-            tom.IsRemoved = false;
-            MetadataObject = tom;
-
-            base.Undelete(collection);
-        }
-
         [Browsable(false)]
-        public bool Unassigned { get; private set; } = false;
+        public bool Unassigned { get; private set; } = true;
 
-        public Culture() : base(TabularModelHandler.Singleton, new Microsoft.AnalysisServices.Tabular.Culture() { Name = TabularModelHandler.Singleton.Model.Cultures.MetadataObjectCollection.GetNewName("Culture") }, false)
+        public Culture(string cultureId): base(new TOM.Culture() { Name = cultureId })
         {
-            Unassigned = true;
-        }
-
-        public Culture(string cultureId): base(TabularModelHandler.Singleton, new TOM.Culture() { Name = cultureId }, false)
-        {
-
+            Unassigned = false;
         }
 
         [Browsable(false)]
@@ -159,7 +129,7 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public ObjectTranslationCollection ObjectTranslations { get { return MetadataObject.ObjectTranslations; } }
 
-        public bool Browsable(string propertyName)
+        protected override bool IsBrowsable(string propertyName)
         {
             switch(propertyName)
             {
@@ -171,7 +141,7 @@ namespace TabularEditor.TOMWrapper
             
         }
 
-        public bool Editable(string propertyName)
+        protected override bool IsEditable(string propertyName)
         {
             return propertyName == "Name";
         }

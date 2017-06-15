@@ -14,17 +14,18 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Column
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public abstract partial class Column: TabularNamedObject, IDetailObject, IHideableObject, IErrorMessageObject, ITabularTableObject, IDescriptionObject, IAnnotationObject
+	public abstract partial class Column: TabularNamedObject
+			, IDetailObject
+			, IHideableObject
+			, IErrorMessageObject
+			, ITabularTableObject
+			, IDescriptionObject
+			, IAnnotationObject
+			, ITabularPerspectiveObject
+			, ITranslatableObject
 	{
 	    protected internal new TOM.Column MetadataObject { get { return base.MetadataObject as TOM.Column; } internal set { base.MetadataObject = value; } }
 
-
-		/// <summary>
-		/// Constructs a wrapper for an existing Column metadataobject in the TOM.
-		/// </summary>
-		public Column(TabularModelHandler handler, TOM.Column columnMetadataObject, bool autoInit = true ) : base(handler, columnMetadataObject, autoInit )
-		{
-		}
         /// <summary>
         /// Gets or sets the DataType of the Column.
         /// </summary>
@@ -102,11 +103,6 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
-        /// <summary>
-        /// Collection of localized descriptions for this Column.
-        /// </summary>
-        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
-	    public new TranslationIndexer TranslatedDescriptions { get { return base.TranslatedDescriptions; } }
         /// <summary>
         /// Gets or sets the IsHidden of the Column.
         /// </summary>
@@ -479,7 +475,7 @@ namespace TabularEditor.TOMWrapper
         /// Collection of localized Display Folders for this Column.
         /// </summary>
         [Browsable(true),DisplayName("Display Folders"),Category("Translations and Perspectives")]
-	    public new TranslationIndexer TranslatedDisplayFolders { get { return base.TranslatedDisplayFolders; } }
+	    public TranslationIndexer TranslatedDisplayFolders { private set; get; }
 		[Browsable(false)]
 		public Table Table
 		{ 
@@ -516,7 +512,55 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeSortByColumn() { return false; }
+
+        /// <Summary>
+		/// Collection of perspectives in which this Column is visible.
+		/// </Summary>
+		[Browsable(true),DisplayName("Perspectives"), Category("Translations and Perspectives")]
+        public PerspectiveIndexer InPerspective { get; private set; }
+        /// <summary>
+        /// Collection of localized descriptions for this Column.
+        /// </summary>
+        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
+	    public TranslationIndexer TranslatedDescriptions { private set; get; }
+        /// <summary>
+        /// Collection of localized names for this Column.
+        /// </summary>
+        [Browsable(true),DisplayName("Names"),Category("Translations and Perspectives")]
+	    public TranslationIndexer TranslatedNames { private set; get; }
+
+
+		/// <summary>
+		/// Creates a Column object representing an existing TOM Column.
+		/// </summary>
+		internal Column(TOM.Column metadataObject) : base(metadataObject)
+		{
+			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
+			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
+			TranslatedDisplayFolders = new TranslationIndexer(this, TOM.TranslatedProperty.DisplayFolder);
+			InPerspective = new PerspectiveColumnIndexer(this);
+		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				
+				// Hides translation properties in the grid, unless the model actually contains translations:
+				case "TranslatedNames":
+				case "TranslatedDescriptions":
+				case "TranslatedDisplayFolders":
+					return Model.Cultures.Any();
+				
+				// Hides the perspective property in the grid, unless the model actually contains perspectives:
+				case "InPerspective":
+					return Model.Perspectives.Any();
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 
 	/// <summary>
 	/// Collection class for Column. Provides convenient properties for setting a property on multiple objects at once.
@@ -525,16 +569,16 @@ namespace TabularEditor.TOMWrapper
 	{
 		public Table Parent { get; private set; }
 
-		public ColumnCollection(TabularModelHandler handler, string collectionName, TOM.ColumnCollection metadataObjectCollection, Table parent) : base(handler, collectionName, metadataObjectCollection)
+		public ColumnCollection(string collectionName, TOM.ColumnCollection metadataObjectCollection, Table parent) : base(collectionName, metadataObjectCollection)
 		{
 			Parent = parent;
 
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				switch(obj.Type) {
-				    case TOM.ColumnType.Data: new DataColumn(handler, obj as TOM.DataColumn) { Collection = this }; break;
-					case TOM.ColumnType.Calculated: new CalculatedColumn(handler, obj as TOM.CalculatedColumn) { Collection = this }; break;
-					case TOM.ColumnType.CalculatedTableColumn: new CalculatedTableColumn(handler, obj as TOM.CalculatedTableColumn) { Collection = this }; break;
+				    case TOM.ColumnType.Data: new DataColumn(obj as TOM.DataColumn) { Collection = this }; break;
+					case TOM.ColumnType.Calculated: new CalculatedColumn(obj as TOM.CalculatedColumn) { Collection = this }; break;
+					case TOM.ColumnType.CalculatedTableColumn: new CalculatedTableColumn(obj as TOM.CalculatedTableColumn) { Collection = this }; break;
 					default: break;
 				}
 			}

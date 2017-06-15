@@ -208,9 +208,9 @@ namespace TabularEditor.UI
                     try
                     {
                         obj.Name = rgc.Replace(obj.Name, replacement);
-                        if(includeNameTranslations)
+                        if(includeNameTranslations && obj is ITranslatableObject)
                         {
-                            var trans = obj.TranslatedNames;
+                            var trans = (obj as ITranslatableObject).TranslatedNames;
                             foreach (var culture in trans.Keys)
                             {
                                 if (!string.IsNullOrEmpty(trans[culture])) trans[culture] = rgc.Replace(trans[culture], replacement);
@@ -228,9 +228,9 @@ namespace TabularEditor.UI
                     try
                     {
                         obj.Name = obj.Name.Replace(pattern, replacement);
-                        if (includeNameTranslations)
+                        if (includeNameTranslations && obj is ITranslatableObject)
                         {
-                            var trans = obj.TranslatedNames;
+                            var trans = (obj as ITranslatableObject).TranslatedNames;
                             foreach (var culture in trans.Keys)
                             {
                                 if (!string.IsNullOrEmpty(trans[culture])) trans[culture] = trans[culture].Replace(pattern, replacement);

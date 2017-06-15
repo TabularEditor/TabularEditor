@@ -18,6 +18,27 @@ namespace TabularEditor.UI
     {
         TabularNodeTextBox TreeView_NameCol;
 
+        public void Goto(TabularNamedObject obj)
+        {
+            if (!Tree.VisibleInTree(obj))
+            {
+                Tree.BeginUpdate();
+                Tree.Options = LogicalTreeOptions.Default | LogicalTreeOptions.ShowHidden;
+                Tree.Filter = "";
+                UI.FormMain.UpdateTreeUIButtons();
+                Tree.EndUpdate();
+            }
+
+            var node = UI.TreeView.FindNodeByTag(obj);
+            if (node != null)
+            {
+                UI.TreeView.EnsureVisible(node);
+                UI.TreeView.SelectedNode = node;
+                UI.FormMain.Activate();
+                UI.TreeView.Focus();
+            }
+        }
+
         private void Tree_Init()
         {
             // Set up custom node controls:

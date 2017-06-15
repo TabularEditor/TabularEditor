@@ -9,16 +9,11 @@ namespace TabularEditor.TOMWrapper
 {
     public partial class Perspective
     {
-        public Perspective() : base(TabularModelHandler.Singleton, new TOM.Perspective() { Name = TabularModelHandler.Singleton.Model.Perspectives.MetadataObjectCollection.GetNewName("Perspective") }, false )
-        {
-
-        }
-
-        public override TabularNamedObject Clone(string newName, bool includeTranslations)
+        /*public override TabularNamedObject Clone(string newName, bool includeTranslations)
         {
             Handler.BeginUpdate("duplicate perspective");
             var tom = MetadataObject.Clone();
-            tom.IsRemoved = false;
+            //tom.IsRemoved = false;
             tom.Name = Model.Perspectives.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
             var p = new Perspective(Handler, tom);
             Model.Perspectives.Add(p);
@@ -36,21 +31,6 @@ namespace TabularEditor.TOMWrapper
             Handler.EndUpdate();
 
             return p;
-        }
-
-        public override void Delete()
-        {
-            if (Collection != null) Collection.Remove(this);
-        }
-
-        internal override void Undelete(ITabularObjectCollection collection)
-        {
-            var tom = new TOM.Perspective();
-            MetadataObject.CopyTo(tom);
-            tom.IsRemoved = false;
-            MetadataObject = tom;
-
-            base.Undelete(collection);
-        }
+        }*/
     }
 }

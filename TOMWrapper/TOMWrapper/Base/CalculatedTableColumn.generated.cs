@@ -15,25 +15,10 @@ namespace TabularEditor.TOMWrapper
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public partial class CalculatedTableColumn: Column
+			, IClonableObject
 	{
 	    protected internal new TOM.CalculatedTableColumn MetadataObject { get { return base.MetadataObject as TOM.CalculatedTableColumn; } internal set { base.MetadataObject = value; } }
 
-		/// <summary>
-		/// Creates a new CalculatedTableColumn and adds it to the parent Table.
-		/// This constructor also creates the underlying metadataobject and adds it to the TOM.
-		/// </summary>
-		public CalculatedTableColumn(Table parent) : base(parent.Handler, new TOM.CalculatedTableColumn(), false) {
-			MetadataObject.Name = parent.MetadataObject.Columns.GetNewName("New CalculatedTableColumn");
-			parent.Columns.Add(this);
-			Init();
-		}
-
-		/// <summary>
-		/// Constructs a wrapper for an existing CalculatedTableColumn metadataobject in the TOM.
-		/// </summary>
-		public CalculatedTableColumn(TabularModelHandler handler, TOM.CalculatedTableColumn calculatedtablecolumnMetadataObject) : base(handler, calculatedtablecolumnMetadataObject)
-		{
-		}
         /// <summary>
         /// Gets or sets the IsNameInferred of the CalculatedTableColumn.
         /// </summary>
@@ -113,5 +98,97 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeColumnOrigin() { return false; }
+
+
+
+		/// <summary>
+		/// Creates a new CalculatedTableColumn and adds it to the parent Table.
+		/// </summary>
+		public CalculatedTableColumn(Table parent, string name = null) : this(new TOM.CalculatedTableColumn()) {
+			
+			MetadataObject.Name = GetNewName(parent.MetadataObject.Columns, string.IsNullOrWhiteSpace(name) ? "New CalculatedTableColumn" : name);
+
+			parent.Columns.Add(this);
+		}
+
+
+		/// <summary>
+		/// Creates an exact copy of this CalculatedTableColumn object.
+		/// </summary>
+		/// 
+		public CalculatedTableColumn Clone(string newName = null, bool includeTranslations = true, Table newParent = null) {
+		    Handler.BeginUpdate("Clone CalculatedTableColumn");
+
+				// Create a clone of the underlying metadataobject:
+				var tom = MetadataObject.Clone() as TOM.CalculatedTableColumn;
+
+				// Assign a new, unique name:
+				tom.Name = Parent.Columns.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				
+				// Create the TOM Wrapper object, representing the metadataobject:
+				var obj = new CalculatedTableColumn(tom);
+
+				// Add the object to the parent collection:
+				if(newParent != null) 
+					newParent.Columns.Add(obj);
+				else
+    				Parent.Columns.Add(obj);
+
+				// Copy translations, if applicable:
+				if(includeTranslations) {
+					obj.TranslatedNames.CopyFrom(TranslatedNames);
+					obj.TranslatedDescriptions.CopyFrom(TranslatedDescriptions);
+					obj.TranslatedDisplayFolders.CopyFrom(TranslatedDisplayFolders);
+				}
+				
+				// Copy perspectives:
+				obj.InPerspective.CopyFrom(InPerspective);
+
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
+			return Clone(newName);
+		}
+
+	
+        internal override void RenewMetadataObject()
+        {
+            var tom = new TOM.CalculatedTableColumn();
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject.CopyTo(tom);
+            MetadataObject = tom;
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+
+		public Table Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Table;
+			}
+		}
+
+		/// <summary>
+		/// Creates a CalculatedTableColumn object representing an existing TOM CalculatedTableColumn.
+		/// </summary>
+		internal CalculatedTableColumn(TOM.CalculatedTableColumn metadataObject) : base(metadataObject)
+		{
+		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				case "Parent":
+					return false;
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 }

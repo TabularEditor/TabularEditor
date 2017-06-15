@@ -1,53 +1,64 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using TabularEditor.PropertyGridUI;
+using TabularEditor.UndoFramework;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class Measure : ITabularPerspectiveObject, IDaxObject, IDynamicPropertyObject, IClonableObject
+    public partial class Measure : IDaxObject
     {
         [Browsable(false)]
         public Dictionary<IDaxObject, List<Dependency>> Dependencies { get; internal set; } = new Dictionary<IDaxObject, List<Dependency>>();
         [Browsable(false)]
         public HashSet<IExpressionObject> Dependants { get; private set; } = new HashSet<IExpressionObject>();
 
-
-        [Browsable(true), DisplayName("Perspectives"), Category("Translations and Perspectives")]
-        public PerspectiveIndexer InPerspective { get; private set; }
-
-        [IntelliSense("Deletes the measure from the table.")]
-        public override void Delete()
+        protected override void Cleanup()
         {
-            InPerspective.None();
-            base.Delete();
+            if (KPI != null) KPI.Delete();
+            base.Cleanup();
+        }
 
-            if (KPI != null) Handler.WrapperLookup.Remove(MetadataObject.KPI);
+        protected override string GetNewName<T, P>(TOM.NamedMetadataObjectCollection<T, P> col, string prefix = null)
+        {
+            // For measures, we must ensure that the new measure name is unique across all tables,
+            // which is why we have to override the GetNewName method here.
+
+            if (string.IsNullOrWhiteSpace(prefix)) prefix = "New Measure";
+
+            string testName = prefix;
+            int suffix = 0;
+
+            // Loop to determine if prefix + suffix is already in use - break, when we find a name
+            // that's not being used anywhere:
+            while (Model.AllMeasures.Any(m => m.Name.Equals(testName, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                suffix++;
+                testName = prefix + " " + suffix;
+            }
+            return testName;
         }
 
         internal override void Undelete(ITabularObjectCollection collection)
         {
-            var tom = new TOM.Measure();
-            MetadataObject.CopyTo(tom);
-            tom.IsRemoved = false;
-            MetadataObject = tom;
+            base.Undelete(collection);
 
             if (MetadataObject.KPI != null)
             {
-                new KPI(Handler, MetadataObject.KPI);
+                new KPI(MetadataObject.KPI);
             }
 
-            base.Undelete(collection);
         }
 
-        public TabularNamedObject CloneTo(Table table, string newName = null, bool includeTranslations = true)
+        /*public TabularNamedObject CloneTo(Table table, string newName = null, bool includeTranslations = true)
         {
             Handler.BeginUpdate("duplicate measure");
             var tom = MetadataObject.Clone();
-            tom.IsRemoved = false;
+            ////tom.IsRemoved = false;
             tom.Name = table.Measures.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-            var m = new Measure(Handler, tom);
+            var m = new Measure(tom);
             table.Measures.Add(m);
 
             if (includeTranslations)
@@ -64,17 +75,16 @@ namespace TabularEditor.TOMWrapper
             Handler.EndUpdate();
 
             return m;
-        }
+        }*/
 
-        public override TabularNamedObject Clone(string newName = null, bool includeTranslations = true)
+        /*public override TabularNamedObject Clone(string newName = null, bool includeTranslations = true)
         {
             return CloneTo(Table, newName, includeTranslations);
-        }
+        }*/
 
         protected override void Init()
         {
-            if (MetadataObject.KPI != null) new KPI(Handler, MetadataObject.KPI);
-            InPerspective = new PerspectiveMeasureIndexer(this);
+            if (MetadataObject.KPI != null) new KPI(MetadataObject.KPI);
         }
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
@@ -109,19 +119,46 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public bool NeedsValidation { get; set; } = false;
         
-        public bool Browsable(string propertyName)
+        protected override bool IsBrowsable(string propertyName)
         {
             switch (propertyName) {
                 case "FormatString": return DataType != TOM.DataType.String;
+                case "DetailRowsExpression":
+                    return Model.Database.CompatibilityLevel >= 1400;
                 default: return true;
             }
         }
 
-        public bool Editable(string propertyName)
+#if CL1400
+        [DisplayName("Detail Rows Expression")]
+        [Category("Options"), IntelliSense("A DAX expression specifying detail rows for this measure (drill-through in client tools).")]
+        [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        public string DetailRowsExpression
         {
-            if (propertyName == "DisplayFolder" && Expression == "test") return false;
-            return true;
+            get
+            {
+                return MetadataObject.DetailRowsDefinition?.Expression;
+            }
+            set
+            {
+                var oldValue = DetailRowsExpression;
+
+                if (oldValue == value) return;
+
+                bool undoable = true;
+                bool cancel = false;
+                OnPropertyChanging("DetailRowsExpression", value, ref undoable, ref cancel);
+                if (cancel) return;
+
+                if (MetadataObject.DetailRowsDefinition == null) MetadataObject.DetailRowsDefinition = new TOM.DetailRowsDefinition();
+                MetadataObject.DetailRowsDefinition.Expression = value;
+                if (string.IsNullOrWhiteSpace(value)) MetadataObject.DetailRowsDefinition = null;
+
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "DetailRowsExpression", oldValue, value));
+                OnPropertyChanged("DetailRowsExpression", oldValue, value);
+            }
         }
+#endif
 
         [Browsable(false)]
         public string DaxObjectName

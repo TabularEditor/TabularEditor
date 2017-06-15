@@ -9,22 +9,21 @@ using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.PropertyGridUI
 {
-    public class DataSourceConverter : TypeConverter
+    public class AllRelationshipConverter : TypeConverter
     {
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
         {
-            return context.Instance is Partition || context.Instance is Partition[];
+            return true;
         }
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-            return new StandardValuesCollection(Model(context).DataSources.OfType<ProviderDataSource>().ToList());
+            return new StandardValuesCollection(GetModel(context).Relationships.OrderBy(r => r.Name).ToList());
         }
 
-        private Model Model(ITypeDescriptorContext context)
+        private Model GetModel(ITypeDescriptorContext context)
         {
-            if (context.Instance is ITabularObject) return (context.Instance as ITabularObject).Model;
-            if (context.Instance is ITabularObject[]) return (context.Instance as ITabularObject[]).First()?.Model;
-            return null;
+            if (context.Instance is ITabularNamedObject[]) return (context.Instance as ITabularNamedObject[]).First().Model;
+            else return (context.Instance as ITabularNamedObject).Model;
         }
 
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
@@ -42,10 +41,8 @@ namespace TabularEditor.PropertyGridUI
                 var name = (string)value;
                 if (string.IsNullOrEmpty(name)) return null;
 
-                var model = Model(context);
-                if (!model.DataSources.Contains(name)) throw new ArgumentException(string.Format("The model does not contain a Data Source named \"{0}\"", name), context.PropertyDescriptor.Name);
-
-                return model.DataSources[name];
+                var model = GetModel(context);
+                return model.Relationships.FirstOrDefault(r => r.Name == name);
             }
             else
                 return base.ConvertFrom(context, culture, value);
@@ -63,7 +60,7 @@ namespace TabularEditor.PropertyGridUI
         {
             if (destinationType == typeof(string))
             {
-                return (value as DataSource)?.Name;
+                return (value as Relationship)?.Name;
             }
             return base.ConvertTo(context, culture, value, destinationType);
         }

@@ -6,11 +6,12 @@ using System.Drawing.Design;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.TextServices;
+using TabularEditor.UndoFramework;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    partial class Table: ITabularObjectContainer, IDetailObjectContainer, ITabularPerspectiveObject, IDaxObject, IDynamicPropertyObject,
+    partial class Table: ITabularObjectContainer, IDetailObjectContainer, ITabularPerspectiveObject, IDaxObject,
         IErrorMessageObject
     {
         [Browsable(false)]
@@ -21,8 +22,7 @@ namespace TabularEditor.TOMWrapper
         public Measure AddMeasure(string name = null, string expression = null, string displayFolder = null)
         {
             Handler.BeginUpdate("add measure");
-            var measure = new Measure(this);
-            if (!string.IsNullOrEmpty(name)) measure.Name = name;
+            var measure = new Measure(this, name);
             if (!string.IsNullOrEmpty(expression)) measure.Expression = expression;
             if (!string.IsNullOrEmpty(displayFolder)) measure.DisplayFolder = displayFolder;
             Handler.EndUpdate();
@@ -33,8 +33,7 @@ namespace TabularEditor.TOMWrapper
         public CalculatedColumn AddCalculatedColumn(string name = null, string expression = null, string displayFolder = null)
         {
             Handler.BeginUpdate("add calculated column");
-            var column = new CalculatedColumn(this);
-            if (!string.IsNullOrEmpty(name)) column.Name = name;
+            var column = new CalculatedColumn(this, name);
             if (!string.IsNullOrEmpty(expression)) column.Expression = expression;
             if (!string.IsNullOrEmpty(displayFolder)) column.DisplayFolder = displayFolder;
             Handler.EndUpdate();
@@ -45,9 +44,8 @@ namespace TabularEditor.TOMWrapper
         public DataColumn AddDataColumn(string name = null, string sourceColumn = null, string displayFolder = null)
         {
             Handler.BeginUpdate("add Data column");
-            var column = new DataColumn(this);
+            var column = new DataColumn(this, name);
             column.DataType = TOM.DataType.String;
-            if (!string.IsNullOrEmpty(name)) column.Name = name;
             if (!string.IsNullOrEmpty(sourceColumn)) column.SourceColumn = sourceColumn;
             if (!string.IsNullOrEmpty(displayFolder)) column.DisplayFolder = displayFolder;
             Handler.EndUpdate();
@@ -59,8 +57,7 @@ namespace TabularEditor.TOMWrapper
         public Hierarchy AddHierarchy(string name = null, string displayFolder = null, params Column[] levels)
         {
             Handler.BeginUpdate("add hierarchy");
-            var hierarchy = new Hierarchy(this);
-            if (!string.IsNullOrEmpty(name)) hierarchy.Name = name;
+            var hierarchy = new Hierarchy(this, name);
             if (!string.IsNullOrEmpty(displayFolder)) hierarchy.DisplayFolder = displayFolder;
             for(var i = 0; i < levels.Length; i++)
             {
@@ -77,11 +74,19 @@ namespace TabularEditor.TOMWrapper
 
         #endregion
         #region Convenient Collections
+        /// <summary>
+        /// Enumerates all levels across all hierarchies on this table.
+        /// </summary>
         [Browsable(false)]
         public IEnumerable<Level> AllLevels { get { return Hierarchies.SelectMany(h => h.Levels); } }
+        /// <summary>
+        /// Enumerates all relationships in which this table participates.
+        /// </summary>
+        [Browsable(false)]
+        public IEnumerable<Relationship> UsedInRelationships { get { return Model.Relationships.Where(r => r.FromTable == this || r.ToTable == this); } }
         #endregion
 
-        public override TabularNamedObject Clone(string newName = null, bool includeTranslations = false)
+        /*public override TabularNamedObject Clone(string newName = null, bool includeTranslations = false)
         {
             Handler.BeginUpdate("duplicate table");
 
@@ -113,45 +118,22 @@ namespace TabularEditor.TOMWrapper
             Handler.EndUpdate();
 
             return t;
-        }
+        }*/
 
-        [IntelliSense("Deletes the table from the model.")]
-        public override void Delete()
+        protected override void Cleanup()
         {
-            Handler.BeginUpdate("Delete child objects");
-
             // Remove row-level-security for this table:
             RowLevelSecurity.Clear();
 
             // Then, delete any relationships this table participates in:
-            Model.Relationships.Where(r => r.FromTable == this || r.ToTable == this).ToList().ForEach(r => r.Delete());
+            UsedInRelationships.ToList().ForEach(r => r.Delete());
 
-            // Remove SortByColumn properties for all columns in the table:
-            foreach (var c in Columns.Where(c => c.SortByColumn != null)) c.SortByColumn = null;
-
-            // Finally, delete any child objects, starting with hierarchies:
+            // Delete any child objects, starting with hierarchies:
             Hierarchies.ForEach(h => h.Delete());
-            GetChildren().Cast<ITabularTableObject>().ToList().ForEach(c => c.Delete());
+            Columns.ForEach(c => c.Delete());
+            Measures.ForEach(m => m.Delete());
 
-            // Remove the table from all perspectives:
-            InPerspective.None();
-
-            Handler.EndUpdate();
-
-
-            base.Delete();
-        }
-
-        internal override void Undelete(ITabularObjectCollection collection)
-        {
-            var tom = new TOM.Table();
-            MetadataObject.CopyTo(tom);
-            tom.IsRemoved = false;
-            MetadataObject = tom;
-
-            base.Undelete(collection);
-
-            Init();
+            base.Cleanup();
         }
 
         [Browsable(false)]
@@ -165,7 +147,7 @@ namespace TabularEditor.TOMWrapper
         public HierarchyCollection Hierarchies { get; private set; }
 
         [Category("Data Source"),NoMultiselect()]
-        [Editor(typeof(RefreshGridCollectionEditor),typeof(UITypeEditor))]
+        [Editor(typeof(PartitionCollectionEditor),typeof(UITypeEditor))]
         public PartitionCollection Partitions { get; private set; }
 
         [Category("Data Source")]
@@ -187,24 +169,25 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public virtual bool Browsable(string propertyName)
+        protected override bool IsBrowsable(string propertyName)
         {
             switch(propertyName)
             {
                 case "Source":
                 case "Partitions":
+#if CL1400
+                    return SourceType == TOM.PartitionSourceType.Query || SourceType == TOM.PartitionSourceType.M;
+#else
                     return SourceType == TOM.PartitionSourceType.Query;
+#endif
+                // Compatibility Level 1400-specific properties:
+                case "DefaultDetailRowsExpression":
+                case "ShowAsVariationsOnly":
+                case "IsPrivate":
+                    return Model.Database.CompatibilityLevel >= 1400;
                 default: return true;
             }
         }
-
-        public virtual bool Editable(string propertyName)
-        {
-            return true;
-        }
-
-        [Browsable(true), DisplayName("Perspectives"), Category("Translations and Perspectives")]
-        public PerspectiveIndexer InPerspective { get; private set; }
 
         [Browsable(true), DisplayName("Row Level Filters"), Category("Security")]
         public TableRLSIndexer RowLevelSecurity { get; private set; }
@@ -252,11 +235,10 @@ namespace TabularEditor.TOMWrapper
 
         protected override void Init()
         {
-            InPerspective = new PerspectiveTableIndexer(this);
-            Columns = new ColumnCollection(Handler, this.GetObjectPath() + ".Columns", MetadataObject.Columns, this);
-            Measures = new MeasureCollection(Handler, this.GetObjectPath() + ".Measures", MetadataObject.Measures, this);
-            Hierarchies = new HierarchyCollection(Handler, this.GetObjectPath() + ".Hierarchies", MetadataObject.Hierarchies, this);
-            Partitions = new PartitionCollection(Handler, this.GetObjectPath() + ".Partitions", MetadataObject.Partitions, this);
+            Columns = new ColumnCollection(this.GetObjectPath() + ".Columns", MetadataObject.Columns, this);
+            Measures = new MeasureCollection(this.GetObjectPath() + ".Measures", MetadataObject.Measures, this);
+            Hierarchies = new HierarchyCollection(this.GetObjectPath() + ".Hierarchies", MetadataObject.Hierarchies, this);
+            Partitions = new PartitionCollection(this.GetObjectPath() + ".Partitions", MetadataObject.Partitions, this);
 
             Columns.CollectionChanged += Children_CollectionChanged;
             Measures.CollectionChanged += Children_CollectionChanged;
@@ -333,6 +315,37 @@ namespace TabularEditor.TOMWrapper
             '?', '"', '&', '%', '$' , '!', '+', '=', '(', ')',
             '[', ']', '{', '}', '<', '>'
         };
+
+#if CL1400
+        [DisplayName("Default Detail Rows Expression")]
+        [Category("Options"), IntelliSense("A DAX expression specifying default detail rows for this table (drill-through in client tools).")]
+        [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        public string DetailRowsExpression
+        {
+            get
+            {
+                return MetadataObject.DefaultDetailRowsDefinition?.Expression;
+            }
+            set
+            {
+                var oldValue = DetailRowsExpression;
+
+                if (oldValue == value) return;
+
+                bool undoable = true;
+                bool cancel = false;
+                OnPropertyChanging("DefaultDetailRowsExpression", value, ref undoable, ref cancel);
+                if (cancel) return;
+
+                if (MetadataObject.DefaultDetailRowsDefinition == null) MetadataObject.DefaultDetailRowsDefinition = new TOM.DetailRowsDefinition();
+                MetadataObject.DefaultDetailRowsDefinition.Expression = value;
+                if (string.IsNullOrWhiteSpace(value)) MetadataObject.DefaultDetailRowsDefinition = null;
+
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "DefaultDetailRowsExpression", oldValue, value));
+                OnPropertyChanged("DefaultDetailRowsExpression", oldValue, value);
+            }
+        }
+#endif
     }
 
     public static class TableExtension

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AnalysisServices.Tabular;
 using System;
+using System.Linq;
 using System.ComponentModel;
 using System.Diagnostics;
 using Microsoft.AnalysisServices.Tabular.Helper;
@@ -26,33 +27,71 @@ namespace TabularEditor.TOMWrapper
         /// <param name="collection"></param>
         internal virtual void Undelete(ITabularObjectCollection collection)
         {
+            RenewMetadataObject();
+
             Collection = collection.GetCurrentCollection();
             Collection.Add(this);
-            Handler.WrapperLookup.Add(MetadataObject, this);
+
+            Init();
         }
 
-        public virtual void Delete()
+        /// <summary>
+        /// The Cleanup method is called when the object is deleted. Derived classes should 
+        /// override this method (but remember to call base.Cleanup()) to provide their own
+        /// housekeeping. For example, when a Level is deleted from a hierarchy, the ordinals
+        /// for the remanining levels in the hierarchy should be compacted.
+        /// 
+        /// Before calling base.Cleanup(), the deleted object will still be available in the
+        /// parent hierarchy. However, after the call to base.Cleanup(), this is no longer
+        /// the case, so any reference to parent objects must be done before calling
+        /// base.Cleanup() in derived classes.
+        /// 
+        /// The call to base.Cleanup() handles the following:
+        ///  - Removing translations from the object (names, descriptions, display folders)
+        ///  - Removing perspective memberships
+        ///  - Clearing dependencies / dependants
+        ///  - Removing the object from its parent object
+        /// </summary>
+        protected override void Cleanup()
         {
-            if(!(this is Culture)) TranslatedDescriptions.Clear();
-            if(this is IDetailObject) TranslatedDisplayFolders.Clear();
-            TranslatedNames.Clear();
+            // Remove translations for names, if this object supports translations:
+            (this as ITranslatableObject)?.TranslatedNames?.Clear();
 
-            if (Collection == null)
-                throw new NotSupportedException("Object cannot be deleted since it does not belong to any collection.");
-            Collection.Remove(this);
-            Handler.WrapperLookup.Remove(MetadataObject);
+            // Remove translations for Display Folders, if this object has Display Folders:
+            (this as IDetailObject)?.TranslatedDisplayFolders?.Clear();
+
+            // Remove perspective membership if this object supports perspectives:
+            (this as ITabularPerspectiveObject)?.InPerspective?.None();
+
+            // Let dependencies know that this object is no longer a dependant (if applicable):
+            var expObj = this as IExpressionObject;
+            if (expObj != null)
+            {
+                expObj.Dependencies.Keys.ToList().ForEach(d => d.Dependants.Remove(expObj));
+                expObj.Dependencies.Clear();
+            }
+
+            // Let dependants know that they can no longer depend on this object (if applicable):
+            var daxObj = this as IDaxObject;
+            if (daxObj != null)
+            {
+                daxObj.Dependants.ToList().ForEach(d => d.Dependencies.Remove(daxObj));
+            }
+
+            base.Cleanup();
+
+            // NamedTabularObjects can belong to collections. Make sure the object is
+            // removed from the collection it belongs to:
+            if (Collection != null) Collection.Remove(this);
         }
 
-        public virtual TabularNamedObject Clone(string newName, bool includeTranslations)
+        protected TabularNamedObject(NamedMetadataObject metadataObject) : base(metadataObject)
         {
-            throw new NotSupportedException("This object cannot be cloned.");
         }
 
-        protected TabularNamedObject(TabularModelHandler handler, NamedMetadataObject metadataObject, bool autoInit = true) : base(handler, metadataObject, autoInit)
-        {
-            TranslatedNames = new TranslationIndexer(this, TranslatedProperty.Caption);
-        }
-
+        /// <summary>
+        /// Returns the index of this item in the parent metadata collection
+        /// </summary>
         public int MetadataIndex
         {
             get
@@ -71,12 +110,6 @@ namespace TabularEditor.TOMWrapper
         }
 
         protected internal new NamedMetadataObject MetadataObject { get { return base.MetadataObject as NamedMetadataObject; } protected set { base.MetadataObject = value; } }
-
-        /// <summary>
-        /// Collection of localized names for this object.
-        /// </summary>
-        [Browsable(true),DisplayName("Captions"),Category("Translations and Perspectives"),IntelliSense("A collection with all translated names of the object. Access individual items using the Culture name.\nExample: Measure.TranslatedNames[\"en-GB\"] = \"English name\".")]
-        public TranslationIndexer TranslatedNames { get; private set; }
 
         private bool ShouldSerializeName() { return false; }
 
@@ -109,6 +142,11 @@ namespace TabularEditor.TOMWrapper
                 OnPropertyChanged("Name", oldValue, value);
 
             }
+        }
+
+        protected virtual string GetNewName<T,P>(NamedMetadataObjectCollection<T, P> col, string prefix = null) where T: NamedMetadataObject where P: MetadataObject
+        {
+            return string.IsNullOrWhiteSpace(prefix) ? col.GetNewName() : col.GetNewName(prefix);
         }
     }
 }

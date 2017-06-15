@@ -88,24 +88,7 @@ namespace TabularEditor.UI.Dialogs
         public void Goto(ListViewItem item)
         {
             var obj = item.Tag as TabularNamedObject;
-            var treeModel = (ModelTree.Model as SortedTreeModel).InnerModel as TabularUITree;
-            if (!treeModel.VisibleInTree(obj))
-            {
-                treeModel.BeginUpdate();
-                treeModel.Options = LogicalTreeOptions.Default | LogicalTreeOptions.ShowHidden;
-                treeModel.Filter = "";
-                FormMain.UpdateTreeUIButtons();
-                treeModel.EndUpdate();
-            }
-
-            var node = ModelTree.FindNodeByTag(item.Tag);
-            if (node != null)
-            {
-                ModelTree.EnsureVisible(node);
-                ModelTree.SelectedNode = node;
-                FormMain.Activate();
-                ModelTree.Focus();
-            }
+            UIController.Current.Goto(obj);
         }
 
         private void listView1_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)

@@ -14,17 +14,12 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for DataSource
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public abstract partial class DataSource: TabularNamedObject, IDescriptionObject, IAnnotationObject
+	public abstract partial class DataSource: TabularNamedObject
+			, IDescriptionObject
+			, IAnnotationObject
 	{
 	    protected internal new TOM.DataSource MetadataObject { get { return base.MetadataObject as TOM.DataSource; } internal set { base.MetadataObject = value; } }
 
-
-		/// <summary>
-		/// Constructs a wrapper for an existing DataSource metadataobject in the TOM.
-		/// </summary>
-		public DataSource(TabularModelHandler handler, TOM.DataSource datasourceMetadataObject, bool autoInit = true ) : base(handler, datasourceMetadataObject, autoInit )
-		{
-		}
 		public string GetAnnotation(string name) {
 		    return MetadataObject.Annotations.Find(name)?.Value;
 		}
@@ -59,11 +54,6 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeDescription() { return false; }
         /// <summary>
-        /// Collection of localized descriptions for this DataSource.
-        /// </summary>
-        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
-	    public new TranslationIndexer TranslatedDescriptions { get { return base.TranslatedDescriptions; } }
-        /// <summary>
         /// Gets or sets the Type of the DataSource.
         /// </summary>
 		[DisplayName("Type")]
@@ -75,7 +65,33 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeType() { return false; }
+
+
+		public Model Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
+			}
+		}
+
+		/// <summary>
+		/// Creates a DataSource object representing an existing TOM DataSource.
+		/// </summary>
+		internal DataSource(TOM.DataSource metadataObject) : base(metadataObject)
+		{
+		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				case "Parent":
+					return false;
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 
 	/// <summary>
 	/// Collection class for DataSource. Provides convenient properties for setting a property on multiple objects at once.
@@ -84,14 +100,17 @@ namespace TabularEditor.TOMWrapper
 	{
 		public Model Parent { get; private set; }
 
-		public DataSourceCollection(TabularModelHandler handler, string collectionName, TOM.DataSourceCollection metadataObjectCollection, Model parent) : base(handler, collectionName, metadataObjectCollection)
+		public DataSourceCollection(string collectionName, TOM.DataSourceCollection metadataObjectCollection, Model parent) : base(collectionName, metadataObjectCollection)
 		{
 			Parent = parent;
 
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
 				switch((obj as TOM.DataSource).Type) {
-					case TOM.DataSourceType.Provider: new ProviderDataSource(handler, obj as TOM.ProviderDataSource) { Collection = this }; break;
+					case TOM.DataSourceType.Provider: new ProviderDataSource(obj as TOM.ProviderDataSource) { Collection = this }; break;
+#if CL1400
+					case TOM.DataSourceType.Structured: new StructuredDataSource(obj as TOM.StructuredDataSource) { Collection = this }; break;
+#endif
 				}
 			}
 		}

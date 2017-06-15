@@ -203,7 +203,7 @@ namespace TabularEditor.TOMWrapper.Tests
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
             handler.Tree = new MockTree(handler.Model);
             var table = handler.Model.Tables["Employee"];
-            table.AddHierarchy("Test Hierarchy", null, table.Columns["Base Rate"], table.Columns["Birth Date"], table.Columns["Department Name"]);
+            table.AddHierarchy("Test Hierarchy", null, "Base Rate", "Birth Date", "Department Name");
             handler.SaveDB();
 
             Assert.AreEqual(3, table.Hierarchies["Test Hierarchy"].Levels.Count);
@@ -243,7 +243,7 @@ namespace TabularEditor.TOMWrapper.Tests
 
             // Perspective which only includes a few select items:
             var pnIn = "Test Perspective Inclusive";
-            m.Perspectives.Add(new Perspective() { Name = pnIn });
+            new Perspective() { Name = pnIn };
             m.Tables["Employee"].InPerspective[pnIn] = true;
             m.Tables["Date"].Hierarchies.InPerspective(pnIn, true);
             m.Tables["Internet Sales"].Measures.InPerspective(pnIn, true);
@@ -252,7 +252,7 @@ namespace TabularEditor.TOMWrapper.Tests
 
             // Perspective which includes everything except a few select items:
             var pnEx = "Test Perspective Exclusive";
-            m.Perspectives.Add(new Perspective() { Name = pnEx });
+            new Perspective() { Name = pnEx };
             m.Tables.InPerspective(pnEx, true);
             m.Tables["Employee"].InPerspective[pnEx] = false;
             m.Tables["Date"].Hierarchies.InPerspective(pnEx, false);

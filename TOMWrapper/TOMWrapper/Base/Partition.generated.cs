@@ -14,26 +14,15 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Partition
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Partition: TabularNamedObject, IErrorMessageObject, ITabularTableObject, IDescriptionObject, IAnnotationObject
+	public partial class Partition: TabularNamedObject
+			, IErrorMessageObject
+			, ITabularTableObject
+			, IDescriptionObject
+			, IAnnotationObject
+			, IClonableObject
 	{
 	    protected internal new TOM.Partition MetadataObject { get { return base.MetadataObject as TOM.Partition; } internal set { base.MetadataObject = value; } }
 
-		/// <summary>
-		/// Creates a new Partition and adds it to the parent Table.
-		/// This constructor also creates the underlying metadataobject and adds it to the TOM.
-		/// </summary>
-		public Partition(Table parent) : base(parent.Handler, new TOM.Partition(), false) {
-			MetadataObject.Name = parent.MetadataObject.Partitions.GetNewName("New Partition");
-			parent.Partitions.Add(this);
-			Init();
-		}
-
-		/// <summary>
-		/// Constructs a wrapper for an existing Partition metadataobject in the TOM.
-		/// </summary>
-		public Partition(TabularModelHandler handler, TOM.Partition partitionMetadataObject) : base(handler, partitionMetadataObject)
-		{
-		}
         /// <summary>
         /// Gets or sets the SourceType of the Partition.
         /// </summary>
@@ -79,11 +68,6 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
-        /// <summary>
-        /// Collection of localized descriptions for this Partition.
-        /// </summary>
-        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
-	    public new TranslationIndexer TranslatedDescriptions { get { return base.TranslatedDescriptions; } }
         /// <summary>
         /// Gets or sets the State of the Partition.
         /// </summary>
@@ -165,7 +149,91 @@ namespace TabularEditor.TOMWrapper
 				return t as Table;
 			} 
 		}
+
+
+
+		/// <summary>
+		/// Creates a new Partition and adds it to the parent Table.
+		/// </summary>
+		public Partition(Table parent, string name = null) : this(new TOM.Partition()) {
+			
+			MetadataObject.Name = GetNewName(parent.MetadataObject.Partitions, string.IsNullOrWhiteSpace(name) ? "New Partition" : name);
+
+			parent.Partitions.Add(this);
+		}
+
+
+		/// <summary>
+		/// Creates an exact copy of this Partition object.
+		/// </summary>
+		/// 
+		public Partition Clone(string newName = null, Table newParent = null) {
+		    Handler.BeginUpdate("Clone Partition");
+
+				// Create a clone of the underlying metadataobject:
+				var tom = MetadataObject.Clone() as TOM.Partition;
+
+				// Assign a new, unique name:
+				tom.Name = Parent.Partitions.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				
+				// Create the TOM Wrapper object, representing the metadataobject:
+				var obj = new Partition(tom);
+
+				// Add the object to the parent collection:
+				if(newParent != null) 
+					newParent.Partitions.Add(obj);
+				else
+    				Parent.Partitions.Add(obj);
+
+
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
+			if (includeTranslations) throw new ArgumentException("This object does not support translations", "includeTranslations");
+			return Clone(newName);
+		}
+
+	
+        internal override void RenewMetadataObject()
+        {
+            var tom = new TOM.Partition();
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject.CopyTo(tom);
+            MetadataObject = tom;
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+
+		public Table Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Table;
+			}
+		}
+
+		/// <summary>
+		/// Creates a Partition object representing an existing TOM Partition.
+		/// </summary>
+		internal Partition(TOM.Partition metadataObject) : base(metadataObject)
+		{
+		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				case "Parent":
+					return false;
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 
 	/// <summary>
 	/// Collection class for Partition. Provides convenient properties for setting a property on multiple objects at once.
@@ -174,13 +242,13 @@ namespace TabularEditor.TOMWrapper
 	{
 		public Table Parent { get; private set; }
 
-		public PartitionCollection(TabularModelHandler handler, string collectionName, TOM.PartitionCollection metadataObjectCollection, Table parent) : base(handler, collectionName, metadataObjectCollection)
+		public PartitionCollection(string collectionName, TOM.PartitionCollection metadataObjectCollection, Table parent) : base(collectionName, metadataObjectCollection)
 		{
 			Parent = parent;
 
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
-				new Partition(handler, obj) { Collection = this };
+				new Partition(obj) { Collection = this };
 			}
 		}
 

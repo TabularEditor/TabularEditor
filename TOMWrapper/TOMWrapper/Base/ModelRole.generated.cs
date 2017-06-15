@@ -14,26 +14,14 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for ModelRole
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class ModelRole: TabularNamedObject, IDescriptionObject, IAnnotationObject
+	public partial class ModelRole: TabularNamedObject
+			, IDescriptionObject
+			, IAnnotationObject
+			, ITranslatableObject
+			, IClonableObject
 	{
 	    protected internal new TOM.ModelRole MetadataObject { get { return base.MetadataObject as TOM.ModelRole; } internal set { base.MetadataObject = value; } }
 
-		/// <summary>
-		/// Creates a new ModelRole and adds it to the parent Model.
-		/// This constructor also creates the underlying metadataobject and adds it to the TOM.
-		/// </summary>
-		public ModelRole(Model parent) : base(parent.Handler, new TOM.ModelRole(), false) {
-			MetadataObject.Name = parent.MetadataObject.Roles.GetNewName("New ModelRole");
-			parent.Roles.Add(this);
-			Init();
-		}
-
-		/// <summary>
-		/// Constructs a wrapper for an existing ModelRole metadataobject in the TOM.
-		/// </summary>
-		public ModelRole(TabularModelHandler handler, TOM.ModelRole modelroleMetadataObject) : base(handler, modelroleMetadataObject)
-		{
-		}
 		public string GetAnnotation(string name) {
 		    return MetadataObject.Annotations.Find(name)?.Value;
 		}
@@ -68,11 +56,6 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeDescription() { return false; }
         /// <summary>
-        /// Collection of localized descriptions for this ModelRole.
-        /// </summary>
-        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
-	    public new TranslationIndexer TranslatedDescriptions { get { return base.TranslatedDescriptions; } }
-        /// <summary>
         /// Gets or sets the ModelPermission of the ModelRole.
         /// </summary>
 		[DisplayName("Model Permission")]
@@ -94,7 +77,114 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeModelPermission() { return false; }
+
+        /// <summary>
+        /// Collection of localized descriptions for this ModelRole.
+        /// </summary>
+        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
+	    public TranslationIndexer TranslatedDescriptions { private set; get; }
+        /// <summary>
+        /// Collection of localized names for this ModelRole.
+        /// </summary>
+        [Browsable(true),DisplayName("Names"),Category("Translations and Perspectives")]
+	    public TranslationIndexer TranslatedNames { private set; get; }
+
+
+
+		/// <summary>
+		/// Creates a new ModelRole and adds it to the parent Model.
+		/// </summary>
+		public ModelRole(Model parent, string name = null) : this(new TOM.ModelRole()) {
+			
+			MetadataObject.Name = GetNewName(parent.MetadataObject.Roles, string.IsNullOrWhiteSpace(name) ? "New ModelRole" : name);
+
+			parent.Roles.Add(this);
+		}
+
+		
+		public ModelRole() : this(TabularModelHandler.Singleton.Model) { }
+
+
+		/// <summary>
+		/// Creates an exact copy of this ModelRole object.
+		/// </summary>
+		/// 
+		public ModelRole Clone(string newName = null, bool includeTranslations = true) {
+		    Handler.BeginUpdate("Clone ModelRole");
+
+				// Create a clone of the underlying metadataobject:
+				var tom = MetadataObject.Clone() as TOM.ModelRole;
+
+				// Assign a new, unique name:
+				tom.Name = Parent.Roles.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				
+				// Create the TOM Wrapper object, representing the metadataobject:
+				var obj = new ModelRole(tom);
+
+				// Add the object to the parent collection:
+				Parent.Roles.Add(obj);
+
+				// Copy translations, if applicable:
+				if(includeTranslations) {
+					obj.TranslatedNames.CopyFrom(TranslatedNames);
+					obj.TranslatedDescriptions.CopyFrom(TranslatedDescriptions);
+				}
+
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
+			if (newParent != null) throw new ArgumentException("This object can not be cloned to another parent. Argument newParent should be left as null.", "newParent");
+			return Clone(newName, includeTranslations);
+		}
+
+	
+        internal override void RenewMetadataObject()
+        {
+            var tom = new TOM.ModelRole();
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject.CopyTo(tom);
+            MetadataObject = tom;
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+
+		public Model Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
+			}
+		}
+
+		/// <summary>
+		/// Creates a ModelRole object representing an existing TOM ModelRole.
+		/// </summary>
+		internal ModelRole(TOM.ModelRole metadataObject) : base(metadataObject)
+		{
+			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
+			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
+		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				case "Parent":
+					return false;
+				
+				// Hides translation properties in the grid, unless the model actually contains translations:
+				case "TranslatedNames":
+				case "TranslatedDescriptions":
+					return Model.Cultures.Any();
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 
 	/// <summary>
 	/// Collection class for ModelRole. Provides convenient properties for setting a property on multiple objects at once.
@@ -103,13 +193,13 @@ namespace TabularEditor.TOMWrapper
 	{
 		public Model Parent { get; private set; }
 
-		public ModelRoleCollection(TabularModelHandler handler, string collectionName, TOM.ModelRoleCollection metadataObjectCollection, Model parent) : base(handler, collectionName, metadataObjectCollection)
+		public ModelRoleCollection(string collectionName, TOM.ModelRoleCollection metadataObjectCollection, Model parent) : base(collectionName, metadataObjectCollection)
 		{
 			Parent = parent;
 
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
-				new ModelRole(handler, obj) { Collection = this };
+				new ModelRole(obj) { Collection = this };
 			}
 		}
 

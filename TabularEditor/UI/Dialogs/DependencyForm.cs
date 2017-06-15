@@ -29,6 +29,7 @@ namespace TabularEditor
             }
             set {
                 _rootObject = value;
+                Text = "Object Dependencies for " + RootObject.DaxObjectFullName;
                 radioButton1.Text = string.Format("Show objects on which {0} depend", RootObject.DaxObjectName);
                 radioButton2.Text = string.Format("Show objects that depend on {0}", RootObject.DaxObjectName);
                 RefreshTree();
@@ -38,7 +39,7 @@ namespace TabularEditor
         private void RecursiveAdd(ITabularNamedObject obj, TreeNodeCollection nodes)
         {
             var img = UI.Tree.TabularIcon.GetIconIndex(obj);
-            var n = new TreeNode(obj.Name, img, img) { Tag = obj };
+            var n = new TreeNode((obj as IDaxObject)?.DaxObjectFullName ?? obj.Name, img, img) { Tag = obj };
             if(obj is IExpressionObject) n.ToolTipText = (obj as IExpressionObject).Expression;
 
             nodes.Add(n);
@@ -67,7 +68,7 @@ namespace TabularEditor
         private void InverseRecursiveAdd(IDaxObject obj, TreeNodeCollection nodes)
         {
             var img = UI.Tree.TabularIcon.GetIconIndex(obj);
-            var n = new TreeNode(obj.Name, img, img) { Tag = obj };
+            var n = new TreeNode((obj as IDaxObject)?.DaxObjectFullName ?? obj.Name, img, img) { Tag = obj };
             if (obj is IExpressionObject) n.ToolTipText = (obj as IExpressionObject).Expression;
 
             nodes.Add(n);
@@ -110,6 +111,11 @@ namespace TabularEditor
         private void btnCancel_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void treeObjects_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            UI.UIController.Current.Goto(e.Node.Tag as TabularNamedObject);
         }
     }
 }

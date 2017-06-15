@@ -50,6 +50,7 @@
             this.treeObjects.ShowNodeToolTips = true;
             this.treeObjects.Size = new System.Drawing.Size(316, 221);
             this.treeObjects.TabIndex = 0;
+            this.treeObjects.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeObjects_NodeMouseDoubleClick);
             // 
             // tabularTreeImages
             // 

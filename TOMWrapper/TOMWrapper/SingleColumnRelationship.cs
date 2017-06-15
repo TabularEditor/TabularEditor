@@ -10,18 +10,14 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class SingleColumnRelationship : IDynamicPropertyObject
+    public partial class SingleColumnRelationship
     {
-        public override void Delete()
-        {
-            if (Collection != null) Collection.Remove(this);
-        }
 
         internal override void Undelete(ITabularObjectCollection collection)
         {
             var tom = new TOM.SingleColumnRelationship();
             MetadataObject.CopyTo(tom);
-            tom.IsRemoved = false;
+            //tom.IsRemoved = false;
             MetadataObject = tom;
 
             // Restore from/to columns, as the related object could have been recreated in the TOM in the meantime:
@@ -33,7 +29,6 @@ namespace TabularEditor.TOMWrapper
 
         protected override void Init()
         {
-            UpdateName();
         }
 
         private void UpdateName()
@@ -54,21 +49,17 @@ namespace TabularEditor.TOMWrapper
             return string.Format("'{0}'[{1}]", col.Table.Name, col.Name);
         }
 
-        public bool Browsable(string propertyName)
+        protected override bool IsBrowsable(string propertyName)
         {
             switch (propertyName)
             {
                 case "FromTable": return false;
                 case "ToTable": return false;
-                case "TranslatedNames":
-                case "TranslatedDisplayFolders":
-                case "TranslatedDescriptions":
-                    return false;
             }
             return true;
         }
 
-        public bool Editable(string propertyName)
+        protected override bool IsEditable(string propertyName)
         {
             switch (propertyName)
             {
@@ -83,6 +74,7 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
+                if (string.IsNullOrEmpty(InternalName)) UpdateName();
                 return InternalName;
             }
 
@@ -92,7 +84,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        private string InternalName;
+        private string InternalName = null;
 
         protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
         {
@@ -124,7 +116,7 @@ namespace TabularEditor.TOMWrapper
     {
         public Model Parent { get; private set; }
 
-        public RelationshipCollection2(TabularModelHandler handler, string collectionName, TOM.RelationshipCollection metadataObjectCollection, Model parent) : base(handler, collectionName, metadataObjectCollection)
+        public RelationshipCollection2(string collectionName, TOM.RelationshipCollection metadataObjectCollection, Model parent) : base(collectionName, metadataObjectCollection)
         {
             Parent = parent;
 
@@ -133,7 +125,7 @@ namespace TabularEditor.TOMWrapper
             {
                 switch ((obj as TOM.Relationship).Type)
                 {
-                    case TOM.RelationshipType.SingleColumn: new SingleColumnRelationship(handler, obj as TOM.SingleColumnRelationship) { Collection = this }; break;
+                    case TOM.RelationshipType.SingleColumn: new SingleColumnRelationship(obj as TOM.SingleColumnRelationship) { Collection = this }; break;
                 }
             }
         }

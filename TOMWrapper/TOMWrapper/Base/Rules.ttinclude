@@ -2,6 +2,42 @@
 #><#+
 
 class Rules {
+	public static bool IsTranslatable(Type t, bool includeAncestors = false) {
+		switch(t.Name) {
+			case "Model":
+			case "ModelRole":
+			case "Perspective":
+			case "Table":
+			case "Level":
+			case "Column":
+			case "Hierarchy":
+			case "Measure":
+			case "KPI":
+				return true;
+			default:
+				return includeAncestors && t.IsSubclassOf(typeof(MetadataObject)) ? IsTranslatable(t.BaseType, true) : false;
+        }
+    }
+
+	public static bool IsPerspectiveObject(Type t, bool includeAncestors = false) {
+		switch(t.Name) {
+			case "Table":
+			case "Column":
+			case "Hierarchy":
+			case "Measure":
+				return true;
+			default:
+				return includeAncestors && t.IsSubclassOf(typeof(MetadataObject)) ? IsPerspectiveObject(t.BaseType, true) : false;
+        }
+    }
+
+	public static bool HasDisplayFolder(Type t) {
+		return t.GetMember("DisplayFolder").Length >= 1;
+    }
+
+	public static void CreateConstructor(StringBuilder codeOutput) {
+
+    }
 
 	public static bool ShouldWrapProperty(PropertyInfo p, Type t)
     {
@@ -47,6 +83,11 @@ class Rules {
 				case "SortByColumn":
 					resolveObject = "value == null ? null : Table.Columns[value.MetadataObject.Name].MetadataObject";
 					break;
+				case "DefaultColumn":
+				case "DefaultHierarchy":
+				case "Relationship":
+					resolveObject = "value == null ? null : value.MetadataObject";
+					break;
 				case "Column":
 					resolveObject = "value == null ? null : Hierarchy.Table.Columns[value.MetadataObject.Name].MetadataObject";
 					break;
@@ -57,6 +98,7 @@ class Rules {
 				case "KPI":
 					resolveObject = "value?.MetadataObject";
 					break;
+
 			}
         }
 		
@@ -107,11 +149,13 @@ class Rules {
         );
     }
 
-	public static string GetDisplayName(string propertyName)
+	public static string GetDisplayName(string propertyName, string className)
     {
 		var result = propertyName;
 
 		if(result.StartsWith("Is") && char.IsUpper(result[2])) result = result.Substring(2);
+
+		if(className == "Variation" && propertyName == "Column") return "Parent Column";
 
 		return SplitCamelCase(result);
     }
@@ -129,7 +173,19 @@ class Rules {
 			case "SortByColumn":
 			case "FormatString":
 			case "SourceColumn":
+			case "IsPrivate":
+			case "ShowAsVariationsOnly":
 				return "Options";
+			case "Column":
+#if CL1400
+				if(objectType == typeof(Variation)) return "Basic";
+#endif
+				return "Other";
+			case "IsDefault":
+			case "DefaultColumn":
+			case "DefaultHierarchy":
+			case "Relationship":
+				return "Variation Options";
 			case "DataCategory":
 			case "ErrorMessage":
 			case "DataType":
@@ -150,7 +206,11 @@ class Rules {
 
 	public static string GetOtherAttributes(string propertyName, string className)
     {
+	    if(className == "Variation" && propertyName == "Column") return "[TypeConverter(typeof(TableColumnConverter)),ReadOnly(true)]";
 		if(propertyName == "SortByColumn") return "[TypeConverter(typeof(TableColumnConverter))]";
+		if(propertyName == "DefaultColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
+		if(propertyName == "DefaultHierarchy") return "[TypeConverter(typeof(AllHierarchyConverter))]";
+		if(propertyName == "Relationship") return "[TypeConverter(typeof(AllRelationshipConverter))]";
 		if(propertyName == "ToColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
 		if(propertyName == "FromColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
 		if(className == "Level" && propertyName == "Hierarchy") return "[Browsable(false)]";
@@ -159,7 +219,7 @@ class Rules {
 		if(className == "Model" && propertyName == "Culture") return "[TypeConverter(typeof(CultureConverter))]";
 		if(propertyName == "DisplayFolder") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]";
 		if(propertyName == "Expression") return "[Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]";
-
+		if(propertyName == "ContextExpression") return "[Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]";
 		return "";
     }
 
@@ -186,28 +246,39 @@ class Rules {
 	// List of types to generate wrapper for:
 	public static readonly Dictionary<Type, string> ObjectTypes = new Dictionary<Type,string>()
 	{ 
-       { typeof(Model), "TabularNamedObject" },
-	   { typeof(Table), "TabularNamedObject" },
-	   { typeof(Column), "TabularNamedObject" },
-	   { typeof(Measure), "TabularNamedObject" },
-	   { typeof(CalculatedColumn), "Column" },
-	   { typeof(DataColumn), "Column" },
-	   { typeof(CalculatedTableColumn), "Column" },
-	   { typeof(Hierarchy), "TabularNamedObject" },
-	   { typeof(Level), "TabularNamedObject" },
-	   { typeof(Culture), "TabularNamedObject" },
-	   { typeof(Perspective), "TabularNamedObject" },
-	   { typeof(KPI), "TabularObject" },
-	   { typeof(Relationship), "TabularNamedObject" },
-	   { typeof(SingleColumnRelationship), "Relationship" },
-	   { typeof(Partition), "TabularNamedObject" },
-	   { typeof(ModelRole), "TabularNamedObject" },
+#if CL1400
+	   { typeof(StructuredDataSource), "DataSource" },
+       { typeof(Variation), "TabularNamedObject" },
+#endif
+       { typeof(CalculatedColumn), "Column" },
+       { typeof(CalculatedTableColumn), "Column" },
+       { typeof(Column), "TabularNamedObject" },
+       { typeof(Culture), "TabularNamedObject" },
+       { typeof(DataColumn), "Column" },
        { typeof(DataSource), "TabularNamedObject" },
-       { typeof(ProviderDataSource), "DataSource" }
+       { typeof(ExternalModelRoleMember), "ModelRoleMember" },
+       { typeof(Hierarchy), "TabularNamedObject" },
+       { typeof(KPI), "TabularObject" },
+       { typeof(Level), "TabularNamedObject" },
+       { typeof(Measure), "TabularNamedObject" },
+       { typeof(Model), "TabularNamedObject" },
+       { typeof(ModelRole), "TabularNamedObject" },
+       { typeof(ModelRoleMember), "TabularNamedObject" },
+       { typeof(Partition), "TabularNamedObject" },
+       { typeof(Perspective), "TabularNamedObject" },
+       { typeof(ProviderDataSource), "DataSource" },
+       { typeof(Relationship), "TabularNamedObject" },
+       { typeof(SingleColumnRelationship), "Relationship" },
+       { typeof(Table), "TabularNamedObject" },
+       { typeof(WindowsModelRoleMember), "ModelRoleMember" }
    };
 
    public static readonly Dictionary<Type, string> Collections = new Dictionary<Type,string>()
    {
+#if CL1400
+       { typeof(Variation), "Variations" },
+#endif
+       { typeof(ModelRoleMember), "Members" },
        { typeof(ModelRole), "Roles" },
        { typeof(Table), "Tables" },
        { typeof(CalculatedColumn), "Columns" },
@@ -225,6 +296,10 @@ class Rules {
 
    public static readonly Dictionary<Type, string> CollectionParent = new Dictionary<Type,string>()
    {
+#if CL1400
+       { typeof(Variation), "Column" },
+#endif
+       { typeof(ModelRoleMember), "ModelRole" },
        { typeof(ModelRole), "Model" },
        { typeof(Table), "Model" },
        { typeof(Column), "Table" },
@@ -237,5 +312,17 @@ class Rules {
 	   { typeof(Relationship), "Model" },
 	   { typeof(DataSource), "Model" }
    };
+
+   public static string GetParent(Type t) {
+	   return Rules.CollectionParent.ContainsKey(t) ? 
+			Rules.CollectionParent[t] : Rules.CollectionParent[t.BaseType];
+   }
+   public static bool InCollection(Type t) {
+	   return Rules.Collections.ContainsKey(t) || Rules.Collections.ContainsKey(t.BaseType);
+   }
+   public static string GetCollection(Type t) {
+	   return Rules.Collections.ContainsKey(t) ? 
+			Rules.Collections[t] : Rules.Collections[t.BaseType];
+   }
 }
 #>

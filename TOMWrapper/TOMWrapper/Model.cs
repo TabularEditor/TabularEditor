@@ -140,24 +140,19 @@ namespace TabularEditor.TOMWrapper
 
         protected override void Init()
         {
-            _database = new Database(MetadataObject.Database);
         }
 
-        private Database _database;
         [Category("Basic")]
-        public Database Database
-        {
-            get { return _database; }
-        }
+        public Database Database { get; internal set; }
 
         public void LoadChildObjects()
         {
-            DataSources = new DataSourceCollection(Handler, "Model.DataSources", MetadataObject.DataSources, this);
-            Perspectives = new PerspectiveCollection(Handler, "Model.Perspectives", MetadataObject.Perspectives, this);
-            Cultures = new CultureCollection(Handler, "Model.Cultures", MetadataObject.Cultures, this);
-            Tables = new TableCollection(Handler, "Model.Tables", MetadataObject.Tables, this);
-            Relationships = new RelationshipCollection2(Handler, "Model.Relationships", MetadataObject.Relationships, this);
-            Roles = new ModelRoleCollection(Handler, "Model.Roles", MetadataObject.Roles, this);
+            DataSources = new DataSourceCollection("Model.DataSources", MetadataObject.DataSources, this);
+            Perspectives = new PerspectiveCollection("Model.Perspectives", MetadataObject.Perspectives, this);
+            Roles = new ModelRoleCollection("Model.Roles", MetadataObject.Roles, this);
+            Cultures = new CultureCollection("Model.Cultures", MetadataObject.Cultures, this);
+            Tables = new TableCollection("Model.Tables", MetadataObject.Tables, this);
+            Relationships = new RelationshipCollection2("Model.Relationships", MetadataObject.Relationships, this);
 
             Tables.ForEach(r => r.InitRLSIndexer());
             Roles.ForEach(r => r.InitRLSIndexer());

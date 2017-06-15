@@ -51,7 +51,7 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => true,
                 (s, m) => s.ForEach(i =>
                 {
-                    var obj = i.Clone(null, true);
+                    var obj = (i as IClonableObject).Clone(null, true);
                     if (s.Count == 1) obj.Edit(); // Focuses the cloned item in the tree, and lets the user edit its name
                 }),
                 (s, m) => "Duplicate " + s.Summary(), true, Context.TableObject));
@@ -69,12 +69,12 @@ namespace TabularEditor.UI.Actions
                 (s, m) => s.ForEach(i =>
                 {
                         var res = csDialog.ShowDialog();
-                        if (res == DialogResult.OK) i.Clone(csDialog.SelectedCulture.Name, false).Edit();
+                        if (res == DialogResult.OK) (i as IClonableObject).Clone(csDialog.SelectedCulture.Name, false).Edit();
                 }),
                 (s, m) => "Duplicate " + s.Summary(), true, Context.Translation));
 
             // "Duplicate Role / Perspective":
-            Add(new Action((s, m) => s.Count == 1, (s, m) => s.ForEach(i => i.Clone(null, true).Edit()), (s, m) => "Duplicate " + s.Summary(), true, Context.Role | Context.Perspective));
+            Add(new Action((s, m) => s.Count == 1, (s, m) => s.ForEach(i => (i as IClonableObject).Clone(null, true).Edit()), (s, m) => "Duplicate " + s.Summary(), true, Context.Role | Context.Perspective));
 
             // "Add to Hierarchy..."
             Add(new Separator());

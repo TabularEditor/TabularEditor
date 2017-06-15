@@ -36,7 +36,7 @@ namespace TabularEditor.TOMWrapper
         public CalculatedTable(Model parent) : base(parent)
         {
         }
-        public CalculatedTable(TabularModelHandler handler, TOM.Table tableMetadataObject) : base(handler, tableMetadataObject)
+        public CalculatedTable(TOM.Table tableMetadataObject) : base(tableMetadataObject)
         {
             
         }
@@ -64,7 +64,7 @@ namespace TabularEditor.TOMWrapper
         public void ReinitColumns()
         {
             Columns.CollectionChanged -= Children_CollectionChanged;
-            Columns = new ColumnCollection(Handler, this.GetObjectPath() + ".Columns", MetadataObject.Columns, this);
+            Columns = new ColumnCollection(this.GetObjectPath() + ".Columns", MetadataObject.Columns, this);
             Columns.CollectionChanged += Children_CollectionChanged;
             Handler.UpdateObject(this);
         }

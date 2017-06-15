@@ -36,7 +36,13 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Provide a lambda statement that is executed once for each object in the collection.\nExample: .ForEach(obj => obj.Name += \" OLD\");")]
         public void ForEach(Action<T> action)
         {
-            this.ToList().ForEach(action);
+            if(this is ColumnCollection)
+            {
+                // When iterating column collections, make sure to not include the row number:
+                this.Where(obj => (obj as Column).Type != TOM.ColumnType.RowNumber).ToList().ForEach(action);
+            }
+            else
+                this.ToList().ForEach(action);
         }
 
         public ITabularObjectCollection GetCurrentCollection()
@@ -44,7 +50,6 @@ namespace TabularEditor.TOMWrapper
             return Handler.WrapperCollections[CollectionName];
         }
 
-        private int updateLocks = 0;
         private bool init = false;
         public TabularModelHandler Handler { get; private set; }
         [IntelliSense("The name of this collection.")]
@@ -143,10 +148,10 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        protected TabularObjectCollection(TabularModelHandler handler, string collectionName, TOM.NamedMetadataObjectCollection<TT, TP> metadataObjectCollection)
+        protected TabularObjectCollection(string collectionName, TOM.NamedMetadataObjectCollection<TT, TP> metadataObjectCollection)
         {
             MetadataObjectCollection = metadataObjectCollection;
-            Handler = handler;
+            Handler = TabularModelHandler.Singleton;
             CollectionName = collectionName;
             Handler.WrapperCollections[CollectionName] = this;
         }
@@ -179,11 +184,13 @@ namespace TabularEditor.TOMWrapper
             if(item.MetadataObject.Parent != null)
                 throw new ArgumentException("The item already belongs to a collection.");
 
+            //item.RenewMetadataObject();
+
             MetadataObjectCollection.Add(item.MetadataObject as TT);
             item.Collection = this;
 
             Handler.UndoManager.Add(new UndoAddRemoveAction(this, item, UndoAddRemoveActionType.Add));
-            if (updateLocks == 0) CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
         }
 
         public void Add(TabularNamedObject item)
@@ -205,7 +212,7 @@ namespace TabularEditor.TOMWrapper
             item.Collection = null;
 
             Handler.UndoManager.Add(new UndoAddRemoveAction(this, item, UndoAddRemoveActionType.Remove));
-            if (updateLocks == 0) CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
             return true;
         }
 

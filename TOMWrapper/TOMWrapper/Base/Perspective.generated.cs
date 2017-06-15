@@ -14,26 +14,14 @@ namespace TabularEditor.TOMWrapper
 	/// Base class declaration for Perspective
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public partial class Perspective: TabularNamedObject, IDescriptionObject, IAnnotationObject
+	public partial class Perspective: TabularNamedObject
+			, IDescriptionObject
+			, IAnnotationObject
+			, ITranslatableObject
+			, IClonableObject
 	{
 	    protected internal new TOM.Perspective MetadataObject { get { return base.MetadataObject as TOM.Perspective; } internal set { base.MetadataObject = value; } }
 
-		/// <summary>
-		/// Creates a new Perspective and adds it to the parent Model.
-		/// This constructor also creates the underlying metadataobject and adds it to the TOM.
-		/// </summary>
-		public Perspective(Model parent) : base(parent.Handler, new TOM.Perspective(), false) {
-			MetadataObject.Name = parent.MetadataObject.Perspectives.GetNewName("New Perspective");
-			parent.Perspectives.Add(this);
-			Init();
-		}
-
-		/// <summary>
-		/// Constructs a wrapper for an existing Perspective metadataobject in the TOM.
-		/// </summary>
-		public Perspective(TabularModelHandler handler, TOM.Perspective perspectiveMetadataObject) : base(handler, perspectiveMetadataObject)
-		{
-		}
 		public string GetAnnotation(string name) {
 		    return MetadataObject.Annotations.Find(name)?.Value;
 		}
@@ -67,12 +55,114 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
+
         /// <summary>
         /// Collection of localized descriptions for this Perspective.
         /// </summary>
         [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
-	    public new TranslationIndexer TranslatedDescriptions { get { return base.TranslatedDescriptions; } }
+	    public TranslationIndexer TranslatedDescriptions { private set; get; }
+        /// <summary>
+        /// Collection of localized names for this Perspective.
+        /// </summary>
+        [Browsable(true),DisplayName("Names"),Category("Translations and Perspectives")]
+	    public TranslationIndexer TranslatedNames { private set; get; }
+
+
+
+		/// <summary>
+		/// Creates a new Perspective and adds it to the parent Model.
+		/// </summary>
+		public Perspective(Model parent, string name = null) : this(new TOM.Perspective()) {
+			
+			MetadataObject.Name = GetNewName(parent.MetadataObject.Perspectives, string.IsNullOrWhiteSpace(name) ? "New Perspective" : name);
+
+			parent.Perspectives.Add(this);
+		}
+
+		
+		public Perspective() : this(TabularModelHandler.Singleton.Model) { }
+
+
+		/// <summary>
+		/// Creates an exact copy of this Perspective object.
+		/// </summary>
+		/// 
+		public Perspective Clone(string newName = null, bool includeTranslations = true) {
+		    Handler.BeginUpdate("Clone Perspective");
+
+				// Create a clone of the underlying metadataobject:
+				var tom = MetadataObject.Clone() as TOM.Perspective;
+
+				// Assign a new, unique name:
+				tom.Name = Parent.Perspectives.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				
+				// Create the TOM Wrapper object, representing the metadataobject:
+				var obj = new Perspective(tom);
+
+				// Add the object to the parent collection:
+				Parent.Perspectives.Add(obj);
+
+				// Copy translations, if applicable:
+				if(includeTranslations) {
+					obj.TranslatedNames.CopyFrom(TranslatedNames);
+					obj.TranslatedDescriptions.CopyFrom(TranslatedDescriptions);
+				}
+
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
+			if (newParent != null) throw new ArgumentException("This object can not be cloned to another parent. Argument newParent should be left as null.", "newParent");
+			return Clone(newName, includeTranslations);
+		}
+
+	
+        internal override void RenewMetadataObject()
+        {
+            var tom = new TOM.Perspective();
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject.CopyTo(tom);
+            MetadataObject = tom;
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+
+		public Model Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
+			}
+		}
+
+		/// <summary>
+		/// Creates a Perspective object representing an existing TOM Perspective.
+		/// </summary>
+		internal Perspective(TOM.Perspective metadataObject) : base(metadataObject)
+		{
+			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
+			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
+		}	
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				case "Parent":
+					return false;
+				
+				// Hides translation properties in the grid, unless the model actually contains translations:
+				case "TranslatedNames":
+				case "TranslatedDescriptions":
+					return Model.Cultures.Any();
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
     }
+
 
 	/// <summary>
 	/// Collection class for Perspective. Provides convenient properties for setting a property on multiple objects at once.
@@ -81,13 +171,13 @@ namespace TabularEditor.TOMWrapper
 	{
 		public Model Parent { get; private set; }
 
-		public PerspectiveCollection(TabularModelHandler handler, string collectionName, TOM.PerspectiveCollection metadataObjectCollection, Model parent) : base(handler, collectionName, metadataObjectCollection)
+		public PerspectiveCollection(string collectionName, TOM.PerspectiveCollection metadataObjectCollection, Model parent) : base(collectionName, metadataObjectCollection)
 		{
 			Parent = parent;
 
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in MetadataObjectCollection) {
-				new Perspective(handler, obj) { Collection = this };
+				new Perspective(obj) { Collection = this };
 			}
 		}
 

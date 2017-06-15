@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TabularEditor.PropertyGridUI;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -12,17 +13,25 @@ namespace TabularEditor.TOMWrapper
     {
         [Browsable(true), DisplayName("Row Level Filters"), Category("Security")]
         public RoleRLSIndexer RowLevelSecurity { get; private set; }
-        
+
+#if CL1400
+        [Browsable(true), DisplayName("Metadata Permissions"), Category("Security")]
+        public RolePermissionIndexer MetadataPermission { get; private set; }
+#endif
+
         public void InitRLSIndexer()
         {
             RowLevelSecurity = new RoleRLSIndexer(this);
+#if CL1400            
+            MetadataPermission = new RolePermissionIndexer(this);
+#endif
         }
 
-        public override TabularNamedObject Clone(string newName, bool includeTranslations)
+        /*public override TabularNamedObject Clone(string newName, bool includeTranslations)
         {
             Handler.BeginUpdate("duplicate role");
             var tom = MetadataObject.Clone();
-            tom.IsRemoved = false;
+            //tom.IsRemoved = false;
             tom.Name = Model.Roles.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
             var r = new ModelRole(Handler, tom);
             r.InitRLSIndexer();
@@ -41,24 +50,16 @@ namespace TabularEditor.TOMWrapper
             Handler.EndUpdate();
 
             return r;
-        }
+        }*/
 
-        internal override void Undelete(ITabularObjectCollection collection)
+        public ModelRoleMemberCollection Members { get; private set; }
+        protected override void Init()
         {
-            var tom = new TOM.ModelRole();
-            MetadataObject.CopyTo(tom);
-            tom.IsRemoved = false;
-            MetadataObject = tom;
-
-            base.Undelete(collection);
+            Members = new ModelRoleMemberCollection(this.GetObjectPath() + ".Members", MetadataObject.Members, this);
+            base.Init();
         }
 
-        public override void Delete()
-        {
-            base.Delete();
-        }
-
-        [Category("Security")]
+        /*[Category("Security")]
         [Description("Specify domain/usernames of the members in this role. One member per line.")]
         [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public string Members
@@ -79,6 +80,13 @@ namespace TabularEditor.TOMWrapper
                 {
                     MetadataObject.Members.Add(new TOM.WindowsModelRoleMember() { MemberName = member });
                 }
+            }
+        }*/
+        protected override bool IsBrowsable(string propertyName)
+        {
+            switch (propertyName) {
+                case "MetadataPermission": return Model.Database.CompatibilityLevel >= 1400;
+                default:  return true;
             }
         }
     }

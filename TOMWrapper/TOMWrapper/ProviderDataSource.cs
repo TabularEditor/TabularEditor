@@ -10,7 +10,7 @@ using TabularEditor.PropertyGridUI;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class ProviderDataSource : IDynamicPropertyObject
+    public partial class ProviderDataSource
     {
         protected override void Init()
         {
@@ -64,22 +64,18 @@ namespace TabularEditor.TOMWrapper
         [DisplayName("Source ID"), Category("Power BI Source Details")]
         public string SourceID { get { return MetadataObject.Name; } }
 
-        public bool Browsable(string propertyName)
+        protected override bool IsBrowsable(string propertyName)
         {
             switch(propertyName)
             {
                 case "MQuery":
                 case "SourceID":
                     return IsPowerBIMashup;
-                case "TranslatedNames":
-                case "TranslatedDisplayFolders":
-                case "TranslatedDescriptions":
-                    return false;
                 default: return true;
             }
         }
 
-        public bool Editable(string propertyName)
+        protected override bool IsEditable(string propertyName)
         {
             switch(propertyName)
             {
