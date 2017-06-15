@@ -10,7 +10,7 @@ using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.PropertyGridUI
 {
-    public class CultureCollectionEditor : RefreshGridCollectionEditor
+    public class PerspectiveCollectionEditor : RefreshGridCollectionEditor
     {
         CollectionForm m_collectionForm;
         Button cloneButton;
@@ -40,21 +40,14 @@ namespace TabularEditor.PropertyGridUI
         {
             if (lb.SelectedItem is null) return;
             PropertyInfo propInfo = lb.SelectedItem.GetType().GetProperty("Value");
-            var orgCulture = propInfo.GetValue(lb.SelectedItem) as Culture;
+            var orgPerspective = propInfo.GetValue(lb.SelectedItem) as Perspective;
 
             MethodInfo methodInfo = m_collectionForm.GetType().GetMethod("AddItems", BindingFlags.NonPublic | BindingFlags.Instance);
-            methodInfo.Invoke(m_collectionForm, new object[] { Enumerable.Repeat(orgCulture.Clone(), 1).ToList() } );
+            methodInfo.Invoke(m_collectionForm, new object[] { Enumerable.Repeat(orgPerspective.Clone(), 1).ToList() } );
 
         }
 
-        protected override void OnFormClosed(FormClosedEventArgs e)
-        {
-            // Delete unassigned translations:
-            TabularModelHandler.Singleton.Model.Cultures.Where(c => c.Unassigned).ToList().ForEach(c => c.Delete());
-            base.OnFormClosed(e);
-        }
-
-        public CultureCollectionEditor(Type type) : base(type)
+        public PerspectiveCollectionEditor(Type type) : base(type)
         {
         }
     }

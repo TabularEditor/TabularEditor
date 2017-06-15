@@ -64,6 +64,13 @@ namespace TabularEditor.TOMWrapper
             return Levels;
         }
 
+        internal override void Undelete(ITabularObjectCollection collection)
+        {
+            base.Undelete(collection);
+
+            Levels.Undelete();
+        }
+
         protected override void Init()
         {
             Levels = new LevelCollection(this.GetObjectPath() + ".Levels", MetadataObject.Levels, this);

@@ -201,6 +201,7 @@ namespace TabularEditor.TOMWrapper
                     case "Translations": return Model.Cultures.Where(t => VisibleInTree(t));
                     case "Relationships": return Model.Relationships.Where(t => VisibleInTree(t));
                     case "Data Sources": return Model.DataSources.Where(t => VisibleInTree(t));
+                    case "Table Partitions": return Model.Tables.Select(t => t.PartitionViewTable);
                 }
                 return Enumerable.Empty<TabularNamedObject>();
             }
@@ -325,6 +326,11 @@ namespace TabularEditor.TOMWrapper
         public void OnNodesInserted(ITabularObject parent, IEnumerable<ITabularObject> children)
         {
             OnNodesInserted(parent, children.ToArray());
+        }
+
+        public virtual void OnNodesChanged()
+        {
+
         }
 
         public abstract void OnNodesChanged(ITabularObject nodeItem);

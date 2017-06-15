@@ -12,7 +12,7 @@ namespace TabularEditor.TOMWrapper
     /// </summary>
     public interface IClonableObject
     {
-        TabularNamedObject Clone(string newName, bool includeTranslations = false, TabularNamedObject newParent = null);
+        TabularNamedObject Clone(string newName = null, bool includeTranslations = false, TabularNamedObject newParent = null);
     }
 
     public interface ITabularObject: INotifyPropertyChanged

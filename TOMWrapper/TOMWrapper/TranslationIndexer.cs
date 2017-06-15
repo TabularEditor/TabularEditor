@@ -1,4 +1,5 @@
 ﻿using Microsoft.AnalysisServices.Tabular;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,6 +13,14 @@ namespace TabularEditor.TOMWrapper
     [TypeConverter(typeof(IndexerConverter))]
     public class TranslationIndexer : IEnumerable<string>, IExpandableIndexer
     {
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(
+                    Keys.Where(k => !string.IsNullOrEmpty(this[k]))
+                    .ToDictionary(k => k, k => this[k])
+                );
+        }
+
         public Dictionary<string, string> Copy()
         {
             return Keys.ToDictionary(k => k, k => this[k]);
@@ -35,6 +44,11 @@ namespace TabularEditor.TOMWrapper
             {
                 this[kvp.Key] = kvp.Value;
             }
+        }
+
+        public bool IsEmpty
+        {
+            get { return Keys.All(k => string.IsNullOrEmpty(this[k])); }
         }
 
         /// <summary>

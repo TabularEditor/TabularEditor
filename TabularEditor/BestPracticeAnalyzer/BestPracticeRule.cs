@@ -13,28 +13,41 @@ using System.ComponentModel;
 
 namespace TabularEditor.BestPracticeAnalyzer
 {
+    [Flags]
     public enum RuleScope
     {
-        Model = 1,
-        Table = 2,
-        Column = 3,
-        Measure = 4,
-        Hierarchy = 5,
-        Level = 6,
-        Relationship = 7,
-        Perspective = 8,
-        Culture = 9,
-        Partition = 10,
-        DataSource = 11,
-        DataColumn = 12,
-        CalculatedColumn = 13,
-        CalculatedTable = 14
+        Model                   = 0x0001,
+        Table                   = 0x0002, // Excludes Calculated Tables even though they derive from this type
+        Measure                 = 0x0004,
+        Hierarchy               = 0x0008,
+        Level                   = 0x0010,
+        Relationship            = 0x0020,
+        Perspective             = 0x0040,
+        Culture                 = 0x0080,
+        Partition               = 0x0100,
+        DataSource              = 0x0200,
+        DataColumn              = 0x0400,
+        CalculatedColumn        = 0x0800,
+        CalculatedTable         = 0x1000,
+        CalculatedTableColumn   = 0x2000
     }
 
     public static class RuleScopeHelper
     {
+        public static RuleScope Combine(this IEnumerable<RuleScope> scopes)
+        {
+            return scopes.Aggregate((r1, r2) => r1 | r2);
+        }
+
+        public static bool IsMultiple(this RuleScope scope)
+        {
+            return ((scope & (scope - 1)) != 0);
+        }
+
         public static string GetTypeName(this RuleScope scope)
         {
+            if (scope.IsMultiple()) throw new InvalidOperationException("The provided RuleScope enum value has more than one flag set.");
+
             var x = scope.ToString().SplitCamelCase();
             if (scope == RuleScope.Hierarchy) x = "Hierarchies";
             else if (scope != RuleScope.Model) x += "s";
@@ -42,6 +55,8 @@ namespace TabularEditor.BestPracticeAnalyzer
         }
         public static Type GetScopeType(this RuleScope scope)
         {
+            if (scope.IsMultiple()) throw new InvalidOperationException("The provided RuleScope enum value has more than one flag set.");
+
             var assembly = System.Reflection.Assembly.GetAssembly(typeof(Model));
             var t = assembly.GetType("TabularEditor.TOMWrapper." + scope.ToString());
             return t;
@@ -52,6 +67,12 @@ namespace TabularEditor.BestPracticeAnalyzer
             if (scope == "Hierarchies") return RuleScope.Hierarchy;
             if (scope == "Model") return RuleScope.Model;
             else return (RuleScope)Enum.Parse(typeof(RuleScope), (scope.EndsWith("s") ? scope.Substring(0, scope.Length - 1) : scope).Replace(" ", ""));
+        }
+
+        public static IEnumerable<RuleScope> Enumerate(this RuleScope input)
+        {
+            foreach (RuleScope value in Enum.GetValues(input.GetType()))
+                if (input.HasFlag(value)) yield return value;
         }
     }
 
@@ -69,8 +90,9 @@ namespace TabularEditor.BestPracticeAnalyzer
         public string Description { get; set; }
         public int Severity { get; set; } = 10;
 
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonConverter(typeof(StringEnumFlagsConverter))]
         public RuleScope Scope { get; set; }
+        public string ScopeString { get => string.Join(",", Scope.Enumerate().Select(s => s.GetTypeName())); }
         public string Expression { get; set; }
         public string FixExpression { get; set; }
         public HashSet<int> Compatibility { get; set; }
@@ -88,7 +110,7 @@ namespace TabularEditor.BestPracticeAnalyzer
             {
                 Name = "Do not summarize key columns",
                 ID = "KEYCOLUMNS_SUMMARIZEBY_NONE",
-                Scope = RuleScope.Column,
+                Scope = RuleScope.CalculatedColumn | RuleScope.CalculatedTableColumn | RuleScope.DataColumn,
                 Description = "Visible numeric columns whose name end with Key or ID should have their 'Summarize By' property set to 'Do Not Summarize'.",
                 Severity = 1,
                 Expression = "(Name.EndsWith(\"Key\", true, null) or Name.EndsWith(\"ID\", true, null)) and SummarizeBy <> \"None\" and not IsHidden and not Table.IsHidden",
@@ -100,7 +122,7 @@ namespace TabularEditor.BestPracticeAnalyzer
             {
                 Name = "Hide foreign key columns",
                 ID = "FKCOLUMNS_HIDDEN",
-                Scope = RuleScope.Column,
+                Scope = RuleScope.CalculatedColumn | RuleScope.CalculatedTableColumn | RuleScope.DataColumn,
                 Description = "Columns used on the Many side of a relationship should be hidden.",
                 Severity = 1,
                 Expression = "Model.Relationships.Any(FromColumn = outerIt) and not IsHidden and not Table.IsHidden",
@@ -124,6 +146,36 @@ namespace TabularEditor.BestPracticeAnalyzer
                 Compatibility = new HashSet<int> { 1200, 1400 }
             });
             return bpc;
+        }
+    }
+
+    public class StringEnumFlagsConverter: StringEnumConverter
+    {
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            if(reader.ValueType == typeof(string) && objectType == typeof(RuleScope))
+            {
+                var types = ((string)reader.Value).Split(',').ToList();
+
+                // For backwards compatibility with rules created when "Column" existed as a RuleScope:
+                if (types.Contains("Column"))
+                {
+                    types.Remove("Column");
+                    types.Add("DataColumn");
+                    types.Add("CalculatedColumn");
+                    types.Add("CalculatedTableColumn");
+                }
+
+
+                return types.Select(t => RuleScopeHelper.GetScope(t)).Combine();
+            }
+            else
+                return base.ReadJson(reader, objectType, existingValue, serializer);
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            base.WriteJson(writer, value, serializer);
         }
     }
 

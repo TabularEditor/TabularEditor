@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TabularEditor", "TabularEditor\TabularEditor.csproj", "{F7588159-3F24-4BFA-A6F6-551657896C34}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TabularEditorTest", "TabularEditorTest\TabularEditorTest.csproj", "{BA495540-1B2D-4C1D-8A91-CB4EC8C3DCC7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AntlrGrammars", "AntlrGrammars\AntlrGrammars.csproj", "{6453FB18-AF97-4D9C-9A50-17CBBCE091DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginTest", "PluginTest\PluginTest.csproj", "{A7DBA03D-8D25-4868-A1DE-453C8ADE5724}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +39,10 @@ Global
 		{6453FB18-AF97-4D9C-9A50-17CBBCE091DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6453FB18-AF97-4D9C-9A50-17CBBCE091DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6453FB18-AF97-4D9C-9A50-17CBBCE091DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7DBA03D-8D25-4868-A1DE-453C8ADE5724}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7DBA03D-8D25-4868-A1DE-453C8ADE5724}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7DBA03D-8D25-4868-A1DE-453C8ADE5724}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7DBA03D-8D25-4868-A1DE-453C8ADE5724}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

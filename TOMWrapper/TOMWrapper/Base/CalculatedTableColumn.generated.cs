@@ -103,6 +103,7 @@ namespace TabularEditor.TOMWrapper
 
 		/// <summary>
 		/// Creates a new CalculatedTableColumn and adds it to the parent Table.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
 		/// </summary>
 		public CalculatedTableColumn(Table parent, string name = null) : this(new TOM.CalculatedTableColumn()) {
 			
@@ -115,7 +116,6 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this CalculatedTableColumn object.
 		/// </summary>
-		/// 
 		public CalculatedTableColumn Clone(string newName = null, bool includeTranslations = true, Table newParent = null) {
 		    Handler.BeginUpdate("Clone CalculatedTableColumn");
 

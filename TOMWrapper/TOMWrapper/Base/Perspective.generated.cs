@@ -71,6 +71,7 @@ namespace TabularEditor.TOMWrapper
 
 		/// <summary>
 		/// Creates a new Perspective and adds it to the parent Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
 		/// </summary>
 		public Perspective(Model parent, string name = null) : this(new TOM.Perspective()) {
 			
@@ -79,14 +80,16 @@ namespace TabularEditor.TOMWrapper
 			parent.Perspectives.Add(this);
 		}
 
-		
+		/// <summary>
+		/// Creates a new Perspective and adds it to the current Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
+		/// </summary>		
 		public Perspective() : this(TabularModelHandler.Singleton.Model) { }
 
 
 		/// <summary>
 		/// Creates an exact copy of this Perspective object.
 		/// </summary>
-		/// 
 		public Perspective Clone(string newName = null, bool includeTranslations = true) {
 		    Handler.BeginUpdate("Clone Perspective");
 

@@ -60,12 +60,12 @@ namespace TabularEditor.UI.Dialogs
             listView1.Items.Clear();
             listView1.Items.AddRange(analyzer.GlobalRules.OrderBy(r => r.Name).Select(r =>
             {
-                var lvi = new ListViewItem(new[] { null, r.Name, r.Scope.GetTypeName(), r.Severity.ToString(), r.Description }, lvgGlobal) { Name = r.ID, Checked = r.Enabled, Tag = r };
+                var lvi = new ListViewItem(new[] { null, r.Name, r.ScopeString, r.Severity.ToString(), r.Description }, lvgGlobal) { Name = r.ID, Checked = r.Enabled, Tag = r };
                 return lvi;
             }).ToArray());
             listView1.Items.AddRange(analyzer.LocalRules.OrderBy(r => r.Name).Select(r =>
             {
-                var lvi = new ListViewItem(new[] { null, r.Name, r.Scope.GetTypeName(), r.Severity.ToString(), r.Description }, lvgLocal) { Name = r.ID, Checked = r.Enabled, Tag = r };
+                var lvi = new ListViewItem(new[] { null, r.Name, r.ScopeString, r.Severity.ToString(), r.Description }, lvgLocal) { Name = r.ID, Checked = r.Enabled, Tag = r };
                 return lvi;
             }).ToArray());
 

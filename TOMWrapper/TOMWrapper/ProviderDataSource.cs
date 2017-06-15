@@ -12,6 +12,16 @@ namespace TabularEditor.TOMWrapper
 {
     public partial class ProviderDataSource
     {
+        /// <summary>
+        /// Replaces any occurence of the specified "keyword" with the specified "replaceWith", in the
+        /// ConnectionString property of this data source.
+        /// </summary>
+        public void SetPlaceholder(string keyword, string replaceWith)
+        {
+            // TODO: Make case-insensitive
+            ConnectionString = ConnectionString.Replace(keyword, replaceWith);
+
+        }
         protected override void Init()
         {
             if (ConnectionString.IndexOf("OleDb", StringComparison.InvariantCultureIgnoreCase) >= 0)

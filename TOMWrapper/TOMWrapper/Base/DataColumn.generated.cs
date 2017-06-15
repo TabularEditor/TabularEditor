@@ -46,6 +46,7 @@ namespace TabularEditor.TOMWrapper
 
 		/// <summary>
 		/// Creates a new DataColumn and adds it to the parent Table.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
 		/// </summary>
 		public DataColumn(Table parent, string name = null) : this(new TOM.DataColumn()) {
 			
@@ -58,7 +59,6 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this DataColumn object.
 		/// </summary>
-		/// 
 		public DataColumn Clone(string newName = null, bool includeTranslations = true, Table newParent = null) {
 		    Handler.BeginUpdate("Clone DataColumn");
 

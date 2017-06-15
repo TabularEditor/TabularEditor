@@ -37,8 +37,8 @@ namespace TabularEditor.TOMWrapper
         {
             Handler.BeginUpdate("add table");
             var t = new Table(this);
-            var p = new Partition();
-            t.Partitions.Add(p);
+            //var p = new Partition();
+            //t.Partitions.Add(p);
             t.InitRLSIndexer();
             
             Handler.EndUpdate();
@@ -77,20 +77,34 @@ namespace TabularEditor.TOMWrapper
         public ProviderDataSource AddDataSource(string name = null)
         {
             Handler.BeginUpdate("add data source");
-            var ds = new ProviderDataSource(this);
-            if (!string.IsNullOrEmpty(name)) ds.Name = name;
+            var ds = new ProviderDataSource(this, name);
             Handler.EndUpdate();
             return ds;
 
         }
         #endregion
         #region Convenient Collections
+        /// <summary>
+        /// Iterates all hierarchies on all tables of the model.
+        /// </summary>
         [Browsable(false)]
         public IEnumerable<Hierarchy> AllHierarchies { get { return Tables.SelectMany(t => t.Hierarchies); } }
+
+        /// <summary>
+        /// Iterates all columns on all tables of the model.
+        /// </summary>
         [Browsable(false)]
         public IEnumerable<Column> AllColumns { get { return Tables.SelectMany(t => t.Columns); } }
+
+        /// <summary>
+        /// Iterates all measures on all tables of the model.
+        /// </summary>
         [Browsable(false)]
         public IEnumerable<Measure> AllMeasures { get { return Tables.SelectMany(t => t.Measures); } }
+
+        /// <summary>
+        /// Iterates all levels on all hierarchies on all tables of the model.
+        /// </summary>
         [Browsable(false)]
         public IEnumerable<Level> AllLevels { get { return Tables.SelectMany(t => t.Hierarchies).SelectMany(h => h.Levels); } }
         #endregion
@@ -99,7 +113,7 @@ namespace TabularEditor.TOMWrapper
         public TableCollection Tables { get; private set; }
 
         [Category("Translations and Perspectives"),DisplayName("Model Perspectives")]
-        [Editor(typeof(TabularEditor.PropertyGridUI.RefreshGridCollectionEditor),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]
+        [Editor(typeof(TabularEditor.PropertyGridUI.PerspectiveCollectionEditor),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]
         public PerspectiveCollection Perspectives { get; private set; }
 
         [Category("Translations and Perspectives"), DisplayName("Model Cultures")]
@@ -122,10 +136,12 @@ namespace TabularEditor.TOMWrapper
         public readonly LogicalGroup GroupRelationships = new LogicalGroup("Relationships");
         public readonly LogicalGroup GroupTranslations = new LogicalGroup("Translations");
         public readonly LogicalGroup GroupRoles = new LogicalGroup("Roles");
+        public readonly LogicalGroup GroupPartitions = new LogicalGroup("Table Partitions");
 
         public IEnumerable<LogicalGroup> LogicalChildGroups { get
             {
                 yield return GroupTables;
+                yield return GroupPartitions;
                 yield return GroupDataSources;
                 yield return GroupPerspectives;
                 yield return GroupRelationships;

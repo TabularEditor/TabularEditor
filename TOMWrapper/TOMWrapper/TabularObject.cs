@@ -117,6 +117,7 @@ namespace TabularEditor.TOMWrapper
         protected virtual void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            Handler.DoObjectChanged(this, propertyName, oldValue, newValue);
         }
 
         /// <summary>
@@ -130,6 +131,8 @@ namespace TabularEditor.TOMWrapper
         protected virtual void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
         {
             PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
+            if (cancel) return;
+            Handler.DoObjectChanging(this, propertyName, newValue, ref cancel);
         }
 
         [Browsable(false),IntelliSense("The model this object belongs to.")]

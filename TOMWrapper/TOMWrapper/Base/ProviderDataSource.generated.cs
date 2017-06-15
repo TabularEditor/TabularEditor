@@ -200,6 +200,7 @@ namespace TabularEditor.TOMWrapper
 
 		/// <summary>
 		/// Creates a new ProviderDataSource and adds it to the parent Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
 		/// </summary>
 		public ProviderDataSource(Model parent, string name = null) : this(new TOM.ProviderDataSource()) {
 			
@@ -208,14 +209,16 @@ namespace TabularEditor.TOMWrapper
 			parent.DataSources.Add(this);
 		}
 
-		
+		/// <summary>
+		/// Creates a new ProviderDataSource and adds it to the current Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
+		/// </summary>		
 		public ProviderDataSource() : this(TabularModelHandler.Singleton.Model) { }
 
 
 		/// <summary>
 		/// Creates an exact copy of this ProviderDataSource object.
 		/// </summary>
-		/// 
 		public ProviderDataSource Clone(string newName = null) {
 		    Handler.BeginUpdate("Clone ProviderDataSource");
 

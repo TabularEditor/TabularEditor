@@ -51,10 +51,10 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => true,
                 (s, m) => s.ForEach(i =>
                 {
-                    var obj = (i as IClonableObject).Clone(null, true);
+                    var obj = (i as IClonableObject).Clone(includeTranslations: i is ITranslatableObject);
                     if (s.Count == 1) obj.Edit(); // Focuses the cloned item in the tree, and lets the user edit its name
                 }),
-                (s, m) => "Duplicate " + s.Summary(), true, Context.TableObject));
+                (s, m) => "Duplicate " + s.Summary(), true, Context.TableObject | Context.Partition ));
 
             Add(new Action((s, m) => s.DirectCount == 1 && s.Direct.First() is IDaxObject, (s, m) =>
             {

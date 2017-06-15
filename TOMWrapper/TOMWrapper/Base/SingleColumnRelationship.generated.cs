@@ -114,6 +114,7 @@ namespace TabularEditor.TOMWrapper
 
 		/// <summary>
 		/// Creates a new SingleColumnRelationship and adds it to the parent Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
 		/// </summary>
 		public SingleColumnRelationship(Model parent, string name = null) : this(new TOM.SingleColumnRelationship()) {
 			
@@ -122,14 +123,16 @@ namespace TabularEditor.TOMWrapper
 			parent.Relationships.Add(this);
 		}
 
-		
+		/// <summary>
+		/// Creates a new SingleColumnRelationship and adds it to the current Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
+		/// </summary>		
 		public SingleColumnRelationship() : this(TabularModelHandler.Singleton.Model) { }
 
 
 		/// <summary>
 		/// Creates an exact copy of this SingleColumnRelationship object.
 		/// </summary>
-		/// 
 		public SingleColumnRelationship Clone(string newName = null) {
 		    Handler.BeginUpdate("Clone SingleColumnRelationship");
 

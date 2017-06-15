@@ -356,6 +356,8 @@ namespace TabularEditor.UI
             CalculatedTableColumns = new UISelectionList<CalculatedTableColumn>(this.OfType<CalculatedTableColumn>());
             DataColumns = new UISelectionList<DataColumn>(this.OfType<DataColumn>());
             Tables = new UI.UISelectionList<Table>(this.OfType<Table>());
+            // TODO: Make this work when selecting a table in the "Table Partitions" group
+
             Direct = new UISelectionList<ITabularNamedObject>(selectedNodes.Select(n => n.Tag).OfType<ITabularNamedObject>());
         }
 

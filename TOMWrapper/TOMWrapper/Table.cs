@@ -133,6 +133,9 @@ namespace TabularEditor.TOMWrapper
             Columns.ForEach(c => c.Delete());
             Measures.ForEach(m => m.Delete());
 
+            // Delete any partitions on the table:
+            Partitions.ForEach(p => p.Delete());
+
             base.Cleanup();
         }
 
@@ -233,6 +236,8 @@ namespace TabularEditor.TOMWrapper
             throw new InvalidOperationException();
         }
 
+        public PartitionViewTable PartitionViewTable { get; private set; }
+
         protected override void Init()
         {
             Columns = new ColumnCollection(this.GetObjectPath() + ".Columns", MetadataObject.Columns, this);
@@ -243,7 +248,9 @@ namespace TabularEditor.TOMWrapper
             Columns.CollectionChanged += Children_CollectionChanged;
             Measures.CollectionChanged += Children_CollectionChanged;
             Hierarchies.CollectionChanged += Children_CollectionChanged;
-            Partitions.CollectionChanged += Children_CollectionChanged;
+            Partitions.CollectionChanged += Partitions_CollectionChanged;
+
+            PartitionViewTable = new PartitionViewTable(this);
 
             CheckChildrenErrors();
         }
@@ -276,6 +283,13 @@ namespace TabularEditor.TOMWrapper
                 Handler.Tree.OnNodesInserted(this, e.NewItems.Cast<ITabularObject>());
             else if (e.Action == NotifyCollectionChangedAction.Remove)
                 Handler.Tree.OnNodesRemoved(this, e.OldItems.Cast<ITabularObject>());
+        }
+        private void Partitions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add)
+                Handler.Tree.OnNodesInserted(PartitionViewTable, e.NewItems.Cast<ITabularObject>());
+            else if (e.Action == NotifyCollectionChangedAction.Remove)
+                Handler.Tree.OnNodesRemoved(PartitionViewTable, e.OldItems.Cast<ITabularObject>());
         }
 
         public override string Name
@@ -346,6 +360,41 @@ namespace TabularEditor.TOMWrapper
             }
         }
 #endif
+    }
+
+    /// <summary>
+    /// Wrapper class for the "Table Partitions" logical group.
+    /// </summary>
+    public class PartitionViewTable: ITabularNamedObject, ITabularObjectContainer
+    {
+        public Table Table { get; private set; }
+        internal PartitionViewTable(Table table)
+        {
+            Table = table;
+        }
+
+        [Category("Partitions"), NoMultiselect()]
+        [Editor(typeof(PartitionCollectionEditor), typeof(UITypeEditor))]
+        public PartitionCollection Partitions { get { return Table.Partitions; } }
+
+        [Category("Partitions"),DisplayName("Table Name")]
+        public string Name { get => Table.Name; set => Table.Name = value; }
+
+        [Browsable(false)]
+        public int MetadataIndex => Table.MetadataIndex;
+
+        [Browsable(false)]
+        public ObjectType ObjectType => ObjectType.Table;
+
+        [Browsable(false)]
+        public Model Model => Table.Model;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public IEnumerable<ITabularNamedObject> GetChildren()
+        {
+            return Partitions;
+        }
     }
 
     public static class TableExtension

@@ -125,6 +125,7 @@ namespace TabularEditor.TOMWrapper
 
 		/// <summary>
 		/// Creates a new <#= t.Name #> and adds it to the parent <#= Rules.GetParent(t) #>.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
 		/// </summary>
 		public <#= t.Name #>(<#= Rules.GetParent(t) #> parent, string name = null) : this(new TOM.<#= t.Name #>()) {
 			
@@ -135,7 +136,10 @@ namespace TabularEditor.TOMWrapper
 
 <# // Create parameterless constructors for objects at Model scope (perspectives, roles, etc.)
 if(Rules.GetParent(t) == "Model") { #>
-		
+		/// <summary>
+		/// Creates a new <#= t.Name #> and adds it to the current Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
+		/// </summary>		
 		public <#= t.Name #>() : this(TabularModelHandler.Singleton.Model) { }
 
 <# } #>
@@ -143,7 +147,6 @@ if(Rules.GetParent(t) == "Model") { #>
 		/// <summary>
 		/// Creates an exact copy of this <#= t.Name #> object.
 		/// </summary>
-		/// 
 		public <#= t.Name #> Clone(string newName = null<#= 
 Rules.IsTranslatable(t, true) ? ", bool includeTranslations = true" : "" #><#=
 Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" : "" #>) {

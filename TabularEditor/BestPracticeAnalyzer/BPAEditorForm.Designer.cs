@@ -30,7 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             this.label4 = new System.Windows.Forms.Label();
-            this.cmbScope = new System.Windows.Forms.ComboBox();
             this.numSeverity = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
             this.txtDescription = new System.Windows.Forms.TextBox();
@@ -46,6 +45,7 @@
             this.pnlInfo = new System.Windows.Forms.Panel();
             this.lblInfo = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.customComboBox1 = new CustomComboBox.CustomComboBox();
             this.label6 = new System.Windows.Forms.Label();
             this.txtID = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -62,20 +62,11 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 132);
+            this.label4.Location = new System.Drawing.Point(12, 133);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(53, 13);
             this.label4.TabIndex = 22;
             this.label4.Text = "Applies to";
-            // 
-            // cmbScope
-            // 
-            this.cmbScope.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbScope.FormattingEnabled = true;
-            this.cmbScope.Location = new System.Drawing.Point(78, 129);
-            this.cmbScope.Name = "cmbScope";
-            this.cmbScope.Size = new System.Drawing.Size(136, 21);
-            this.cmbScope.TabIndex = 21;
             // 
             // numSeverity
             // 
@@ -233,13 +224,13 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.label5);
+            this.panel1.Controls.Add(this.customComboBox1);
             this.panel1.Controls.Add(this.label6);
             this.panel1.Controls.Add(this.txtID);
-            this.panel1.Controls.Add(this.label5);
             this.panel1.Controls.Add(this.btnCancel);
             this.panel1.Controls.Add(this.btnOK);
             this.panel1.Controls.Add(this.label4);
-            this.panel1.Controls.Add(this.cmbScope);
             this.panel1.Controls.Add(this.numSeverity);
             this.panel1.Controls.Add(this.label3);
             this.panel1.Controls.Add(this.txtDescription);
@@ -252,6 +243,18 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(659, 410);
             this.panel1.TabIndex = 29;
+            // 
+            // customComboBox1
+            // 
+            this.customComboBox1.AllowResizeDropDown = true;
+            this.customComboBox1.ControlSize = new System.Drawing.Size(1, 1);
+            this.customComboBox1.DropDownControl = null;
+            this.customComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.customComboBox1.DropSize = new System.Drawing.Size(121, 150);
+            this.customComboBox1.Location = new System.Drawing.Point(78, 129);
+            this.customComboBox1.Name = "customComboBox1";
+            this.customComboBox1.Size = new System.Drawing.Size(253, 21);
+            this.customComboBox1.TabIndex = 33;
             // 
             // label6
             // 
@@ -275,11 +278,11 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(220, 132);
+            this.label5.Location = new System.Drawing.Point(337, 133);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(186, 13);
+            this.label5.Size = new System.Drawing.Size(149, 13);
             this.label5.TabIndex = 30;
-            this.label5.Text = "objects satisfying the following criteria:";
+            this.label5.Text = "satisfying the following criteria:";
             // 
             // btnCancel
             // 
@@ -333,7 +336,6 @@
 
         #endregion
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.ComboBox cmbScope;
         private System.Windows.Forms.NumericUpDown numSeverity;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtDescription;
@@ -354,5 +356,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox txtID;
+        private CustomComboBox.CustomComboBox customComboBox1;
     }
 }

@@ -68,6 +68,7 @@ namespace TabularEditor.TOMWrapper
 
 		/// <summary>
 		/// Creates a new ExternalModelRoleMember and adds it to the parent ModelRole.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
 		/// </summary>
 		public ExternalModelRoleMember(ModelRole parent, string name = null) : this(new TOM.ExternalModelRoleMember()) {
 			
@@ -80,7 +81,6 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this ExternalModelRoleMember object.
 		/// </summary>
-		/// 
 		public ExternalModelRoleMember Clone(string newName = null, ModelRole newParent = null) {
 		    Handler.BeginUpdate("Clone ExternalModelRoleMember");
 

@@ -34,6 +34,7 @@ namespace TabularEditor.BestPracticeAnalyzer
     {
         public bool RuleHasError { get { return !string.IsNullOrEmpty(RuleError); } }
         public string RuleError { get; set; }
+        public RuleScope RuleErrorScope { get; set; }
         public string ObjectName { get { return (Object as IDaxObject)?.DaxObjectFullName ?? Object.GetLinqPath(); } }
         public string RuleName { get { return Rule.Name; } }
         public TabularNamedObject Object { get; set; }
@@ -183,28 +184,45 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         public IEnumerable<AnalyzerResult> Analyze(BestPracticeRule rule)
         {
-            // Gets a collection of all objects in scope for this rule:
-            var collection = GetCollection(rule.Scope);
-
-            LambdaExpression lambda;
-
-            // Parse the expression specified on the rule (this can fail if the expression is malformed):
-            try
+            // Loop through the types of objects in scope for this rule:
+            foreach (var currentScope in rule.Scope.Enumerate())
             {
-                lambda = System.Linq.Dynamic.DynamicExpression.ParseLambda(collection.ElementType, typeof(bool), rule.Expression);
-            }
-            catch (Exception ex)
-            {
-                return Enumerable.Repeat(new AnalyzerResult { Rule = rule, RuleError = ex.Message }, 1);
-            }
 
-            var result = collection.Provider.CreateQuery(
-                Expression.Call(
-                    typeof(Queryable), "Where",
-                    new Type[] { collection.ElementType },
-                    collection.Expression, Expression.Quote(lambda))).OfType<TabularNamedObject>();
+                // Gets a collection of all objects of this type:
+                var collection = GetCollection(currentScope);
 
-            return result.Select(obj => new AnalyzerResult { Rule = rule, Object = obj });
+                LambdaExpression lambda = null;
+
+                bool isError = false;
+                string errMessage = string.Empty;
+
+                // Parse the expression specified on the rule (this can fail if the expression is malformed):
+                try
+                {
+                    lambda = System.Linq.Dynamic.DynamicExpression.ParseLambda(collection.ElementType, typeof(bool), rule.Expression);
+                }
+                catch (Exception ex)
+                {
+                    // Hack, since compiler does not allow to yield return directly from a catch block:
+                    isError = true;
+                    errMessage = ex.Message;
+                }
+                if (isError)
+                {
+                    yield return new AnalyzerResult { Rule = rule, RuleError = errMessage, RuleErrorScope = currentScope };
+                }
+                else
+                {
+
+                    var result = collection.Provider.CreateQuery(
+                        Expression.Call(
+                            typeof(Queryable), "Where",
+                            new Type[] { collection.ElementType },
+                            collection.Expression, Expression.Quote(lambda))).OfType<TabularNamedObject>();
+
+                    foreach (var res in result) yield return new AnalyzerResult { Rule = rule, Object = res };
+                }
+            }
         }
 
         public IEnumerable<AnalyzerResult> Analyze(IEnumerable<BestPracticeRule> rules)
@@ -216,6 +234,8 @@ namespace TabularEditor.BestPracticeAnalyzer
             return Enumerable.Empty<AnalyzerResult>();
         }
 
+
+
         private IQueryable GetCollection(RuleScope scope)
         {
             switch (scope)
@@ -224,8 +244,8 @@ namespace TabularEditor.BestPracticeAnalyzer
                     return Model.Tables.SelectMany(t => t.Columns).OfType<CalculatedColumn>().AsQueryable();
                 case RuleScope.CalculatedTable:
                     return Model.Tables.OfType<CalculatedTable>().AsQueryable();
-                case RuleScope.Column:
-                    return Model.Tables.SelectMany(t => t.Columns).AsQueryable();
+                case RuleScope.CalculatedTableColumn:
+                    return Model.Tables.OfType<CalculatedTable>().SelectMany(t => t.Columns).OfType<CalculatedTableColumn>().AsQueryable();
                 case RuleScope.Culture:
                     return Model.Cultures.AsQueryable();
                 case RuleScope.DataColumn:
@@ -247,11 +267,13 @@ namespace TabularEditor.BestPracticeAnalyzer
                 case RuleScope.Relationship:
                     return Model.Relationships.AsQueryable();
                 case RuleScope.Table:
-                    return Model.Tables.AsQueryable();
+                    return Model.Tables.Where(t => !(t is CalculatedTable)).AsQueryable();
 
                 default:
                     return Enumerable.Empty<TabularNamedObject>().AsQueryable();
             }
+
+            
         }
 
     }

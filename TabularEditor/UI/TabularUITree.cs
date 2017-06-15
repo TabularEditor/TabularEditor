@@ -12,6 +12,12 @@ namespace TabularEditor
 {
     public class TabularUITree : TabularTree, ITreeModel
     {
+        public TreeViewAdv TreeView { get; set; }
+        public override void OnNodesChanged()
+        {
+            if (UpdateLocks == 0) TreeView?.Invalidate();
+        }
+
         public TabularUITree(Model model) : base(model) { }
 
         public IEnumerable GetChildren(TreePath treePath)
@@ -138,9 +144,17 @@ namespace TabularEditor
             var stack = new List<object>();
 
             stack.Add(Model);
+            if (item is PartitionViewTable || item is Partition)
+            {
+                stack.Add(Model.GroupPartitions);
+                if (item is Partition) stack.Add((item as Partition).Table.PartitionViewTable);
+                stack.Add(item);
+                return new TreePath(stack.ToArray());
+            }
 
             if (Options.HasFlag(LogicalTreeOptions.AllObjectTypes) && item != Model)
             {
+
                 // If "Show all object types" is enabled, we need to add the "group" of the item to the stack,
                 // to get the complete path. The group can be determined from the type of object:
                 switch (item.ObjectType)

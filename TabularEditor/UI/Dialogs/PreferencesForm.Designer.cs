@@ -30,22 +30,22 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PreferencesForm));
-            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Data Sources");
-            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Perspectives");
-            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Relationships");
-            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Roles");
-            System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Annotations");
-            System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Columns");
-            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Hierarchies");
-            System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("Measures");
-            System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("Partitions");
-            System.Windows.Forms.TreeNode treeNode10 = new System.Windows.Forms.TreeNode("Tables", new System.Windows.Forms.TreeNode[] {
-            treeNode5,
-            treeNode6,
-            treeNode7,
-            treeNode8,
-            treeNode9});
-            System.Windows.Forms.TreeNode treeNode11 = new System.Windows.Forms.TreeNode("Translations");
+            System.Windows.Forms.TreeNode treeNode12 = new System.Windows.Forms.TreeNode("Data Sources");
+            System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("Perspectives");
+            System.Windows.Forms.TreeNode treeNode14 = new System.Windows.Forms.TreeNode("Relationships");
+            System.Windows.Forms.TreeNode treeNode15 = new System.Windows.Forms.TreeNode("Roles");
+            System.Windows.Forms.TreeNode treeNode16 = new System.Windows.Forms.TreeNode("Annotations");
+            System.Windows.Forms.TreeNode treeNode17 = new System.Windows.Forms.TreeNode("Columns");
+            System.Windows.Forms.TreeNode treeNode18 = new System.Windows.Forms.TreeNode("Hierarchies");
+            System.Windows.Forms.TreeNode treeNode19 = new System.Windows.Forms.TreeNode("Measures");
+            System.Windows.Forms.TreeNode treeNode20 = new System.Windows.Forms.TreeNode("Partitions");
+            System.Windows.Forms.TreeNode treeNode21 = new System.Windows.Forms.TreeNode("Tables", new System.Windows.Forms.TreeNode[] {
+            treeNode16,
+            treeNode17,
+            treeNode18,
+            treeNode19,
+            treeNode20});
+            System.Windows.Forms.TreeNode treeNode22 = new System.Windows.Forms.TreeNode("Translations");
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
@@ -57,12 +57,18 @@
             this.chkIgnoreInfProps = new System.Windows.Forms.CheckBox();
             this.chkSplitMultiline = new System.Windows.Forms.CheckBox();
             this.chkPrefixFiles = new System.Windows.Forms.CheckBox();
+            this.chkSplitMultilineFile = new System.Windows.Forms.CheckBox();
+            this.chkIgnoreInfPropsFile = new System.Windows.Forms.CheckBox();
+            this.chkIgnoreInfObjectsFile = new System.Windows.Forms.CheckBox();
+            this.chkIgnoreTimestampsFile = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.grpDeployment = new System.Windows.Forms.GroupBox();
             this.btnFolder = new System.Windows.Forms.Button();
             this.txtBackupPath = new System.Windows.Forms.TextBox();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.treeView1 = new System.Windows.Forms.TreeView();
@@ -75,31 +81,27 @@
             this.btnVersionCheck = new System.Windows.Forms.Button();
             this.lblAvailableVersion = new System.Windows.Forms.Label();
             this.lblCurrentVersion = new System.Windows.Forms.Label();
-            this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.chkSplitMultilineFile = new System.Windows.Forms.CheckBox();
-            this.chkIgnoreInfPropsFile = new System.Windows.Forms.CheckBox();
-            this.chkIgnoreInfObjectsFile = new System.Windows.Forms.CheckBox();
-            this.chkIgnoreTimestampsFile = new System.Windows.Forms.CheckBox();
+            this.chkLocalTranslations = new System.Windows.Forms.CheckBox();
+            this.chkLocalPerspectives = new System.Windows.Forms.CheckBox();
             this.groupBox3.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.grpDeployment.SuspendLayout();
+            this.tabPage5.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            this.tabPage5.SuspendLayout();
-            this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnOK
             // 
             this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(186, 342);
+            this.btnOK.Location = new System.Drawing.Point(186, 377);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 1;
@@ -110,7 +112,7 @@
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(267, 342);
+            this.btnCancel.Location = new System.Drawing.Point(267, 377);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 2;
@@ -199,6 +201,53 @@
         "y a number indicating the object\'s order in the Model.bim metadata.");
             this.chkPrefixFiles.UseVisualStyleBackColor = true;
             // 
+            // chkSplitMultilineFile
+            // 
+            this.chkSplitMultilineFile.AutoSize = true;
+            this.chkSplitMultilineFile.Location = new System.Drawing.Point(143, 42);
+            this.chkSplitMultilineFile.Name = "chkSplitMultilineFile";
+            this.chkSplitMultilineFile.Size = new System.Drawing.Size(114, 17);
+            this.chkSplitMultilineFile.TabIndex = 3;
+            this.chkSplitMultilineFile.Text = "Split multiline string";
+            this.toolTip1.SetToolTip(this.chkSplitMultilineFile, "If checked, expressions and other multiline string properties are serialized as a" +
+        " JSON array.");
+            this.chkSplitMultilineFile.UseVisualStyleBackColor = true;
+            // 
+            // chkIgnoreInfPropsFile
+            // 
+            this.chkIgnoreInfPropsFile.AutoSize = true;
+            this.chkIgnoreInfPropsFile.Location = new System.Drawing.Point(143, 19);
+            this.chkIgnoreInfPropsFile.Name = "chkIgnoreInfPropsFile";
+            this.chkIgnoreInfPropsFile.Size = new System.Drawing.Size(143, 17);
+            this.chkIgnoreInfPropsFile.TabIndex = 2;
+            this.chkIgnoreInfPropsFile.Text = "Ignore inferred properties";
+            this.toolTip1.SetToolTip(this.chkIgnoreInfPropsFile, "If checked, objects whose value is controlled by the server (Column.State, etc.) " +
+        "are not serialized into the .json files");
+            this.chkIgnoreInfPropsFile.UseVisualStyleBackColor = true;
+            // 
+            // chkIgnoreInfObjectsFile
+            // 
+            this.chkIgnoreInfObjectsFile.AutoSize = true;
+            this.chkIgnoreInfObjectsFile.Location = new System.Drawing.Point(6, 19);
+            this.chkIgnoreInfObjectsFile.Name = "chkIgnoreInfObjectsFile";
+            this.chkIgnoreInfObjectsFile.Size = new System.Drawing.Size(131, 17);
+            this.chkIgnoreInfObjectsFile.TabIndex = 1;
+            this.chkIgnoreInfObjectsFile.Text = "Ignore inferred objects";
+            this.toolTip1.SetToolTip(this.chkIgnoreInfObjectsFile, "If checked, objects whose lifetime is controlled by the server (RowNumber, attrib" +
+        "ute hierarchies, etc.) are not serialized into the .json files");
+            this.chkIgnoreInfObjectsFile.UseVisualStyleBackColor = true;
+            // 
+            // chkIgnoreTimestampsFile
+            // 
+            this.chkIgnoreTimestampsFile.AutoSize = true;
+            this.chkIgnoreTimestampsFile.Location = new System.Drawing.Point(6, 42);
+            this.chkIgnoreTimestampsFile.Name = "chkIgnoreTimestampsFile";
+            this.chkIgnoreTimestampsFile.Size = new System.Drawing.Size(111, 17);
+            this.chkIgnoreTimestampsFile.TabIndex = 0;
+            this.chkIgnoreTimestampsFile.Text = "Ignore timestamps";
+            this.toolTip1.SetToolTip(this.chkIgnoreTimestampsFile, "If checked, editing timestamps are not serialized into the .json files");
+            this.chkIgnoreTimestampsFile.UseVisualStyleBackColor = true;
+            // 
             // groupBox3
             // 
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -207,7 +256,7 @@
             this.groupBox3.Controls.Add(this.chkFixup);
             this.groupBox3.Location = new System.Drawing.Point(6, 6);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(310, 286);
+            this.groupBox3.Size = new System.Drawing.Size(310, 321);
             this.groupBox3.TabIndex = 4;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Editing";
@@ -225,7 +274,7 @@
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(330, 324);
+            this.tabControl1.Size = new System.Drawing.Size(330, 359);
             this.tabControl1.TabIndex = 2;
             // 
             // tabPage1
@@ -234,7 +283,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(322, 298);
+            this.tabPage1.Size = new System.Drawing.Size(322, 333);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Deployment";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -249,7 +298,7 @@
             this.grpDeployment.Controls.Add(this.chkAutoBackup);
             this.grpDeployment.Location = new System.Drawing.Point(7, 6);
             this.grpDeployment.Name = "grpDeployment";
-            this.grpDeployment.Size = new System.Drawing.Size(309, 286);
+            this.grpDeployment.Size = new System.Drawing.Size(309, 321);
             this.grpDeployment.TabIndex = 6;
             this.grpDeployment.TabStop = false;
             this.grpDeployment.Text = "Deployment Options";
@@ -275,6 +324,32 @@
             this.txtBackupPath.Size = new System.Drawing.Size(264, 20);
             this.txtBackupPath.TabIndex = 7;
             // 
+            // tabPage5
+            // 
+            this.tabPage5.Controls.Add(this.groupBox5);
+            this.tabPage5.Location = new System.Drawing.Point(4, 22);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage5.Size = new System.Drawing.Size(322, 333);
+            this.tabPage5.TabIndex = 4;
+            this.tabPage5.Text = "Save to File";
+            this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox5.Controls.Add(this.chkSplitMultilineFile);
+            this.groupBox5.Controls.Add(this.chkIgnoreInfPropsFile);
+            this.groupBox5.Controls.Add(this.chkIgnoreInfObjectsFile);
+            this.groupBox5.Controls.Add(this.chkIgnoreTimestampsFile);
+            this.groupBox5.Location = new System.Drawing.Point(6, 6);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(310, 66);
+            this.groupBox5.TabIndex = 1;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Serialization Options";
+            // 
             // tabPage4
             // 
             this.tabPage4.Controls.Add(this.groupBox4);
@@ -282,7 +357,7 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(322, 298);
+            this.tabPage4.Size = new System.Drawing.Size(322, 333);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Save to Folder";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -292,11 +367,13 @@
             this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox4.Controls.Add(this.chkLocalTranslations);
+            this.groupBox4.Controls.Add(this.chkLocalPerspectives);
             this.groupBox4.Controls.Add(this.treeView1);
             this.groupBox4.Controls.Add(this.label1);
             this.groupBox4.Location = new System.Drawing.Point(6, 100);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(310, 192);
+            this.groupBox4.Size = new System.Drawing.Size(310, 227);
             this.groupBox4.TabIndex = 4;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Serialization Levels";
@@ -309,48 +386,48 @@
             this.treeView1.CheckBoxes = true;
             this.treeView1.Location = new System.Drawing.Point(6, 54);
             this.treeView1.Name = "treeView1";
-            treeNode1.Checked = true;
-            treeNode1.Name = "Data Sources";
-            treeNode1.Text = "Data Sources";
-            treeNode2.Checked = true;
-            treeNode2.Name = "Perspectives";
-            treeNode2.Text = "Perspectives";
-            treeNode3.Checked = true;
-            treeNode3.Name = "Relationships";
-            treeNode3.Text = "Relationships";
-            treeNode4.Checked = true;
-            treeNode4.Name = "Roles";
-            treeNode4.Text = "Roles";
-            treeNode5.Name = "Annotations";
-            treeNode5.Text = "Annotations";
-            treeNode6.Checked = true;
-            treeNode6.Name = "Columns";
-            treeNode6.Text = "Columns";
-            treeNode7.Checked = true;
-            treeNode7.Name = "Hierarchies";
-            treeNode7.Text = "Hierarchies";
-            treeNode8.Checked = true;
-            treeNode8.Name = "Measures";
-            treeNode8.Text = "Measures";
-            treeNode9.Checked = true;
-            treeNode9.Name = "Partitions";
-            treeNode9.Text = "Partitions";
-            treeNode10.Checked = true;
-            treeNode10.Name = "Tables";
-            treeNode10.Text = "Tables";
-            treeNode11.Checked = true;
-            treeNode11.Name = "Translations";
-            treeNode11.Text = "Translations";
+            treeNode12.Checked = true;
+            treeNode12.Name = "Data Sources";
+            treeNode12.Text = "Data Sources";
+            treeNode13.Checked = true;
+            treeNode13.Name = "Perspectives";
+            treeNode13.Text = "Perspectives";
+            treeNode14.Checked = true;
+            treeNode14.Name = "Relationships";
+            treeNode14.Text = "Relationships";
+            treeNode15.Checked = true;
+            treeNode15.Name = "Roles";
+            treeNode15.Text = "Roles";
+            treeNode16.Name = "Annotations";
+            treeNode16.Text = "Annotations";
+            treeNode17.Checked = true;
+            treeNode17.Name = "Columns";
+            treeNode17.Text = "Columns";
+            treeNode18.Checked = true;
+            treeNode18.Name = "Hierarchies";
+            treeNode18.Text = "Hierarchies";
+            treeNode19.Checked = true;
+            treeNode19.Name = "Measures";
+            treeNode19.Text = "Measures";
+            treeNode20.Checked = true;
+            treeNode20.Name = "Partitions";
+            treeNode20.Text = "Partitions";
+            treeNode21.Checked = true;
+            treeNode21.Name = "Tables";
+            treeNode21.Text = "Tables";
+            treeNode22.Checked = true;
+            treeNode22.Name = "Translations";
+            treeNode22.Text = "Translations";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode1,
-            treeNode2,
-            treeNode3,
-            treeNode4,
-            treeNode10,
-            treeNode11});
+            treeNode12,
+            treeNode13,
+            treeNode14,
+            treeNode15,
+            treeNode21,
+            treeNode22});
             this.treeView1.PathSeparator = "/";
             this.treeView1.ShowLines = false;
-            this.treeView1.Size = new System.Drawing.Size(298, 132);
+            this.treeView1.Size = new System.Drawing.Size(298, 119);
             this.treeView1.TabIndex = 1;
             this.treeView1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCheck);
             // 
@@ -387,7 +464,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(322, 298);
+            this.tabPage2.Size = new System.Drawing.Size(322, 333);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "DAX";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -398,7 +475,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(322, 298);
+            this.tabPage3.Size = new System.Drawing.Size(322, 333);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "General";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -459,78 +536,31 @@
             this.lblCurrentVersion.TabIndex = 1;
             this.lblCurrentVersion.Text = "Current version: 2.0.0.0";
             // 
-            // tabPage5
+            // chkLocalTranslations
             // 
-            this.tabPage5.Controls.Add(this.groupBox5);
-            this.tabPage5.Location = new System.Drawing.Point(4, 22);
-            this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(322, 298);
-            this.tabPage5.TabIndex = 4;
-            this.tabPage5.Text = "Save to File";
-            this.tabPage5.UseVisualStyleBackColor = true;
+            this.chkLocalTranslations.AutoSize = true;
+            this.chkLocalTranslations.Location = new System.Drawing.Point(6, 202);
+            this.chkLocalTranslations.Name = "chkLocalTranslations";
+            this.chkLocalTranslations.Size = new System.Drawing.Size(171, 17);
+            this.chkLocalTranslations.TabIndex = 8;
+            this.chkLocalTranslations.Text = "Serialize translations per-object";
+            this.toolTip1.SetToolTip(this.chkLocalTranslations, "If checked, all translatable objects (measures, columns, etc.) will have their tr" +
+        "anslations stored in the annotations of the object itself.");
+            this.chkLocalTranslations.UseVisualStyleBackColor = true;
+            this.chkLocalTranslations.CheckedChanged += new System.EventHandler(this.chkLocalTranslations_CheckedChanged);
             // 
-            // groupBox5
+            // chkLocalPerspectives
             // 
-            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox5.Controls.Add(this.chkSplitMultilineFile);
-            this.groupBox5.Controls.Add(this.chkIgnoreInfPropsFile);
-            this.groupBox5.Controls.Add(this.chkIgnoreInfObjectsFile);
-            this.groupBox5.Controls.Add(this.chkIgnoreTimestampsFile);
-            this.groupBox5.Location = new System.Drawing.Point(6, 6);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(310, 66);
-            this.groupBox5.TabIndex = 1;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Serialization Options";
-            // 
-            // chkSplitMultilineFile
-            // 
-            this.chkSplitMultilineFile.AutoSize = true;
-            this.chkSplitMultilineFile.Location = new System.Drawing.Point(143, 42);
-            this.chkSplitMultilineFile.Name = "chkSplitMultilineFile";
-            this.chkSplitMultilineFile.Size = new System.Drawing.Size(114, 17);
-            this.chkSplitMultilineFile.TabIndex = 3;
-            this.chkSplitMultilineFile.Text = "Split multiline string";
-            this.toolTip1.SetToolTip(this.chkSplitMultilineFile, "If checked, expressions and other multiline string properties are serialized as a" +
-        " JSON array.");
-            this.chkSplitMultilineFile.UseVisualStyleBackColor = true;
-            // 
-            // chkIgnoreInfPropsFile
-            // 
-            this.chkIgnoreInfPropsFile.AutoSize = true;
-            this.chkIgnoreInfPropsFile.Location = new System.Drawing.Point(143, 19);
-            this.chkIgnoreInfPropsFile.Name = "chkIgnoreInfPropsFile";
-            this.chkIgnoreInfPropsFile.Size = new System.Drawing.Size(143, 17);
-            this.chkIgnoreInfPropsFile.TabIndex = 2;
-            this.chkIgnoreInfPropsFile.Text = "Ignore inferred properties";
-            this.toolTip1.SetToolTip(this.chkIgnoreInfPropsFile, "If checked, objects whose value is controlled by the server (Column.State, etc.) " +
-        "are not serialized into the .json files");
-            this.chkIgnoreInfPropsFile.UseVisualStyleBackColor = true;
-            // 
-            // chkIgnoreInfObjectsFile
-            // 
-            this.chkIgnoreInfObjectsFile.AutoSize = true;
-            this.chkIgnoreInfObjectsFile.Location = new System.Drawing.Point(6, 19);
-            this.chkIgnoreInfObjectsFile.Name = "chkIgnoreInfObjectsFile";
-            this.chkIgnoreInfObjectsFile.Size = new System.Drawing.Size(131, 17);
-            this.chkIgnoreInfObjectsFile.TabIndex = 1;
-            this.chkIgnoreInfObjectsFile.Text = "Ignore inferred objects";
-            this.toolTip1.SetToolTip(this.chkIgnoreInfObjectsFile, "If checked, objects whose lifetime is controlled by the server (RowNumber, attrib" +
-        "ute hierarchies, etc.) are not serialized into the .json files");
-            this.chkIgnoreInfObjectsFile.UseVisualStyleBackColor = true;
-            // 
-            // chkIgnoreTimestampsFile
-            // 
-            this.chkIgnoreTimestampsFile.AutoSize = true;
-            this.chkIgnoreTimestampsFile.Location = new System.Drawing.Point(6, 42);
-            this.chkIgnoreTimestampsFile.Name = "chkIgnoreTimestampsFile";
-            this.chkIgnoreTimestampsFile.Size = new System.Drawing.Size(111, 17);
-            this.chkIgnoreTimestampsFile.TabIndex = 0;
-            this.chkIgnoreTimestampsFile.Text = "Ignore timestamps";
-            this.toolTip1.SetToolTip(this.chkIgnoreTimestampsFile, "If checked, editing timestamps are not serialized into the .json files");
-            this.chkIgnoreTimestampsFile.UseVisualStyleBackColor = true;
+            this.chkLocalPerspectives.AutoSize = true;
+            this.chkLocalPerspectives.Location = new System.Drawing.Point(6, 179);
+            this.chkLocalPerspectives.Name = "chkLocalPerspectives";
+            this.chkLocalPerspectives.Size = new System.Drawing.Size(183, 17);
+            this.chkLocalPerspectives.TabIndex = 7;
+            this.chkLocalPerspectives.Text = "Serializes perspectives per-object";
+            this.toolTip1.SetToolTip(this.chkLocalPerspectives, "If checked, all objects that can be toggled in a perspective, will have its persp" +
+        "ective membership information stored in the annotations of the object itself.");
+            this.chkLocalPerspectives.UseVisualStyleBackColor = true;
+            this.chkLocalPerspectives.CheckedChanged += new System.EventHandler(this.chkLocalPerspectives_CheckedChanged);
             // 
             // PreferencesForm
             // 
@@ -538,7 +568,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(354, 377);
+            this.ClientSize = new System.Drawing.Size(354, 412);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
@@ -559,17 +589,18 @@
             this.tabPage1.ResumeLayout(false);
             this.grpDeployment.ResumeLayout(false);
             this.grpDeployment.PerformLayout();
+            this.tabPage5.ResumeLayout(false);
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.tabPage4.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.tabPage5.ResumeLayout(false);
-            this.groupBox5.ResumeLayout(false);
-            this.groupBox5.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -610,5 +641,7 @@
         private System.Windows.Forms.CheckBox chkIgnoreInfPropsFile;
         private System.Windows.Forms.CheckBox chkIgnoreInfObjectsFile;
         private System.Windows.Forms.CheckBox chkIgnoreTimestampsFile;
+        private System.Windows.Forms.CheckBox chkLocalTranslations;
+        private System.Windows.Forms.CheckBox chkLocalPerspectives;
     }
 }

@@ -19,10 +19,10 @@ namespace TabularEditor.TOMWrapper
     public abstract class TabularNamedObject: TabularObject, ITabularNamedObject, IComparable
     {
         /// <summary>
-        /// Hacky workaround needed to undo a delete operations.
-        /// Derived classes must take care to update any objects "owned" by the
-        /// object in question. For example, a Measure must take care of updating
-        /// the wrapper for its KPI (if any).
+        /// Derived classes must take care to undelete any objects "owned" by the
+        /// object in question. For example, a Measure must take care of calling
+        /// Undelete on its KPI (if any), a Hierarchy must call Undelete on each
+        /// of its levels, etc.
         /// </summary>
         /// <param name="collection"></param>
         internal virtual void Undelete(ITabularObjectCollection collection)

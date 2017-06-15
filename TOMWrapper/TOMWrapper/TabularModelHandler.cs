@@ -13,6 +13,43 @@ using Newtonsoft.Json;
 
 namespace TabularEditor.TOMWrapper
 {
+
+    public class ObjectChangedEventArgs
+    {
+        public TabularObject TabularObject { get; private set; }
+        public string PropertyName { get; private set; }
+        public object OldValue { get; private set; }
+        public object NewValue { get; private set; }
+
+        public ObjectChangedEventArgs(TabularObject tabularObject, string propertyName, object oldValue, object newValue)
+        {
+            TabularObject = tabularObject;
+            PropertyName = propertyName;
+            OldValue = oldValue;
+            NewValue = newValue;
+        }
+    }
+
+    public class ObjectChangingEventArgs
+    {
+        public bool Cancel { get; set; } = false;
+        public TabularObject TabularObject { get; private set; }
+        public string PropertyName { get; private set; }
+        public object NewValue { get; private set; }
+
+        public ObjectChangingEventArgs(TabularObject tabularObject, string propertyName, object newValue)
+        {
+            TabularObject = tabularObject;
+            PropertyName = propertyName;
+            NewValue = newValue;
+            Cancel = false;
+        }
+    }
+
+    public delegate void ObjectChangingEventHandler(object sender, ObjectChangingEventArgs e);
+    public delegate void ObjectChangedEventHandler(object sender, ObjectChangedEventArgs e);
+    
+
     public enum DeploymentStatus
     {
         ChangesSaved,
@@ -56,6 +93,8 @@ namespace TabularEditor.TOMWrapper
         public bool IgnoreTimestamps = true;
         public bool SplitMultilineStrings = true;
         public bool PrefixFilenames = false;
+        public bool LocalTranslations = false;
+        public bool LocalPerspectives = false;
 
         public HashSet<string> Levels = new HashSet<string>() {
             "Data Sources",
@@ -374,6 +413,8 @@ namespace TabularEditor.TOMWrapper
             Init();
         }
 
+        // TODO: Make public setter - remove options for setting this elsewhere
+        public SerializeOptions SerializeOptions { get; private set; } = SerializeOptions.Default;
 
         /// <summary>
         /// Loads an Analysis Services tabular database (Compatibility Level 1200 or newer) from a file
@@ -406,6 +447,58 @@ namespace TabularEditor.TOMWrapper
 
             Status = "File loaded succesfully.";
             Init();
+
+            var serializeOptionsAnnotation = Model.GetAnnotation("TabularEditor_SerializeOptions");
+            if (serializeOptionsAnnotation != null) SerializeOptions = JsonConvert.DeserializeObject<SerializeOptions>(serializeOptionsAnnotation);
+
+            // Check if translations / perspectives are stored locally in the model:
+            if (SourceType == ModelSourceType.Folder && (SerializeOptions.LocalTranslations || SerializeOptions.LocalPerspectives))
+            {
+                // First, construct a list of all items where we may have the relevant annotations:
+                var items = Enumerable.Repeat(Model as IAnnotationObject, 1)
+                    .Concat(Model.Tables)
+                    .Concat(Model.AllMeasures)
+                    .Concat(Model.AllColumns)
+                    .Concat(Model.AllHierarchies)
+                    .Concat(Model.AllLevels)
+                    .Concat(Model.Perspectives);
+
+                UndoManager.Enabled = false;
+                BeginUpdate("Apply translations and perspectives from annotations");
+
+                var translationsJson = Model.GetAnnotation("TabularEditor_Cultures");
+                if (SerializeOptions.LocalTranslations && translationsJson != null)
+                {
+                    Model.Cultures.FromJson(translationsJson);
+
+                    foreach (var item in items.OfType<ITranslatableObject>())
+                    {
+                        var tn = (item as IAnnotationObject).GetAnnotation("TabularEditor_TranslatedNames");
+                        if (tn != null) item.TranslatedNames.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, string>>(tn));
+
+                        var td = (item as IAnnotationObject).GetAnnotation("TabularEditor_TranslatedDescriptions");
+                        if (td != null) item.TranslatedDescriptions.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, string>>(td));
+
+                        var tdf = (item as IAnnotationObject).GetAnnotation("TabularEditor_TranslatedDisplayFolders");
+                        if (tdf != null && item is IDetailObject) (item as IDetailObject).TranslatedDisplayFolders.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, string>>(tdf));
+                    }
+                }
+
+                var perspectivesJson = Model.GetAnnotation("TabularEditor_Perspectives");
+                if (SerializeOptions.LocalPerspectives && perspectivesJson != null)
+                {
+                    Model.Perspectives.FromJson(perspectivesJson);
+
+                    foreach (var item in items.OfType<ITabularPerspectiveObject>())
+                    {
+                        var p = (item as IAnnotationObject).GetAnnotation("TabularEditor_InPerspective");
+                        if (p != null) item.InPerspective.CopyFrom(JsonConvert.DeserializeObject<string[]>(p));
+                    }
+                }
+
+                EndUpdate();
+                UndoManager.Enabled = true;
+            }
         }
 
         /// <summary>
@@ -705,6 +798,49 @@ namespace TabularEditor.TOMWrapper
  
             Model.SetAnnotation("TabularEditor_SerializeOptions", JsonConvert.SerializeObject(options), false);
 
+            if(options.LocalTranslations || options.LocalPerspectives)
+            {
+                // Create local annotations with translations / perspective options for relevant items
+
+                // First, construct a list of all items where we may have to add this annotation:
+                var items = Enumerable.Repeat(Model as IAnnotationObject, 1)
+                    .Concat(Model.Tables)
+                    .Concat(Model.AllMeasures)
+                    .Concat(Model.AllColumns)
+                    .Concat(Model.AllHierarchies)
+                    .Concat(Model.AllLevels)
+                    .Concat(Model.Perspectives);
+
+                if(options.LocalTranslations)
+                {
+                    // Loop through all translatable objects and provide the translation in the annotation:
+                    foreach(var item in items.OfType<ITranslatableObject>())
+                    {
+                        if(!item.TranslatedNames.IsEmpty)
+                            (item as IAnnotationObject).SetAnnotation("TabularEditor_TranslatedNames", item.TranslatedNames.ToJson(), false);
+                        if(!item.TranslatedDescriptions.IsEmpty)
+                            (item as IAnnotationObject).SetAnnotation("TabularEditor_TranslatedDescriptions", item.TranslatedDescriptions.ToJson(), false);
+                        if(item is IDetailObject)
+                            (item as IAnnotationObject).SetAnnotation("TabularEditor_TranslatedDisplayFolders", (item as IDetailObject).TranslatedDisplayFolders.ToJson(), false);
+                    }
+
+                    // Store the cultures (without translations) as an annotation on the model:
+                    Model.SetAnnotation("TabularEditor_Cultures", Model.Cultures.ToJson(), false);
+                }
+
+                if (options.LocalPerspectives)
+                {
+                    // Loop through all perspective objects and provide the perspective membership in the annotation:
+                    foreach (var item in items.OfType<ITabularPerspectiveObject>())
+                    {
+                        (item as IAnnotationObject).SetAnnotation("TabularEditor_InPerspective", item.InPerspective.ToJson(), false);
+                    }
+
+                    // Store the perspectives (without members) as an annotation on the model:
+                    Model.SetAnnotation("TabularEditor_Perspectives", Model.Perspectives.ToJson(), false);
+                }
+            }
+
             var json = SerializeDB(options);
             var jobj = JObject.Parse(json);
 
@@ -712,16 +848,16 @@ namespace TabularEditor.TOMWrapper
             var dataSources = options.Levels.Contains("Data Sources") ? PopArray(model, "dataSources") : null;
             var tables = options.Levels.Contains("Tables") ? PopArray(model, "tables") : null;
             var relationships = options.Levels.Contains("Relationships") ? PopArray(model, "relationships") : null;
-            var cultures = options.Levels.Contains("Translations") ? PopArray(model, "cultures") : null;
-            var perspectives = options.Levels.Contains("Perspectives") ? PopArray(model, "perspectives") : null;
+            var cultures = options.Levels.Contains("Translations") || options.LocalTranslations ? PopArray(model, "cultures") : null;
+            var perspectives = options.Levels.Contains("Perspectives") || options.LocalPerspectives ? PopArray(model, "perspectives") : null;
             var roles = options.Levels.Contains("Roles") ? PopArray(model, "roles") : null;
 
             CurrentFiles = new HashSet<string>();
             WriteIfChanged(path + "\\database.json", jobj.ToString(Newtonsoft.Json.Formatting.Indented));
 
             if (relationships != null) OutArray(path, "relationships", relationships, options);
-            if (perspectives != null) OutArray(path, "perspectives", perspectives, options);
-            if (cultures != null) OutArray(path, "cultures", cultures, options);
+            if (perspectives != null && !options.LocalPerspectives) OutArray(path, "perspectives", perspectives, options);
+            if (cultures != null && !options.LocalTranslations) OutArray(path, "cultures", cultures, options);
             if (dataSources != null) OutArray(path, "dataSources", dataSources, options);
             if (roles != null) OutArray(path, "roles", roles, options);
 
@@ -846,6 +982,21 @@ namespace TabularEditor.TOMWrapper
             return result;
         }
 
+        public event ObjectChangingEventHandler ObjectChanging;
+        public event ObjectChangedEventHandler ObjectChanged;
+
+        internal void DoObjectChanging(TabularObject obj, string propertyName, object newValue, ref bool cancel)
+        {
+            var e = new ObjectChangingEventArgs(obj, propertyName, newValue);
+            ObjectChanging?.Invoke(this, e);
+            cancel = e.Cancel;
+        }
+        internal void DoObjectChanged(TabularObject obj, string propertyName, object oldValue, object newValue)
+        {
+            var e = new ObjectChangedEventArgs(obj, propertyName, oldValue, newValue);
+            ObjectChanged?.Invoke(this, e);
+        }
+
         internal static List<Tuple<TOM.NamedMetadataObject, TOM.ObjectState>> GetObjectsNotReady(TOM.Database database)
         {
             var result = new List<Tuple<TOM.NamedMetadataObject, TOM.ObjectState>>();
@@ -898,12 +1049,22 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        /// <summary>
+        /// Begins a batch update
+        /// </summary>
+        /// <param name="undoName"></param>
         public void BeginUpdate(string undoName)
         {
             Tree.BeginUpdate();
             if(!string.IsNullOrEmpty(undoName)) UndoManager.BeginBatch(undoName);
         }
 
+        /// <summary>
+        /// Ends the latest batch update (can never be called more times than BeginUpdate).
+        /// </summary>
+        /// <param name="undoable"></param>
+        /// <param name="rollback"></param>
+        /// <returns></returns>
         public int EndUpdate(bool undoable = true, bool rollback = false)
         {
             var actionCount = 0;
@@ -912,6 +1073,12 @@ namespace TabularEditor.TOMWrapper
 
             return actionCount;
         }
+
+        /// <summary>
+        /// Ends all batch updates in progress.
+        /// </summary>
+        /// <param name="rollback"></param>
+        /// <returns></returns>
         public int EndUpdateAll(bool rollback = false)
         {
             var actionCount = 0;
@@ -955,6 +1122,20 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public TabularTree Tree { get; set; }
+        private TabularTree _tree;
+        public TabularTree Tree {
+            get
+            {
+                if(_tree == null)
+                {
+                    _tree = new NullTree(Model);
+                }
+                return _tree;
+            }
+            set
+            {
+                _tree = value;
+            }
+        }
     }
 }

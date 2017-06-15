@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Windows.Forms;
 using TabularEditor.UIServices;
@@ -77,6 +78,11 @@ namespace TabularEditor.UI.Dialogs
             chkSplitMultiline.Checked = Preferences.Current.SaveToFolder_SplitMultilineStrings;
             chkPrefixFiles.Checked = Preferences.Current.SaveToFolder_PrefixFiles;
 
+            chkLocalPerspectives.Checked = Preferences.Current.SaveToFolder_LocalPerspectives;
+            chkLocalTranslations.Checked = Preferences.Current.SaveToFolder_LocalTranslations;
+            SetNodeVisible("Perspectives", !chkLocalPerspectives.Checked);
+            SetNodeVisible("Translations", !chkLocalTranslations.Checked);
+
             chkIgnoreTimestampsFile.Checked = Preferences.Current.SaveToFile_IgnoreTimestamps;
             chkIgnoreInfObjectsFile.Checked = Preferences.Current.SaveToFile_IgnoreInferredObjects;
             chkIgnoreInfPropsFile.Checked = Preferences.Current.SaveToFile_IgnoreInferredProperties;
@@ -95,6 +101,8 @@ namespace TabularEditor.UI.Dialogs
                 Preferences.Current.SaveToFolder_IgnoreInferredProperties = chkIgnoreInfProps.Checked;
                 Preferences.Current.SaveToFolder_SplitMultilineStrings = chkSplitMultiline.Checked;
                 Preferences.Current.SaveToFolder_PrefixFiles = chkPrefixFiles.Checked;
+                Preferences.Current.SaveToFolder_LocalPerspectives = chkLocalPerspectives.Checked;
+                Preferences.Current.SaveToFolder_LocalTranslations = chkLocalTranslations.Checked;
                 Preferences.Current.SaveToFile_IgnoreTimestamps = chkIgnoreTimestampsFile.Checked;
                 Preferences.Current.SaveToFile_IgnoreInferredObjects = chkIgnoreInfObjectsFile.Checked;
                 Preferences.Current.SaveToFile_IgnoreInferredProperties = chkIgnoreInfPropsFile.Checked;
@@ -147,6 +155,40 @@ namespace TabularEditor.UI.Dialogs
                     p = p.Parent;
                 }
             }
+        }
+
+        Dictionary<string, bool> removedNodes = new Dictionary<string, bool>();
+
+        private void SetNodeVisible(string nodeKey, bool visible)
+        {
+            if (treeView1.Nodes.ContainsKey(nodeKey))
+            {
+                if (!visible)
+                {
+                    removedNodes.Add(nodeKey, treeView1.Nodes[nodeKey].Checked);
+                    treeView1.Nodes[nodeKey].Remove();
+                }
+            }
+            else
+            {
+                if (visible)
+                {
+                    treeView1.Nodes.Add(nodeKey, nodeKey).Checked = removedNodes[nodeKey];
+                    removedNodes.Remove(nodeKey);
+                }
+            }
+
+            treeView1.Sort();
+        }
+
+        private void chkLocalPerspectives_CheckedChanged(object sender, EventArgs e)
+        {
+            SetNodeVisible("Perspectives", !chkLocalPerspectives.Checked);
+        }
+
+        private void chkLocalTranslations_CheckedChanged(object sender, EventArgs e)
+        {
+            SetNodeVisible("Translations", !chkLocalTranslations.Checked);
         }
     }
 }

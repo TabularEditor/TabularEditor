@@ -938,7 +938,7 @@
             this.btnRun.Image = global::TabularEditor.Resources.Run;
             this.btnRun.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnRun.Name = "btnRun";
-            this.btnRun.Size = new System.Drawing.Size(36, 36);
+            this.btnRun.Size = new System.Drawing.Size(23, 22);
             this.btnRun.Text = "Replace";
             // 
             // deployToolStripMenuItem
@@ -957,7 +957,7 @@
             this.btnSaveCustomAction.Image = global::TabularEditor.Resources.action_add_16xLG;
             this.btnSaveCustomAction.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSaveCustomAction.Name = "btnSaveCustomAction";
-            this.btnSaveCustomAction.Size = new System.Drawing.Size(173, 36);
+            this.btnSaveCustomAction.Size = new System.Drawing.Size(157, 22);
             this.btnSaveCustomAction.Text = "Save as Custom Action...";
             // 
             // cutToolStripMenuItem
@@ -1489,7 +1489,7 @@
             this.txtAdvanced.AutoIndentChars = false;
             this.txtAdvanced.AutoIndentCharsPatterns = "\r\n^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;]+);\r\n^\\s*(case|default)\\s*[^:]" +
     "*(?<range>:)\\s*(?<range>[^;]+);\r\n";
-            this.txtAdvanced.AutoScrollMinSize = new System.Drawing.Size(27, 14);
+            this.txtAdvanced.AutoScrollMinSize = new System.Drawing.Size(2, 14);
             this.txtAdvanced.BackBrush = null;
             this.txtAdvanced.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtAdvanced.BracketsHighlightStrategy = FastColoredTextBoxNS.BracketsHighlightStrategy.Strategy2;
@@ -1502,14 +1502,14 @@
             this.txtAdvanced.Language = FastColoredTextBoxNS.Language.CSharp;
             this.txtAdvanced.LeftBracket = '(';
             this.txtAdvanced.LeftBracket2 = '{';
-            this.txtAdvanced.Location = new System.Drawing.Point(3, 42);
+            this.txtAdvanced.Location = new System.Drawing.Point(3, 28);
             this.txtAdvanced.Name = "txtAdvanced";
             this.txtAdvanced.Paddings = new System.Windows.Forms.Padding(0);
             this.txtAdvanced.RightBracket = ')';
             this.txtAdvanced.RightBracket2 = '}';
             this.txtAdvanced.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
             this.txtAdvanced.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtAdvanced.ServiceColors")));
-            this.txtAdvanced.Size = new System.Drawing.Size(445, 138);
+            this.txtAdvanced.Size = new System.Drawing.Size(445, 152);
             this.txtAdvanced.TabIndex = 16;
             this.txtAdvanced.Zoom = 100;
             // 
@@ -1525,7 +1525,7 @@
             this.btnSaveCustomAction});
             this.toolStrip4.Location = new System.Drawing.Point(3, 3);
             this.toolStrip4.Name = "toolStrip4";
-            this.toolStrip4.Size = new System.Drawing.Size(445, 39);
+            this.toolStrip4.Size = new System.Drawing.Size(445, 25);
             this.toolStrip4.TabIndex = 15;
             this.toolStrip4.Text = "toolStrip4";
             // 
@@ -1537,7 +1537,7 @@
             this.btnUndoErrors.Image = global::TabularEditor.Resources.Undo_grey_16x;
             this.btnUndoErrors.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnUndoErrors.Name = "btnUndoErrors";
-            this.btnUndoErrors.Size = new System.Drawing.Size(133, 36);
+            this.btnUndoErrors.Size = new System.Drawing.Size(117, 22);
             this.btnUndoErrors.Text = "Rollback on error";
             this.btnUndoErrors.ToolTipText = "When auto-undo is enabled, changes done by the script will be rolled back in case" +
     " of errors.";
@@ -1545,7 +1545,7 @@
             // toolStripSeparator11
             // 
             this.toolStripSeparator11.Name = "toolStripSeparator11";
-            this.toolStripSeparator11.Size = new System.Drawing.Size(6, 39);
+            this.toolStripSeparator11.Size = new System.Drawing.Size(6, 25);
             // 
             // samplesMenu
             // 
@@ -1555,7 +1555,7 @@
             this.toolStripSeparator17});
             this.samplesMenu.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.samplesMenu.Name = "samplesMenu";
-            this.samplesMenu.Size = new System.Drawing.Size(64, 36);
+            this.samplesMenu.Size = new System.Drawing.Size(64, 22);
             this.samplesMenu.Text = "Samples";
             // 
             // customActionsToolStripMenuItem
@@ -1572,12 +1572,12 @@
             // toolStripSeparator15
             // 
             this.toolStripSeparator15.Name = "toolStripSeparator15";
-            this.toolStripSeparator15.Size = new System.Drawing.Size(6, 39);
+            this.toolStripSeparator15.Size = new System.Drawing.Size(6, 25);
             // 
             // propertyGrid1
             // 
             this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertyGrid1.LineColor = System.Drawing.SystemColors.ControlDark;
+            this.propertyGrid1.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(247)))), ((int)(((byte)(252)))));
             this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid1.Name = "propertyGrid1";
             this.propertyGrid1.Size = new System.Drawing.Size(459, 222);
@@ -1886,6 +1886,7 @@
             this.tabularTreeImages.Images.SetKeyName(35, "culture");
             this.tabularTreeImages.Images.SetKeyName(36, "datasource");
             this.tabularTreeImages.Images.SetKeyName(37, "sort");
+            this.tabularTreeImages.Images.SetKeyName(38, "partition");
             // 
             // saveBimFile
             // 

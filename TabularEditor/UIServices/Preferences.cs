@@ -21,6 +21,9 @@ namespace TabularEditor.UIServices
         public bool SaveToFolder_SplitMultilineStrings = true;
         public bool SaveToFolder_PrefixFiles = false;
 
+        public bool SaveToFolder_LocalPerspectives = false;
+        public bool SaveToFolder_LocalTranslations = false;
+
         public bool SaveToFile_IgnoreInferredObjects = true;
         public bool SaveToFile_IgnoreInferredProperties = true;
         public bool SaveToFile_IgnoreTimestamps = true;
@@ -111,6 +114,8 @@ namespace TabularEditor.UIServices
                     IgnoreTimestamps = value.SaveToFolder_IgnoreTimestamps,
                     SplitMultilineStrings = value.SaveToFolder_SplitMultilineStrings,
                     PrefixFilenames = value.SaveToFolder_PrefixFiles,
+                    LocalPerspectives = value.SaveToFolder_LocalPerspectives,
+                    LocalTranslations = value.SaveToFolder_LocalTranslations,
                     Levels = new HashSet<string>(value.SaveToFolder_Levels)
                 };
             } else

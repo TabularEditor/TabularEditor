@@ -63,6 +63,7 @@ namespace Aga.Controls.Tree
 					_editingNode = null;
 				}
 			}
+            UpdateView();
 			return true;
 		}
 

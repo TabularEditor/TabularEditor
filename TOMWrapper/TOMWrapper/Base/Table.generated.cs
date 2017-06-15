@@ -123,6 +123,7 @@ namespace TabularEditor.TOMWrapper
 
 		/// <summary>
 		/// Creates a new Table and adds it to the parent Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
 		/// </summary>
 		public Table(Model parent, string name = null) : this(new TOM.Table()) {
 			
@@ -131,14 +132,16 @@ namespace TabularEditor.TOMWrapper
 			parent.Tables.Add(this);
 		}
 
-		
+		/// <summary>
+		/// Creates a new Table and adds it to the current Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
+		/// </summary>		
 		public Table() : this(TabularModelHandler.Singleton.Model) { }
 
 
 		/// <summary>
 		/// Creates an exact copy of this Table object.
 		/// </summary>
-		/// 
 		public Table Clone(string newName = null, bool includeTranslations = true) {
 		    Handler.BeginUpdate("Clone Table");
 

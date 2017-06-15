@@ -271,6 +271,7 @@ namespace TabularEditor.TOMWrapper
 
 		/// <summary>
 		/// Creates a new Measure and adds it to the parent Table.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
 		/// </summary>
 		public Measure(Table parent, string name = null) : this(new TOM.Measure()) {
 			
@@ -283,7 +284,6 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this Measure object.
 		/// </summary>
-		/// 
 		public Measure Clone(string newName = null, bool includeTranslations = true, Table newParent = null) {
 		    Handler.BeginUpdate("Clone Measure");
 

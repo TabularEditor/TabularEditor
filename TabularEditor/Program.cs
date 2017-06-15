@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Reflection;
 using System.IO;
+using TabularEditor.TOMWrapper;
 
 namespace TabularEditor
 {
@@ -17,6 +18,7 @@ namespace TabularEditor
         static void Main()
         {
             SetupLibraries();
+            LoadPlugins();
 
             var args = Environment.GetCommandLineArgs();
             if (args.Length > 1 && HandleCommandLine(args))
@@ -44,6 +46,37 @@ namespace TabularEditor
         {
             ScriptEngine.InitScriptEngine();
         }
+
+        /// <summary>
+        /// Scans executable directory for .dll's to load
+        /// </summary>
+        static void LoadPlugins()
+        {
+            foreach (var dll in Directory.EnumerateFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll"))
+            {
+                try
+                {
+                    var pluginAssembly = Assembly.LoadFile(dll);
+                    if(pluginAssembly != null)
+                    {
+                        var pluginType = pluginAssembly.GetTypes().Where(t => typeof(ITabularEditorPlugin).IsAssignableFrom(t)).FirstOrDefault();
+
+                        var plugin = Activator.CreateInstance(pluginType) as ITabularEditorPlugin;
+                        if (plugin != null)
+                        {
+                            Plugins.Add(plugin);
+                            Console.WriteLine("Succesfully loaded plugin " + pluginType.Name + " from assembly " + pluginAssembly.FullName);
+                        }
+                    }
+                }
+                catch
+                {
+
+                }
+            }
+        }
+
+        public static List<ITabularEditorPlugin> Plugins = new List<ITabularEditorPlugin>();
 
         [System.Runtime.InteropServices.DllImport("kernel32.dll")]
         private static extern bool AllocConsole();
@@ -253,6 +286,7 @@ namespace TabularEditor
                 {
                     options.DeployConnections = true;
                     switches.Remove("-C"); switches.Remove("-CONNECTIONS");
+                    // TODO: Obtain placeholder-value pairs from after the -C switch
                 }
                 if (switches.Contains("-R") || switches.Contains("-ROLES"))
                 {
@@ -299,7 +333,7 @@ namespace TabularEditor
             cw.WriteLine(@"Usage:
 
 TABULAREDITOR file [-S script] [-B output] [-D server database [-L username password]
-    [-O [-C] [-P]] [-R [-M]]] [-V] [-W]
+    [-O [-C [placeholder1 value1 [placeholder2 value2 [...]]]] [-P]] [-R [-M]]] [-V] [-W]
 
 file                Full path of the Model.bim file or database.json model folder to load.
 -S / -SCRIPT        Execute the specified script on the model after loading.
@@ -313,7 +347,11 @@ file                Full path of the Model.bim file or database.json model folde
   username            Username (must be a user with admin rights on the server)
   password            Password
 -O / -OVERWRITE     Allow deploy (overwrite) of an existing database.
--C / -CONNECTIONS   Deploy (overwrite) existing connections in the model.
+-C / -CONNECTIONS   Deploy (overwrite) existing data sources in the model. After the -C
+                    switch, you can (optionally) specify any number of placeholder-value
+                    pairs. Doing so, will replace any occurrence of the specified
+                    ""placeholder"" in the connection strings of every data source in
+                    the model, with the specified ""value"".                    
 -P / -PARTITIONS    Deploy (overwrite) existing table partitions in the model.
 -R / -ROLES         Deploy roles.
 -M / -MEMBERS       Deploy role members.

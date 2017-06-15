@@ -75,30 +75,42 @@ namespace TabularEditor.UI.Dialogs
         {
             InitializeComponent();
 
-            cmbScope.Items.AddRange(Enum.GetValues(typeof(RuleScope)).Cast<RuleScope>().Select(v => v.GetTypeName()).OrderBy(v => v).ToArray());
-            cmbScope.SelectedIndex = 0;
-            cmbScope.SelectionChangeCommitted += CmbScope_SelectionChangeCommitted;
+            lb = new CheckedListBox();
+            lb.CheckOnClick = true;
+            lb.FormattingEnabled = true;
+            lb.Items.AddRange(Enum.GetValues(typeof(RuleScope)).Cast<RuleScope>().Select(v => v.GetTypeName()).OrderBy(v => v).ToArray());
+            lb.BorderStyle = BorderStyle.None;
+            lb.ItemCheck += (s, e) => {
+                var selection = lb.Items.Cast<string>().Where(
+                    i => (((string)lb.Items[e.Index]) != i && lb.CheckedItems.Contains(i))
+                        || (((string)lb.Items[e.Index]) == i && e.NewValue == CheckState.Checked));
+
+                customComboBox1.Text = string.Join(",", selection);
+
+                _scope = selection.Select(scope => RuleScopeHelper.GetScope(scope)).Combine();
+            };
+            customComboBox1.DropDownControl = lb;
         }
 
-        private void CmbScope_SelectionChangeCommitted(object sender, EventArgs e)
-        {
-            _scope = RuleScopeHelper.GetScope(cmbScope.Text).GetScopeType();
-
-            ValidateRule();
-        }
+        private CheckedListBox lb;
 
         public string Expression { get { return txtExpression.Text; } private set { txtExpression.Text = value; } }
-        public Type _scope;
+        public IEnumerable<Type> ScopeTypes { get => _scope.Enumerate().Select(s => s.GetScopeType()); }
+
+        private RuleScope _scope;
         public RuleScope Scope
         {
             get
             {
-                return RuleScopeHelper.GetScope(_scope.Name);
+                return _scope;
             }
             private set
             {
-                cmbScope.SelectedItem = value.GetTypeName();
-                _scope = value.GetScopeType();
+                _scope = value;
+
+                // Update UI:
+                foreach (int i in lb.CheckedIndices) lb.SetItemChecked(i, false);
+                foreach (int i in value.Enumerate().Select(s => lb.Items.IndexOf(s.GetTypeName()))) lb.SetItemChecked(i, true);
             }
         }
 

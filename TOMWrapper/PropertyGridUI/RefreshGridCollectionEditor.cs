@@ -50,6 +50,10 @@ namespace TabularEditor.PropertyGridUI
 
         protected override object SetItems(object editValue, object[] value)
         {
+            if (canceled) return editValue;
+
+            //return base.SetItems(editValue, value);
+
             var col = (editValue as ITabularObjectCollection);
 
             // Manually add/remove items from the collection, instead of doing the default clear+add:
@@ -76,7 +80,11 @@ namespace TabularEditor.PropertyGridUI
 
             OnFormClosed(e);
 
-            if (!canceled) handler?.EndUpdate();
+            if (!canceled)
+            {
+                handler?.EndUpdate();
+                handler?.Tree.OnNodesChanged();
+            }
         }
     }
 }

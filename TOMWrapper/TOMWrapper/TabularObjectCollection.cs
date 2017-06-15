@@ -28,6 +28,16 @@ namespace TabularEditor.TOMWrapper
         where TT: TOM.NamedMetadataObject
         where TP: TOM.MetadataObject
     {
+
+        /// <summary>
+        /// Convenient method to call the Undelete() method on all objects in the collection.
+        /// </summary>
+        public void Undelete()
+        {
+            ForEach(i => i.Undelete(this));
+        }
+
+
         public int IndexOf(TabularNamedObject obj)
         {
             return MetadataObjectCollection?.IndexOf(obj.MetadataObject as TT) ?? -1;

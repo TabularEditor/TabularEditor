@@ -156,6 +156,7 @@ namespace TabularEditor.TOMWrapper
 
 		/// <summary>
 		/// Creates a new Hierarchy and adds it to the parent Table.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
 		/// </summary>
 		public Hierarchy(Table parent, string name = null) : this(new TOM.Hierarchy()) {
 			
@@ -168,7 +169,6 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this Hierarchy object.
 		/// </summary>
-		/// 
 		public Hierarchy Clone(string newName = null, bool includeTranslations = true, Table newParent = null) {
 		    Handler.BeginUpdate("Clone Hierarchy");
 

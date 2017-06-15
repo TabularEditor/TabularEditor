@@ -154,6 +154,7 @@ namespace TabularEditor.TOMWrapper
 
 		/// <summary>
 		/// Creates a new Partition and adds it to the parent Table.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
 		/// </summary>
 		public Partition(Table parent, string name = null) : this(new TOM.Partition()) {
 			
@@ -166,7 +167,6 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this Partition object.
 		/// </summary>
-		/// 
 		public Partition Clone(string newName = null, Table newParent = null) {
 		    Handler.BeginUpdate("Clone Partition");
 

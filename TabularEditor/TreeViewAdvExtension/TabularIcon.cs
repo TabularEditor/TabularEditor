@@ -27,7 +27,8 @@ namespace TabularEditor.UI.Tree
             { ObjectType.Relationship, TabularIcons.ICON_LINK },
             { ObjectType.Perspective, TabularIcons.ICON_PERSPECTIVE },
             { ObjectType.Role, TabularIcons.ICON_ROLE },
-            { ObjectType.DataSource, TabularIcons.ICON_DATASOURCE }
+            { ObjectType.DataSource, TabularIcons.ICON_DATASOURCE },
+            { ObjectType.Partition, TabularIcons.ICON_PARTITION }
         };
 
 
@@ -57,6 +58,7 @@ namespace TabularEditor.UI.Tree
                 int iconIndex;
                 if (IconMap.TryGetValue((obj as TabularObject).ObjectType, out iconIndex)) return iconIndex;
             }
+            if (obj is PartitionViewTable) return GetIconIndex((obj as PartitionViewTable).Table);
             return -1;
         }
 
@@ -124,6 +126,8 @@ namespace TabularEditor.UI.Tree
         public const int ICON_ROLE = 34;
         public const int ICON_CULTURE = 35;
         public const int ICON_DATASOURCE = 36;
+
+        public const int ICON_PARTITION = 38;
     }
 
 }

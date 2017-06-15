@@ -36,6 +36,7 @@ namespace TabularEditor.TOMWrapper
 
 		/// <summary>
 		/// Creates a new Culture and adds it to the parent Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
 		/// </summary>
 		public Culture(Model parent, string name = null) : this(new TOM.Culture()) {
 			
@@ -44,14 +45,16 @@ namespace TabularEditor.TOMWrapper
 			parent.Cultures.Add(this);
 		}
 
-		
+		/// <summary>
+		/// Creates a new Culture and adds it to the current Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
+		/// </summary>		
 		public Culture() : this(TabularModelHandler.Singleton.Model) { }
 
 
 		/// <summary>
 		/// Creates an exact copy of this Culture object.
 		/// </summary>
-		/// 
 		public Culture Clone(string newName = null) {
 		    Handler.BeginUpdate("Clone Culture");
 

@@ -154,6 +154,12 @@
     </Compile>
     <Compile Include="BestPracticeAnalyzer\Operator.cs" />
     <Compile Include="BindingHelper.cs" />
+    <Compile Include="CommandLine.cs" />
+    <Compile Include="CustomCombobox\CustomComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CustomCombobox\OldNewEvent.cs" />
+    <Compile Include="CustomCombobox\PopupControl.cs" />
     <Compile Include="Extensions\StringHelper.cs" />
     <Compile Include="UIServices\DynamicLinq.cs" />
     <Compile Include="UIServices\PowerBIHelper.cs" />

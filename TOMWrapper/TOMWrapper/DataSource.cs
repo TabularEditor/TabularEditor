@@ -18,4 +18,16 @@ namespace TabularEditor.TOMWrapper
             get { return Model.Tables.SelectMany(t => t.Partitions).Where(p => p.DataSource == this); }
         }
     }
+
+    public partial class DataSourceCollection
+    {
+        /// <summary>
+        /// Replaces any occurence of the specified "keyword" with the specified "replaceWith", in the
+        /// ConnectionString property of all Provider Data Sources in the collection.
+        /// </summary>
+        public void SetPlaceholder(string keyword, string replaceWith)
+        {
+            this.OfType<ProviderDataSource>().ToList().ForEach(ds => ds.SetPlaceholder(keyword, replaceWith));
+        }
+    }
 }

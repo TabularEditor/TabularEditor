@@ -95,6 +95,8 @@ namespace TabularEditor.UI
         }
         #endregion
 
+        public bool ScriptEditor_IsExecuting { get; private set; }
+
         public void ScriptEditor_ExecuteScript(bool undoErrors)
         {
             Cursor.Current = Cursors.WaitCursor;
@@ -124,6 +126,7 @@ namespace TabularEditor.UI
             Handler.BeginUpdate("script");
             try
             {
+                ScriptEditor_IsExecuting = true;
                 dyn.Invoke(Handler.Model, Selection);
                 var actionCount = Handler.EndUpdateAll();
                 UI.StatusExLabel.Text = string.Format("Script executed succesfully. {0} model change{1}.", actionCount, actionCount == 1 ? "" : "s");
@@ -152,6 +155,7 @@ namespace TabularEditor.UI
             }
             finally
             {
+                ScriptEditor_IsExecuting = false;
             }
 
             Cursor.Current = Cursors.Default;

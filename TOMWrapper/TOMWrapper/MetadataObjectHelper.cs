@@ -47,17 +47,7 @@ namespace Microsoft.AnalysisServices.Tabular.Helper
         {
             if (culture != null)
             {
-                var tran = culture.ObjectTranslations[obj, TranslatedProperty.Caption];
-                if (tran == null)
-                {
-                    tran = new ObjectTranslation
-                    {
-                        Object = obj,
-                        Property = TranslatedProperty.Caption
-                    };
-                    culture.ObjectTranslations.Add(tran);
-                }
-                tran.Value = newName;
+                culture.ObjectTranslations.SetTranslation(obj, TranslatedProperty.Caption, newName);
             }
             else
             {

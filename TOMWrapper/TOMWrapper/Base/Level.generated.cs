@@ -129,6 +129,7 @@ namespace TabularEditor.TOMWrapper
 
 		/// <summary>
 		/// Creates a new Level and adds it to the parent Hierarchy.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
 		/// </summary>
 		public Level(Hierarchy parent, string name = null) : this(new TOM.Level()) {
 			
@@ -141,7 +142,6 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this Level object.
 		/// </summary>
-		/// 
 		public Level Clone(string newName = null, bool includeTranslations = true, Hierarchy newParent = null) {
 		    Handler.BeginUpdate("Clone Level");
 

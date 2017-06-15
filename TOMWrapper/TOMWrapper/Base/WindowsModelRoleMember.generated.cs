@@ -24,6 +24,7 @@ namespace TabularEditor.TOMWrapper
 
 		/// <summary>
 		/// Creates a new WindowsModelRoleMember and adds it to the parent ModelRole.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
 		/// </summary>
 		public WindowsModelRoleMember(ModelRole parent, string name = null) : this(new TOM.WindowsModelRoleMember()) {
 			
@@ -36,7 +37,6 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this WindowsModelRoleMember object.
 		/// </summary>
-		/// 
 		public WindowsModelRoleMember Clone(string newName = null, ModelRole newParent = null) {
 		    Handler.BeginUpdate("Clone WindowsModelRoleMember");
 

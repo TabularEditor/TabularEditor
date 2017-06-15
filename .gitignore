@@ -23,3 +23,6 @@
 /.vs
 /.vs
 *.suo
+/PluginTest/bin/Debug
+/PluginTest/obj/Debug
+/PluginTest/obj/Debug

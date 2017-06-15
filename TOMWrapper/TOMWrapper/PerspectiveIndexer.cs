@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Newtonsoft.Json;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -11,6 +12,11 @@ namespace TabularEditor.TOMWrapper
     [TypeConverter(typeof(IndexerConverter))]
     public abstract class PerspectiveIndexer : IEnumerable<bool>, IExpandableIndexer
     {
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(Keys.Where(k => this[k]).ToArray());
+        }
+
         public Dictionary<string, bool> Copy()
         {
             return Keys.ToDictionary(k => k, k => this[k]);
@@ -28,6 +34,15 @@ namespace TabularEditor.TOMWrapper
             {
                 var value = source[p];
                 this[p] = value;
+            }
+        }
+
+        public void CopyFrom(IEnumerable<string> source)
+        {
+            None();
+            foreach(var persp in source)
+            {
+                this[persp] = true;
             }
         }
 

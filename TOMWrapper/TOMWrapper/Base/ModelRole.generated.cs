@@ -93,6 +93,7 @@ namespace TabularEditor.TOMWrapper
 
 		/// <summary>
 		/// Creates a new ModelRole and adds it to the parent Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
 		/// </summary>
 		public ModelRole(Model parent, string name = null) : this(new TOM.ModelRole()) {
 			
@@ -101,14 +102,16 @@ namespace TabularEditor.TOMWrapper
 			parent.Roles.Add(this);
 		}
 
-		
+		/// <summary>
+		/// Creates a new ModelRole and adds it to the current Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
+		/// </summary>		
 		public ModelRole() : this(TabularModelHandler.Singleton.Model) { }
 
 
 		/// <summary>
 		/// Creates an exact copy of this ModelRole object.
 		/// </summary>
-		/// 
 		public ModelRole Clone(string newName = null, bool includeTranslations = true) {
 		    Handler.BeginUpdate("Clone ModelRole");
 

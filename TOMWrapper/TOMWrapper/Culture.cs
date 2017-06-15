@@ -7,6 +7,7 @@ using System.Linq;
 using System.Collections.Generic;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using TabularEditor.UndoFramework;
+using Newtonsoft.Json;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -104,11 +105,10 @@ namespace TabularEditor.TOMWrapper
         #endregion
 
         [Browsable(false)]
-        public bool Unassigned { get; private set; } = true;
+        public bool Unassigned { get { return !CultureConverter.Cultures.ContainsKey(Name); } }
 
         public Culture(string cultureId): base(new TOM.Culture() { Name = cultureId })
         {
-            Unassigned = false;
         }
 
         [Browsable(false)]
@@ -146,7 +146,7 @@ namespace TabularEditor.TOMWrapper
             return propertyName == "Name";
         }
 
-        [TypeConverter(typeof(CultureConverter)), NoMultiselect()]
+        [TypeConverter(typeof(CultureConverter)), NoMultiselect(), DisplayName("Language")]
         public override string Name
         {
             get
@@ -157,8 +157,12 @@ namespace TabularEditor.TOMWrapper
             set
             {
                 var oldValue = MetadataObject.Name;
+                if (oldValue == value) return;
+                bool undoable = true;
+                bool cancel = false;
+                OnPropertyChanging("Name", value, ref undoable, ref cancel);
+                if (cancel) return;
 
-                Unassigned = false;
                 MetadataObject.Name = value;
                 UpdateDisplayName();
 
@@ -176,7 +180,7 @@ namespace TabularEditor.TOMWrapper
 
     public class CultureConverter: TypeConverter
     {
-        Dictionary<string, CultureInfo> Cultures = CultureInfo.GetCultures(CultureTypes.SpecificCultures).ToDictionary(c => c.Name, c => c);
+        public static Dictionary<string, CultureInfo> Cultures = CultureInfo.GetCultures(CultureTypes.SpecificCultures).ToDictionary(c => c.Name, c => c);
 
         public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
         {
@@ -226,5 +230,23 @@ namespace TabularEditor.TOMWrapper
             else
                 throw new InvalidOperationException();
         }        
+    }
+
+    public partial class CultureCollection
+    {
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this.Select(c => c.Name).ToArray());
+        }
+
+        public void FromJson(string json)
+        {
+            var cultures = JsonConvert.DeserializeObject<string[]>(json);
+
+            foreach(var c in cultures)
+            {
+                Handler.Model.AddTranslation(c);
+            }
+        }
     }
 }

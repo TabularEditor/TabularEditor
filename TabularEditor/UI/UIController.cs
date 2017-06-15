@@ -61,6 +61,48 @@ namespace TabularEditor.UI
             {
                 if (ScriptEngine.CustomActionError) UI.StatusExLabel.Text = "Failed loading custom actions. See CustomActionsError.log for more details.";
             }
+
+            foreach(var plugin in Program.Plugins)
+            {
+                plugin.RegisterActions(RegisterPluginCallback);
+            }
+        }
+
+        private void RegisterPluginCallback(string name, System.Action action)
+        {
+            var splitName = name.Split(new[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+
+            var items = UI.ToolsMenu.DropDownItems;
+            for (var i = 0; i < splitName.Length; i++)
+            {
+                var item = items.Cast<ToolStripMenuItem>().FirstOrDefault(it => it.Text == splitName[i]);
+                if(item != null)
+                {
+                    items = item.DropDownItems;
+                } else
+                {
+                    var newItem = items.Add(splitName[i]);
+                    items = (newItem as ToolStripMenuItem).DropDownItems;
+                    if (i == splitName.Length - 1)
+                    {
+                        newItem.Click += (s, e) =>
+                        {
+                            try
+                            {
+                                action();
+                            }
+                            catch (Exception ex)
+                            {
+                                var st = ex.StackTrace.Split('\n');
+                                if (st.Length > 1) st = st.Take(st.Length - 1).ToArray();
+                                var stacktrace = string.Join("\n", st);
+
+                                MessageBox.Show(stacktrace + "\n\n" + ex.Message, "Plug-in Error");
+                            }
+                        };
+                    }
+                }
+            }
         }
 
         public ModelActionManager Actions { get; private set; }
@@ -74,12 +116,13 @@ namespace TabularEditor.UI
         public void LoadTabularModelToUI()
         {
             Handler.UndoManager.UndoStateChanged += UndoManager_UndoActionAdded;
+            Handler.ObjectChanging += UIController_ObjectChanging;
 
             ExpressionEditor_CancelEdit();
             ExpressionEditor_Current = null;
 
             ShowSelectionStatus = false;
-            Tree = new TabularUITree(Handler.Model) { Options = Tree?.Options ?? LogicalTreeOptions.Default };
+            Tree = new TabularUITree(Handler.Model) { Options = Tree?.Options ?? LogicalTreeOptions.Default, TreeView = UI.TreeView };
 
             var sortedModel = new SortedTreeModel(Tree);
 
@@ -104,6 +147,43 @@ namespace TabularEditor.UI
             TreeView_SelectionChanged(UI.TreeView, new EventArgs());
             UI.FormMain.modelToolStripMenuItem.Enabled = true;
             UI.ModelMenu.Enabled = true;
+
+            InitPlugins();
+        }
+
+        private void InitPlugins()
+        {
+            foreach(var plugin in Program.Plugins)
+            {
+                plugin.Init(Handler);
+            }
+        }
+
+        private void UIController_ObjectChanging(object sender, ObjectChangingEventArgs e)
+        {
+            // This method captures all changes to object properties in the Tabular Object Model.
+            // We can use this event handler to provide UI messages/warnings when specific object
+            // properties are about to be changed. If we want to cancel a property change, set
+            // the Cancel flag on e to true.
+
+            // If currently executing a script, do nothing, as we assume users know what they're doing:
+            if (ScriptEditor_IsExecuting) return;
+
+            if(Handler.SourceType == ModelSourceType.Folder)
+            {
+                if(Handler.SerializeOptions.LocalPerspectives && e.TabularObject is Perspective && e.PropertyName == "Name")
+                {
+                    var r = MessageBox.Show("Model is currently loaded from a Folder Structure where perspectives are serialized on the individual objects.\n\nChanging a perspective name, will cause changes to all objects visible in that perspective, potentially causing merge conflicts in your Version Control tool. Proceed?", "Local perspective serialization", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                    e.Cancel = r == DialogResult.Cancel;
+                    return;
+                }
+                if(Handler.SerializeOptions.LocalTranslations && e.TabularObject is Culture && e.PropertyName == "Name")
+                {
+                    var r = MessageBox.Show("Model is currently loaded from a Folder Structure where translations are serialized on the individual objects.\n\nChanging a translation, will cause changes to all objects having that translation, potentially causing merge conflicts in your Version Control tool. Proceed?", "Local translation serialization", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                    e.Cancel = r == DialogResult.Cancel;
+                    return;
+                }
+            }
         }
 
         protected void OnModelLoaded()
