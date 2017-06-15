@@ -50,7 +50,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the Description of the Partition.
         /// </summary>
 		[DisplayName("Description")]
-		[Category("Basic"),IntelliSense("The Description of this Partition.")]
+		[Category("Basic"),IntelliSense("The Description of this Partition.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;

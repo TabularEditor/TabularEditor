@@ -59,7 +59,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the Description of the Level.
         /// </summary>
 		[DisplayName("Description")]
-		[Category("Basic"),IntelliSense("The Description of this Level.")]
+		[Category("Basic"),IntelliSense("The Description of this Level.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;

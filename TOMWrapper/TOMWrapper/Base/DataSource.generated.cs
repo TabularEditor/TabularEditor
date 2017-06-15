@@ -35,7 +35,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the Description of the DataSource.
         /// </summary>
 		[DisplayName("Description")]
-		[Category("Basic"),IntelliSense("The Description of this DataSource.")]
+		[Category("Basic"),IntelliSense("The Description of this DataSource.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;
