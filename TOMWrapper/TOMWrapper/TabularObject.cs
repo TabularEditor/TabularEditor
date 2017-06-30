@@ -71,28 +71,6 @@ namespace TabularEditor.TOMWrapper
     /// </summary>
     public abstract class TabularObject: ITabularObject, INotifyPropertyChanged, INotifyPropertyChanging, IDynamicPropertyObject
     {
-        public void Delete()
-        {
-            Handler.UndoManager.BeginBatch("Delete " + this.GetTypeName());
-            Cleanup();
-
-            // Always remove the deleted object from the WrapperLookup:
-            Handler.WrapperLookup.Remove(MetadataObject);
-
-            Handler.UndoManager.EndBatch();
-        }
- 
-        /// <summary>
-        /// Derived classes can override this method to clean up any references or dependent objects.
-        /// This method is called within an undo batch, whenever Delete() is called.
-        /// </summary>
-        protected virtual void Cleanup()
-        {
-            // TabularObjects can have translations for the description property, even though
-            // they might not be NamedTabularObjects (one example is KPI):
-            (this as ITranslatableObject)?.TranslatedDescriptions?.Clear();
-        }
-
         protected internal ITabularObjectCollection Collection;
 
         private TOM.MetadataObject _metadataObject;
@@ -113,6 +91,9 @@ namespace TabularEditor.TOMWrapper
         }
 
         internal abstract void RenewMetadataObject();
+        internal virtual void Undelete(ITabularObjectCollection collection) { }
+        internal virtual void ReapplyReferences() { }
+        internal virtual void Reinit() { }
 
         protected virtual void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
@@ -136,7 +117,7 @@ namespace TabularEditor.TOMWrapper
         }
 
         [Browsable(false),IntelliSense("The model this object belongs to.")]
-        public Model Model { get { return Handler.Model; } }
+        public Model Model { get { return Handler.WrapperLookup[MetadataObject.Model] as Model; } }
 
         [Browsable(false),IntelliSense("The type of this object (Folder, Measure, Table, etc.).")]
         public ObjectType ObjectType { get { return (ObjectType)MetadataObject.ObjectType; } }
@@ -157,7 +138,9 @@ namespace TabularEditor.TOMWrapper
             Handler = TabularModelHandler.Singleton;
             Handler.WrapperLookup[metadataObject] = this;
 
-            Init();
+            // Assign collection based on parent:
+            if (metadataObject.Parent != null)
+                Collection = (Handler.WrapperLookup[metadataObject.Parent] as TabularNamedObject).GetCollectionForChild(this);
         }
 
         /// <summary>

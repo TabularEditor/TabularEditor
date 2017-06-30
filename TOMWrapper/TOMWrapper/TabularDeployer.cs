@@ -219,7 +219,19 @@ namespace TabularEditor.TOMWrapper
         public bool DeployRoles = true;
         public bool DeployRoleMembers = false;
 
+        /// <summary>
+        /// Default deployment. Does not overwrite connections, partitions or role members.
+        /// </summary>
         public static DeploymentOptions Default = new DeploymentOptions();
+
+        /// <summary>
+        /// Full deployment.
+        /// </summary>
+        public static DeploymentOptions Full = new DeploymentOptions() { DeployConnections = true, DeployPartitions = true, DeployRoles = true, DeployRoleMembers = true };
+
+        /// <summary>
+        /// StructureOnly deployment. Does not overwrite roles or role members.
+        /// </summary>
         public static DeploymentOptions StructureOnly = new DeploymentOptions() { DeployRoles = false };
     }
 

@@ -40,13 +40,13 @@ namespace TabularEditor
         {
             var img = UI.Tree.TabularIcon.GetIconIndex(obj);
             var n = new TreeNode((obj as IDaxObject)?.DaxObjectFullName ?? obj.Name, img, img) { Tag = obj };
-            if(obj is IExpressionObject) n.ToolTipText = (obj as IExpressionObject).Expression;
+            if(obj is IDAXExpressionObject) n.ToolTipText = (obj as IDAXExpressionObject).Expression;
 
             nodes.Add(n);
 
-            if(obj is IExpressionObject)
+            if(obj is IDAXExpressionObject)
             {
-                foreach(var d in ((IExpressionObject)obj).Dependencies.OrderBy(k => k.Key.ObjectType))
+                foreach(var d in ((IDAXExpressionObject)obj).Dependencies.OrderBy(k => k.Key.ObjectType))
                 {
                     currentDepth++;
 
@@ -69,7 +69,7 @@ namespace TabularEditor
         {
             var img = UI.Tree.TabularIcon.GetIconIndex(obj);
             var n = new TreeNode((obj as IDaxObject)?.DaxObjectFullName ?? obj.Name, img, img) { Tag = obj };
-            if (obj is IExpressionObject) n.ToolTipText = (obj as IExpressionObject).Expression;
+            if (obj is IDAXExpressionObject) n.ToolTipText = (obj as IDAXExpressionObject).Expression;
 
             nodes.Add(n);
 

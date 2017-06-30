@@ -35,7 +35,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         public bool RuleHasError { get { return !string.IsNullOrEmpty(RuleError); } }
         public string RuleError { get; set; }
         public RuleScope RuleErrorScope { get; set; }
-        public string ObjectName { get { return (Object as IDaxObject)?.DaxObjectFullName ?? Object.GetLinqPath(); } }
+        public string ObjectName { get { return (Object as IDaxObject)?.DaxObjectFullName ?? Object.Name; } }
         public string RuleName { get { return Rule.Name; } }
         public TabularNamedObject Object { get; set; }
         public BestPracticeRule Rule { get; set; }
@@ -66,7 +66,7 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         public BestPracticeCollection GlobalRules { get; private set; }
         public BestPracticeCollection LocalRules { get; private set; }
-
+        public IEnumerable<BestPracticeRule> AllRules { get { return GlobalRules.Concat(LocalRules); } }
 
 
         public string GetUniqueId(string id)
@@ -177,9 +177,10 @@ namespace TabularEditor.BestPracticeAnalyzer
 
             //StandardBestPractices.GetStandardBestPractices().SaveToFile(@"c:\Projects\test.json");
         }
-        public Analyzer(Model model)
+
+        public IEnumerable<AnalyzerResult> AnalyzeAll()
         {
-            Model = model;
+            return Analyze(AllRules);
         }
 
         public IEnumerable<AnalyzerResult> Analyze(BestPracticeRule rule)
@@ -265,7 +266,7 @@ namespace TabularEditor.BestPracticeAnalyzer
                 case RuleScope.Perspective:
                     return Model.Perspectives.AsQueryable();
                 case RuleScope.Relationship:
-                    return Model.Relationships.AsQueryable();
+                    return Model.Relationships.OfType<SingleColumnRelationship>().AsQueryable();
                 case RuleScope.Table:
                     return Model.Tables.Where(t => !(t is CalculatedTable)).AsQueryable();
 

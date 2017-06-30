@@ -243,7 +243,7 @@ namespace TabularEditor.TOMWrapper.Tests
 
             // Perspective which only includes a few select items:
             var pnIn = "Test Perspective Inclusive";
-            new Perspective() { Name = pnIn };
+            Perspective.CreateNew(pnIn);
             m.Tables["Employee"].InPerspective[pnIn] = true;
             m.Tables["Date"].Hierarchies.InPerspective(pnIn, true);
             m.Tables["Internet Sales"].Measures.InPerspective(pnIn, true);
@@ -252,7 +252,7 @@ namespace TabularEditor.TOMWrapper.Tests
 
             // Perspective which includes everything except a few select items:
             var pnEx = "Test Perspective Exclusive";
-            new Perspective() { Name = pnEx };
+            Perspective.CreateNew(pnEx);
             m.Tables.InPerspective(pnEx, true);
             m.Tables["Employee"].InPerspective[pnEx] = false;
             m.Tables["Date"].Hierarchies.InPerspective(pnEx, false);

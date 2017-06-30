@@ -1,5 +1,6 @@
-﻿<#@ import namespace="System.Text.RegularExpressions"
-#><#+
+﻿<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.Collections.Specialized" #>
+<#+
 
 class Rules {
 	public static bool IsTranslatable(Type t, bool includeAncestors = false) {
@@ -12,7 +13,6 @@ class Rules {
 			case "Column":
 			case "Hierarchy":
 			case "Measure":
-			case "KPI":
 				return true;
 			default:
 				return includeAncestors && t.IsSubclassOf(typeof(MetadataObject)) ? IsTranslatable(t.BaseType, true) : false;
@@ -149,21 +149,28 @@ class Rules {
         );
     }
 
-	public static string GetDisplayName(string propertyName, string className)
+	public static string GetDisplayName(string propertyName, string typeName)
     {
 		var result = propertyName;
 
 		if(result.StartsWith("Is") && char.IsUpper(result[2])) result = result.Substring(2);
 
-		if(className == "Variation" && propertyName == "Column") return "Parent Column";
+		if(typeName == "Variation" && propertyName == "Column") return "Parent Column";
 
 		return SplitCamelCase(result);
     }
 
-	public static string GetCategory(string propertyName, Type objectType)
+	public static string GetCategory(string propertyName, string typeName)
     {
 		switch(propertyName)
         {
+		    case "Perspectives":
+			case "Cultures":
+				return "Translations and Perspectives";
+			case "Roles":
+				return "Security";
+			case "Partitions":
+				return "Data Source";
 			case "DisplayFolder":
 			case "Name":
 			case "IsHidden":
@@ -178,7 +185,7 @@ class Rules {
 				return "Options";
 			case "Column":
 #if CL1400
-				if(objectType == typeof(Variation)) return "Basic";
+				if(typeName == "Variation") return "Basic";
 #endif
 				return "Other";
 			case "IsDefault":
@@ -198,8 +205,8 @@ class Rules {
 			case "IsActive":
 				return "Relationship";
 			default:
-				if(objectType == typeof(ProviderDataSource)) return "Connection Details";
-				if(objectType == typeof(ModelRole)) return "Security";
+				if(typeName == "ProviderDataSource") return "Connection Details";
+				if(typeName == "ModelRole") return "Security";
 				return "Other";
         }
     }
@@ -219,7 +226,12 @@ class Rules {
 		if(className == "Model" && propertyName == "Culture") return "[TypeConverter(typeof(CultureConverter))]";
 		if(propertyName == "DisplayFolder") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]";
 		if(propertyName == "Expression") return "[Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]";
+		if(propertyName == "Description") return "[Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]";
 		if(propertyName == "ContextExpression") return "[Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]";
+		if(propertyName == "Perspectives") return "[Editor(typeof(TabularEditor.PropertyGridUI.PerspectiveCollectionEditor),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]";
+		if(propertyName == "Cultures") return "[Editor(typeof(TabularEditor.PropertyGridUI.CultureCollectionEditor),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]";
+		if(propertyName == "Roles") return "[Editor(typeof(TabularEditor.PropertyGridUI.RefreshGridCollectionEditor), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]";
+		if(propertyName == "Partitions") return "[NoMultiselect(),Editor(typeof(PartitionCollectionEditor),typeof(UITypeEditor))]";
 		return "";
     }
 
@@ -294,35 +306,66 @@ class Rules {
 	   { typeof(DataSource), "DataSources" }
    };
 
-   public static readonly Dictionary<Type, string> CollectionParent = new Dictionary<Type,string>()
+   public static string CollectionName(Type itemType) {
+	   switch(itemType.Name) {
+		   case "ModelRole": return "Roles";
+		   case "ModelRoleMember": return "Members";
+		   case "Hierarchy": return "Hierarchies";
+		   default: return itemType.Name + "s";
+       }
+   }
+
+   public static readonly List<KeyValuePair<Type, string>> CollectionParent = new List<KeyValuePair<Type, string>>()
    {
+	   // Collections owned by a Model (order of items matters, as this is the order in which child objects will be initialized):
+       { new KeyValuePair<Type, string>(typeof(Perspective), "Model") },
+       { new KeyValuePair<Type, string>(typeof(Culture), "Model") },
+	   { new KeyValuePair<Type, string>(typeof(DataSource), "Model") },
+       { new KeyValuePair<Type, string>(typeof(ModelRole), "Model") },
+       { new KeyValuePair<Type, string>(typeof(Table), "Model") },
+	   { new KeyValuePair<Type, string>(typeof(Relationship), "Model") },
+
+	   // Collections owned by a Table (order of items matters, as this is the order in which child objects will be initialized):
+       { new KeyValuePair<Type, string>(typeof(Partition), "Table") },
+       { new KeyValuePair<Type, string>(typeof(Column), "Table") },
+       { new KeyValuePair<Type, string>(typeof(Hierarchy), "Table") },
+       { new KeyValuePair<Type, string>(typeof(Measure), "Table") },
+
+	   // Collections owned by a ModelRole (order of items matters, as this is the order in which child objects will be initialized):
+       { new KeyValuePair<Type, string>(typeof(ModelRoleMember), "ModelRole") },
+
 #if CL1400
-       { typeof(Variation), "Column" },
+	   // Collections owned by a Column (order of items matters, as this is the order in which child objects will be initialized):
+       { new KeyValuePair<Type, string>(typeof(Variation), "Column") },
 #endif
-       { typeof(ModelRoleMember), "ModelRole" },
-       { typeof(ModelRole), "Model" },
-       { typeof(Table), "Model" },
-       { typeof(Column), "Table" },
-       { typeof(Level), "Hierarchy" },
-       { typeof(Hierarchy), "Table" },
-       { typeof(Measure), "Table" },
-       { typeof(Partition), "Table" },
-       { typeof(Perspective), "Model" },
-       { typeof(Culture), "Model" },
-	   { typeof(Relationship), "Model" },
-	   { typeof(DataSource), "Model" }
+
+	   // Collections owned by a Hierarchy (order of items matters, as this is the order in which child objects will be initialized):
+       { new KeyValuePair<Type, string>(typeof(Level), "Hierarchy") }
    };
 
+   private static string ParentOf(Type t) {
+	   return Rules.CollectionParent.FirstOrDefault(kvp => kvp.Key == t).Value;
+   }
+
    public static string GetParent(Type t) {
-	   return Rules.CollectionParent.ContainsKey(t) ? 
-			Rules.CollectionParent[t] : Rules.CollectionParent[t.BaseType];
+	   return Rules.CollectionParent.Any(kvp => kvp.Key == t) ? 
+			ParentOf(t) : ParentOf(t.BaseType);
    }
    public static bool InCollection(Type t) {
 	   return Rules.Collections.ContainsKey(t) || Rules.Collections.ContainsKey(t.BaseType);
    }
+   public static bool NeedsCollection(Type t) {
+	   return Rules.CollectionParent.Any(kvp => kvp.Key == t);
+   }
    public static string GetCollection(Type t) {
 	   return Rules.Collections.ContainsKey(t) ? 
 			Rules.Collections[t] : Rules.Collections[t.BaseType];
+   }
+   public static bool HasCollections(Type t) {
+	   return CollectionParent.Any(c => c.Value == t.Name);
+   }
+   public static IEnumerable<KeyValuePair<Type, string>> GetChildCollections(Type t) {
+	   return Rules.CollectionParent.Where(c => c.Value == t.Name);
    }
 }
 #>

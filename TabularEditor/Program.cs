@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.IO;
 using TabularEditor.TOMWrapper;
+using BPA = TabularEditor.BestPracticeAnalyzer;
 
 namespace TabularEditor
 {
@@ -60,12 +61,14 @@ namespace TabularEditor
                     if(pluginAssembly != null)
                     {
                         var pluginType = pluginAssembly.GetTypes().Where(t => typeof(ITabularEditorPlugin).IsAssignableFrom(t)).FirstOrDefault();
-
-                        var plugin = Activator.CreateInstance(pluginType) as ITabularEditorPlugin;
-                        if (plugin != null)
+                        if (pluginType != null)
                         {
-                            Plugins.Add(plugin);
-                            Console.WriteLine("Succesfully loaded plugin " + pluginType.Name + " from assembly " + pluginAssembly.FullName);
+                            var plugin = Activator.CreateInstance(pluginType) as ITabularEditorPlugin;
+                            if (plugin != null)
+                            {
+                                Plugins.Add(plugin);
+                                Console.WriteLine("Succesfully loaded plugin " + pluginType.Name + " from assembly " + pluginAssembly.FullName);
+                            }
                         }
                     }
                 }
@@ -238,12 +241,71 @@ namespace TabularEditor
                 h.SaveFile(buildOutputPath, TOMWrapper.SerializeOptions.Default);
             }
 
+            var replaceMap = new Dictionary<string, string>();
+
+            var analyze = upperArgList.IndexOf("-ANALYZE");
+            if (analyze == -1) analyze = upperArgList.IndexOf("-A");
+            if (analyze > -1)
+            {
+                var rulefile = argList.Skip(analyze + 1).FirstOrDefault(n => !n.StartsWith("-"));
+
+                var analyzer = new BPA.Analyzer() { Model = h.Model };
+
+                BPA.BestPracticeCollection suppliedRules = null;
+                if (!string.IsNullOrEmpty(rulefile))
+                {
+                    if(!File.Exists(rulefile))
+                    {
+                        Error("Rulefile not found: {0}", rulefile);
+                        return true;
+                    }
+                    try
+                    {
+                        suppliedRules = BPA.BestPracticeCollection.LoadFromJsonFile(rulefile);
+                    }
+                    catch
+                    {
+                        Error("Invalid rulefile: {0}", rulefile);
+                        return true;
+                    }
+                }
+
+                cw.WriteLine("Running Best Practice Analyzer...");
+                cw.WriteLine("=================================");
+                IEnumerable<BPA.AnalyzerResult> bpaResults;
+                if (suppliedRules == null) bpaResults = analyzer.AnalyzeAll();
+                else bpaResults = analyzer.Analyze(suppliedRules.Concat(analyzer.LocalRules));
+
+                if (!bpaResults.Any()) cw.WriteLine("No objects in violation of Best Practices.");
+                foreach(var res in bpaResults)
+                {
+                    Warning("{0} {1} violates rule {2}", res.Object.GetTypeName(), res.Object, res.RuleName);
+                }
+                cw.WriteLine("=================================");
+            }
+
             var deploy = upperArgList.IndexOf("-DEPLOY");
             if (deploy == -1) deploy = upperArgList.IndexOf("-D");
             if(deploy > -1)
             {
                 var serverName = argList.Skip(deploy + 1).FirstOrDefault(); if (serverName != null && serverName.StartsWith("-")) serverName = null;
                 var databaseID = argList.Skip(deploy + 2).FirstOrDefault(); if (databaseID != null && databaseID.StartsWith("-")) databaseID = null;
+
+                var conn = upperArgList.IndexOf("-CONNECTIONS");
+                if (conn == -1) conn = upperArgList.IndexOf("-C");
+                if (conn > -1) {
+                    var replaces = argList.Skip(conn + 1).TakeWhile(s => s[0] != '-').ToList();
+
+                    if (replaces.Count > 0 && replaces.Count % 2 == 0)
+                    {
+                        // Placeholder replacing:
+                        for (var index = 0; index < replaces.Count; index = index + 2)
+                        {
+                            replaceMap.Add(replaces[index], replaces[index + 1]);
+                        }
+                    }
+                }
+
                 string userName = null;
                 string password = null;
                 var options = TOMWrapper.DeploymentOptions.StructureOnly;
@@ -286,7 +348,6 @@ namespace TabularEditor
                 {
                     options.DeployConnections = true;
                     switches.Remove("-C"); switches.Remove("-CONNECTIONS");
-                    // TODO: Obtain placeholder-value pairs from after the -C switch
                 }
                 if (switches.Contains("-R") || switches.Contains("-ROLES"))
                 {
@@ -308,6 +369,12 @@ namespace TabularEditor
 
                 try
                 {
+                    if(replaceMap.Count > 0)
+                    {
+                        cw.WriteLine("Switching connection string placeholders...");
+                        foreach (var map in replaceMap) h.Model.DataSources.SetPlaceholder(map.Key, map.Value);
+                    }
+
                     cw.WriteLine("Deploying...");
                     var cs = string.IsNullOrEmpty(userName) ? TOMWrapper.TabularConnection.GetConnectionString(serverName) :
                         TOMWrapper.TabularConnection.GetConnectionString(serverName, userName, password);
@@ -334,6 +401,7 @@ namespace TabularEditor
 
 TABULAREDITOR file [-S script] [-B output] [-D server database [-L username password]
     [-O [-C [placeholder1 value1 [placeholder2 value2 [...]]]] [-P]] [-R [-M]]] [-V] [-W]
+    [-A [rulefile]]
 
 file                Full path of the Model.bim file or database.json model folder to load.
 -S / -SCRIPT        Execute the specified script on the model after loading.
@@ -356,8 +424,10 @@ file                Full path of the Model.bim file or database.json model folde
 -R / -ROLES         Deploy roles.
 -M / -MEMBERS       Deploy role members.
 -V / -VSTS          Output Visual Studio Team Services logging commands.
--W / -WARN          Outputs information about unprocessed objects as warnings.");
-
+-W / -WARN          Outputs information about unprocessed objects as warnings.
+-A / -ANALYZE       Runs Best Practice Analyzer and outputs the result to the console.
+  rulefile            Optional path of file containing BPA rules to be analyzed. If not
+                      specified, model is analyzed against global rules on the machine.");
         }
     }
 }

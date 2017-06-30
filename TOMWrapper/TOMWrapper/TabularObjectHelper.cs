@@ -32,6 +32,10 @@ namespace TabularEditor.TOMWrapper
                     return string.Format("{0}.Perspectives[\"{1}\"]", obj.Model.GetLinqPath(), obj.Name);
                 case ObjectType.Culture:
                     return string.Format("{0}.Cultures[\"{1}\"]", obj.Model.GetLinqPath(), obj.Name);
+                case ObjectType.DataSource:
+                    return string.Format("({0}.DataSources[\"{1}\"] as {2})", obj.Model.GetLinqPath(), obj.Name, obj.GetType().Name);
+                case ObjectType.Relationship:
+                    return string.Format("({0}.Relationships[{1}] as {2})", obj.Model.GetLinqPath(), obj.MetadataIndex, obj.GetType().Name);
                 default:
                     throw new NotSupportedException();
             }

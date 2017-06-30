@@ -182,6 +182,7 @@
     <Compile Include="TOMWrapper\TabularCommonActions.cs" />
     <Compile Include="TOMWrapper\TabularConnection.cs" />
     <Compile Include="TOMWrapper\TabularDeployer.cs" />
+    <Compile Include="TOMWrapper\AnnotationHelper.cs" />
     <Compile Include="TOMWrapper\Variation.cs" />
     <Compile Include="UndoFramework\IUndoAction.cs" />
     <Compile Include="UndoFramework\UndoAnnotationAction.cs" />

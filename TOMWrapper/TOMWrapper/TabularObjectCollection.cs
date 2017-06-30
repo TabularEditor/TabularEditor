@@ -21,6 +21,8 @@ namespace TabularEditor.TOMWrapper
         string CollectionName { get; }
         ITabularObjectCollection GetCurrentCollection();
         int IndexOf(TabularNamedObject obj);
+        TabularNamedObject Parent { get; }
+        void CreateChildrenFromMetadata();
     }
 
     public abstract class TabularObjectCollection<T, TT, TP> : IList, INotifyCollectionChanged, ICollection<T>, IList<T>, ITabularObjectCollection, IExpandableIndexer
@@ -29,14 +31,10 @@ namespace TabularEditor.TOMWrapper
         where TP: TOM.MetadataObject
     {
 
-        /// <summary>
-        /// Convenient method to call the Undelete() method on all objects in the collection.
-        /// </summary>
-        public void Undelete()
-        {
-            ForEach(i => i.Undelete(this));
-        }
+        internal abstract void Reinit();
+        internal abstract void ReapplyReferences();
 
+        public abstract TabularNamedObject Parent { get; }
 
         public int IndexOf(TabularNamedObject obj)
         {
@@ -55,6 +53,8 @@ namespace TabularEditor.TOMWrapper
                 this.ToList().ForEach(action);
         }
 
+        public abstract void CreateChildrenFromMetadata();
+
         public ITabularObjectCollection GetCurrentCollection()
         {
             return Handler.WrapperCollections[CollectionName];
@@ -62,10 +62,11 @@ namespace TabularEditor.TOMWrapper
 
         private bool init = false;
         public TabularModelHandler Handler { get; private set; }
+        public Model Model { get { return Handler.Model; } }
         [IntelliSense("The name of this collection.")]
         public string CollectionName { get; private set; }
 
-        protected internal TOM.NamedMetadataObjectCollection<TT, TP> MetadataObjectCollection { get; private set; }
+        protected internal TOM.NamedMetadataObjectCollection<TT, TP> MetadataObjectCollection { get; protected set; }
 
         public virtual void Refresh()
         {
@@ -186,6 +187,11 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        public virtual string GetNewName(string prefix = null)
+        {
+            return string.IsNullOrWhiteSpace(prefix) ? MetadataObjectCollection.GetNewName() : MetadataObjectCollection.GetNewName(prefix);
+        }
+
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         #region Notifying child objects
@@ -260,6 +266,8 @@ namespace TabularEditor.TOMWrapper
 
         public virtual int IndexOf(T item)
         {
+            var c = new System.Collections.Specialized.OrderedDictionary();
+
             return MetadataObjectCollection.IndexOf(item.MetadataObject as TT);
         }
 

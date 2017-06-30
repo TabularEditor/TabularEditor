@@ -24,7 +24,7 @@ namespace TabularEditor.TOMWrapper
     /// <summary>
     /// Objects whose name and description properties can be translated
     /// </summary>
-    public interface ITranslatableObject
+    public interface ITranslatableObject: IAnnotationObject, ITabularNamedObject
     {
         TranslationIndexer TranslatedNames { get; }
         TranslationIndexer TranslatedDescriptions { get; }
@@ -49,7 +49,7 @@ namespace TabularEditor.TOMWrapper
     /// <summary>
     /// Objects that can be shown/hidden in individual perspectives
     /// </summary>
-    public interface ITabularPerspectiveObject: IHideableObject
+    public interface ITabularPerspectiveObject: IHideableObject, IAnnotationObject
     {
         PerspectiveIndexer InPerspective { get; }
     }
@@ -80,11 +80,18 @@ namespace TabularEditor.TOMWrapper
     }
 
     /// <summary>
-    /// Objects that have a DAX expression (measure, calculated column, calculated table)
+    /// Objects that have an expression (measure, calcualted column, partition, etc.)
     /// </summary>
-    public interface IExpressionObject: IDaxObject
+    public interface IExpressionObject: ITabularNamedObject
     {
         string Expression { get; set; }
+    }
+
+    /// <summary>
+    /// Objects that have a DAX expression (measure, calculated column, calculated table)
+    /// </summary>
+    public interface IDAXExpressionObject: IDaxObject, IExpressionObject
+    {
         bool NeedsValidation { get; set; }
         Dictionary<IDaxObject, List<Dependency>> Dependencies { get; }
     }
@@ -106,7 +113,7 @@ namespace TabularEditor.TOMWrapper
         string DaxObjectName { get; }
         string DaxObjectFullName { get; }
         string DaxTableName { get; }
-        HashSet<IExpressionObject> Dependants { get; }
+        HashSet<IDAXExpressionObject> Dependants { get; }
     }
     #endregion
 

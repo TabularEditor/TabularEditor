@@ -125,14 +125,14 @@ namespace TabularEditor.UI
         {
             get
             {
-                var c = this.OfType<IExpressionObject>();
+                var c = this.OfType<IDAXExpressionObject>();
                 if (c.Count() > 1) throw new InvalidOperationException("Multiple objects selected");
                 return c.FirstOrDefault()?.Expression;
             }
             set
             {
                 Handler.BeginUpdate("expression");
-                this.OfType<IExpressionObject>().ToList().ForEach(i => i.Expression = value);
+                this.OfType<IDAXExpressionObject>().ToList().ForEach(i => i.Expression = value);
                 Handler.EndUpdate();
             }
         }
@@ -252,7 +252,7 @@ namespace TabularEditor.UI
         [IntelliSense("Specify a search pattern and a replacement value, that will be applied to the Expression of the objects in the collection.")]
         public void ReplaceExpression(string pattern, string replacement, bool regex = false)
         {
-            var objects = this.OfType<IExpressionObject>().ToList();
+            var objects = this.OfType<IDAXExpressionObject>().ToList();
             Handler.BeginUpdate("replace expression");
 
             if (regex)

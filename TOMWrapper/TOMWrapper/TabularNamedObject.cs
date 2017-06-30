@@ -6,6 +6,7 @@ using System.Diagnostics;
 using Microsoft.AnalysisServices.Tabular.Helper;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.UndoFramework;
+using System.Collections.Specialized;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -19,43 +20,79 @@ namespace TabularEditor.TOMWrapper
     public abstract class TabularNamedObject: TabularObject, ITabularNamedObject, IComparable
     {
         /// <summary>
+        /// Deletes the object.
+        /// </summary>
+        public void Delete()
+        {
+            Handler.UndoManager.BeginBatch("Delete " + this.GetTypeName());
+
+            DeleteLinkedObjects(false);
+            RemoveReferences();
+
+            var _collection = Collection;
+
+            // TabularObjects can belong to collections. Make sure the object is
+            // removed from the collection it belongs to. This will add an undo
+            // operation to the stack, meaning the parent collection will be
+            // responsible for undeleting the object if the operation is undone:
+            if (Collection != null) Collection.Remove(this);
+
+            AfterRemoval(_collection);
+
+            // Always remove the deleted object from the WrapperLookup:
+            Handler.WrapperLookup.Remove(MetadataObject);
+
+            Handler.UndoManager.EndBatch();
+        }
+
+        protected virtual void DeleteLinkedObjects(bool isChildOfDeleted)
+        {
+            var container = this as ITabularObjectContainer;
+            if (container != null) foreach (var child in container.GetChildren().OfType<TabularNamedObject>()) child.DeleteLinkedObjects(true);
+        }
+
+        internal override void ReapplyReferences()
+        {
+            var container = this as ITabularObjectContainer;
+            if (container != null) foreach (var child in container.GetChildren().OfType<TabularNamedObject>()) child.ReapplyReferences();
+        }
+
+        /// <summary>
         /// Derived classes must take care to undelete any objects "owned" by the
         /// object in question. For example, a Measure must take care of calling
         /// Undelete on its KPI (if any), a Hierarchy must call Undelete on each
         /// of its levels, etc.
         /// </summary>
         /// <param name="collection"></param>
-        internal virtual void Undelete(ITabularObjectCollection collection)
+        internal override void Undelete(ITabularObjectCollection collection)
         {
             RenewMetadataObject();
 
             Collection = collection.GetCurrentCollection();
             Collection.Add(this);
-
-            Init();
         }
 
         /// <summary>
-        /// The Cleanup method is called when the object is deleted. Derived classes should 
-        /// override this method (but remember to call base.Cleanup()) to provide their own
-        /// housekeeping. For example, when a Level is deleted from a hierarchy, the ordinals
-        /// for the remanining levels in the hierarchy should be compacted.
+        /// The BeforeRemoval method is called before an object is deleted. Derived classes
+        /// should override this to remove all references to this object, from other objects.
+        /// When a parent object is deleted.
         /// 
-        /// Before calling base.Cleanup(), the deleted object will still be available in the
-        /// parent hierarchy. However, after the call to base.Cleanup(), this is no longer
-        /// the case, so any reference to parent objects must be done before calling
-        /// base.Cleanup() in derived classes.
-        /// 
-        /// The call to base.Cleanup() handles the following:
+        /// Remember to call base.BeforeRemoval(), as this will take care of calling the same
+        /// method on any child objects, as well as removing the following references:
         ///  - Removing translations from the object (names, descriptions, display folders)
         ///  - Removing perspective memberships
-        ///  - Clearing dependencies / dependants
-        ///  - Removing the object from its parent object
+        ///  - Clearing DAX dependencies / dependants
         /// </summary>
-        protected override void Cleanup()
+        internal virtual void RemoveReferences()
         {
+            var container = this as ITabularObjectContainer;
+            if (container != null) foreach (var child in container.GetChildren().OfType<TabularNamedObject>()) child.RemoveReferences();
+
             // Remove translations for names, if this object supports translations:
             (this as ITranslatableObject)?.TranslatedNames?.Clear();
+
+            // Remove translations for descriptions, if this object supports translations:
+            (this as ITranslatableObject)?.TranslatedDescriptions?.Clear();
 
             // Remove translations for Display Folders, if this object has Display Folders:
             (this as IDetailObject)?.TranslatedDisplayFolders?.Clear();
@@ -64,7 +101,7 @@ namespace TabularEditor.TOMWrapper
             (this as ITabularPerspectiveObject)?.InPerspective?.None();
 
             // Let dependencies know that this object is no longer a dependant (if applicable):
-            var expObj = this as IExpressionObject;
+            var expObj = this as IDAXExpressionObject;
             if (expObj != null)
             {
                 expObj.Dependencies.Keys.ToList().ForEach(d => d.Dependants.Remove(expObj));
@@ -77,12 +114,37 @@ namespace TabularEditor.TOMWrapper
             {
                 daxObj.Dependants.ToList().ForEach(d => d.Dependencies.Remove(daxObj));
             }
+        }
 
-            base.Cleanup();
+        /// <summary>
+        /// This method is called after an object has been removed from a collection.
+        /// Derived classes should override this to perform any cleanup necessary after
+        /// removal. For example, when a level is removed from a hierarchy, the hierachy
+        /// must compact the ordinal numbers of the remaining levels.
+        /// 
+        /// The base class will automatically call AfterRemoval on all child objects to
+        /// the object that was removed.
+        /// </summary>
+        /// <param name="collection"></param>
+        internal virtual void AfterRemoval(ITabularObjectCollection collection)
+        {
+            var container = this as ITabularObjectContainer;
+            if (container != null) foreach (var child in container.GetChildren().OfType<TabularNamedObject>()) child.AfterRemoval(GetCollectionForChild(child));
+        }
 
-            // NamedTabularObjects can belong to collections. Make sure the object is
-            // removed from the collection it belongs to:
-            if (Collection != null) Collection.Remove(this);
+        internal virtual ITabularObjectCollection GetCollectionForChild(TabularObject child)
+        {
+            throw new NotSupportedException("This object does not have any child collections.");
+        }
+
+        public static void TestStatic() { }
+
+        protected virtual void Children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add)
+                Handler.Tree.OnNodesInserted(this, e.NewItems.Cast<ITabularObject>());
+            else if (e.Action == NotifyCollectionChangedAction.Remove)
+                Handler.Tree.OnNodesRemoved(this, e.OldItems.Cast<ITabularObject>());
         }
 
         protected TabularNamedObject(NamedMetadataObject metadataObject) : base(metadataObject)
@@ -92,6 +154,7 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Returns the index of this item in the parent metadata collection
         /// </summary>
+        [Browsable(false)]
         public int MetadataIndex
         {
             get
@@ -142,11 +205,6 @@ namespace TabularEditor.TOMWrapper
                 OnPropertyChanged("Name", oldValue, value);
 
             }
-        }
-
-        protected virtual string GetNewName<T,P>(NamedMetadataObjectCollection<T, P> col, string prefix = null) where T: NamedMetadataObject where P: MetadataObject
-        {
-            return string.IsNullOrWhiteSpace(prefix) ? col.GetNewName() : col.GetNewName(prefix);
         }
     }
 }

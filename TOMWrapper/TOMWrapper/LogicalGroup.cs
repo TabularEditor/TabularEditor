@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 
 namespace TabularEditor.TOMWrapper
 {
-    // TODO: Create a special grouping for Partitions on tables.
-
     public class LogicalGroup: ITabularNamedObject, ITabularObjectContainer
     {
         [ReadOnly(true)]

@@ -70,6 +70,8 @@
     <Compile Include="TOMWrapper\TabularModelHandlerTests.cs" />
     <Compile Include="TOMWrapper\UndoManagerTests.cs" />
     <Compile Include="TOMWrapper\FixUpTests.cs" />
+    <Compile Include="TOMWrapper\ObjectHandlingTests.cs" />
+    <Compile Include="TOMWrapper\ObjectCreationTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TabularEditor\TabularEditor.csproj">

@@ -61,7 +61,7 @@ namespace TabularEditor.TOMWrapper
         public void CheckChildrenErrors()
         {
             var errObj = GetChildren().OfType<IErrorMessageObject>().FirstOrDefault(c => !string.IsNullOrEmpty(c.ErrorMessage));
-            if (errObj != null && (!(errObj as IExpressionObject)?.NeedsValidation ?? true))
+            if (errObj != null && (!(errObj as IDAXExpressionObject)?.NeedsValidation ?? true))
             {
                 ErrorMessage = "Error on " + (errObj as TabularNamedObject).Name + ": " + errObj.ErrorMessage;
             }

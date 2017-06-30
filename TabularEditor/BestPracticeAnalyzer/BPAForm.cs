@@ -119,7 +119,7 @@ namespace TabularEditor.UI.Dialogs
                 listView2.Items.Clear();
                 var results = analyzer.Analyze(rules).ToList();
                 listView2.Items.AddRange(
-                    results.Where(r => !r.RuleHasError && !r.Ignored).Select(r => new ListViewItem(new[] { r.ObjectName, r.RuleName, r.Rule.ID }) { Tag = r.Object }).ToArray());
+                    results.Where(r => !r.RuleHasError && !r.Ignored).Select(r => new ListViewItem(new[] { r.ObjectName, r.Object.GetTypeName(), r.RuleName, r.Rule.ID }) { Tag = r.Object }).ToArray());
 
                 var oC = listView2.Items.Count;
                 var rC = rules.Count();
@@ -162,8 +162,8 @@ namespace TabularEditor.UI.Dialogs
             }
             var plural = listView2.SelectedItems.Count > 1;
 
-            // SubItems[2] contains the ID of the respective rule:
-            var rules = listView2.SelectedItems.Cast<ListViewItem>().Select(i => i.SubItems[2].Text).Distinct().Select(n => RuleIndex[n]).ToList();
+            // SubItems[3] contains the ID of the respective rule:
+            var rules = listView2.SelectedItems.Cast<ListViewItem>().Select(i => i.SubItems[3].Text).Distinct().Select(n => RuleIndex[n]).ToList();
 
             bpaResultGoTo.Visible = !plural;
             bpaResultGoToSep.Visible = !plural;

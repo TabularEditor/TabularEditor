@@ -4,8 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.UndoFramework;
-using TOM = Microsoft.AnalysisServices.Tabular;
-using TabularEditor.PropertyGridUI;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -45,7 +43,8 @@ namespace TabularEditor.TOMWrapper
                 throw new ArgumentException(string.Format("Column {0} already exists as a level in hierarchy {1}.", column.Name, Name));
 
             Handler.BeginUpdate("add level");
-            var level = new Level(this, levelName ?? column.Name) { Column = column };
+            var level = Level.CreateNew(this, levelName ?? column.Name);
+            level.Column = column;
             if (levelName == null) level.TranslatedNames.CopyFrom(column.TranslatedNames);
             level.Ordinal = ordinal == -1 ? this.Levels.Count - 1 : ordinal;
             Handler.EndUpdate();
@@ -64,13 +63,6 @@ namespace TabularEditor.TOMWrapper
             return Levels;
         }
 
-        internal override void Undelete(ITabularObjectCollection collection)
-        {
-            base.Undelete(collection);
-
-            Levels.Undelete();
-        }
-
         protected override void Init()
         {
             Levels = new LevelCollection(this.GetObjectPath() + ".Levels", MetadataObject.Levels, this);
@@ -78,9 +70,6 @@ namespace TabularEditor.TOMWrapper
             // Loop through all levels, to make sure that they point to the current columns (i.e. not "deleted" columns):
             foreach (var l in Levels) l.MetadataObject.Column = Table.Columns[l.MetadataObject.Column.Name].MetadataObject;
         }
-
-        [Browsable(false)]
-        public LevelCollection Levels { get; private set; }
 
         private bool _reordering = false;
         /// <summary>

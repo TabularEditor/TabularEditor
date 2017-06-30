@@ -13,44 +13,15 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public Dictionary<IDaxObject, List<Dependency>> Dependencies { get; internal set; } = new Dictionary<IDaxObject, List<Dependency>>();
         [Browsable(false)]
-        public HashSet<IExpressionObject> Dependants { get; private set; } = new HashSet<IExpressionObject>();
+        public HashSet<IDAXExpressionObject> Dependants { get; private set; } = new HashSet<IDAXExpressionObject>();
 
-        protected override void Cleanup()
+        internal override void RemoveReferences()
         {
-            if (KPI != null) KPI.Delete();
-            base.Cleanup();
+            // TODO: Make sure KPIs can be deleted and undeleted - how do we even edit KPIs right now in Tabular Editor?
+            //if (KPI != null) KPI.Delete();
+            base.RemoveReferences();
         }
 
-        protected override string GetNewName<T, P>(TOM.NamedMetadataObjectCollection<T, P> col, string prefix = null)
-        {
-            // For measures, we must ensure that the new measure name is unique across all tables,
-            // which is why we have to override the GetNewName method here.
-
-            if (string.IsNullOrWhiteSpace(prefix)) prefix = "New Measure";
-
-            string testName = prefix;
-            int suffix = 0;
-
-            // Loop to determine if prefix + suffix is already in use - break, when we find a name
-            // that's not being used anywhere:
-            while (Model.AllMeasures.Any(m => m.Name.Equals(testName, StringComparison.InvariantCultureIgnoreCase)))
-            {
-                suffix++;
-                testName = prefix + " " + suffix;
-            }
-            return testName;
-        }
-
-        internal override void Undelete(ITabularObjectCollection collection)
-        {
-            base.Undelete(collection);
-
-            if (MetadataObject.KPI != null)
-            {
-                new KPI(MetadataObject.KPI);
-            }
-
-        }
 
         /*public TabularNamedObject CloneTo(Table table, string newName = null, bool includeTranslations = true)
         {
@@ -84,7 +55,7 @@ namespace TabularEditor.TOMWrapper
 
         protected override void Init()
         {
-            if (MetadataObject.KPI != null) new KPI(MetadataObject.KPI);
+            if (MetadataObject.KPI != null) this.KPI = KPI.CreateFromMetadata(MetadataObject.KPI);
         }
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
@@ -118,10 +89,11 @@ namespace TabularEditor.TOMWrapper
 
         [Browsable(false)]
         public bool NeedsValidation { get; set; } = false;
-        
+
         protected override bool IsBrowsable(string propertyName)
         {
-            switch (propertyName) {
+            switch (propertyName)
+            {
                 case "FormatString": return DataType != TOM.DataType.String;
                 case "DetailRowsExpression":
                     return Model.Database.CompatibilityLevel >= 1400;
@@ -185,6 +157,49 @@ namespace TabularEditor.TOMWrapper
             {
                 return Table.DaxTableName;
             }
+        }
+    }
+
+    public partial class MeasureCollection
+    {
+        public override string GetNewName(string prefix = null)
+        {
+            // For measures, we must ensure that the new measure name is unique across all tables,
+            // which is why we have to override the GetNewName method here.
+
+            if (string.IsNullOrWhiteSpace(prefix)) prefix = "New Measure";
+
+            string testName = prefix;
+            int suffix = 0;
+
+            // Loop to determine if prefix + suffix is already in use - break, when we find a name
+            // that's not being used anywhere:
+            while (Model.AllMeasures.Any(m => m.Name.Equals(testName, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                suffix++;
+                testName = prefix + " " + suffix;
+            }
+            return testName;
+        }
+
+        public static string GetNewMeasureName(string prefix)
+        {
+            // For measures, we must ensure that the new measure name is unique across all tables,
+            // which is why we have to override the GetNewName method here.
+
+            if (string.IsNullOrWhiteSpace(prefix)) prefix = "New Measure";
+
+            string testName = prefix;
+            int suffix = 0;
+
+            // Loop to determine if prefix + suffix is already in use - break, when we find a name
+            // that's not being used anywhere:
+            while (TabularModelHandler.Singleton.Model.AllMeasures.Any(m => m.Name.Equals(testName, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                suffix++;
+                testName = prefix + " " + suffix;
+            }
+            return testName;
         }
     }
 }

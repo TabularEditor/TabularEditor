@@ -11,7 +11,7 @@ namespace TabularEditor.TOMWrapper
     public abstract partial class Column: ITabularPerspectiveObject, IDaxObject
     {
         [Browsable(false)]
-        public HashSet<IExpressionObject> Dependants { get; private set; } = new HashSet<IExpressionObject>();
+        public HashSet<IDAXExpressionObject> Dependants { get; private set; } = new HashSet<IDAXExpressionObject>();
 
         #region Convenient collections
         /// <summary>
@@ -36,22 +36,29 @@ namespace TabularEditor.TOMWrapper
         public IEnumerable<Relationship> UsedInRelationships { get { return Model.Relationships.Where(r => r.FromColumn == this || r.ToColumn == this); } }
         #endregion
 
-        protected override void Cleanup()
+        internal override void RemoveReferences()
         {
             // Remove IsKey column property if set:
             if (IsKey) IsKey = false;
 
+            base.RemoveReferences();
+        }
+
+        protected override void DeleteLinkedObjects(bool isChildOfDeleted)
+        {
             // Remove any relationships this column participates in:
             UsedInRelationships.ToList().ForEach(r => r.Delete());
 
-            // Remove any hierarchy levels that use this column
-            UsedInLevels.ToList().ForEach(l => l.Delete());
+            if(!isChildOfDeleted)
+            {
+                // Remove any hierarchy levels this column is used in:
+                UsedInLevels.ToList().ForEach(l => l.Delete());
 
-            // Remove the column from other columns SortByColumn property:
-            UsedInSortBy.ToList().ForEach(c => c.SortByColumn = null);
-            if (SortByColumn != null) SortByColumn = null;
+                // Make sure the column is no longer used as a Sort By column:
+                UsedInSortBy.ToList().ForEach(c => c.SortByColumn = null);
+            }
 
-            base.Cleanup();
+            base.DeleteLinkedObjects(isChildOfDeleted);
         }
 
 #if CL1400

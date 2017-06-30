@@ -112,7 +112,7 @@ namespace TabularEditor.TOMWrapper
 
     public static class DependencyHelper
     {
-        static public void AddDep(this IExpressionObject target, IDaxObject dependsOn, int fromChar, int toChar, bool fullyQualified)
+        static public void AddDep(this IDAXExpressionObject target, IDaxObject dependsOn, int fromChar, int toChar, bool fullyQualified)
         {
             var dep = new Dependency { from = fromChar, to = toChar, fullyQualified = fullyQualified };
             List<Dependency> depList;
@@ -185,7 +185,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public void BuildDependencyTree(IExpressionObject expressionObj)
+        public void BuildDependencyTree(IDAXExpressionObject expressionObj)
         {
             foreach (var d in expressionObj.Dependencies.Keys) d.Dependants.Remove(expressionObj);
             expressionObj.Dependencies.Clear();
@@ -270,7 +270,7 @@ namespace TabularEditor.TOMWrapper
             var sw = new Stopwatch();
             sw.Start();
 
-            foreach(var eo in Model.Tables.SelectMany(t => t.GetChildren()).Concat(Model.Tables).OfType<IExpressionObject>())
+            foreach(var eo in Model.Tables.SelectMany(t => t.GetChildren()).Concat(Model.Tables).OfType<IDAXExpressionObject>())
             {
                 BuildDependencyTree(eo);
             }
@@ -361,13 +361,13 @@ namespace TabularEditor.TOMWrapper
                 {
                     // Calculated column
                     var tom = TOM.JsonSerializer.DeserializeObject<TOM.CalculatedColumn>(jObj.ToString());
-                    obj = new CalculatedColumn(tom);
+                    obj = CalculatedColumn.CreateFromMetadata(tom);
                 }
                 else if (jObj["expression"] != null)
                 {
                     // Measure
                     var tom = TOM.JsonSerializer.DeserializeObject<TOM.Measure>(jObj.ToString());
-                    obj = new Measure(tom);
+                    obj = Measure.CreateFromMetadata(tom);
                 }
 
                 if(obj != null) result.Add(obj);
@@ -381,7 +381,7 @@ namespace TabularEditor.TOMWrapper
             if (database.CompatibilityLevel < 1200) throw new InvalidOperationException("Tabular Databases of compatibility level 1100 or 1103 are not supported in Tabular Editor.");
             UndoManager = new UndoFramework.UndoManager(this);
             Actions = new TabularCommonActions(this);
-            Model = new Model(database.Model);
+            Model = Model.CreateFromMetadata(database.Model);
             Model.Database = new Database(database);
             Model.LoadChildObjects();
             CheckErrors();
@@ -454,15 +454,6 @@ namespace TabularEditor.TOMWrapper
             // Check if translations / perspectives are stored locally in the model:
             if (SourceType == ModelSourceType.Folder && (SerializeOptions.LocalTranslations || SerializeOptions.LocalPerspectives))
             {
-                // First, construct a list of all items where we may have the relevant annotations:
-                var items = Enumerable.Repeat(Model as IAnnotationObject, 1)
-                    .Concat(Model.Tables)
-                    .Concat(Model.AllMeasures)
-                    .Concat(Model.AllColumns)
-                    .Concat(Model.AllHierarchies)
-                    .Concat(Model.AllLevels)
-                    .Concat(Model.Perspectives);
-
                 UndoManager.Enabled = false;
                 BeginUpdate("Apply translations and perspectives from annotations");
 
@@ -471,17 +462,7 @@ namespace TabularEditor.TOMWrapper
                 {
                     Model.Cultures.FromJson(translationsJson);
 
-                    foreach (var item in items.OfType<ITranslatableObject>())
-                    {
-                        var tn = (item as IAnnotationObject).GetAnnotation("TabularEditor_TranslatedNames");
-                        if (tn != null) item.TranslatedNames.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, string>>(tn));
-
-                        var td = (item as IAnnotationObject).GetAnnotation("TabularEditor_TranslatedDescriptions");
-                        if (td != null) item.TranslatedDescriptions.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, string>>(td));
-
-                        var tdf = (item as IAnnotationObject).GetAnnotation("TabularEditor_TranslatedDisplayFolders");
-                        if (tdf != null && item is IDetailObject) (item as IDetailObject).TranslatedDisplayFolders.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, string>>(tdf));
-                    }
+                    foreach (var item in AllTranslatableObjects) item.LoadTranslations();
                 }
 
                 var perspectivesJson = Model.GetAnnotation("TabularEditor_Perspectives");
@@ -489,11 +470,7 @@ namespace TabularEditor.TOMWrapper
                 {
                     Model.Perspectives.FromJson(perspectivesJson);
 
-                    foreach (var item in items.OfType<ITabularPerspectiveObject>())
-                    {
-                        var p = (item as IAnnotationObject).GetAnnotation("TabularEditor_InPerspective");
-                        if (p != null) item.InPerspective.CopyFrom(JsonConvert.DeserializeObject<string[]>(p));
-                    }
+                    foreach (var item in AllPerspectiveObjects) item.LoadPerspectives();
                 }
 
                 EndUpdate();
@@ -613,17 +590,21 @@ namespace TabularEditor.TOMWrapper
             DetachCalculatedTableMetadata();
             try
             {
-                // TODO: Deleting a column with IsKey = true, then undoing, then saving causes an error... wWTF?!?
+                // TODO: Deleting a column with IsKey = true, then undoing, then saving causes an error... Check if this is still the case.
                 database.Model.SaveChanges();
+
+                AttachCalculatedTableMetadata();
+
+                // If reattaching Calculated Table metadata caused local changes, let's save the model again:
+                if (database.Model.HasLocalChanges) database.Model.SaveChanges();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Status = "Save to DB error!";
                 throw ex;
             }
             finally
             {
-                AttachCalculatedTableMetadata();
                 UndoManager.Enabled = true;
             }
 
@@ -645,7 +626,7 @@ namespace TabularEditor.TOMWrapper
         {
             CTCMetadataBackup = new List<CTCMetadata>();
 
-            foreach(var ctc in Model.Tables.OfType<CalculatedTable>().Where(ctc => ctc.NeedsValidation).SelectMany(t => t.Columns.OfType<CalculatedTableColumn>()))
+            foreach(var ctc in Model.Tables.OfType<CalculatedTable>().Where(ctc => ctc.NeedsValidation).SelectMany(t => t.Columns.OfType<CalculatedTableColumn>()).ToList())
             {
                 CTCMetadataBackup.Add(new CTCMetadata(ctc));
                 ctc.InPerspective.None();
@@ -683,11 +664,15 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         private void AttachCalculatedTableMetadata()
         {
-            foreach (var ct in Model.Tables.OfType<CalculatedTable>()) ct.ReinitColumns();
-
-            foreach(var ctcbackup in CTCMetadataBackup)
+            foreach (var ct in Model.Tables.OfType<CalculatedTable>().Where(ctc => ctc.NeedsValidation))
             {
-                if(Model.Tables.Contains(ctcbackup.TableName))
+                ct.Columns.CreateChildrenFromMetadata();
+                Tree.OnStructureChanged(ct);
+            }
+
+            foreach (var ctcbackup in CTCMetadataBackup)
+            {
+                if (Model.Tables.Contains(ctcbackup.TableName))
                 {
                     var t = Model.Tables[ctcbackup.TableName];
                     if (t.Columns.Contains(ctcbackup.ColumnName))
@@ -783,6 +768,31 @@ namespace TabularEditor.TOMWrapper
                 });
         }
 
+        internal IEnumerable<ITranslatableObject> AllTranslatableObjects
+        {
+            get
+            {
+                return Enumerable.Repeat(Model as ITranslatableObject, 1)
+                    .Concat(Model.Tables)
+                    .Concat(Model.AllMeasures)
+                    .Concat(Model.AllColumns)
+                    .Concat(Model.AllHierarchies)
+                    .Concat(Model.AllLevels)
+                    .Concat(Model.Perspectives);
+            }
+        }
+
+        internal IEnumerable<ITabularPerspectiveObject> AllPerspectiveObjects
+        {
+            get
+            {
+                return Enumerable.Repeat(Model.Tables as ITabularPerspectiveObject, 1)
+                    .Concat(Model.AllMeasures)
+                    .Concat(Model.AllColumns)
+                    .Concat(Model.AllHierarchies);
+            }
+        }
+
         /// <summary>
         /// Saves the model to the specified folder using the specified serialize options.
         /// </summary>
@@ -802,27 +812,11 @@ namespace TabularEditor.TOMWrapper
             {
                 // Create local annotations with translations / perspective options for relevant items
 
-                // First, construct a list of all items where we may have to add this annotation:
-                var items = Enumerable.Repeat(Model as IAnnotationObject, 1)
-                    .Concat(Model.Tables)
-                    .Concat(Model.AllMeasures)
-                    .Concat(Model.AllColumns)
-                    .Concat(Model.AllHierarchies)
-                    .Concat(Model.AllLevels)
-                    .Concat(Model.Perspectives);
 
                 if(options.LocalTranslations)
                 {
                     // Loop through all translatable objects and provide the translation in the annotation:
-                    foreach(var item in items.OfType<ITranslatableObject>())
-                    {
-                        if(!item.TranslatedNames.IsEmpty)
-                            (item as IAnnotationObject).SetAnnotation("TabularEditor_TranslatedNames", item.TranslatedNames.ToJson(), false);
-                        if(!item.TranslatedDescriptions.IsEmpty)
-                            (item as IAnnotationObject).SetAnnotation("TabularEditor_TranslatedDescriptions", item.TranslatedDescriptions.ToJson(), false);
-                        if(item is IDetailObject)
-                            (item as IAnnotationObject).SetAnnotation("TabularEditor_TranslatedDisplayFolders", (item as IDetailObject).TranslatedDisplayFolders.ToJson(), false);
-                    }
+                    foreach (var item in AllTranslatableObjects) item.SaveTranslations();
 
                     // Store the cultures (without translations) as an annotation on the model:
                     Model.SetAnnotation("TabularEditor_Cultures", Model.Cultures.ToJson(), false);
@@ -831,10 +825,7 @@ namespace TabularEditor.TOMWrapper
                 if (options.LocalPerspectives)
                 {
                     // Loop through all perspective objects and provide the perspective membership in the annotation:
-                    foreach (var item in items.OfType<ITabularPerspectiveObject>())
-                    {
-                        (item as IAnnotationObject).SetAnnotation("TabularEditor_InPerspective", item.InPerspective.ToJson(), false);
-                    }
+                    foreach (var item in AllPerspectiveObjects) item.SavePerspectives();
 
                     // Store the perspectives (without members) as an annotation on the model:
                     Model.SetAnnotation("TabularEditor_Perspectives", Model.Perspectives.ToJson(), false);
@@ -951,37 +942,6 @@ namespace TabularEditor.TOMWrapper
             return result;
         }
 
-        public IDetailObject Add(AddObjectType objectType, IDetailObjectContainer container)
-        {
-            var table = container as Table ?? (container as IDetailObject).Table;
-            var df = (container as Folder)?.Path;
-            IDetailObject result;
-
-            UndoManager.BeginBatch("add " + objectType.ToString().SplitCamelCase().ToLower());
-            switch(objectType)
-            {
-                case AddObjectType.Measure:
-                    result = new Measure(table);
-                    break;
-
-                case AddObjectType.CalculatedColumn:
-                    result = new CalculatedColumn(table);
-                    break;
-
-                case AddObjectType.Hierarchy:
-                    result = new Hierarchy(table);
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
-
-            result.DisplayFolder = df;
-            UndoManager.EndBatch();
-
-            return result;
-        }
-
         public event ObjectChangingEventHandler ObjectChanging;
         public event ObjectChangedEventHandler ObjectChanged;
 
@@ -1041,7 +1001,7 @@ namespace TabularEditor.TOMWrapper
                 var table = (WrapperLookup[t] as Table);
                 
                 table?.CheckChildrenErrors();
-                WrapperLookup.Values.OfType<IExpressionObject>().ToList().ForEach(i => i.NeedsValidation = false);
+                WrapperLookup.Values.OfType<IDAXExpressionObject>().ToList().ForEach(i => i.NeedsValidation = false);
             }
             if (errorList.Count > 0 || Errors?.Count > 0)
             {

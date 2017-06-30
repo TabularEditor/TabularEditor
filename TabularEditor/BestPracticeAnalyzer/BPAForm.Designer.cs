@@ -59,6 +59,7 @@
             this.btnAnalyzeAll = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -124,6 +125,7 @@
             // 
             this.listView2.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader6,
+            this.columnHeader8,
             this.columnHeader7});
             this.listView2.ContextMenuStrip = this.contextMenuStrip1;
             this.listView2.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -322,6 +324,11 @@
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
             // 
+            // columnHeader8
+            // 
+            this.columnHeader8.Text = "Object Type";
+            this.columnHeader8.Width = 100;
+            // 
             // BPAForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -376,5 +383,6 @@
         private System.Windows.Forms.ToolStripMenuItem bpaResultFixRule;
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnMakeLocal;
+        private System.Windows.Forms.ColumnHeader columnHeader8;
     }
 }

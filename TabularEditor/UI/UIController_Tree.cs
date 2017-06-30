@@ -119,7 +119,7 @@ namespace TabularEditor.UI
             {
                 var node = UI.TreeView.SelectedNode;
                 if (node == null || UI.TreeView.CurrentEditor != null) return;
-                if (node.Tag is IExpressionObject) ExpressionEditor_Edit(node.Tag as IExpressionObject);
+                if (node.Tag is IDAXExpressionObject) ExpressionEditor_Edit(node.Tag as IDAXExpressionObject);
                 else if (!node.IsLeaf) if (node.IsExpanded) node.Collapse(); else node.Expand();
             }
             if(e.KeyCode == Keys.F && e.Modifiers.HasFlag(Keys.Control))
@@ -209,8 +209,8 @@ namespace TabularEditor.UI
 
         private void TreeView_NodeMouseDoubleClick(object sender, TreeNodeAdvMouseEventArgs e)
         {
-            if(e.Node.Tag is IExpressionObject)
-                ExpressionEditor_Edit(e.Node.Tag as IExpressionObject);
+            if(e.Node.Tag is IDAXExpressionObject)
+                ExpressionEditor_Edit(e.Node.Tag as IDAXExpressionObject);
         }
 
         private void TreeView_ItemDrag(object sender, ItemDragEventArgs e)

@@ -40,7 +40,7 @@ namespace TabularEditor.UI
 
         private void ExpressionEditor_Current_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "Name") UI.CurrentMeasureLabel.Text = (sender as IExpressionObject).DaxObjectName + " :=";
+            if (e.PropertyName == "Name") UI.CurrentMeasureLabel.Text = (sender as IDAXExpressionObject).DaxObjectName + " :=";
             if (e.PropertyName == "Expression")
             {
                 if (sender == ExpressionEditor_Current) UI.ExpressionEditor.Text = (sender as IExpressionObject).Expression;
@@ -131,14 +131,18 @@ namespace TabularEditor.UI
             UI.ExpressionEditor.ClearUndo();
             UI.ExpressionEditor.SelectionStart = i;
 
-            UI.CurrentMeasureLabel.Text = fromMeasure ? _expressionEditor_Current.DaxObjectName + " :=" : "";
-            UI.CurrentMeasureLabel.Visible = fromMeasure;
+            UI.CurrentMeasureLabel.Text = fromMeasure ? (_expressionEditor_Current as IDaxObject)?.DaxObjectName + " :=" : "";
+            UI.CurrentMeasureLabel.Visible = fromMeasure && _expressionEditor_Current is IDaxObject;
 
             UI.ExpressionEditor.TextChanged += ExpressionEditor_TextChanged;
         }
 
         private void ExpressionEditor_Preview()
         {
+            // TODO: Consider inspecting the expression of partitions, to determine
+            // if the expression editor should use SQL syntax highlighting. This would
+            // typically be the case for partitions using OLE DB or SQLNCLI providers.
+
             var obj = UI.TreeView.SelectedNode?.Tag as IExpressionObject;
 
             if(!ExpressionEditor_IsEditing)
@@ -167,7 +171,7 @@ namespace TabularEditor.UI
                 ExpressionEditor_Current = obj;
                 ExpressionEditor_SetText(true);
             }
-            UI.StatusLabel.Text = "Editing " + obj.DaxObjectFullName;
+            UI.StatusLabel.Text = "Editing " + (obj as IDaxObject)?.DaxObjectFullName ?? obj.Name;
             ExpressionEditor_IsEditing = true;
             if(!UI.ExpressionEditor.Focused) UI.ExpressionEditor.SelectAll();
             UI.ExpressionEditor.Focus();

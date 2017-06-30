@@ -11,7 +11,7 @@ using System.Drawing.Design;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class Partition
+    public partial class Partition: IExpressionObject
     {
         public Partition(): this(new TOM.Partition() { Source = new TOM.QueryPartitionSource() })
         {
@@ -19,12 +19,22 @@ namespace TabularEditor.TOMWrapper
             DataSource = Model.DataSources.FirstOrDefault();
         }
 
-        public string Source
+        public string QueryType
         {
             get
             {
-                return (MetadataObject.Source as TOM.QueryPartitionSource)?.DataSource.Name;
+                return "";
             }
+        }
+
+        protected override void Init()
+        {
+            if (MetadataObject.Source == null && !(Parent is CalculatedTable))
+            {
+                if (Model.DataSources.Count == 0) Model.AddDataSource();
+                MetadataObject.Source = new TOM.QueryPartitionSource() { DataSource = Model.DataSources[0].MetadataObject };
+            }
+            base.Init();
         }
 
         [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
@@ -50,31 +60,29 @@ namespace TabularEditor.TOMWrapper
             }
             set
             {
-                if (MetadataObject.Source is TOM.CalculatedPartitionSource)
+                var oldValue = Expression;
+                if (oldValue == value) return;
+                bool undoable = true;
+                bool cancel = false;
+                OnPropertyChanging("Expression", value, ref undoable, ref cancel);
+                if (cancel) return;
+
+                switch (MetadataObject.SourceType)
                 {
-                    var oldValue = Expression;
-                    if (oldValue == value) return;
-                    bool undoable = true;
-                    bool cancel = false;
-                    OnPropertyChanging("Expression", value, ref undoable, ref cancel);
-                    if (cancel) return;
-
-                    switch (MetadataObject.SourceType)
-                    {
-                        case TOM.PartitionSourceType.Calculated:
-                            (MetadataObject.Source as TOM.CalculatedPartitionSource).Expression = value; break;
-                        case TOM.PartitionSourceType.Query:
-                            (MetadataObject.Source as TOM.QueryPartitionSource).Query = value; break;
+                    case TOM.PartitionSourceType.Calculated:
+                        (MetadataObject.Source as TOM.CalculatedPartitionSource).Expression = value; break;
+                    case TOM.PartitionSourceType.Query:
+                        (MetadataObject.Source as TOM.QueryPartitionSource).Query = value; break;
 #if CL1400
-                        case TOM.PartitionSourceType.M:
-                            (MetadataObject.Source as TOM.MPartitionSource).Expression = value; break;
+                    case TOM.PartitionSourceType.M:
+                        (MetadataObject.Source as TOM.MPartitionSource).Expression = value; break;
 #endif
-                    }
-                    (MetadataObject.Source as TOM.CalculatedPartitionSource).Expression = value;
-
-                    if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Expression", oldValue, value));
-                    OnPropertyChanged("Expression", oldValue, value);
+                    default:
+                        throw new NotSupportedException();
                 }
+
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Expression", oldValue, value));
+                OnPropertyChanged("Expression", oldValue, value);
             }
         }
 

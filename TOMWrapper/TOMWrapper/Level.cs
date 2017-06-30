@@ -10,24 +10,19 @@ namespace TabularEditor.TOMWrapper
 {
     public partial class Level: ITabularTableObject
     {
-        protected override void Cleanup()
+        internal override void AfterRemoval(ITabularObjectCollection collection)
         {
-            // Keep a reference to the parent hierarchy:
-            var hierRef = Hierarchy;
-
-            // Level is removed from the hierarchy during the call to base.Cleanup():
-            base.Cleanup();
-
-            // Compact the hierarchy levels now that this level has been removed:
-            hierRef.CompactLevelOrdinals();
+            (collection as LevelCollection).Hierarchy.CompactLevelOrdinals();
+            base.AfterRemoval(collection);
         }
 
-        internal override void Undelete(ITabularObjectCollection collection)
+
+        internal override void ReapplyReferences()
         {
-            base.Undelete(collection);
+            base.ReapplyReferences();
 
             // Since the original column could have been deleted since the level was deleted, let's find the column by name:
-            var c = (collection as LevelCollection).Parent.Table.Columns[MetadataObject.Column.Name].MetadataObject;
+            var c = (Collection as LevelCollection).Hierarchy.MetadataObject.Table.Columns[MetadataObject.Column.Name];
             MetadataObject.Column = c;
 
             Hierarchy.FixLevelOrder(this, this.Ordinal);
@@ -75,14 +70,14 @@ namespace TabularEditor.TOMWrapper
         public override bool Remove(Level item)
         {
             var result = base.Remove(item);
-            Handler.UpdateLevels(Parent);
+            Handler.UpdateLevels(Hierarchy);
             return result;
         }
 
         public override void Add(Level item)
         {
             base.Add(item);
-            Handler.UpdateLevels(Parent);
+            Handler.UpdateLevels(Hierarchy);
         }
     }
 }

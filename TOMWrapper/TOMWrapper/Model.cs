@@ -18,27 +18,24 @@ namespace TabularEditor.TOMWrapper
         public Perspective AddPerspective(string name = null)
         {
             Handler.BeginUpdate("add perspective");
-            var perspective = new Perspective(this);
-            if (!string.IsNullOrEmpty(name)) perspective.Name = name;
+            var perspective = Perspective.CreateNew(this, name);
             Handler.EndUpdate();
             return perspective;
         }
 
-        public CalculatedTable AddCalculatedTable()
+        public CalculatedTable AddCalculatedTable(string name = null, string expression = null)
         {
             Handler.BeginUpdate("add calculated table");
-            var t = new CalculatedTable(this);
+            var t = CalculatedTable.CreateNew(this, name, expression);
             Handler.EndUpdate();
             t.InitRLSIndexer();
             return t;
         }
 
-        public Table AddTable()
+        public Table AddTable(string name = null)
         {
             Handler.BeginUpdate("add table");
-            var t = new Table(this);
-            //var p = new Partition();
-            //t.Partitions.Add(p);
+            var t = Table.CreateNew(this, name);
             t.InitRLSIndexer();
             
             Handler.EndUpdate();
@@ -48,7 +45,7 @@ namespace TabularEditor.TOMWrapper
         public SingleColumnRelationship AddRelationship()
         {
             Handler.BeginUpdate("add relationship");
-            var rel = new SingleColumnRelationship(this);
+            var rel = SingleColumnRelationship.CreateNew(this);
             Handler.EndUpdate();
             return rel;
         }
@@ -57,8 +54,7 @@ namespace TabularEditor.TOMWrapper
         public Culture AddTranslation(string cultureId)
         {
             Handler.BeginUpdate("add translation");
-            var culture = new Culture(cultureId);
-            Cultures.Add(culture);
+            var culture = TOMWrapper.Culture.CreateNew(cultureId);
             Handler.EndUpdate();
             return culture;
         }
@@ -67,7 +63,7 @@ namespace TabularEditor.TOMWrapper
         public ModelRole AddRole(string name = null)
         {
             Handler.BeginUpdate("add role");
-            var role = new ModelRole(this);
+            var role = ModelRole.CreateNew(this);
             role.InitRLSIndexer();
             if (!string.IsNullOrEmpty(name)) role.Name = name;
             Handler.EndUpdate();
@@ -77,7 +73,7 @@ namespace TabularEditor.TOMWrapper
         public ProviderDataSource AddDataSource(string name = null)
         {
             Handler.BeginUpdate("add data source");
-            var ds = new ProviderDataSource(this, name);
+            var ds = ProviderDataSource.CreateNew(this, name);
             Handler.EndUpdate();
             return ds;
 
@@ -108,27 +104,6 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public IEnumerable<Level> AllLevels { get { return Tables.SelectMany(t => t.Hierarchies).SelectMany(h => h.Levels); } }
         #endregion
-
-        [Browsable(false),IntelliSense("The collection of tables in this model.")]
-        public TableCollection Tables { get; private set; }
-
-        [Category("Translations and Perspectives"),DisplayName("Model Perspectives")]
-        [Editor(typeof(TabularEditor.PropertyGridUI.PerspectiveCollectionEditor),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]
-        public PerspectiveCollection Perspectives { get; private set; }
-
-        [Category("Translations and Perspectives"), DisplayName("Model Cultures")]
-        [Editor(typeof(TabularEditor.PropertyGridUI.CultureCollectionEditor),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]
-        public CultureCollection Cultures { get; private set; }
-
-        [Category("Security"), DisplayName("Model Roles")]
-        [Editor(typeof(TabularEditor.PropertyGridUI.RefreshGridCollectionEditor), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]
-        public ModelRoleCollection Roles { get; private set; }
-
-        [Browsable(false)]
-        public RelationshipCollection2 Relationships { get; private set; }
-
-        [Browsable(false)]
-        public DataSourceCollection DataSources { get; private set; }
 
         public readonly LogicalGroup GroupTables = new LogicalGroup("Tables");
         public readonly LogicalGroup GroupDataSources = new LogicalGroup("Data Sources");
@@ -163,31 +138,8 @@ namespace TabularEditor.TOMWrapper
 
         public void LoadChildObjects()
         {
-            DataSources = new DataSourceCollection("Model.DataSources", MetadataObject.DataSources, this);
-            Perspectives = new PerspectiveCollection("Model.Perspectives", MetadataObject.Perspectives, this);
-            Roles = new ModelRoleCollection("Model.Roles", MetadataObject.Roles, this);
-            Cultures = new CultureCollection("Model.Cultures", MetadataObject.Cultures, this);
-            Tables = new TableCollection("Model.Tables", MetadataObject.Tables, this);
-            Relationships = new RelationshipCollection2("Model.Relationships", MetadataObject.Relationships, this);
-
             Tables.ForEach(r => r.InitRLSIndexer());
             Roles.ForEach(r => r.InitRLSIndexer());
-
-            Tables.CollectionChanged += Children_CollectionChanged;
-            Perspectives.CollectionChanged += Children_CollectionChanged;
-            Cultures.CollectionChanged += Children_CollectionChanged;
-            Roles.CollectionChanged += Children_CollectionChanged;
-            DataSources.CollectionChanged += Children_CollectionChanged;
-            Relationships.CollectionChanged += Children_CollectionChanged;
-            
-        }
-
-        private void Children_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == NotifyCollectionChangedAction.Add)
-                Handler.Tree.OnNodesInserted(this, e.NewItems.Cast<ITabularObject>());
-            else if (e.Action == NotifyCollectionChangedAction.Remove)
-                Handler.Tree.OnNodesRemoved(this, e.OldItems.Cast<ITabularObject>());
         }
     }
 }

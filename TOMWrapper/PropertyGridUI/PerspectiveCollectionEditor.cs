@@ -38,7 +38,7 @@ namespace TabularEditor.PropertyGridUI
 
         private void CloneButton_Click(object sender, EventArgs e)
         {
-            if (lb.SelectedItem is null) return;
+            if (lb.SelectedItem == null) return;
             PropertyInfo propInfo = lb.SelectedItem.GetType().GetProperty("Value");
             var orgPerspective = propInfo.GetValue(lb.SelectedItem) as Perspective;
 

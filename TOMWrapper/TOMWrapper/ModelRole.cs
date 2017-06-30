@@ -52,13 +52,6 @@ namespace TabularEditor.TOMWrapper
             return r;
         }*/
 
-        public ModelRoleMemberCollection Members { get; private set; }
-        protected override void Init()
-        {
-            Members = new ModelRoleMemberCollection(this.GetObjectPath() + ".Members", MetadataObject.Members, this);
-            base.Init();
-        }
-
         /*[Category("Security")]
         [Description("Specify domain/usernames of the members in this role. One member per line.")]
         [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]

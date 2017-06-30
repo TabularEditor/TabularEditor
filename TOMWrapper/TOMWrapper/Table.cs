@@ -15,14 +15,14 @@ namespace TabularEditor.TOMWrapper
         IErrorMessageObject
     {
         [Browsable(false)]
-        public HashSet<IExpressionObject> Dependants { get; private set; } = new HashSet<IExpressionObject>();
+        public HashSet<IDAXExpressionObject> Dependants { get; private set; } = new HashSet<IDAXExpressionObject>();
 
         #region Convenient methods
         [IntelliSense("Adds a new measure to the table.")]
         public Measure AddMeasure(string name = null, string expression = null, string displayFolder = null)
         {
             Handler.BeginUpdate("add measure");
-            var measure = new Measure(this, name);
+            var measure = Measure.CreateNew(this, name);
             if (!string.IsNullOrEmpty(expression)) measure.Expression = expression;
             if (!string.IsNullOrEmpty(displayFolder)) measure.DisplayFolder = displayFolder;
             Handler.EndUpdate();
@@ -33,7 +33,7 @@ namespace TabularEditor.TOMWrapper
         public CalculatedColumn AddCalculatedColumn(string name = null, string expression = null, string displayFolder = null)
         {
             Handler.BeginUpdate("add calculated column");
-            var column = new CalculatedColumn(this, name);
+            var column = CalculatedColumn.CreateNew(this, name);
             if (!string.IsNullOrEmpty(expression)) column.Expression = expression;
             if (!string.IsNullOrEmpty(displayFolder)) column.DisplayFolder = displayFolder;
             Handler.EndUpdate();
@@ -44,7 +44,7 @@ namespace TabularEditor.TOMWrapper
         public DataColumn AddDataColumn(string name = null, string sourceColumn = null, string displayFolder = null)
         {
             Handler.BeginUpdate("add Data column");
-            var column = new DataColumn(this, name);
+            var column = DataColumn.CreateNew(this, name);
             column.DataType = TOM.DataType.String;
             if (!string.IsNullOrEmpty(sourceColumn)) column.SourceColumn = sourceColumn;
             if (!string.IsNullOrEmpty(displayFolder)) column.DisplayFolder = displayFolder;
@@ -57,7 +57,7 @@ namespace TabularEditor.TOMWrapper
         public Hierarchy AddHierarchy(string name = null, string displayFolder = null, params Column[] levels)
         {
             Handler.BeginUpdate("add hierarchy");
-            var hierarchy = new Hierarchy(this, name);
+            var hierarchy = Hierarchy.CreateNew(this, name);
             if (!string.IsNullOrEmpty(displayFolder)) hierarchy.DisplayFolder = displayFolder;
             for(var i = 0; i < levels.Length; i++)
             {
@@ -120,38 +120,16 @@ namespace TabularEditor.TOMWrapper
             return t;
         }*/
 
-        protected override void Cleanup()
+        protected override void DeleteLinkedObjects(bool isChildOfDeleted)
         {
             // Remove row-level-security for this table:
             RowLevelSecurity.Clear();
 
-            // Then, delete any relationships this table participates in:
-            UsedInRelationships.ToList().ForEach(r => r.Delete());
-
-            // Delete any child objects, starting with hierarchies:
-            Hierarchies.ForEach(h => h.Delete());
-            Columns.ForEach(c => c.Delete());
-            Measures.ForEach(m => m.Delete());
-
-            // Delete any partitions on the table:
-            Partitions.ForEach(p => p.Delete());
-
-            base.Cleanup();
+            base.DeleteLinkedObjects(isChildOfDeleted);
         }
 
         [Browsable(false)]
         public Table ParentTable { get { return this; } }
-
-        [Browsable(false)]
-        public ColumnCollection Columns { get; protected set; }
-        [Browsable(false)]
-        public MeasureCollection Measures { get; private set; }
-        [Browsable(false)]
-        public HierarchyCollection Hierarchies { get; private set; }
-
-        [Category("Data Source"),NoMultiselect()]
-        [Editor(typeof(PartitionCollectionEditor),typeof(UITypeEditor))]
-        public PartitionCollection Partitions { get; private set; }
 
         [Category("Data Source")]
         public string Source {
@@ -188,6 +166,8 @@ namespace TabularEditor.TOMWrapper
                 case "ShowAsVariationsOnly":
                 case "IsPrivate":
                     return Model.Database.CompatibilityLevel >= 1400;
+                case "RowLevelSecurity":
+                    return Model.Roles.Any();
                 default: return true;
             }
         }
@@ -228,7 +208,7 @@ namespace TabularEditor.TOMWrapper
         /// <returns></returns>
         public IEnumerable<ITabularNamedObject> GetChildren()
         {
-            return Columns.Concat<ITabularNamedObject>(Measures).Concat(Hierarchies);
+            return Columns.Concat<TabularNamedObject>(Measures).Concat(Hierarchies);
         }
 
         public IEnumerable<IDetailObject> GetChildrenByFolders(bool recursive)
@@ -236,21 +216,18 @@ namespace TabularEditor.TOMWrapper
             throw new InvalidOperationException();
         }
 
+        [Browsable(false)]
         public PartitionViewTable PartitionViewTable { get; private set; }
 
         protected override void Init()
         {
-            Columns = new ColumnCollection(this.GetObjectPath() + ".Columns", MetadataObject.Columns, this);
-            Measures = new MeasureCollection(this.GetObjectPath() + ".Measures", MetadataObject.Measures, this);
-            Hierarchies = new HierarchyCollection(this.GetObjectPath() + ".Hierarchies", MetadataObject.Hierarchies, this);
-            Partitions = new PartitionCollection(this.GetObjectPath() + ".Partitions", MetadataObject.Partitions, this);
-
-            Columns.CollectionChanged += Children_CollectionChanged;
-            Measures.CollectionChanged += Children_CollectionChanged;
-            Hierarchies.CollectionChanged += Children_CollectionChanged;
-            Partitions.CollectionChanged += Partitions_CollectionChanged;
-
             PartitionViewTable = new PartitionViewTable(this);
+
+            if (Partitions.Count == 0 && !(this is CalculatedTable))
+            {
+                // Make sure the table contains at least one partition (Calculated Tables handles this on their own):
+                var p = Partition.CreateNew(this, Name);
+            }
 
             CheckChildrenErrors();
         }
@@ -267,7 +244,7 @@ namespace TabularEditor.TOMWrapper
         public virtual void CheckChildrenErrors()
         {
             var errObj = GetChildren().OfType<IErrorMessageObject>().FirstOrDefault(c => !string.IsNullOrEmpty(c.ErrorMessage));
-            if (errObj != null && (!(errObj as IExpressionObject)?.NeedsValidation ?? true))
+            if (errObj != null && (!(errObj as IDAXExpressionObject)?.NeedsValidation ?? true))
             {
                 ErrorMessage = "Error on " + (errObj as TabularNamedObject).Name + ": " + errObj.ErrorMessage;
             }
@@ -277,19 +254,23 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        protected void Children_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        protected override void Children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if(e.Action == NotifyCollectionChangedAction.Add)
-                Handler.Tree.OnNodesInserted(this, e.NewItems.Cast<ITabularObject>());
-            else if (e.Action == NotifyCollectionChangedAction.Remove)
-                Handler.Tree.OnNodesRemoved(this, e.OldItems.Cast<ITabularObject>());
-        }
-        private void Partitions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == NotifyCollectionChangedAction.Add)
-                Handler.Tree.OnNodesInserted(PartitionViewTable, e.NewItems.Cast<ITabularObject>());
-            else if (e.Action == NotifyCollectionChangedAction.Remove)
-                Handler.Tree.OnNodesRemoved(PartitionViewTable, e.OldItems.Cast<ITabularObject>());
+            if (sender is PartitionCollection)
+            {
+                // When a partition is added / removed, we notify the logical tree about changes to the
+                // PartitionViewTable, which is the object that holds the Partitions in the logical tree.
+                if (e.Action == NotifyCollectionChangedAction.Add)
+                    Handler.Tree.OnNodesInserted(PartitionViewTable, e.NewItems.Cast<ITabularObject>());
+                else if (e.Action == NotifyCollectionChangedAction.Remove)
+                    Handler.Tree.OnNodesRemoved(PartitionViewTable, e.OldItems.Cast<ITabularObject>());
+            }
+            else
+            {
+                // All other objects are shown as children of the table in the logical tree, so just
+                // notify in the normal way:
+                base.Children_CollectionChanged(sender, e);
+            }
         }
 
         public override string Name
@@ -365,7 +346,8 @@ namespace TabularEditor.TOMWrapper
     /// <summary>
     /// Wrapper class for the "Table Partitions" logical group.
     /// </summary>
-    public class PartitionViewTable: ITabularNamedObject, ITabularObjectContainer
+	[TypeConverter(typeof(DynamicPropertyConverter))]
+    public class PartitionViewTable: ITabularNamedObject, ITabularObjectContainer, IDynamicPropertyObject
     {
         public Table Table { get; private set; }
         internal PartitionViewTable(Table table)
@@ -377,16 +359,17 @@ namespace TabularEditor.TOMWrapper
         [Editor(typeof(PartitionCollectionEditor), typeof(UITypeEditor))]
         public PartitionCollection Partitions { get { return Table.Partitions; } }
 
-        [Category("Partitions"),DisplayName("Table Name")]
-        public string Name { get => Table.Name; set => Table.Name = value; }
+        [Category("Partitions"), DisplayName("Table Name")]
+        public string Name
+        {
+            get { return Table.Name; }
+            set { Table.Name = value; }
+        }
 
-        [Browsable(false)]
         public int MetadataIndex => Table.MetadataIndex;
 
-        [Browsable(false)]
         public ObjectType ObjectType => ObjectType.Table;
 
-        [Browsable(false)]
         public Model Model => Table.Model;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -394,6 +377,23 @@ namespace TabularEditor.TOMWrapper
         public IEnumerable<ITabularNamedObject> GetChildren()
         {
             return Partitions;
+        }
+
+        public bool Browsable(string propertyName)
+        {
+            switch(propertyName)
+            {
+                case "Partitions":
+                    return !(Table is CalculatedTable);
+                case "Name":
+                    return true;
+            }
+            return false;
+        }
+
+        public bool Editable(string propertyName)
+        {
+            return propertyName == "Name";
         }
     }
 

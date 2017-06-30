@@ -11,7 +11,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    public class CalculatedTable: Table, IExpressionObject
+    public class CalculatedTable: Table, IDAXExpressionObject
     {
         [Browsable(false)]
         public Dictionary<IDaxObject, List<Dependency>> Dependencies { get; private set; } = new Dictionary<IDaxObject, List<Dependency>>();
@@ -21,11 +21,26 @@ namespace TabularEditor.TOMWrapper
             base.Init();
 
             if (Partitions.Count == 0) {
-                var p = new Partition(this);
+                // Make sure the calculated table contains at least one partition:
+                var p = Partition.CreateNew(this, Name);
                 p.MetadataObject.Source = new TOM.CalculatedPartitionSource();
             }
 
             Partitions[0].PropertyChanged += CalculatedTable_PropertyChanged;
+        }
+
+        protected override bool IsBrowsable(string propertyName)
+        {
+            // Calculated Table should not expose all properties that the ancestor Table class has
+            // For example, we don't want users to edit the Partitions collection.
+            switch(propertyName)
+            {
+                case "Partitions":
+                case "SourceType":
+                    return false;
+                default:
+                    return base.IsBrowsable(propertyName);
+            }
         }
 
         private void CalculatedTable_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -33,12 +48,42 @@ namespace TabularEditor.TOMWrapper
             if (e.PropertyName == "Expression") OnPropertyChanged("Expression", null, this.Expression);
         }
 
-        public CalculatedTable(Model parent) : base(parent)
+        /// <summary>
+        /// Creates a new Calculated Table and adds it to the specified Model.
+        /// Also creates the underlying metadataobject and adds it to the TOM tree.
+        /// </summary>		
+        public static CalculatedTable CreateNew(Model parent, string name = null, string expression = null)
         {
+            var metadataObject = new TOM.Table();
+            metadataObject.Name = parent.Tables.GetNewName(string.IsNullOrWhiteSpace(name) ? "New Table" : name);
+
+            var obj = new CalculatedTable(metadataObject);
+            parent.Tables.Add(obj);
+            obj.Init();
+
+            if (!string.IsNullOrWhiteSpace(expression)) obj.Expression = expression;
+
+            return obj;
         }
+
+        public static new CalculatedTable CreateFromMetadata(TOM.Table metadataObject)
+        {
+            var obj = new CalculatedTable(metadataObject);
+            obj.Init();
+            return obj;
+        }
+
+        /// <summary>
+        /// Creates a new Calculated Table and adds it to the current Model.
+        /// Also creates the underlying metadataobject and adds it to the TOM tree.
+        /// </summary>
+        public static CalculatedTable CreateNew()
+        {
+            return CreateNew(TabularModelHandler.Singleton.Model);
+        }
+
         public CalculatedTable(TOM.Table tableMetadataObject) : base(tableMetadataObject)
         {
-            
         }
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
@@ -56,17 +101,6 @@ namespace TabularEditor.TOMWrapper
         {
             base.CheckChildrenErrors();
             if (Partitions.Count > 0 && !string.IsNullOrEmpty(Partitions[0].ErrorMessage)) ErrorMessage = Partitions[0].ErrorMessage;
-        }
-
-        /// <summary>
-        /// Call this method after the model is saved to a DB, to check for changed columns (in case of expression changes)
-        /// </summary>
-        public void ReinitColumns()
-        {
-            Columns.CollectionChanged -= Children_CollectionChanged;
-            Columns = new ColumnCollection(this.GetObjectPath() + ".Columns", MetadataObject.Columns, this);
-            Columns.CollectionChanged += Children_CollectionChanged;
-            Handler.UpdateObject(this);
         }
 
         [DisplayName("Expression")]

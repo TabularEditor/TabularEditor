@@ -36,6 +36,7 @@ namespace TabularEditor.BestPracticeAnalyzer
     {
         public static RuleScope Combine(this IEnumerable<RuleScope> scopes)
         {
+            if (!scopes.Any()) return (RuleScope)0;
             return scopes.Aggregate((r1, r2) => r1 | r2);
         }
 
@@ -57,9 +58,25 @@ namespace TabularEditor.BestPracticeAnalyzer
         {
             if (scope.IsMultiple()) throw new InvalidOperationException("The provided RuleScope enum value has more than one flag set.");
 
-            var assembly = System.Reflection.Assembly.GetAssembly(typeof(Model));
-            var t = assembly.GetType("TabularEditor.TOMWrapper." + scope.ToString());
-            return t;
+            switch(scope)
+            {
+                case RuleScope.Model: return typeof(Model);
+                case RuleScope.Table: return typeof(Table);
+                case RuleScope.Measure: return typeof(Measure);
+                case RuleScope.Hierarchy: return typeof(Hierarchy);
+                case RuleScope.Level: return typeof(Level);
+                case RuleScope.Relationship: return typeof(SingleColumnRelationship);
+                case RuleScope.Perspective: return typeof(Perspective);
+                case RuleScope.Culture: return typeof(Culture);
+                case RuleScope.Partition: return typeof(Partition);
+                case RuleScope.DataSource: return typeof(DataSource);
+                case RuleScope.DataColumn: return typeof(DataColumn);
+                case RuleScope.CalculatedColumn: return typeof(CalculatedColumn);
+                case RuleScope.CalculatedTable: return typeof(CalculatedTable);
+                case RuleScope.CalculatedTableColumn: return typeof(CalculatedTableColumn);
+                default:
+                    throw new InvalidOperationException("Unknown scope type");
+            }
         }
 
         public static RuleScope GetScope(string scope)
@@ -69,6 +86,11 @@ namespace TabularEditor.BestPracticeAnalyzer
             else return (RuleScope)Enum.Parse(typeof(RuleScope), (scope.EndsWith("s") ? scope.Substring(0, scope.Length - 1) : scope).Replace(" ", ""));
         }
 
+        /// <summary>
+        /// Enumerates the currently set flags on this Enum as individual Enum values.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         public static IEnumerable<RuleScope> Enumerate(this RuleScope input)
         {
             foreach (RuleScope value in Enum.GetValues(input.GetType()))
@@ -92,7 +114,17 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         [JsonConverter(typeof(StringEnumFlagsConverter))]
         public RuleScope Scope { get; set; }
-        public string ScopeString { get => string.Join(",", Scope.Enumerate().Select(s => s.GetTypeName())); }
+        public string ScopeString
+        {
+            get {
+                switch (Scope) {
+                    case RuleScope.CalculatedColumn | RuleScope.CalculatedTableColumn | RuleScope.DataColumn:
+                        return "Columns";
+                    default:
+                        return string.Join(",", Scope.Enumerate().Select(s => s.GetTypeName()));
+                }
+            }
+        }
         public string Expression { get; set; }
         public string FixExpression { get; set; }
         public HashSet<int> Compatibility { get; set; }

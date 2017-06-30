@@ -95,7 +95,10 @@ namespace TabularEditor.UI.Dialogs
         private CheckedListBox lb;
 
         public string Expression { get { return txtExpression.Text; } private set { txtExpression.Text = value; } }
-        public IEnumerable<Type> ScopeTypes { get => _scope.Enumerate().Select(s => s.GetScopeType()); }
+        public IEnumerable<Type> ScopeTypes
+        {
+            get { return _scope.Enumerate().Select(s => s.GetScopeType()); }
+        }
 
         private RuleScope _scope;
         public RuleScope Scope
@@ -160,7 +163,10 @@ namespace TabularEditor.UI.Dialogs
                 try
                 {
                     // Attempt to parse the expression of the assigned rule:
-                    var expr = DynamicExpression.ParseLambda(Scope.GetScopeType(), typeof(bool), Expression);
+                    foreach (var t in Scope.Enumerate().Select(s => s.GetScopeType()))
+                    {
+                        var expr = DynamicExpression.ParseLambda(t, typeof(bool), Expression);
+                    }
 
                     // TODO: Uncomment below code to re-enable visual tree builder
                     //var rootNode = CriteriaTreeBuilder.BuildFromExpression(expr.Body);

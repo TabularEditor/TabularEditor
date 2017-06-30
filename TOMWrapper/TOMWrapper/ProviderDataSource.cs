@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TabularEditor.PropertyGridUI;
+using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -18,12 +19,12 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         public void SetPlaceholder(string keyword, string replaceWith)
         {
-            // TODO: Make case-insensitive
-            ConnectionString = ConnectionString.Replace(keyword, replaceWith);
-
+            ConnectionString = ConnectionString.Replace(keyword, replaceWith, StringComparison.InvariantCultureIgnoreCase);
         }
         protected override void Init()
         {
+            if (MetadataObject.ImpersonationMode == TOM.ImpersonationMode.Default) MetadataObject.ImpersonationMode = Microsoft.AnalysisServices.Tabular.ImpersonationMode.ImpersonateAnonymous;
+
             if (ConnectionString.IndexOf("OleDb", StringComparison.InvariantCultureIgnoreCase) >= 0)
             {
                 ExtractMashupMetadata();
@@ -33,6 +34,10 @@ namespace TabularEditor.TOMWrapper
 
         private void ExtractMashupMetadata()
         {
+            // This method looks for the keywords "Mashup" or "PowerBI" in the connection string. If the
+            // connection string contains one of these, the actual MQuery definition making up the connection
+            // can be found inside a Base64 encoded Zip stream.
+
             var cs = new System.Data.OleDb.OleDbConnectionStringBuilder(this.ConnectionString);
             if (cs.Provider.IndexOf("Mashup", StringComparison.InvariantCultureIgnoreCase) >= 0 ||
                 cs.Provider.IndexOf("PowerBI", StringComparison.InvariantCultureIgnoreCase) >= 0) {

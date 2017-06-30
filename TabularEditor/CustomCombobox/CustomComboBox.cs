@@ -25,7 +25,10 @@ namespace CustomComboBox
         }
 
         public override string Text {
-            get => base.Text;
+            get
+            {
+                return base.Text;
+            }
             set {
                 if (Items.Count == 0) Items.Add(value);
                 Items[0] = value;
