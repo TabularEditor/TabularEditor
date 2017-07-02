@@ -68,6 +68,9 @@
     <Compile Include="IPlugin.cs" />
     <Compile Include="PropertyGridUI\AllRelationshipConverter.cs" />
     <Compile Include="PropertyGridUI\AllHierarchyConverter.cs" />
+    <Compile Include="PropertyGridUI\FormatStringConverter.cs" />
+    <Compile Include="PropertyGridUI\KPITrendGraphicConverter.cs" />
+    <Compile Include="PropertyGridUI\KPIStatusGraphicConverter.cs" />
     <Compile Include="PropertyGridUI\PerspectiveCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CustomDialogEditor.cs" />
     <Compile Include="PropertyGridUI\PartitionCollectionEditor.cs" />

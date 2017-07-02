@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper;
 using TabularEditor.UI.Actions;
 using TabularEditor.UI.Tree;
@@ -61,6 +62,7 @@ namespace TabularEditor.UI
             UI.TreeView.NodeMouseDoubleClick += TreeView_NodeMouseDoubleClick;
             UI.TreeView.KeyDown += TreeView_KeyDown;
             UI.TreeView.BeforeMultiSelect += TreeView_BeforeMultiSelect;
+            TreeView_NameCol.EditorShowing += TvName_EditorShowing;
 
             UI.TreeView.DragLeave += TreeView_DragLeave;
 
@@ -70,6 +72,14 @@ namespace TabularEditor.UI
             UI.TreeView.ContextMenuStrip = menu;
             UI.ToolsMenu.DropDown.Opening += ToolsMenu_Opening;
             UI.ModelMenu.DropDown.Opening += ContextMenu_Opening;
+        }
+
+        private void TvName_EditorShowing(object sender, CancelEventArgs e)
+        {
+            if(UI.TreeView.SelectedNode != null && UI.TreeView.SelectedNode.Tag is IDynamicPropertyObject)
+            {
+                e.Cancel = !(UI.TreeView.SelectedNode.Tag as IDynamicPropertyObject).Editable("Name");
+            }
         }
 
         private void TreeView_BeforeMultiSelect(object sender, TreeViewAdvCancelEventArgs e)

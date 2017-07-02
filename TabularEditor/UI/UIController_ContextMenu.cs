@@ -90,12 +90,12 @@ namespace TabularEditor.UI
                     var act = action as IModelMultiAction;
                     if (act.HideWhenDisabled && !act.Enabled(null)) continue;
 
-                    foreach (var argName in act.ArgNames)
+                    foreach (string argName in act.ArgNames.Keys)
                     {
-                        var item = ContextMenu_AddFromAction(act.Path.ConcatPath(argName.Key), menu);
+                        var item = ContextMenu_AddFromAction(act.Path.ConcatPath(argName), menu);
                         if (!string.IsNullOrEmpty(act.ToolTip)) item.ToolTipText = act.ToolTip;
                         item.Tag = act;
-                        item.Enabled = act.Enabled(argName.Value);
+                        item.Enabled = act.Enabled(act.ArgNames[argName]);
                         item.Click += ContextMenuItem_Click;
                     }
                 } else if (action is Separator)

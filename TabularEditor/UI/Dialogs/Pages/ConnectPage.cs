@@ -52,7 +52,9 @@ namespace TabularEditor.UI.Dialogs.Pages
             try
             {
                 result.Connect(GetConnectionString());
-                if(result.ServerMode != Microsoft.AnalysisServices.ServerMode.Tabular)
+                Console.WriteLine(result.ServerMode);
+                // SharePoint mode seems to be an alias for Power BI mode starting from an update of Power BI some time in 2017:
+                if(result.ServerMode != Microsoft.AnalysisServices.ServerMode.Tabular && result.ServerMode != Microsoft.AnalysisServices.ServerMode.SharePoint)
                 {
                     MessageBox.Show("Tabular Editor can only connect to Analysis Services instances running in Tabular mode.", "Unsupported instance", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                     return null;

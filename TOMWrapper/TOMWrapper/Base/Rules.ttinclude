@@ -224,14 +224,17 @@ class Rules {
 		if(className == "Level" && propertyName == "Column") return "[TypeConverter(typeof(HierarchyColumnConverter)),NoMultiselect()]";
 		if(className == "Level" && propertyName == "Ordinal") return "[NoMultiselect()]";
 		if(className == "Model" && propertyName == "Culture") return "[TypeConverter(typeof(CultureConverter))]";
+		if(propertyName.EndsWith("FormatString")) return "[TypeConverter(typeof(FormatStringConverter))]";
 		if(propertyName == "DisplayFolder") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]";
-		if(propertyName == "Expression") return "[Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]";
-		if(propertyName == "Description") return "[Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]";
+		if(propertyName.EndsWith("Expression")) return "[Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]";
+		if(propertyName.EndsWith("Description")) return "[Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]";
 		if(propertyName == "ContextExpression") return "[Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]";
 		if(propertyName == "Perspectives") return "[Editor(typeof(TabularEditor.PropertyGridUI.PerspectiveCollectionEditor),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Cultures") return "[Editor(typeof(TabularEditor.PropertyGridUI.CultureCollectionEditor),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Roles") return "[Editor(typeof(TabularEditor.PropertyGridUI.RefreshGridCollectionEditor), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Partitions") return "[NoMultiselect(),Editor(typeof(PartitionCollectionEditor),typeof(UITypeEditor))]";
+		if(propertyName == "StatusGraphic") return "[TypeConverter(typeof(KPIStatusGraphicConverter))]";
+		if(propertyName == "TrendGraphic") return "[TypeConverter(typeof(KPITrendGraphicConverter))]";
 		return "";
     }
 

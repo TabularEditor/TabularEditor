@@ -331,7 +331,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the FormatString of the Column.
         /// </summary>
 		[DisplayName("Format String")]
-		[Category("Options"),IntelliSense("The Format String of this Column.")]
+		[Category("Options"),IntelliSense("The Format String of this Column.")][TypeConverter(typeof(FormatStringConverter))]
 		public string FormatString {
 			get {
 			    return MetadataObject.FormatString;

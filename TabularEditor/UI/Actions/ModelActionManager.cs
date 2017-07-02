@@ -26,6 +26,9 @@ namespace TabularEditor.UI.Actions
             // 1 item, which is either a Table or a Folder:
             Action.EnabledDelegate calcContext = (s, m) => s.DirectCount == 1 && ( s.Types == Types.Folder);
 
+            Add(new CreateRelationshipAction(CreateRelationshipDirection.To));
+            Add(new CreateRelationshipAction(CreateRelationshipDirection.From));
+
             // "Create New"
             Add(new Action((s, m) => true, (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Measure", true, Context.Table | Context.TableObject));
             Add(new Action((s, m) => true, (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Calculated Column", true, Context.Table | Context.TableObject));

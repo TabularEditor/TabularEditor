@@ -31,7 +31,7 @@
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>2.3.6380.25635</ApplicationVersion>
+    <ApplicationVersion>2.3.6390.15706</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -173,6 +173,7 @@
     </Compile>
     <Compile Include="TextServices\CSharpLexer.cs" />
     <Compile Include="TextServices\ExpressionParser.cs" />
+    <Compile Include="UI\Actions\CreateRelationshipAction.cs" />
     <Compile Include="UI\Actions\SelectAllAction.cs">
       <SubType>Component</SubType>
     </Compile>

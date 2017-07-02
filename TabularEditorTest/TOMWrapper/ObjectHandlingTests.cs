@@ -32,7 +32,17 @@ namespace TabularEditor.TOMWrapper
             var t2 = tm.Model.AddTable("Test Table 2");
 
             // Create calculated table based on table 2:
-            var t3 = tm.Model.AddCalculatedTable("Test CalcTable 1", "'Test Table 2'");
+            var t3 = tm.Model.AddCalculatedTable("Test CalcTable 1", @"DATATABLE (
+    ""String Column"", STRING,
+    ""Decimal Column"", CURRENCY,
+    ""Int Column"", INTEGER,
+    ""Date Column"", DATETIME,
+    {
+        { ""Category A"", -50.1234, -5, ""2017-01-01"" }, 
+        { ""Category B"", 3.1415,    2, ""2017-01-02"" }, 
+        { ""Category C"", 45.9876,   8, ""2017-01-03"" }
+    }
+)");
 
             var c11 = t1.AddDataColumn("Column 1");
             var c12 = t1.AddDataColumn("Column 2");
@@ -54,8 +64,10 @@ namespace TabularEditor.TOMWrapper
             r.FromColumn = c11;
             r.ToColumn = c21;
 
-            var m1 = t1.AddMeasure("Measure 1", "sum([Column 1])");
-            var m2 = t1.AddMeasure("Measure 2", "sum([Column 2])");
+            var m1 = t1.AddMeasure("Measure 1", "sum('Test CalcTable 1'[Decimal Column])");
+            var m2 = t1.AddMeasure("Measure 2", "sum('Test CalcTable 1'[Int Column])");
+
+            var k1 = m1.AddKPI();
 
             // Apply translations to all items in table 1:
             var items = t1.GetChildren().Concat(t1.AllLevels).Concat(Enumerable.Repeat(t1, 1));

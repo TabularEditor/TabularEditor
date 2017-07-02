@@ -8,12 +8,26 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class Measure : IDaxObject
+    public partial class Measure : IDaxObject, ITabularObjectContainer
     {
         [Browsable(false)]
         public Dictionary<IDaxObject, List<Dependency>> Dependencies { get; internal set; } = new Dictionary<IDaxObject, List<Dependency>>();
         [Browsable(false)]
         public HashSet<IDAXExpressionObject> Dependants { get; private set; } = new HashSet<IDAXExpressionObject>();
+
+
+
+        internal override ITabularObjectCollection GetCollectionForChild(TabularObject child)
+        {
+            if (child is KPI) return null;
+            return base.GetCollectionForChild(child);
+        }
+        public KPI AddKPI()
+        {
+            var kpi = new TOM.KPI() { };
+            KPI = KPI.CreateFromMetadata(kpi, true);
+            return KPI;
+        }
 
         internal override void RemoveReferences()
         {
@@ -99,6 +113,12 @@ namespace TabularEditor.TOMWrapper
                     return Model.Database.CompatibilityLevel >= 1400;
                 default: return true;
             }
+        }
+
+        public IEnumerable<ITabularNamedObject> GetChildren()
+        {
+            if (KPI == null) return Enumerable.Empty<ITabularNamedObject>();
+            else return Enumerable.Repeat<ITabularNamedObject>(KPI, 1);
         }
 
 #if CL1400

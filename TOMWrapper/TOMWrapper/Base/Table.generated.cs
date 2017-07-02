@@ -178,6 +178,7 @@ namespace TabularEditor.TOMWrapper
 			var tom = MetadataObject.Clone() as TOM.Table;
 
 			// Make sure that measures on the table are renamed:
+			// TODO: This does not come up with a globally unique measure name.
 			foreach(var m in tom.Measures) m.Name = MeasureCollection.GetNewMeasureName(m.Name);
 
 			// Assign a new, unique name:

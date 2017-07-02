@@ -84,6 +84,19 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         [Browsable(false)]
         public IEnumerable<Relationship> UsedInRelationships { get { return Model.Relationships.Where(r => r.FromTable == this || r.ToTable == this); } }
+        /// <summary>
+        /// Enumerates all tables related to or from this table.
+        /// </summary>
+        [Browsable(false)]
+        public IEnumerable<Table> RelatedTables
+        {
+            get
+            {
+                return UsedInRelationships.Select(r => r.FromTable)
+                    .Concat(UsedInRelationships.Select(r => r.ToTable))
+                    .Where(t => t != this).Distinct();
+            }
+        }
         #endregion
 
         /*public override TabularNamedObject Clone(string newName = null, bool includeTranslations = false)

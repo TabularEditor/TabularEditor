@@ -24,7 +24,7 @@ namespace TabularEditor.UI.Actions
 
     public interface IModelMultiAction: IBaseAction
     {
-        Dictionary<string, object> ArgNames { get; }
+        IDictionary ArgNames { get; }
         string Path { get; }
     }
 
@@ -162,7 +162,7 @@ namespace TabularEditor.UI.Actions
 
         UIController ui;
 
-        public Dictionary<string, object> ArgNames
+        public IDictionary ArgNames
         {
             get
             {

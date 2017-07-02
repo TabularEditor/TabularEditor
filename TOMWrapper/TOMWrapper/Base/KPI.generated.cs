@@ -58,7 +58,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the TargetDescription of the KPI.
         /// </summary>
 		[DisplayName("Target Description")]
-		[Category("Other"),IntelliSense("The Target Description of this KPI.")]
+		[Category("Other"),IntelliSense("The Target Description of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string TargetDescription {
 			get {
 			    return MetadataObject.TargetDescription;
@@ -80,7 +80,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the TargetExpression of the KPI.
         /// </summary>
 		[DisplayName("Target Expression")]
-		[Category("Other"),IntelliSense("The Target Expression of this KPI.")]
+		[Category("Other"),IntelliSense("The Target Expression of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string TargetExpression {
 			get {
 			    return MetadataObject.TargetExpression;
@@ -102,7 +102,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the TargetFormatString of the KPI.
         /// </summary>
 		[DisplayName("Target Format String")]
-		[Category("Other"),IntelliSense("The Target Format String of this KPI.")]
+		[Category("Other"),IntelliSense("The Target Format String of this KPI.")][TypeConverter(typeof(FormatStringConverter))]
 		public string TargetFormatString {
 			get {
 			    return MetadataObject.TargetFormatString;
@@ -124,7 +124,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the StatusGraphic of the KPI.
         /// </summary>
 		[DisplayName("Status Graphic")]
-		[Category("Other"),IntelliSense("The Status Graphic of this KPI.")]
+		[Category("Other"),IntelliSense("The Status Graphic of this KPI.")][TypeConverter(typeof(KPIStatusGraphicConverter))]
 		public string StatusGraphic {
 			get {
 			    return MetadataObject.StatusGraphic;
@@ -146,7 +146,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the StatusDescription of the KPI.
         /// </summary>
 		[DisplayName("Status Description")]
-		[Category("Other"),IntelliSense("The Status Description of this KPI.")]
+		[Category("Other"),IntelliSense("The Status Description of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string StatusDescription {
 			get {
 			    return MetadataObject.StatusDescription;
@@ -168,7 +168,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the StatusExpression of the KPI.
         /// </summary>
 		[DisplayName("Status Expression")]
-		[Category("Other"),IntelliSense("The Status Expression of this KPI.")]
+		[Category("Other"),IntelliSense("The Status Expression of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string StatusExpression {
 			get {
 			    return MetadataObject.StatusExpression;
@@ -190,7 +190,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the TrendGraphic of the KPI.
         /// </summary>
 		[DisplayName("Trend Graphic")]
-		[Category("Other"),IntelliSense("The Trend Graphic of this KPI.")]
+		[Category("Other"),IntelliSense("The Trend Graphic of this KPI.")][TypeConverter(typeof(KPITrendGraphicConverter))]
 		public string TrendGraphic {
 			get {
 			    return MetadataObject.TrendGraphic;
@@ -212,7 +212,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the TrendDescription of the KPI.
         /// </summary>
 		[DisplayName("Trend Description")]
-		[Category("Other"),IntelliSense("The Trend Description of this KPI.")]
+		[Category("Other"),IntelliSense("The Trend Description of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string TrendDescription {
 			get {
 			    return MetadataObject.TrendDescription;
@@ -234,7 +234,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the TrendExpression of the KPI.
         /// </summary>
 		[DisplayName("Trend Expression")]
-		[Category("Other"),IntelliSense("The Trend Expression of this KPI.")]
+		[Category("Other"),IntelliSense("The Trend Expression of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string TrendExpression {
 			get {
 			    return MetadataObject.TrendExpression;
