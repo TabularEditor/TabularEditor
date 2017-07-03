@@ -22,6 +22,13 @@ namespace TabularEditor
 
         public static Action<Model, UITreeSelection> ScriptAction(string script, out CompilerResults compilerResults)
         {
+            var lines = script.Split('\n');
+            for(int i = 0; i < lines.Length; i++)
+            {
+                lines[i] = lines[i].Replace(".Output()",".Output(" + (i + 1) + ")");
+            }
+            script = string.Join("\n", lines);
+
             var code = string.Format(@"namespace TabularEditor.Scripting
 {{
     public static class ScriptHost

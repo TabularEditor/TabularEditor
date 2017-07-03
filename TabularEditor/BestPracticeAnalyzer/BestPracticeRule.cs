@@ -29,7 +29,8 @@ namespace TabularEditor.BestPracticeAnalyzer
         DataColumn              = 0x0400,
         CalculatedColumn        = 0x0800,
         CalculatedTable         = 0x1000,
-        CalculatedTableColumn   = 0x2000
+        CalculatedTableColumn   = 0x2000,
+        KPI                     = 0x4000
     }
 
     public static class RuleScopeHelper
@@ -74,6 +75,7 @@ namespace TabularEditor.BestPracticeAnalyzer
                 case RuleScope.CalculatedColumn: return typeof(CalculatedColumn);
                 case RuleScope.CalculatedTable: return typeof(CalculatedTable);
                 case RuleScope.CalculatedTableColumn: return typeof(CalculatedTableColumn);
+                case RuleScope.KPI: return typeof(KPI);
                 default:
                     throw new InvalidOperationException("Unknown scope type");
             }

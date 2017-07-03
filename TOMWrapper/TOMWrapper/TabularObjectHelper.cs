@@ -10,10 +10,12 @@ namespace TabularEditor.TOMWrapper
 {
     public static class TabularObjectHelper
     {
-        public static string GetLinqPath(this TabularNamedObject obj)
+        public static string GetLinqPath(this ITabularNamedObject obj)
         {
             switch (obj.ObjectType)
             {
+                case ObjectType.KPI:
+                    return (obj as KPI).Measure.GetLinqPath() + ".KPI";
                 case ObjectType.Model:
                     return "Model";
                 case ObjectType.Column:

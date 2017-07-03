@@ -35,9 +35,16 @@ namespace TabularEditor.BestPracticeAnalyzer
         public bool RuleHasError { get { return !string.IsNullOrEmpty(RuleError); } }
         public string RuleError { get; set; }
         public RuleScope RuleErrorScope { get; set; }
-        public string ObjectName { get { return (Object as IDaxObject)?.DaxObjectFullName ?? Object.Name; } }
+        public string ObjectName
+        {
+            get
+            {
+                if (Object is KPI) return (Object as KPI).Measure.DaxObjectFullName + ".KPI";
+                return (Object as IDaxObject)?.DaxObjectFullName ?? Object.Name;
+            }
+        }
         public string RuleName { get { return Rule.Name; } }
-        public TabularNamedObject Object { get; set; }
+        public ITabularNamedObject Object { get; set; }
         public BestPracticeRule Rule { get; set; }
         public bool CanFix { get { return Rule.FixExpression != null; } }
         public void Fix() {
@@ -219,7 +226,7 @@ namespace TabularEditor.BestPracticeAnalyzer
                         Expression.Call(
                             typeof(Queryable), "Where",
                             new Type[] { collection.ElementType },
-                            collection.Expression, Expression.Quote(lambda))).OfType<TabularNamedObject>();
+                            collection.Expression, Expression.Quote(lambda))).OfType<ITabularNamedObject>();
 
                     foreach (var res in result) yield return new AnalyzerResult { Rule = rule, Object = res };
                 }
@@ -241,6 +248,8 @@ namespace TabularEditor.BestPracticeAnalyzer
         {
             switch (scope)
             {
+                case RuleScope.KPI:
+                    return Model.AllMeasures.Where(m => m.KPI != null).Select(m => m.KPI).AsQueryable();
                 case RuleScope.CalculatedColumn:
                     return Model.Tables.SelectMany(t => t.Columns).OfType<CalculatedColumn>().AsQueryable();
                 case RuleScope.CalculatedTable:

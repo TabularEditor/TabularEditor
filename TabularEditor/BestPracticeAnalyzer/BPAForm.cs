@@ -193,7 +193,7 @@ namespace TabularEditor.UI.Dialogs
 
             foreach (ListViewItem item in listView2.SelectedItems)
             {
-                var rule = RuleIndex[item.SubItems[2].Text];
+                var rule = RuleIndex[item.SubItems[3].Text];
                 var obj = item.Tag as IAnnotationObject;
 
                 if (obj == null) unsupported = true;
@@ -208,7 +208,7 @@ namespace TabularEditor.UI.Dialogs
 
         private void bpaResultIgnoreRule_Click(object sender, EventArgs e)
         {
-            var rules = listView2.SelectedItems.Cast<ListViewItem>().Select(i => i.SubItems[2].Text).Distinct().Select(n => RuleIndex[n]).ToList();
+            var rules = listView2.SelectedItems.Cast<ListViewItem>().Select(i => i.SubItems[3].Text).Distinct().Select(n => RuleIndex[n]).ToList();
 
             foreach (var rule in rules)
             {
@@ -223,8 +223,8 @@ namespace TabularEditor.UI.Dialogs
                 i =>
                 {
                     var obj = i.Tag as TabularNamedObject;
-                    var rule = RuleIndex[i.SubItems[2].Text];
-                    if (string.IsNullOrEmpty(rule.FixExpression)) return string.Format("// No automatic fix for rule '{0}' on object {1}", i.SubItems[1], i.SubItems[0]);
+                    var rule = RuleIndex[i.SubItems[3].Text];
+                    if (string.IsNullOrEmpty(rule.FixExpression)) return string.Format("// No automatic fix for rule '{0}' on object {1}", i.SubItems[2], i.SubItems[0]);
                     return obj.GetLinqPath() + "." + rule.FixExpression + ";";
                 }
                 ).ToArray());
@@ -354,7 +354,7 @@ namespace TabularEditor.UI.Dialogs
             if(listView2.SelectedItems.Count == 1)
             {
                 var item = listView2.SelectedItems[0];
-                var rule = RuleIndex[item.SubItems[2].Text];
+                var rule = RuleIndex[item.SubItems[3].Text];
 
                 if (string.IsNullOrEmpty(rule.FixExpression))
                 {
