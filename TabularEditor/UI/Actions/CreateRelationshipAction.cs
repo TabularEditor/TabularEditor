@@ -110,7 +110,7 @@ namespace TabularEditor.UI.Actions
                 rel.ToColumn = SelectedColumn;
                 rel.FromColumn = arg as Column;
             }
-            rel.Edit();
+            UI.EditName(rel);
         }
     }
 }

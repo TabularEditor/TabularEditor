@@ -90,12 +90,15 @@ namespace TabularEditor.UI
                     var act = action as IModelMultiAction;
                     if (act.HideWhenDisabled && !act.Enabled(null)) continue;
 
-                    foreach (string argName in act.ArgNames.Keys)
+                    var dict = act.ArgNames;
+
+                    foreach (string argName in dict.Keys)
                     {
                         var item = ContextMenu_AddFromAction(act.Path.ConcatPath(argName), menu);
                         if (!string.IsNullOrEmpty(act.ToolTip)) item.ToolTipText = act.ToolTip;
                         item.Tag = act;
-                        item.Enabled = act.Enabled(act.ArgNames[argName]);
+                        item.Name = argName;
+                        item.Enabled = act.Enabled(dict[argName]);
                         item.Click += ContextMenuItem_Click;
                     }
                 } else if (action is Separator)
@@ -149,7 +152,7 @@ namespace TabularEditor.UI
             var act = item.Tag as IBaseAction;
             if (act == null) return;
 
-            act.Execute((act as IModelMultiAction)?.ArgNames[item.Text.Split('\\').Last()]);
+            act.Execute((act as IModelMultiAction)?.ArgNames[item.Name]);
             UI.PropertyGrid.Refresh();
         }
 

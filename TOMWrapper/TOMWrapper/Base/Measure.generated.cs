@@ -23,6 +23,7 @@ namespace TabularEditor.TOMWrapper
 			, IDescriptionObject
 			, IDAXExpressionObject
 			, IAnnotationObject
+			, IDeletableObject
 			, ITabularPerspectiveObject
 			, ITranslatableObject
 			, IClonableObject
@@ -228,29 +229,6 @@ namespace TabularEditor.TOMWrapper
 				return t as Table;
 			} 
 		}
-        /// <summary>
-        /// Gets or sets the KPI of the Measure.
-        /// </summary>
-		[DisplayName("KPI")]
-		[Category("Other"),IntelliSense("The KPI of this Measure.")]
-		public KPI KPI {
-			get {
-				if (MetadataObject.KPI == null) return null;
-			    return Handler.WrapperLookup[MetadataObject.KPI] as KPI;
-            }
-			set {
-				var oldValue = KPI;
-				if (oldValue?.MetadataObject == value?.MetadataObject) return;
-				bool undoable = true;
-				bool cancel = false;
-				OnPropertyChanging("KPI", value, ref undoable, ref cancel);
-				if (cancel) return;
-				MetadataObject.KPI = value?.MetadataObject;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "KPI", oldValue, value));
-				OnPropertyChanged("KPI", oldValue, value);
-			}
-		}
-		private bool ShouldSerializeKPI() { return false; }
         /// <Summary>
 		/// Collection of perspectives in which this Measure is visible.
 		/// </Summary>
@@ -378,8 +356,6 @@ namespace TabularEditor.TOMWrapper
 			// Create indexers for perspectives:
 			InPerspective = new PerspectiveMeasureIndexer(this);
 		}
-
-
 
 		internal override void Undelete(ITabularObjectCollection collection) {
 			base.Undelete(collection);

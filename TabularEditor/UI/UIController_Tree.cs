@@ -142,7 +142,7 @@ namespace TabularEditor.UI
             }
         }
 
-        public void EditName(TabularNamedObject item)
+        public void EditName(ITabularNamedObject item)
         {
             var node = UI.TreeView.FindNodeByTag(item);
             if(node != null)
@@ -152,7 +152,7 @@ namespace TabularEditor.UI
             }
         }
 
-        public void ExpandItem(TabularNamedObject item)
+        public void ExpandItem(ITabularNamedObject item)
         {
             var node = UI.TreeView.FindNodeByTag(item);
             if (node != null) node.Expand();
@@ -239,7 +239,9 @@ namespace TabularEditor.UI
             }
             else if (draggedNodes.Length == 1 && UI.TreeView.CurrentNode.Tag is TabularNamedObject && scriptableObjects.Contains((UI.TreeView.CurrentNode.Tag as TabularNamedObject).ObjectType))
                 Tree_CurrentDragObject.SetData(Handler.ScriptCreateOrReplace(UI.TreeView.CurrentNode.Tag as TabularNamedObject));
-            else Tree_CurrentDragObject.SetData(Handler.SerializeObjects(Selection));
+            
+            // TODO: Handle KPI objects (which is not of type TabularNamedObject):
+            else Tree_CurrentDragObject.SetData(Handler.SerializeObjects(Selection.OfType<TabularNamedObject>()));
 
             Tree_CurrentDragObject.SetData(draggedNodes);
             UI.TreeView.DoDragDrop(Tree_CurrentDragObject, DragDropEffects.Move | DragDropEffects.Copy);

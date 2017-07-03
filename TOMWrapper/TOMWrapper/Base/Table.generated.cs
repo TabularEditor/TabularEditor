@@ -19,6 +19,7 @@ namespace TabularEditor.TOMWrapper
 			, IHideableObject
 			, IDescriptionObject
 			, IAnnotationObject
+			, IDeletableObject
 			, ITabularPerspectiveObject
 			, ITranslatableObject
 			, IClonableObject

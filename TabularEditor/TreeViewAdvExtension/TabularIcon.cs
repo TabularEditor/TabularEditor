@@ -95,9 +95,7 @@ namespace TabularEditor.UI.Tree
         public const int ICON_HIERARCHY = 3;
         public const int ICON_COLUMN = 4;
         public const int ICON_CALCULATOR = 5;
-        public const int ICON_KPI = 6;
-        public const int ICON_MEASURE = 7;
-        public const int ICON_SIGMA = 8;
+        public const int ICON_MEASURE = 8;
         public const int ICON_CUBE = 9;
         public const int ICON_LINK = 10;
         public const int ICON_LEVEL = 11;
@@ -128,6 +126,8 @@ namespace TabularEditor.UI.Tree
         public const int ICON_DATASOURCE = 36;
 
         public const int ICON_PARTITION = 38;
+        public const int ICON_KPI = 39;
+
     }
 
 }

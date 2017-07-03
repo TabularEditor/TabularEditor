@@ -18,6 +18,7 @@ namespace TabularEditor.TOMWrapper
 	public partial class KPI: TabularObject
 			, IDescriptionObject
 			, IAnnotationObject
+			, IDeletableObject
 	{
 	    protected internal new TOM.KPI MetadataObject { get { return base.MetadataObject as TOM.KPI; } internal set { base.MetadataObject = value; } }
 

@@ -16,6 +16,7 @@ namespace TabularEditor.TOMWrapper
 	/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public partial class DataColumn: Column
+			, IDeletableObject
 			, IClonableObject
 	{
 	    protected internal new TOM.DataColumn MetadataObject { get { return base.MetadataObject as TOM.DataColumn; } internal set { base.MetadataObject = value; } }

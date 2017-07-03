@@ -17,6 +17,7 @@ namespace TabularEditor.TOMWrapper
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public partial class Culture: TabularNamedObject
 			, IAnnotationObject
+			, IDeletableObject
 			, IClonableObject
 	{
 	    protected internal new TOM.Culture MetadataObject { get { return base.MetadataObject as TOM.Culture; } internal set { base.MetadataObject = value; } }

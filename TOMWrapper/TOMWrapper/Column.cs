@@ -44,7 +44,7 @@ namespace TabularEditor.TOMWrapper
             base.RemoveReferences();
         }
 
-        protected override void DeleteLinkedObjects(bool isChildOfDeleted)
+        internal override void DeleteLinkedObjects(bool isChildOfDeleted)
         {
             // Remove any relationships this column participates in:
             UsedInRelationships.ToList().ForEach(r => r.Delete());

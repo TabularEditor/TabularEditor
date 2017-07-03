@@ -30,6 +30,7 @@ namespace TabularEditor.UI.Actions
             Add(new CreateRelationshipAction(CreateRelationshipDirection.From));
 
             // "Create New"
+            Add(new Action((s, m) => s.Count == 1 && s.Types == Types.Measure, (s, m) => s.Measure.AddKPI().Edit(), (s, m) => @"Create New\KPI", true, Context.DataObjects));
             Add(new Action((s, m) => true, (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Measure", true, Context.Table | Context.TableObject));
             Add(new Action((s, m) => true, (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Calculated Column", true, Context.Table | Context.TableObject));
             Add(new Action((s, m) => true, (s, m) => s.Table.AddDataColumn(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Data Column", true, Context.Table | Context.TableObject));
@@ -133,7 +134,7 @@ namespace TabularEditor.UI.Actions
 
             // Delete Action
             // TODO: Would be nice to have an IDeletable interface...
-            Delete = new Action((s, m) => !s.CalculatedTableColumns.Any() && s.Count(i => !(i is CalculatedTableColumn)) > 0, 
+            Delete = new Action((s, m) => s.All(obj => obj is IDeletableObject), 
                 (s, m) => {
                     string refs = "";
                     if (s.Count == 1)
@@ -153,7 +154,7 @@ namespace TabularEditor.UI.Actions
                             refs += "\n\nThis object is directly referenced in the DAX expression on " + d.Dependants.First().DaxObjectFullName;
                             if (d.Dependants.Count > 1) refs += string.Format(" and {0} other object{1}.", d.Dependants.Count - 1, d.Dependants.Count == 2 ? "" : "s");
                         }
-                        else
+                        else if (!(s.FirstOrDefault() is KPI))
                         {
                             refs += "\n\nThis object does not appear to be referenced in DAX expressions on other objects.";
                         }
@@ -180,7 +181,7 @@ namespace TabularEditor.UI.Actions
         /// levels have been added, we would like to show the levels immediately after
         /// creation.
         /// </summary>
-        public static T Expand<T>(this T obj) where T: TabularNamedObject
+        public static T Expand<T>(this T obj) where T: ITabularNamedObject
         {
             UIController.Current.Actions.LastActionExecuted.ExpandObject = obj;
             return obj;
@@ -191,7 +192,7 @@ namespace TabularEditor.UI.Actions
         /// to the model tree, when you want end users to be able to provide a name for
         /// the new object immediately after creation.
         /// </summary>
-        public static T Edit<T>(this T obj) where T: TabularNamedObject
+        public static T Edit<T>(this T obj) where T: ITabularNamedObject
         {
             UIController.Current.Actions.LastActionExecuted.EditObjectName = obj;
             return obj;

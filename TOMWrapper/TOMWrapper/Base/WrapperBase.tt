@@ -42,6 +42,7 @@ namespace TabularEditor.TOMWrapper
 #><#= props.Any(p => p.Name == "Description") ? "\n\t\t\t, IDescriptionObject" : ""
 #><#= props.Any(p => p.Name == "Expression") ? "\n\t\t\t, IDAXExpressionObject" : ""
 #><#= props.Any(p => p.Name == "Annotations") ? "\n\t\t\t, IAnnotationObject" : ""
+#><#= Rules.IsDeletable(t) ? "\n\t\t\t, IDeletableObject" : ""
 #><#= Rules.IsPerspectiveObject(t) ? "\n\t\t\t, ITabularPerspectiveObject" : ""
 #><#= Rules.IsTranslatable(t) ? "\n\t\t\t, ITranslatableObject" : ""
 #><#= Rules.InCollection(t) && !t.IsAbstract ? "\n\t\t\t, IClonableObject" : ""

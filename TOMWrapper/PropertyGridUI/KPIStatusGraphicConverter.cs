@@ -10,7 +10,6 @@ namespace TabularEditor.PropertyGridUI
     public class KPIStatusGraphicConverter: TypeConverter
     {
         public static readonly string[] StatusValues = {
-            null,
             "Cylinder",
             "Faces",
             "Gauge",
@@ -23,11 +22,6 @@ namespace TabularEditor.PropertyGridUI
         };
 
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
-        {
-            return true;
-        }
-
-        public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
         {
             return true;
         }

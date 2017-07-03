@@ -291,8 +291,7 @@ namespace TabularEditor.UI
             if (objects.Count == 0) return;
             Handler.BeginUpdate("delete" + (objects.Count > 1 ? " objects" : ""));
 
-            // TODO: We really need an IDeletable interface...
-            this.OfType<TabularNamedObject>().Where(i => !(i is CalculatedTableColumn)).ToList().ForEach(i => i.Delete());
+            this.OfType<IDeletableObject>().Where(i => !(i is CalculatedTableColumn)).ToList().ForEach(i => i.Delete());
             Handler.EndUpdate();
         }
 

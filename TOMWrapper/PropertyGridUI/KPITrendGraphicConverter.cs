@@ -10,7 +10,6 @@ namespace TabularEditor.PropertyGridUI
     public class KPITrendGraphicConverter: TypeConverter
     {
         public static readonly string[] TrendValues = {
-            null,
             "Faces",
             "Reversed status arrow",
             "Standard Arrow",
@@ -18,11 +17,6 @@ namespace TabularEditor.PropertyGridUI
         };
 
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
-        {
-            return true;
-        }
-
-        public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
         {
             return true;
         }

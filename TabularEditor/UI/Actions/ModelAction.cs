@@ -67,12 +67,12 @@ namespace TabularEditor.UI.Actions
         /// If this field is set, after an action has finished executing its custom code,
         /// the object will be selected in the TreeView, and the name editor will show up.
         /// </summary>
-        public TabularNamedObject EditObjectName { get; set; } = null;
+        public ITabularNamedObject EditObjectName { get; set; } = null;
         /// <summary>
         /// If this field is set, after an action has finished executing its custom code,
         /// the object will be expanded to show child objects in the TreeView.
         /// </summary>
-        public TabularNamedObject ExpandObject { get; set; } = null;
+        public ITabularNamedObject ExpandObject { get; set; } = null;
 
         public Action(EnabledDelegate enabled, ExecuteDelegate execute, NameDelegate name, bool hideWhenDisabled = false, Context validContexts = Context.Everywhere)
         {

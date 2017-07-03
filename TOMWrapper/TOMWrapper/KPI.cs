@@ -8,7 +8,7 @@ using TabularEditor.PropertyGridUI;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class KPI: ITabularNamedObject
+    public partial class KPI: ITabularNamedObject, IDeletableObject
     {
         [Browsable(false)]
         public int MetadataIndex
@@ -31,6 +31,11 @@ namespace TabularEditor.TOMWrapper
             {
                 
             }
+        }
+
+        public void Delete()
+        {
+            Measure.RemoveKPI();
         }
 
         protected override bool IsBrowsable(string propertyName)

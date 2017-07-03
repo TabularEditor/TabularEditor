@@ -20,6 +20,7 @@ namespace TabularEditor.TOMWrapper
 			, ITabularTableObject
 			, IDescriptionObject
 			, IAnnotationObject
+			, IDeletableObject
 			, IClonableObject
 	{
 	    protected internal new TOM.Partition MetadataObject { get { return base.MetadataObject as TOM.Partition; } internal set { base.MetadataObject = value; } }

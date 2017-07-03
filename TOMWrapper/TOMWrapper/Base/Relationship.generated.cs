@@ -17,6 +17,7 @@ namespace TabularEditor.TOMWrapper
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public abstract partial class Relationship: TabularNamedObject
 			, IAnnotationObject
+			, IDeletableObject
 	{
 	    protected internal new TOM.Relationship MetadataObject { get { return base.MetadataObject as TOM.Relationship; } internal set { base.MetadataObject = value; } }
 

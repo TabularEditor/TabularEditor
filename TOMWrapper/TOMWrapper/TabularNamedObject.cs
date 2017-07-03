@@ -45,16 +45,16 @@ namespace TabularEditor.TOMWrapper
             Handler.UndoManager.EndBatch();
         }
 
-        protected virtual void DeleteLinkedObjects(bool isChildOfDeleted)
+        internal override void DeleteLinkedObjects(bool isChildOfDeleted)
         {
             var container = this as ITabularObjectContainer;
-            if (container != null) foreach (var child in container.GetChildren().OfType<TabularNamedObject>()) child.DeleteLinkedObjects(true);
+            if (container != null) foreach (var child in container.GetChildren().OfType<TabularObject>()) child.DeleteLinkedObjects(true);
         }
 
         internal override void ReapplyReferences()
         {
             var container = this as ITabularObjectContainer;
-            if (container != null) foreach (var child in container.GetChildren().OfType<TabularNamedObject>()) child.ReapplyReferences();
+            if (container != null) foreach (var child in container.GetChildren().OfType<TabularObject>()) child.ReapplyReferences();
         }
 
         /// <summary>

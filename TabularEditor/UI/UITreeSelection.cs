@@ -81,7 +81,8 @@ namespace TabularEditor.UI
         Column =                1 << 3,
         CalculatedColumn =      1 << 4,
         DataColumn =            1 << 5,
-        CalculatedTableColumn = 1 << 6
+        CalculatedTableColumn = 1 << 6,
+        KPI =                   1 << 7
     }
 
     public static class TypesHelper
@@ -238,8 +239,13 @@ namespace TabularEditor.UI
         /// </summary>
         Translation = 1 << 15,
 
+        /// <summary>
+        /// Context menu opened on a KPI object
+        /// </summary>
+        KPI = 1 << 16,
+
         Everywhere = 0xFFFFFF,
-        SingularObjects = Table | TableObject | Level | Partition | Relationship | DataSource | Role | Perspective | Translation,
+        SingularObjects = Table | TableObject | Level | Partition | Relationship | DataSource | Role | Perspective | Translation | KPI,
         Groups = Model | Tables | Relationships | DataSources | Roles | Perspectives | Translations,
         DataObjects = Table | TableObject
     }
@@ -256,7 +262,7 @@ namespace TabularEditor.UI
     /// Additionally, a range of properties have been provided, to give some overall information
     /// about the selection.
     /// </summary>
-    public class UITreeSelection: UISelectionList<TabularNamedObject>
+    public class UITreeSelection: UISelectionList<ITabularNamedObject>
     {
         IReadOnlyCollection<TreeNodeAdv> _selectedNodes;
 
@@ -287,6 +293,7 @@ namespace TabularEditor.UI
                         else if (item is DataColumn) result |= Types.DataColumn;
                         else if (item is CalculatedTableColumn) result |= Types.CalculatedTableColumn;
                         break;
+                    case ObjectType.KPI: result |= Types.KPI; break;
                 }
             }
             return result;
@@ -311,6 +318,7 @@ namespace TabularEditor.UI
                 case ObjectType.Relationship: result = Context.Relationship; break;
                 case ObjectType.Table: result = Context.Table; break;
                 case ObjectType.Level: result = Context.Level; break;
+                case ObjectType.KPI: result = Context.KPI; break;
                 case ObjectType.Column:
                 case ObjectType.Measure:
                 case ObjectType.Hierarchy:
@@ -332,10 +340,10 @@ namespace TabularEditor.UI
         }
 
         public UITreeSelection(IReadOnlyCollection<TreeNodeAdv> selectedNodes) : 
-            base(GetDeep(selectedNodes).Select(n => n.Tag).OfType<TabularNamedObject>())
+            base(GetDeep(selectedNodes).Select(n => n.Tag).OfType<ITabularNamedObject>().Where(n => !(n is Folder)))
         {
             _selectedNodes = selectedNodes;
-
+     
             if (selectedNodes.Count > 0)
             {
                 Context = GetNodeContext(selectedNodes.First());

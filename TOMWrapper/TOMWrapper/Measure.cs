@@ -28,44 +28,65 @@ namespace TabularEditor.TOMWrapper
             KPI = KPI.CreateFromMetadata(kpi, true);
             return KPI;
         }
+        public void RemoveKPI()
+        {
+            KPI = null;
+        }
 
+        private KPI KPIBackup;
         internal override void RemoveReferences()
         {
-            // TODO: Make sure KPIs can be deleted and undeleted - how do we even edit KPIs right now in Tabular Editor?
-            //if (KPI != null) KPI.Delete();
+            KPIBackup = KPI;
             base.RemoveReferences();
         }
 
-
-        /*public TabularNamedObject CloneTo(Table table, string newName = null, bool includeTranslations = true)
+        internal override void Reinit()
         {
-            Handler.BeginUpdate("duplicate measure");
-            var tom = MetadataObject.Clone();
-            ////tom.IsRemoved = false;
-            tom.Name = table.Measures.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-            var m = new Measure(tom);
-            table.Measures.Add(m);
-
-            if (includeTranslations)
+            if(KPIBackup != null)
             {
-                m.TranslatedDescriptions.CopyFrom(TranslatedDescriptions);
-                m.TranslatedDisplayFolders.CopyFrom(TranslatedDisplayFolders);
-                if (string.IsNullOrEmpty(newName))
-                    m.TranslatedNames.CopyFrom(TranslatedNames, n => n + " copy");
-                else
-                    m.TranslatedNames.CopyFrom(TranslatedNames, n => n.Replace(Name, newName));
+                Handler.WrapperLookup.Remove(KPIBackup.MetadataObject);
+                KPIBackup.MetadataObject = MetadataObject.KPI;
+                Handler.WrapperLookup.Add(KPIBackup.MetadataObject, KPIBackup);
             }
-            m.InPerspective.CopyFrom(InPerspective);
+            base.Reinit();
+        }
 
-            Handler.EndUpdate();
-
-            return m;
-        }*/
-
-        /*public override TabularNamedObject Clone(string newName = null, bool includeTranslations = true)
+        /// <summary>
+        /// Gets or sets the KPI of the Measure.
+        /// </summary>
+		[DisplayName("KPI")]
+        [Category("Other"), IntelliSense("The KPI of this Measure.")]
+        public KPI KPI
         {
-            return CloneTo(Table, newName, includeTranslations);
-        }*/
+            get
+            {
+                if (MetadataObject.KPI == null) return null;
+                return Handler.WrapperLookup[MetadataObject.KPI] as KPI;
+            }
+            set
+            {
+                var oldValue = KPI;
+                if (oldValue?.MetadataObject == value?.MetadataObject) return;
+                bool undoable = true;
+                bool cancel = false;
+                OnPropertyChanging("KPI", value, ref undoable, ref cancel);
+                if (cancel) return;
+
+                var newKPI = value?.MetadataObject;
+                if(newKPI != null && newKPI.IsRemoved)
+                {
+                    Handler.WrapperLookup.Remove(newKPI);
+                    newKPI = newKPI.Clone();
+                    value.MetadataObject = newKPI;
+                    Handler.WrapperLookup.Add(newKPI, value);
+                }
+
+                MetadataObject.KPI = newKPI;
+
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "KPI", oldValue, value));
+                OnPropertyChanged("KPI", oldValue, value);
+            }
+        }
 
         protected override void Init()
         {
@@ -83,6 +104,10 @@ namespace TabularEditor.TOMWrapper
             {
                 Handler.DoFixup(this, (string)newValue);
                 Handler.UndoManager.EndBatch();
+            }
+            if (propertyName == "KPI")
+            {
+                Handler.Tree.OnStructureChanged(this);
             }
 
             base.OnPropertyChanged(propertyName, oldValue, newValue);

@@ -93,6 +93,7 @@ namespace TabularEditor.TOMWrapper
         internal abstract void RenewMetadataObject();
         internal virtual void Undelete(ITabularObjectCollection collection) { }
         internal virtual void ReapplyReferences() { }
+        internal virtual void DeleteLinkedObjects(bool isChildOfDeleted) { }
         internal virtual void Reinit() { }
 
         protected virtual void OnPropertyChanged(string propertyName, object oldValue, object newValue)

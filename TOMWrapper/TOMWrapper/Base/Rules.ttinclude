@@ -3,6 +3,25 @@
 <#+
 
 class Rules {
+	public static bool IsDeletable(Type t) {
+		switch(t.Name) {
+			case "Table":
+			case "Measure":
+			case "DataColumn":
+			case "CalculatedColumn":
+			case "Hierarchy":
+			case "KPI":
+			case "Partition":
+			case "DataSource":
+			case "Perspective":
+			case "Culture":
+			case "Relationship":
+			case "ModelRole":
+				return true;
+			default:
+				return false;
+        }
+    }
 	public static bool IsTranslatable(Type t, bool includeAncestors = false) {
 		switch(t.Name) {
 			case "Model":
@@ -41,6 +60,7 @@ class Rules {
 
 	public static bool ShouldWrapProperty(PropertyInfo p, Type t)
     {
+		if(p.Name == "KPI") return false;
 		return p.Name != "Name" && (
 				Aliases.ContainsKey(p.PropertyType) ||
 				(p.Name != "Table" && p.PropertyType.IsClass && ObjectTypes.ContainsKey(p.PropertyType)) ||

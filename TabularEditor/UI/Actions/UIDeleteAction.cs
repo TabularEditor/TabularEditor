@@ -9,6 +9,7 @@ using System.Windows.Forms;
 namespace TabularEditor.UI
 {
     // TODO: Do we have duplicated Delete logic? The ModelActionManager also defines an action for deleting objects.
+    // Maybe this entire class can be removed.
 
     [StandardAction]
     public class UIDeleteAction: UIModelAction

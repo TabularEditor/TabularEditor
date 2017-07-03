@@ -18,6 +18,7 @@ namespace TabularEditor.TOMWrapper
 	public abstract partial class DataSource: TabularNamedObject
 			, IDescriptionObject
 			, IAnnotationObject
+			, IDeletableObject
 	{
 	    protected internal new TOM.DataSource MetadataObject { get { return base.MetadataObject as TOM.DataSource; } internal set { base.MetadataObject = value; } }
 

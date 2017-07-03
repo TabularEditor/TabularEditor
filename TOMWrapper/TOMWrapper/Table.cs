@@ -133,7 +133,7 @@ namespace TabularEditor.TOMWrapper
             return t;
         }*/
 
-        protected override void DeleteLinkedObjects(bool isChildOfDeleted)
+        internal override void DeleteLinkedObjects(bool isChildOfDeleted)
         {
             // Remove row-level-security for this table:
             RowLevelSecurity.Clear();

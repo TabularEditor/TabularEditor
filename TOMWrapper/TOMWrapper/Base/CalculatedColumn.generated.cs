@@ -17,6 +17,7 @@ namespace TabularEditor.TOMWrapper
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public partial class CalculatedColumn: Column
 			, IDAXExpressionObject
+			, IDeletableObject
 			, IClonableObject
 	{
 	    protected internal new TOM.CalculatedColumn MetadataObject { get { return base.MetadataObject as TOM.CalculatedColumn; } internal set { base.MetadataObject = value; } }

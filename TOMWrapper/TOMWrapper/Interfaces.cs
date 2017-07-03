@@ -36,6 +36,11 @@ namespace TabularEditor.TOMWrapper
         int MetadataIndex { get; }
     }
 
+    public interface IDeletableObject
+    {
+        void Delete();
+    }
+
 
     #region Common interfaces
     /// <summary>

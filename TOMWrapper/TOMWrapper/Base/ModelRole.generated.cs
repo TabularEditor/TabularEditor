@@ -18,6 +18,7 @@ namespace TabularEditor.TOMWrapper
 	public partial class ModelRole: TabularNamedObject
 			, IDescriptionObject
 			, IAnnotationObject
+			, IDeletableObject
 			, ITranslatableObject
 			, IClonableObject
 	{
