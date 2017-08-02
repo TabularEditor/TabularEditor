@@ -11,31 +11,87 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
   
-    /// <summary>
-	/// Base class declaration for ModelRoleMember
-	/// </summary>
+	/// <summary>
+///             Defines a user principal that belongs to the Role. It is a child of a Role object.
+///             </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public abstract partial class ModelRoleMember: TabularNamedObject
 			, IAnnotationObject
 	{
 	    protected internal new TOM.ModelRoleMember MetadataObject { get { return base.MetadataObject as TOM.ModelRoleMember; } internal set { base.MetadataObject = value; } }
 
+        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on this object."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+		public AnnotationCollection Annotations { get; private set; }
+		public string GetAnnotation(int index) {
+			return MetadataObject.Annotations[index].Value;
+		}
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.Find(name)?.Value;
+		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		}
+		public void SetAnnotation(int index, string value, bool undoable = true) {
+			var name = MetadataObject.Annotations[index].Name;
+			SetAnnotation(name, value, undoable);
+		}
+		public string GetNewAnnotationName() {
+			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
 		public void SetAnnotation(string name, string value, bool undoable = true) {
-			if(MetadataObject.Annotations.Contains(name)) {
-				MetadataObject.Annotations[name].Value = value;
-			} else {
-				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+			if(name == null) name = GetNewAnnotationName();
+
+			if(value == null) {
+				// Remove annotation if set to null:
+				RemoveAnnotation(name, undoable);
+				return;
 			}
-			if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value));
+
+			if(GetAnnotation(name) == value) return;
+			bool undoable2 = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Change existing annotation:
+				var oldValue = GetAnnotation(name);
+				MetadataObject.Annotations[name].Value = value;
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new annotation:
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+			}
+
 		}
-		        /// <summary>
-        /// Gets or sets the MemberName of the ModelRoleMember.
-        /// </summary>
+		public void RemoveAnnotation(string name, bool undoable = true) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Get current value:
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				if (cancel) return;
+
+				var oldValue = MetadataObject.Annotations[name].Value;
+				MetadataObject.Annotations.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			}
+		}
+		public int GetAnnotationsCount() {
+			return MetadataObject.Annotations.Count;
+		}
+		public IEnumerable<string> GetAnnotations() {
+			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		/// <summary>
+///             Gets or sets the member name.
+///             </summary><returns>The member name.</returns>
 		[DisplayName("Member Name")]
-		[Category("Other"),IntelliSense("The Member Name of this ModelRoleMember.")]
+		[Category("Other"),Description(@"Gets or sets the member name."),IntelliSense("The Member Name of this ModelRoleMember.")]
 		public string MemberName {
 			get {
 			    return MetadataObject.MemberName;
@@ -45,19 +101,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("MemberName", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.MEMBERNAME, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.MemberName = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "MemberName", oldValue, value));
-				OnPropertyChanged("MemberName", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MEMBERNAME, oldValue, value));
+				OnPropertyChanged(Properties.MEMBERNAME, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeMemberName() { return false; }
-        /// <summary>
-        /// Gets or sets the MemberID of the ModelRoleMember.
-        /// </summary>
+/// <summary>Gets or sets the member identifier.</summary><returns>The member identifier.</returns>
 		[DisplayName("Member ID")]
-		[Category("Other"),IntelliSense("The Member ID of this ModelRoleMember.")]
+		[Category("Other"),Description(@"Gets or sets the member identifier."),IntelliSense("The Member ID of this ModelRoleMember.")]
 		public string MemberID {
 			get {
 			    return MetadataObject.MemberID;
@@ -67,19 +121,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("MemberID", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.MEMBERID, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.MemberID = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "MemberID", oldValue, value));
-				OnPropertyChanged("MemberID", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MEMBERID, oldValue, value));
+				OnPropertyChanged(Properties.MEMBERID, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeMemberID() { return false; }
-        /// <summary>
-        /// Gets or sets the Role of the ModelRoleMember.
-        /// </summary>
+/// <summary>Gets or sets the model role object.</summary><returns>The model role object.</returns>
 		[DisplayName("Role")]
-		[Category("Other"),IntelliSense("The Role of this ModelRoleMember.")]
+		[Category("Other"),Description(@"Gets or sets the model role object."),IntelliSense("The Role of this ModelRoleMember.")]
 		public ModelRole Role {
 			get {
 				if (MetadataObject.Role == null) return null;
@@ -106,6 +158,9 @@ namespace TabularEditor.TOMWrapper
 
 		private void InternalInit()
 		{
+			
+			// Create indexer for annotations:
+			Annotations = new AnnotationCollection(this);
 		}
 
 
@@ -118,7 +173,7 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
-				case "Parent":
+				case Properties.PARENT:
 					return false;
 				
 				default:

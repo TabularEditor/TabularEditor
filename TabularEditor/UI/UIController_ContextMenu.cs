@@ -153,7 +153,7 @@ namespace TabularEditor.UI
             if (act == null) return;
 
             act.Execute((act as IModelMultiAction)?.ArgNames[item.Name]);
-            UI.PropertyGrid.Refresh();
+            //UI.PropertyGrid.Refresh();
         }
 
     }

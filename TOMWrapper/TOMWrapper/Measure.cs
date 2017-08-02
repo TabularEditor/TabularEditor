@@ -11,11 +11,17 @@ namespace TabularEditor.TOMWrapper
     public partial class Measure : IDaxObject, ITabularObjectContainer
     {
         [Browsable(false)]
-        public Dictionary<IDaxObject, List<Dependency>> Dependencies { get; internal set; } = new Dictionary<IDaxObject, List<Dependency>>();
+        public Dictionary<IDaxObject, List<Dependency>> Dependencies { get; } = new Dictionary<IDaxObject, List<Dependency>>();
         [Browsable(false)]
-        public HashSet<IDAXExpressionObject> Dependants { get; private set; } = new HashSet<IDAXExpressionObject>();
+        public HashSet<IDAXExpressionObject> Dependants { get; } = new HashSet<IDAXExpressionObject>();
 
-
+        public override bool CanDelete(out string message)
+        {
+            message = string.Empty;
+            if (Dependants.Count > 0) message += Messages.ReferencedByDAX;
+            if (message == string.Empty) message = null;
+            return true;
+        }
 
         internal override ITabularObjectCollection GetCollectionForChild(TabularObject child)
         {
@@ -95,17 +101,17 @@ namespace TabularEditor.TOMWrapper
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
-            if (propertyName == "Expression")
+            if (propertyName == Properties.EXPRESSION)
             {
                 NeedsValidation = true;
                 Handler.BuildDependencyTree(this);
             }
-            if (propertyName == "Name" && Handler.AutoFixup)
+            if (propertyName == Properties.NAME && Handler.AutoFixup)
             {
-                Handler.DoFixup(this, (string)newValue);
+                Handler.DoFixup(this);
                 Handler.UndoManager.EndBatch();
             }
-            if (propertyName == "KPI")
+            if (propertyName == Properties.KPI)
             {
                 Handler.Tree.OnStructureChanged(this);
             }
@@ -115,13 +121,13 @@ namespace TabularEditor.TOMWrapper
 
         protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
         {
-            if (propertyName == "Name")
+            if (propertyName == Properties.NAME)
             {
                 Handler.BuildDependencyTree();
 
                 // When formula fixup is enabled, we need to begin a new batch of undo operations, as this
                 // name change could result in expression changes on multiple objects:
-                if (Handler.AutoFixup) Handler.UndoManager.BeginBatch("Name change");
+                if (Handler.AutoFixup) Handler.UndoManager.BeginBatch("Set Property 'Name'");
             }
             base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
         }
@@ -133,9 +139,11 @@ namespace TabularEditor.TOMWrapper
         {
             switch (propertyName)
             {
-                case "FormatString": return DataType != TOM.DataType.String;
-                case "DetailRowsExpression":
+                case Properties.FORMATSTRING: return DataType != TOM.DataType.String && Description != "hej";
+#if CL1400
+                case Properties.DETAILROWSEXPRESSION:
                     return Model.Database.CompatibilityLevel >= 1400;
+#endif
                 default: return true;
             }
         }

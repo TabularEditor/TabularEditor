@@ -260,7 +260,6 @@ namespace TabularEditor.TOMWrapper
         protected override void SetInPerspective(Perspective perspective, bool included)
         {
             var c = Column.MetadataObject;
-            var t = Column.Table;
             var pcs = (Column.Table.InPerspective as PerspectiveTableIndexer).EnsurePTExists(perspective).PerspectiveColumns;
 
             if (included)
@@ -297,7 +296,6 @@ namespace TabularEditor.TOMWrapper
         protected override void SetInPerspective(Perspective perspective, bool included)
         {
             var m = Measure.MetadataObject;
-            var t = Measure.Table;
             var pms = (Measure.Table.InPerspective as PerspectiveTableIndexer).EnsurePTExists(perspective).PerspectiveMeasures;
 
             if (included)
@@ -335,7 +333,6 @@ namespace TabularEditor.TOMWrapper
         protected override void SetInPerspective(Perspective perspective, bool included)
         {
             var h = Hierarchy.MetadataObject;
-            var t = Hierarchy.Table;
             var phs = (Hierarchy.Table.InPerspective as PerspectiveTableIndexer).EnsurePTExists(perspective).PerspectiveHierarchies;
 
             if (included)

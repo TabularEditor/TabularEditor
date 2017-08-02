@@ -39,14 +39,14 @@ namespace TabularEditor.TOMWrapper
 
         protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
         {
-            if (propertyName == "Ordinal")
+            if (propertyName == Properties.ORDINAL)
             {
                 // No automatic handling of Ordinal changes. We will handle it manually in the hierarchy's FixLevelOrder() method.
                 cancel = true;
                 this.MetadataObject.Ordinal = (int)newValue;
                 Hierarchy.FixLevelOrder(this, (int)newValue);
             }
-            if (propertyName == "Column")
+            if (propertyName == Properties.COLUMN)
             {
                 if (newValue == null && !Handler.UndoManager.UndoInProgress) throw new ArgumentNullException("Column");
                 if (Hierarchy.Levels.Where(l => l != this).Any(l => l.Column == newValue))
@@ -57,7 +57,7 @@ namespace TabularEditor.TOMWrapper
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
-            if (propertyName == "Column")
+            if (propertyName == Properties.COLUMN)
             {
                 Handler.UpdateObject(this);
             }

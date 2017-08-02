@@ -29,14 +29,15 @@ namespace TabularEditor.UndoFramework
 
         public string GetSummary()
         {
-            return "set annotation on " + (Obj as ITabularNamedObject).Name ?? Obj.GetTypeName();
+            return "set annotation on " + ((Obj as ITabularNamedObject).Name ?? Obj.GetTypeName()) + "." + name + ": " + oldValue + " -> " + newValue;
         }
 
-        public UndoAnnotationAction(IAnnotationObject obj, string annotationName, string newValue)
+        public UndoAnnotationAction(IAnnotationObject obj, string annotationName, string newValue, string oldValue)
         {
-            this.oldValue = obj.GetAnnotation(annotationName);
+            Obj = obj;
             this.name = annotationName;
             this.newValue = newValue;
+            this.oldValue = oldValue;
         }
 
         public void Redo()

@@ -123,7 +123,7 @@ namespace TabularEditor.UI.Actions
             {
                 ui.EditName(EditObjectName);
             }
-            ui.Refresh();
+            //ui.Refresh();
         }
 
         public Context ValidContexts { get; set; }

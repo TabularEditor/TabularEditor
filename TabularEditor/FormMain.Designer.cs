@@ -66,6 +66,8 @@
             this.actComment = new Crad.Windows.Forms.Actions.Action();
             this.actUncomment = new Crad.Windows.Forms.Actions.Action();
             this.actNewModel = new Crad.Windows.Forms.Actions.Action();
+            this.actOpenScript = new Crad.Windows.Forms.Actions.Action();
+            this.actSaveScript = new Crad.Windows.Forms.Actions.Action();
             this.toolStripButton8 = new System.Windows.Forms.ToolStripButton();
             this.fileToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.fromDBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -115,6 +117,8 @@
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.saveToFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -153,6 +157,7 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.txtAdvanced = new FastColoredTextBoxNS.FastColoredTextBox();
             this.toolStrip4 = new System.Windows.Forms.ToolStrip();
+            this.toolStripSeparator18 = new System.Windows.Forms.ToolStripSeparator();
             this.btnUndoErrors = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.samplesMenu = new System.Windows.Forms.ToolStripDropDownButton();
@@ -258,6 +263,8 @@
             actionsMain.Actions.Add(this.actComment);
             actionsMain.Actions.Add(this.actUncomment);
             actionsMain.Actions.Add(this.actNewModel);
+            actionsMain.Actions.Add(this.actOpenScript);
+            actionsMain.Actions.Add(this.actSaveScript);
             actionsMain.ContainerControl = this;
             // 
             // actToggleDisplayFolders
@@ -536,6 +543,18 @@
             this.actNewModel.ToolTipText = "Creates a new blank Model.bim file";
             this.actNewModel.Execute += new System.EventHandler(this.actNewModel_Execute);
             // 
+            // actOpenScript
+            // 
+            this.actOpenScript.Image = global::TabularEditor.Resources.Open;
+            this.actOpenScript.Text = "Open script";
+            this.actOpenScript.ToolTipText = "Opens a C# script from a file";
+            // 
+            // actSaveScript
+            // 
+            this.actSaveScript.Image = global::TabularEditor.Resources.Save;
+            this.actSaveScript.Text = "Save script";
+            this.actSaveScript.ToolTipText = "Saves the script to a file";
+            // 
             // toolStripButton8
             // 
             actionsMain.SetAction(this.toolStripButton8, this.actOpenFile);
@@ -573,7 +592,6 @@
             // exitToolStripMenuItem
             // 
             actionsMain.SetAction(this.exitToolStripMenuItem, this.actExit);
-            this.exitToolStripMenuItem.AutoToolTip = true;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
@@ -698,6 +716,7 @@
             // btnSave
             // 
             actionsMain.SetAction(this.btnSave, this.actSave);
+            this.btnSave.AutoToolTip = false;
             this.btnSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnSave.Image = global::TabularEditor.Resources.Save;
             this.btnSave.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -708,6 +727,7 @@
             // saveToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveToolStripMenuItem, this.actSave);
+            this.saveToolStripMenuItem.AutoToolTip = true;
             this.saveToolStripMenuItem.Image = global::TabularEditor.Resources.Save;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+S";
@@ -718,6 +738,7 @@
             // saveAsToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveAsToolStripMenuItem, this.actSaveAs);
+            this.saveAsToolStripMenuItem.AutoToolTip = true;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.saveAsToolStripMenuItem.Text = "Save As...";
@@ -725,7 +746,6 @@
             // undoToolStripMenuItem
             // 
             actionsMain.SetAction(this.undoToolStripMenuItem, this.actUndo);
-            this.undoToolStripMenuItem.AutoToolTip = true;
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Z";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
@@ -735,7 +755,6 @@
             // redoToolStripMenuItem
             // 
             actionsMain.SetAction(this.redoToolStripMenuItem, this.actRedo);
-            this.redoToolStripMenuItem.AutoToolTip = true;
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Y";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
@@ -829,7 +848,6 @@
             // expandAllToolStripMenuItem
             // 
             actionsMain.SetAction(this.expandAllToolStripMenuItem, this.actExpandAll);
-            this.expandAllToolStripMenuItem.AutoToolTip = true;
             this.expandAllToolStripMenuItem.Image = global::TabularEditor.Resources.ExpandAll;
             this.expandAllToolStripMenuItem.Name = "expandAllToolStripMenuItem";
             this.expandAllToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
@@ -838,7 +856,6 @@
             // collapseAllToolStripMenuItem
             // 
             actionsMain.SetAction(this.collapseAllToolStripMenuItem, this.actCollapseAll);
-            this.collapseAllToolStripMenuItem.AutoToolTip = true;
             this.collapseAllToolStripMenuItem.Image = global::TabularEditor.Resources.CollapseAll;
             this.collapseAllToolStripMenuItem.Name = "collapseAllToolStripMenuItem";
             this.collapseAllToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
@@ -871,7 +888,6 @@
             // btnFind
             // 
             actionsMain.SetAction(this.btnFind, this.actFind);
-            this.btnFind.AutoToolTip = false;
             this.btnFind.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnFind.Image = global::TabularEditor.Resources.Find;
             this.btnFind.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -882,7 +898,6 @@
             // btnReplace
             // 
             actionsMain.SetAction(this.btnReplace, this.actReplace);
-            this.btnReplace.AutoToolTip = false;
             this.btnReplace.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnReplace.Image = global::TabularEditor.Resources.Replace;
             this.btnReplace.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -893,7 +908,6 @@
             // findToolStripMenuItem
             // 
             actionsMain.SetAction(this.findToolStripMenuItem, this.actFind);
-            this.findToolStripMenuItem.AutoToolTip = true;
             this.findToolStripMenuItem.Image = global::TabularEditor.Resources.Find;
             this.findToolStripMenuItem.Name = "findToolStripMenuItem";
             this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
@@ -903,7 +917,6 @@
             // replaceToolStripMenuItem
             // 
             actionsMain.SetAction(this.replaceToolStripMenuItem, this.actReplace);
-            this.replaceToolStripMenuItem.AutoToolTip = true;
             this.replaceToolStripMenuItem.Image = global::TabularEditor.Resources.Replace;
             this.replaceToolStripMenuItem.Name = "replaceToolStripMenuItem";
             this.replaceToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.H)));
@@ -934,6 +947,7 @@
             // btnRun
             // 
             actionsMain.SetAction(this.btnRun, this.actExecuteScript);
+            this.btnRun.AutoToolTip = false;
             this.btnRun.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnRun.Image = global::TabularEditor.Resources.Run;
             this.btnRun.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -953,7 +967,6 @@
             // btnSaveCustomAction
             // 
             actionsMain.SetAction(this.btnSaveCustomAction, this.actSaveCustomAction);
-            this.btnSaveCustomAction.AutoToolTip = false;
             this.btnSaveCustomAction.Image = global::TabularEditor.Resources.action_add_16xLG;
             this.btnSaveCustomAction.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSaveCustomAction.Name = "btnSaveCustomAction";
@@ -1087,7 +1100,6 @@
             // saveToFolderToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveToFolderToolStripMenuItem, this.actSaveToFolder);
-            this.saveToFolderToolStripMenuItem.AutoToolTip = true;
             this.saveToFolderToolStripMenuItem.Name = "saveToFolderToolStripMenuItem";
             this.saveToFolderToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.saveToFolderToolStripMenuItem.Text = "Save to Folder...";
@@ -1099,6 +1111,30 @@
             this.newModelToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.newModelToolStripMenuItem.Text = "New model";
             this.newModelToolStripMenuItem.ToolTipText = "Creates a new blank Model.bim file";
+            // 
+            // toolStripButton3
+            // 
+            actionsMain.SetAction(this.toolStripButton3, this.actSaveScript);
+            this.toolStripButton3.AutoToolTip = false;
+            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton3.Image = global::TabularEditor.Resources.Save;
+            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton3.Name = "toolStripButton3";
+            this.toolStripButton3.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton3.Text = "Save script";
+            this.toolStripButton3.ToolTipText = "Saves the script to a file";
+            // 
+            // toolStripButton4
+            // 
+            actionsMain.SetAction(this.toolStripButton4, this.actOpenScript);
+            this.toolStripButton4.AutoToolTip = false;
+            this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton4.Image = global::TabularEditor.Resources.Open;
+            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton4.Name = "toolStripButton4";
+            this.toolStripButton4.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton4.Text = "Open script";
+            this.toolStripButton4.ToolTipText = "Opens a C# script from a file";
             // 
             // preferencesToolStripMenuItem
             // 
@@ -1498,6 +1534,7 @@
             this.txtAdvanced.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtAdvanced.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
             this.txtAdvanced.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtAdvanced.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtAdvanced.IsReplaceMode = false;
             this.txtAdvanced.Language = FastColoredTextBoxNS.Language.CSharp;
             this.txtAdvanced.LeftBracket = '(';
@@ -1517,6 +1554,9 @@
             // 
             this.toolStrip4.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip4.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButton4,
+            this.toolStripButton3,
+            this.toolStripSeparator18,
             this.btnRun,
             this.btnUndoErrors,
             this.toolStripSeparator11,
@@ -1528,6 +1568,11 @@
             this.toolStrip4.Size = new System.Drawing.Size(445, 25);
             this.toolStrip4.TabIndex = 15;
             this.toolStrip4.Text = "toolStrip4";
+            // 
+            // toolStripSeparator18
+            // 
+            this.toolStripSeparator18.Name = "toolStripSeparator18";
+            this.toolStripSeparator18.Size = new System.Drawing.Size(6, 25);
             // 
             // btnUndoErrors
             // 
@@ -2016,13 +2061,8 @@
         private System.Windows.Forms.ToolStripButton btnRun;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
         private TabularEditor.UI.UIModelAction actToggleDisplayFolders;
-        private TabularEditor.UI.UIModelAction actToggleHidden;
         private TabularEditor.UI.UIModelAction actToggleMetadataOrder;
-        private TabularEditor.UI.UIModelAction actToggleMeasures;
-        private TabularEditor.UI.UIModelAction actToggleColumns;
-        private TabularEditor.UI.UIModelAction actToggleHierarchies;
         private TabularEditor.UI.UIModelAction actToggleInfoColumns;
-        private TabularEditor.UI.UIModelAction actToggleFilter;
         private TabularEditor.UI.UIModelAction actExpressionAcceptEdit;
         private TabularEditor.UI.UIModelAction actExpressionCancelEdit;
         private Crad.Windows.Forms.Actions.Action actOpenFile;
@@ -2138,7 +2178,6 @@
         private TabularEditor.UI.Actions.CutAction actCut;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
         private System.Windows.Forms.ToolStripButton tbShowAllObjectTypes;
-        private UI.UIModelAction actToggleAllObjectTypes;
         private System.Windows.Forms.ToolStripMenuItem showAllObjectTypesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToFolderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
@@ -2156,6 +2195,17 @@
         private UI.UIModelAction actSaveToFolder;
         private Crad.Windows.Forms.Actions.Action actNewModel;
         private System.Windows.Forms.ToolStripMenuItem newModelToolStripMenuItem;
+        private Crad.Windows.Forms.Actions.Action actOpenScript;
+        private Crad.Windows.Forms.Actions.Action actSaveScript;
+        private System.Windows.Forms.ToolStripButton toolStripButton4;
+        private System.Windows.Forms.ToolStripButton toolStripButton3;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator18;
+        public UI.UIModelAction actToggleAllObjectTypes;
+        public UI.UIModelAction actToggleHidden;
+        public UI.UIModelAction actToggleMeasures;
+        public UI.UIModelAction actToggleColumns;
+        public UI.UIModelAction actToggleHierarchies;
+        public UI.UIModelAction actToggleFilter;
     }
 }
 

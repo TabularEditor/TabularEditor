@@ -11,20 +11,20 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
   
-    /// <summary>
-	/// Base class declaration for ExternalModelRoleMember
-	/// </summary>
+	/// <summary>
+///             For internal use only.
+///             </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public partial class ExternalModelRoleMember: ModelRoleMember
 			, IClonableObject
 	{
 	    protected internal new TOM.ExternalModelRoleMember MetadataObject { get { return base.MetadataObject as TOM.ExternalModelRoleMember; } internal set { base.MetadataObject = value; } }
 
-        /// <summary>
-        /// Gets or sets the IdentityProvider of the ExternalModelRoleMember.
-        /// </summary>
+/// <summary>
+///             Gets or sets the identity provider.
+///             </summary><returns>The identity provider.</returns>
 		[DisplayName("Identity Provider")]
-		[Category("Other"),IntelliSense("The Identity Provider of this ExternalModelRoleMember.")]
+		[Category("Other"),Description(@"Gets or sets the identity provider."),IntelliSense("The Identity Provider of this ExternalModelRoleMember.")]
 		public string IdentityProvider {
 			get {
 			    return MetadataObject.IdentityProvider;
@@ -34,19 +34,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("IdentityProvider", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.IDENTITYPROVIDER, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.IdentityProvider = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "IdentityProvider", oldValue, value));
-				OnPropertyChanged("IdentityProvider", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.IDENTITYPROVIDER, oldValue, value));
+				OnPropertyChanged(Properties.IDENTITYPROVIDER, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeIdentityProvider() { return false; }
-        /// <summary>
-        /// Gets or sets the MemberType of the ExternalModelRoleMember.
-        /// </summary>
+/// <summary>Gets or sets the external role for the member type property.</summary><returns>The role member type property.</returns>
 		[DisplayName("Member Type")]
-		[Category("Other"),IntelliSense("The Member Type of this ExternalModelRoleMember.")]
+		[Category("Other"),Description(@"Gets or sets the external role for the member type property."),IntelliSense("The Member Type of this ExternalModelRoleMember.")]
 		public TOM.RoleMemberType MemberType {
 			get {
 			    return MetadataObject.MemberType;
@@ -56,11 +54,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("MemberType", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.MEMBERTYPE, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.MemberType = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "MemberType", oldValue, value));
-				OnPropertyChanged("MemberType", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MEMBERTYPE, oldValue, value));
+				OnPropertyChanged(Properties.MEMBERTYPE, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeMemberType() { return false; }
@@ -120,6 +118,7 @@ namespace TabularEditor.TOMWrapper
 			obj.InternalInit();
 			obj.Init();
 
+
             Handler.EndUpdate();
 
             return obj;
@@ -169,7 +168,7 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
-				case "Parent":
+				case Properties.PARENT:
 					return false;
 				
 				default:

@@ -22,17 +22,17 @@ namespace PluginTest
 
         public void RegisterActions(Action<string, Action> registerCallback)
         {
-            registerCallback("MyPlugin\\Display Name", Action1);
-            registerCallback("MyPlugin\\Change Name", Action2);
+            registerCallback("MyPlugin\\Display Name", SayHello);
+            registerCallback("MyPlugin\\Change Name", ChangeModelName);
         }
 
-        public void Action1()
+        public void SayHello()
         {
             MessageBox.Show("Hello from plugin!\n\nCurrently loaded model name:" + Handler.Model?.Name);
 
         }
 
-        public void Action2()
+        public void ChangeModelName()
         {
             Model.Name = "test";
         }

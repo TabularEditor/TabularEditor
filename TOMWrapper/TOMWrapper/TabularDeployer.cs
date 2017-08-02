@@ -23,7 +23,7 @@ namespace TabularEditor.TOMWrapper
 
             string result;
 
-            if (!server.Databases.Contains(targetDatabaseID)) result = DeployNewTMSL(db, server, targetDatabaseID, options);
+            if (!server.Databases.Contains(targetDatabaseID)) result = DeployNewTMSL(db, targetDatabaseID, options);
             else result = DeployExistingTMSL(db, server, targetDatabaseID, options);
 
             // TODO: Check if invalid CalculatedTableColumn perspectives/translations can give us any issues here
@@ -115,7 +115,7 @@ namespace TabularEditor.TOMWrapper
             else return string.Format("{0} '{1}'", ((ObjectType)obj.ObjectType).GetTypeName(), obj.Name);
         }
 
-        private static string DeployNewTMSL(TOM.Database db, TOM.Server server, string newDbID, DeploymentOptions options)
+        private static string DeployNewTMSL(TOM.Database db, string newDbID, DeploymentOptions options)
         {
             var rawScript = TOM.JsonScripter.ScriptCreate(db);
             var jObj = JObject.Parse(rawScript);

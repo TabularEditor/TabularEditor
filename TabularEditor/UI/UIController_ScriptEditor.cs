@@ -106,6 +106,7 @@ namespace TabularEditor.UI
             var script = !string.IsNullOrEmpty(UI.ScriptEditor.SelectedText) ? UI.ScriptEditor.SelectedText : UI.ScriptEditor.Text;
             var offset = (!string.IsNullOrEmpty(UI.ScriptEditor.SelectedText) ? UI.ScriptEditor.Selection.FromLine : 0);
 
+            Scripting.ScriptOutputForm.Reset();
             var dyn = ScriptEngine.ScriptAction(script, out result);
             if (result.Errors.Count > 0) {
                 foreach(System.CodeDom.Compiler.CompilerError err in result.Errors)
@@ -159,8 +160,8 @@ namespace TabularEditor.UI
             }
 
             Cursor.Current = Cursors.Default;
-            UI.PropertyGrid.Refresh();
-            UI.TreeView.Refresh();
+            //UI.PropertyGrid.Refresh();
+            //UI.TreeView.Refresh();
         }
 
 

@@ -23,7 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet />
+    <CodeAnalysisRuleSet>LocateDeadCode.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -66,12 +66,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IPlugin.cs" />
+    <Compile Include="Messages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
     <Compile Include="PropertyGridUI\AllRelationshipConverter.cs" />
     <Compile Include="PropertyGridUI\AllHierarchyConverter.cs" />
+    <Compile Include="PropertyGridUI\AnnotationCollectionEditor.cs" />
+    <Compile Include="PropertyGridUI\ClonableObjectCollectionEditor.cs" />
+    <Compile Include="PropertyGridUI\DesignerHost.cs" />
     <Compile Include="PropertyGridUI\FormatStringConverter.cs" />
     <Compile Include="PropertyGridUI\KPITrendGraphicConverter.cs" />
     <Compile Include="PropertyGridUI\KPIStatusGraphicConverter.cs" />
-    <Compile Include="PropertyGridUI\PerspectiveCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CustomDialogEditor.cs" />
     <Compile Include="PropertyGridUI\PartitionCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\RefreshGridCollectionEditor.cs" />
@@ -83,8 +90,10 @@
     <Compile Include="PropertyGridUI\AllColumnConverter.cs" />
     <Compile Include="PropertyGridUI\DataSourceConverter.cs" />
     <Compile Include="PropertyGridUI\TableColumnConverter.cs" />
+    <Compile Include="PropertyGridUI\VirtualObjectConverter.cs" />
     <Compile Include="StringHelper.cs" />
     <Compile Include="TextServices\DAXLexer.cs" />
+    <Compile Include="TOMWrapper\AnnotationCollection.cs" />
     <Compile Include="TOMWrapper\Base\CalculatedColumn.generated.cs">
       <DependentUpon>WrapperBase.tt</DependentUpon>
     </Compile>
@@ -125,6 +134,9 @@
       <DependentUpon>WrapperBase.tt</DependentUpon>
     </Compile>
     <Compile Include="TOMWrapper\Base\ModelRoleMember.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TOMWrapper\Base\Properties.generated.cs">
       <DependentUpon>WrapperBase.tt</DependentUpon>
     </Compile>
     <Compile Include="TOMWrapper\Base\ProviderDataSource.generated.cs">
@@ -207,6 +219,7 @@
     <Compile Include="TOMWrapper\TranslationIndexer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="LocateDeadCode.ruleset" />
     <None Include="packages.config" />
     <None Include="TOMWrapper\Base\Manager.ttinclude" />
     <None Include="TOMWrapper\Base\Rules.ttinclude">
@@ -221,6 +234,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Messages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

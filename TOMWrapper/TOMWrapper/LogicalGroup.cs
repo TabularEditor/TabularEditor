@@ -15,14 +15,41 @@ namespace TabularEditor.TOMWrapper
         public TranslationIndexer TranslatedNames { get { return null; } }
         public ObjectType ObjectType { get { return ObjectType.Group; } }
         [Browsable(false)]
-        public Model Model { get; set; }
+        public Model Model { get { return TabularModelHandler.Singleton.Model; } }
         public event PropertyChangedEventHandler PropertyChanged;
 
         public IEnumerable<ITabularNamedObject> GetChildren()
         {
-            return Enumerable.Empty<ITabularNamedObject>();
+            switch (Name)
+            {
+                case "Tables": return Model.Tables;
+                case "Roles": return Model.Roles;
+                case "Perspectives": return Model.Perspectives;
+                case "Translations": return Model.Cultures;
+                case "Relationships": return Model.Relationships;
+                case "Data Sources": return Model.DataSources;
+                case "Table Partitions": return Model.Tables.Where(t => !(t is CalculatedTable)).Select(t => t.PartitionViewTable);
+            }
+            return Enumerable.Empty<TabularNamedObject>();
         }
 
+        public bool CanDelete()
+        {
+            return false;
+        }
+
+        public bool CanDelete(out string message)
+        {
+            message = Messages.CannotDeleteObject;
+            return false;
+        }
+
+        public void Delete()
+        {
+            throw new NotSupportedException();
+        }
+
+        [Browsable(false)]
         public int MetadataIndex {
             get {
                 return -1;

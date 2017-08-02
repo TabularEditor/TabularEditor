@@ -10,6 +10,7 @@ using Antlr4.Runtime;
 using System.Diagnostics;
 using System.Text;
 using Newtonsoft.Json;
+using System.ComponentModel;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -46,9 +47,19 @@ namespace TabularEditor.TOMWrapper
         }
     }
 
+    public class ObjectDeletingEventArgs
+    {
+        public bool Cancel { get; set; } = false;
+        public TabularObject TabularObject { get; private set; }
+        public ObjectDeletingEventArgs(TabularObject tabularObject)
+        {
+            TabularObject = tabularObject;
+        }
+    }
+
     public delegate void ObjectChangingEventHandler(object sender, ObjectChangingEventArgs e);
     public delegate void ObjectChangedEventHandler(object sender, ObjectChangedEventArgs e);
-    
+    public delegate void ObjectDeletingEventHandler(object sender, ObjectDeletingEventArgs e);
 
     public enum DeploymentStatus
     {
@@ -163,7 +174,7 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="newName"></param>
-        public void DoFixup(IDaxObject obj, string newName)
+        public void DoFixup(IDaxObject obj)
         {
             //foreach (var d in obj.Model.Tables.OfType<IExpressionObject>().Concat(obj.Model.Tables.SelectMany(t => t.GetChildren().OfType<IExpressionObject>())))
             foreach (var d in obj.Dependants.ToList())
@@ -700,8 +711,6 @@ namespace TabularEditor.TOMWrapper
                 var tables = new JArray();
                 foreach (var tablePath in Directory.GetDirectories(path + "\\tables"))
                 {
-                    var tableName = new DirectoryInfo(tablePath).Name;
-
                     var filesInTableFolder = Directory.GetFiles(tablePath, "*.json");
                     if (filesInTableFolder.Length != 1) throw new FileNotFoundException(string.Format("Folder '{0}' is expected to contain exactly one .json file.", tablePath));
                     var tableFile = filesInTableFolder[0];
@@ -871,8 +880,6 @@ namespace TabularEditor.TOMWrapper
                     if (!fi.Directory.Exists) fi.Directory.Create();
                     WriteIfChanged(p, t.ToString(Newtonsoft.Json.Formatting.Indented));
 
-                    var table = Model.Tables[t["name"].ToString()].MetadataObject;
-
                     if (measures != null) OutArray(tablePath, "measures", measures, options);
                     if (columns != null) OutArray(tablePath, "columns", columns, options);
                     if (hierarchies != null) OutArray(tablePath, "hierarchies", hierarchies, options);
@@ -944,6 +951,14 @@ namespace TabularEditor.TOMWrapper
 
         public event ObjectChangingEventHandler ObjectChanging;
         public event ObjectChangedEventHandler ObjectChanged;
+        public event ObjectDeletingEventHandler ObjectDeleting;
+
+        internal void DoObjectDeleting(TabularObject obj, ref bool cancel)
+        {
+            var e = new ObjectDeletingEventArgs(obj);
+            ObjectDeleting?.Invoke(this, e);
+            cancel = e.Cancel;
+        }
 
         internal void DoObjectChanging(TabularObject obj, string propertyName, object newValue, ref bool cancel)
         {
@@ -1055,14 +1070,6 @@ namespace TabularEditor.TOMWrapper
         {
 
             Tree.OnNodesChanged(obj);
-        }
-
-        internal void UpdateTables()
-        {
-            if (Tree.Options.HasFlag(LogicalTreeOptions.AllObjectTypes))
-                Tree.OnStructureChanged(Model.GroupTables);
-            else
-                Tree.OnStructureChanged(Model);
         }
 
         internal void UpdateFolders(Table table)

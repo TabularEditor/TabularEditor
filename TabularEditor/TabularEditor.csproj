@@ -160,7 +160,13 @@
     </Compile>
     <Compile Include="CustomCombobox\OldNewEvent.cs" />
     <Compile Include="CustomCombobox\PopupControl.cs" />
-    <Compile Include="ScriptHelper.cs" />
+    <Compile Include="Scripting\ScriptHelper.cs" />
+    <Compile Include="Scripting\ScriptOutputForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Scripting\ScriptOutputForm.Designer.cs">
+      <DependentUpon>ScriptOutputForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UIServices\DynamicLinq.cs" />
     <Compile Include="UIServices\PowerBIHelper.cs" />
     <Compile Include="UIServices\Preferences.cs" />
@@ -168,7 +174,7 @@
     <Compile Include="UIServices\UpdateService.cs" />
     <Compile Include="UIServices\DaxFormatter.cs" />
     <Compile Include="GUIConsoleWriter.cs" />
-    <Compile Include="ScriptEngine.cs" />
+    <Compile Include="Scripting\ScriptEngine.cs" />
     <Compile Include="PropertyGrid\NavigatablePropertyGrid.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -466,6 +472,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="BestPracticeAnalyzer\BPAForm.resx">
       <DependentUpon>BPAForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Scripting\ScriptOutputForm.resx">
+      <DependentUpon>ScriptOutputForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\CultureSelectDialog.resx">
       <DependentUpon>CultureSelectDialog.cs</DependentUpon>

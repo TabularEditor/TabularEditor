@@ -11,21 +11,18 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
   
-    /// <summary>
-	/// Base class declaration for DataColumn
-	/// </summary>
+	/// <summary>
+///             Represents a column in a Table that gets data from an external data source.
+///             </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public partial class DataColumn: Column
-			, IDeletableObject
 			, IClonableObject
 	{
 	    protected internal new TOM.DataColumn MetadataObject { get { return base.MetadataObject as TOM.DataColumn; } internal set { base.MetadataObject = value; } }
 
-        /// <summary>
-        /// Gets or sets the SourceColumn of the DataColumn.
-        /// </summary>
+/// <summary>Gets or sets the SourceColumn property of the current DataColumn object.</summary><returns>A String containing the SourceColumn property of the current DataColumn object.</returns>
 		[DisplayName("Source Column")]
-		[Category("Options"),IntelliSense("The Source Column of this DataColumn.")]
+		[Category("Options"),Description(@"Gets or sets the SourceColumn property of the current DataColumn object."),IntelliSense("The Source Column of this DataColumn.")]
 		public string SourceColumn {
 			get {
 			    return MetadataObject.SourceColumn;
@@ -35,11 +32,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("SourceColumn", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.SOURCECOLUMN, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.SourceColumn = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "SourceColumn", oldValue, value));
-				OnPropertyChanged("SourceColumn", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SOURCECOLUMN, oldValue, value));
+				OnPropertyChanged(Properties.SOURCECOLUMN, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeSourceColumn() { return false; }
@@ -98,6 +95,7 @@ namespace TabularEditor.TOMWrapper
 
 			obj.InternalInit();
 			obj.Init();
+
 			// Copy translations, if applicable:
 			if(includeTranslations) {
 				// TODO: Copy translations of child objects
@@ -158,7 +156,7 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
-				case "Parent":
+				case Properties.PARENT:
 					return false;
 				
 				default:

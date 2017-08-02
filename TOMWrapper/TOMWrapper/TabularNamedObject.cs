@@ -20,11 +20,37 @@ namespace TabularEditor.TOMWrapper
     public abstract class TabularNamedObject: TabularObject, ITabularNamedObject, IComparable
     {
         /// <summary>
+        /// Derived classes should override this method to prevent an object from being deleted.
+        /// </summary>
+        /// <param name="message">If an object CANNOT be deleted, this string should provide
+        /// a reason why. If an object CAN be deleted, this string may optionally provide a
+        /// suitable warning message that applies if the object is deleted immediately after
+        /// the call to CanDelete.</param>
+        /// <returns>True if an object can be deleted. False otherwise.</returns>
+        public virtual bool CanDelete(out string message)
+        {
+            message = null;
+            return true;
+        }
+
+        public bool CanDelete()
+        {
+            string dummy;
+            return CanDelete(out dummy);
+        }
+
+        /// <summary>
         /// Deletes the object.
         /// </summary>
         public void Delete()
         {
-            Handler.UndoManager.BeginBatch("Delete " + this.GetTypeName());
+            if (!CanDelete()) return;
+
+            bool cancelDelete = false;
+            Handler.DoObjectDeleting(this, ref cancelDelete);
+            if (cancelDelete) return;
+
+            Handler.UndoManager.BeginBatch(string.Format(Messages.OperationDelete, this.GetTypeName()));
 
             DeleteLinkedObjects(false);
             RemoveReferences();
@@ -137,8 +163,6 @@ namespace TabularEditor.TOMWrapper
             throw new NotSupportedException("This object does not have any child collections.");
         }
 
-        public static void TestStatic() { }
-
         protected virtual void Children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
@@ -181,7 +205,9 @@ namespace TabularEditor.TOMWrapper
             return Name.CompareTo((obj as TabularNamedObject).Name);
         }
 
-        [Category("Basic"),NoMultiselect(),IntelliSense("The name of this object. Warning: Changing the name can break formula logic.")]
+        [Category("Basic"), NoMultiselect()]
+        [Description("The name of this object. Warning: Changing the name can break formula logic, if Automatic Formula Fix-up is disabled.")]
+        [IntelliSense("The name of this object. Warning: Changing the name can break formula logic, if Automatic Formula Fix-up is disabled.")]
         public virtual string Name
         {
             get {
@@ -190,19 +216,20 @@ namespace TabularEditor.TOMWrapper
             set {
                 var oldValue = Name;
                 if (oldValue == value) return;
-                if (string.IsNullOrEmpty(value?.Trim())) throw new ArgumentException("Name cannot be blank.");
+                if (string.IsNullOrEmpty(value?.Trim()))
+                    throw new ArgumentException(string.Format(Messages.ParameterBlankNotAllowed, Properties.NAME), Properties.NAME);
 
                 bool undoable = true;
                 bool cancel = false;
-                OnPropertyChanging("Name", value, ref undoable, ref cancel);
+                OnPropertyChanging(Properties.NAME, value, ref undoable, ref cancel);
                 if (cancel) return;
 
                 // This will take care of throwing exception in case of duplicate names:
                 MetadataObject.SetName(value, null);
                 
-                Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Name", oldValue, value));
+                Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.NAME, oldValue, value));
                 Handler.UpdateObject(this);
-                OnPropertyChanged("Name", oldValue, value);
+                OnPropertyChanged(Properties.NAME, oldValue, value);
 
             }
         }

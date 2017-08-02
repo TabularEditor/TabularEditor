@@ -11,35 +11,90 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
   
-    /// <summary>
-	/// Base class declaration for Perspective
-	/// </summary>
+	/// <summary>
+///             Defines a logical view over the Model and is a child of a Model object. It allows hiding Tables, Columns, Measures, and Hierarchies so that end users can look at a smaller subset of the large data model. 
+///             </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public partial class Perspective: TabularNamedObject
 			, IDescriptionObject
 			, IAnnotationObject
-			, IDeletableObject
 			, ITranslatableObject
 			, IClonableObject
 	{
 	    protected internal new TOM.Perspective MetadataObject { get { return base.MetadataObject as TOM.Perspective; } internal set { base.MetadataObject = value; } }
 
+        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on this object."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+		public AnnotationCollection Annotations { get; private set; }
+		public string GetAnnotation(int index) {
+			return MetadataObject.Annotations[index].Value;
+		}
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.Find(name)?.Value;
+		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		}
+		public void SetAnnotation(int index, string value, bool undoable = true) {
+			var name = MetadataObject.Annotations[index].Name;
+			SetAnnotation(name, value, undoable);
+		}
+		public string GetNewAnnotationName() {
+			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
 		public void SetAnnotation(string name, string value, bool undoable = true) {
-			if(MetadataObject.Annotations.Contains(name)) {
-				MetadataObject.Annotations[name].Value = value;
-			} else {
-				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+			if(name == null) name = GetNewAnnotationName();
+
+			if(value == null) {
+				// Remove annotation if set to null:
+				RemoveAnnotation(name, undoable);
+				return;
 			}
-			if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value));
+
+			if(GetAnnotation(name) == value) return;
+			bool undoable2 = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Change existing annotation:
+				var oldValue = GetAnnotation(name);
+				MetadataObject.Annotations[name].Value = value;
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new annotation:
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+			}
+
 		}
-		        /// <summary>
-        /// Gets or sets the Description of the Perspective.
-        /// </summary>
+		public void RemoveAnnotation(string name, bool undoable = true) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Get current value:
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				if (cancel) return;
+
+				var oldValue = MetadataObject.Annotations[name].Value;
+				MetadataObject.Annotations.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			}
+		}
+		public int GetAnnotationsCount() {
+			return MetadataObject.Annotations.Count;
+		}
+		public IEnumerable<string> GetAnnotations() {
+			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		/// <summary>
+///             Gets or sets the description of the object.
+///             </summary><returns>The string contining the description of the object.</returns>
 		[DisplayName("Description")]
-		[Category("Basic"),IntelliSense("The Description of this Perspective.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"Gets or sets the description of the object."),IntelliSense("The Description of this Perspective.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;
@@ -49,23 +104,23 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("Description", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.DESCRIPTION, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.Description = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Description", oldValue, value));
-				OnPropertyChanged("Description", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, value));
+				OnPropertyChanged(Properties.DESCRIPTION, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
         /// <summary>
         /// Collection of localized descriptions for this Perspective.
         /// </summary>
-        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Descriptions"),Description("Shows all translated descriptions of this object."),Category("Translations and Perspectives")]
 	    public TranslationIndexer TranslatedDescriptions { private set; get; }
         /// <summary>
         /// Collection of localized names for this Perspective.
         /// </summary>
-        [Browsable(true),DisplayName("Names"),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of this object."),Category("Translations and Perspectives")]
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
 
@@ -138,6 +193,7 @@ namespace TabularEditor.TOMWrapper
 
 			obj.InternalInit();
 			obj.Init();
+
 			// Copy translations, if applicable:
 			if(includeTranslations) {
 				// TODO: Copy translations of child objects
@@ -186,6 +242,9 @@ namespace TabularEditor.TOMWrapper
 			// Create indexers for translations:
 			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
 			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
+			
+			// Create indexer for annotations:
+			Annotations = new AnnotationCollection(this);
 		}
 
 
@@ -198,12 +257,12 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
-				case "Parent":
+				case Properties.PARENT:
 					return false;
 				
 				// Hides translation properties in the grid, unless the model actually contains translations:
-				case "TranslatedNames":
-				case "TranslatedDescriptions":
+				case Properties.TRANSLATEDNAMES:
+				case Properties.TRANSLATEDDESCRIPTIONS:
 					return Model.Cultures.Any();
 				
 				default:

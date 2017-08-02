@@ -11,33 +11,88 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
   
-    /// <summary>
-	/// Base class declaration for KPI
-	/// </summary>
+	/// <summary>
+///             Represents a Key Performance Indicator object. It is a child of a Measure object.
+///             </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public partial class KPI: TabularObject
 			, IDescriptionObject
 			, IAnnotationObject
-			, IDeletableObject
 	{
 	    protected internal new TOM.KPI MetadataObject { get { return base.MetadataObject as TOM.KPI; } internal set { base.MetadataObject = value; } }
 
+        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on this object."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+		public AnnotationCollection Annotations { get; private set; }
+		public string GetAnnotation(int index) {
+			return MetadataObject.Annotations[index].Value;
+		}
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.Find(name)?.Value;
+		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		}
+		public void SetAnnotation(int index, string value, bool undoable = true) {
+			var name = MetadataObject.Annotations[index].Name;
+			SetAnnotation(name, value, undoable);
+		}
+		public string GetNewAnnotationName() {
+			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
 		public void SetAnnotation(string name, string value, bool undoable = true) {
-			if(MetadataObject.Annotations.Contains(name)) {
-				MetadataObject.Annotations[name].Value = value;
-			} else {
-				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+			if(name == null) name = GetNewAnnotationName();
+
+			if(value == null) {
+				// Remove annotation if set to null:
+				RemoveAnnotation(name, undoable);
+				return;
 			}
-			if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value));
+
+			if(GetAnnotation(name) == value) return;
+			bool undoable2 = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Change existing annotation:
+				var oldValue = GetAnnotation(name);
+				MetadataObject.Annotations[name].Value = value;
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new annotation:
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+			}
+
 		}
-		        /// <summary>
-        /// Gets or sets the Description of the KPI.
-        /// </summary>
+		public void RemoveAnnotation(string name, bool undoable = true) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Get current value:
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				if (cancel) return;
+
+				var oldValue = MetadataObject.Annotations[name].Value;
+				MetadataObject.Annotations.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			}
+		}
+		public int GetAnnotationsCount() {
+			return MetadataObject.Annotations.Count;
+		}
+		public IEnumerable<string> GetAnnotations() {
+			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		/// <summary>
+///             Gets or sets the description for the KPI.
+///             </summary><returns>An String description for the KPI.</returns>
 		[DisplayName("Description")]
-		[Category("Basic"),IntelliSense("The Description of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"Gets or sets the description for the KPI."),IntelliSense("The Description of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;
@@ -47,19 +102,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("Description", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.DESCRIPTION, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.Description = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Description", oldValue, value));
-				OnPropertyChanged("Description", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, value));
+				OnPropertyChanged(Properties.DESCRIPTION, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
-        /// <summary>
-        /// Gets or sets the TargetDescription of the KPI.
-        /// </summary>
+/// <summary>
+///             Gets or sets the target description.
+///             </summary><returns>The target description.</returns>
 		[DisplayName("Target Description")]
-		[Category("Other"),IntelliSense("The Target Description of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Other"),Description(@"Gets or sets the target description."),IntelliSense("The Target Description of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string TargetDescription {
 			get {
 			    return MetadataObject.TargetDescription;
@@ -69,19 +124,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("TargetDescription", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.TARGETDESCRIPTION, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.TargetDescription = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "TargetDescription", oldValue, value));
-				OnPropertyChanged("TargetDescription", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TARGETDESCRIPTION, oldValue, value));
+				OnPropertyChanged(Properties.TARGETDESCRIPTION, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeTargetDescription() { return false; }
-        /// <summary>
-        /// Gets or sets the TargetExpression of the KPI.
-        /// </summary>
+/// <summary>
+///             Gets or sets the target expression of the KPI.
+///             </summary><returns>A String containing the target expression of the KPI.</returns>
 		[DisplayName("Target Expression")]
-		[Category("Other"),IntelliSense("The Target Expression of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Other"),Description(@"Gets or sets the target expression of the KPI."),IntelliSense("The Target Expression of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string TargetExpression {
 			get {
 			    return MetadataObject.TargetExpression;
@@ -91,19 +146,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("TargetExpression", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.TARGETEXPRESSION, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.TargetExpression = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "TargetExpression", oldValue, value));
-				OnPropertyChanged("TargetExpression", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TARGETEXPRESSION, oldValue, value));
+				OnPropertyChanged(Properties.TARGETEXPRESSION, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeTargetExpression() { return false; }
-        /// <summary>
-        /// Gets or sets the TargetFormatString of the KPI.
-        /// </summary>
+/// <summary>Gets or sets the string format of the current KPI.</summary><returns>A String contains the target format of the current KPI.</returns>
 		[DisplayName("Target Format String")]
-		[Category("Other"),IntelliSense("The Target Format String of this KPI.")][TypeConverter(typeof(FormatStringConverter))]
+		[Category("Other"),Description(@"Gets or sets the string format of the current KPI."),IntelliSense("The Target Format String of this KPI.")][TypeConverter(typeof(FormatStringConverter))]
 		public string TargetFormatString {
 			get {
 			    return MetadataObject.TargetFormatString;
@@ -113,19 +166,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("TargetFormatString", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.TARGETFORMATSTRING, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.TargetFormatString = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "TargetFormatString", oldValue, value));
-				OnPropertyChanged("TargetFormatString", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TARGETFORMATSTRING, oldValue, value));
+				OnPropertyChanged(Properties.TARGETFORMATSTRING, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeTargetFormatString() { return false; }
-        /// <summary>
-        /// Gets or sets the StatusGraphic of the KPI.
-        /// </summary>
+/// <summary>Gets or sets a visual element that provides a quick indication of the status for a KPI.</summary><returns>The name of the status graphic.</returns>
 		[DisplayName("Status Graphic")]
-		[Category("Other"),IntelliSense("The Status Graphic of this KPI.")][TypeConverter(typeof(KPIStatusGraphicConverter))]
+		[Category("Other"),Description(@"Gets or sets a visual element that provides a quick indication of the status for a KPI."),IntelliSense("The Status Graphic of this KPI.")][TypeConverter(typeof(KPIStatusGraphicConverter))]
 		public string StatusGraphic {
 			get {
 			    return MetadataObject.StatusGraphic;
@@ -135,19 +186,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("StatusGraphic", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.STATUSGRAPHIC, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.StatusGraphic = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "StatusGraphic", oldValue, value));
-				OnPropertyChanged("StatusGraphic", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.STATUSGRAPHIC, oldValue, value));
+				OnPropertyChanged(Properties.STATUSGRAPHIC, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeStatusGraphic() { return false; }
-        /// <summary>
-        /// Gets or sets the StatusDescription of the KPI.
-        /// </summary>
+/// <summary>Gets or sets the status description for the current KPI.</summary><returns>A String containing the status description for the current KPI.</returns>
 		[DisplayName("Status Description")]
-		[Category("Other"),IntelliSense("The Status Description of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Other"),Description(@"Gets or sets the status description for the current KPI."),IntelliSense("The Status Description of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string StatusDescription {
 			get {
 			    return MetadataObject.StatusDescription;
@@ -157,19 +206,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("StatusDescription", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.STATUSDESCRIPTION, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.StatusDescription = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "StatusDescription", oldValue, value));
-				OnPropertyChanged("StatusDescription", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.STATUSDESCRIPTION, oldValue, value));
+				OnPropertyChanged(Properties.STATUSDESCRIPTION, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeStatusDescription() { return false; }
-        /// <summary>
-        /// Gets or sets the StatusExpression of the KPI.
-        /// </summary>
+/// <summary>
+///             Gets or sets an expression that is used to calculate the status of the KPI.
+///             </summary><returns>An expression that is used to calculate the status of the KPI.</returns>
 		[DisplayName("Status Expression")]
-		[Category("Other"),IntelliSense("The Status Expression of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Other"),Description(@"Gets or sets an expression that is used to calculate the status of the KPI."),IntelliSense("The Status Expression of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string StatusExpression {
 			get {
 			    return MetadataObject.StatusExpression;
@@ -179,19 +228,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("StatusExpression", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.STATUSEXPRESSION, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.StatusExpression = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "StatusExpression", oldValue, value));
-				OnPropertyChanged("StatusExpression", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.STATUSEXPRESSION, oldValue, value));
+				OnPropertyChanged(Properties.STATUSEXPRESSION, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeStatusExpression() { return false; }
-        /// <summary>
-        /// Gets or sets the TrendGraphic of the KPI.
-        /// </summary>
+/// <summary>
+///             Gets or sets the string that identifies the graphic to show for the trend of the KPI.
+///             </summary><returns>The string that identifies the graphic to show for the trend of the KPI.</returns>
 		[DisplayName("Trend Graphic")]
-		[Category("Other"),IntelliSense("The Trend Graphic of this KPI.")][TypeConverter(typeof(KPITrendGraphicConverter))]
+		[Category("Other"),Description(@"Gets or sets the string that identifies the graphic to show for the trend of the KPI."),IntelliSense("The Trend Graphic of this KPI.")][TypeConverter(typeof(KPITrendGraphicConverter))]
 		public string TrendGraphic {
 			get {
 			    return MetadataObject.TrendGraphic;
@@ -201,19 +250,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("TrendGraphic", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.TRENDGRAPHIC, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.TrendGraphic = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "TrendGraphic", oldValue, value));
-				OnPropertyChanged("TrendGraphic", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TRENDGRAPHIC, oldValue, value));
+				OnPropertyChanged(Properties.TRENDGRAPHIC, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeTrendGraphic() { return false; }
-        /// <summary>
-        /// Gets or sets the TrendDescription of the KPI.
-        /// </summary>
+/// <summary>Gets or sets the trend description for the KPI.</summary><returns>A String containing the trend description for the KPI.</returns>
 		[DisplayName("Trend Description")]
-		[Category("Other"),IntelliSense("The Trend Description of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Other"),Description(@"Gets or sets the trend description for the KPI."),IntelliSense("The Trend Description of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string TrendDescription {
 			get {
 			    return MetadataObject.TrendDescription;
@@ -223,19 +270,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("TrendDescription", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.TRENDDESCRIPTION, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.TrendDescription = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "TrendDescription", oldValue, value));
-				OnPropertyChanged("TrendDescription", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TRENDDESCRIPTION, oldValue, value));
+				OnPropertyChanged(Properties.TRENDDESCRIPTION, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeTrendDescription() { return false; }
-        /// <summary>
-        /// Gets or sets the TrendExpression of the KPI.
-        /// </summary>
+/// <summary>
+///             Gets or sets an expression representing the trend of the KPI.
+///             </summary><returns>An expression representing the trend of the KPI.</returns>
 		[DisplayName("Trend Expression")]
-		[Category("Other"),IntelliSense("The Trend Expression of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Other"),Description(@"Gets or sets an expression representing the trend of the KPI."),IntelliSense("The Trend Expression of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string TrendExpression {
 			get {
 			    return MetadataObject.TrendExpression;
@@ -245,19 +292,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("TrendExpression", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.TRENDEXPRESSION, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.TrendExpression = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "TrendExpression", oldValue, value));
-				OnPropertyChanged("TrendExpression", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TRENDEXPRESSION, oldValue, value));
+				OnPropertyChanged(Properties.TRENDEXPRESSION, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeTrendExpression() { return false; }
-        /// <summary>
-        /// Gets or sets the Measure of the KPI.
-        /// </summary>
+/// <summary>
+///             Gets or sets the measure of this object.
+///             </summary><returns>The measure of this object.</returns>
 		[DisplayName("Measure")]
-		[Category("Other"),IntelliSense("The Measure of this KPI.")]
+		[Category("Other"),Description(@"Gets or sets the measure of this object."),IntelliSense("The Measure of this KPI.")]
 		public Measure Measure {
 			get {
 				if (MetadataObject.Measure == null) return null;
@@ -298,6 +345,9 @@ namespace TabularEditor.TOMWrapper
 
 		private void InternalInit()
 		{
+			
+			// Create indexer for annotations:
+			Annotations = new AnnotationCollection(this);
 		}
 
 

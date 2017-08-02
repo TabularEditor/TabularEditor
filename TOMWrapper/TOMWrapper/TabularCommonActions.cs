@@ -79,7 +79,7 @@ namespace TabularEditor.TOMWrapper
             return table.Columns.MetadataObjectCollection.GetNewName(prefix);
         }
 
-        public void MoveObjects(IEnumerable<IDetailObject> objects, Table newTable, Culture culture)
+        public void MoveObjects(IEnumerable<IDetailObject> objects, Table newTable)
         {
             if (objects == null) throw new ArgumentNullException("objects");
             if (newTable == null) throw new ArgumentNullException("newContainer");

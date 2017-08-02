@@ -11,22 +11,19 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
   
-    /// <summary>
-	/// Base class declaration for CalculatedColumn
-	/// </summary>
+	/// <summary>
+///             Represents a column that is based on a DAX expression in a Table that also contains DataColumns and a RowNumberColumn. A CalculatedColumn can also be added to a calculated table.
+///             </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public partial class CalculatedColumn: Column
 			, IDAXExpressionObject
-			, IDeletableObject
 			, IClonableObject
 	{
 	    protected internal new TOM.CalculatedColumn MetadataObject { get { return base.MetadataObject as TOM.CalculatedColumn; } internal set { base.MetadataObject = value; } }
 
-        /// <summary>
-        /// Gets or sets the IsDataTypeInferred of the CalculatedColumn.
-        /// </summary>
+/// <summary>Gets or sets a value that indicates whether the data type of the calculated column is inferred.</summary><returns>true if the data type of the calculated column is inferred; otherwise, false.</returns>
 		[DisplayName("Data Type Inferred")]
-		[Category("Other"),IntelliSense("The Data Type Inferred of this CalculatedColumn.")]
+		[Category("Other"),Description(@"Gets or sets a value that indicates whether the data type of the calculated column is inferred."),IntelliSense("The Data Type Inferred of this CalculatedColumn.")]
 		public bool IsDataTypeInferred {
 			get {
 			    return MetadataObject.IsDataTypeInferred;
@@ -36,19 +33,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("IsDataTypeInferred", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.ISDATATYPEINFERRED, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.IsDataTypeInferred = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "IsDataTypeInferred", oldValue, value));
-				OnPropertyChanged("IsDataTypeInferred", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISDATATYPEINFERRED, oldValue, value));
+				OnPropertyChanged(Properties.ISDATATYPEINFERRED, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeIsDataTypeInferred() { return false; }
-        /// <summary>
-        /// Gets or sets the Expression of the CalculatedColumn.
-        /// </summary>
+/// <summary>Gets or sets the expression of this calculated column.</summary><returns>The expression of this calculated column.</returns>
 		[DisplayName("Expression")]
-		[Category("Options"),IntelliSense("The Expression of this CalculatedColumn.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Options"),Description(@"Gets or sets the expression of this calculated column."),IntelliSense("The Expression of this CalculatedColumn.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Expression {
 			get {
 			    return MetadataObject.Expression;
@@ -58,11 +53,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("Expression", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.EXPRESSION, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.Expression = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Expression", oldValue, value));
-				OnPropertyChanged("Expression", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EXPRESSION, oldValue, value));
+				OnPropertyChanged(Properties.EXPRESSION, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeExpression() { return false; }
@@ -121,6 +116,7 @@ namespace TabularEditor.TOMWrapper
 
 			obj.InternalInit();
 			obj.Init();
+
 			// Copy translations, if applicable:
 			if(includeTranslations) {
 				// TODO: Copy translations of child objects
@@ -181,7 +177,7 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
-				case "Parent":
+				case Properties.PARENT:
 					return false;
 				
 				default:

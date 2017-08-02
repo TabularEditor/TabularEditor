@@ -142,10 +142,47 @@ namespace TabularEditor.UI
             }
         }
 
-        public void EditName(ITabularNamedObject item)
+        /// <summary>
+        /// This method toggles Explorer Tree options in a way suitable to show the given item.
+        /// For example, of a filter is currently specified, but the given item does not fulfill
+        /// the filter criteria, Filtering will be toggled off in the UI.
+        /// </summary>
+        /// <param name="item"></param>
+        public TreeNodeAdv EnsureNodeVisible(ITabularNamedObject item)
         {
             var node = UI.TreeView.FindNodeByTag(item);
-            if(node != null)
+            if (node != null) return node;
+
+            LogicalTreeOptions optionsToApply = 0;
+
+            if((item as IHideableObject)?.IsHidden ?? false && !Tree.Options.HasFlag(LogicalTreeOptions.ShowHidden))
+            {
+                // If the object is hidden, make sure the tree is set up to show hidden objects:
+                optionsToApply |= LogicalTreeOptions.ShowHidden;
+                UI.FormMain.actToggleHidden.Checked = true;
+            }
+
+            switch(item.ObjectType)
+            {
+                case ObjectType.Table:
+                    // Tables will always be visible
+                case ObjectType.Column:
+                case ObjectType.Measure:
+                case ObjectType.Hierarchy:
+                case ObjectType.Level:
+                case ObjectType.KPI:
+                default:
+                    break;
+            }
+
+            return null;
+        }
+
+        public void EditName(ITabularNamedObject item)
+        {
+            var node = EnsureNodeVisible(item);
+
+            if (node != null)
             {
                 UI.TreeView.SelectedNode = node;
                 TreeView_NameCol.BeginEdit();

@@ -52,10 +52,10 @@ namespace TabularEditor.TOMWrapper
             return r;
         }*/
 
-        /*[Category("Security")]
+        [Category("Security"), DisplayName("Members")]
         [Description("Specify domain/usernames of the members in this role. One member per line.")]
         [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public string Members
+        public string RoleMembers
         {
             get
             {
@@ -65,16 +65,17 @@ namespace TabularEditor.TOMWrapper
             {
                 if (MetadataObject.Members.Any(m => m is TOM.ExternalModelRoleMember))
                     throw new InvalidOperationException("This role uses External Role Members. These role members are not supported in this version of Tabular Editor.");
-                if (Members == value) return;
+                if (RoleMembers == value) return;
 
-                Handler.UndoManager.Add(new UndoFramework.UndoPropertyChangedAction(this, "Members", Members, value));
+                Handler.UndoManager.Add(new UndoFramework.UndoPropertyChangedAction(this, "Members", RoleMembers, value));
                 MetadataObject.Members.Clear();
-                foreach (var member in value.Replace("\r","").Split('\n'))
+                foreach (var member in value.Replace("\r", "").Split('\n'))
                 {
                     MetadataObject.Members.Add(new TOM.WindowsModelRoleMember() { MemberName = member });
                 }
             }
-        }*/
+        }
+
         protected override bool IsBrowsable(string propertyName)
         {
             switch (propertyName) {

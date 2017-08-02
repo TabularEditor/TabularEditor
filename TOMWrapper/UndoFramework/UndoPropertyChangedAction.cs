@@ -19,7 +19,7 @@ namespace TabularEditor.UndoFramework
             var name = tabularObject.GetObjectPath();
             if (prop == null) return null;
             if (prop.Name == "Name") name = name.Substring(0, name.Length - name.Length) + oldValue.ToString();
-            return string.Format("Changed {{{0}.{1}{4}}}: \"{2}\" --> \"{3}\"", name, prop.Name, oldValue?.ToString(), newValue?.ToString(),
+            return string.Format("Set Property {{{0}.{1}{4}}}: \"{2}\" --> \"{3}\"", name, prop.Name, oldValue?.ToString(), newValue?.ToString(),
                 string.IsNullOrEmpty(index) ? "" : "[" + index + "]");
         }
 
@@ -61,7 +61,7 @@ namespace TabularEditor.UndoFramework
 
         public static string GetActionNameFromProperty(string propertyName)
         {
-            return propertyName.SplitCamelCase().ToLower().Replace("display ", "").Replace(" string", "") + " change";
+            return string.Format("Set Property '{0}'", propertyName);
         }
 
         public string ActionName { get; private set; }

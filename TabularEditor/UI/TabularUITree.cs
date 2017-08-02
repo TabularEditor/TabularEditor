@@ -15,7 +15,8 @@ namespace TabularEditor
         public TreeViewAdv TreeView { get; set; }
         public override void OnNodesChanged()
         {
-            if (UpdateLocks == 0) TreeView?.Invalidate();
+            //if (UpdateLocks == 0) TreeView?.Invalidate();
+            //NodesChanged?.Invoke(this, new TreeModelEventArgs(null, new object[] { }));
         }
 
         public TabularUITree(Model model) : base(model) { }
@@ -120,7 +121,7 @@ namespace TabularEditor
                 case DropMode.AddColumns: Handler.Actions.AddColumnsToHierarchy(sourceNodes.Select(n => n.Tag as Column), DragInfo.TargetHierarchy, DragInfo.TargetOrdinal); break;
                 case DropMode.Folder: Handler.Actions.SetContainer(sourceNodes.Select(n => n.Tag as IDetailObject), targetNode.Tag as IDetailObjectContainer, Culture); break;
                 case DropMode.MoveObject:
-                    Handler.Actions.MoveObjects(sourceNodes.Select(n => n.Tag as IDetailObject), targetNode.Tag as Table, Culture);
+                    Handler.Actions.MoveObjects(sourceNodes.Select(n => n.Tag as IDetailObject), targetNode.Tag as Table);
                     break;
             }
         }
@@ -189,8 +190,8 @@ namespace TabularEditor
                     for (var i = 1; i < pathBits.Length; i++)
                     {
                         folderPath = folderPath.ConcatPath(pathBits[i]);
-                        if (!FolderTree.ContainsKey(folderPath)) Folder.CreateFolder(dfo.Table, FolderHelper.PathFromFullPath(folderPath));
-                        stack.Add(FolderTree[folderPath]);
+                        if (!FolderCache.ContainsKey(folderPath)) Folder.CreateFolder(dfo.Table, FolderHelper.PathFromFullPath(folderPath));
+                        stack.Add(FolderCache[folderPath]);
                     }
                 }
 
@@ -200,8 +201,8 @@ namespace TabularEditor
             return new TreePath(stack.ToArray());
         }
 
-        private int onStructureChangedRequests = 0;
-        private HashSet<ITabularObject> updateReqs = new HashSet<ITabularObject>();
+        private HashSet<ITabularObject> structureChangedItems = new HashSet<ITabularObject>();
+        private int nodeChangedItemsCount = 0;
 
         public override void OnStructureChanged(ITabularNamedObject obj = null)
         {
@@ -215,8 +216,7 @@ namespace TabularEditor
         {
             if (UpdateLocks > 0)
             {
-                updateReqs.AddIfNotExists(parent);
-                onStructureChangedRequests++;
+                structureChangedItems.AddIfNotExists(parent);
                 return;
             }
             else
@@ -229,8 +229,7 @@ namespace TabularEditor
         {
             if (UpdateLocks > 0)
             {
-                updateReqs.AddIfNotExists(parent);
-                onStructureChangedRequests++;
+                structureChangedItems.AddIfNotExists(parent);
                 return;
             }
             else
@@ -243,8 +242,7 @@ namespace TabularEditor
         {
             if (UpdateLocks > 0)
             {
-                updateReqs.AddIfNotExists(nodeItem);
-                //onStructureChangedRequests++;
+                nodeChangedItemsCount++;
                 return;
             }
             else
@@ -259,27 +257,34 @@ namespace TabularEditor
         {
             if (UpdateLocks > 0)
             {
-                updateReqs.AddIfNotExists(path.LastNode as ITabularObject);
-                onStructureChangedRequests++;
+                structureChangedItems.AddIfNotExists(path.LastNode as ITabularObject);
                 return;
             }
-            else StructureChanged?.Invoke(this, new TreePathEventArgs(path));
+            else
+                StructureChanged?.Invoke(this, new TreePathEventArgs(path));
+
         }
 
         public override void EndUpdate()
         {
             base.EndUpdate();
 
-            if (UpdateLocks == 0 && onStructureChangedRequests > 0)
+            if (UpdateLocks > 0) return;
+
+            if (structureChangedItems.Count > 0)
             {
-                if (updateReqs.Count == 1) OnStructureChanged(GetPath(updateReqs.First()));
+                if (structureChangedItems.Count == 1) OnStructureChanged(GetPath(structureChangedItems.First()));
                 else OnStructureChanged();
 
-                onStructureChangedRequests = 0;
-                updateReqs.Clear();
+                structureChangedItems.Clear();
+            }
+
+            if (nodeChangedItemsCount > 0)
+            {
+                OnNodesChanged();
+                nodeChangedItemsCount = 0;
             }
         }
-
     }
 
     internal enum DropMode

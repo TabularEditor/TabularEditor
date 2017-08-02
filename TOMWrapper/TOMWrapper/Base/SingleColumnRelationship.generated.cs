@@ -11,20 +11,20 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
   
-    /// <summary>
-	/// Base class declaration for SingleColumnRelationship
-	/// </summary>
+	/// <summary>
+///             SingleColumnRelationship object.
+///             </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public partial class SingleColumnRelationship: Relationship
 			, IClonableObject
 	{
 	    protected internal new TOM.SingleColumnRelationship MetadataObject { get { return base.MetadataObject as TOM.SingleColumnRelationship; } internal set { base.MetadataObject = value; } }
 
-        /// <summary>
-        /// Gets or sets the FromColumn of the SingleColumnRelationship.
-        /// </summary>
+/// <summary>
+///             Gets or sets the starting column in a single column relationship.
+///             </summary><returns>The starting column in a single column relationship.</returns>
 		[DisplayName("From Column")]
-		[Category("Relationship"),IntelliSense("The From Column of this SingleColumnRelationship.")][TypeConverter(typeof(AllColumnConverter))]
+		[Category("Relationship"),Description(@"Gets or sets the starting column in a single column relationship."),IntelliSense("The From Column of this SingleColumnRelationship.")][TypeConverter(typeof(AllColumnConverter))]
 		public Column FromColumn {
 			get {
 				if (MetadataObject.FromColumn == null) return null;
@@ -35,19 +35,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue?.MetadataObject == value?.MetadataObject) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("FromColumn", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.FROMCOLUMN, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.FromColumn = value?.MetadataObject;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "FromColumn", oldValue, value));
-				OnPropertyChanged("FromColumn", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FROMCOLUMN, oldValue, value));
+				OnPropertyChanged(Properties.FROMCOLUMN, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeFromColumn() { return false; }
-        /// <summary>
-        /// Gets or sets the ToColumn of the SingleColumnRelationship.
-        /// </summary>
+/// <summary>
+///             Gets or sets the destination column in a single column relationship.
+///             </summary><returns>The destination column in a single column relationship.</returns>
 		[DisplayName("To Column")]
-		[Category("Relationship"),IntelliSense("The To Column of this SingleColumnRelationship.")][TypeConverter(typeof(AllColumnConverter))]
+		[Category("Relationship"),Description(@"Gets or sets the destination column in a single column relationship."),IntelliSense("The To Column of this SingleColumnRelationship.")][TypeConverter(typeof(AllColumnConverter))]
 		public Column ToColumn {
 			get {
 				if (MetadataObject.ToColumn == null) return null;
@@ -58,19 +58,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue?.MetadataObject == value?.MetadataObject) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("ToColumn", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.TOCOLUMN, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.ToColumn = value?.MetadataObject;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "ToColumn", oldValue, value));
-				OnPropertyChanged("ToColumn", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TOCOLUMN, oldValue, value));
+				OnPropertyChanged(Properties.TOCOLUMN, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeToColumn() { return false; }
-        /// <summary>
-        /// Gets or sets the FromCardinality of the SingleColumnRelationship.
-        /// </summary>
+/// <summary>
+///             Gets or sets the relationship from cardinality.
+///             </summary><returns>The relationship from cardinality.</returns>
 		[DisplayName("From Cardinality")]
-		[Category("Other"),IntelliSense("The From Cardinality of this SingleColumnRelationship.")]
+		[Category("Other"),Description(@"Gets or sets the relationship from cardinality."),IntelliSense("The From Cardinality of this SingleColumnRelationship.")]
 		public TOM.RelationshipEndCardinality FromCardinality {
 			get {
 			    return MetadataObject.FromCardinality;
@@ -80,19 +80,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("FromCardinality", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.FROMCARDINALITY, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.FromCardinality = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "FromCardinality", oldValue, value));
-				OnPropertyChanged("FromCardinality", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FROMCARDINALITY, oldValue, value));
+				OnPropertyChanged(Properties.FROMCARDINALITY, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeFromCardinality() { return false; }
-        /// <summary>
-        /// Gets or sets the ToCardinality of the SingleColumnRelationship.
-        /// </summary>
+/// <summary>Gets or sets the end of the cardinality relationship.</summary><returns>The end of the cardinality relationship.</returns>
 		[DisplayName("To Cardinality")]
-		[Category("Other"),IntelliSense("The To Cardinality of this SingleColumnRelationship.")]
+		[Category("Other"),Description(@"Gets or sets the end of the cardinality relationship."),IntelliSense("The To Cardinality of this SingleColumnRelationship.")]
 		public TOM.RelationshipEndCardinality ToCardinality {
 			get {
 			    return MetadataObject.ToCardinality;
@@ -102,11 +100,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("ToCardinality", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.TOCARDINALITY, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.ToCardinality = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "ToCardinality", oldValue, value));
-				OnPropertyChanged("ToCardinality", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TOCARDINALITY, oldValue, value));
+				OnPropertyChanged(Properties.TOCARDINALITY, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeToCardinality() { return false; }
@@ -181,6 +179,7 @@ namespace TabularEditor.TOMWrapper
 			obj.InternalInit();
 			obj.Init();
 
+
             Handler.EndUpdate();
 
             return obj;
@@ -231,7 +230,7 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
-				case "Parent":
+				case Properties.PARENT:
 					return false;
 				
 				default:

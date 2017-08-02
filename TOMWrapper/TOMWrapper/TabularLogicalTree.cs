@@ -78,7 +78,7 @@ namespace TabularEditor.TOMWrapper
                 if (_culture == value) return;
                 _culture = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Culture"));
-                FolderTree.Clear();
+                FolderCache.Clear();
                 OnStructureChanged();
             }
         }
@@ -117,6 +117,7 @@ namespace TabularEditor.TOMWrapper
 
         #endregion        
 
+        public event EventHandler UpdateComplete;
 
         protected Model Model { get; private set; }
         protected TabularModelHandler Handler { get { return Model.Handler; } }
@@ -138,6 +139,8 @@ namespace TabularEditor.TOMWrapper
         {
             if (UpdateLocks == 0) throw new InvalidOperationException("EndUpdate() called before BeginUpdate()");
             UpdateLocks--;
+
+            if (UpdateLocks == 0) UpdateComplete?.Invoke(this, new EventArgs());
         }        
 
         #region Handling Display Folders
@@ -193,21 +196,18 @@ namespace TabularEditor.TOMWrapper
 
             if(tabularObject is LogicalGroup)
             {
-                switch ((tabularObject as LogicalGroup).Name)
-                {
-                    case "Tables": return Model.Tables.Where(t => VisibleInTree(t));
-                    case "Roles": return Model.Roles.Where(t => VisibleInTree(t));
-                    case "Perspectives": return Model.Perspectives.Where(t => VisibleInTree(t));
-                    case "Translations": return Model.Cultures.Where(t => VisibleInTree(t));
-                    case "Relationships": return Model.Relationships.Where(t => VisibleInTree(t));
-                    case "Data Sources": return Model.DataSources.Where(t => VisibleInTree(t));
-                    case "Table Partitions": return Model.Tables.Where(t => !(t is CalculatedTable)).Select(t => t.PartitionViewTable);
-                }
-                return Enumerable.Empty<TabularNamedObject>();
+                return (tabularObject as LogicalGroup).GetChildren().Where(o => VisibleInTree(o));
             }
-            if(tabularObject is Model && !Options.HasFlag(LogicalTreeOptions.AllObjectTypes))
+            if(tabularObject is Model)
             {
-                return Model.Tables.Where(t => VisibleInTree(t));
+                // If all object types should be shown, simply let the Model.GetChildren() method
+                // return the objects needed:
+                if (Options.HasFlag(LogicalTreeOptions.AllObjectTypes))
+                {
+                    return Model.GetChildren().Where(o => VisibleInTree(o));
+                }
+                // Otherwise, only show tables:
+                else return Model.Tables.Where(t => VisibleInTree(t));
             }
             if(tabularObject is Table)
             {
@@ -261,6 +261,7 @@ namespace TabularEditor.TOMWrapper
                 switch (tabularObject.ObjectType)
                 {
                     case ObjectType.Relationship:
+                    case ObjectType.Partition:
                     case ObjectType.DataSource:
                     case ObjectType.Perspective:
                     case ObjectType.Role:
@@ -268,6 +269,12 @@ namespace TabularEditor.TOMWrapper
                     case ObjectType.Column:
                     case ObjectType.Hierarchy:
                     case ObjectType.Measure:
+                        if(tabularObject is ITabularTableObject)
+                        {
+                            // If the parent table's name matches the filter criteria, show all objects inside the table, even
+                            // though they don't match the filter:
+                            if ((tabularObject as ITabularTableObject).Table.Name.IndexOf(Filter, StringComparison.InvariantCultureIgnoreCase) >= 0) break;
+                        }
                         if (tabularObject.Name.IndexOf(Filter, StringComparison.InvariantCultureIgnoreCase) == -1) return false;
                         break;
                 }
@@ -284,11 +291,23 @@ namespace TabularEditor.TOMWrapper
                     return (Options.HasFlag(LogicalTreeOptions.Hierarchies));
             }
 
-            // Always hide empty tabels when filtering
+            // Always hide empty tables when filtering, unless the table name matches the filter criteria
             if (tabularObject is Table)
             {
                 var table = tabularObject as Table;
-                return string.IsNullOrEmpty(Filter) || table.GetChildren().Any(o => VisibleInTree(o));
+                return string.IsNullOrEmpty(Filter) || (table.GetChildren().Any(o => VisibleInTree(o)) || table.Name.IndexOf(Filter, StringComparison.InvariantCultureIgnoreCase) >= 0);
+            }
+            // Same goes for PartitionViewTables:
+            if (tabularObject is PartitionViewTable)
+            {
+                var table = tabularObject as PartitionViewTable;
+                return string.IsNullOrEmpty(Filter) || (table.GetChildren().Any(o => VisibleInTree(o)) || table.Name.IndexOf(Filter, StringComparison.InvariantCultureIgnoreCase) >= 0);
+            }
+
+            // If a filter is in place, Logical Groups are only shown when they contain objects:
+            if (tabularObject is LogicalGroup)
+            {
+                return string.IsNullOrEmpty(Filter) || (tabularObject as LogicalGroup).GetChildren().Any(o => VisibleInTree(o));
             }
 
             // All other objects should be visible by default:
@@ -297,18 +316,18 @@ namespace TabularEditor.TOMWrapper
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected internal readonly Dictionary<string, Folder> FolderTree = new Dictionary<string, Folder>();
+        protected internal readonly Dictionary<string, Folder> FolderCache = new Dictionary<string, Folder>();
         internal void UpdateFolder(Folder folder, string oldFullPath = null)
         {
-            if (!string.IsNullOrEmpty(oldFullPath)) FolderTree.Remove(oldFullPath);
+            if (!string.IsNullOrEmpty(oldFullPath)) FolderCache.Remove(oldFullPath);
 
-            if(FolderTree.ContainsKey(folder.FullPath))
+            if(FolderCache.ContainsKey(folder.FullPath))
             {
-                FolderTree[folder.FullPath] = folder;
+                FolderCache[folder.FullPath] = folder;
             }
             else
             {
-                FolderTree.Add(folder.FullPath, folder);
+                FolderCache.Add(folder.FullPath, folder);
             }
         }
 
@@ -328,10 +347,7 @@ namespace TabularEditor.TOMWrapper
             OnNodesInserted(parent, children.ToArray());
         }
 
-        public virtual void OnNodesChanged()
-        {
-
-        }
+        public virtual void OnNodesChanged() { }
 
         public abstract void OnNodesChanged(ITabularObject nodeItem);
 

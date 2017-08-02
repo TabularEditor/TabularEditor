@@ -11,21 +11,20 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
   
-    /// <summary>
-	/// Base class declaration for Relationship
-	/// </summary>
+	/// <summary>
+///             Represents a logical relationship between two Table objects. It is a child of a Model object.
+///             </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public abstract partial class Relationship: TabularNamedObject
 			, IAnnotationObject
-			, IDeletableObject
 	{
 	    protected internal new TOM.Relationship MetadataObject { get { return base.MetadataObject as TOM.Relationship; } internal set { base.MetadataObject = value; } }
 
-        /// <summary>
-        /// Gets or sets the ToTable of the Relationship.
-        /// </summary>
+/// <summary>
+///             Gets the destination table in a directional table relationship.
+///             </summary><returns>The destination table in a directional table relationship.</returns>
 		[DisplayName("To Table")]
-		[Category("Other"),IntelliSense("The To Table of this Relationship.")]
+		[Category("Other"),Description(@"Gets the destination table in a directional table relationship."),IntelliSense("The To Table of this Relationship.")]
 		public Table ToTable {
 			get {
 				if (MetadataObject.ToTable == null) return null;
@@ -34,11 +33,11 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeToTable() { return false; }
-        /// <summary>
-        /// Gets or sets the FromTable of the Relationship.
-        /// </summary>
+/// <summary>
+///             Gets or sets the starting table in a directional table relationship.
+///             </summary><returns>The starting table in a directional table relationship.</returns>
 		[DisplayName("From Table")]
-		[Category("Other"),IntelliSense("The From Table of this Relationship.")]
+		[Category("Other"),Description(@"Gets or sets the starting table in a directional table relationship."),IntelliSense("The From Table of this Relationship.")]
 		public Table FromTable {
 			get {
 				if (MetadataObject.FromTable == null) return null;
@@ -47,22 +46,78 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeFromTable() { return false; }
+        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on this object."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+		public AnnotationCollection Annotations { get; private set; }
+		public string GetAnnotation(int index) {
+			return MetadataObject.Annotations[index].Value;
+		}
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.Find(name)?.Value;
+		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		}
+		public void SetAnnotation(int index, string value, bool undoable = true) {
+			var name = MetadataObject.Annotations[index].Name;
+			SetAnnotation(name, value, undoable);
+		}
+		public string GetNewAnnotationName() {
+			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
 		public void SetAnnotation(string name, string value, bool undoable = true) {
-			if(MetadataObject.Annotations.Contains(name)) {
-				MetadataObject.Annotations[name].Value = value;
-			} else {
-				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+			if(name == null) name = GetNewAnnotationName();
+
+			if(value == null) {
+				// Remove annotation if set to null:
+				RemoveAnnotation(name, undoable);
+				return;
 			}
-			if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value));
+
+			if(GetAnnotation(name) == value) return;
+			bool undoable2 = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Change existing annotation:
+				var oldValue = GetAnnotation(name);
+				MetadataObject.Annotations[name].Value = value;
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new annotation:
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+			}
+
 		}
-		        /// <summary>
-        /// Gets or sets the IsActive of the Relationship.
-        /// </summary>
+		public void RemoveAnnotation(string name, bool undoable = true) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Get current value:
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				if (cancel) return;
+
+				var oldValue = MetadataObject.Annotations[name].Value;
+				MetadataObject.Annotations.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			}
+		}
+		public int GetAnnotationsCount() {
+			return MetadataObject.Annotations.Count;
+		}
+		public IEnumerable<string> GetAnnotations() {
+			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		/// <summary>
+///            Gets or sets a value that indicates whether the column is active.
+///             </summary><returns>true if the column is active; otherwise, false.</returns>
 		[DisplayName("Active")]
-		[Category("Relationship"),IntelliSense("The Active of this Relationship.")]
+		[Category("Relationship"),Description(@"Gets or sets a value that indicates whether the column is active."),IntelliSense("The Active of this Relationship.")]
 		public bool IsActive {
 			get {
 			    return MetadataObject.IsActive;
@@ -72,19 +127,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("IsActive", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.ISACTIVE, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.IsActive = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "IsActive", oldValue, value));
-				OnPropertyChanged("IsActive", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISACTIVE, oldValue, value));
+				OnPropertyChanged(Properties.ISACTIVE, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeIsActive() { return false; }
-        /// <summary>
-        /// Gets or sets the Type of the Relationship.
-        /// </summary>
+/// <summary>
+///             Gets the type of the <see cref="T:TabularEditor.TOMWrapper.Relationship" /> object.
+///             </summary><returns>The type of the <see cref="T:TabularEditor.TOMWrapper.Relationship" /> object.</returns>
 		[DisplayName("Type")]
-		[Category("Other"),IntelliSense("The Type of this Relationship.")]
+		[Category("Other"),Description(@"Gets the type of the Relationship object."),IntelliSense("The Type of this Relationship.")]
 		public TOM.RelationshipType Type {
 			get {
 			    return MetadataObject.Type;
@@ -92,11 +147,9 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeType() { return false; }
-        /// <summary>
-        /// Gets or sets the CrossFilteringBehavior of the Relationship.
-        /// </summary>
+/// <summary>Gets or sets the cross filtering behavior in the relationship.</summary><returns>The cross filtering behavior in the relationship.</returns>
 		[DisplayName("Cross Filtering Behavior")]
-		[Category("Relationship"),IntelliSense("The Cross Filtering Behavior of this Relationship.")]
+		[Category("Relationship"),Description(@"Gets or sets the cross filtering behavior in the relationship."),IntelliSense("The Cross Filtering Behavior of this Relationship.")]
 		public TOM.CrossFilteringBehavior CrossFilteringBehavior {
 			get {
 			    return MetadataObject.CrossFilteringBehavior;
@@ -106,19 +159,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("CrossFilteringBehavior", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.CROSSFILTERINGBEHAVIOR, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.CrossFilteringBehavior = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "CrossFilteringBehavior", oldValue, value));
-				OnPropertyChanged("CrossFilteringBehavior", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.CROSSFILTERINGBEHAVIOR, oldValue, value));
+				OnPropertyChanged(Properties.CROSSFILTERINGBEHAVIOR, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeCrossFilteringBehavior() { return false; }
-        /// <summary>
-        /// Gets or sets the JoinOnDateBehavior of the Relationship.
-        /// </summary>
+/// <summary>
+///             Gets or sets the join on date behavior for this property.
+///             </summary><returns>The join on date behavior for this property.</returns>
 		[DisplayName("Join On Date Behavior")]
-		[Category("Other"),IntelliSense("The Join On Date Behavior of this Relationship.")]
+		[Category("Other"),Description(@"Gets or sets the join on date behavior for this property."),IntelliSense("The Join On Date Behavior of this Relationship.")]
 		public TOM.DateTimeRelationshipBehavior JoinOnDateBehavior {
 			get {
 			    return MetadataObject.JoinOnDateBehavior;
@@ -128,19 +181,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("JoinOnDateBehavior", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.JOINONDATEBEHAVIOR, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.JoinOnDateBehavior = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "JoinOnDateBehavior", oldValue, value));
-				OnPropertyChanged("JoinOnDateBehavior", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.JOINONDATEBEHAVIOR, oldValue, value));
+				OnPropertyChanged(Properties.JOINONDATEBEHAVIOR, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeJoinOnDateBehavior() { return false; }
-        /// <summary>
-        /// Gets or sets the RelyOnReferentialIntegrity of the Relationship.
-        /// </summary>
+/// <summary>Gets or sets a value that indicates whether if the object relies on referential integrity.</summary><returns>true if the object relies on referential integrity; otherwise, false.</returns>
 		[DisplayName("Rely On Referential Integrity")]
-		[Category("Other"),IntelliSense("The Rely On Referential Integrity of this Relationship.")]
+		[Category("Other"),Description(@"Gets or sets a value that indicates whether if the object relies on referential integrity."),IntelliSense("The Rely On Referential Integrity of this Relationship.")]
 		public bool RelyOnReferentialIntegrity {
 			get {
 			    return MetadataObject.RelyOnReferentialIntegrity;
@@ -150,19 +201,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("RelyOnReferentialIntegrity", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.RELYONREFERENTIALINTEGRITY, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.RelyOnReferentialIntegrity = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "RelyOnReferentialIntegrity", oldValue, value));
-				OnPropertyChanged("RelyOnReferentialIntegrity", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.RELYONREFERENTIALINTEGRITY, oldValue, value));
+				OnPropertyChanged(Properties.RELYONREFERENTIALINTEGRITY, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeRelyOnReferentialIntegrity() { return false; }
-        /// <summary>
-        /// Gets or sets the State of the Relationship.
-        /// </summary>
+/// <summary>
+///             Gets or sets the relationship state.
+///             </summary><returns>The relationship state.</returns>
 		[DisplayName("State")]
-		[Category("Metadata"),IntelliSense("The State of this Relationship.")]
+		[Category("Metadata"),Description(@"Gets or sets the relationship state."),IntelliSense("The State of this Relationship.")]
 		public TOM.ObjectState State {
 			get {
 			    return MetadataObject.State;
@@ -170,11 +221,11 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeState() { return false; }
-        /// <summary>
-        /// Gets or sets the SecurityFilteringBehavior of the Relationship.
-        /// </summary>
+/// <summary>
+///             Gets or sets the security filtering behavior.
+///             </summary><returns>The security filtering behavior.</returns>
 		[DisplayName("Security Filtering Behavior")]
-		[Category("Relationship"),IntelliSense("The Security Filtering Behavior of this Relationship.")]
+		[Category("Relationship"),Description(@"Gets or sets the security filtering behavior."),IntelliSense("The Security Filtering Behavior of this Relationship.")]
 		public TOM.SecurityFilteringBehavior SecurityFilteringBehavior {
 			get {
 			    return MetadataObject.SecurityFilteringBehavior;
@@ -184,11 +235,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("SecurityFilteringBehavior", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.SECURITYFILTERINGBEHAVIOR, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.SecurityFilteringBehavior = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "SecurityFilteringBehavior", oldValue, value));
-				OnPropertyChanged("SecurityFilteringBehavior", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SECURITYFILTERINGBEHAVIOR, oldValue, value));
+				OnPropertyChanged(Properties.SECURITYFILTERINGBEHAVIOR, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeSecurityFilteringBehavior() { return false; }
@@ -210,6 +261,9 @@ namespace TabularEditor.TOMWrapper
 
 		private void InternalInit()
 		{
+			
+			// Create indexer for annotations:
+			Annotations = new AnnotationCollection(this);
 		}
 
 
@@ -222,7 +276,7 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
-				case "Parent":
+				case Properties.PARENT:
 					return false;
 				
 				default:

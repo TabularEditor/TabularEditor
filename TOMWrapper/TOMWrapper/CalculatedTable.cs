@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
     public class CalculatedTable: Table, IDAXExpressionObject
     {
         [Browsable(false)]
-        public Dictionary<IDaxObject, List<Dependency>> Dependencies { get; private set; } = new Dictionary<IDaxObject, List<Dependency>>();
+        public Dictionary<IDaxObject, List<Dependency>> Dependencies { get; } = new Dictionary<IDaxObject, List<Dependency>>();
 
         protected override void Init()
         {
@@ -26,7 +26,7 @@ namespace TabularEditor.TOMWrapper
                 p.MetadataObject.Source = new TOM.CalculatedPartitionSource();
             }
 
-            Partitions[0].PropertyChanged += CalculatedTable_PropertyChanged;
+            Partitions[0].PropertyChanged += Partition_PropertyChanged;
         }
 
         protected override bool IsBrowsable(string propertyName)
@@ -43,9 +43,11 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        private void CalculatedTable_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void Partition_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "Expression") OnPropertyChanged("Expression", null, this.Expression);
+            // Changes to the Expression property of a CalculatedTables partitions should be re-raised as a
+            // property change event on the CalculatedTable itself:
+            if (e.PropertyName == Properties.EXPRESSION) OnPropertyChanged(Properties.EXPRESSION, null, this.Expression);
         }
 
         /// <summary>
@@ -66,7 +68,7 @@ namespace TabularEditor.TOMWrapper
             return obj;
         }
 
-        public static new CalculatedTable CreateFromMetadata(TOM.Table metadataObject)
+        public static CalculatedTable CreateFromMetadata(TOM.Table metadataObject)
         {
             var obj = new CalculatedTable(metadataObject);
             obj.Init();
@@ -88,7 +90,7 @@ namespace TabularEditor.TOMWrapper
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
-            if(propertyName == "Expression")
+            if(propertyName == Properties.EXPRESSION)
             {
                 NeedsValidation = true;
                 Handler.BuildDependencyTree(this);

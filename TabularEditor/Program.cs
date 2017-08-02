@@ -58,7 +58,7 @@ namespace TabularEditor
                 try
                 {
                     var pluginAssembly = Assembly.LoadFile(dll);
-                    if(pluginAssembly != null)
+                    if(pluginAssembly != null && !pluginAssembly.FullName.StartsWith("TOMWrapper"))
                     {
                         var pluginType = pluginAssembly.GetTypes().Where(t => typeof(ITabularEditorPlugin).IsAssignableFrom(t)).FirstOrDefault();
                         if (pluginType != null)
@@ -214,6 +214,7 @@ namespace TabularEditor
                 cw.WriteLine("Executing script...");
 
                 System.CodeDom.Compiler.CompilerResults result;
+                Scripting.ScriptOutputForm.Reset(false);
                 var dyn = ScriptEngine.ScriptAction(script, out result);
                 if (result.Errors.Count > 0)
                 {

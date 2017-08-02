@@ -10,7 +10,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.PropertyGridUI
 {
-    public class PartitionCollectionEditor: RefreshGridCollectionEditor
+    public class PartitionCollectionEditor: ClonableObjectCollectionEditor<Partition>
     {
         public PartitionCollectionEditor(Type type) : base(type)
         {
@@ -40,6 +40,28 @@ namespace TabularEditor.PropertyGridUI
             if (col.Parent is CalculatedTable && value.Length > 1) throw new InvalidOperationException("A calculated table cannot have more than 1 partition.");
             if (value.Length == 0) throw new InvalidOperationException("A table must always have at least 1 partition.");
             return base.SetItems(editValue, value);
+        }
+
+        Table table;
+
+        protected override object[] GetItems(object editValue)
+        {
+            table = (editValue as PartitionCollection).Table;
+            return base.GetItems(editValue);
+        }
+
+        protected override object CreateInstance(Type itemType)
+        {
+#if CL1400
+            if(itemType == typeof(MPartition)) {
+                return MPartition.CreateNew(table);
+            }
+#endif
+            if(itemType == typeof(Partition))
+            {
+                return Partition.CreateNew(table);
+            }
+            return base.CreateInstance(itemType);
         }
     }
 }

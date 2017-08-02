@@ -9,6 +9,7 @@ using TabularEditor.UI.Actions;
 using TabularEditor.UI.Dialogs;
 using TabularEditor.UIServices;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace TabularEditor
 {
@@ -18,7 +19,11 @@ namespace TabularEditor
 
         public FormMain()
         {
+            Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en-US");
             InitializeComponent();
+            propertyGrid1.Site = new DesignerHost();
+            
+
             SetupUIController();
             txtFilter.Control.SetCueBanner("Filter");
 
@@ -32,6 +37,7 @@ namespace TabularEditor
                     customActionsToolStripMenuItem.DropDownItems.Add(act.Name, null, (s, e) => { txtAdvanced.Text = act.Execute; });
                 }
             }
+
             if (custActions == null || custActions.Actions.Length == 0)
             {
                 var item = customActionsToolStripMenuItem.DropDownItems.Add("(No custom actions)");
@@ -217,8 +223,8 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void actUndoRedo_Execute(object sender, EventArgs e)
         {
             if(!txtExpression.Focused) UI.ExpressionEditor_CancelEdit();
-            propertyGrid1.Refresh();
-            tvModel.Refresh();
+            //propertyGrid1.Refresh();
+            //tvModel.Refresh();
         }
 
         private void txtFilter_KeyDown(object sender, KeyEventArgs e)
@@ -438,7 +444,6 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             tbShowColumns.Checked = treeModel.Options.HasFlag(TOMWrapper.LogicalTreeOptions.Columns);
             tbShowHierarchies.Checked = treeModel.Options.HasFlag(TOMWrapper.LogicalTreeOptions.Hierarchies);
             tbApplyFilter.Checked = !string.IsNullOrEmpty(treeModel.Filter);
-
         }
 
         private void fromFolderToolStripMenuItem_Click(object sender, EventArgs e)

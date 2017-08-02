@@ -64,7 +64,7 @@ namespace TabularEditor.TOMWrapper
         {
             Handler.BeginUpdate("add role");
             var role = ModelRole.CreateNew(this);
-            role.InitRLSIndexer();
+            //role.InitRLSIndexer();
             if (!string.IsNullOrEmpty(name)) role.Name = name;
             Handler.EndUpdate();
             return role;
@@ -93,6 +93,12 @@ namespace TabularEditor.TOMWrapper
         public IEnumerable<Column> AllColumns { get { return Tables.SelectMany(t => t.Columns); } }
 
         /// <summary>
+        /// Iterates all partitions on all tables of the model.
+        /// </summary>
+        [Browsable(false)]
+        public IEnumerable<Partition> AllPartitions { get { return Tables.SelectMany(t => t.Partitions); } }
+
+        /// <summary>
         /// Iterates all measures on all tables of the model.
         /// </summary>
         [Browsable(false)]
@@ -113,6 +119,7 @@ namespace TabularEditor.TOMWrapper
         public readonly LogicalGroup GroupRoles = new LogicalGroup("Roles");
         public readonly LogicalGroup GroupPartitions = new LogicalGroup("Table Partitions");
 
+        [Browsable(false)]
         public IEnumerable<LogicalGroup> LogicalChildGroups { get
             {
                 yield return GroupTables;
@@ -129,8 +136,15 @@ namespace TabularEditor.TOMWrapper
             return LogicalChildGroups.AsEnumerable().Cast<ITabularNamedObject>();
         }
 
+        public override bool CanDelete(out string message)
+        {
+            message = Messages.CannotDeleteObject;
+            return false;
+        }
+
         protected override void Init()
         {
+            
         }
 
         [Category("Basic")]

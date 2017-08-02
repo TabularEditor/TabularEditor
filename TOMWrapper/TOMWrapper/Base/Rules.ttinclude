@@ -1,27 +1,53 @@
 ﻿<#@ import namespace="System.Text.RegularExpressions" #>
 <#@ import namespace="System.Collections.Specialized" #>
+<#@ import namespace="System.Xml.Linq" #>
+<#@ import namespace="System.Reflection" #>
+<#@ import namespace="System.ComponentModel" #>
 <#+
 
 class Rules {
-	public static bool IsDeletable(Type t) {
-		switch(t.Name) {
-			case "Table":
-			case "Measure":
-			case "DataColumn":
-			case "CalculatedColumn":
-			case "Hierarchy":
-			case "KPI":
-			case "Partition":
-			case "DataSource":
-			case "Perspective":
-			case "Culture":
-			case "Relationship":
-			case "ModelRole":
-				return true;
-			default:
-				return false;
+	public const string XmlDocFile = @"C:\Users\do\Documents\GitHubVisualStudio\TabularEditor\packages\Microsoft.AnalysisServices.Tabular.13.0.2150.2\lib\Microsoft.AnalysisServices.Tabular.xml";
+
+	public static string GetTypeXmlDoc(Type t) {
+		var xml = XElement.Load(XmlDocFile);
+		var node = xml?.Element("members")?.Elements("member")?.FirstOrDefault(e => ((string)e.Attribute("name")) == "T:Microsoft.AnalysisServices.Tabular." + t.Name);
+		if(node != null) {
+			var nodeReader = node.CreateReader();
+			nodeReader.MoveToContent();
+			var doc = nodeReader.ReadInnerXml();
+			return string.Join("\n", doc.Split('\n').Select(line => "/// " + line.Replace("Microsoft.AnalysisServices.Tabular","TabularEditor.TOMWrapper")));
         }
+		return "";
     }
+
+    public static string GetPropertyXmlDoc(Type t, string propertyName) {
+		var xml = XElement.Load(XmlDocFile);
+		var node = xml?.Element("members")?.Elements("member")?.FirstOrDefault(e => ((string)e.Attribute("name")) == "P:Microsoft.AnalysisServices.Tabular." + t.Name + "." + propertyName);
+		if(node != null) {
+			var nodeReader = node.CreateReader();
+			nodeReader.MoveToContent();
+			var doc = nodeReader.ReadInnerXml();
+			return string.Join("\n", doc.Split('\n').Select(line => "/// " + line.Replace("Microsoft.AnalysisServices.Tabular","TabularEditor.TOMWrapper")));
+        }
+		return "";
+    }
+
+    public static string GetPropertyDescription(Type t, string propertyName) {
+		var xml = XElement.Load(XmlDocFile);
+		var node = xml?.Element("members")?.Elements("member")?.FirstOrDefault(e => ((string)e.Attribute("name")) == "P:Microsoft.AnalysisServices.Tabular." + t.Name + "." + propertyName)?.Element("summary");
+		if(node != null) {
+			var nodeReader = node.CreateReader();
+			nodeReader.MoveToContent();
+			var doc = nodeReader.ReadInnerXml()
+				.Replace("<see cref=\"T:Microsoft.AnalysisServices.Tabular.", "")
+				.Replace("<see cref=\"P:Microsoft.AnalysisServices.Tabular.", "")
+				.Replace("\" />", "").Replace("\"","\"\"").Trim();
+			return doc;
+        }
+
+		return "";
+    }
+
 	public static bool IsTranslatable(Type t, bool includeAncestors = false) {
 		switch(t.Name) {
 			case "Model":
@@ -127,17 +153,17 @@ class Rules {
 				if (oldValue{1} == value{1}) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(""{0}"", value, ref undoable, ref cancel);
+				OnPropertyChanging({5}, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.{0} = {4};
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, ""{0}"", oldValue, value));
-				OnPropertyChanged(""{0}"", oldValue, value);{2}{3}
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, {5}, oldValue, value));
+				OnPropertyChanged({5}, oldValue, value);{2}{3}
 			}}", 
 			p.Name, 
 			p.PropertyType.IsClass && p.PropertyType != typeof(string) ? "?.MetadataObject" : "",
 			p.Name == "DisplayFolder" ? "\n\t\t\t\tHandler.UpdateFolders(Table);" : "",
 			p.Name == "IsHidden" ? "\n\t\t\t\tHandler.UpdateObject(this);" : "",
-			resolveObject);
+			resolveObject, "Properties." + p.Name.ToUpper());
     }
 
 	public static string PropertyGetter(PropertyInfo p)
@@ -244,15 +270,27 @@ class Rules {
 		if(className == "Level" && propertyName == "Column") return "[TypeConverter(typeof(HierarchyColumnConverter)),NoMultiselect()]";
 		if(className == "Level" && propertyName == "Ordinal") return "[NoMultiselect()]";
 		if(className == "Model" && propertyName == "Culture") return "[TypeConverter(typeof(CultureConverter))]";
+		if(className == "Column" && propertyName == "Type") return "[Browsable(false)]";
 		if(propertyName.EndsWith("FormatString")) return "[TypeConverter(typeof(FormatStringConverter))]";
 		if(propertyName == "DisplayFolder") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]";
 		if(propertyName.EndsWith("Expression")) return "[Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]";
 		if(propertyName.EndsWith("Description")) return "[Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]";
 		if(propertyName == "ContextExpression") return "[Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]";
-		if(propertyName == "Perspectives") return "[Editor(typeof(TabularEditor.PropertyGridUI.PerspectiveCollectionEditor),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]";
+
+		if(propertyName == "Perspectives") return "[Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<Perspective>),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Cultures") return "[Editor(typeof(TabularEditor.PropertyGridUI.CultureCollectionEditor),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]";
-		if(propertyName == "Roles") return "[Editor(typeof(TabularEditor.PropertyGridUI.RefreshGridCollectionEditor), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]";
+		if(propertyName == "Roles") return "[Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<ModelRole>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Partitions") return "[NoMultiselect(),Editor(typeof(PartitionCollectionEditor),typeof(UITypeEditor))]";
+		
+		if(propertyName == "DataSources") return "[Browsable(false)]";
+		if(propertyName == "Relationships") return "[Browsable(false)]";
+		if(propertyName == "Members") return "[Browsable(false)]";
+		if(propertyName == "Columns") return "[Browsable(false)]";
+		if(propertyName == "Measures") return "[Browsable(false)]";
+		if(propertyName == "Hierarchies") return "[Browsable(false)]";
+		if(propertyName == "Levels") return "[Browsable(false)]";
+		if(propertyName == "Tables") return "[Browsable(false)]";
+		
 		if(propertyName == "StatusGraphic") return "[TypeConverter(typeof(KPIStatusGraphicConverter))]";
 		if(propertyName == "TrendGraphic") return "[TypeConverter(typeof(KPITrendGraphicConverter))]";
 		return "";

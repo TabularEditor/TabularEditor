@@ -11,9 +11,9 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
   
-    /// <summary>
-	/// Base class declaration for Model
-	/// </summary>
+	/// <summary>
+///             A Tabular model created at compatibility level 1200 or above.
+///             </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public partial class Model: TabularNamedObject
 			, IDescriptionObject
@@ -22,11 +22,11 @@ namespace TabularEditor.TOMWrapper
 	{
 	    protected internal new TOM.Model MetadataObject { get { return base.MetadataObject as TOM.Model; } internal set { base.MetadataObject = value; } }
 
-        /// <summary>
-        /// Gets or sets the HasLocalChanges of the Model.
-        /// </summary>
+/// <summary> 
+///             Gets or sets a value that indicates whether the model has local changes.
+///         </summary><returns>true if the model has local changes; otherwise, false.</returns>
 		[DisplayName("Has Local Changes")]
-		[Category("Other"),IntelliSense("The Has Local Changes of this Model.")]
+		[Category("Other"),Description(@"Gets or sets a value that indicates whether the model has local changes."),IntelliSense("The Has Local Changes of this Model.")]
 		public bool HasLocalChanges {
 			get {
 			    return MetadataObject.HasLocalChanges;
@@ -34,22 +34,78 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeHasLocalChanges() { return false; }
+        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on this object."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+		public AnnotationCollection Annotations { get; private set; }
+		public string GetAnnotation(int index) {
+			return MetadataObject.Annotations[index].Value;
+		}
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.Find(name)?.Value;
+		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		}
+		public void SetAnnotation(int index, string value, bool undoable = true) {
+			var name = MetadataObject.Annotations[index].Name;
+			SetAnnotation(name, value, undoable);
+		}
+		public string GetNewAnnotationName() {
+			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
 		public void SetAnnotation(string name, string value, bool undoable = true) {
-			if(MetadataObject.Annotations.Contains(name)) {
-				MetadataObject.Annotations[name].Value = value;
-			} else {
-				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+			if(name == null) name = GetNewAnnotationName();
+
+			if(value == null) {
+				// Remove annotation if set to null:
+				RemoveAnnotation(name, undoable);
+				return;
 			}
-			if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value));
+
+			if(GetAnnotation(name) == value) return;
+			bool undoable2 = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Change existing annotation:
+				var oldValue = GetAnnotation(name);
+				MetadataObject.Annotations[name].Value = value;
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new annotation:
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+			}
+
 		}
-		        /// <summary>
-        /// Gets or sets the Description of the Model.
-        /// </summary>
+		public void RemoveAnnotation(string name, bool undoable = true) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Get current value:
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				if (cancel) return;
+
+				var oldValue = MetadataObject.Annotations[name].Value;
+				MetadataObject.Annotations.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			}
+		}
+		public int GetAnnotationsCount() {
+			return MetadataObject.Annotations.Count;
+		}
+		public IEnumerable<string> GetAnnotations() {
+			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		/// <summary>
+///             Gets or sets the description of the object.
+///             </summary><returns>The String description of the object.</returns>
 		[DisplayName("Description")]
-		[Category("Basic"),IntelliSense("The Description of this Model.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"Gets or sets the description of the object."),IntelliSense("The Description of this Model.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;
@@ -59,19 +115,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("Description", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.DESCRIPTION, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.Description = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Description", oldValue, value));
-				OnPropertyChanged("Description", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, value));
+				OnPropertyChanged(Properties.DESCRIPTION, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
-        /// <summary>
-        /// Gets or sets the StorageLocation of the Model.
-        /// </summary>
+/// <summary>
+///             Gets or sets the storage location of the database.
+///             </summary><returns>A String containing storage location of the database.</returns>
 		[DisplayName("Storage Location")]
-		[Category("Other"),IntelliSense("The Storage Location of this Model.")]
+		[Category("Other"),Description(@"Gets or sets the storage location of the database."),IntelliSense("The Storage Location of this Model.")]
 		public string StorageLocation {
 			get {
 			    return MetadataObject.StorageLocation;
@@ -81,19 +137,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("StorageLocation", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.STORAGELOCATION, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.StorageLocation = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "StorageLocation", oldValue, value));
-				OnPropertyChanged("StorageLocation", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.STORAGELOCATION, oldValue, value));
+				OnPropertyChanged(Properties.STORAGELOCATION, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeStorageLocation() { return false; }
-        /// <summary>
-        /// Gets or sets the DefaultMode of the Model.
-        /// </summary>
+/// <summary>
+///             Gets or sets the DefaultMode value inherited by sample and full data view partitions used throughout the model.
+///             </summary><returns>The DefaultMode value inherited by sample and full data view partitions used throughout the model.</returns>
 		[DisplayName("Default Mode")]
-		[Category("Other"),IntelliSense("The Default Mode of this Model.")]
+		[Category("Other"),Description(@"Gets or sets the DefaultMode value inherited by sample and full data view partitions used throughout the model."),IntelliSense("The Default Mode of this Model.")]
 		public TOM.ModeType DefaultMode {
 			get {
 			    return MetadataObject.DefaultMode;
@@ -103,19 +159,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("DefaultMode", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.DEFAULTMODE, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.DefaultMode = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "DefaultMode", oldValue, value));
-				OnPropertyChanged("DefaultMode", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DEFAULTMODE, oldValue, value));
+				OnPropertyChanged(Properties.DEFAULTMODE, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeDefaultMode() { return false; }
-        /// <summary>
-        /// Gets or sets the DefaultDataView of the Model.
-        /// </summary>
+/// <summary>
+///             Gets or sets the data view type used by default for partitions throughout the model.
+///             </summary><returns>The data view type used by default for partitions throughout the model.</returns>
 		[DisplayName("Default Data View")]
-		[Category("Other"),IntelliSense("The Default Data View of this Model.")]
+		[Category("Other"),Description(@"Gets or sets the data view type used by default for partitions throughout the model."),IntelliSense("The Default Data View of this Model.")]
 		public TOM.DataViewType DefaultDataView {
 			get {
 			    return MetadataObject.DefaultDataView;
@@ -125,19 +181,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("DefaultDataView", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.DEFAULTDATAVIEW, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.DefaultDataView = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "DefaultDataView", oldValue, value));
-				OnPropertyChanged("DefaultDataView", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DEFAULTDATAVIEW, oldValue, value));
+				OnPropertyChanged(Properties.DEFAULTDATAVIEW, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeDefaultDataView() { return false; }
-        /// <summary>
-        /// Gets or sets the Culture of the Model.
-        /// </summary>
+/// <summary>
+///             Gets or sets the Culture object used for translation scenarios.
+///             </summary><returns>A string containing the Culture object used for translation scenarios.</returns>
 		[DisplayName("Culture")]
-		[Category("Other"),IntelliSense("The Culture of this Model.")][TypeConverter(typeof(CultureConverter))]
+		[Category("Other"),Description(@"Gets or sets the Culture object used for translation scenarios."),IntelliSense("The Culture of this Model.")][TypeConverter(typeof(CultureConverter))]
 		public string Culture {
 			get {
 			    return MetadataObject.Culture;
@@ -147,19 +203,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("Culture", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.CULTURE, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.Culture = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Culture", oldValue, value));
-				OnPropertyChanged("Culture", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.CULTURE, oldValue, value));
+				OnPropertyChanged(Properties.CULTURE, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeCulture() { return false; }
-        /// <summary>
-        /// Gets or sets the Collation of the Model.
-        /// </summary>
+/// <summary>
+///             Gets or sets the collation used on the object.
+///             </summary><returns>The collation used on the object.</returns>
 		[DisplayName("Collation")]
-		[Category("Other"),IntelliSense("The Collation of this Model.")]
+		[Category("Other"),Description(@"Gets or sets the collation used on the object."),IntelliSense("The Collation of this Model.")]
 		public string Collation {
 			get {
 			    return MetadataObject.Collation;
@@ -169,23 +225,23 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("Collation", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.COLLATION, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.Collation = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Collation", oldValue, value));
-				OnPropertyChanged("Collation", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.COLLATION, oldValue, value));
+				OnPropertyChanged(Properties.COLLATION, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeCollation() { return false; }
         /// <summary>
         /// Collection of localized descriptions for this Model.
         /// </summary>
-        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Descriptions"),Description("Shows all translated descriptions of this object."),Category("Translations and Perspectives")]
 	    public TranslationIndexer TranslatedDescriptions { private set; get; }
         /// <summary>
         /// Collection of localized names for this Model.
         /// </summary>
-        [Browsable(true),DisplayName("Names"),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of this object."),Category("Translations and Perspectives")]
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
 
@@ -223,7 +279,7 @@ namespace TabularEditor.TOMWrapper
         /// The collection of Perspective objects on this Model.
         /// </summary>
 		[DisplayName("Perspectives")]
-		[Category("Translations and Perspectives"),IntelliSense("The collection of Perspective objects on this Model.")][Editor(typeof(TabularEditor.PropertyGridUI.PerspectiveCollectionEditor),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]
+		[Category("Translations and Perspectives"),IntelliSense("The collection of Perspective objects on this Model.")][Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<Perspective>),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]
 		public PerspectiveCollection Perspectives { get; protected set; }
         /// <summary>
         /// The collection of Culture objects on this Model.
@@ -235,25 +291,25 @@ namespace TabularEditor.TOMWrapper
         /// The collection of DataSource objects on this Model.
         /// </summary>
 		[DisplayName("Data Sources")]
-		[Category("Other"),IntelliSense("The collection of Data Source objects on this Model.")]
+		[Category("Other"),IntelliSense("The collection of Data Source objects on this Model.")][Browsable(false)]
 		public DataSourceCollection DataSources { get; protected set; }
         /// <summary>
         /// The collection of ModelRole objects on this Model.
         /// </summary>
 		[DisplayName("Roles")]
-		[Category("Security"),IntelliSense("The collection of Model Role objects on this Model.")][Editor(typeof(TabularEditor.PropertyGridUI.RefreshGridCollectionEditor), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]
+		[Category("Security"),IntelliSense("The collection of Model Role objects on this Model.")][Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<ModelRole>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]
 		public ModelRoleCollection Roles { get; protected set; }
         /// <summary>
         /// The collection of Table objects on this Model.
         /// </summary>
 		[DisplayName("Tables")]
-		[Category("Other"),IntelliSense("The collection of Table objects on this Model.")]
+		[Category("Other"),IntelliSense("The collection of Table objects on this Model.")][Browsable(false)]
 		public TableCollection Tables { get; protected set; }
         /// <summary>
         /// The collection of Relationship objects on this Model.
         /// </summary>
 		[DisplayName("Relationships")]
-		[Category("Other"),IntelliSense("The collection of Relationship objects on this Model.")]
+		[Category("Other"),IntelliSense("The collection of Relationship objects on this Model.")][Browsable(false)]
 		public RelationshipCollection Relationships { get; protected set; }
 
 		/// <summary>
@@ -269,6 +325,9 @@ namespace TabularEditor.TOMWrapper
 			// Create indexers for translations:
 			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
 			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
+			
+			// Create indexer for annotations:
+			Annotations = new AnnotationCollection(this);
 			
 			// Instantiate child collections:
 			Perspectives = new PerspectiveCollection(this.GetObjectPath() + ".Perspectives", MetadataObject.Perspectives, this);
@@ -315,8 +374,8 @@ namespace TabularEditor.TOMWrapper
 			switch (propertyName) {
 				
 				// Hides translation properties in the grid, unless the model actually contains translations:
-				case "TranslatedNames":
-				case "TranslatedDescriptions":
+				case Properties.TRANSLATEDNAMES:
+				case Properties.TRANSLATEDDESCRIPTIONS:
 					return Model.Cultures.Any();
 				
 				default:

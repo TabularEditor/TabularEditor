@@ -340,7 +340,10 @@ namespace TabularEditor.UI
         }
 
         public UITreeSelection(IReadOnlyCollection<TreeNodeAdv> selectedNodes) : 
-            base(GetDeep(selectedNodes).Select(n => n.Tag).OfType<ITabularNamedObject>().Where(n => !(n is Folder)))
+            base(GetDeep(selectedNodes).Select(n => n.Tag)
+                .OfType<ITabularNamedObject>()
+                .Where(n => !(n is Folder))
+                .Select(n => (n as PartitionViewTable)?.Table ?? n))
         {
             _selectedNodes = selectedNodes;
      
@@ -363,8 +366,8 @@ namespace TabularEditor.UI
             CalculatedColumns = new UISelectionList<CalculatedColumn>(this.OfType<CalculatedColumn>());
             CalculatedTableColumns = new UISelectionList<CalculatedTableColumn>(this.OfType<CalculatedTableColumn>());
             DataColumns = new UISelectionList<DataColumn>(this.OfType<DataColumn>());
-            Tables = new UI.UISelectionList<Table>(this.OfType<Table>());
-            // TODO: Make this work when selecting a table in the "Table Partitions" group
+            Tables = new UISelectionList<Table>(this.OfType<Table>());
+            Partitions = new UISelectionList<Partition>(this.OfType<Partition>());
 
             Direct = new UISelectionList<ITabularNamedObject>(selectedNodes.Select(n => n.Tag).OfType<ITabularNamedObject>());
         }
@@ -372,8 +375,8 @@ namespace TabularEditor.UI
         private T One<T>() where T: TabularObject
         {
             var obj = this.FirstOrDefault() as T;
-            if (obj == null) throw new Exception("The collection does not contain any objects of type " + typeof(T).Name);
-            else if (this.Skip(1).Any()) throw new Exception("The collection contains more than one object of type " + typeof(T).Name);
+            if (obj == null) throw new Exception("The selection does not contain any objects of type " + typeof(T).Name);
+            else if (this.Skip(1).Any()) throw new Exception("The selection contains more than one object of type " + typeof(T).Name);
             else return obj;
         }
 
@@ -423,6 +426,9 @@ namespace TabularEditor.UI
         [IntelliSense("The currently selected level (if exactly one level is selected in the explorer tree).")]
         public Level Level { get { return One<Level>(); } }
 
+        [IntelliSense("The currently selected KPI.")]
+        public KPI KPI { get { return One<KPI>(); } }
+
         [IntelliSense("The currently selected levels.")]
         public UISelectionList<Level> Levels { get; private set; }
 
@@ -458,6 +464,13 @@ namespace TabularEditor.UI
 
         [IntelliSense("All currently selected data columns (including data columns within selected Display Folders).")]
         public UISelectionList<DataColumn> DataColumns { get; private set; }
+
+        [IntelliSense("All currently selected partitions.")]
+        public UISelectionList<Partition> Partitions { get; private set; }
+
+        [IntelliSense("The currently selected partition.")]
+        public Partition Partition { get { return One<Partition>(); } }
+
 
         [IntelliSense("The currently selected perspective in Tabular Editor.")]
         public Perspective Perspective

@@ -80,16 +80,6 @@ namespace TabularEditor.TOMWrapper
         public event PropertyChangedEventHandler PropertyChanged;
         public event PropertyChangingEventHandler PropertyChanging;
 
-        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
-        {
-            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-            Handler.UndoManager.Add(new UndoPropertyChangedAction(this, propertyName, field, value));
-            object oldValue = field;
-            field = value;
-            OnPropertyChanged(propertyName, oldValue, value);
-            return true;
-        }
-
         internal abstract void RenewMetadataObject();
         internal virtual void Undelete(ITabularObjectCollection collection) { }
         internal virtual void ReapplyReferences() { }
@@ -100,6 +90,7 @@ namespace TabularEditor.TOMWrapper
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             Handler.DoObjectChanged(this, propertyName, oldValue, newValue);
+            Handler.UpdateObject(this);
         }
 
         /// <summary>
@@ -118,7 +109,7 @@ namespace TabularEditor.TOMWrapper
         }
 
         [Browsable(false),IntelliSense("The model this object belongs to.")]
-        public Model Model { get { return Handler.WrapperLookup[MetadataObject.Model] as Model; } }
+        public Model Model { get { return MetadataObject.Model == null ? null : Handler.WrapperLookup[MetadataObject.Model] as Model; } }
 
         [Browsable(false),IntelliSense("The type of this object (Folder, Measure, Table, etc.).")]
         public ObjectType ObjectType { get { return (ObjectType)MetadataObject.ObjectType; } }

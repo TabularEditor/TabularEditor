@@ -11,9 +11,9 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
   
-    /// <summary>
-	/// Base class declaration for WindowsModelRoleMember
-	/// </summary>
+	/// <summary>
+///             Represents an individual Windows user account or a Windows security group.
+///             </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public partial class WindowsModelRoleMember: ModelRoleMember
 			, IClonableObject
@@ -76,6 +76,7 @@ namespace TabularEditor.TOMWrapper
 			obj.InternalInit();
 			obj.Init();
 
+
             Handler.EndUpdate();
 
             return obj;
@@ -125,7 +126,7 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
-				case "Parent":
+				case Properties.PARENT:
 					return false;
 				
 				default:

@@ -37,6 +37,9 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => true || s.Direct.OfType<Column>().Any(), 
                 (s, m) => s.Table.AddHierarchy(displayFolder: s.CurrentFolder, levels: s.Direct.OfType<Column>().ToArray()).Expand().Edit(), 
                 (s, m) => @"Create New\Hierarchy", true, Context.Table | Context.TableObject));
+            Add(new Separator(@"Create New"));
+            Add(new Action((s, m) => true, (s, m) => Partition.CreateNew(s.Table).Edit(), (s, m) => @"Create New\Partition", true, Context.Table));
+
             Add(new Action((s, m) => true, (s, m) => m.AddDataSource().Edit(), (s, m) => @"Create New\Data Source", false, Context.DataSources));
             Add(new Action((s, m) => true, (s, m) => m.AddCalculatedTable().Edit(), (s, m) => @"Create New\Calculated Table", false, Context.Tables));
             Add(new Action((s, m) => m.DataSources.Any(), (s, m) => m.AddTable().Edit(), (s, m) => @"Create New\Table", false, Context.Tables));
@@ -134,33 +137,42 @@ namespace TabularEditor.UI.Actions
 
             // Delete Action
             // TODO: Would be nice to have an IDeletable interface...
-            Delete = new Action((s, m) => s.All(obj => obj is IDeletableObject), 
+            Delete = new Action((s, m) => s.Count >= 1, 
                 (s, m) => {
+
                     string refs = "";
+
                     if (s.Count == 1)
                     {
-                        if(s.FirstOrDefault() is Column)
+                        // Handle single-object deletion:
+                        string message;
+                        if (!s.First().CanDelete(out message))
                         {
-                            var hCount = (s.FirstOrDefault() as Column).UsedInHierarchies.Count();
-                            if(hCount > 0)
-                            {
-                                refs += string.Format("\n\nThis column is used in {0} hierarch{1}. The corresponding level{2} will be removed from the hierarch{1}.", hCount, hCount == 1 ? "y" : "ies", hCount == 1 ? "" : "s");
-                            }
+                            MessageBox.Show(message, s.Summary() + " cannot be deleted.", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                            return;
                         }
-
-                        var d = (s.FirstOrDefault() as IDaxObject);
-                        if (d != null && d.Dependants.Count > 0)
+                        else if (!string.IsNullOrEmpty(message))
                         {
-                            refs += "\n\nThis object is directly referenced in the DAX expression on " + d.Dependants.First().DaxObjectFullName;
-                            if (d.Dependants.Count > 1) refs += string.Format(" and {0} other object{1}.", d.Dependants.Count - 1, d.Dependants.Count == 2 ? "" : "s");
+                            var mr = MessageBox.Show(message, "Confirm deletion", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                            if (mr == DialogResult.Cancel) return;
                         }
-                        else if (!(s.FirstOrDefault() is KPI))
+                    }
+                    else
+                    {
+                        // Handle multi-object deletion:
+                        string message;
+                        if(s.Any(o => !o.CanDelete(out message)))
                         {
-                            refs += "\n\nThis object does not appear to be referenced in DAX expressions on other objects.";
+                            var mr = MessageBox.Show("One or more of the selected objects cannot be deleted. Proceed?", "Unable to delete one or more objects.", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                            if (mr == DialogResult.Cancel) return;
+                        } else
+                        {
+                            // Confirm deletion of multiple objects just in case...
+                            var mr = MessageBox.Show("Are you sure you want to delete the selected objects?", s.Summary(), MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                            if (mr == DialogResult.Cancel) return;
                         }
                     }
 
-                    if (MessageBox.Show(string.Format("Are you sure you want to delete {0}?{1}", s.Name, refs), "Confirm deletion", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel) return;
                     s.Delete();
                 }, (s, m) => "Delete " + s.Summary() + "...", true, Context.SingularObjects);
             Add(Delete);

@@ -29,7 +29,7 @@ namespace TabularEditor.TOMWrapper
             if (string.IsNullOrEmpty(path)) return obj.Table;
             var fullPath = obj.Table.Name.ConcatPath(path);
             Folder result;
-            if (tree.FolderTree.TryGetValue(fullPath, out result)) return result;
+            if (tree.FolderCache.TryGetValue(fullPath, out result)) return result;
             return obj.Table;
         }
 

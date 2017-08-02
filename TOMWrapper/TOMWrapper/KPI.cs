@@ -8,7 +8,7 @@ using TabularEditor.PropertyGridUI;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class KPI: ITabularNamedObject, IDeletableObject
+    public partial class KPI: ITabularNamedObject
     {
         [Browsable(false)]
         public int MetadataIndex
@@ -33,6 +33,17 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        public bool CanDelete()
+        {
+            return true;
+        }
+
+        public bool CanDelete(out string message)
+        {
+            message = null;
+            return true;
+        }
+
         public void Delete()
         {
             Measure.RemoveKPI();
@@ -42,14 +53,14 @@ namespace TabularEditor.TOMWrapper
         {
             switch(propertyName)
             {
-                case "Measure": return false;
+                case Properties.MEASURE: return false;
             }
             return true;
         }
 
         protected override bool IsEditable(string propertyName)
         {
-            if (propertyName == "Name") return false;
+            if (propertyName == Properties.NAME) return false;
             return true;
         }
     }

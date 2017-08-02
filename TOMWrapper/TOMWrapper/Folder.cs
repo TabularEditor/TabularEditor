@@ -22,7 +22,7 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                return Tree.FolderTree[Table.Name.ConcatPath(DisplayFolder)];
+                return Tree.FolderCache[Table.Name.ConcatPath(DisplayFolder)];
             }
         }
 
@@ -44,7 +44,7 @@ namespace TabularEditor.TOMWrapper
             // Always attempt to re-use folders:
             var fullPath = table.Name.ConcatPath(path);
             Folder result;
-            if(!table.Handler.Tree.FolderTree.TryGetValue(fullPath, out result))
+            if(!table.Handler.Tree.FolderCache.TryGetValue(fullPath, out result))
             {
                 result = new Folder(table, path);
             }
@@ -133,10 +133,6 @@ namespace TabularEditor.TOMWrapper
             {
                 return Table.Name.ConcatPath(Path);
             }
-            set
-            {
-                throw new NotImplementedException();
-            }
         }
 
         [Browsable(false)]
@@ -158,13 +154,6 @@ namespace TabularEditor.TOMWrapper
         private string _path;
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        internal void UndoSetPath(string value)
-        {
-            var oldFullPath = FullPath;
-            _path = value;
-            Tree.UpdateFolder(this, oldFullPath);
-        }
 
         [ReadOnly(true)]
         public string Path {
@@ -243,6 +232,17 @@ namespace TabularEditor.TOMWrapper
         public IEnumerable<ITabularNamedObject> GetChildren()
         {
             return GetChildrenByFolders(true).OfType<ITabularNamedObject>();
+        }
+
+        public bool CanDelete()
+        {
+            return true;
+        }
+
+        public bool CanDelete(out string message)
+        {
+            message = null;
+            return true;
         }
     }
 }

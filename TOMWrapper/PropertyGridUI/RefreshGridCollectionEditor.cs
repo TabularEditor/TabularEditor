@@ -76,14 +76,13 @@ namespace TabularEditor.PropertyGridUI
             PropertyInfo propInfo = Context.GetType().GetProperty("OwnerGrid");
             var grid = propInfo.GetValue(Context) as PropertyGrid;
             
-            grid.Refresh();
+            //grid.Refresh();
 
             OnFormClosed(e);
 
             if (!canceled)
             {
                 handler?.EndUpdate();
-                handler?.Tree.OnNodesChanged();
             }
         }
     }

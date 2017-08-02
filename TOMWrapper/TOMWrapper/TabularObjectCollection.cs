@@ -60,7 +60,6 @@ namespace TabularEditor.TOMWrapper
             return Handler.WrapperCollections[CollectionName];
         }
 
-        private bool init = false;
         public TabularModelHandler Handler { get; private set; }
         public Model Model { get { return Handler.Model; } }
         [IntelliSense("The name of this collection.")]
@@ -266,8 +265,6 @@ namespace TabularEditor.TOMWrapper
 
         public virtual int IndexOf(T item)
         {
-            var c = new System.Collections.Specialized.OrderedDictionary();
-
             return MetadataObjectCollection.IndexOf(item.MetadataObject as TT);
         }
 

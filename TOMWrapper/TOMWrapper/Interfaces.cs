@@ -34,13 +34,10 @@ namespace TabularEditor.TOMWrapper
     {
         string Name { get; set; }
         int MetadataIndex { get; }
-    }
-
-    public interface IDeletableObject
-    {
+        bool CanDelete();
+        bool CanDelete(out string message);
         void Delete();
     }
-
 
     #region Common interfaces
     /// <summary>
@@ -80,8 +77,14 @@ namespace TabularEditor.TOMWrapper
     /// </summary>
     public interface IAnnotationObject: ITabularObject
     {
+        string GetAnnotation(int index);
         string GetAnnotation(string name);
+        string GetNewAnnotationName();
+        void SetAnnotation(int index, string value, bool undoable = true);
         void SetAnnotation(string name, string value, bool undoable = true);
+        void RemoveAnnotation(string name, bool undoable = true);
+        int GetAnnotationsCount();
+        IEnumerable<string> GetAnnotations();
     }
 
     /// <summary>
@@ -107,7 +110,6 @@ namespace TabularEditor.TOMWrapper
     public interface ITabularTableObject : ITabularNamedObject
     {
         Table Table { get; }
-        void Delete();
     }
 
     /// <summary>
@@ -119,6 +121,12 @@ namespace TabularEditor.TOMWrapper
         string DaxObjectFullName { get; }
         string DaxTableName { get; }
         HashSet<IDAXExpressionObject> Dependants { get; }
+    }
+
+    public interface IFormattableObject
+    {
+        string FormatString { get; set; }
+        Microsoft.AnalysisServices.Tabular.DataType DataType { get; }
     }
     #endregion
 

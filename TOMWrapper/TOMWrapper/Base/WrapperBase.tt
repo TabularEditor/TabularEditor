@@ -25,14 +25,29 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
 <# manager.EndBlock();
- 
+
+   if(!File.Exists(Rules.XmlDocFile)) {
+	   throw new Exception("Could not locate file: " + Rules.XmlDocFile);
+   }
+
+   manager.StartNewFile("Properties.generated.cs");
+#>    public static class Properties
+    {
+<# var TOMWrapperProperties = new[]{ "TranslatedNames", "TranslatedDescriptions", "TranslatedDisplayFolders", "InPerspective" };
+   foreach(string pn in Rules.ObjectTypes.Keys
+	   .SelectMany(t => t.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+	   .Select(p => p.Name).Distinct().Concat(TOMWrapperProperties).OrderBy(p => p)) { #>
+	    public const string <#= pn.ToUpper() #> = "<#= pn #>";
+<# } #>
+    }
+<#
+   manager.EndBlock();
+
    foreach(var t in Rules.ObjectTypes.Keys) {
 	   manager.StartNewFile(t.Name + ".generated.cs");
 	   var props = t.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 #>  
-    /// <summary>
-	/// Base class declaration for <#= t.Name #>
-	/// </summary>
+	<#= Rules.GetTypeXmlDoc(t) #>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public <#= t.IsAbstract ? "abstract " : "" #>partial class <#= t.Name #>: <#= Rules.ObjectTypes[t]
 #><#= props.Any(p => p.Name == "DisplayFolder") ? "\n\t\t\t, IDetailObject" : ""
@@ -41,8 +56,8 @@ namespace TabularEditor.TOMWrapper
 #><#= props.Any(p => p.Name == "Table") ? "\n\t\t\t, ITabularTableObject" : ""
 #><#= props.Any(p => p.Name == "Description") ? "\n\t\t\t, IDescriptionObject" : ""
 #><#= props.Any(p => p.Name == "Expression") ? "\n\t\t\t, IDAXExpressionObject" : ""
+#><#= props.Any(p => p.Name == "FormatString") ? "\n\t\t\t, IFormattableObject" : ""
 #><#= props.Any(p => p.Name == "Annotations") ? "\n\t\t\t, IAnnotationObject" : ""
-#><#= Rules.IsDeletable(t) ? "\n\t\t\t, IDeletableObject" : ""
 #><#= Rules.IsPerspectiveObject(t) ? "\n\t\t\t, ITabularPerspectiveObject" : ""
 #><#= Rules.IsTranslatable(t) ? "\n\t\t\t, ITranslatableObject" : ""
 #><#= Rules.InCollection(t) && !t.IsAbstract ? "\n\t\t\t, IClonableObject" : ""
@@ -54,25 +69,79 @@ namespace TabularEditor.TOMWrapper
 	foreach(PropertyInfo p in props) 
 	{   
 		if (p.Name == "Annotations") { #>
+        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on this object."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+		public AnnotationCollection Annotations { get; private set; }
+		public string GetAnnotation(int index) {
+			return MetadataObject.Annotations[index].Value;
+		}
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.Find(name)?.Value;
+		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		}
+		public void SetAnnotation(int index, string value, bool undoable = true) {
+			var name = MetadataObject.Annotations[index].Name;
+			SetAnnotation(name, value, undoable);
+		}
+		public string GetNewAnnotationName() {
+			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
 		public void SetAnnotation(string name, string value, bool undoable = true) {
-			if(MetadataObject.Annotations.Contains(name)) {
-				MetadataObject.Annotations[name].Value = value;
-			} else {
-				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+			if(name == null) name = GetNewAnnotationName();
+
+			if(value == null) {
+				// Remove annotation if set to null:
+				RemoveAnnotation(name, undoable);
+				return;
 			}
-			if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value));
+
+			if(GetAnnotation(name) == value) return;
+			bool undoable2 = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Change existing annotation:
+				var oldValue = GetAnnotation(name);
+				MetadataObject.Annotations[name].Value = value;
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new annotation:
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+			}
+
 		}
+		public void RemoveAnnotation(string name, bool undoable = true) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Get current value:
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				if (cancel) return;
+
+				var oldValue = MetadataObject.Annotations[name].Value;
+				MetadataObject.Annotations.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			}
+		}
+		public int GetAnnotationsCount() {
+			return MetadataObject.Annotations.Count;
+		}
+		public IEnumerable<string> GetAnnotations() {
+			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
 		<# }
 
 		if (Rules.ShouldWrapProperty(p, t)) { #>
-        /// <summary>
-        /// Gets or sets the <#= p.Name #> of the <#= t.Name #>.
-        /// </summary>
+<#= Rules.GetPropertyXmlDoc(t, p.Name) #>
 		[DisplayName("<#= Rules.GetDisplayName(p.Name, t.Name) #>")]
-		[Category("<#= Rules.GetCategory(p.Name, t.Name) #>"),IntelliSense("The <#= Rules.GetDisplayName(p.Name, t.Name) #> of this <#= t.Name #>.")]<#= Rules.GetOtherAttributes(p.Name, t.Name) #>
+		[Category("<#= Rules.GetCategory(p.Name, t.Name) #>"),Description(@"<#= Rules.GetPropertyDescription(t, p.Name)#>"),IntelliSense("The <#= Rules.GetDisplayName(p.Name, t.Name) #> of this <#= t.Name #>.")]<#= Rules.GetOtherAttributes(p.Name, t.Name) #>
 		public <#= Rules.PropertyType(p) #> <#= p.Name #> {
 			<#= Rules.PropertyGetter(p) #>
 			<#= Rules.PropertySetter(p) #>
@@ -83,7 +152,7 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Collection of localized Display Folders for this <#= t.Name #>.
         /// </summary>
-        [Browsable(true),DisplayName("Display Folders"),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Display Folders"),Description("Shows all translated Display Folders of this object."),Category("Translations and Perspectives")]
 	    public TranslationIndexer TranslatedDisplayFolders { private set; get; }
 <#		}
 		if (p.Name == "Table") { #>
@@ -106,18 +175,18 @@ namespace TabularEditor.TOMWrapper
         /// <Summary>
 		/// Collection of perspectives in which this <#= t.Name #> is visible.
 		/// </Summary>
-		[Browsable(true),DisplayName("Perspectives"), Category("Translations and Perspectives")]
+		[Browsable(true),DisplayName("Shown in Perspective"), Description("Provides an easy way to include or exclude this object from the perspectives of the model."), Category("Translations and Perspectives")]
         public PerspectiveIndexer InPerspective { get; private set; }
 <# } if (Rules.IsTranslatable(t)) { #>
         /// <summary>
         /// Collection of localized descriptions for this <#= t.Name #>.
         /// </summary>
-        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Descriptions"),Description("Shows all translated descriptions of this object."),Category("Translations and Perspectives")]
 	    public TranslationIndexer TranslatedDescriptions { private set; get; }
         /// <summary>
         /// Collection of localized names for this <#= t.Name #>.
         /// </summary>
-        [Browsable(true),DisplayName("Names"),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of this object."),Category("Translations and Perspectives")]
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
 <# } if (!t.IsAbstract) { #>
@@ -148,6 +217,9 @@ namespace TabularEditor.TOMWrapper
 			parent.<#= Rules.GetCollection(t) #>.Add(obj);
 			
 			obj.Init();
+<# if(t.Name == "ModelRole") { #>
+			obj.InitRLSIndexer();
+<# } #>
 
 			return obj;
 		}
@@ -168,6 +240,9 @@ if(Rules.GetParent(t) == "Model") { #>
 			TabularModelHandler.Singleton.Model.<#= Rules.GetCollection(t) #>.Add(obj);
 
 			obj.Init();
+<# if(t.Name == "ModelRole") { #>
+			obj.InitRLSIndexer();
+<# } #>
 
 			return obj;
 		}
@@ -206,6 +281,10 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 
 			obj.InternalInit();
 			obj.Init();
+<# if(t.Name == "ModelRole") { #>
+			obj.InitRLSIndexer();
+<# } #>
+
 <# if (Rules.IsTranslatable(t, true)) { #>
 			// Copy translations, if applicable:
 			if(includeTranslations) {
@@ -294,8 +373,12 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 			TranslatedDisplayFolders = new TranslationIndexer(this, TOM.TranslatedProperty.DisplayFolder);
 <# } if(Rules.IsPerspectiveObject(t)) { #>
 
-			// Create indexers for perspectives:
+			// Create indexer for perspectives:
 			InPerspective = new Perspective<#= t.Name #>Indexer(this);
+<# } if(props.Any(p => p.Name == "Annotations")) { #>
+			
+			// Create indexer for annotations:
+			Annotations = new AnnotationCollection(this);
 <# }#>
 <# if(Rules.HasCollections(t)) { #>
 			
@@ -334,21 +417,21 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
 <# if(Rules.InCollection(t)) { #>
-				case "Parent":
+				case Properties.PARENT:
 					return false;
 <# } if(Rules.IsTranslatable(t)) { #>
 				
 				// Hides translation properties in the grid, unless the model actually contains translations:
-				case "TranslatedNames":
-				case "TranslatedDescriptions":
+				case Properties.TRANSLATEDNAMES:
+				case Properties.TRANSLATEDDESCRIPTIONS:
 <#     if(Rules.HasDisplayFolder(t)) { #>
-				case "TranslatedDisplayFolders":
+				case Properties.TRANSLATEDDISPLAYFOLDERS:
 <#     } #>
 					return Model.Cultures.Any();
 <# } if(Rules.IsPerspectiveObject(t)) { #>
 				
 				// Hides the perspective property in the grid, unless the model actually contains perspectives:
-				case "InPerspective":
+				case Properties.INPERSPECTIVE:
 					return Model.Perspectives.Any();
 <# } #>				
 				default:

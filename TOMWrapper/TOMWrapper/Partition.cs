@@ -19,14 +19,6 @@ namespace TabularEditor.TOMWrapper
             DataSource = Model.DataSources.FirstOrDefault();
         }
 
-        public string QueryType
-        {
-            get
-            {
-                return "";
-            }
-        }
-
         protected override void Init()
         {
             if (MetadataObject.Source == null && !(Parent is CalculatedTable))
@@ -37,9 +29,11 @@ namespace TabularEditor.TOMWrapper
             base.Init();
         }
 
+        [Category("Basic"),Description("The query which is executed on the Data Source to populate this partition with data.")]
         [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
         public string Query { get { return Expression; } set { Expression = value; } }
 
+        [Category("Expression"), Description("The expression which is used to populate this partition with data.")]
         [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
         public string Expression
         {
@@ -86,7 +80,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        [TypeConverter(typeof(DataSourceConverter))]
+        [Category("Other"),DisplayName("Data Source"),Description("The Data Source used by this partition."),TypeConverter(typeof(DataSourceConverter))]
         public DataSource DataSource
         {
             get
@@ -130,9 +124,13 @@ namespace TabularEditor.TOMWrapper
                     return SourceType == TOM.PartitionSourceType.Calculated;
 #endif
                 case "Mode":
+                case "DataView":
                 case "Description":
                 case "Name":
                 case "RefreshedTime":
+                case "ObjectTypeName":
+                case "State":
+                case "SourceType":
                     return true;
                 default:
                     return false;
@@ -157,6 +155,16 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        public override bool CanDelete(out string message)
+        {
+            if(Table.Partitions.Count == 1)
+            {
+                message = Messages.TableMustHaveAtLeastOnePartition;
+                return false;
+            }
+            return base.CanDelete(out message);
+        }
+
         protected override bool IsEditable(string propertyName)
         {
             switch(propertyName)
@@ -166,6 +174,8 @@ namespace TabularEditor.TOMWrapper
                 case "DataSource":
                 case "Query":
                 case "Expression":
+                case "Mode":
+                case "DataView":
                     return true;
                 default:
                     return false;

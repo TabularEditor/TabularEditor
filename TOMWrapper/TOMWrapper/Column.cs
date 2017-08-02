@@ -10,8 +10,11 @@ namespace TabularEditor.TOMWrapper
 {
     public abstract partial class Column: ITabularPerspectiveObject, IDaxObject
     {
+        /// <summary>
+        /// Collection of objects that depend on this column.
+        /// </summary>
         [Browsable(false)]
-        public HashSet<IDAXExpressionObject> Dependants { get; private set; } = new HashSet<IDAXExpressionObject>();
+        public HashSet<IDAXExpressionObject> Dependants { get; } = new HashSet<IDAXExpressionObject>();
 
         #region Convenient collections
         /// <summary>
@@ -42,6 +45,23 @@ namespace TabularEditor.TOMWrapper
             if (IsKey) IsKey = false;
 
             base.RemoveReferences();
+        }
+
+        public override bool CanDelete(out string message)
+        {
+            if(this is CalculatedTableColumn)
+            {
+                message = Messages.CannotDeleteCalculatedTableColumn;
+                return false;
+            }
+
+            message = string.Empty;
+            if (UsedInHierarchies.Any()) message += Messages.ColumnUsedInHierarchy + " ";
+            if (UsedInRelationships.Any()) message += Messages.ColumnUsedInRelationship + " ";
+            if (Dependants.Count > 0) message += Messages.ReferencedByDAX + " ";
+
+            if (message == string.Empty) message = null;
+            return true;
         }
 
         internal override void DeleteLinkedObjects(bool isChildOfDeleted)
@@ -83,15 +103,15 @@ namespace TabularEditor.TOMWrapper
 
         protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
         {
-            if (propertyName == "Name")
+            if (propertyName == Properties.NAME)
             {
                 Handler.BuildDependencyTree();
 
                 // When formula fixup is enabled, we need to begin a new batch of undo operations, as this
                 // name change could result in expression changes on multiple objects:
-                if (Handler.AutoFixup) Handler.UndoManager.BeginBatch("Name change");
+                if (Handler.AutoFixup) Handler.UndoManager.BeginBatch("Set Property 'Name'");
             }
-            if(propertyName == "IsKey" && (bool)newValue == true)
+            if(propertyName == Properties.ISKEY && (bool)newValue == true)
             {
                 // When the IsKey column is set to "true", all other columns must have their IsKey set to false.
                 // This has to happen within one undo-batch, so the change can be perfectly restored.
@@ -106,13 +126,13 @@ namespace TabularEditor.TOMWrapper
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
-            if(propertyName == "IsKey" && IsKey == true)
+            if(propertyName == Properties.ISKEY && IsKey == true)
             {
                 Handler.UndoManager.EndBatch();
             }
-            if (propertyName == "Name" && Handler.AutoFixup)
+            if (propertyName == Properties.NAME && Handler.AutoFixup)
             {
-                Handler.DoFixup(this, (string)newValue);
+                Handler.DoFixup(this);
                 Handler.UndoManager.EndBatch();
             }
             base.OnPropertyChanged(propertyName, oldValue, newValue);
@@ -122,8 +142,10 @@ namespace TabularEditor.TOMWrapper
         {
             switch (propertyName)
             {
-                case "Variations":
+#if CL1400
+                case Properties.VARIATIONS:
                     return Model.Database.CompatibilityLevel >= 1400;
+#endif
                 default: return true;
             }
         }

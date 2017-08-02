@@ -18,7 +18,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         public AnalyzerIgnoreRules(IAnnotationObject obj)
         {
             RuleIDs = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
-            var json = obj.GetAnnotation("BestPractizeAnalyzer_IgnoreRules");
+            var json = obj.GetAnnotation("BestPracticeAnalyzer_IgnoreRules") ?? obj.GetAnnotation("BestPractizeAnalyzer_IgnoreRules"); // Stupid typo in earlier version
             if(!string.IsNullOrEmpty(json))
             {
                 JsonConvert.PopulateObject(json, this);
@@ -26,7 +26,8 @@ namespace TabularEditor.BestPracticeAnalyzer
         }
         public void Save(IAnnotationObject obj)
         {
-            obj.SetAnnotation("BestPractizeAnalyzer_IgnoreRules", JsonConvert.SerializeObject(this), false);
+            obj.RemoveAnnotation("BestPractizeAnalyzer_IgnoreRules"); // Stupid typo in earlier version
+            obj.SetAnnotation("BestPracticeAnalyzer_IgnoreRules", JsonConvert.SerializeObject(this), false);
         }
     }
 
@@ -109,7 +110,7 @@ namespace TabularEditor.BestPracticeAnalyzer
                 _model = value;
                 if (_model != null)
                 {
-                    var localRulesJson = _model.GetAnnotation("BestPractizeAnalyzer");
+                    var localRulesJson = _model.GetAnnotation("BestPracticeAnalyzer") ?? _model.GetAnnotation("BestPractizeAnalyzer"); // Stupid typo in earlier version
                     if (!string.IsNullOrEmpty(localRulesJson))
                     {
                         LocalRules = BestPracticeCollection.LoadFromJson(localRulesJson);
@@ -164,7 +165,8 @@ namespace TabularEditor.BestPracticeAnalyzer
         public void SaveLocalRulesToModel()
         {
             if (_model == null) return;
-            _model.SetAnnotation("BestPractizeAnalyzer", LocalRules.SerializeToJson(), false);
+            _model.RemoveAnnotation("BestPractizeAnalyzer"); // Stupid typo in earlier version
+            _model.SetAnnotation("BestPracticeAnalyzer", LocalRules.SerializeToJson(), false);
         }
 
         public Analyzer()

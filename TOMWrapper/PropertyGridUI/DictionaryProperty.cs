@@ -5,14 +5,25 @@ using System.Globalization;
 using System.Collections;
 using TabularEditor.TOMWrapper;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.Drawing.Design;
 
 namespace TabularEditor.PropertyGridUI
 {
+    /// <summary>
+    /// This interface must be implemented by dictionary-type properties on a class, such as
+    /// annotations, translations, etc.
+    /// </summary>
     internal interface IExpandableIndexer
     {
         string Summary { get; }
         IEnumerable<string> Keys { get; }
         object this[string index] { get; set; }
+        /// <summary>
+        /// Gets the value to display for a given key. Note, this is not the value of the object represented by the key. 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         string GetDisplayName(string key);
         void Refresh();
     }
@@ -77,7 +88,6 @@ namespace TabularEditor.PropertyGridUI
         IExpandableIndexer _dictionary;
         string _key;
         string _propertyName;
-        public string DictionaryName { get { return _propertyName; } }
 
         internal DictionaryPropertyDescriptor(IExpandableIndexer d, string key, string propertyName, string displayName)
             : base(displayName, null)
@@ -94,12 +104,16 @@ namespace TabularEditor.PropertyGridUI
         protected override void FillAttributes(IList attributeList)
         {
             attributeList.Add(new NotifyParentPropertyAttribute(true));
+
+            // For annotations, make sure we enable multiline string editing:
+            if(_dictionary is AnnotationCollection)
+                attributeList.Add(new EditorAttribute(typeof(MultilineStringEditor), typeof(UITypeEditor)));
+
             base.FillAttributes(attributeList);
         }
 
         public override void SetValue(object component, object value)
         {
-            var oldValue = _dictionary[_key];
             _dictionary[_key] = value;
         }
 

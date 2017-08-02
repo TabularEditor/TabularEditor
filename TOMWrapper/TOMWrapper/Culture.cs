@@ -123,7 +123,7 @@ namespace TabularEditor.TOMWrapper
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
             base.OnPropertyChanged(propertyName, oldValue, newValue);
-            if (propertyName == "Name") base.OnPropertyChanged("DisplayName", null, newValue);
+            if (propertyName == Properties.NAME) base.OnPropertyChanged("DisplayName", null, newValue);
         }
 
         [Browsable(false)]
@@ -133,8 +133,8 @@ namespace TabularEditor.TOMWrapper
         {
             switch(propertyName)
             {
-                case "Name":
-                case "ObjectType":
+                case Properties.NAME:
+                case Properties.OBJECTTYPE:
                     return true;
                 default: return propertyName.StartsWith("Stats");
             }
@@ -143,7 +143,7 @@ namespace TabularEditor.TOMWrapper
 
         protected override bool IsEditable(string propertyName)
         {
-            return propertyName == "Name";
+            return propertyName == Properties.NAME;
         }
 
         [TypeConverter(typeof(CultureConverter)), NoMultiselect(), DisplayName("Language")]
@@ -160,15 +160,15 @@ namespace TabularEditor.TOMWrapper
                 if (oldValue == value) return;
                 bool undoable = true;
                 bool cancel = false;
-                OnPropertyChanging("Name", value, ref undoable, ref cancel);
+                OnPropertyChanging(Properties.NAME, value, ref undoable, ref cancel);
                 if (cancel) return;
 
                 MetadataObject.Name = value;
                 UpdateDisplayName();
 
-                Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Name", oldValue, value));
+                Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.NAME, oldValue, value));
                 Handler.UpdateObject(this);
-                OnPropertyChanged("Name", oldValue, value);
+                OnPropertyChanged(Properties.NAME, oldValue, value);
             }
         }
 

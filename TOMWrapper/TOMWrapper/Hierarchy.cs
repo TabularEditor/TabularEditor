@@ -9,6 +9,7 @@ namespace TabularEditor.TOMWrapper
 {
     partial class Hierarchy: ITabularObjectContainer, ITabularPerspectiveObject
     {
+        [Browsable(false)]
         public string DaxObjectFullName
         {
             get { return Table.DaxObjectFullName + "[" + Name + "]"; }

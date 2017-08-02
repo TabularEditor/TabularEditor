@@ -11,25 +11,24 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
   
-    /// <summary>
-	/// Base class declaration for Partition
-	/// </summary>
+	/// <summary>
+///             Represents a partition in a table. Partitions define the query against external data sources that return the rowsets of a <see cref="T:TabularEditor.TOMWrapper.Table" />.
+///             </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public partial class Partition: TabularNamedObject
 			, IErrorMessageObject
 			, ITabularTableObject
 			, IDescriptionObject
 			, IAnnotationObject
-			, IDeletableObject
 			, IClonableObject
 	{
 	    protected internal new TOM.Partition MetadataObject { get { return base.MetadataObject as TOM.Partition; } internal set { base.MetadataObject = value; } }
 
-        /// <summary>
-        /// Gets or sets the SourceType of the Partition.
-        /// </summary>
+/// <summary>
+///             Gets the Type of PartitionSource.
+///             </summary><returns>The Type of PartitionSource.</returns>
 		[DisplayName("Source Type")]
-		[Category("Other"),IntelliSense("The Source Type of this Partition.")]
+		[Category("Other"),Description(@"Gets the Type of PartitionSource."),IntelliSense("The Source Type of this Partition.")]
 		public TOM.PartitionSourceType SourceType {
 			get {
 			    return MetadataObject.SourceType;
@@ -37,22 +36,78 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeSourceType() { return false; }
+        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on this object."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+		public AnnotationCollection Annotations { get; private set; }
+		public string GetAnnotation(int index) {
+			return MetadataObject.Annotations[index].Value;
+		}
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.Find(name)?.Value;
+		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		}
+		public void SetAnnotation(int index, string value, bool undoable = true) {
+			var name = MetadataObject.Annotations[index].Name;
+			SetAnnotation(name, value, undoable);
+		}
+		public string GetNewAnnotationName() {
+			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
 		public void SetAnnotation(string name, string value, bool undoable = true) {
-			if(MetadataObject.Annotations.Contains(name)) {
-				MetadataObject.Annotations[name].Value = value;
-			} else {
-				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+			if(name == null) name = GetNewAnnotationName();
+
+			if(value == null) {
+				// Remove annotation if set to null:
+				RemoveAnnotation(name, undoable);
+				return;
 			}
-			if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value));
+
+			if(GetAnnotation(name) == value) return;
+			bool undoable2 = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Change existing annotation:
+				var oldValue = GetAnnotation(name);
+				MetadataObject.Annotations[name].Value = value;
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new annotation:
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+			}
+
 		}
-		        /// <summary>
-        /// Gets or sets the Description of the Partition.
-        /// </summary>
+		public void RemoveAnnotation(string name, bool undoable = true) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Get current value:
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				if (cancel) return;
+
+				var oldValue = MetadataObject.Annotations[name].Value;
+				MetadataObject.Annotations.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			}
+		}
+		public int GetAnnotationsCount() {
+			return MetadataObject.Annotations.Count;
+		}
+		public IEnumerable<string> GetAnnotations() {
+			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		/// <summary>
+///             Gets or sets the Description property of the current column.
+///             </summary><returns>The Description property of the current column.</returns>
 		[DisplayName("Description")]
-		[Category("Basic"),IntelliSense("The Description of this Partition.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"Gets or sets the Description property of the current column."),IntelliSense("The Description of this Partition.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;
@@ -62,19 +117,21 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("Description", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.DESCRIPTION, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.Description = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Description", oldValue, value));
-				OnPropertyChanged("Description", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, value));
+				OnPropertyChanged(Properties.DESCRIPTION, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
-        /// <summary>
-        /// Gets or sets the State of the Partition.
-        /// </summary>
+/// <summary>
+///             Gets or sets the state for the object partitions. For regular partitions, Ready if the partition has been refreshed or NoData if it was never refreshed or if it was cleared. 
+///             For calculated partitions, as with calculated columns, this value can be CalculationNeeded or Ready.
+///             </summary><returns>The object state for the partitions.</returns>
 		[DisplayName("State")]
-		[Category("Metadata"),IntelliSense("The State of this Partition.")]
+		[Category("Metadata"),Description(@"Gets or sets the state for the object partitions. For regular partitions, Ready if the partition has been refreshed or NoData if it was never refreshed or if it was cleared. 
+            For calculated partitions, as with calculated columns, this value can be CalculationNeeded or Ready."),IntelliSense("The State of this Partition.")]
 		public TOM.ObjectState State {
 			get {
 			    return MetadataObject.State;
@@ -82,11 +139,11 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeState() { return false; }
-        /// <summary>
-        /// Gets or sets the Mode of the Partition.
-        /// </summary>
+/// <summary>
+///             Gets or sets the type of the model (import or DirectQuery).
+///             </summary><returns>The type of the mode.</returns>
 		[DisplayName("Mode")]
-		[Category("Other"),IntelliSense("The Mode of this Partition.")]
+		[Category("Other"),Description(@"Gets or sets the type of the model (import or DirectQuery)."),IntelliSense("The Mode of this Partition.")]
 		public TOM.ModeType Mode {
 			get {
 			    return MetadataObject.Mode;
@@ -96,19 +153,20 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("Mode", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.MODE, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.Mode = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Mode", oldValue, value));
-				OnPropertyChanged("Mode", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MODE, oldValue, value));
+				OnPropertyChanged(Properties.MODE, oldValue, value);
 			}
 		}
+
 		private bool ShouldSerializeMode() { return false; }
-        /// <summary>
-        /// Gets or sets the DataView of the Partition.
-        /// </summary>
+/// <summary>
+///             Gets or sets the type of data view that defines a partition slice.
+///             </summary><returns>The type of data view that defines a partition slice.</returns>
 		[DisplayName("Data View")]
-		[Category("Other"),IntelliSense("The Data View of this Partition.")]
+		[Category("Other"),Description(@"Gets or sets the type of data view that defines a partition slice."),IntelliSense("The Data View of this Partition.")]
 		public TOM.DataViewType DataView {
 			get {
 			    return MetadataObject.DataView;
@@ -118,19 +176,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("DataView", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.DATAVIEW, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.DataView = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "DataView", oldValue, value));
-				OnPropertyChanged("DataView", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DATAVIEW, oldValue, value));
+				OnPropertyChanged(Properties.DATAVIEW, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeDataView() { return false; }
-        /// <summary>
-        /// Gets or sets the ErrorMessage of the Partition.
-        /// </summary>
+/// <summary>
+///             Gets or sets an error message if the column is invalid or in an error state.
+///             </summary><returns>An error message if the column is invalid or in an error state.</returns>
 		[DisplayName("Error Message")]
-		[Category("Metadata"),IntelliSense("The Error Message of this Partition.")]
+		[Category("Metadata"),Description(@"Gets or sets an error message if the column is invalid or in an error state."),IntelliSense("The Error Message of this Partition.")]
 		public string ErrorMessage {
 			get {
 			    return MetadataObject.ErrorMessage;
@@ -207,6 +265,7 @@ namespace TabularEditor.TOMWrapper
 			obj.InternalInit();
 			obj.Init();
 
+
             Handler.EndUpdate();
 
             return obj;
@@ -244,6 +303,9 @@ namespace TabularEditor.TOMWrapper
 
 		private void InternalInit()
 		{
+			
+			// Create indexer for annotations:
+			Annotations = new AnnotationCollection(this);
 		}
 
 
@@ -256,7 +318,7 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
-				case "Parent":
+				case Properties.PARENT:
 					return false;
 				
 				default:

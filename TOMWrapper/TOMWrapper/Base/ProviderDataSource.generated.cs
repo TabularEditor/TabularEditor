@@ -11,20 +11,18 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
   
-    /// <summary>
-	/// Base class declaration for ProviderDataSource
-	/// </summary>
+	/// <summary>
+///             Represents a data source that uses a connection string for the connection.
+///             </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public partial class ProviderDataSource: DataSource
 			, IClonableObject
 	{
 	    protected internal new TOM.ProviderDataSource MetadataObject { get { return base.MetadataObject as TOM.ProviderDataSource; } internal set { base.MetadataObject = value; } }
 
-        /// <summary>
-        /// Gets or sets the ConnectionString of the ProviderDataSource.
-        /// </summary>
+/// <summary>Gets or sets the connection string to the data source.</summary><returns>A connection containing string to the data source.</returns>
 		[DisplayName("Connection String")]
-		[Category("Connection Details"),IntelliSense("The Connection String of this ProviderDataSource.")]
+		[Category("Connection Details"),Description(@"Gets or sets the connection string to the data source."),IntelliSense("The Connection String of this ProviderDataSource.")]
 		public string ConnectionString {
 			get {
 			    return MetadataObject.ConnectionString;
@@ -34,19 +32,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("ConnectionString", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.CONNECTIONSTRING, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.ConnectionString = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "ConnectionString", oldValue, value));
-				OnPropertyChanged("ConnectionString", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.CONNECTIONSTRING, oldValue, value));
+				OnPropertyChanged(Properties.CONNECTIONSTRING, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeConnectionString() { return false; }
-        /// <summary>
-        /// Gets or sets the ImpersonationMode of the ProviderDataSource.
-        /// </summary>
+/// <summary>
+///             Gets or sets the impersonation mode to connect to the data source. 
+///             </summary><returns>The impersonation mode to connect to the data source.</returns>
 		[DisplayName("Impersonation Mode")]
-		[Category("Connection Details"),IntelliSense("The Impersonation Mode of this ProviderDataSource.")]
+		[Category("Connection Details"),Description(@"Gets or sets the impersonation mode to connect to the data source."),IntelliSense("The Impersonation Mode of this ProviderDataSource.")]
 		public TOM.ImpersonationMode ImpersonationMode {
 			get {
 			    return MetadataObject.ImpersonationMode;
@@ -56,19 +54,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("ImpersonationMode", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.IMPERSONATIONMODE, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.ImpersonationMode = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "ImpersonationMode", oldValue, value));
-				OnPropertyChanged("ImpersonationMode", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.IMPERSONATIONMODE, oldValue, value));
+				OnPropertyChanged(Properties.IMPERSONATIONMODE, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeImpersonationMode() { return false; }
-        /// <summary>
-        /// Gets or sets the Account of the ProviderDataSource.
-        /// </summary>
+/// <summary>Gets or sets the account for the data source.</summary><returns>The account for the data source.</returns>
 		[DisplayName("Account")]
-		[Category("Connection Details"),IntelliSense("The Account of this ProviderDataSource.")]
+		[Category("Connection Details"),Description(@"Gets or sets the account for the data source."),IntelliSense("The Account of this ProviderDataSource.")]
 		public string Account {
 			get {
 			    return MetadataObject.Account;
@@ -78,19 +74,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("Account", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.ACCOUNT, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.Account = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Account", oldValue, value));
-				OnPropertyChanged("Account", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ACCOUNT, oldValue, value));
+				OnPropertyChanged(Properties.ACCOUNT, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeAccount() { return false; }
-        /// <summary>
-        /// Gets or sets the Password of the ProviderDataSource.
-        /// </summary>
+/// <summary>Gets or sets the password of the data source provider.</summary><returns>A String containing the password of the data source provider.</returns>
 		[DisplayName("Password")]
-		[Category("Connection Details"),IntelliSense("The Password of this ProviderDataSource.")]
+		[Category("Connection Details"),Description(@"Gets or sets the password of the data source provider."),IntelliSense("The Password of this ProviderDataSource.")]
 		public string Password {
 			get {
 			    return MetadataObject.Password;
@@ -100,19 +94,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("Password", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.PASSWORD, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.Password = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Password", oldValue, value));
-				OnPropertyChanged("Password", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.PASSWORD, oldValue, value));
+				OnPropertyChanged(Properties.PASSWORD, oldValue, value);
 			}
 		}
 		private bool ShouldSerializePassword() { return false; }
-        /// <summary>
-        /// Gets or sets the MaxConnections of the ProviderDataSource.
-        /// </summary>
+/// <summary>
+///             Gets or sets the maximum number of connections to be opened concurrently to the data source.
+///             </summary><returns>The maximum number of connections to be opened concurrently to the data source.</returns>
 		[DisplayName("Max Connections")]
-		[Category("Connection Details"),IntelliSense("The Max Connections of this ProviderDataSource.")]
+		[Category("Connection Details"),Description(@"Gets or sets the maximum number of connections to be opened concurrently to the data source."),IntelliSense("The Max Connections of this ProviderDataSource.")]
 		public int MaxConnections {
 			get {
 			    return MetadataObject.MaxConnections;
@@ -122,19 +116,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("MaxConnections", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.MAXCONNECTIONS, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.MaxConnections = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "MaxConnections", oldValue, value));
-				OnPropertyChanged("MaxConnections", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MAXCONNECTIONS, oldValue, value));
+				OnPropertyChanged(Properties.MAXCONNECTIONS, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeMaxConnections() { return false; }
-        /// <summary>
-        /// Gets or sets the Isolation of the ProviderDataSource.
-        /// </summary>
+/// <summary>
+///             Gets or sets the isolation property for a DataSource object.
+///             </summary><returns>The data source isolation status.</returns>
 		[DisplayName("Isolation")]
-		[Category("Connection Details"),IntelliSense("The Isolation of this ProviderDataSource.")]
+		[Category("Connection Details"),Description(@"Gets or sets the isolation property for a DataSource object."),IntelliSense("The Isolation of this ProviderDataSource.")]
 		public TOM.DatasourceIsolation Isolation {
 			get {
 			    return MetadataObject.Isolation;
@@ -144,19 +138,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("Isolation", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.ISOLATION, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.Isolation = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Isolation", oldValue, value));
-				OnPropertyChanged("Isolation", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISOLATION, oldValue, value));
+				OnPropertyChanged(Properties.ISOLATION, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeIsolation() { return false; }
-        /// <summary>
-        /// Gets or sets the Timeout of the ProviderDataSource.
-        /// </summary>
+/// <summary>
+///             Gets or sets the timeout in seconds for commands executed against the data source.
+///             </summary><returns>The timeout in seconds for commands executed against the data source.</returns>
 		[DisplayName("Timeout")]
-		[Category("Connection Details"),IntelliSense("The Timeout of this ProviderDataSource.")]
+		[Category("Connection Details"),Description(@"Gets or sets the timeout in seconds for commands executed against the data source."),IntelliSense("The Timeout of this ProviderDataSource.")]
 		public int Timeout {
 			get {
 			    return MetadataObject.Timeout;
@@ -166,19 +160,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("Timeout", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.TIMEOUT, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.Timeout = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Timeout", oldValue, value));
-				OnPropertyChanged("Timeout", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TIMEOUT, oldValue, value));
+				OnPropertyChanged(Properties.TIMEOUT, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeTimeout() { return false; }
-        /// <summary>
-        /// Gets or sets the Provider of the ProviderDataSource.
-        /// </summary>
+/// <summary>Gets or sets the provider of the data source.</summary><returns>The string containing the provider of the data source.</returns>
 		[DisplayName("Provider")]
-		[Category("Connection Details"),IntelliSense("The Provider of this ProviderDataSource.")]
+		[Category("Connection Details"),Description(@"Gets or sets the provider of the data source."),IntelliSense("The Provider of this ProviderDataSource.")]
 		public string Provider {
 			get {
 			    return MetadataObject.Provider;
@@ -188,11 +180,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("Provider", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.PROVIDER, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.Provider = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Provider", oldValue, value));
-				OnPropertyChanged("Provider", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.PROVIDER, oldValue, value));
+				OnPropertyChanged(Properties.PROVIDER, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeProvider() { return false; }
@@ -267,6 +259,7 @@ namespace TabularEditor.TOMWrapper
 			obj.InternalInit();
 			obj.Init();
 
+
             Handler.EndUpdate();
 
             return obj;
@@ -317,7 +310,7 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
-				case "Parent":
+				case Properties.PARENT:
 					return false;
 				
 				default:

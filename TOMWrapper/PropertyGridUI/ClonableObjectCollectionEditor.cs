@@ -10,7 +10,7 @@ using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.PropertyGridUI
 {
-    public class PerspectiveCollectionEditor : RefreshGridCollectionEditor
+    public class ClonableObjectCollectionEditor<T> : RefreshGridCollectionEditor where T: class, IClonableObject
     {
         CollectionForm m_collectionForm;
         Button cloneButton;
@@ -40,15 +40,25 @@ namespace TabularEditor.PropertyGridUI
         {
             if (lb.SelectedItem == null) return;
             PropertyInfo propInfo = lb.SelectedItem.GetType().GetProperty("Value");
-            var orgPerspective = propInfo.GetValue(lb.SelectedItem) as Perspective;
+            var orgObject = propInfo.GetValue(lb.SelectedItem) as T;
 
             MethodInfo methodInfo = m_collectionForm.GetType().GetMethod("AddItems", BindingFlags.NonPublic | BindingFlags.Instance);
-            methodInfo.Invoke(m_collectionForm, new object[] { Enumerable.Repeat(orgPerspective.Clone(), 1).ToList() } );
+            methodInfo.Invoke(m_collectionForm, new object[] { Enumerable.Repeat(orgObject.Clone(), 1).ToList() } );
 
         }
 
-        public PerspectiveCollectionEditor(Type type) : base(type)
+        protected override object CreateInstance(Type itemType)
         {
+            if(itemType == typeof(T))
+            {
+                return typeof(T).GetMethod("CreateNew", new Type[] { typeof(string) }).Invoke(null, new object[] { null });
+            }
+            return base.CreateInstance(itemType);
+        }
+
+        public ClonableObjectCollectionEditor(Type type): base(type)
+        {
+
         }
     }
 }

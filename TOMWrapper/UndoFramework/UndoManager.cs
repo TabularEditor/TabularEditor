@@ -214,15 +214,25 @@ namespace TabularEditor.UndoFramework
 
                 return 0;
             }
+            else if ((_UndoStack.Skip(1).FirstOrDefault() as UndoBatchAction)?.Begin ?? false)
+            {
+                // If the batch action only contains a single non-batch action, we might as well pop the batch
+                // and add the non-batch action directly to the stack:
+                var a = _UndoStack.Pop();
+                var beginBatch = _UndoStack.Pop();
+                _UndoStack.Push(a);
+            }
             else
             {
                 var actionName = _UndoStack.OfType<UndoBatchAction>().First(uba => uba.Depth == batchDepth).ActionName;
                 _UndoStack.Push(new UndoBatchAction(actionName, batchDepth, false));
-                if (undo)
-                {
-                    XDo(false, false);
-                    return 0;
-                }
+            }
+
+            // Rollback if requested:
+            if (undo)
+            {
+                XDo(false, false);
+                return 0;
             }
 
             UndoStateChanged?.Invoke(this, new EventArgs());

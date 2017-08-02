@@ -11,9 +11,9 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
   
-    /// <summary>
-	/// Base class declaration for Hierarchy
-	/// </summary>
+	/// <summary>
+///             Represents a collection of levels that provide a logical hierarchical drilldown path for client applications. It is a child of a Table object.
+///             </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public partial class Hierarchy: TabularNamedObject
 			, IDetailObject
@@ -21,29 +21,84 @@ namespace TabularEditor.TOMWrapper
 			, ITabularTableObject
 			, IDescriptionObject
 			, IAnnotationObject
-			, IDeletableObject
 			, ITabularPerspectiveObject
 			, ITranslatableObject
 			, IClonableObject
 	{
 	    protected internal new TOM.Hierarchy MetadataObject { get { return base.MetadataObject as TOM.Hierarchy; } internal set { base.MetadataObject = value; } }
 
+        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on this object."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+		public AnnotationCollection Annotations { get; private set; }
+		public string GetAnnotation(int index) {
+			return MetadataObject.Annotations[index].Value;
+		}
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.Find(name)?.Value;
+		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		}
+		public void SetAnnotation(int index, string value, bool undoable = true) {
+			var name = MetadataObject.Annotations[index].Name;
+			SetAnnotation(name, value, undoable);
+		}
+		public string GetNewAnnotationName() {
+			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
 		public void SetAnnotation(string name, string value, bool undoable = true) {
-			if(MetadataObject.Annotations.Contains(name)) {
-				MetadataObject.Annotations[name].Value = value;
-			} else {
-				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+			if(name == null) name = GetNewAnnotationName();
+
+			if(value == null) {
+				// Remove annotation if set to null:
+				RemoveAnnotation(name, undoable);
+				return;
 			}
-			if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value));
+
+			if(GetAnnotation(name) == value) return;
+			bool undoable2 = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Change existing annotation:
+				var oldValue = GetAnnotation(name);
+				MetadataObject.Annotations[name].Value = value;
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new annotation:
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+			}
+
 		}
-		        /// <summary>
-        /// Gets or sets the Description of the Hierarchy.
-        /// </summary>
+		public void RemoveAnnotation(string name, bool undoable = true) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Get current value:
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				if (cancel) return;
+
+				var oldValue = MetadataObject.Annotations[name].Value;
+				MetadataObject.Annotations.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			}
+		}
+		public int GetAnnotationsCount() {
+			return MetadataObject.Annotations.Count;
+		}
+		public IEnumerable<string> GetAnnotations() {
+			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		/// <summary>
+///             Gets or sets the description of the <see cref="T:TabularEditor.TOMWrapper.Hierarchy" /> object.
+///             </summary><returns>The description of the <see cref="T:TabularEditor.TOMWrapper.Hierarchy" /> object.</returns>
 		[DisplayName("Description")]
-		[Category("Basic"),IntelliSense("The Description of this Hierarchy.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"Gets or sets the description of the Hierarchy object."),IntelliSense("The Description of this Hierarchy.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;
@@ -53,19 +108,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("Description", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.DESCRIPTION, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.Description = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Description", oldValue, value));
-				OnPropertyChanged("Description", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, value));
+				OnPropertyChanged(Properties.DESCRIPTION, oldValue, value);
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
-        /// <summary>
-        /// Gets or sets the IsHidden of the Hierarchy.
-        /// </summary>
+/// <summary>Gets or sets a value that indicates whether the hierarchy is hidden.</summary><returns>true if the hierarchy is hidden; otherwise, false.</returns>
 		[DisplayName("Hidden")]
-		[Category("Basic"),IntelliSense("The Hidden of this Hierarchy.")]
+		[Category("Basic"),Description(@"Gets or sets a value that indicates whether the hierarchy is hidden."),IntelliSense("The Hidden of this Hierarchy.")]
 		public bool IsHidden {
 			get {
 			    return MetadataObject.IsHidden;
@@ -75,20 +128,18 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("IsHidden", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.ISHIDDEN, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.IsHidden = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "IsHidden", oldValue, value));
-				OnPropertyChanged("IsHidden", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISHIDDEN, oldValue, value));
+				OnPropertyChanged(Properties.ISHIDDEN, oldValue, value);
 				Handler.UpdateObject(this);
 			}
 		}
 		private bool ShouldSerializeIsHidden() { return false; }
-        /// <summary>
-        /// Gets or sets the State of the Hierarchy.
-        /// </summary>
+/// <summary>Gets or sets the object state.</summary><returns>An object state.</returns>
 		[DisplayName("State")]
-		[Category("Metadata"),IntelliSense("The State of this Hierarchy.")]
+		[Category("Metadata"),Description(@"Gets or sets the object state."),IntelliSense("The State of this Hierarchy.")]
 		public TOM.ObjectState State {
 			get {
 			    return MetadataObject.State;
@@ -96,11 +147,11 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeState() { return false; }
-        /// <summary>
-        /// Gets or sets the DisplayFolder of the Hierarchy.
-        /// </summary>
+/// <summary>
+///             Gets or sets the display folder.
+///             </summary><returns>The display folder.</returns>
 		[DisplayName("Display Folder")]
-		[Category("Basic"),IntelliSense("The Display Folder of this Hierarchy.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"Gets or sets the display folder."),IntelliSense("The Display Folder of this Hierarchy.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string DisplayFolder {
 			get {
 			    return MetadataObject.DisplayFolder;
@@ -110,11 +161,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == value) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging("DisplayFolder", value, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.DISPLAYFOLDER, value, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.DisplayFolder = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "DisplayFolder", oldValue, value));
-				OnPropertyChanged("DisplayFolder", oldValue, value);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISPLAYFOLDER, oldValue, value));
+				OnPropertyChanged(Properties.DISPLAYFOLDER, oldValue, value);
 				Handler.UpdateFolders(Table);
 			}
 		}
@@ -122,7 +173,7 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Collection of localized Display Folders for this Hierarchy.
         /// </summary>
-        [Browsable(true),DisplayName("Display Folders"),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Display Folders"),Description("Shows all translated Display Folders of this object."),Category("Translations and Perspectives")]
 	    public TranslationIndexer TranslatedDisplayFolders { private set; get; }
 		[Browsable(false)]
 		public Table Table
@@ -140,17 +191,17 @@ namespace TabularEditor.TOMWrapper
         /// <Summary>
 		/// Collection of perspectives in which this Hierarchy is visible.
 		/// </Summary>
-		[Browsable(true),DisplayName("Perspectives"), Category("Translations and Perspectives")]
+		[Browsable(true),DisplayName("Shown in Perspective"), Description("Provides an easy way to include or exclude this object from the perspectives of the model."), Category("Translations and Perspectives")]
         public PerspectiveIndexer InPerspective { get; private set; }
         /// <summary>
         /// Collection of localized descriptions for this Hierarchy.
         /// </summary>
-        [Browsable(true),DisplayName("Descriptions"),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Descriptions"),Description("Shows all translated descriptions of this object."),Category("Translations and Perspectives")]
 	    public TranslationIndexer TranslatedDescriptions { private set; get; }
         /// <summary>
         /// Collection of localized names for this Hierarchy.
         /// </summary>
-        [Browsable(true),DisplayName("Names"),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of this object."),Category("Translations and Perspectives")]
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
 
@@ -208,6 +259,7 @@ namespace TabularEditor.TOMWrapper
 
 			obj.InternalInit();
 			obj.Init();
+
 			// Copy translations, if applicable:
 			if(includeTranslations) {
 				// TODO: Copy translations of child objects
@@ -254,7 +306,7 @@ namespace TabularEditor.TOMWrapper
         /// The collection of Level objects on this Hierarchy.
         /// </summary>
 		[DisplayName("Levels")]
-		[Category("Other"),IntelliSense("The collection of Level objects on this Hierarchy.")]
+		[Category("Other"),IntelliSense("The collection of Level objects on this Hierarchy.")][Browsable(false)]
 		public LevelCollection Levels { get; protected set; }
 
 		/// <summary>
@@ -272,8 +324,11 @@ namespace TabularEditor.TOMWrapper
 			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
 			TranslatedDisplayFolders = new TranslationIndexer(this, TOM.TranslatedProperty.DisplayFolder);
 
-			// Create indexers for perspectives:
+			// Create indexer for perspectives:
 			InPerspective = new PerspectiveHierarchyIndexer(this);
+			
+			// Create indexer for annotations:
+			Annotations = new AnnotationCollection(this);
 			
 			// Instantiate child collections:
 			Levels = new LevelCollection(this.GetObjectPath() + ".Levels", MetadataObject.Levels, this);
@@ -298,17 +353,17 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
-				case "Parent":
+				case Properties.PARENT:
 					return false;
 				
 				// Hides translation properties in the grid, unless the model actually contains translations:
-				case "TranslatedNames":
-				case "TranslatedDescriptions":
-				case "TranslatedDisplayFolders":
+				case Properties.TRANSLATEDNAMES:
+				case Properties.TRANSLATEDDESCRIPTIONS:
+				case Properties.TRANSLATEDDISPLAYFOLDERS:
 					return Model.Cultures.Any();
 				
 				// Hides the perspective property in the grid, unless the model actually contains perspectives:
-				case "InPerspective":
+				case Properties.INPERSPECTIVE:
 					return Model.Perspectives.Any();
 				
 				default:

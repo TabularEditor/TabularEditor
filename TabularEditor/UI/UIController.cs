@@ -19,6 +19,7 @@ namespace TabularEditor.UI
         public static UIController Current;
 
         private UIElements UI;
+        public UIElements Elements { get { return UI; } }
 
         public event EventHandler ModelLoaded;
 
@@ -107,22 +108,19 @@ namespace TabularEditor.UI
 
         public ModelActionManager Actions { get; private set; }
 
-        public void Refresh()
-        {
-            UI.TreeView.Refresh();
-            UI.PropertyGrid.Refresh();
-        }
-
         public void LoadTabularModelToUI()
         {
             Handler.UndoManager.UndoStateChanged += UndoManager_UndoActionAdded;
             Handler.ObjectChanging += UIController_ObjectChanging;
+            Handler.ObjectChanged += UIController_ObjectChanged;
+            Handler.ObjectDeleting += UIController_ObjectDeleting;
 
             ExpressionEditor_CancelEdit();
             ExpressionEditor_Current = null;
 
             ShowSelectionStatus = false;
             Tree = new TabularUITree(Handler.Model) { Options = Tree?.Options ?? LogicalTreeOptions.Default, TreeView = UI.TreeView };
+            Tree.UpdateComplete += Tree_UpdateComplete;
 
             var sortedModel = new SortedTreeModel(Tree);
 
@@ -149,6 +147,26 @@ namespace TabularEditor.UI
             UI.ModelMenu.Enabled = true;
 
             InitPlugins();
+        }
+
+        private void UIController_ObjectDeleting(object sender, ObjectDeletingEventArgs e)
+        {
+            if(UI.PropertyGrid.SelectedObjects.Contains(e.TabularObject))
+            {
+                UI.PropertyGrid.SelectedObject = null;
+            }
+        }
+
+        private void Tree_UpdateComplete(object sender, EventArgs e)
+        {
+            UI.TreeView.Invalidate();
+            UI.PropertyGrid.Refresh();
+        }
+
+        private void UIController_ObjectChanged(object sender, ObjectChangedEventArgs e)
+        {
+            if (e.PropertyName == "Annotations" && e.TabularObject == UI.PropertyGrid.SelectedObject)
+                UI.PropertyGrid.Refresh();
         }
 
         private void InitPlugins()

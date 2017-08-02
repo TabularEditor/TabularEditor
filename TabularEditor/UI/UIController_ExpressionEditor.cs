@@ -40,7 +40,9 @@ namespace TabularEditor.UI
 
         private void ExpressionEditor_Current_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "Name") UI.CurrentMeasureLabel.Text = (sender as IDAXExpressionObject).DaxObjectName + " :=";
+            if (e.PropertyName == "Name") UI.CurrentMeasureLabel.Text = 
+                    ((sender as IDAXExpressionObject)?.DaxObjectName ?? 
+                    ((sender as IExpressionObject).Name + ".Expression")) + " :=";
             if (e.PropertyName == "Expression")
             {
                 if (sender == ExpressionEditor_Current) UI.ExpressionEditor.Text = (sender as IExpressionObject).Expression;

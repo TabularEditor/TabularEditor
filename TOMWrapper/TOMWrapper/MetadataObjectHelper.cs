@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TabularEditor;
 
 namespace Microsoft.AnalysisServices.Tabular.Helper
 {
@@ -63,11 +64,11 @@ namespace Microsoft.AnalysisServices.Tabular.Helper
 
                     // Do not allow multiple measures with the same name:
                     if (measure.Model.Tables.Any(t => t.Measures.Any(m => m != obj && m.Name.Equals(newName, StringComparison.InvariantCultureIgnoreCase))))
-                        throw new ArgumentException(string.Format("A measure with the name \"{0}\" already exists in the model. Choose a different name for this measure.", newName));
+                        throw new ArgumentException(string.Format(Messages.DuplicateMeasureName, newName));
 
                     // Do not allow a measure with the same name as a column in the table:
                     if (measure.Table.Columns.Any(c => c.Name.Equals(newName, StringComparison.InvariantCultureIgnoreCase)))
-                        throw new ArgumentException(string.Format("A column with the name \"{0}\" already exists in the table. Choose a different name for this measure.", newName));
+                        throw new ArgumentException(string.Format(Messages.DuplicateColumnName, newName));
                 }
                 else if (obj is Column)
                 {
@@ -75,11 +76,11 @@ namespace Microsoft.AnalysisServices.Tabular.Helper
 
                     // Do not allow a column with the same name as a measure in the table:
                     if (column.Table.Measures.Any(m => m.Name.Equals(newName, StringComparison.InvariantCultureIgnoreCase)))
-                        throw new ArgumentException(string.Format("A measure with the name \"{0}\" already exists in the table. Choose a different name for this column.", newName));
+                        throw new ArgumentException(string.Format(Messages.DuplicateMeasureName, newName));
 
                     // Do not allow a column with the same name as another column in the table:
                     if (column.Table.Columns.Any(c => c != obj && c.Name.Equals(newName, StringComparison.InvariantCultureIgnoreCase)))
-                        throw new ArgumentException(string.Format("A column with the name \"{0}\" already exists in the table. Choose a different name for this column.", newName));
+                        throw new ArgumentException(string.Format(Messages.DuplicateColumnName, newName));
                 }
 
                 // Automatically apply name change to translations (but only if the translation is identical to the old name):

@@ -15,7 +15,15 @@ namespace TabularEditor.TOMWrapper
         IErrorMessageObject
     {
         [Browsable(false)]
-        public HashSet<IDAXExpressionObject> Dependants { get; private set; } = new HashSet<IDAXExpressionObject>();
+        public HashSet<IDAXExpressionObject> Dependants { get; } = new HashSet<IDAXExpressionObject>();
+
+        public override bool CanDelete(out string message)
+        {
+            message = string.Empty;
+            if (Dependants.Count > 0) message += Messages.ReferencedByDAX;
+            if (message == string.Empty) message = null;
+            return true;
+        }
 
         #region Convenient methods
         [IntelliSense("Adds a new measure to the table.")]
@@ -239,7 +247,7 @@ namespace TabularEditor.TOMWrapper
             if (Partitions.Count == 0 && !(this is CalculatedTable))
             {
                 // Make sure the table contains at least one partition (Calculated Tables handles this on their own):
-                var p = Partition.CreateNew(this, Name);
+                Partition.CreateNew(this, Name);
             }
 
             CheckChildrenErrors();
@@ -298,22 +306,26 @@ namespace TabularEditor.TOMWrapper
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
-            if (propertyName == "Name" && Handler.AutoFixup)
+            if (propertyName == Properties.NAME)
             {
-                Handler.DoFixup(this, (string)newValue);
-                Handler.UndoManager.EndBatch();
+                if (Handler.AutoFixup)
+                {
+                    Handler.DoFixup(this);
+                    Handler.UndoManager.EndBatch();
+                }
+                Handler.Tree.FolderCache.Clear(); // Clear folder cache when a table is renamed.
             }
             base.OnPropertyChanged(propertyName, oldValue, newValue);
         }
         protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
         {
-            if (propertyName == "Name")
+            if (propertyName == Properties.NAME)
             {
                 Handler.BuildDependencyTree();
 
                 // When formula fixup is enabled, we need to begin a new batch of undo operations, as this
                 // name change could result in expression changes on multiple objects:
-                if (Handler.AutoFixup) Handler.UndoManager.BeginBatch("Name change");
+                if (Handler.AutoFixup) Handler.UndoManager.BeginBatch("Set Property 'Name'");
             }
             base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
         }
@@ -396,9 +408,9 @@ namespace TabularEditor.TOMWrapper
         {
             switch(propertyName)
             {
-                case "Partitions":
+                case Properties.PARTITIONS:
                     return !(Table is CalculatedTable);
-                case "Name":
+                case Properties.NAME:
                     return true;
             }
             return false;
@@ -406,7 +418,22 @@ namespace TabularEditor.TOMWrapper
 
         public bool Editable(string propertyName)
         {
-            return propertyName == "Name";
+            return propertyName == Properties.NAME;
+        }
+
+        public bool CanDelete()
+        {
+            return Table.CanDelete();
+        }
+
+        public bool CanDelete(out string message)
+        {
+            return Table.CanDelete(out message);
+        }
+
+        public void Delete()
+        {
+            Table.Delete();
         }
     }
 

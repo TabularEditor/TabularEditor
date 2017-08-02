@@ -1095,7 +1095,7 @@ namespace Aga.Controls.Tree
                 if (!nodes.SequenceEqual(SelectedNodes))
                 {
                     // Must rebuild selection:
-                    ClearSelection();
+                    ClearSelectionInternal();
                     if (nodes.Count > 0) {
                         foreach (var n in nodes) n.IsSelected = true;
                         EnsureVisible(nodes.First());

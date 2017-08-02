@@ -15,8 +15,6 @@
 
         public string ActionName { get; private set; }
 
-        public bool TreeStructureChanged { get { return false; } }
-
         public void Redo()
         {
         }
