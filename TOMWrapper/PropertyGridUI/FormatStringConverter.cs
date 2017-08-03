@@ -12,6 +12,39 @@ using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.PropertyGridUI
 {
+    class NumberFormatConverter: EnumConverter
+    {
+        public NumberFormatConverter(Type type) : base(type) { }
+        public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
+        {
+            return new StandardValuesCollection(
+                Enum.GetValues(typeof(Format.NumberFormats))
+                .OfType<Format.NumberFormats>().Where(nf => nf != Format.NumberFormats.Mixed).ToArray()
+                );
+        }
+        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+        {
+            if (destinationType == typeof(string) && (Format.NumberFormats)value == Format.NumberFormats.Mixed)
+                return "";
+            return base.ConvertTo(context, culture, value, destinationType);
+        }
+    }
+
+    class DateFormatConverter: StringConverter
+    {
+        public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
+        {
+            return new StandardValuesCollection(
+                DateTimeFormatInfo.CurrentInfo.GetAllDateTimePatterns()
+                );
+        }
+
+        public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
+        {
+            return true;
+        }
+    }
+
     class Format: IDynamicPropertyObject
     {
         IFormattableObject baseObject;
@@ -19,7 +52,14 @@ namespace TabularEditor.PropertyGridUI
         public Format(IFormattableObject baseObject)
         {
             this.baseObject = baseObject;
-            ApplyFormatString(baseObject.FormatString);
+
+            // Set the format to Mixed, in case multiple objects with different formats have been selected:
+            if((baseObject as FormattableObjectCollection)?.Mixed ?? false)
+            {
+                numberFormat = NumberFormats.Mixed;
+            }
+            else
+                ApplyFormatString(baseObject.FormatString);
         }
 
         private static string GetNumberFormatString(NumberFormats format, bool useTS, int dec, int exp)
@@ -98,17 +138,48 @@ namespace TabularEditor.PropertyGridUI
             else numberFormat = NumberFormats.Custom;
         }
 
-        public bool Browsable(string propertyName)
+        bool BrowsableDateTimeProperty(string propertyName)
         {
-            switch(propertyName)
+            switch (propertyName)
             {
+                case "DateFormat": return true;
+                case "ExampleDate": return true;
+                default:
+                    return false;
+            }
+        }
+        bool BrowsableNumberProperty(string propertyName)
+        {
+            switch (propertyName)
+            {
+                case "NumberFormat": return true;
                 case "Decimals": return numberFormat == NumberFormats.Currency || numberFormat == NumberFormats.DecimalNumber || numberFormat == NumberFormats.Percentage || numberFormat == NumberFormats.Scientific;
                 case "ExponentDigits": return numberFormat == NumberFormats.Scientific;
                 case "ThousandSeparators":
                 case "ParenthesisForNegative":
-                    return numberFormat != NumberFormats.General && numberFormat != NumberFormats.Custom;
+                    return numberFormat != NumberFormats.General && numberFormat != NumberFormats.Custom && numberFormat != NumberFormats.Mixed;
+                case "Example":
+                    return numberFormat != NumberFormats.Mixed;
                 default:
-                    return true;
+                    return false;
+            }
+        }
+
+        public bool Browsable(string propertyName)
+        {
+            switch (baseObject.DataType)
+            {
+                case TOM.DataType.DateTime:
+                    return BrowsableDateTimeProperty(propertyName);
+                case TOM.DataType.Decimal:
+                case TOM.DataType.Double:
+                case TOM.DataType.Int64:
+                    return BrowsableNumberProperty(propertyName);
+                case TOM.DataType.Unknown:
+                    // If we don't know the datatype of the object, assume it is a number:
+                    return BrowsableNumberProperty(propertyName);
+                default:
+                    return false;
             }
         }
 
@@ -116,29 +187,55 @@ namespace TabularEditor.PropertyGridUI
         {
             switch(propertyName)
             {
-                case "Sample": return false;
+                case "Example":
+                case "ExampleDate":
+                    return false;
                 default: return true;
             }
         }
 
         [DisplayName("Example")]
-        public string Sample
+        public string Example
         {
             get
             {
-                return string.Format("{0:" + GetFormatString() + "}", -1234.567);
+                try
+                {
+                    return string.Format("{0:" + baseObject.FormatString + "}", -1234.567);
+                }
+                catch
+                {
+                    return string.Format("{0}", -1234.567);
+                }
+            }
+        }
+
+        [DisplayName("Example")]
+        public string ExampleDate
+        {
+            get
+            {
+                try
+                {
+                    return string.Format("{0:" + baseObject.FormatString + "}", DateTime.Now);
+                }
+                catch
+                {
+                    return string.Format("{0}", DateTime.Now);
+                }
             }
         }
 
         public enum NumberFormats
         {
-            Custom = 0,
-            General = 1,
-            WholeNumber = 2,
-            DecimalNumber = 3,
-            Currency = 4,
-            Percentage = 5,
-            Scientific = 6
+            Mixed = 0,
+            Custom = 1,
+            General = 2,
+            WholeNumber = 3,
+            DecimalNumber = 4,
+            Currency = 5,
+            Percentage = 6,
+            Scientific = 7
         }
         private NumberFormats numberFormat = NumberFormats.General;
         private int decimals = 2;
@@ -146,7 +243,7 @@ namespace TabularEditor.PropertyGridUI
         private bool parenthesisForNegative = false;
         private int exponentDigits = 1;
 
-        [DisplayName("Format")]
+        [DisplayName("Format"),TypeConverter(typeof(NumberFormatConverter))]
         public NumberFormats NumberFormat
         {
             get
@@ -160,6 +257,19 @@ namespace TabularEditor.PropertyGridUI
                 if (numberFormat == NumberFormats.DecimalNumber && decimals == 0) decimals = 1;
 
                 baseObject.FormatString = GetFormatString();
+            }
+        }
+
+        [DisplayName("Date Format"),TypeConverter(typeof(DateFormatConverter))]
+        public string DateFormat
+        {
+            get
+            {
+                return baseObject.FormatString;
+            }
+            set
+            {
+                baseObject.FormatString = value;
             }
         }
 
@@ -234,6 +344,7 @@ namespace TabularEditor.PropertyGridUI
         public FormattableObjectCollection(IEnumerable<IFormattableObject> selection)
         {
             this.selection = selection.ToList();
+            Mixed = selection.Any() && !selection.All(obj => obj.FormatString == selection.First().FormatString);
         }
 
         public TOM.DataType DataType
@@ -245,6 +356,8 @@ namespace TabularEditor.PropertyGridUI
                 else return TOM.DataType.Unknown;
             }
         }
+
+        public bool Mixed { get; private set; } = false;
 
         public string FormatString
         {

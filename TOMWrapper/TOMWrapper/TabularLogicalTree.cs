@@ -128,7 +128,7 @@ namespace TabularEditor.TOMWrapper
             model.Handler.Tree = this;
         }
 
-        protected int UpdateLocks { get; private set; }
+        internal protected int UpdateLocks { get; private set; }
 
         public virtual void BeginUpdate()
         {

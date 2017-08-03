@@ -11,6 +11,14 @@ namespace TabularEditor.UI.Actions
 {
     public class ModelActionManager : List<IBaseAction>
     {
+        public void RemoveCustomActions()
+        {
+            for(var i = this.Count - 1; i >= 0; i--)
+            {
+                if (this[i] is CustomAction) this.RemoveAt(i);
+            }
+        }
+
         /// <summary>
         /// When an Action is executed, it will set this field.
         /// </summary>
@@ -40,12 +48,12 @@ namespace TabularEditor.UI.Actions
             Add(new Separator(@"Create New"));
             Add(new Action((s, m) => true, (s, m) => Partition.CreateNew(s.Table).Edit(), (s, m) => @"Create New\Partition", true, Context.Table));
 
-            Add(new Action((s, m) => true, (s, m) => m.AddDataSource().Edit(), (s, m) => @"Create New\Data Source", false, Context.DataSources));
-            Add(new Action((s, m) => true, (s, m) => m.AddCalculatedTable().Edit(), (s, m) => @"Create New\Calculated Table", false, Context.Tables));
-            Add(new Action((s, m) => m.DataSources.Any(), (s, m) => m.AddTable().Edit(), (s, m) => @"Create New\Table", false, Context.Tables));
-            Add(new Action((s, m) => m.Tables.Count(t => t.Columns.Any()) >= 2, (s, m) => m.AddRelationship().Edit(), (s, m) => @"Create New\Relationship", false, Context.Relationship | Context.Relationships));
+            Add(new Action((s, m) => true, (s, m) => m.AddDataSource().Edit(), (s, m) => @"Create New\Data Source", false, Context.DataSources | Context.Model));
             Add(new Action((s, m) => true, (s, m) => m.AddPerspective().Edit(), (s, m) => @"Create New\Perspective", false, Context.Model | Context.Perspectives | Context.Perspective));
+            Add(new Action((s, m) => m.Tables.Count(t => t.Columns.Any()) >= 2, (s, m) => m.AddRelationship().Edit(), (s, m) => @"Create New\Relationship", false, Context.Relationship | Context.Relationships | Context.Model));
             Add(new Action((s, m) => true, (s, m) => m.AddRole().Edit(), (s, m) => @"Create New\Role", false, Context.Model | Context.Roles | Context.Role));
+            Add(new Action((s, m) => m.DataSources.Any(), (s, m) => m.AddTable().Edit(), (s, m) => @"Create New\Table", false, Context.Tables | Context.Model));
+            Add(new Action((s, m) => true, (s, m) => m.AddCalculatedTable().Edit(), (s, m) => @"Create New\Calculated Table", false, Context.Tables | Context.Model));
             Add(new Action((s, m) => true, (s, m) => {
                 var res = csDialog.ShowDialog();
                 if (res == DialogResult.OK)
@@ -136,12 +144,8 @@ namespace TabularEditor.UI.Actions
             { ToolTip = "Opens a dialog that lets you rename all children of the selected objects at once. Folders are not renamed, but objects inside folders are." });
 
             // Delete Action
-            // TODO: Would be nice to have an IDeletable interface...
             Delete = new Action((s, m) => s.Count >= 1, 
                 (s, m) => {
-
-                    string refs = "";
-
                     if (s.Count == 1)
                     {
                         // Handle single-object deletion:
@@ -174,12 +178,12 @@ namespace TabularEditor.UI.Actions
                     }
 
                     s.Delete();
-                }, (s, m) => "Delete " + s.Summary() + "...", true, Context.SingularObjects);
+                }, (s, m) => "Delete " + s.Summary() + "...", true, Context.SingularObjects ^ Context.Model);
             Add(Delete);
 
             Add(new Separator());
-            Add(new Action((s, m) => m.Cultures.Count > 0, (s, m) => UIController.Current.Translations_ExportAll(), (s, m) => "Export translations...", false, Context.Translations));
-            Add(new Action((s, m) => true, (s, m) => UIController.Current.Translations_Import(), (s, m) => "Import translations...", true, Context.Translations));
+            Add(new Action((s, m) => m.Cultures.Count > 0, (s, m) => UIController.Current.Translations_ExportAll(), (s, m) => "Export translations...", false, Context.Translations | Context.Tool));
+            Add(new Action((s, m) => true, (s, m) => UIController.Current.Translations_Import(), (s, m) => "Import translations...", true, Context.Translations | Context.Tool));
             Add(new Action((s, m) => true, (s, m) => UIController.Current.Translations_ExportSelected(), (s, m) => string.Format("Export {0} translation{1}...", s.Count, s.Count == 1 ? "" : "s"), true, Context.Translation));
 
         }

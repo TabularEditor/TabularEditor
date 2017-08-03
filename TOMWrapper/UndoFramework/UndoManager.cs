@@ -194,9 +194,9 @@ namespace TabularEditor.UndoFramework
         /// <summary>
         /// Ends a batch of undoable operations.
         /// </summary>
-        /// <param name="undo">Set to true if the batch needs to be undone immediately.</param>
+        /// <param name="rollback">Set to true if the batch needs to be undone immediately.</param>
         /// <returns></returns>
-        public int EndBatch(bool undo = false)
+        public int EndBatch(bool rollback = false)
         {
             if (!Enabled) return 0;
 
@@ -229,7 +229,7 @@ namespace TabularEditor.UndoFramework
             }
 
             // Rollback if requested:
-            if (undo)
+            if (rollback)
             {
                 XDo(false, false);
                 return 0;

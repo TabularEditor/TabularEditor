@@ -17,6 +17,8 @@ namespace TabularEditor
     {
         private UIController UI;
 
+        private string CurrentCustomAction;
+
         public FormMain()
         {
             Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en-US");
@@ -34,7 +36,11 @@ namespace TabularEditor
                 custActions = CustomActionsJson.LoadFromJson(ScriptEngine.CustomActionsJsonPath);
                 foreach (var act in custActions.Actions)
                 {
-                    customActionsToolStripMenuItem.DropDownItems.Add(act.Name, null, (s, e) => { txtAdvanced.Text = act.Execute; });
+                    customActionsToolStripMenuItem.DropDownItems.Add(act.Name, null, (s, e) =>
+                    {
+                        CurrentCustomAction = act.Name;
+                        txtAdvanced.Text = act.Execute;
+                    });
                 }
             }
 
@@ -88,7 +94,8 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 ModelMenu = modelToolStripMenuItem,
                 PerspectiveSelector = cmbPerspective,
                 TranslationSelector = cmbTranslation,
-                ToolsMenu = toolsToolStripMenuItem
+                ToolsMenu = toolsToolStripMenuItem,
+                DynamicMenu = dynamicToolStripMenuItem
             };
 
             // The UIController class sets up all bindings and event handlers needed for UI
@@ -348,6 +355,9 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         {
             // TODO: Move this somewhere else
             var form = new SaveCustomActionForm();
+            form.Context = UI.Selection.Context;
+            form.txtName.Text = CurrentCustomAction;
+
             var res = form.ShowDialog();
 
             if(res == DialogResult.OK)
@@ -357,12 +367,25 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 act.Tooltip = form.txtTooltip.Text;
                 act.Execute = txtAdvanced.Text;
                 act.Enabled = "true";
+                act.ValidContexts = form.Context;
+
                 if (custActions == null) custActions = new CustomActionsJson() { Actions = new CustomActionJson[0] };
+
+                // Remove any existing actions with the same name:
+                custActions.Actions = custActions.Actions.Where(a => !a.Name.Equals(act.Name, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+                var toRemove = UI.Actions.OfType<CustomAction>().FirstOrDefault(a => a.BaseName.Equals(act.Name, StringComparison.InvariantCultureIgnoreCase));
+                if (toRemove != null) UI.Actions.Remove(toRemove);
+
                 var list = custActions.Actions.ToList();
+
                 list.Add(act);
 
                 custActions.Actions = list.ToArray();
                 custActions.SaveToJson(ScriptEngine.CustomActionsJsonPath);
+
+                // Compile and add the newly created action:
+                ScriptEngine.CompileCustomActions(new CustomActionsJson() { Actions = new []{ act } });
+                if (!ScriptEngine.CustomActionError) ScriptEngine.AddCustomActions(UI.Actions);
             }
         }
 
@@ -484,6 +507,11 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void actNewModel_Execute(object sender, EventArgs e)
         {
             UI.File_New();
+        }
+
+        private void toolTreeView_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
         }
     }
 }

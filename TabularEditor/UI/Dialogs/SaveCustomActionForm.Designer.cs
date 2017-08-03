@@ -29,10 +29,12 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.txtName = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.chkListboxContexts = new System.Windows.Forms.CheckedListBox();
             this.txtTooltip = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtName = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnOK = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
@@ -40,31 +42,43 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label3);
+            this.groupBox1.Controls.Add(this.chkListboxContexts);
             this.groupBox1.Controls.Add(this.txtTooltip);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.txtName);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(422, 127);
+            this.groupBox1.Size = new System.Drawing.Size(422, 244);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             // 
-            // label1
+            // label3
             // 
-            this.label1.Location = new System.Drawing.Point(7, 20);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(409, 18);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Provide a name for your custom action. Use backslashes (\\) to create groupings.";
+            this.label3.Location = new System.Drawing.Point(7, 135);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(409, 18);
+            this.label3.TabIndex = 5;
+            this.label3.Text = "Choose the context for which this action will be available (select at least 1):";
             // 
-            // txtName
+            // chkListboxContexts
             // 
-            this.txtName.Location = new System.Drawing.Point(6, 41);
-            this.txtName.Name = "txtName";
-            this.txtName.Size = new System.Drawing.Size(410, 20);
-            this.txtName.TabIndex = 1;
-            this.txtName.TextChanged += new System.EventHandler(this.txtName_TextChanged);
+            this.chkListboxContexts.CheckOnClick = true;
+            this.chkListboxContexts.FormattingEnabled = true;
+            this.chkListboxContexts.Location = new System.Drawing.Point(6, 156);
+            this.chkListboxContexts.MultiColumn = true;
+            this.chkListboxContexts.Name = "chkListboxContexts";
+            this.chkListboxContexts.Size = new System.Drawing.Size(410, 79);
+            this.chkListboxContexts.TabIndex = 4;
+            this.chkListboxContexts.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.chkListboxContexts_ItemCheck);
+            // 
+            // txtTooltip
+            // 
+            this.txtTooltip.Location = new System.Drawing.Point(6, 97);
+            this.txtTooltip.Name = "txtTooltip";
+            this.txtTooltip.Size = new System.Drawing.Size(410, 20);
+            this.txtTooltip.TabIndex = 3;
             // 
             // label2
             // 
@@ -74,17 +88,26 @@
             this.label2.TabIndex = 2;
             this.label2.Text = "Provide a tooltip (optional)";
             // 
-            // txtTooltip
+            // txtName
             // 
-            this.txtTooltip.Location = new System.Drawing.Point(6, 97);
-            this.txtTooltip.Name = "txtTooltip";
-            this.txtTooltip.Size = new System.Drawing.Size(410, 20);
-            this.txtTooltip.TabIndex = 3;
+            this.txtName.Location = new System.Drawing.Point(6, 41);
+            this.txtName.Name = "txtName";
+            this.txtName.Size = new System.Drawing.Size(410, 20);
+            this.txtName.TabIndex = 1;
+            this.txtName.TextChanged += new System.EventHandler(this.txtName_TextChanged);
+            // 
+            // label1
+            // 
+            this.label1.Location = new System.Drawing.Point(7, 20);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(409, 18);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Provide a name for your custom action. Use backslashes (\\) to create subfolders.";
             // 
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(359, 145);
+            this.btnCancel.Location = new System.Drawing.Point(359, 262);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 1;
@@ -94,7 +117,7 @@
             // btnOK
             // 
             this.btnOK.Enabled = false;
-            this.btnOK.Location = new System.Drawing.Point(278, 145);
+            this.btnOK.Location = new System.Drawing.Point(278, 262);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 2;
@@ -108,7 +131,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(446, 179);
+            this.ClientSize = new System.Drawing.Size(446, 293);
             this.ControlBox = false;
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.btnCancel);
@@ -131,5 +154,7 @@
         private System.Windows.Forms.Button btnOK;
         public System.Windows.Forms.TextBox txtName;
         public System.Windows.Forms.TextBox txtTooltip;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.CheckedListBox chkListboxContexts;
     }
 }

@@ -48,8 +48,15 @@ namespace TabularEditor.UI
         }
 
         private IEnumerable<T> _items;
+        protected internal UISelectionList()
+        {
 
+        }
         protected internal UISelectionList(IEnumerable<T> items)
+        {
+            SetItems(items);
+        }
+        protected void SetItems(IEnumerable<T> items)
         {
             _items = items;
         }

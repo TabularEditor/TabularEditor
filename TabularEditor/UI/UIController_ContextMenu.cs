@@ -12,33 +12,73 @@ namespace TabularEditor.UI
 {
     public partial class UIController
     {
-        ToolStripItem[] originalItems = null;
+        ToolStripItem[] StaticToolsMenuItems = null;
+        ToolStripItem[] StaticModelMenuItems = null;
+
+        private void DynamicMenu_Update()
+        {
+            var c = Selection.Context;
+            if (c.Has1(Context.SingularObjects | (Context.Groups ^ Context.TablePartitions)) && c != Context.Model)
+            {
+                UI.DynamicMenu.Visible = true;
+                UI.DynamicMenu.Text = c.ToString().SplitCamelCase();
+                return;
+            }
+
+            UI.DynamicMenu.Visible = false;
+            return;
+        }
+
+        private void DynamicMenu_Opening(object sender, CancelEventArgs e)
+        {
+            if (Handler == null) return;
+            var menu = (sender as ToolStripDropDown);
+
+            menu.Items.Clear();
+
+            // Populate the Dynamic menu with all objects at the selected context, excluding
+            // the Delete Action, as it can already be found under the Edit menu:
+            ContextMenu_Populate(menu, Selection.Context, true, a => a != Actions.Delete);
+
+            if (menu.Items.Count == 0)
+            {
+                menu.Items.Add("-");
+                e.Cancel = true;
+            }
+        }
+
 
         private void ToolsMenu_Opening(object sender, CancelEventArgs e)
         {
             if (Handler == null) return;
             var menu = (sender as ToolStripDropDown);
 
-            if(originalItems == null) originalItems = menu.Items.OfType<ToolStripItem>().ToArray();
+            if(StaticToolsMenuItems == null) StaticToolsMenuItems = menu.Items.OfType<ToolStripItem>().ToArray();
             menu.Items.Clear();
-            if (originalItems.Length > 0)
+            if (StaticToolsMenuItems.Length > 0)
             {
-                menu.Items.AddRange(originalItems);
+                menu.Items.AddRange(StaticToolsMenuItems);
+                if (menu.Items.Count > 0 && !(menu.Items[menu.Items.Count - 1] is ToolStripSeparator)) menu.Items.Add(new ToolStripSeparator());
+            }
+            ContextMenu_Populate(menu, Context.Tool);
+        }
+
+
+        private void ModelMenu_Opening(object sender, CancelEventArgs e)
+        {
+            if (Handler == null) return;
+            var menu = (sender as ToolStripDropDown);
+
+            if (StaticModelMenuItems == null) StaticModelMenuItems = menu.Items.OfType<ToolStripItem>().ToArray();
+            menu.Items.Clear();
+            if (StaticModelMenuItems.Length > 0)
+            {
+                menu.Items.AddRange(StaticModelMenuItems);
                 if (menu.Items.Count > 0 && !(menu.Items[menu.Items.Count - 1] is ToolStripSeparator)) menu.Items.Add(new ToolStripSeparator());
             }
 
-            bool first = true;
-            foreach (var act in Actions.OfType<IModelAction>())
-            {
-                if((act.ValidContexts & Context.Groups) > 0)
-                {
-                    var item = ContextMenu_AddFromAction(act.Name, menu);
-                    if (!string.IsNullOrEmpty(act.ToolTip)) item.ToolTipText = act.ToolTip;
-                    item.Tag = act;
-                    item.Enabled = act.Enabled(null);
-                    item.Click += ContextMenuItem_Click;
-                }
-            }
+            // Populate the Model menu with all actions at Model context, excluding custom actions:
+            ContextMenu_Populate(menu, Context.Model, false);
         }
 
         private void ContextMenu_Opening(object sender, CancelEventArgs e)
@@ -59,12 +99,25 @@ namespace TabularEditor.UI
             e.Cancel = menu.Items.Count == 0;
         }
 
-        private void ContextMenu_Populate(ToolStripDropDown menu)
+        private void ContextMenu_Populate(ToolStripDropDown menu, Context contextFilter = Context.Everywhere, 
+            bool allowCustomActions = true, Func<IBaseAction, bool> actionFilter = null)
         {
+            var availableActions = new List<IBaseAction>();
+            var createNewActions = 0;
+
             foreach (var action in Actions)
             {
-                if (!action.ValidContexts.HasFlag(Selection.Context)) continue;
+                if (actionFilter != null && !actionFilter(action)) continue;
+                if (!allowCustomActions && action is CustomAction) continue;
+                if (contextFilter != Context.Everywhere && !action.ValidContexts.HasX(contextFilter)) continue;
+                if (contextFilter == Context.Everywhere && !action.ValidContexts.HasX(Selection.Context)) continue;
 
+                if (action is IModelAction && (action as IModelAction).Name.StartsWith("Create New\\")) createNewActions++;
+                availableActions.Add(action);
+            }
+
+            foreach (var action in availableActions)
+            {
                 if (action is IModelAction)
                 {
                     var act = action as IModelAction;
@@ -79,7 +132,11 @@ namespace TabularEditor.UI
                     }
                     if (act.HideWhenDisabled && !enabled) continue;
 
-                    var item = ContextMenu_AddFromAction(act.Name, menu);
+                    var name = act.Name;
+                    if((createNewActions <= 2 || menu == UI.ModelMenu.DropDown) && name.StartsWith("Create New\\"))
+                        name = name.Replace("Create New\\", "New ");
+
+                    var item = ContextMenu_AddFromAction(name, menu);
                     if (!string.IsNullOrEmpty(act.ToolTip)) item.ToolTipText = act.ToolTip;
                     item.Tag = act;
                     item.Enabled = enabled;

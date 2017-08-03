@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.IO;
+using Newtonsoft.Json.Converters;
 
 namespace TabularEditor.UI.Actions
 {
@@ -32,5 +33,7 @@ namespace TabularEditor.UI.Actions
         public string Enabled;
         public string Execute;
         public string Tooltip;
+        [JsonConverter(typeof(StringEnumConverter))]
+        public Context ValidContexts = Context.SingularObjects;
     }
 }

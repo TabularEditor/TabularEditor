@@ -93,7 +93,7 @@ namespace TabularEditor
                 sb.Append(t2 + "private static TabularEditor.UI.Actions.CustomAction CustomAction");
                 sb.Append(i);
                 sb.AppendLine("() {");
-                sb.AppendLine(t3 + "return new TabularEditor.UI.Actions.CustomAction(");
+                sb.AppendLine(t3 + "var act = new TabularEditor.UI.Actions.CustomAction(");
 
                 // EnabledDelegate:
                 sb.Append(t4 + "(Selected, Model) => ");
@@ -106,16 +106,21 @@ namespace TabularEditor
                 sb.AppendLine(t4 + "},");
 
                 // Name:
-                sb.Append(t4 + "@\"" + act.Name.Replace("\"", "\"\"") + "\")");
+                sb.AppendLine(t4 + "@\"" + act.Name.Replace("\"", "\"\"") + "\");");
 
                 if (!string.IsNullOrEmpty(act.Tooltip))
                 {
-                    sb.Append("{ ToolTip = \"");
+                    sb.Append(t3 + "act.ToolTip = \"");
                     sb.Append(act.Tooltip);
-                    sb.Append("\"}");
+                    sb.AppendLine("\";");
                 }
 
+                sb.Append(t3 + "act.ValidContexts = (Context)");
+                sb.Append((int)act.ValidContexts);
                 sb.AppendLine(";");
+
+                sb.AppendLine();
+                sb.AppendLine("return act;");
 
                 sb.AppendLine(t2 + "}");
                 i++;
@@ -137,6 +142,8 @@ namespace TabularEditor
 
             var code = GetCustomActionsCode(actions);
             var result = Compile(code);
+
+            CustomActionError = false;
 
             if(result.Errors.Count > 0)
             {

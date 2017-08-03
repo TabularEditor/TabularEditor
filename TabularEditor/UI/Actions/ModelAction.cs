@@ -175,7 +175,7 @@ namespace TabularEditor.UI.Actions
 
         public bool Enabled(object arg)
         {
-            return ValidContexts.HasFlag(ui.Selection.Context) && _enabled(ui.Selection, ui.Handler.Model, arg);
+            return ValidContexts.HasX(ui.Selection.Context) && _enabled(ui.Selection, ui.Handler.Model, arg);
         }
 
         public bool HideWhenDisabled { get; set; }

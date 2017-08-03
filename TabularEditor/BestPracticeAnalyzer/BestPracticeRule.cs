@@ -114,7 +114,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         public string Description { get; set; }
         public int Severity { get; set; } = 10;
 
-        [JsonConverter(typeof(StringEnumFlagsConverter))]
+        [JsonConverter(typeof(RuleScopeConverter))]
         public RuleScope Scope { get; set; }
         public string ScopeString
         {
@@ -183,7 +183,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         }
     }
 
-    public class StringEnumFlagsConverter: StringEnumConverter
+    public class RuleScopeConverter: StringEnumConverter
     {
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
@@ -199,7 +199,6 @@ namespace TabularEditor.BestPracticeAnalyzer
                     types.Add("CalculatedColumn");
                     types.Add("CalculatedTableColumn");
                 }
-
 
                 return types.Select(t => RuleScopeHelper.GetScope(t)).Combine();
             }

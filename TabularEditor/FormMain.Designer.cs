@@ -141,6 +141,7 @@
             this.nodeTextBox3 = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeTextBox4 = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.toolTreeView = new System.Windows.Forms.ToolStrip();
+            this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.txtFilter = new System.Windows.Forms.ToolStripTextBox();
@@ -193,6 +194,7 @@
             this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
             this.modelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dynamicToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bestPracticeAnalyzerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabularTreeImages = new System.Windows.Forms.ImageList(this.components);
@@ -203,6 +205,7 @@
             this._dataType = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this._description = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.treeColumn1 = new Aga.Controls.Tree.TreeColumn();
+            this.toolStripSeparator19 = new System.Windows.Forms.ToolStripSeparator();
             actionsMain = new Crad.Windows.Forms.Actions.ActionList();
             ((System.ComponentModel.ISupportInitialize)(actionsMain)).BeginInit();
             this.toolStrip2.SuspendLayout();
@@ -621,7 +624,7 @@
             this.tbShowDisplayFolders.Image = global::TabularEditor.Resources.FolderOpen;
             this.tbShowDisplayFolders.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbShowDisplayFolders.Name = "tbShowDisplayFolders";
-            this.tbShowDisplayFolders.Size = new System.Drawing.Size(23, 22);
+            this.tbShowDisplayFolders.Size = new System.Drawing.Size(23, 20);
             this.tbShowDisplayFolders.Text = "Display Folders";
             this.tbShowDisplayFolders.ToolTipText = "Show/hide display folders";
             // 
@@ -635,7 +638,7 @@
             this.tbShowHidden.Image = global::TabularEditor.Resources.Hidden;
             this.tbShowHidden.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbShowHidden.Name = "tbShowHidden";
-            this.tbShowHidden.Size = new System.Drawing.Size(23, 22);
+            this.tbShowHidden.Size = new System.Drawing.Size(23, 20);
             this.tbShowHidden.Text = "Hidden Objects";
             this.tbShowHidden.ToolTipText = "Show/hide hidden objects";
             // 
@@ -651,7 +654,7 @@
             this.tbShowMeasures.Image = global::TabularEditor.Resources.Measure;
             this.tbShowMeasures.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbShowMeasures.Name = "tbShowMeasures";
-            this.tbShowMeasures.Size = new System.Drawing.Size(23, 22);
+            this.tbShowMeasures.Size = new System.Drawing.Size(23, 20);
             this.tbShowMeasures.Text = "Measures";
             this.tbShowMeasures.ToolTipText = "Show/hide measures";
             // 
@@ -667,7 +670,7 @@
             this.tbShowColumns.Image = global::TabularEditor.Resources.Column;
             this.tbShowColumns.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbShowColumns.Name = "tbShowColumns";
-            this.tbShowColumns.Size = new System.Drawing.Size(23, 22);
+            this.tbShowColumns.Size = new System.Drawing.Size(23, 20);
             this.tbShowColumns.Text = "Columns";
             this.tbShowColumns.ToolTipText = "Show/hide columns";
             // 
@@ -683,7 +686,7 @@
             this.tbShowHierarchies.Image = global::TabularEditor.Resources.Hierarchy;
             this.tbShowHierarchies.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbShowHierarchies.Name = "tbShowHierarchies";
-            this.tbShowHierarchies.Size = new System.Drawing.Size(23, 22);
+            this.tbShowHierarchies.Size = new System.Drawing.Size(23, 20);
             this.tbShowHierarchies.Text = "Hierarchies";
             this.tbShowHierarchies.ToolTipText = "Show/hide hierarchies";
             // 
@@ -696,7 +699,7 @@
             this.tbApplyFilter.Image = global::TabularEditor.Resources.Filter;
             this.tbApplyFilter.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbApplyFilter.Name = "tbApplyFilter";
-            this.tbApplyFilter.Size = new System.Drawing.Size(23, 22);
+            this.tbApplyFilter.Size = new System.Drawing.Size(23, 20);
             this.tbApplyFilter.Text = "Filter";
             this.tbApplyFilter.ToolTipText = "Filter objects by name";
             // 
@@ -709,7 +712,7 @@
             this.toolStripButton6.Image = global::TabularEditor.Resources.Columns;
             this.toolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton6.Name = "toolStripButton6";
-            this.toolStripButton6.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton6.Size = new System.Drawing.Size(23, 20);
             this.toolStripButton6.Text = "Metadata Information";
             this.toolStripButton6.ToolTipText = "Show/hide metadata information columns";
             // 
@@ -1024,7 +1027,7 @@
             this.tbShowAllObjectTypes.Image = global::TabularEditor.Resources.ShowDetails_16x;
             this.tbShowAllObjectTypes.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbShowAllObjectTypes.Name = "tbShowAllObjectTypes";
-            this.tbShowAllObjectTypes.Size = new System.Drawing.Size(23, 22);
+            this.tbShowAllObjectTypes.Size = new System.Drawing.Size(23, 20);
             this.tbShowAllObjectTypes.Text = "Show All Object Types";
             this.tbShowAllObjectTypes.ToolTipText = "Show/hide all object types (perspectives, roles, data sources, etc.) in addition " +
     "to tables";
@@ -1055,7 +1058,7 @@
             this.tbSortAlphabetically.Image = global::TabularEditor.Resources.SortAscending_16x;
             this.tbSortAlphabetically.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbSortAlphabetically.Name = "tbSortAlphabetically";
-            this.tbSortAlphabetically.Size = new System.Drawing.Size(23, 22);
+            this.tbSortAlphabetically.Size = new System.Drawing.Size(23, 20);
             this.tbSortAlphabetically.Text = "Sort alphabetically";
             this.tbSortAlphabetically.ToolTipText = "Toggle alphabetical/metadata ordering of items";
             // 
@@ -1160,7 +1163,7 @@
             this.toolStripSeparator10});
             this.toolStrip2.Location = new System.Drawing.Point(0, 24);
             this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(748, 25);
+            this.toolStrip2.Size = new System.Drawing.Size(920, 25);
             this.toolStrip2.TabIndex = 13;
             this.toolStrip2.Text = "toolStrip2";
             // 
@@ -1223,8 +1226,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(748, 435);
-            this.splitContainer1.SplitterDistance = 285;
+            this.splitContainer1.Size = new System.Drawing.Size(920, 569);
+            this.splitContainer1.SplitterDistance = 350;
             this.splitContainer1.TabIndex = 16;
             // 
             // tvModel
@@ -1244,7 +1247,7 @@
             this.tvModel.FullRowSelect = true;
             this.tvModel.Indent = 12;
             this.tvModel.LineColor = System.Drawing.SystemColors.ControlDark;
-            this.tvModel.Location = new System.Drawing.Point(0, 25);
+            this.tvModel.Location = new System.Drawing.Point(0, 23);
             this.tvModel.Model = null;
             this.tvModel.Name = "tvModel";
             this.tvModel.NodeControls.Add(this.nodeTextBox1);
@@ -1256,7 +1259,7 @@
             this.tvModel.ShowLines = false;
             this.tvModel.ShowNodeToolTips = true;
             this.tvModel.ShowPlusMinus = false;
-            this.tvModel.Size = new System.Drawing.Size(285, 410);
+            this.tvModel.Size = new System.Drawing.Size(350, 546);
             this.tvModel.TabIndex = 19;
             this.tvModel.Text = "treeViewAdv1";
             this.tvModel.UseColumns = true;
@@ -1328,6 +1331,7 @@
             // 
             this.toolTreeView.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolTreeView.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripLabel3,
             this.tbShowDisplayFolders,
             this.tbShowHidden,
             this.tbShowAllObjectTypes,
@@ -1341,21 +1345,29 @@
             this.tbApplyFilter,
             this.toolStripSeparator6,
             this.toolStripButton6});
+            this.toolTreeView.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
             this.toolTreeView.Location = new System.Drawing.Point(0, 0);
             this.toolTreeView.Name = "toolTreeView";
-            this.toolTreeView.Size = new System.Drawing.Size(285, 25);
+            this.toolTreeView.Size = new System.Drawing.Size(350, 23);
             this.toolTreeView.Stretch = true;
             this.toolTreeView.TabIndex = 18;
+            this.toolTreeView.Text = "Tree";
+            this.toolTreeView.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.toolTreeView_ItemClicked);
+            // 
+            // toolStripLabel3
+            // 
+            this.toolStripLabel3.Name = "toolStripLabel3";
+            this.toolStripLabel3.Size = new System.Drawing.Size(0, 0);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 23);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 23);
             // 
             // txtFilter
             // 
@@ -1371,7 +1383,7 @@
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(6, 23);
             // 
             // splitContainer2
             // 
@@ -1388,8 +1400,8 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.propertyGrid1);
-            this.splitContainer2.Size = new System.Drawing.Size(459, 435);
-            this.splitContainer2.SplitterDistance = 209;
+            this.splitContainer2.Size = new System.Drawing.Size(566, 569);
+            this.splitContainer2.SplitterDistance = 273;
             this.splitContainer2.TabIndex = 15;
             // 
             // tabControl1
@@ -1400,7 +1412,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(459, 209);
+            this.tabControl1.Size = new System.Drawing.Size(566, 273);
             this.tabControl1.TabIndex = 2;
             // 
             // tabPage1
@@ -1411,7 +1423,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(451, 183);
+            this.tabPage1.Size = new System.Drawing.Size(558, 247);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Expression Editor";
             // 
@@ -1447,7 +1459,7 @@
             this.txtExpression.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
             this.txtExpression.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtExpression.ServiceColors")));
             this.txtExpression.ShowLineNumbers = false;
-            this.txtExpression.Size = new System.Drawing.Size(445, 134);
+            this.txtExpression.Size = new System.Drawing.Size(552, 198);
             this.txtExpression.TabIndex = 23;
             this.txtExpression.Zoom = 100;
             // 
@@ -1458,7 +1470,7 @@
             this.lblCurrentMeasure.Location = new System.Drawing.Point(3, 28);
             this.lblCurrentMeasure.Name = "lblCurrentMeasure";
             this.lblCurrentMeasure.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-            this.lblCurrentMeasure.Size = new System.Drawing.Size(445, 18);
+            this.lblCurrentMeasure.Size = new System.Drawing.Size(552, 18);
             this.lblCurrentMeasure.TabIndex = 24;
             this.lblCurrentMeasure.Visible = false;
             this.lblCurrentMeasure.Paint += new System.Windows.Forms.PaintEventHandler(this.lblCurrentMeasure_Paint);
@@ -1479,7 +1491,7 @@
             this.toolStripButton2});
             this.toolStrip3.Location = new System.Drawing.Point(3, 3);
             this.toolStrip3.Name = "toolStrip3";
-            this.toolStrip3.Size = new System.Drawing.Size(445, 25);
+            this.toolStrip3.Size = new System.Drawing.Size(552, 25);
             this.toolStrip3.TabIndex = 22;
             this.toolStrip3.Text = "toolStrip3";
             // 
@@ -1505,7 +1517,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(451, 183);
+            this.tabPage2.Size = new System.Drawing.Size(558, 247);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Advanced Scripting";
             // 
@@ -1546,7 +1558,7 @@
             this.txtAdvanced.RightBracket2 = '}';
             this.txtAdvanced.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
             this.txtAdvanced.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtAdvanced.ServiceColors")));
-            this.txtAdvanced.Size = new System.Drawing.Size(445, 152);
+            this.txtAdvanced.Size = new System.Drawing.Size(552, 216);
             this.txtAdvanced.TabIndex = 16;
             this.txtAdvanced.Zoom = 100;
             // 
@@ -1565,7 +1577,7 @@
             this.btnSaveCustomAction});
             this.toolStrip4.Location = new System.Drawing.Point(3, 3);
             this.toolStrip4.Name = "toolStrip4";
-            this.toolStrip4.Size = new System.Drawing.Size(445, 25);
+            this.toolStrip4.Size = new System.Drawing.Size(552, 25);
             this.toolStrip4.TabIndex = 15;
             this.toolStrip4.Text = "toolStrip4";
             // 
@@ -1584,8 +1596,8 @@
             this.btnUndoErrors.Name = "btnUndoErrors";
             this.btnUndoErrors.Size = new System.Drawing.Size(117, 22);
             this.btnUndoErrors.Text = "Rollback on error";
-            this.btnUndoErrors.ToolTipText = "When auto-undo is enabled, changes done by the script will be rolled back in case" +
-    " of errors.";
+            this.btnUndoErrors.ToolTipText = "When this is enabled, changes done by the script will be rolled back in case of e" +
+    "rrors.";
             // 
             // toolStripSeparator11
             // 
@@ -1625,7 +1637,7 @@
             this.propertyGrid1.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(247)))), ((int)(((byte)(252)))));
             this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(459, 222);
+            this.propertyGrid1.Size = new System.Drawing.Size(566, 292);
             this.propertyGrid1.TabIndex = 14;
             // 
             // tvMenu
@@ -1642,9 +1654,9 @@
             this.lblStatus,
             this.lblErrors,
             this.lblScriptStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 484);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 618);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(748, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(920, 22);
             this.statusStrip1.TabIndex = 17;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -1679,7 +1691,7 @@
             | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
             this.lblScriptStatus.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
             this.lblScriptStatus.Name = "lblScriptStatus";
-            this.lblScriptStatus.Size = new System.Drawing.Size(433, 17);
+            this.lblScriptStatus.Size = new System.Drawing.Size(605, 17);
             this.lblScriptStatus.Spring = true;
             this.lblScriptStatus.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -1690,10 +1702,11 @@
             this.editToolStripMenuItem,
             this.viewToolStripMenuItem,
             this.modelToolStripMenuItem,
+            this.dynamicToolStripMenuItem,
             this.toolsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(748, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(920, 24);
             this.menuStrip1.TabIndex = 18;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -1874,6 +1887,15 @@
             this.modelToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
             this.modelToolStripMenuItem.Text = "Model";
             // 
+            // dynamicToolStripMenuItem
+            // 
+            this.dynamicToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripSeparator19});
+            this.dynamicToolStripMenuItem.Name = "dynamicToolStripMenuItem";
+            this.dynamicToolStripMenuItem.Size = new System.Drawing.Size(66, 20);
+            this.dynamicToolStripMenuItem.Text = "Dynamic";
+            this.dynamicToolStripMenuItem.Visible = false;
+            // 
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1982,11 +2004,16 @@
             this.treeColumn1.SortOrder = System.Windows.Forms.SortOrder.None;
             this.treeColumn1.TooltipText = null;
             // 
+            // toolStripSeparator19
+            // 
+            this.toolStripSeparator19.Name = "toolStripSeparator19";
+            this.toolStripSeparator19.Size = new System.Drawing.Size(149, 6);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(748, 506);
+            this.ClientSize = new System.Drawing.Size(920, 640);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.toolStrip2);
             this.Controls.Add(this.statusStrip1);
@@ -2206,6 +2233,9 @@
         public UI.UIModelAction actToggleColumns;
         public UI.UIModelAction actToggleHierarchies;
         public UI.UIModelAction actToggleFilter;
+        private System.Windows.Forms.ToolStripMenuItem dynamicToolStripMenuItem;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel3;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator19;
     }
 }
 

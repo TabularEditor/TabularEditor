@@ -71,7 +71,8 @@ namespace TabularEditor.UI
             menu.Opening += ContextMenu_Opening;
             UI.TreeView.ContextMenuStrip = menu;
             UI.ToolsMenu.DropDown.Opening += ToolsMenu_Opening;
-            UI.ModelMenu.DropDown.Opening += ContextMenu_Opening;
+            UI.ModelMenu.DropDown.Opening += ModelMenu_Opening;
+            UI.DynamicMenu.DropDown.Opening += DynamicMenu_Opening;
         }
 
         private void TvName_EditorShowing(object sender, CancelEventArgs e)
@@ -234,6 +235,8 @@ namespace TabularEditor.UI
                 UI.StatusLabel.Text = Selection.Summary(true) + " selected.";
                 ShowSelectionStatus = true;
             }
+
+            DynamicMenu_Update();
         }
 
         bool ShowSelectionStatus = false;

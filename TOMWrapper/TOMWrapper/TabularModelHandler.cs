@@ -1061,7 +1061,10 @@ namespace TabularEditor.TOMWrapper
             {
                 actionCount = UndoManager.EndBatch(rollback);
             }
-            Tree.EndUpdate();
+            while (Tree.UpdateLocks > 0)
+            {
+                Tree.EndUpdate();
+            }
             return actionCount;
         }
 

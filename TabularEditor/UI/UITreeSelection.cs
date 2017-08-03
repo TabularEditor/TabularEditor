@@ -118,6 +118,21 @@ namespace TabularEditor.UI
             var x = (context & flags);
             return x != 0 && (x & (x - 1)) == 0;
         }
+        public static Context Combine(this IEnumerable<Context> contexts)
+        {
+            if (!contexts.Any()) return (Context)0;
+            return contexts.Aggregate((r1, r2) => r1 | r2);
+        }
+        /// <summary>
+        /// Checks if one and only one bit is set in the specified context enum flags.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static bool Just1(this Context context)
+        {
+            var x = context;
+            return x != 0 && (x & (x - 1)) == 0;
+        }
 
         /// <summary>
         /// Returns the number of flags set.
@@ -195,58 +210,80 @@ namespace TabularEditor.UI
         Relationships = 1 << 6,
 
         /// <summary>
-        /// Context menu opened on one or more tables
+        /// Context menu opened on the "Table Partitions" group node
         /// </summary>
-        Table = 1 << 7,
+        TablePartitions = 1 << 7,
 
         /// <summary>
-        /// Context menu opened on one or more table objects (measures, columns, hierarchies or folders - use Selected.Types to determine type of objects)
+        /// Context menu opened on one or more tables
         /// </summary>
-        TableObject = 1 << 8,
+        Table = 1 << 11,
+        
+        /// <summary>
+        /// Context menu opened on one or more measures (or on a display folder containing measures)
+        /// </summary>
+        Measure = 1 << 12,
+
+        /// <summary>
+        /// Context menu opened on one or more columns (or on a display folder containing columns)
+        /// </summary>
+        Column = 1 << 13,
+
+        /// <summary>
+        /// Context menu opened on one or more hierarchies (or on a display folder containing hierarchies)
+        /// </summary>
+        Hierarchy = 1 << 14,
 
         /// <summary>
         /// Context menu opened on one or more hierarchy levels
         /// </summary>
-        Level = 1 << 9,
+        Level = 1 << 15,
 
         /// <summary>
         /// Context menu opened on one or more table partitions
         /// </summary>
-        Partition = 1 << 10,
+        Partition = 1 << 16,
 
         /// <summary>
         /// Context menu opened on one or more relationships
         /// </summary>
-        Relationship = 1 << 11,
+        Relationship = 1 << 17,
 
         /// <summary>
         /// Context menu opened on one or more data sources
         /// </summary>
-        DataSource = 1 << 12,
+        DataSource = 1 << 18,
 
         /// <summary>
         /// Context menu opened on one or more roles
         /// </summary>
-        Role = 1 << 13,
+        Role = 1 << 19,
 
         /// <summary>
         /// Context menu opened on one or more perspectives
         /// </summary>
-        Perspective = 1 << 14,
+        Perspective = 1 << 20,
 
         /// <summary>
         /// Context menu opened on one or more cultures
         /// </summary>
-        Translation = 1 << 15,
+        Translation = 1 << 21,
 
         /// <summary>
         /// Context menu opened on a KPI object
         /// </summary>
-        KPI = 1 << 16,
+        KPI = 1 << 22,
 
-        Everywhere = 0xFFFFFF,
-        SingularObjects = Table | TableObject | Level | Partition | Relationship | DataSource | Role | Perspective | Translation | KPI,
-        Groups = Model | Tables | Relationships | DataSources | Roles | Perspectives | Translations,
+        /// <summary>
+        /// Special context for actions that can be executed regardless of the current selection,
+        /// but where the action should show up in the "Tools" menu only.
+        /// </summary>
+        Tool = 1 << 28,
+
+        Everywhere = 0x7FFFFFFF,
+        TableObject = Measure | Column | Hierarchy,
+        SingularObjects = Model | Table | TableObject | Level | Partition | Relationship | DataSource | Role | Perspective | Translation | KPI,
+        Groups = Tables | Relationships | DataSources | Roles | Perspectives | Translations | TablePartitions,
         DataObjects = Table | TableObject
     }
 
@@ -300,6 +337,18 @@ namespace TabularEditor.UI
         }
 
         /// <summary>
+        /// Iterates through the passed list of nodes, to return the combined context of the items represented by the nodes.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        static public Context GetNodeContexts(IList<TreeNodeAdv> nodes)
+        {
+            var result = Context.None;
+            foreach (var node in nodes) result |= GetNodeContext(node);
+            return result;
+        }
+
+        /// <summary>
         /// Returns the "context" commonly associated with a given Explorer Tree node
         /// </summary>
         /// <param name="node"></param>
@@ -309,49 +358,49 @@ namespace TabularEditor.UI
             var result = Context.None;
             switch ((node.Tag as ITabularNamedObject).ObjectType)
             {
-                case ObjectType.Model: result = Context.Model; break;
-                case ObjectType.Culture: result = Context.Translation; break;
-                case ObjectType.DataSource: result = Context.DataSource; break;
-                case ObjectType.Perspective: result = Context.Perspective; break;
-                case ObjectType.Partition: result = Context.Partition; break;
-                case ObjectType.Role: result = Context.Role; break;
-                case ObjectType.Relationship: result = Context.Relationship; break;
-                case ObjectType.Table: result = Context.Table; break;
-                case ObjectType.Level: result = Context.Level; break;
-                case ObjectType.KPI: result = Context.KPI; break;
-                case ObjectType.Column:
-                case ObjectType.Measure:
-                case ObjectType.Hierarchy:
-                case ObjectType.Folder:
-                    result = Context.TableObject; break;
+                case ObjectType.Model: return Context.Model;
+                case ObjectType.Culture: return Context.Translation;
+                case ObjectType.DataSource: return Context.DataSource;
+                case ObjectType.Perspective: return Context.Perspective;
+                case ObjectType.Partition: return Context.Partition;
+                case ObjectType.Role: return Context.Role;
+                case ObjectType.Relationship: return Context.Relationship;
+                case ObjectType.Table: return Context.Table;
+                case ObjectType.Level: return Context.Level;
+                case ObjectType.KPI: return Context.KPI;
+                case ObjectType.Column: return Context.Column;
+                case ObjectType.Measure: return Context.Measure;
+                case ObjectType.Hierarchy: return Context.Hierarchy;
                 case ObjectType.Group:
                     switch ((node.Tag as LogicalGroup).Name)
                     {
-                        case "Tables": result = Context.Tables; break;
-                        case "Data Sources": result = Context.DataSources; break;
-                        case "Perspectives": result = Context.Perspectives; break;
-                        case "Roles": result = Context.Roles; break;
-                        case "Translations": result = Context.Translations; break;
-                        case "Relationships": result = Context.Relationships; break;
+                        case "Tables": return Context.Tables;
+                        case "Data Sources": return Context.DataSources;
+                        case "Perspectives": return Context.Perspectives;
+                        case "Roles": return Context.Roles;
+                        case "Translations": return Context.Translations;
+                        case "Relationships": return Context.Relationships;
+                        case "Table Partitions": return Context.TablePartitions;
                     }
-                    break;
+                    break;                   
             }
             return result;
         }
 
-        public UITreeSelection(IReadOnlyCollection<TreeNodeAdv> selectedNodes) : 
-            base(GetDeep(selectedNodes).Select(n => n.Tag)
-                .OfType<ITabularNamedObject>()
-                .Where(n => !(n is Folder))
-                .Select(n => (n as PartitionViewTable)?.Table ?? n))
+        public UITreeSelection(IReadOnlyCollection<TreeNodeAdv> selectedNodes)
         {
+            var allNodes = GetDeep(selectedNodes).ToList();
+            SetItems(allNodes.Select(n => n.Tag).OfType<ITabularNamedObject>()
+                .Where(n => !(n is Folder))
+                .Select(n => (n as PartitionViewTable)?.Table ?? n));
+
             _selectedNodes = selectedNodes;
-     
-            if (selectedNodes.Count > 0)
-            {
-                Context = GetNodeContext(selectedNodes.First());
-                if (Context == Context.TableObject) Types = GetNodeTypes(selectedNodes);
-            }
+
+            if (Count == 0) Context = Context.None;
+            else if (Count == 1) Context = GetNodeContext(allNodes[0]);
+            else Context = GetNodeContexts(allNodes);
+
+            Types = GetNodeTypes(selectedNodes);
 
             Folders = selectedNodes.Select(n => n.Tag).OfType<Folder>();
             Groups = selectedNodes.Select(n => n.Tag).OfType<LogicalGroup>();

@@ -267,6 +267,7 @@ namespace TabularEditor.UI
         public ImageList TreeImages;
         public ToolStripDropDownItem ModelMenu;
         public ToolStripDropDownItem ToolsMenu;
+        public ToolStripDropDownItem DynamicMenu;
         public ToolStripComboBox TranslationSelector;
         public ToolStripComboBox PerspectiveSelector;
     }
