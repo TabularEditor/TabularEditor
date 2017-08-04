@@ -578,6 +578,11 @@
     <Content Include="FodyWeavers.xml">
       <SubType>Designer</SubType>
     </Content>
+    <None Include="Resources\SaveToFile.png" />
+    <None Include="Resources\SaveToDB.png" />
+    <None Include="Resources\SaveFolderTree2.png" />
+    <None Include="Resources\SaveFolderTree.png" />
+    <None Include="Resources\SaveFolderTree.jpg" />
     <None Include="Resources\UncommentCode_16x.png" />
     <None Include="Resources\CommentCode_16x.png" />
     <None Include="Resources\SortAscending_16x.png" />
