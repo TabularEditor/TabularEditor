@@ -76,6 +76,7 @@ namespace TabularEditor.UI.Dialogs
 
         private void btnAnalyzeAll_Click(object sender, EventArgs e)
         {
+            listView1.SelectedIndices.Clear();
             Analyze();
         }
 

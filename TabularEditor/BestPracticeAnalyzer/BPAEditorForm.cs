@@ -24,7 +24,7 @@ namespace TabularEditor.UI.Dialogs
             txtDescription.Text = rule.Description;
             numSeverity.Value = rule.Severity;
 
-            btnOK.Enabled = ValidateRule();
+            btnOK.Enabled = ValidateRuleData();
 
             if(ShowDialog() == DialogResult.OK)
             {
@@ -53,7 +53,7 @@ namespace TabularEditor.UI.Dialogs
             txtDescription.Text = "";
             numSeverity.Value = 10;
 
-            btnOK.Enabled = ValidateRule();
+            btnOK.Enabled = ValidateRuleData();
 
             if (ShowDialog() == DialogResult.OK)
             {
@@ -126,25 +126,15 @@ namespace TabularEditor.UI.Dialogs
             controlList.ForEach(c => c.Dispose());
         }
 
-        /// <summary>
-        /// Call this method to validate the dynamic linq expression and rebuild the
-        /// visual builder tree. Returns true if the expression was succesfully
-        /// validated - false otherwise.
-        /// 
-        /// This method also displays an info-panel at the top of the screen, in case
-        /// validation fails.
-        /// </summary>
-        /// <returns></returns>
-        private bool ValidateRule()
+        private bool ValidateRuleData()
         {
-            var result = true;
-            if(string.IsNullOrWhiteSpace(txtID.Text))
+            if (string.IsNullOrWhiteSpace(txtID.Text))
             {
                 pnlInfo.Visible = true;
                 lblInfo.Text = "ID cannot be blank";
                 return false;
             }
-            if(string.IsNullOrWhiteSpace(txtName.Text))
+            if (string.IsNullOrWhiteSpace(txtName.Text))
             {
                 pnlInfo.Visible = true;
                 lblInfo.Text = "Name cannot be blank";
@@ -156,31 +146,44 @@ namespace TabularEditor.UI.Dialogs
                 Root = new MultiNode();
                 Root.AddNode(new CriteriaNode());
                 pnlInfo.Visible = false;
-                return false;
             }
-            else
+            return true;
+        }
+
+        /// <summary>
+        /// Call this method to validate the dynamic linq expression and rebuild the
+        /// visual builder tree. Returns true if the expression was succesfully
+        /// validated - false otherwise.
+        /// 
+        /// This method also displays an info-panel at the top of the screen, in case
+        /// validation fails.
+        /// </summary>
+        /// <returns></returns>
+        private bool ValidateRule()
+        {
+            var result = ValidateRuleData();
+            if (!result) return result;
+
+            try
             {
-                try
+                // Attempt to parse the expression of the assigned rule:
+                foreach (var t in Scope.Enumerate().Select(s => s.GetScopeType()))
                 {
-                    // Attempt to parse the expression of the assigned rule:
-                    foreach (var t in Scope.Enumerate().Select(s => s.GetScopeType()))
-                    {
-                        var expr = DynamicExpression.ParseLambda(t, typeof(bool), Expression);
-                    }
-
-                    // TODO: Uncomment below code to re-enable visual tree builder
-                    //var rootNode = CriteriaTreeBuilder.BuildFromExpression(expr.Body);
-                    //if (!(rootNode is MultiNode)) Root = rootNode.PromoteToMulti();
-                    //else Root = rootNode as MultiNode;
-
-                    pnlInfo.Visible = false;
+                    var expr = DynamicExpression.ParseLambda(t, typeof(bool), Expression);
                 }
-                catch (Exception ex)
-                {
-                    lblInfo.Text = "Error: " + ex.Message;
-                    pnlInfo.Visible = true;
-                    result = false;
-                }
+
+                // TODO: Uncomment below code to re-enable visual tree builder
+                //var rootNode = CriteriaTreeBuilder.BuildFromExpression(expr.Body);
+                //if (!(rootNode is MultiNode)) Root = rootNode.PromoteToMulti();
+                //else Root = rootNode as MultiNode;
+
+                pnlInfo.Visible = false;
+            }
+            catch (Exception ex)
+            {
+                lblInfo.Text = "Error: " + ex.Message;
+                pnlInfo.Visible = true;
+                result = false;
             }
 
             RefreshPanels();
@@ -343,7 +346,7 @@ namespace TabularEditor.UI.Dialogs
 
         private void txtExpression_Leave(object sender, EventArgs e)
         {
-            btnOK.Enabled = ValidateRule();
+            ValidateRule();
         }
 
         private void txtName_TextChanged(object sender, EventArgs e)
@@ -353,14 +356,14 @@ namespace TabularEditor.UI.Dialogs
                 txtID.Text = GetStandardIdFromName(txtName.Text);
                 nameBefore = txtName.Text;
             }
-            else btnOK.Enabled = ValidateRule();
+            else btnOK.Enabled = ValidateRuleData();
         }
 
         private string nameBefore = "";
 
         private void txtID_TextChanged(object sender, EventArgs e)
         {
-           btnOK.Enabled = ValidateRule();
+           btnOK.Enabled = ValidateRuleData();
         }
     }
 }
