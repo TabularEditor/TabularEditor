@@ -536,6 +536,26 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         [Browsable(true),DisplayName("Translated Display Folders"),Description("Shows all translated Display Folders of this object."),Category("Translations and Perspectives")]
 	    public TranslationIndexer TranslatedDisplayFolders { private set; get; }
+
+		[DisplayName("Encoding Hint")]
+		[Category("Other"),Description(@""),IntelliSense("The Encoding Hint of this Column.")]
+		public TOM.EncodingHintType EncodingHint {
+			get {
+			    return MetadataObject.EncodingHint;
+			}
+			set {
+				var oldValue = EncodingHint;
+				if (oldValue == value) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ENCODINGHINT, value, ref undoable, ref cancel);
+				if (cancel) return;
+				MetadataObject.EncodingHint = value;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ENCODINGHINT, oldValue, value));
+				OnPropertyChanged(Properties.ENCODINGHINT, oldValue, value);
+			}
+		}
+		private bool ShouldSerializeEncodingHint() { return false; }
 		[Browsable(false)]
 		public Table Table
 		{ 
@@ -572,6 +592,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeSortByColumn() { return false; }
+
         /// <Summary>
 		/// Collection of perspectives in which this Column is visible.
 		/// </Summary>
@@ -589,7 +610,18 @@ namespace TabularEditor.TOMWrapper
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
 
+        internal override ITabularObjectCollection GetCollectionForChild(TabularObject child)
+        {
+			if (child is Variation) return Variations;
+            return base.GetCollectionForChild(child);
+        }
 
+        /// <summary>
+        /// The collection of Variation objects on this Column.
+        /// </summary>
+		[DisplayName("Variations")]
+		[Category("Other"),IntelliSense("The collection of Variation objects on this Column.")][NoMultiselect(),Editor(typeof(VariationCollectionEditor),typeof(UITypeEditor))]
+		public VariationCollection Variations { get; protected set; }
 
 		/// <summary>
 		/// CTOR - only called from static factory methods on the class
@@ -611,9 +643,21 @@ namespace TabularEditor.TOMWrapper
 			
 			// Create indexer for annotations:
 			Annotations = new AnnotationCollection(this);
+			
+			// Instantiate child collections:
+			Variations = new VariationCollection(this.GetObjectPath() + ".Variations", MetadataObject.Variations, this);
+
+			// Populate child collections:
+			Variations.CreateChildrenFromMetadata();
+
+			// Hook up event handlers on child collections:
+			Variations.CollectionChanged += Children_CollectionChanged;
 		}
 
 
+		internal override void Reinit() {
+			Variations.Reinit();
+		}
 
 		internal override void Undelete(ITabularObjectCollection collection) {
 			base.Undelete(collection);
@@ -846,6 +890,15 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("DisplayFolder"));
 				this.ToList().ForEach(item => { item.DisplayFolder = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		[Description("Sets the EncodingHint property of all objects in the collection at once.")]
+		public TOM.EncodingHintType EncodingHint {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("EncodingHint"));
+				this.ToList().ForEach(item => { item.EncodingHint = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}

@@ -280,6 +280,7 @@ namespace TabularEditor.TOMWrapper
 				return t as Table;
 			} 
 		}
+
         /// <Summary>
 		/// Collection of perspectives in which this Measure is visible.
 		/// </Summary>

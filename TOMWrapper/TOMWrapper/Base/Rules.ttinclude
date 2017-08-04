@@ -144,7 +144,9 @@ class Rules {
 				case "KPI":
 					resolveObject = "value?.MetadataObject";
 					break;
-
+				case "DefaultMeasure":
+				    resolveObject = "value?.MetadataObject";
+					break;
 			}
         }
 		
@@ -230,9 +232,7 @@ class Rules {
 			case "ShowAsVariationsOnly":
 				return "Options";
 			case "Column":
-#if CL1400
 				if(typeName == "Variation") return "Basic";
-#endif
 				return "Other";
 			case "IsDefault":
 			case "DefaultColumn":
@@ -281,6 +281,7 @@ class Rules {
 		if(propertyName == "Cultures") return "[Editor(typeof(TabularEditor.PropertyGridUI.CultureCollectionEditor),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Roles") return "[Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<ModelRole>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Partitions") return "[NoMultiselect(),Editor(typeof(PartitionCollectionEditor),typeof(UITypeEditor))]";
+		if(propertyName == "Variations") return "[NoMultiselect(),Editor(typeof(VariationCollectionEditor),typeof(UITypeEditor))]";
 		
 		if(propertyName == "DataSources") return "[Browsable(false)]";
 		if(propertyName == "Relationships") return "[Browsable(false)]";
@@ -319,10 +320,8 @@ class Rules {
 	// List of types to generate wrapper for:
 	public static readonly Dictionary<Type, string> ObjectTypes = new Dictionary<Type,string>()
 	{ 
-#if CL1400
 	   { typeof(StructuredDataSource), "DataSource" },
        { typeof(Variation), "TabularNamedObject" },
-#endif
        { typeof(CalculatedColumn), "Column" },
        { typeof(CalculatedTableColumn), "Column" },
        { typeof(Column), "TabularNamedObject" },
@@ -348,9 +347,7 @@ class Rules {
 
    public static readonly Dictionary<Type, string> Collections = new Dictionary<Type,string>()
    {
-#if CL1400
        { typeof(Variation), "Variations" },
-#endif
        { typeof(ModelRoleMember), "Members" },
        { typeof(ModelRole), "Roles" },
        { typeof(Table), "Tables" },
@@ -395,10 +392,8 @@ class Rules {
 	   // Collections owned by a ModelRole (order of items matters, as this is the order in which child objects will be initialized):
        { new KeyValuePair<Type, string>(typeof(ModelRoleMember), "ModelRole") },
 
-#if CL1400
 	   // Collections owned by a Column (order of items matters, as this is the order in which child objects will be initialized):
        { new KeyValuePair<Type, string>(typeof(Variation), "Column") },
-#endif
 
 	   // Collections owned by a Hierarchy (order of items matters, as this is the order in which child objects will be initialized):
        { new KeyValuePair<Type, string>(typeof(Level), "Hierarchy") }

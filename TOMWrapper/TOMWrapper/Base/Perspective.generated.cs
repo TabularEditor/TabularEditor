@@ -112,6 +112,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
+
         /// <summary>
         /// Collection of localized descriptions for this Perspective.
         /// </summary>

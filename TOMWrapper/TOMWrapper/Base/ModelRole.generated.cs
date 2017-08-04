@@ -132,6 +132,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeModelPermission() { return false; }
+
         /// <summary>
         /// Collection of localized descriptions for this ModelRole.
         /// </summary>

@@ -164,6 +164,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeColumn() { return false; }
+
         /// <summary>
         /// Collection of localized descriptions for this Level.
         /// </summary>

@@ -89,6 +89,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		
+
 		public static Culture CreateFromMetadata(TOM.Culture metadataObject, bool init = true) {
 			var obj = new Culture(metadataObject, init);
 			if(init) 

@@ -243,6 +243,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeSecurityFilteringBehavior() { return false; }
+
 		public Model Parent { 
 			get {
 				return Handler.WrapperLookup[MetadataObject.Parent] as Model;

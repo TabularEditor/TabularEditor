@@ -140,6 +140,7 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeRole() { return false; }
+
 		public ModelRole Parent { 
 			get {
 				return Handler.WrapperLookup[MetadataObject.Parent] as ModelRole;

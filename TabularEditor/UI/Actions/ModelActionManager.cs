@@ -49,6 +49,9 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => true, (s, m) => Partition.CreateNew(s.Table).Edit(), (s, m) => @"Create New\Partition", true, Context.Table));
 
             Add(new Action((s, m) => true, (s, m) => m.AddDataSource().Edit(), (s, m) => @"Create New\Data Source", false, Context.DataSources | Context.Model));
+#if CL1400
+            Add(new Action((s, m) => true, (s, m) => m.AddStructuredDataSource().Edit(), (s, m) => @"Create New\Structured Data Source", false, Context.DataSources | Context.Model));
+#endif
             Add(new Action((s, m) => true, (s, m) => m.AddPerspective().Edit(), (s, m) => @"Create New\Perspective", false, Context.Model | Context.Perspectives | Context.Perspective));
             Add(new Action((s, m) => m.Tables.Count(t => t.Columns.Any()) >= 2, (s, m) => m.AddRelationship().Edit(), (s, m) => @"Create New\Relationship", false, Context.Relationship | Context.Relationships | Context.Model));
             Add(new Action((s, m) => true, (s, m) => m.AddRole().Edit(), (s, m) => @"Create New\Role", false, Context.Model | Context.Roles | Context.Role));

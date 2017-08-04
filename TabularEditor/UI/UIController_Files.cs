@@ -26,9 +26,17 @@ namespace TabularEditor.UI
 
         public void File_New()
         {
-            Handler = new TabularModelHandler();
+            var cl = 1200;
+#if CL1400
+            var res = MessageBox.Show("Do you want to create a Compatibility Level 1400 model?\n(No = 1200, Yes = 1400).", "Compatibility Level", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+            if (res == DialogResult.Cancel) return;
+            if (res == DialogResult.Yes) cl = 1400;
+#endif
+
+            Handler = new TabularModelHandler(cl);
+
             Handler.AutoFixup = Preferences.Current.FormulaFixup;
-            File_Current = Handler.Source;
+            File_Current = null;
             File_SaveMode = Handler.SourceType;
 
             LoadTabularModelToUI();
@@ -139,6 +147,12 @@ namespace TabularEditor.UI
 
         public void Save()
         {
+            if(File_Current == null && File_SaveMode == ModelSourceType.File)
+            {
+                File_SaveAs();
+                return;
+            }
+
             UI.StatusLabel.Text = "Saving...";
 
             if (File_SaveMode == ModelSourceType.Database)

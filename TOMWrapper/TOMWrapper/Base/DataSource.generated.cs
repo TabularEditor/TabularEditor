@@ -120,6 +120,27 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeType() { return false; }
+
+		[DisplayName("Max Connections")]
+		[Category("Other"),Description(@""),IntelliSense("The Max Connections of this DataSource.")]
+		public int MaxConnections {
+			get {
+			    return MetadataObject.MaxConnections;
+			}
+			set {
+				var oldValue = MaxConnections;
+				if (oldValue == value) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.MAXCONNECTIONS, value, ref undoable, ref cancel);
+				if (cancel) return;
+				MetadataObject.MaxConnections = value;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MAXCONNECTIONS, oldValue, value));
+				OnPropertyChanged(Properties.MAXCONNECTIONS, oldValue, value);
+			}
+		}
+		private bool ShouldSerializeMaxConnections() { return false; }
+
 		public Model Parent { 
 			get {
 				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
@@ -212,6 +233,15 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("Description"));
 				this.ToList().ForEach(item => { item.Description = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		[Description("Sets the MaxConnections property of all objects in the collection at once.")]
+		public int MaxConnections {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("MaxConnections"));
+				this.ToList().ForEach(item => { item.MaxConnections = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}

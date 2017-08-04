@@ -103,28 +103,6 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializePassword() { return false; }
 /// <summary>
-///             Gets or sets the maximum number of connections to be opened concurrently to the data source.
-///             </summary><returns>The maximum number of connections to be opened concurrently to the data source.</returns>
-		[DisplayName("Max Connections")]
-		[Category("Connection Details"),Description(@"Gets or sets the maximum number of connections to be opened concurrently to the data source."),IntelliSense("The Max Connections of this ProviderDataSource.")]
-		public int MaxConnections {
-			get {
-			    return MetadataObject.MaxConnections;
-			}
-			set {
-				var oldValue = MaxConnections;
-				if (oldValue == value) return;
-				bool undoable = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.MAXCONNECTIONS, value, ref undoable, ref cancel);
-				if (cancel) return;
-				MetadataObject.MaxConnections = value;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MAXCONNECTIONS, oldValue, value));
-				OnPropertyChanged(Properties.MAXCONNECTIONS, oldValue, value);
-			}
-		}
-		private bool ShouldSerializeMaxConnections() { return false; }
-/// <summary>
 ///             Gets or sets the isolation property for a DataSource object.
 ///             </summary><returns>The data source isolation status.</returns>
 		[DisplayName("Isolation")]
@@ -188,6 +166,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeProvider() { return false; }
+
 
 		public static ProviderDataSource CreateFromMetadata(TOM.ProviderDataSource metadataObject, bool init = true) {
 			var obj = new ProviderDataSource(metadataObject, init);
