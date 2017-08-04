@@ -141,7 +141,7 @@ namespace TabularEditor.TOMWrapper
             {
                 case Properties.FORMATSTRING: return DataType != TOM.DataType.String && Description != "hej";
 #if CL1400
-                case Properties.DETAILROWSEXPRESSION:
+                case Properties.DETAILROWSDEFINITION:
                     return Model.Database.CompatibilityLevel >= 1400;
 #endif
                 default: return true;
@@ -158,7 +158,7 @@ namespace TabularEditor.TOMWrapper
         [DisplayName("Detail Rows Expression")]
         [Category("Options"), IntelliSense("A DAX expression specifying detail rows for this measure (drill-through in client tools).")]
         [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public string DetailRowsExpression
+        public string DetailRowsDefinition
         {
             get
             {
@@ -166,21 +166,21 @@ namespace TabularEditor.TOMWrapper
             }
             set
             {
-                var oldValue = DetailRowsExpression;
+                var oldValue = DetailRowsDefinition;
 
                 if (oldValue == value) return;
 
                 bool undoable = true;
                 bool cancel = false;
-                OnPropertyChanging("DetailRowsExpression", value, ref undoable, ref cancel);
+                OnPropertyChanging(Properties.DETAILROWSDEFINITION, value, ref undoable, ref cancel);
                 if (cancel) return;
 
                 if (MetadataObject.DetailRowsDefinition == null) MetadataObject.DetailRowsDefinition = new TOM.DetailRowsDefinition();
                 MetadataObject.DetailRowsDefinition.Expression = value;
                 if (string.IsNullOrWhiteSpace(value)) MetadataObject.DetailRowsDefinition = null;
 
-                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "DetailRowsExpression", oldValue, value));
-                OnPropertyChanged("DetailRowsExpression", oldValue, value);
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DETAILROWSDEFINITION, oldValue, value));
+                OnPropertyChanged(Properties.DETAILROWSDEFINITION, oldValue, value);
             }
         }
 #endif

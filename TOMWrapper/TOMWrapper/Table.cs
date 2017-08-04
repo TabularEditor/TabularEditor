@@ -340,7 +340,7 @@ namespace TabularEditor.TOMWrapper
         [DisplayName("Default Detail Rows Expression")]
         [Category("Options"), IntelliSense("A DAX expression specifying default detail rows for this table (drill-through in client tools).")]
         [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public string DetailRowsExpression
+        public string DefaultDetailRowsDefinition
         {
             get
             {
@@ -348,21 +348,21 @@ namespace TabularEditor.TOMWrapper
             }
             set
             {
-                var oldValue = DetailRowsExpression;
+                var oldValue = DefaultDetailRowsDefinition;
 
                 if (oldValue == value) return;
 
                 bool undoable = true;
                 bool cancel = false;
-                OnPropertyChanging("DefaultDetailRowsExpression", value, ref undoable, ref cancel);
+                OnPropertyChanging(Properties.DEFAULTDETAILROWSDEFINITION, value, ref undoable, ref cancel);
                 if (cancel) return;
 
                 if (MetadataObject.DefaultDetailRowsDefinition == null) MetadataObject.DefaultDetailRowsDefinition = new TOM.DetailRowsDefinition();
                 MetadataObject.DefaultDetailRowsDefinition.Expression = value;
                 if (string.IsNullOrWhiteSpace(value)) MetadataObject.DefaultDetailRowsDefinition = null;
 
-                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "DefaultDetailRowsExpression", oldValue, value));
-                OnPropertyChanged("DefaultDetailRowsExpression", oldValue, value);
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DEFAULTDETAILROWSDEFINITION, oldValue, value));
+                OnPropertyChanged(Properties.DEFAULTDETAILROWSDEFINITION, oldValue, value);
             }
         }
 #endif

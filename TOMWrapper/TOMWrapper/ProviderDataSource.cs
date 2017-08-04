@@ -23,7 +23,8 @@ namespace TabularEditor.TOMWrapper
         }
         protected override void Init()
         {
-            if (MetadataObject.ImpersonationMode == TOM.ImpersonationMode.Default) MetadataObject.ImpersonationMode = Microsoft.AnalysisServices.Tabular.ImpersonationMode.ImpersonateAnonymous;
+            if (MetadataObject.ImpersonationMode == TOM.ImpersonationMode.Default)
+                MetadataObject.ImpersonationMode = TOM.ImpersonationMode.ImpersonateServiceAccount;
 
             if (ConnectionString.IndexOf("OleDb", StringComparison.InvariantCultureIgnoreCase) >= 0)
             {

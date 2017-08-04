@@ -411,12 +411,12 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Creates a new blank Tabular Model
         /// </summary>
-        public TabularModelHandler()
+        public TabularModelHandler(int compatibilityLevel = 1200)
         {
             Singleton = this;
             server = null;
 
-            database = new TOM.Database("New Tabular Database");
+            database = new TOM.Database("New Tabular Database") { CompatibilityLevel = compatibilityLevel };
             database.Model = new TOM.Model();
 
             SourceType = ModelSourceType.File;

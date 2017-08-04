@@ -82,9 +82,6 @@ namespace TabularEditor.TOMWrapper
         }
 
 #if CL1400
-        [Category("Options")]
-        public VariationCollection Variations { get; private set; }
-
         [Browsable(true), DisplayName("Object Level Security"), Category("Security")]
         public ColumnOLSIndexer ObjectLevelSecurity { get; private set; }
 

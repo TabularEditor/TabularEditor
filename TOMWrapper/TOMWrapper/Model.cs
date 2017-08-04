@@ -76,8 +76,17 @@ namespace TabularEditor.TOMWrapper
             var ds = ProviderDataSource.CreateNew(this, name);
             Handler.EndUpdate();
             return ds;
-
         }
+
+#if CL1400
+        public StructuredDataSource AddStructuredDataSource(string name = null)
+        {
+            Handler.BeginUpdate("add data source");
+            var ds = StructuredDataSource.CreateNew(this, name);
+            Handler.EndUpdate();
+            return ds;
+        }
+#endif
         #endregion
         #region Convenient Collections
         /// <summary>
