@@ -96,7 +96,20 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                return new SerializeOptions();
+                var so = new SerializeOptions();
+                so.Levels = new HashSet<string> {
+                    "Data Sources",
+                    "Perspectives",
+                    "Relationships",
+                    "Roles",
+                    "Tables",
+                    "Tables/Columns",
+                    "Tables/Hierarchies",
+                    "Tables/Measures",
+                    "Tables/Partitions",
+                    "Translations"
+                };
+                return so;
             }
         }
         public bool IgnoreInferredObjects = true;
@@ -107,18 +120,7 @@ namespace TabularEditor.TOMWrapper
         public bool LocalTranslations = false;
         public bool LocalPerspectives = false;
 
-        public HashSet<string> Levels = new HashSet<string>() {
-            "Data Sources",
-            "Perspectives",
-            "Relationships",
-            "Roles",
-            "Tables",
-            "Tables/Columns",
-            "Tables/Hierarchies",
-            "Tables/Measures",
-            "Tables/Partitions",
-            "Translations"
-        };
+        public HashSet<string> Levels = new HashSet<string>(); 
     }
 
     public static class DependencyHelper
