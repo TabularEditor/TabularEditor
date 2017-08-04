@@ -516,5 +516,21 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         {
 
         }
+
+        private void btnOpenScript_Click(object sender, EventArgs e)
+        {
+            if(ofdScript.ShowDialog() == DialogResult.OK)
+            {
+                txtAdvanced.Text = File.ReadAllText(ofdScript.FileName);
+            }
+        }
+
+        private void btnSaveScript_Click(object sender, EventArgs e)
+        {
+            if(sfdScript.ShowDialog() == DialogResult.OK)
+            {
+                File.WriteAllText(sfdScript.FileName, txtAdvanced.Text);
+            }
+        }
     }
 }
