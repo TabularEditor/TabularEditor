@@ -157,6 +157,47 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeIsHidden() { return false; }
+
+		[DisplayName("Show As Variations Only")]
+		[Category("Options"),Description(@""),IntelliSense("The Show As Variations Only of this Table.")]
+		public bool ShowAsVariationsOnly {
+			get {
+			    return MetadataObject.ShowAsVariationsOnly;
+			}
+			set {
+				var oldValue = ShowAsVariationsOnly;
+				if (oldValue == value) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.SHOWASVARIATIONSONLY, value, ref undoable, ref cancel);
+				if (cancel) return;
+				MetadataObject.ShowAsVariationsOnly = value;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SHOWASVARIATIONSONLY, oldValue, value));
+				OnPropertyChanged(Properties.SHOWASVARIATIONSONLY, oldValue, value);
+			}
+		}
+		private bool ShouldSerializeShowAsVariationsOnly() { return false; }
+
+		[DisplayName("Private")]
+		[Category("Options"),Description(@""),IntelliSense("The Private of this Table.")]
+		public bool IsPrivate {
+			get {
+			    return MetadataObject.IsPrivate;
+			}
+			set {
+				var oldValue = IsPrivate;
+				if (oldValue == value) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ISPRIVATE, value, ref undoable, ref cancel);
+				if (cancel) return;
+				MetadataObject.IsPrivate = value;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISPRIVATE, oldValue, value));
+				OnPropertyChanged(Properties.ISPRIVATE, oldValue, value);
+			}
+		}
+		private bool ShouldSerializeIsPrivate() { return false; }
+
         /// <Summary>
 		/// Collection of perspectives in which this Table is visible.
 		/// </Summary>
@@ -403,10 +444,11 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		internal override void Reinit() {
+			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
 				var item = this[i];
 				Handler.WrapperLookup.Remove(item.MetadataObject);
-				item.MetadataObject = Model.MetadataObject.Tables[i] as TOM.Table;
+				item.MetadataObject = Model.MetadataObject.Tables[i + ixOffset] as TOM.Table;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}
@@ -456,6 +498,24 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("IsHidden"));
 				this.ToList().ForEach(item => { item.IsHidden = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		[Description("Sets the ShowAsVariationsOnly property of all objects in the collection at once.")]
+		public bool ShowAsVariationsOnly {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("ShowAsVariationsOnly"));
+				this.ToList().ForEach(item => { item.ShowAsVariationsOnly = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		[Description("Sets the IsPrivate property of all objects in the collection at once.")]
+		public bool IsPrivate {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("IsPrivate"));
+				this.ToList().ForEach(item => { item.IsPrivate = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}

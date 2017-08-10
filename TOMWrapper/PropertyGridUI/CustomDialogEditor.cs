@@ -9,6 +9,21 @@ using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.PropertyGridUI
 {
+    /// <summary>
+    /// The CustomEditors static class, can be used to register custom editors that should be used when
+    /// a specified property is edited in the PropertyGrid. An editor provided this way, must implement
+    /// the ICustomEditor interface.
+    /// 
+    /// An example of a custom editor is the FormDisplayFolderSelect which displays a hierarchical view
+    /// of Display Folders in a table. The editor is used for editing Display Folder strings in the
+    /// property grid.
+    /// 
+    /// Properties that should be editable in a Custom Editors, must be decorated with the Editor attribute
+    /// like so:
+    /// 
+    ///     [Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
+    ///     public string FormatString { get; set; }
+    /// </summary>
     public interface ICustomEditor
     {
         object Edit(object instance, string property, object value, out bool cancel);

@@ -62,6 +62,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeExpression() { return false; }
 
+
 		public static CalculatedColumn CreateFromMetadata(TOM.CalculatedColumn metadataObject, bool init = true) {
 			var obj = new CalculatedColumn(metadataObject, init);
 			if(init) 

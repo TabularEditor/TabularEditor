@@ -26,3 +26,6 @@
 /PluginTest/bin/Debug
 /PluginTest/obj/Debug
 /PluginTest/obj/Debug
+/Plugins/SimplePlugin/obj
+/Plugins/VisualizeRelationships/obj/Debug
+/PluginTest/obj/Release

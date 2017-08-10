@@ -63,6 +63,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeMemberType() { return false; }
 
+
 		public static ExternalModelRoleMember CreateFromMetadata(TOM.ExternalModelRoleMember metadataObject, bool init = true) {
 			var obj = new ExternalModelRoleMember(metadataObject, init);
 			if(init) 

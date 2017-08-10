@@ -164,6 +164,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeColumn() { return false; }
+
         /// <summary>
         /// Collection of localized descriptions for this Level.
         /// </summary>
@@ -322,10 +323,11 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		internal override void Reinit() {
+			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
 				var item = this[i];
 				Handler.WrapperLookup.Remove(item.MetadataObject);
-				item.MetadataObject = Hierarchy.MetadataObject.Levels[i] as TOM.Level;
+				item.MetadataObject = Hierarchy.MetadataObject.Levels[i + ixOffset] as TOM.Level;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}

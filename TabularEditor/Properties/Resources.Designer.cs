@@ -403,6 +403,16 @@ namespace TabularEditor {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Sigma {
+            get {
+                object obj = ResourceManager.GetObject("Sigma", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap SortAscending_16x {
             get {
                 object obj = ResourceManager.GetObject("SortAscending_16x", resourceCulture);

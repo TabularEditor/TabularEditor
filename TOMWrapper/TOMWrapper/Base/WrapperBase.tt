@@ -461,13 +461,14 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 		}
 
 		internal override void Reinit() {
+			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
-<# if (t.Name == "Column") { #>
-				if (MetadataObjectCollection[i] is TOM.RowNumberColumn) continue;
-<# } #>
 				var item = this[i];
 				Handler.WrapperLookup.Remove(item.MetadataObject);
-				item.MetadataObject = <#= Rules.GetParent(t) #>.MetadataObject.<#= Rules.CollectionName(t) #>[i] as TOM.<#= t.Name == "Relationship" ? "SingleColumnRelationship" : t.Name #>;
+<# if (t.Name == "Column") { #>
+				if(Table.MetadataObject.Columns[i] is TOM.RowNumberColumn) ixOffset++;
+<# } #>
+				item.MetadataObject = <#= Rules.GetParent(t) #>.MetadataObject.<#= Rules.CollectionName(t) #>[i + ixOffset] as TOM.<#= t.Name == "Relationship" ? "SingleColumnRelationship" : t.Name #>;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}

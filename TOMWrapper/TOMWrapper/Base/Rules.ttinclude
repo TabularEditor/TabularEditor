@@ -281,7 +281,7 @@ class Rules {
 		if(propertyName == "Cultures") return "[Editor(typeof(TabularEditor.PropertyGridUI.CultureCollectionEditor),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Roles") return "[Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<ModelRole>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Partitions") return "[NoMultiselect(),Editor(typeof(PartitionCollectionEditor),typeof(UITypeEditor))]";
-		if(propertyName == "Variations") return "[NoMultiselect(),Editor(typeof(VariationCollectionEditor),typeof(UITypeEditor))]";
+		if(propertyName == "Variations") return "[NoMultiselect(),Editor(typeof(ClonableObjectCollectionEditor<Variation>),typeof(UITypeEditor))]";
 		
 		if(propertyName == "DataSources") return "[Browsable(false)]";
 		if(propertyName == "Relationships") return "[Browsable(false)]";

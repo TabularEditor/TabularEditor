@@ -83,7 +83,7 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                return string.Format("Shown in {0} out of {1} perspectives", this.Count(p => p), TabularObject.Model.Perspectives.Count);
+                return string.Format("Shown in {0} out of {1} perspectives", Keys.Count(k => this[k]), TabularObject.Model.Perspectives.Count);
             }
         }
 
@@ -91,7 +91,7 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                return PerspectiveMap.Keys.Select(k => k.Name);
+                return TabularObject.Model.Perspectives.Select(p => p.Name);
             }
         }
 

@@ -160,7 +160,6 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.MODE, oldValue, value);
 			}
 		}
-
 		private bool ShouldSerializeMode() { return false; }
 /// <summary>
 ///             Gets or sets the type of data view that defines a partition slice.
@@ -196,6 +195,26 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeErrorMessage() { return false; }
+
+		[DisplayName("Retain Data Till Force Calculate")]
+		[Category("Other"),Description(@""),IntelliSense("The Retain Data Till Force Calculate of this Partition.")]
+		public bool RetainDataTillForceCalculate {
+			get {
+			    return MetadataObject.RetainDataTillForceCalculate;
+			}
+			set {
+				var oldValue = RetainDataTillForceCalculate;
+				if (oldValue == value) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.RETAINDATATILLFORCECALCULATE, value, ref undoable, ref cancel);
+				if (cancel) return;
+				MetadataObject.RetainDataTillForceCalculate = value;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.RETAINDATATILLFORCECALCULATE, oldValue, value));
+				OnPropertyChanged(Properties.RETAINDATATILLFORCECALCULATE, oldValue, value);
+			}
+		}
+		private bool ShouldSerializeRetainDataTillForceCalculate() { return false; }
 		[Browsable(false)]
 		public Table Table
 		{ 
@@ -209,6 +228,7 @@ namespace TabularEditor.TOMWrapper
 				return t as Table;
 			} 
 		}
+
 
 		public static Partition CreateFromMetadata(TOM.Partition metadataObject, bool init = true) {
 			var obj = new Partition(metadataObject, init);
@@ -342,10 +362,11 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		internal override void Reinit() {
+			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
 				var item = this[i];
 				Handler.WrapperLookup.Remove(item.MetadataObject);
-				item.MetadataObject = Table.MetadataObject.Partitions[i] as TOM.Partition;
+				item.MetadataObject = Table.MetadataObject.Partitions[i + ixOffset] as TOM.Partition;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}
@@ -392,6 +413,15 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("DataView"));
 				this.ToList().ForEach(item => { item.DataView = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		[Description("Sets the RetainDataTillForceCalculate property of all objects in the collection at once.")]
+		public bool RetainDataTillForceCalculate {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("RetainDataTillForceCalculate"));
+				this.ToList().ForEach(item => { item.RetainDataTillForceCalculate = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}

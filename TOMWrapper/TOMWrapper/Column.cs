@@ -180,5 +180,35 @@ namespace TabularEditor.TOMWrapper
             return MetadataObjectCollection
                 .Where(c => c.Type != TOM.ColumnType.RowNumber).Select(c => Handler.WrapperLookup[c] as Column).GetEnumerator();
         }
+
+        private bool HasRowNumColumn
+        {
+            get
+            {
+                return (MetadataObjectCollection as TOM.ColumnCollection)?.Any(c => c.Type == TOM.ColumnType.RowNumber) ?? false;
+            }
+        }
+
+        public override int Count
+        {
+            get
+            {
+                return HasRowNumColumn ? (base.Count - 1) : base.Count;
+            }
+        }
+
+        public override Column this[int index]
+        {
+            get
+            {
+                var rnCol = MetadataObjectCollection.FirstOrDefault(c => c.Type == TOM.ColumnType.RowNumber);
+                if (rnCol != null)
+                {
+                    var rnColIndex = MetadataObjectCollection.IndexOf(rnCol);
+                    if (index >= rnColIndex) index++;
+                }
+                return base[index];
+            }
+        }
     }
 }

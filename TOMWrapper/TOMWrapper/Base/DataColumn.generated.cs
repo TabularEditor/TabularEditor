@@ -41,6 +41,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeSourceColumn() { return false; }
 
+
 		public static DataColumn CreateFromMetadata(TOM.DataColumn metadataObject, bool init = true) {
 			var obj = new DataColumn(metadataObject, init);
 			if(init) 

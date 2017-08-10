@@ -20,27 +20,40 @@ namespace TabularEditor.TOMWrapper
 	    public const string COLUMN = "Column";
 	    public const string COLUMNORIGIN = "ColumnOrigin";
 	    public const string COLUMNS = "Columns";
+	    public const string CONNECTIONDETAILS = "ConnectionDetails";
 	    public const string CONNECTIONSTRING = "ConnectionString";
+	    public const string CONTEXTEXPRESSION = "ContextExpression";
+	    public const string CREDENTIAL = "Credential";
 	    public const string CROSSFILTERINGBEHAVIOR = "CrossFilteringBehavior";
 	    public const string CULTURE = "Culture";
 	    public const string CULTURES = "Cultures";
+	    public const string DATAACCESSOPTIONS = "DataAccessOptions";
 	    public const string DATABASE = "Database";
 	    public const string DATACATEGORY = "DataCategory";
 	    public const string DATASOURCES = "DataSources";
 	    public const string DATATYPE = "DataType";
 	    public const string DATAVIEW = "DataView";
+	    public const string DEFAULTCOLUMN = "DefaultColumn";
 	    public const string DEFAULTDATAVIEW = "DefaultDataView";
+	    public const string DEFAULTDETAILROWSDEFINITION = "DefaultDetailRowsDefinition";
+	    public const string DEFAULTHIERARCHY = "DefaultHierarchy";
+	    public const string DEFAULTMEASURE = "DefaultMeasure";
 	    public const string DEFAULTMODE = "DefaultMode";
 	    public const string DESCRIPTION = "Description";
+	    public const string DETAILROWSDEFINITION = "DetailRowsDefinition";
 	    public const string DISPLAYFOLDER = "DisplayFolder";
 	    public const string DISPLAYORDINAL = "DisplayOrdinal";
+	    public const string ENCODINGHINT = "EncodingHint";
 	    public const string ERRORMESSAGE = "ErrorMessage";
 	    public const string EXPRESSION = "Expression";
+	    public const string EXPRESSIONS = "Expressions";
+	    public const string EXTENDEDPROPERTIES = "ExtendedProperties";
 	    public const string FORMATSTRING = "FormatString";
 	    public const string FROMCARDINALITY = "FromCardinality";
 	    public const string FROMCOLUMN = "FromColumn";
 	    public const string FROMTABLE = "FromTable";
 	    public const string HASLOCALCHANGES = "HasLocalChanges";
+	    public const string HIDEMEMBERS = "HideMembers";
 	    public const string HIERARCHIES = "Hierarchies";
 	    public const string HIERARCHY = "Hierarchy";
 	    public const string IDENTITYPROVIDER = "IdentityProvider";
@@ -49,6 +62,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string ISACTIVE = "IsActive";
 	    public const string ISAVAILABLEINMDX = "IsAvailableInMDX";
 	    public const string ISDATATYPEINFERRED = "IsDataTypeInferred";
+	    public const string ISDEFAULT = "IsDefault";
 	    public const string ISDEFAULTIMAGE = "IsDefaultImage";
 	    public const string ISDEFAULTLABEL = "IsDefaultLabel";
 	    public const string ISHIDDEN = "IsHidden";
@@ -56,6 +70,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string ISNAMEINFERRED = "IsNameInferred";
 	    public const string ISNULLABLE = "IsNullable";
 	    public const string ISOLATION = "Isolation";
+	    public const string ISPRIVATE = "IsPrivate";
 	    public const string ISSIMPLEMEASURE = "IsSimpleMeasure";
 	    public const string ISUNIQUE = "IsUnique";
 	    public const string JOINONDATEBEHAVIOR = "JoinOnDateBehavior";
@@ -76,6 +91,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string NAME = "Name";
 	    public const string OBJECTTRANSLATIONS = "ObjectTranslations";
 	    public const string OBJECTTYPE = "ObjectType";
+	    public const string OPTIONS = "Options";
 	    public const string ORDINAL = "Ordinal";
 	    public const string PARENT = "Parent";
 	    public const string PARTITIONS = "Partitions";
@@ -84,12 +100,15 @@ namespace TabularEditor.TOMWrapper
 	    public const string PERSPECTIVETABLES = "PerspectiveTables";
 	    public const string PROVIDER = "Provider";
 	    public const string REFRESHEDTIME = "RefreshedTime";
+	    public const string RELATIONSHIP = "Relationship";
 	    public const string RELATIONSHIPS = "Relationships";
 	    public const string RELYONREFERENTIALINTEGRITY = "RelyOnReferentialIntegrity";
+	    public const string RETAINDATATILLFORCECALCULATE = "RetainDataTillForceCalculate";
 	    public const string ROLE = "Role";
 	    public const string ROLES = "Roles";
 	    public const string SECURITYFILTERINGBEHAVIOR = "SecurityFilteringBehavior";
 	    public const string SERVER = "Server";
+	    public const string SHOWASVARIATIONSONLY = "ShowAsVariationsOnly";
 	    public const string SORTBYCOLUMN = "SortByColumn";
 	    public const string SOURCE = "Source";
 	    public const string SOURCECOLUMN = "SourceColumn";
@@ -120,5 +139,6 @@ namespace TabularEditor.TOMWrapper
 	    public const string TRENDEXPRESSION = "TrendExpression";
 	    public const string TRENDGRAPHIC = "TrendGraphic";
 	    public const string TYPE = "Type";
+	    public const string VARIATIONS = "Variations";
     }
 }
