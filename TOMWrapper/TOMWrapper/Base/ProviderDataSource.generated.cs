@@ -189,6 +189,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeProvider() { return false; }
 
+
 		public static ProviderDataSource CreateFromMetadata(TOM.ProviderDataSource metadataObject, bool init = true) {
 			var obj = new ProviderDataSource(metadataObject, init);
 			if(init) 

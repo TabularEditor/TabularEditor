@@ -21,6 +21,7 @@ namespace TabularEditor.TOMWrapper
 	    protected internal new TOM.WindowsModelRoleMember MetadataObject { get { return base.MetadataObject as TOM.WindowsModelRoleMember; } internal set { base.MetadataObject = value; } }
 
 
+
 		public static WindowsModelRoleMember CreateFromMetadata(TOM.WindowsModelRoleMember metadataObject, bool init = true) {
 			var obj = new WindowsModelRoleMember(metadataObject, init);
 			if(init) 

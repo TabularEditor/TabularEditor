@@ -166,7 +166,7 @@ namespace TabularEditor.TOMWrapper
             Handler.WrapperCollections[CollectionName] = this;
         }
 
-        public T this[string name]
+        public virtual T this[string name]
         {
             get
             {
@@ -174,11 +174,12 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public T this[int index]
+        public virtual T this[int index]
         {
             get
             {
-                return Handler.WrapperLookup[MetadataObjectCollection[index]] as T;
+                var mObject = MetadataObjectCollection[index];
+                return Handler.WrapperLookup[mObject] as T;
             }
             set
             {

@@ -132,6 +132,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeModelPermission() { return false; }
+
         /// <summary>
         /// Collection of localized descriptions for this ModelRole.
         /// </summary>
@@ -330,10 +331,11 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		internal override void Reinit() {
+			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
 				var item = this[i];
 				Handler.WrapperLookup.Remove(item.MetadataObject);
-				item.MetadataObject = Model.MetadataObject.Roles[i] as TOM.ModelRole;
+				item.MetadataObject = Model.MetadataObject.Roles[i + ixOffset] as TOM.ModelRole;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}

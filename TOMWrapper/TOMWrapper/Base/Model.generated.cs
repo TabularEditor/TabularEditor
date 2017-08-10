@@ -233,6 +233,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeCollation() { return false; }
+
         /// <summary>
         /// Collection of localized descriptions for this Model.
         /// </summary>

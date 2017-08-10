@@ -36,9 +36,10 @@
             this.txtDatabaseName = new System.Windows.Forms.TextBox();
             this.DatabaseIcon = new System.Windows.Forms.DataGridViewImageColumn();
             this.colID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CompatibilityLevel = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colLastUpdate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colLastProcessed = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.databaseBindingSource)).BeginInit();
             this.pnlDatabaseID.SuspendLayout();
@@ -57,9 +58,10 @@
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.DatabaseIcon,
             this.colID,
-            this.colDescription,
+            this.CompatibilityLevel,
             this.colLastUpdate,
-            this.colLastProcessed});
+            this.colLastProcessed,
+            this.colDescription});
             this.dataGridView1.DataSource = this.databaseBindingSource;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
@@ -130,12 +132,12 @@
             this.colID.ReadOnly = true;
             this.colID.Width = 200;
             // 
-            // colDescription
+            // CompatibilityLevel
             // 
-            this.colDescription.DataPropertyName = "Description";
-            this.colDescription.HeaderText = "Description";
-            this.colDescription.Name = "colDescription";
-            this.colDescription.ReadOnly = true;
+            this.CompatibilityLevel.DataPropertyName = "CompatibilityLevel";
+            this.CompatibilityLevel.HeaderText = "Compatibility";
+            this.CompatibilityLevel.Name = "CompatibilityLevel";
+            this.CompatibilityLevel.ReadOnly = true;
             // 
             // colLastUpdate
             // 
@@ -150,6 +152,13 @@
             this.colLastProcessed.HeaderText = "Last Processed";
             this.colLastProcessed.Name = "colLastProcessed";
             this.colLastProcessed.ReadOnly = true;
+            // 
+            // colDescription
+            // 
+            this.colDescription.DataPropertyName = "Description";
+            this.colDescription.HeaderText = "Description";
+            this.colDescription.Name = "colDescription";
+            this.colDescription.ReadOnly = true;
             // 
             // DatabasePage
             // 
@@ -176,8 +185,9 @@
         private System.Windows.Forms.BindingSource databaseBindingSource;
         private System.Windows.Forms.DataGridViewImageColumn DatabaseIcon;
         private System.Windows.Forms.DataGridViewTextBoxColumn colID;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colDescription;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CompatibilityLevel;
         private System.Windows.Forms.DataGridViewTextBoxColumn colLastUpdate;
         private System.Windows.Forms.DataGridViewTextBoxColumn colLastProcessed;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colDescription;
     }
 }

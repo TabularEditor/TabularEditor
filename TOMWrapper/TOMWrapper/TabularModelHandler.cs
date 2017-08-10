@@ -797,7 +797,7 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                return Enumerable.Repeat(Model.Tables as ITabularPerspectiveObject, 1)
+                return Model.Tables.OfType<ITabularPerspectiveObject>()
                     .Concat(Model.AllMeasures)
                     .Concat(Model.AllColumns)
                     .Concat(Model.AllHierarchies);

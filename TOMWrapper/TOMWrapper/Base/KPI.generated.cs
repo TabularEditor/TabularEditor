@@ -314,6 +314,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeMeasure() { return false; }
 
+
 		public static KPI CreateFromMetadata(TOM.KPI metadataObject, bool init = true) {
 			var obj = new KPI(metadataObject, init);
 			if(init) 

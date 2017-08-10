@@ -89,6 +89,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		
+
 		public static Culture CreateFromMetadata(TOM.Culture metadataObject, bool init = true) {
 			var obj = new Culture(metadataObject, init);
 			if(init) 
@@ -235,10 +236,11 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		internal override void Reinit() {
+			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
 				var item = this[i];
 				Handler.WrapperLookup.Remove(item.MetadataObject);
-				item.MetadataObject = Model.MetadataObject.Cultures[i] as TOM.Culture;
+				item.MetadataObject = Model.MetadataObject.Cultures[i + ixOffset] as TOM.Culture;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}

@@ -320,8 +320,6 @@ class Rules {
 	// List of types to generate wrapper for:
 	public static readonly Dictionary<Type, string> ObjectTypes = new Dictionary<Type,string>()
 	{ 
-	   { typeof(StructuredDataSource), "DataSource" },
-       { typeof(Variation), "TabularNamedObject" },
        { typeof(CalculatedColumn), "Column" },
        { typeof(CalculatedTableColumn), "Column" },
        { typeof(Column), "TabularNamedObject" },
@@ -347,7 +345,6 @@ class Rules {
 
    public static readonly Dictionary<Type, string> Collections = new Dictionary<Type,string>()
    {
-       { typeof(Variation), "Variations" },
        { typeof(ModelRoleMember), "Members" },
        { typeof(ModelRole), "Roles" },
        { typeof(Table), "Tables" },
@@ -391,9 +388,6 @@ class Rules {
 
 	   // Collections owned by a ModelRole (order of items matters, as this is the order in which child objects will be initialized):
        { new KeyValuePair<Type, string>(typeof(ModelRoleMember), "ModelRole") },
-
-	   // Collections owned by a Column (order of items matters, as this is the order in which child objects will be initialized):
-       { new KeyValuePair<Type, string>(typeof(Variation), "Column") },
 
 	   // Collections owned by a Hierarchy (order of items matters, as this is the order in which child objects will be initialized):
        { new KeyValuePair<Type, string>(typeof(Level), "Hierarchy") }

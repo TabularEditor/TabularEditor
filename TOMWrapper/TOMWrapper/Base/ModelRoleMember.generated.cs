@@ -140,6 +140,7 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeRole() { return false; }
+
 		public ModelRole Parent { 
 			get {
 				return Handler.WrapperLookup[MetadataObject.Parent] as ModelRole;
@@ -197,10 +198,11 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		internal override void Reinit() {
+			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
 				var item = this[i];
 				Handler.WrapperLookup.Remove(item.MetadataObject);
-				item.MetadataObject = ModelRole.MetadataObject.Members[i] as TOM.ModelRoleMember;
+				item.MetadataObject = ModelRole.MetadataObject.Members[i + ixOffset] as TOM.ModelRoleMember;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}

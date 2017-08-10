@@ -71,26 +71,26 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Messages.resx</DependentUpon>
     </Compile>
-    <Compile Include="PropertyGridUI\AllRelationshipConverter.cs" />
-    <Compile Include="PropertyGridUI\AllHierarchyConverter.cs" />
-    <Compile Include="PropertyGridUI\AnnotationCollectionEditor.cs" />
-    <Compile Include="PropertyGridUI\ClonableObjectCollectionEditor.cs" />
+    <Compile Include="PropertyGridUI\Converters\AllRelationshipConverter.cs" />
+    <Compile Include="PropertyGridUI\Converters\AllHierarchyConverter.cs" />
+    <Compile Include="PropertyGridUI\CollectionEditors\AnnotationCollectionEditor.cs" />
+    <Compile Include="PropertyGridUI\CollectionEditors\ClonableObjectCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\DesignerHost.cs" />
-    <Compile Include="PropertyGridUI\FormatStringConverter.cs" />
-    <Compile Include="PropertyGridUI\KPITrendGraphicConverter.cs" />
-    <Compile Include="PropertyGridUI\KPIStatusGraphicConverter.cs" />
+    <Compile Include="PropertyGridUI\Converters\FormatStringConverter.cs" />
+    <Compile Include="PropertyGridUI\Converters\KPITrendGraphicConverter.cs" />
+    <Compile Include="PropertyGridUI\Converters\KPIStatusGraphicConverter.cs" />
     <Compile Include="PropertyGridUI\CustomDialogEditor.cs" />
-    <Compile Include="PropertyGridUI\PartitionCollectionEditor.cs" />
-    <Compile Include="PropertyGridUI\RefreshGridCollectionEditor.cs" />
-    <Compile Include="PropertyGridUI\CultureCollectionEditor.cs" />
+    <Compile Include="PropertyGridUI\CollectionEditors\PartitionCollectionEditor.cs" />
+    <Compile Include="PropertyGridUI\CollectionEditors\RefreshGridCollectionEditor.cs" />
+    <Compile Include="PropertyGridUI\CollectionEditors\CultureCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\DictionaryProperty.cs" />
     <Compile Include="PropertyGridUI\DynamicPropertyObject.cs" />
     <Compile Include="PropertyGridUI\NoMultiselectAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PropertyGridUI\AllColumnConverter.cs" />
-    <Compile Include="PropertyGridUI\DataSourceConverter.cs" />
-    <Compile Include="PropertyGridUI\TableColumnConverter.cs" />
-    <Compile Include="PropertyGridUI\VirtualObjectConverter.cs" />
+    <Compile Include="PropertyGridUI\Converters\AllColumnConverter.cs" />
+    <Compile Include="PropertyGridUI\Converters\DataSourceConverter.cs" />
+    <Compile Include="PropertyGridUI\Converters\TableColumnConverter.cs" />
+    <Compile Include="PropertyGridUI\Converters\VirtualObjectConverter.cs" />
     <Compile Include="StringHelper.cs" />
     <Compile Include="TextServices\DAXLexer.cs" />
     <Compile Include="TOMWrapper\AnnotationCollection.cs" />
@@ -241,6 +241,7 @@
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

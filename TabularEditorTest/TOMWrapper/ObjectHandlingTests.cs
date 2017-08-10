@@ -93,6 +93,13 @@ namespace TabularEditor.TOMWrapper
         }
 
         [TestMethod]
+        public void ResetTest()
+        {
+            var tm = ResetAndConnect();
+            tm.SaveDB();
+        }
+
+        [TestMethod]
         public void DeleteTableTest()
         {
             var tm = ResetAndConnect();

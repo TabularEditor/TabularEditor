@@ -31,7 +31,7 @@
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>2.4.6392.41602</ApplicationVersion>
+    <ApplicationVersion>2.5.6431.17680</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -578,6 +578,7 @@
     <Content Include="FodyWeavers.xml">
       <SubType>Designer</SubType>
     </Content>
+    <None Include="Resources\AutoSum_16x.png" />
     <None Include="Resources\SaveToFile.png" />
     <None Include="Resources\SaveToDB.png" />
     <None Include="Resources\SaveFolderTree2.png" />

@@ -93,9 +93,20 @@ namespace TabularEditor
         {
             cancel = true;
 
-            if(instance is IDetailObject)
+            Table table = null;
+
+            var arr = instance as object[];
+            if (arr != null && arr.Length > 0 && arr.All(obj => obj is IDetailObject))
             {
-                var table = (instance as IDetailObject).Table;
+                table = (arr[0] as IDetailObject).Table;
+            }
+            else if (instance is IDetailObject)
+            {
+                table = (instance as IDetailObject).Table;
+            }
+
+            if(table != null)
+            {
                 FolderNodes.Clear();
 
                 rootNode = FolderNodes.Add(table.Name, table.Name, 2, 2);

@@ -13,7 +13,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TabularEditorTest", "Tabula
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AntlrGrammars", "AntlrGrammars\AntlrGrammars.csproj", "{6453FB18-AF97-4D9C-9A50-17CBBCE091DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginTest", "PluginTest\PluginTest.csproj", "{A7DBA03D-8D25-4868-A1DE-453C8ADE5724}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{4033B9CF-5A9B-40EF-AE72-B2A745EB3CAF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplePlugin", "Plugins\SimplePlugin\SimplePlugin.csproj", "{A7DBA03D-8D25-4868-A1DE-453C8ADE5724}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisualizeRelationships", "Plugins\VisualizeRelationships\VisualizeRelationships.csproj", "{28244C9C-E8CE-43DF-AB98-500BEE2C03A1}"
 EndProject
 Global
 	GlobalSection(Performance) = preSolution
@@ -46,8 +50,16 @@ Global
 		{A7DBA03D-8D25-4868-A1DE-453C8ADE5724}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7DBA03D-8D25-4868-A1DE-453C8ADE5724}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7DBA03D-8D25-4868-A1DE-453C8ADE5724}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28244C9C-E8CE-43DF-AB98-500BEE2C03A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28244C9C-E8CE-43DF-AB98-500BEE2C03A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28244C9C-E8CE-43DF-AB98-500BEE2C03A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28244C9C-E8CE-43DF-AB98-500BEE2C03A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A7DBA03D-8D25-4868-A1DE-453C8ADE5724} = {4033B9CF-5A9B-40EF-AE72-B2A745EB3CAF}
+		{28244C9C-E8CE-43DF-AB98-500BEE2C03A1} = {4033B9CF-5A9B-40EF-AE72-B2A745EB3CAF}
 	EndGlobalSection
 EndGlobal

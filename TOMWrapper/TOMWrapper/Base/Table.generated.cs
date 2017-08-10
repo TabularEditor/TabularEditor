@@ -157,6 +157,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeIsHidden() { return false; }
+
         /// <Summary>
 		/// Collection of perspectives in which this Table is visible.
 		/// </Summary>
@@ -403,10 +404,11 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		internal override void Reinit() {
+			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
 				var item = this[i];
 				Handler.WrapperLookup.Remove(item.MetadataObject);
-				item.MetadataObject = Model.MetadataObject.Tables[i] as TOM.Table;
+				item.MetadataObject = Model.MetadataObject.Tables[i + ixOffset] as TOM.Table;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}

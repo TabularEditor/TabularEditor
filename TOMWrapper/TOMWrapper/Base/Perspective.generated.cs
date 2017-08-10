@@ -112,6 +112,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
+
         /// <summary>
         /// Collection of localized descriptions for this Perspective.
         /// </summary>
@@ -284,10 +285,11 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		internal override void Reinit() {
+			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
 				var item = this[i];
 				Handler.WrapperLookup.Remove(item.MetadataObject);
-				item.MetadataObject = Model.MetadataObject.Perspectives[i] as TOM.Perspective;
+				item.MetadataObject = Model.MetadataObject.Perspectives[i + ixOffset] as TOM.Perspective;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}

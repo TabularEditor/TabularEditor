@@ -572,6 +572,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeSortByColumn() { return false; }
+
         /// <Summary>
 		/// Collection of perspectives in which this Column is visible.
 		/// </Summary>
@@ -655,11 +656,12 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		internal override void Reinit() {
+			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
-				if (MetadataObjectCollection[i] is TOM.RowNumberColumn) continue;
 				var item = this[i];
 				Handler.WrapperLookup.Remove(item.MetadataObject);
-				item.MetadataObject = Table.MetadataObject.Columns[i] as TOM.Column;
+				if(Table.MetadataObject.Columns[i] is TOM.RowNumberColumn) ixOffset++;
+				item.MetadataObject = Table.MetadataObject.Columns[i + ixOffset] as TOM.Column;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}

@@ -83,6 +83,7 @@ namespace TabularEditor
                         {
                             var cbItem = comboBox.Items.OfType<Item>().First(i => i.Value == item);
                             comboBox.Items.Remove(cbItem);
+                            if (comboBox.SelectedIndex == -1 && comboBox.Items.Count > 0) comboBox.SelectedIndex = 0;
                             (item as T).PropertyChanged -= change;
                         }
                     }

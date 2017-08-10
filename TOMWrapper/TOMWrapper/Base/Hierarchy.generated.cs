@@ -188,6 +188,7 @@ namespace TabularEditor.TOMWrapper
 				return t as Table;
 			} 
 		}
+
         /// <Summary>
 		/// Collection of perspectives in which this Hierarchy is visible.
 		/// </Summary>
@@ -387,10 +388,11 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		internal override void Reinit() {
+			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
 				var item = this[i];
 				Handler.WrapperLookup.Remove(item.MetadataObject);
-				item.MetadataObject = Table.MetadataObject.Hierarchies[i] as TOM.Hierarchy;
+				item.MetadataObject = Table.MetadataObject.Hierarchies[i + ixOffset] as TOM.Hierarchy;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}

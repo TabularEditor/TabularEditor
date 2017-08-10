@@ -120,6 +120,7 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeType() { return false; }
+
 		public Model Parent { 
 			get {
 				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
@@ -175,10 +176,11 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		internal override void Reinit() {
+			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
 				var item = this[i];
 				Handler.WrapperLookup.Remove(item.MetadataObject);
-				item.MetadataObject = Model.MetadataObject.DataSources[i] as TOM.DataSource;
+				item.MetadataObject = Model.MetadataObject.DataSources[i + ixOffset] as TOM.DataSource;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}

@@ -109,6 +109,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeToCardinality() { return false; }
 
+
 		public static SingleColumnRelationship CreateFromMetadata(TOM.SingleColumnRelationship metadataObject, bool init = true) {
 			var obj = new SingleColumnRelationship(metadataObject, init);
 			if(init) 

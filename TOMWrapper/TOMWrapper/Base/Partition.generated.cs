@@ -160,7 +160,6 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.MODE, oldValue, value);
 			}
 		}
-
 		private bool ShouldSerializeMode() { return false; }
 /// <summary>
 ///             Gets or sets the type of data view that defines a partition slice.
@@ -209,6 +208,7 @@ namespace TabularEditor.TOMWrapper
 				return t as Table;
 			} 
 		}
+
 
 		public static Partition CreateFromMetadata(TOM.Partition metadataObject, bool init = true) {
 			var obj = new Partition(metadataObject, init);
@@ -342,10 +342,11 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		internal override void Reinit() {
+			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
 				var item = this[i];
 				Handler.WrapperLookup.Remove(item.MetadataObject);
-				item.MetadataObject = Table.MetadataObject.Partitions[i] as TOM.Partition;
+				item.MetadataObject = Table.MetadataObject.Partitions[i + ixOffset] as TOM.Partition;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}
