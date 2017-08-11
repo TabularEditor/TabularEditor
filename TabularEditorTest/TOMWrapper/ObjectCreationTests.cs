@@ -21,12 +21,12 @@ namespace TabularEditor.TOMWrapper
 
             // New data source should have been created:
             Assert.AreEqual(1, tm.Model.DataSources.Count);
-            Assert.AreEqual(TOM.DataSourceType.Provider, tm.Model.DataSources[0].Type);
+            Assert.AreEqual(DataSourceType.Provider, tm.Model.DataSources[0].Type);
 
             // Table partition should have been created:
             Assert.AreEqual(1, t.Partitions.Count);
             Assert.AreEqual("My Table", t.Partitions[0].Name);
-            Assert.AreEqual(TOM.PartitionSourceType.Query, t.Partitions[0].SourceType);
+            Assert.AreEqual(PartitionSourceType.Query, t.Partitions[0].SourceType);
             Assert.AreEqual(tm.Model.DataSources[0], t.Partitions[0].DataSource);
         }
 
@@ -50,7 +50,7 @@ namespace TabularEditor.TOMWrapper
             // Table partition should have been created:
             Assert.AreEqual(1, t.Partitions.Count);
             Assert.AreEqual(tableName, t.Partitions[0].Name);
-            Assert.AreEqual(TOM.PartitionSourceType.Calculated, t.Partitions[0].SourceType);
+            Assert.AreEqual(PartitionSourceType.Calculated, t.Partitions[0].SourceType);
             Assert.AreEqual(expression, t.Partitions[0].Expression);
         }
     }

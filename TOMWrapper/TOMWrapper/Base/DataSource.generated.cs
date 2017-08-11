@@ -113,9 +113,9 @@ namespace TabularEditor.TOMWrapper
 /// <summary>Gets or sets an accessor specifying the type of data source providing data to the object.</summary><returns>An accessor specifying the type of data source providing data to the object.</returns>
 		[DisplayName("Type")]
 		[Category("Other"),Description(@"Gets or sets an accessor specifying the type of data source providing data to the object."),IntelliSense("The Type of this DataSource.")]
-		public TOM.DataSourceType Type {
+		public DataSourceType Type {
 			get {
-			    return MetadataObject.Type;
+			    return (DataSourceType)MetadataObject.Type;
 			}
 			
 		}
@@ -188,13 +188,25 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for DataSource. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public partial class DataSourceCollection: TabularObjectCollection<DataSource, TOM.DataSource, TOM.Model>
+	public sealed partial class DataSourceCollection: TabularObjectCollection<DataSource>
 	{
-		public override TabularNamedObject Parent { get { return Model; } }
-		public DataSourceCollection(string collectionName, TOM.DataSourceCollection metadataObjectCollection, Model parent) : base(collectionName, metadataObjectCollection)
+		TOM.DataSourceCollection TOM_Collection;
+		internal DataSourceCollection(string collectionName, TOM.DataSourceCollection metadataObjectCollection, Model parent) : base(collectionName, parent)
 		{
+			TOM_Collection = metadataObjectCollection;
 		}
 
+        protected override void TOM_Add(TOM.MetadataObject obj) { TOM_Collection.Add(obj as TOM.DataSource); }
+        protected override bool TOM_Contains(TOM.MetadataObject obj) { return TOM_Collection.Contains(obj as TOM.DataSource); }
+        protected override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.DataSource); }
+        protected override void TOM_Clear() { TOM_Collection.Clear(); }
+        protected override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
+        protected override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+        protected override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        public override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        public override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.DataSource); }
+        public override int Count { get { return TOM_Collection.Count; } }
+        public override IEnumerator<DataSource> GetEnumerator() { return TOM_Collection.Select(h => Handler.WrapperLookup[h]).OfType<DataSource>().GetEnumerator(); }
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
@@ -204,7 +216,7 @@ namespace TabularEditor.TOMWrapper
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}
-			MetadataObjectCollection = Model.MetadataObject.DataSources;
+			TOM_Collection = Model.MetadataObject.DataSources;
 			foreach(var item in this) item.Reinit();
 		}
 
@@ -218,7 +230,7 @@ namespace TabularEditor.TOMWrapper
 		public override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in MetadataObjectCollection) {
+			foreach(var obj in TOM_Collection) {
 				switch((obj as TOM.DataSource).Type) {
 					case TOM.DataSourceType.Provider: ProviderDataSource.CreateFromMetadata(obj as TOM.ProviderDataSource).Collection = this; break;
 #if CL1400

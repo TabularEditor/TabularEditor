@@ -188,15 +188,26 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for ModelRoleMember. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public partial class ModelRoleMemberCollection: TabularObjectCollection<ModelRoleMember, TOM.ModelRoleMember, TOM.ModelRole>
+	public sealed partial class ModelRoleMemberCollection: TabularObjectCollection<ModelRoleMember>
 	{
-		public override TabularNamedObject Parent { get { return ModelRole; } }
-		public ModelRole ModelRole { get; protected set; }
-		public ModelRoleMemberCollection(string collectionName, TOM.ModelRoleMemberCollection metadataObjectCollection, ModelRole parent) : base(collectionName, metadataObjectCollection)
+		internal ModelRole ModelRole { get { return Parent as ModelRole; } }
+		TOM.ModelRoleMemberCollection TOM_Collection;
+		internal ModelRoleMemberCollection(string collectionName, TOM.ModelRoleMemberCollection metadataObjectCollection, ModelRole parent) : base(collectionName, parent)
 		{
-			ModelRole = parent;
+			TOM_Collection = metadataObjectCollection;
 		}
 
+        protected override void TOM_Add(TOM.MetadataObject obj) { TOM_Collection.Add(obj as TOM.ModelRoleMember); }
+        protected override bool TOM_Contains(TOM.MetadataObject obj) { return TOM_Collection.Contains(obj as TOM.ModelRoleMember); }
+        protected override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.ModelRoleMember); }
+        protected override void TOM_Clear() { TOM_Collection.Clear(); }
+        protected override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
+        protected override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+        protected override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        public override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        public override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.ModelRoleMember); }
+        public override int Count { get { return TOM_Collection.Count; } }
+        public override IEnumerator<ModelRoleMember> GetEnumerator() { return TOM_Collection.Select(h => Handler.WrapperLookup[h]).OfType<ModelRoleMember>().GetEnumerator(); }
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
@@ -206,7 +217,7 @@ namespace TabularEditor.TOMWrapper
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}
-			MetadataObjectCollection = ModelRole.MetadataObject.Members;
+			TOM_Collection = ModelRole.MetadataObject.Members;
 			foreach(var item in this) item.Reinit();
 		}
 
@@ -220,7 +231,7 @@ namespace TabularEditor.TOMWrapper
 		public override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in MetadataObjectCollection) {
+			foreach(var obj in TOM_Collection) {
 				if(obj is TOM.WindowsModelRoleMember) WindowsModelRoleMember.CreateFromMetadata(obj as TOM.WindowsModelRoleMember).Collection = this;
 				if(obj is TOM.ExternalModelRoleMember) ExternalModelRoleMember.CreateFromMetadata(obj as TOM.ExternalModelRoleMember).Collection = this;
 			}

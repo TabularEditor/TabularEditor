@@ -3,13 +3,13 @@ using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.UndoFramework
 {
-    public enum UndoAddRemoveActionType
+    internal enum UndoAddRemoveActionType
     {
         Add,
         Remove
     }
 
-    public class UndoAddRemoveAction : IUndoAction
+    internal class UndoAddRemoveAction : IUndoAction
     {
         ITabularObjectCollection _collection;
         TabularNamedObject _obj;

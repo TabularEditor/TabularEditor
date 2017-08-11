@@ -29,9 +29,9 @@ namespace TabularEditor.TOMWrapper
 ///             </summary><returns>The Type of PartitionSource.</returns>
 		[DisplayName("Source Type")]
 		[Category("Other"),Description(@"Gets the Type of PartitionSource."),IntelliSense("The Source Type of this Partition.")]
-		public TOM.PartitionSourceType SourceType {
+		public PartitionSourceType SourceType {
 			get {
-			    return MetadataObject.SourceType;
+			    return (PartitionSourceType)MetadataObject.SourceType;
 			}
 			
 		}
@@ -132,9 +132,9 @@ namespace TabularEditor.TOMWrapper
 		[DisplayName("State")]
 		[Category("Metadata"),Description(@"Gets or sets the state for the object partitions. For regular partitions, Ready if the partition has been refreshed or NoData if it was never refreshed or if it was cleared. 
             For calculated partitions, as with calculated columns, this value can be CalculationNeeded or Ready."),IntelliSense("The State of this Partition.")]
-		public TOM.ObjectState State {
+		public ObjectState State {
 			get {
-			    return MetadataObject.State;
+			    return (ObjectState)MetadataObject.State;
 			}
 			
 		}
@@ -144,9 +144,9 @@ namespace TabularEditor.TOMWrapper
 ///             </summary><returns>The type of the mode.</returns>
 		[DisplayName("Mode")]
 		[Category("Other"),Description(@"Gets or sets the type of the model (import or DirectQuery)."),IntelliSense("The Mode of this Partition.")]
-		public TOM.ModeType Mode {
+		public ModeType Mode {
 			get {
-			    return MetadataObject.Mode;
+			    return (ModeType)MetadataObject.Mode;
 			}
 			set {
 				var oldValue = Mode;
@@ -155,7 +155,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.MODE, value, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Mode = value;
+				MetadataObject.Mode = (TOM.ModeType)value;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MODE, oldValue, value));
 				OnPropertyChanged(Properties.MODE, oldValue, value);
 			}
@@ -166,9 +166,9 @@ namespace TabularEditor.TOMWrapper
 ///             </summary><returns>The type of data view that defines a partition slice.</returns>
 		[DisplayName("Data View")]
 		[Category("Other"),Description(@"Gets or sets the type of data view that defines a partition slice."),IntelliSense("The Data View of this Partition.")]
-		public TOM.DataViewType DataView {
+		public DataViewType DataView {
 			get {
-			    return MetadataObject.DataView;
+			    return (DataViewType)MetadataObject.DataView;
 			}
 			set {
 				var oldValue = DataView;
@@ -177,7 +177,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DATAVIEW, value, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.DataView = value;
+				MetadataObject.DataView = (TOM.DataViewType)value;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DATAVIEW, oldValue, value));
 				OnPropertyChanged(Properties.DATAVIEW, oldValue, value);
 			}
@@ -271,7 +271,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Partitions.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Partitions.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject (but don't init until after we add it to the parent):
 			var obj = CreateFromMetadata(tom, false);
@@ -352,15 +352,26 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for Partition. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public partial class PartitionCollection: TabularObjectCollection<Partition, TOM.Partition, TOM.Table>
+	public sealed partial class PartitionCollection: TabularObjectCollection<Partition>
 	{
-		public override TabularNamedObject Parent { get { return Table; } }
-		public Table Table { get; protected set; }
-		public PartitionCollection(string collectionName, TOM.PartitionCollection metadataObjectCollection, Table parent) : base(collectionName, metadataObjectCollection)
+		internal Table Table { get { return Parent as Table; } }
+		TOM.PartitionCollection TOM_Collection;
+		internal PartitionCollection(string collectionName, TOM.PartitionCollection metadataObjectCollection, Table parent) : base(collectionName, parent)
 		{
-			Table = parent;
+			TOM_Collection = metadataObjectCollection;
 		}
 
+        protected override void TOM_Add(TOM.MetadataObject obj) { TOM_Collection.Add(obj as TOM.Partition); }
+        protected override bool TOM_Contains(TOM.MetadataObject obj) { return TOM_Collection.Contains(obj as TOM.Partition); }
+        protected override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.Partition); }
+        protected override void TOM_Clear() { TOM_Collection.Clear(); }
+        protected override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
+        protected override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+        protected override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        public override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        public override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Partition); }
+        public override int Count { get { return TOM_Collection.Count; } }
+        public override IEnumerator<Partition> GetEnumerator() { return TOM_Collection.Select(h => Handler.WrapperLookup[h]).OfType<Partition>().GetEnumerator(); }
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
@@ -370,7 +381,7 @@ namespace TabularEditor.TOMWrapper
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}
-			MetadataObjectCollection = Table.MetadataObject.Partitions;
+			TOM_Collection = Table.MetadataObject.Partitions;
 			foreach(var item in this) item.Reinit();
 		}
 
@@ -384,7 +395,7 @@ namespace TabularEditor.TOMWrapper
 		public override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in MetadataObjectCollection) {
+			foreach(var obj in TOM_Collection) {
 				Partition.CreateFromMetadata(obj).Collection = this;
 			}
 		}
@@ -399,7 +410,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		[Description("Sets the Mode property of all objects in the collection at once.")]
-		public TOM.ModeType Mode {
+		public ModeType Mode {
 			set {
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("Mode"));
@@ -408,7 +419,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		[Description("Sets the DataView property of all objects in the collection at once.")]
-		public TOM.DataViewType DataView {
+		public DataViewType DataView {
 			set {
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("DataView"));

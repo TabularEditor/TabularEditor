@@ -150,9 +150,9 @@ namespace TabularEditor.TOMWrapper
 ///             </summary><returns>The DefaultMode value inherited by sample and full data view partitions used throughout the model.</returns>
 		[DisplayName("Default Mode")]
 		[Category("Other"),Description(@"Gets or sets the DefaultMode value inherited by sample and full data view partitions used throughout the model."),IntelliSense("The Default Mode of this Model.")]
-		public TOM.ModeType DefaultMode {
+		public ModeType DefaultMode {
 			get {
-			    return MetadataObject.DefaultMode;
+			    return (ModeType)MetadataObject.DefaultMode;
 			}
 			set {
 				var oldValue = DefaultMode;
@@ -161,7 +161,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DEFAULTMODE, value, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.DefaultMode = value;
+				MetadataObject.DefaultMode = (TOM.ModeType)value;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DEFAULTMODE, oldValue, value));
 				OnPropertyChanged(Properties.DEFAULTMODE, oldValue, value);
 			}
@@ -172,9 +172,9 @@ namespace TabularEditor.TOMWrapper
 ///             </summary><returns>The data view type used by default for partitions throughout the model.</returns>
 		[DisplayName("Default Data View")]
 		[Category("Other"),Description(@"Gets or sets the data view type used by default for partitions throughout the model."),IntelliSense("The Default Data View of this Model.")]
-		public TOM.DataViewType DefaultDataView {
+		public DataViewType DefaultDataView {
 			get {
-			    return MetadataObject.DefaultDataView;
+			    return (DataViewType)MetadataObject.DefaultDataView;
 			}
 			set {
 				var oldValue = DefaultDataView;
@@ -183,7 +183,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DEFAULTDATAVIEW, value, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.DefaultDataView = value;
+				MetadataObject.DefaultDataView = (TOM.DataViewType)value;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DEFAULTDATAVIEW, oldValue, value));
 				OnPropertyChanged(Properties.DEFAULTDATAVIEW, oldValue, value);
 			}

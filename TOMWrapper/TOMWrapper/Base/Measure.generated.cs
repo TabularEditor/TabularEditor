@@ -124,9 +124,9 @@ namespace TabularEditor.TOMWrapper
 ///             </summary><returns>The Auto Inferred data type of the measure.</returns>
 		[DisplayName("Data Type")]
 		[Category("Metadata"),Description(@"Gets or sets the Auto Inferred data type of the measure."),IntelliSense("The Data Type of this Measure.")]
-		public TOM.DataType DataType {
+		public DataType DataType {
 			get {
-			    return MetadataObject.DataType;
+			    return (DataType)MetadataObject.DataType;
 			}
 			
 		}
@@ -199,9 +199,9 @@ namespace TabularEditor.TOMWrapper
 ///             </summary><returns>The state of the <see cref="T:TabularEditor.TOMWrapper.Measure" />.</returns>
 		[DisplayName("State")]
 		[Category("Metadata"),Description(@"Gets or sets the state of the Measure."),IntelliSense("The State of this Measure.")]
-		public TOM.ObjectState State {
+		public ObjectState State {
 			get {
-			    return MetadataObject.State;
+			    return (ObjectState)MetadataObject.State;
 			}
 			
 		}
@@ -339,7 +339,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Measures.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Measures.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject (but don't init until after we add it to the parent):
 			var obj = CreateFromMetadata(tom, false);
@@ -447,15 +447,25 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for Measure. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public partial class MeasureCollection: TabularObjectCollection<Measure, TOM.Measure, TOM.Table>
+	public sealed partial class MeasureCollection: TabularObjectCollection<Measure>
 	{
-		public override TabularNamedObject Parent { get { return Table; } }
-		public Table Table { get; protected set; }
-		public MeasureCollection(string collectionName, TOM.MeasureCollection metadataObjectCollection, Table parent) : base(collectionName, metadataObjectCollection)
+		internal Table Table { get { return Parent as Table; } }
+		TOM.MeasureCollection TOM_Collection;
+		internal MeasureCollection(string collectionName, TOM.MeasureCollection metadataObjectCollection, Table parent) : base(collectionName, parent)
 		{
-			Table = parent;
+			TOM_Collection = metadataObjectCollection;
 		}
 
+        protected override void TOM_Add(TOM.MetadataObject obj) { TOM_Collection.Add(obj as TOM.Measure); }
+        protected override bool TOM_Contains(TOM.MetadataObject obj) { return TOM_Collection.Contains(obj as TOM.Measure); }
+        protected override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.Measure); }
+        protected override void TOM_Clear() { TOM_Collection.Clear(); }
+        protected override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
+        protected override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+        protected override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        public override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Measure); }
+        public override int Count { get { return TOM_Collection.Count; } }
+        public override IEnumerator<Measure> GetEnumerator() { return TOM_Collection.Select(h => Handler.WrapperLookup[h]).OfType<Measure>().GetEnumerator(); }
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
@@ -465,7 +475,7 @@ namespace TabularEditor.TOMWrapper
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}
-			MetadataObjectCollection = Table.MetadataObject.Measures;
+			TOM_Collection = Table.MetadataObject.Measures;
 			foreach(var item in this) item.Reinit();
 		}
 
@@ -479,7 +489,7 @@ namespace TabularEditor.TOMWrapper
 		public override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in MetadataObjectCollection) {
+			foreach(var obj in TOM_Collection) {
 				Measure.CreateFromMetadata(obj).Collection = this;
 			}
 		}

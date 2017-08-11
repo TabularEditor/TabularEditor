@@ -3,7 +3,7 @@ using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.UndoFramework
 {
-    public class UndoClearAction : IUndoAction
+    internal class UndoClearAction : IUndoAction
     {
         ITabularObjectCollection _collection;
         TabularNamedObject[] _objs;

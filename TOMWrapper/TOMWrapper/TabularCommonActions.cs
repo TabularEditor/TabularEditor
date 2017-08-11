@@ -76,7 +76,7 @@ namespace TabularEditor.TOMWrapper
         }
         public string NewColumnName(string prefix, Table table)
         {
-            return table.Columns.MetadataObjectCollection.GetNewName(prefix);
+            return table.Columns.GetNewName(prefix);
         }
 
         public void MoveObjects(IEnumerable<IDetailObject> objects, Table newTable)

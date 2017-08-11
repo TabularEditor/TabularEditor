@@ -6,6 +6,15 @@ using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.UndoFramework
 {
+    /// <summary>
+    /// UndoManager implements an undo/redo handling system. The system implements two stacks: One for undoable operations (i.e. "going back"),
+    /// and one for redoable operations (i.e. undoable operations that has been undone, "going forward"). The UndoManager supports setting
+    /// checkpoints, rolling all changes back, etc.
+    /// 
+    /// To register an undoable operation, call the "Add" method. Use the public methods "Undo()", "Redo()", "Clear()", etc. to control the
+    /// stack of operations. Use "BeginBatch()" and "EndBatch()" to register batch of undoable operations that will be undone/redone together
+    /// in a single batch.
+    /// </summary>
     public class UndoManager
     {
         TabularModelHandler _handler;
@@ -13,6 +22,9 @@ namespace TabularEditor.UndoFramework
         Stack<IUndoAction> _RedoStack = new Stack<IUndoAction>();
 
         internal bool RebuildDependencyTree = false;
+        /// <summary>
+        /// Whether or not the undo manager is collecting operations.
+        /// </summary>
         public bool Enabled { get; internal set; } = true;
 
         /// <summary>
@@ -251,7 +263,7 @@ namespace TabularEditor.UndoFramework
         /// Call this method when an action is performed, that should be undoable
         /// </summary>
         /// <param name="action"></param>
-        public void Add(IUndoAction action)
+        internal void Add(IUndoAction action)
         {
             if (!Enabled) return;
 

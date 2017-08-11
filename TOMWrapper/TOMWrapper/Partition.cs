@@ -116,12 +116,12 @@ namespace TabularEditor.TOMWrapper
             {
                 case "DataSource":
                 case "Query":
-                    return SourceType == TOM.PartitionSourceType.Query;
+                    return SourceType == PartitionSourceType.Query;
                 case "Expression":
 #if CL1400
-                    return SourceType == TOM.PartitionSourceType.Calculated || SourceType == TOM.PartitionSourceType.M;
+                    return SourceType == PartitionSourceType.Calculated || SourceType == TOM.PartitionSourceType.M;
 #else
-                    return SourceType == TOM.PartitionSourceType.Calculated;
+                    return SourceType == PartitionSourceType.Calculated;
 #endif
                 case "Mode":
                 case "DataView":

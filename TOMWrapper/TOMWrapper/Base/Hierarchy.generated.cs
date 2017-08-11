@@ -140,9 +140,9 @@ namespace TabularEditor.TOMWrapper
 /// <summary>Gets or sets the object state.</summary><returns>An object state.</returns>
 		[DisplayName("State")]
 		[Category("Metadata"),Description(@"Gets or sets the object state."),IntelliSense("The State of this Hierarchy.")]
-		public TOM.ObjectState State {
+		public ObjectState State {
 			get {
-			    return MetadataObject.State;
+			    return (ObjectState)MetadataObject.State;
 			}
 			
 		}
@@ -267,7 +267,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Hierarchies.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Hierarchies.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject (but don't init until after we add it to the parent):
 			var obj = CreateFromMetadata(tom, false);
@@ -398,15 +398,26 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for Hierarchy. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public partial class HierarchyCollection: TabularObjectCollection<Hierarchy, TOM.Hierarchy, TOM.Table>
+	public sealed partial class HierarchyCollection: TabularObjectCollection<Hierarchy>
 	{
-		public override TabularNamedObject Parent { get { return Table; } }
-		public Table Table { get; protected set; }
-		public HierarchyCollection(string collectionName, TOM.HierarchyCollection metadataObjectCollection, Table parent) : base(collectionName, metadataObjectCollection)
+		internal Table Table { get { return Parent as Table; } }
+		TOM.HierarchyCollection TOM_Collection;
+		internal HierarchyCollection(string collectionName, TOM.HierarchyCollection metadataObjectCollection, Table parent) : base(collectionName, parent)
 		{
-			Table = parent;
+			TOM_Collection = metadataObjectCollection;
 		}
 
+        protected override void TOM_Add(TOM.MetadataObject obj) { TOM_Collection.Add(obj as TOM.Hierarchy); }
+        protected override bool TOM_Contains(TOM.MetadataObject obj) { return TOM_Collection.Contains(obj as TOM.Hierarchy); }
+        protected override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.Hierarchy); }
+        protected override void TOM_Clear() { TOM_Collection.Clear(); }
+        protected override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
+        protected override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+        protected override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        public override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        public override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Hierarchy); }
+        public override int Count { get { return TOM_Collection.Count; } }
+        public override IEnumerator<Hierarchy> GetEnumerator() { return TOM_Collection.Select(h => Handler.WrapperLookup[h]).OfType<Hierarchy>().GetEnumerator(); }
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
@@ -416,7 +427,7 @@ namespace TabularEditor.TOMWrapper
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}
-			MetadataObjectCollection = Table.MetadataObject.Hierarchies;
+			TOM_Collection = Table.MetadataObject.Hierarchies;
 			foreach(var item in this) item.Reinit();
 		}
 
@@ -430,7 +441,7 @@ namespace TabularEditor.TOMWrapper
 		public override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in MetadataObjectCollection) {
+			foreach(var obj in TOM_Collection) {
 				Hierarchy.CreateFromMetadata(obj).Collection = this;
 			}
 		}

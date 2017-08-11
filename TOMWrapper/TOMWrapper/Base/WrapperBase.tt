@@ -1,6 +1,6 @@
 ﻿<#@ template debug="false" hostspecific="true" language="C#" #>
 <#@ assembly name="System.Core" #>
-<#@ assembly name="Microsoft.AnalysisServices.Tabular, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" #>
+<#@ assembly name="Microsoft.AnalysisServices.Tabular, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Reflection" #>
@@ -41,6 +41,17 @@ namespace TabularEditor.TOMWrapper
 <# } #>
     }
 <#
+   manager.EndBlock();
+
+   manager.StartNewFile("Enums.generated.cs");
+   foreach(var t in Rules.EnumTypes) {
+#>
+	public enum <#= t.Name #> {    
+<# foreach(var value in Enum.GetValues(t)) { #>
+        <#= Enum.GetName(t, value) #> = <#= (int)value #>,
+<# } #>
+	}
+<# }
    manager.EndBlock();
 
    foreach(var t in Rules.ObjectTypes.Keys) {
@@ -268,7 +279,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 <# } #>
 
 			// Assign a new, unique name:
-			tom.Name = Parent.<#= Rules.GetCollection(t) #>.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.<#= Rules.GetCollection(t) #>.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject (but don't init until after we add it to the parent):
 			var obj = CreateFromMetadata(tom, false);
@@ -447,19 +458,31 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 	/// <summary>
 	/// Collection class for <#= t.Name #>. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public partial class <#= t.Name #>Collection: TabularObjectCollection<<#= t.Name == "Relationship" ? "SingleColumnRelationship" : t.Name #>, TOM.<#= t.Name #>, TOM.<#= Rules.GetParent(t) #>>
+	public sealed partial class <#= t.Name #>Collection: TabularObjectCollection<<#= t.Name == "Relationship" ? "SingleColumnRelationship" : t.Name #>>
 	{
-		public override TabularNamedObject Parent { get { return <#= Rules.GetParent(t) #>; } }
 <# if (Rules.GetParent(t) != "Model") { #>
-		public <#= Rules.GetParent(t) #> <#= Rules.GetParent(t) #> { get; protected set; }
+		internal <#= Rules.GetParent(t) #> <#= Rules.GetParent(t) #> { get { return Parent as <#= Rules.GetParent(t) #>; } }
 <# } #>
-		public <#= t.Name #>Collection(string collectionName, TOM.<#= t.Name #>Collection metadataObjectCollection, <#= Rules.GetParent(t) #> parent) : base(collectionName, metadataObjectCollection)
+		TOM.<#= t.Name #>Collection TOM_Collection;
+		internal <#= t.Name #>Collection(string collectionName, TOM.<#= t.Name #>Collection metadataObjectCollection, <#= Rules.GetParent(t) #> parent) : base(collectionName, parent)
 		{
-<# if (Rules.GetParent(t) != "Model") { #>
-			<#= Rules.GetParent(t) #> = parent;
-<# } #>
+			TOM_Collection = metadataObjectCollection;
 		}
 
+        protected override void TOM_Add(TOM.MetadataObject obj) { TOM_Collection.Add(obj as TOM.<#= t.Name #>); }
+        protected override bool TOM_Contains(TOM.MetadataObject obj) { return TOM_Collection.Contains(obj as TOM.<#= t.Name #>); }
+        protected override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.<#= t.Name #>); }
+        protected override void TOM_Clear() { TOM_Collection.Clear(); }
+        protected override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
+        protected override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+        protected override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+<# if (t.Name != "Measure") { #>
+        public override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+<# } if (t.Name != "Column") { #>
+        public override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.<#= t.Name #>); }
+        public override int Count { get { return TOM_Collection.Count; } }
+        public override IEnumerator<<#= t.Name == "Relationship" ? "SingleColumnRelationship" : t.Name #>> GetEnumerator() { return TOM_Collection.Select(h => Handler.WrapperLookup[h]).OfType<<#= t.Name == "Relationship" ? "SingleColumnRelationship" : t.Name #>>().GetEnumerator(); }
+<# } #>
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
@@ -472,7 +495,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}
-			MetadataObjectCollection = <#= Rules.GetParent(t) #>.MetadataObject.<#= Rules.CollectionName(t) #>;
+			TOM_Collection = <#= Rules.GetParent(t) #>.MetadataObject.<#= Rules.CollectionName(t) #>;
 			foreach(var item in this) item.Reinit();
 		}
 
@@ -486,7 +509,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 		public override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in MetadataObjectCollection) {
+			foreach(var obj in TOM_Collection) {
 <# if(t.Name == "ModelRoleMember") { #>
 				if(obj is TOM.WindowsModelRoleMember) WindowsModelRoleMember.CreateFromMetadata(obj as TOM.WindowsModelRoleMember).Collection = this;
 				if(obj is TOM.ExternalModelRoleMember) ExternalModelRoleMember.CreateFromMetadata(obj as TOM.ExternalModelRoleMember).Collection = this;

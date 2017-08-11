@@ -5,7 +5,7 @@ using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.UndoFramework
 {
-    public class UndoPropertyChangedAction : IUndoAction
+    internal class UndoPropertyChangedAction : IUndoAction
     {
         object oldValue;
         object newValue;

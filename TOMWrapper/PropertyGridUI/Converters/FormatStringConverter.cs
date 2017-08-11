@@ -7,7 +7,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TOM = Microsoft.AnalysisServices.Tabular;
 using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.PropertyGridUI
@@ -169,13 +168,13 @@ namespace TabularEditor.PropertyGridUI
         {
             switch (baseObject.DataType)
             {
-                case TOM.DataType.DateTime:
+                case DataType.DateTime:
                     return BrowsableDateTimeProperty(propertyName);
-                case TOM.DataType.Decimal:
-                case TOM.DataType.Double:
-                case TOM.DataType.Int64:
+                case DataType.Decimal:
+                case DataType.Double:
+                case DataType.Int64:
                     return BrowsableNumberProperty(propertyName);
-                case TOM.DataType.Unknown:
+                case DataType.Unknown:
                     // If we don't know the datatype of the object, assume it is a number:
                     return BrowsableNumberProperty(propertyName);
                 default:
@@ -347,13 +346,13 @@ namespace TabularEditor.PropertyGridUI
             Mixed = selection.Any() && !selection.All(obj => obj.FormatString == selection.First().FormatString);
         }
 
-        public TOM.DataType DataType
+        public DataType DataType
         {
             get
             {
                 var types = selection.Select(obj => obj.DataType).Distinct().ToList();
                 if (types.Count == 1) return types[0];
-                else return TOM.DataType.Unknown;
+                else return DataType.Unknown;
             }
         }
 
@@ -384,7 +383,7 @@ namespace TabularEditor.PropertyGridUI
         }
         public KPI KPI { get; private set; }
 
-        public TOM.DataType DataType { get { return KPI.Measure.DataType; } }
+        public DataType DataType { get { return KPI.Measure.DataType; } }
 
         public string FormatString
         {

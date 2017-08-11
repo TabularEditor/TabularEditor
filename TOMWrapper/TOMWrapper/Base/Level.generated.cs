@@ -218,7 +218,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Levels.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Levels.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject (but don't init until after we add it to the parent):
 			var obj = CreateFromMetadata(tom, false);
@@ -313,15 +313,26 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for Level. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public partial class LevelCollection: TabularObjectCollection<Level, TOM.Level, TOM.Hierarchy>
+	public sealed partial class LevelCollection: TabularObjectCollection<Level>
 	{
-		public override TabularNamedObject Parent { get { return Hierarchy; } }
-		public Hierarchy Hierarchy { get; protected set; }
-		public LevelCollection(string collectionName, TOM.LevelCollection metadataObjectCollection, Hierarchy parent) : base(collectionName, metadataObjectCollection)
+		internal Hierarchy Hierarchy { get { return Parent as Hierarchy; } }
+		TOM.LevelCollection TOM_Collection;
+		internal LevelCollection(string collectionName, TOM.LevelCollection metadataObjectCollection, Hierarchy parent) : base(collectionName, parent)
 		{
-			Hierarchy = parent;
+			TOM_Collection = metadataObjectCollection;
 		}
 
+        protected override void TOM_Add(TOM.MetadataObject obj) { TOM_Collection.Add(obj as TOM.Level); }
+        protected override bool TOM_Contains(TOM.MetadataObject obj) { return TOM_Collection.Contains(obj as TOM.Level); }
+        protected override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.Level); }
+        protected override void TOM_Clear() { TOM_Collection.Clear(); }
+        protected override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
+        protected override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+        protected override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        public override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        public override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Level); }
+        public override int Count { get { return TOM_Collection.Count; } }
+        public override IEnumerator<Level> GetEnumerator() { return TOM_Collection.Select(h => Handler.WrapperLookup[h]).OfType<Level>().GetEnumerator(); }
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
@@ -331,7 +342,7 @@ namespace TabularEditor.TOMWrapper
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}
-			MetadataObjectCollection = Hierarchy.MetadataObject.Levels;
+			TOM_Collection = Hierarchy.MetadataObject.Levels;
 			foreach(var item in this) item.Reinit();
 		}
 
@@ -345,7 +356,7 @@ namespace TabularEditor.TOMWrapper
 		public override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in MetadataObjectCollection) {
+			foreach(var obj in TOM_Collection) {
 				Level.CreateFromMetadata(obj).Collection = this;
 			}
 		}

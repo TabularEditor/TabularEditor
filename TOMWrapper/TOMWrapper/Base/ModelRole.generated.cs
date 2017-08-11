@@ -115,9 +115,9 @@ namespace TabularEditor.TOMWrapper
 ///             </summary><returns>The model permission.</returns>
 		[DisplayName("Model Permission")]
 		[Category("Security"),Description(@"Gets or sets the model permission."),IntelliSense("The Model Permission of this ModelRole.")]
-		public TOM.ModelPermission ModelPermission {
+		public ModelPermission ModelPermission {
 			get {
-			    return MetadataObject.ModelPermission;
+			    return (ModelPermission)MetadataObject.ModelPermission;
 			}
 			set {
 				var oldValue = ModelPermission;
@@ -126,7 +126,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.MODELPERMISSION, value, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.ModelPermission = value;
+				MetadataObject.ModelPermission = (TOM.ModelPermission)value;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MODELPERMISSION, oldValue, value));
 				OnPropertyChanged(Properties.MODELPERMISSION, oldValue, value);
 			}
@@ -206,7 +206,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Roles.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Roles.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject (but don't init until after we add it to the parent):
 			var obj = CreateFromMetadata(tom, false);
@@ -323,13 +323,25 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for ModelRole. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public partial class ModelRoleCollection: TabularObjectCollection<ModelRole, TOM.ModelRole, TOM.Model>
+	public sealed partial class ModelRoleCollection: TabularObjectCollection<ModelRole>
 	{
-		public override TabularNamedObject Parent { get { return Model; } }
-		public ModelRoleCollection(string collectionName, TOM.ModelRoleCollection metadataObjectCollection, Model parent) : base(collectionName, metadataObjectCollection)
+		TOM.ModelRoleCollection TOM_Collection;
+		internal ModelRoleCollection(string collectionName, TOM.ModelRoleCollection metadataObjectCollection, Model parent) : base(collectionName, parent)
 		{
+			TOM_Collection = metadataObjectCollection;
 		}
 
+        protected override void TOM_Add(TOM.MetadataObject obj) { TOM_Collection.Add(obj as TOM.ModelRole); }
+        protected override bool TOM_Contains(TOM.MetadataObject obj) { return TOM_Collection.Contains(obj as TOM.ModelRole); }
+        protected override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.ModelRole); }
+        protected override void TOM_Clear() { TOM_Collection.Clear(); }
+        protected override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
+        protected override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+        protected override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        public override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        public override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.ModelRole); }
+        public override int Count { get { return TOM_Collection.Count; } }
+        public override IEnumerator<ModelRole> GetEnumerator() { return TOM_Collection.Select(h => Handler.WrapperLookup[h]).OfType<ModelRole>().GetEnumerator(); }
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
@@ -339,7 +351,7 @@ namespace TabularEditor.TOMWrapper
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}
-			MetadataObjectCollection = Model.MetadataObject.Roles;
+			TOM_Collection = Model.MetadataObject.Roles;
 			foreach(var item in this) item.Reinit();
 		}
 
@@ -353,7 +365,7 @@ namespace TabularEditor.TOMWrapper
 		public override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in MetadataObjectCollection) {
+			foreach(var obj in TOM_Collection) {
 				ModelRole.CreateFromMetadata(obj).Collection = this;
 			}
 		}
@@ -368,7 +380,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		[Description("Sets the ModelPermission property of all objects in the collection at once.")]
-		public TOM.ModelPermission ModelPermission {
+		public ModelPermission ModelPermission {
 			set {
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("ModelPermission"));

@@ -38,7 +38,7 @@ namespace TabularEditor.UI
             {
                 try
                 {
-                    TabularDeployer.Deploy(Handler.Database, f.DeployTargetServer.ConnectionString, f.DeployTargetDatabaseID, f.DeployOptions);
+                    TabularDeployer.Deploy(Handler, f.DeployTargetServer.ConnectionString, f.DeployTargetDatabaseID, f.DeployOptions);
                 }
                 catch (Exception ex)
                 {
