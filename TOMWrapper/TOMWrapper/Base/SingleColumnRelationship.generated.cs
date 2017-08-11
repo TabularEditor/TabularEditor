@@ -71,9 +71,9 @@ namespace TabularEditor.TOMWrapper
 ///             </summary><returns>The relationship from cardinality.</returns>
 		[DisplayName("From Cardinality")]
 		[Category("Other"),Description(@"Gets or sets the relationship from cardinality."),IntelliSense("The From Cardinality of this SingleColumnRelationship.")]
-		public TOM.RelationshipEndCardinality FromCardinality {
+		public RelationshipEndCardinality FromCardinality {
 			get {
-			    return MetadataObject.FromCardinality;
+			    return (RelationshipEndCardinality)MetadataObject.FromCardinality;
 			}
 			set {
 				var oldValue = FromCardinality;
@@ -82,7 +82,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.FROMCARDINALITY, value, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.FromCardinality = value;
+				MetadataObject.FromCardinality = (TOM.RelationshipEndCardinality)value;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FROMCARDINALITY, oldValue, value));
 				OnPropertyChanged(Properties.FROMCARDINALITY, oldValue, value);
 			}
@@ -91,9 +91,9 @@ namespace TabularEditor.TOMWrapper
 /// <summary>Gets or sets the end of the cardinality relationship.</summary><returns>The end of the cardinality relationship.</returns>
 		[DisplayName("To Cardinality")]
 		[Category("Other"),Description(@"Gets or sets the end of the cardinality relationship."),IntelliSense("The To Cardinality of this SingleColumnRelationship.")]
-		public TOM.RelationshipEndCardinality ToCardinality {
+		public RelationshipEndCardinality ToCardinality {
 			get {
-			    return MetadataObject.ToCardinality;
+			    return (RelationshipEndCardinality)MetadataObject.ToCardinality;
 			}
 			set {
 				var oldValue = ToCardinality;
@@ -102,7 +102,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.TOCARDINALITY, value, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.ToCardinality = value;
+				MetadataObject.ToCardinality = (TOM.RelationshipEndCardinality)value;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TOCARDINALITY, oldValue, value));
 				OnPropertyChanged(Properties.TOCARDINALITY, oldValue, value);
 			}
@@ -169,7 +169,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Relationships.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Relationships.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject (but don't init until after we add it to the parent):
 			var obj = CreateFromMetadata(tom, false);

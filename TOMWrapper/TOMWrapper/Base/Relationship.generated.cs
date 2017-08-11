@@ -140,9 +140,9 @@ namespace TabularEditor.TOMWrapper
 ///             </summary><returns>The type of the <see cref="T:TabularEditor.TOMWrapper.Relationship" /> object.</returns>
 		[DisplayName("Type")]
 		[Category("Other"),Description(@"Gets the type of the Relationship object."),IntelliSense("The Type of this Relationship.")]
-		public TOM.RelationshipType Type {
+		public RelationshipType Type {
 			get {
-			    return MetadataObject.Type;
+			    return (RelationshipType)MetadataObject.Type;
 			}
 			
 		}
@@ -150,9 +150,9 @@ namespace TabularEditor.TOMWrapper
 /// <summary>Gets or sets the cross filtering behavior in the relationship.</summary><returns>The cross filtering behavior in the relationship.</returns>
 		[DisplayName("Cross Filtering Behavior")]
 		[Category("Relationship"),Description(@"Gets or sets the cross filtering behavior in the relationship."),IntelliSense("The Cross Filtering Behavior of this Relationship.")]
-		public TOM.CrossFilteringBehavior CrossFilteringBehavior {
+		public CrossFilteringBehavior CrossFilteringBehavior {
 			get {
-			    return MetadataObject.CrossFilteringBehavior;
+			    return (CrossFilteringBehavior)MetadataObject.CrossFilteringBehavior;
 			}
 			set {
 				var oldValue = CrossFilteringBehavior;
@@ -161,7 +161,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.CROSSFILTERINGBEHAVIOR, value, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.CrossFilteringBehavior = value;
+				MetadataObject.CrossFilteringBehavior = (TOM.CrossFilteringBehavior)value;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.CROSSFILTERINGBEHAVIOR, oldValue, value));
 				OnPropertyChanged(Properties.CROSSFILTERINGBEHAVIOR, oldValue, value);
 			}
@@ -172,9 +172,9 @@ namespace TabularEditor.TOMWrapper
 ///             </summary><returns>The join on date behavior for this property.</returns>
 		[DisplayName("Join On Date Behavior")]
 		[Category("Other"),Description(@"Gets or sets the join on date behavior for this property."),IntelliSense("The Join On Date Behavior of this Relationship.")]
-		public TOM.DateTimeRelationshipBehavior JoinOnDateBehavior {
+		public DateTimeRelationshipBehavior JoinOnDateBehavior {
 			get {
-			    return MetadataObject.JoinOnDateBehavior;
+			    return (DateTimeRelationshipBehavior)MetadataObject.JoinOnDateBehavior;
 			}
 			set {
 				var oldValue = JoinOnDateBehavior;
@@ -183,7 +183,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.JOINONDATEBEHAVIOR, value, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.JoinOnDateBehavior = value;
+				MetadataObject.JoinOnDateBehavior = (TOM.DateTimeRelationshipBehavior)value;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.JOINONDATEBEHAVIOR, oldValue, value));
 				OnPropertyChanged(Properties.JOINONDATEBEHAVIOR, oldValue, value);
 			}
@@ -214,9 +214,9 @@ namespace TabularEditor.TOMWrapper
 ///             </summary><returns>The relationship state.</returns>
 		[DisplayName("State")]
 		[Category("Metadata"),Description(@"Gets or sets the relationship state."),IntelliSense("The State of this Relationship.")]
-		public TOM.ObjectState State {
+		public ObjectState State {
 			get {
-			    return MetadataObject.State;
+			    return (ObjectState)MetadataObject.State;
 			}
 			
 		}
@@ -226,9 +226,9 @@ namespace TabularEditor.TOMWrapper
 ///             </summary><returns>The security filtering behavior.</returns>
 		[DisplayName("Security Filtering Behavior")]
 		[Category("Relationship"),Description(@"Gets or sets the security filtering behavior."),IntelliSense("The Security Filtering Behavior of this Relationship.")]
-		public TOM.SecurityFilteringBehavior SecurityFilteringBehavior {
+		public SecurityFilteringBehavior SecurityFilteringBehavior {
 			get {
-			    return MetadataObject.SecurityFilteringBehavior;
+			    return (SecurityFilteringBehavior)MetadataObject.SecurityFilteringBehavior;
 			}
 			set {
 				var oldValue = SecurityFilteringBehavior;
@@ -237,7 +237,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.SECURITYFILTERINGBEHAVIOR, value, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.SecurityFilteringBehavior = value;
+				MetadataObject.SecurityFilteringBehavior = (TOM.SecurityFilteringBehavior)value;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SECURITYFILTERINGBEHAVIOR, oldValue, value));
 				OnPropertyChanged(Properties.SECURITYFILTERINGBEHAVIOR, oldValue, value);
 			}
@@ -291,13 +291,25 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for Relationship. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public partial class RelationshipCollection: TabularObjectCollection<SingleColumnRelationship, TOM.Relationship, TOM.Model>
+	public sealed partial class RelationshipCollection: TabularObjectCollection<SingleColumnRelationship>
 	{
-		public override TabularNamedObject Parent { get { return Model; } }
-		public RelationshipCollection(string collectionName, TOM.RelationshipCollection metadataObjectCollection, Model parent) : base(collectionName, metadataObjectCollection)
+		TOM.RelationshipCollection TOM_Collection;
+		internal RelationshipCollection(string collectionName, TOM.RelationshipCollection metadataObjectCollection, Model parent) : base(collectionName, parent)
 		{
+			TOM_Collection = metadataObjectCollection;
 		}
 
+        protected override void TOM_Add(TOM.MetadataObject obj) { TOM_Collection.Add(obj as TOM.Relationship); }
+        protected override bool TOM_Contains(TOM.MetadataObject obj) { return TOM_Collection.Contains(obj as TOM.Relationship); }
+        protected override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.Relationship); }
+        protected override void TOM_Clear() { TOM_Collection.Clear(); }
+        protected override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
+        protected override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+        protected override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        public override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        public override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Relationship); }
+        public override int Count { get { return TOM_Collection.Count; } }
+        public override IEnumerator<SingleColumnRelationship> GetEnumerator() { return TOM_Collection.Select(h => Handler.WrapperLookup[h]).OfType<SingleColumnRelationship>().GetEnumerator(); }
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
@@ -307,7 +319,7 @@ namespace TabularEditor.TOMWrapper
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}
-			MetadataObjectCollection = Model.MetadataObject.Relationships;
+			TOM_Collection = Model.MetadataObject.Relationships;
 			foreach(var item in this) item.Reinit();
 		}
 
@@ -321,7 +333,7 @@ namespace TabularEditor.TOMWrapper
 		public override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in MetadataObjectCollection) {
+			foreach(var obj in TOM_Collection) {
 				switch((obj as TOM.Relationship).Type) {
 					case TOM.RelationshipType.SingleColumn: SingleColumnRelationship.CreateFromMetadata(obj as TOM.SingleColumnRelationship).Collection = this; break;
 				}
@@ -338,7 +350,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		[Description("Sets the CrossFilteringBehavior property of all objects in the collection at once.")]
-		public TOM.CrossFilteringBehavior CrossFilteringBehavior {
+		public CrossFilteringBehavior CrossFilteringBehavior {
 			set {
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("CrossFilteringBehavior"));
@@ -347,7 +359,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		[Description("Sets the JoinOnDateBehavior property of all objects in the collection at once.")]
-		public TOM.DateTimeRelationshipBehavior JoinOnDateBehavior {
+		public DateTimeRelationshipBehavior JoinOnDateBehavior {
 			set {
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("JoinOnDateBehavior"));
@@ -365,7 +377,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		[Description("Sets the SecurityFilteringBehavior property of all objects in the collection at once.")]
-		public TOM.SecurityFilteringBehavior SecurityFilteringBehavior {
+		public SecurityFilteringBehavior SecurityFilteringBehavior {
 			set {
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("SecurityFilteringBehavior"));

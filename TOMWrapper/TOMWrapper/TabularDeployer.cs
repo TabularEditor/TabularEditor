@@ -32,9 +32,18 @@ namespace TabularEditor.TOMWrapper
             return result;
         }
 
-        public static void Deploy(TOM.Database db, string targetConnectionString, string targetDatabaseName)
+        public static DeploymentResult Deploy(TabularModelHandler handler, string targetConnectionString, string targetDatabaseName)
         {
-            Deploy(db, targetConnectionString, targetDatabaseName, DeploymentOptions.Default);
+            return Deploy(handler.Database, targetConnectionString, targetDatabaseName, DeploymentOptions.Default);
+        }
+        public static DeploymentResult Deploy(TabularModelHandler handler, string targetConnectionString, string targetDatabaseName, DeploymentOptions options)
+        {
+            return Deploy(handler.Database, targetConnectionString, targetDatabaseName, options);
+        }
+
+        internal static DeploymentResult Deploy(TOM.Database db, string targetConnectionString, string targetDatabaseName)
+        {
+            return Deploy(db, targetConnectionString, targetDatabaseName, DeploymentOptions.Default);
         }
 
         public static void SaveModelMetadataBackup(string connectionString, string targetDatabaseID, string backupFilePath)
@@ -79,7 +88,7 @@ namespace TabularEditor.TOMWrapper
         /// <param name="targetDatabaseID"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static DeploymentResult Deploy(TOM.Database db, string targetConnectionString, string targetDatabaseID, DeploymentOptions options)
+        internal static DeploymentResult Deploy(TOM.Database db, string targetConnectionString, string targetDatabaseID, DeploymentOptions options)
         {
             if (string.IsNullOrWhiteSpace(targetConnectionString)) throw new ArgumentNullException("targetConnectionString");
             var s = new TOM.Server();

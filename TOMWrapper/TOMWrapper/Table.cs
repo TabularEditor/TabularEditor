@@ -53,7 +53,7 @@ namespace TabularEditor.TOMWrapper
         {
             Handler.BeginUpdate("add Data column");
             var column = DataColumn.CreateNew(this, name);
-            column.DataType = TOM.DataType.String;
+            column.DataType = DataType.String;
             if (!string.IsNullOrEmpty(sourceColumn)) column.SourceColumn = sourceColumn;
             if (!string.IsNullOrEmpty(displayFolder)) column.DisplayFolder = displayFolder;
             Handler.EndUpdate();

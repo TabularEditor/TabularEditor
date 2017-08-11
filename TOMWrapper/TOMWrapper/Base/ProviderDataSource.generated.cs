@@ -45,9 +45,9 @@ namespace TabularEditor.TOMWrapper
 ///             </summary><returns>The impersonation mode to connect to the data source.</returns>
 		[DisplayName("Impersonation Mode")]
 		[Category("Connection Details"),Description(@"Gets or sets the impersonation mode to connect to the data source."),IntelliSense("The Impersonation Mode of this ProviderDataSource.")]
-		public TOM.ImpersonationMode ImpersonationMode {
+		public ImpersonationMode ImpersonationMode {
 			get {
-			    return MetadataObject.ImpersonationMode;
+			    return (ImpersonationMode)MetadataObject.ImpersonationMode;
 			}
 			set {
 				var oldValue = ImpersonationMode;
@@ -56,7 +56,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.IMPERSONATIONMODE, value, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.ImpersonationMode = value;
+				MetadataObject.ImpersonationMode = (TOM.ImpersonationMode)value;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.IMPERSONATIONMODE, oldValue, value));
 				OnPropertyChanged(Properties.IMPERSONATIONMODE, oldValue, value);
 			}
@@ -129,9 +129,9 @@ namespace TabularEditor.TOMWrapper
 ///             </summary><returns>The data source isolation status.</returns>
 		[DisplayName("Isolation")]
 		[Category("Connection Details"),Description(@"Gets or sets the isolation property for a DataSource object."),IntelliSense("The Isolation of this ProviderDataSource.")]
-		public TOM.DatasourceIsolation Isolation {
+		public DatasourceIsolation Isolation {
 			get {
-			    return MetadataObject.Isolation;
+			    return (DatasourceIsolation)MetadataObject.Isolation;
 			}
 			set {
 				var oldValue = Isolation;
@@ -140,7 +140,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ISOLATION, value, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Isolation = value;
+				MetadataObject.Isolation = (TOM.DatasourceIsolation)value;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISOLATION, oldValue, value));
 				OnPropertyChanged(Properties.ISOLATION, oldValue, value);
 			}
@@ -249,7 +249,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.DataSources.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.DataSources.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject (but don't init until after we add it to the parent):
 			var obj = CreateFromMetadata(tom, false);

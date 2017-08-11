@@ -33,9 +33,9 @@ namespace TabularEditor.TOMWrapper
 ///             </summary><returns>A DataType object that represents the column data type.</returns>
 		[DisplayName("Data Type")]
 		[Category("Metadata"),Description(@"Gets or sets the type of data stored in the column. For a DataColumn, specifies the data type. See  for a list of supported data types."),IntelliSense("The Data Type of this Column.")]
-		public TOM.DataType DataType {
+		public DataType DataType {
 			get {
-			    return MetadataObject.DataType;
+			    return (DataType)MetadataObject.DataType;
 			}
 			set {
 				var oldValue = DataType;
@@ -44,7 +44,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DATATYPE, value, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.DataType = value;
+				MetadataObject.DataType = (TOM.DataType)value;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DATATYPE, oldValue, value));
 				OnPropertyChanged(Properties.DATATYPE, oldValue, value);
 			}
@@ -191,9 +191,9 @@ namespace TabularEditor.TOMWrapper
 		[DisplayName("State")]
 		[Category("Metadata"),Description(@"Gets or sets the calculated columns or columns in a calculated table, the state of this column is either calculated (Ready), or not (CalculationNeeded), or an error. 
             For non-calculated columns it is always Ready."),IntelliSense("The State of this Column.")]
-		public TOM.ObjectState State {
+		public ObjectState State {
 			get {
-			    return MetadataObject.State;
+			    return (ObjectState)MetadataObject.State;
 			}
 			
 		}
@@ -269,9 +269,9 @@ namespace TabularEditor.TOMWrapper
 ///             </summary><returns>The alignment for this property.</returns>
 		[DisplayName("Alignment")]
 		[Category("Other"),Description(@"Gets or sets the alignment for this property."),IntelliSense("The Alignment of this Column.")]
-		public TOM.Alignment Alignment {
+		public Alignment Alignment {
 			get {
-			    return MetadataObject.Alignment;
+			    return (Alignment)MetadataObject.Alignment;
 			}
 			set {
 				var oldValue = Alignment;
@@ -280,7 +280,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ALIGNMENT, value, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Alignment = value;
+				MetadataObject.Alignment = (TOM.Alignment)value;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ALIGNMENT, oldValue, value));
 				OnPropertyChanged(Properties.ALIGNMENT, oldValue, value);
 			}
@@ -357,9 +357,9 @@ namespace TabularEditor.TOMWrapper
 ///             </summary><returns>The aggregation function used by this column.</returns>
 		[DisplayName("Summarize By")]
 		[Category("Other"),Description(@"Gets or sets the aggregation function used by this column."),IntelliSense("The Summarize By of this Column.")]
-		public TOM.AggregateFunction SummarizeBy {
+		public AggregateFunction SummarizeBy {
 			get {
-			    return MetadataObject.SummarizeBy;
+			    return (AggregateFunction)MetadataObject.SummarizeBy;
 			}
 			set {
 				var oldValue = SummarizeBy;
@@ -368,7 +368,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.SUMMARIZEBY, value, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.SummarizeBy = value;
+				MetadataObject.SummarizeBy = (TOM.AggregateFunction)value;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SUMMARIZEBY, oldValue, value));
 				OnPropertyChanged(Properties.SUMMARIZEBY, oldValue, value);
 			}
@@ -379,9 +379,9 @@ namespace TabularEditor.TOMWrapper
 ///             </summary><returns>The column type.</returns>
 		[DisplayName("Type")]
 		[Category("Other"),Description(@"Gets or sets the column type."),IntelliSense("The Type of this Column.")][Browsable(false)]
-		public TOM.ColumnType Type {
+		public ColumnType Type {
 			get {
-			    return MetadataObject.Type;
+			    return (ColumnType)MetadataObject.Type;
 			}
 			
 		}
@@ -646,15 +646,23 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for Column. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public partial class ColumnCollection: TabularObjectCollection<Column, TOM.Column, TOM.Table>
+	public sealed partial class ColumnCollection: TabularObjectCollection<Column>
 	{
-		public override TabularNamedObject Parent { get { return Table; } }
-		public Table Table { get; protected set; }
-		public ColumnCollection(string collectionName, TOM.ColumnCollection metadataObjectCollection, Table parent) : base(collectionName, metadataObjectCollection)
+		internal Table Table { get { return Parent as Table; } }
+		TOM.ColumnCollection TOM_Collection;
+		internal ColumnCollection(string collectionName, TOM.ColumnCollection metadataObjectCollection, Table parent) : base(collectionName, parent)
 		{
-			Table = parent;
+			TOM_Collection = metadataObjectCollection;
 		}
 
+        protected override void TOM_Add(TOM.MetadataObject obj) { TOM_Collection.Add(obj as TOM.Column); }
+        protected override bool TOM_Contains(TOM.MetadataObject obj) { return TOM_Collection.Contains(obj as TOM.Column); }
+        protected override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.Column); }
+        protected override void TOM_Clear() { TOM_Collection.Clear(); }
+        protected override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
+        protected override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+        protected override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        public override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
@@ -665,7 +673,7 @@ namespace TabularEditor.TOMWrapper
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}
-			MetadataObjectCollection = Table.MetadataObject.Columns;
+			TOM_Collection = Table.MetadataObject.Columns;
 			foreach(var item in this) item.Reinit();
 		}
 
@@ -679,7 +687,7 @@ namespace TabularEditor.TOMWrapper
 		public override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in MetadataObjectCollection) {
+			foreach(var obj in TOM_Collection) {
 				switch(obj.Type) {
 				    case TOM.ColumnType.Data: DataColumn.CreateFromMetadata(obj as TOM.DataColumn).Collection = this; break;
 					case TOM.ColumnType.Calculated: CalculatedColumn.CreateFromMetadata(obj as TOM.CalculatedColumn).Collection = this; break;
@@ -690,7 +698,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		[Description("Sets the DataType property of all objects in the collection at once.")]
-		public TOM.DataType DataType {
+		public DataType DataType {
 			set {
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("DataType"));
@@ -753,7 +761,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		[Description("Sets the Alignment property of all objects in the collection at once.")]
-		public TOM.Alignment Alignment {
+		public Alignment Alignment {
 			set {
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("Alignment"));
@@ -789,7 +797,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		[Description("Sets the SummarizeBy property of all objects in the collection at once.")]
-		public TOM.AggregateFunction SummarizeBy {
+		public AggregateFunction SummarizeBy {
 			set {
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("SummarizeBy"));

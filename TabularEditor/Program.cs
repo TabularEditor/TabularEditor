@@ -379,7 +379,7 @@ namespace TabularEditor
                     cw.WriteLine("Deploying...");
                     var cs = string.IsNullOrEmpty(userName) ? TOMWrapper.TabularConnection.GetConnectionString(serverName) :
                         TOMWrapper.TabularConnection.GetConnectionString(serverName, userName, password);
-                    var deploymentResult = TOMWrapper.TabularDeployer.Deploy(h.Database, cs, databaseID, options);
+                    var deploymentResult = TOMWrapper.TabularDeployer.Deploy(h, cs, databaseID, options);
                     cw.WriteLine("Deployment succeeded.");
                     foreach (var err in deploymentResult.Issues) Issue(err);
                     foreach (var err in deploymentResult.Warnings) Warning(err);

@@ -139,7 +139,7 @@ namespace TabularEditor.TOMWrapper
         {
             switch (propertyName)
             {
-                case Properties.FORMATSTRING: return DataType != TOM.DataType.String && Description != "hej";
+                case Properties.FORMATSTRING: return DataType != DataType.String && Description != "hej";
 #if CL1400
                 case Properties.DETAILROWSDEFINITION:
                     return Model.Database.CompatibilityLevel >= 1400;

@@ -5,7 +5,7 @@ using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.UndoFramework
 {
-    public class UndoHierarchyLevelOrderAction : IUndoAction
+    internal class UndoHierarchyLevelOrderAction : IUndoAction
     {
         IList<Level> before;
         IList<Level> after;

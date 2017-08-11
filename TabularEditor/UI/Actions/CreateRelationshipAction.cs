@@ -98,6 +98,7 @@ namespace TabularEditor.UI.Actions
         public void Execute(object arg)
         {
             if (!(arg is Column)) return;
+            UI.Handler.BeginUpdate("Create relationship");
             var rel = UI.Handler.Model.AddRelationship();
 
             if (Direction == CreateRelationshipDirection.To)
@@ -110,6 +111,7 @@ namespace TabularEditor.UI.Actions
                 rel.ToColumn = SelectedColumn;
                 rel.FromColumn = arg as Column;
             }
+            UI.Handler.EndUpdate();
             UI.EditName(rel);
         }
     }

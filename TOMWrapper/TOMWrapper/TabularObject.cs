@@ -71,7 +71,7 @@ namespace TabularEditor.TOMWrapper
     /// </summary>
     public abstract class TabularObject: ITabularObject, INotifyPropertyChanged, INotifyPropertyChanging, IDynamicPropertyObject
     {
-        protected internal ITabularObjectCollection Collection;
+        internal ITabularObjectCollection Collection;
 
         private TOM.MetadataObject _metadataObject;
         protected internal TOM.MetadataObject MetadataObject { get { return _metadataObject; } protected set { _metadataObject = value; } }

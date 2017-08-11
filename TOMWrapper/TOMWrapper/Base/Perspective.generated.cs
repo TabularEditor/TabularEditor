@@ -184,7 +184,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Perspectives.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Perspectives.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject (but don't init until after we add it to the parent):
 			var obj = CreateFromMetadata(tom, false);
@@ -277,13 +277,25 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for Perspective. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public partial class PerspectiveCollection: TabularObjectCollection<Perspective, TOM.Perspective, TOM.Model>
+	public sealed partial class PerspectiveCollection: TabularObjectCollection<Perspective>
 	{
-		public override TabularNamedObject Parent { get { return Model; } }
-		public PerspectiveCollection(string collectionName, TOM.PerspectiveCollection metadataObjectCollection, Model parent) : base(collectionName, metadataObjectCollection)
+		TOM.PerspectiveCollection TOM_Collection;
+		internal PerspectiveCollection(string collectionName, TOM.PerspectiveCollection metadataObjectCollection, Model parent) : base(collectionName, parent)
 		{
+			TOM_Collection = metadataObjectCollection;
 		}
 
+        protected override void TOM_Add(TOM.MetadataObject obj) { TOM_Collection.Add(obj as TOM.Perspective); }
+        protected override bool TOM_Contains(TOM.MetadataObject obj) { return TOM_Collection.Contains(obj as TOM.Perspective); }
+        protected override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.Perspective); }
+        protected override void TOM_Clear() { TOM_Collection.Clear(); }
+        protected override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
+        protected override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+        protected override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        public override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        public override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Perspective); }
+        public override int Count { get { return TOM_Collection.Count; } }
+        public override IEnumerator<Perspective> GetEnumerator() { return TOM_Collection.Select(h => Handler.WrapperLookup[h]).OfType<Perspective>().GetEnumerator(); }
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
@@ -293,7 +305,7 @@ namespace TabularEditor.TOMWrapper
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}
-			MetadataObjectCollection = Model.MetadataObject.Perspectives;
+			TOM_Collection = Model.MetadataObject.Perspectives;
 			foreach(var item in this) item.Reinit();
 		}
 
@@ -307,7 +319,7 @@ namespace TabularEditor.TOMWrapper
 		public override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in MetadataObjectCollection) {
+			foreach(var obj in TOM_Collection) {
 				Perspective.CreateFromMetadata(obj).Collection = this;
 			}
 		}

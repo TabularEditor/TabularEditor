@@ -21,12 +21,12 @@ namespace VisualizeRelationships
 
         public void ShowGraph(Model model)
         {
-            foreach(var table in model.Tables.OfType<Table>())
+            foreach(var table in model.Tables)
             {
                 var node = nodesControl1.Graph.AddTable(table);
             }
 
-            foreach (var rel in model.Relationships.OfType<SingleColumnRelationship>())
+            foreach (var rel in model.Relationships)
             {
                 nodesControl1.Graph.AddRelationship(rel);
             }

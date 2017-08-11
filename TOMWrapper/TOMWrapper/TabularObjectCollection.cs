@@ -9,7 +9,7 @@ using TabularEditor.UndoFramework;
 
 namespace TabularEditor.TOMWrapper
 {
-    public interface ITabularObjectCollection: IEnumerable
+    internal interface ITabularObjectCollection: IEnumerable
     {
         TabularModelHandler Handler { get; }
         void Add(TabularNamedObject obj);
@@ -25,20 +25,24 @@ namespace TabularEditor.TOMWrapper
         void CreateChildrenFromMetadata();
     }
 
-    public abstract class TabularObjectCollection<T, TT, TP> : IList, INotifyCollectionChanged, ICollection<T>, IList<T>, ITabularObjectCollection, IExpandableIndexer
+    public abstract class TabularObjectCollection<T> : IList, INotifyCollectionChanged, ICollection<T>, IList<T>, IExpandableIndexer, ITabularObjectCollection
         where T: TabularNamedObject
-        where TT: TOM.NamedMetadataObject
-        where TP: TOM.MetadataObject
     {
+        int IList.IndexOf(object value)
+        {
+            return IndexOf(value as T);
+        }
 
         internal abstract void Reinit();
         internal abstract void ReapplyReferences();
 
-        public abstract TabularNamedObject Parent { get; }
+        TabularNamedObject _parent;
+        TabularNamedObject ITabularObjectCollection.Parent { get { return _parent; } }
+        internal protected TabularNamedObject Parent { get { return _parent; } }
 
-        public int IndexOf(TabularNamedObject obj)
+        int ITabularObjectCollection.IndexOf(TabularNamedObject obj)
         {
-            return MetadataObjectCollection?.IndexOf(obj.MetadataObject as TT) ?? -1;
+            return IndexOf(obj as T);
         }
 
         [IntelliSense("Provide a lambda statement that is executed once for each object in the collection.\nExample: .ForEach(obj => obj.Name += \" OLD\");")]
@@ -47,7 +51,7 @@ namespace TabularEditor.TOMWrapper
             if(this is ColumnCollection)
             {
                 // When iterating column collections, make sure to not include the row number:
-                this.Where(obj => (obj as Column).Type != TOM.ColumnType.RowNumber).ToList().ForEach(action);
+                this.Where(obj => (obj as Column).Type != ColumnType.RowNumber).ToList().ForEach(action);
             }
             else
                 this.ToList().ForEach(action);
@@ -55,7 +59,7 @@ namespace TabularEditor.TOMWrapper
 
         public abstract void CreateChildrenFromMetadata();
 
-        public ITabularObjectCollection GetCurrentCollection()
+        ITabularObjectCollection ITabularObjectCollection.GetCurrentCollection()
         {
             return Handler.WrapperCollections[CollectionName];
         }
@@ -65,25 +69,17 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("The name of this collection.")]
         public string CollectionName { get; private set; }
 
-        protected internal TOM.NamedMetadataObjectCollection<TT, TP> MetadataObjectCollection { get; protected set; }
-
-        public virtual void Refresh()
+        public void Refresh()
         {
 
         }
 
         [IntelliSense("The number of items in this collection.")]
-        public virtual int Count
-        {
-            get
-            {
-                return MetadataObjectCollection.Count;
-            }
-        }
+        public abstract int Count { get; }
 
 
         [IntelliSense("Whether or not this collection is read-only.")]
-        public virtual bool IsReadOnly
+        public bool IsReadOnly
         {
             get
             {
@@ -92,7 +88,7 @@ namespace TabularEditor.TOMWrapper
         }
 
         [IntelliSense("A summary of this collection's content.")]
-        public virtual string Summary
+        public string Summary
         {
             get
             {
@@ -100,11 +96,10 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public IEnumerable<string> Keys
-        {
+        public IEnumerable<string> Keys {
             get
             {
-                return MetadataObjectCollection.Select(i => i.Name);
+                return this.Select(obj => obj.Name);
             }
         }
 
@@ -158,19 +153,22 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        protected TabularObjectCollection(string collectionName, TOM.NamedMetadataObjectCollection<TT, TP> metadataObjectCollection)
+        protected TabularObjectCollection(string collectionName, TabularNamedObject parent)
         {
-            MetadataObjectCollection = metadataObjectCollection;
+            _parent = parent;
             Handler = TabularModelHandler.Singleton;
             CollectionName = collectionName;
             Handler.WrapperCollections[CollectionName] = this;
         }
 
-        public virtual T this[string name]
+        protected abstract TOM.MetadataObject TOM_Get(string name);
+        protected abstract TOM.MetadataObject TOM_Get(int index);
+
+        public T this[string name]
         {
             get
             {
-                return Handler.WrapperLookup[MetadataObjectCollection[name]] as T;
+                return Handler.WrapperLookup[TOM_Get(name)] as T;
             }
         }
 
@@ -178,8 +176,7 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                var mObject = MetadataObjectCollection[index];
-                return Handler.WrapperLookup[mObject] as T;
+                return Handler.WrapperLookup[TOM_Get(index)] as T;
             }
             set
             {
@@ -187,10 +184,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public virtual string GetNewName(string prefix = null)
-        {
-            return string.IsNullOrWhiteSpace(prefix) ? MetadataObjectCollection.GetNewName() : MetadataObjectCollection.GetNewName(prefix);
-        }
+        public abstract string GetNewName(string prefix = null);
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
@@ -202,29 +196,33 @@ namespace TabularEditor.TOMWrapper
 
             //item.RenewMetadataObject();
 
-            MetadataObjectCollection.Add(item.MetadataObject as TT);
+            TOM_Add(item.MetadataObject);
             item.Collection = this;
 
             Handler.UndoManager.Add(new UndoAddRemoveAction(this, item, UndoAddRemoveActionType.Add));
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
         }
 
-        public void Add(TabularNamedObject item)
+        protected abstract void TOM_Add(TOM.MetadataObject obj);
+        protected abstract void TOM_Remove(TOM.MetadataObject obj);
+        protected abstract void TOM_Clear();
+        protected abstract bool TOM_Contains(TOM.MetadataObject obj);
+
+        void ITabularObjectCollection.Add(TabularNamedObject item)
         {
             Add(item as T);
         }
 
-        public void Remove(TabularNamedObject item)
+        void ITabularObjectCollection.Remove(TabularNamedObject item)
         {
             Remove(item as T);
         }
 
         public virtual bool Remove(T item)
         {
-            if (item.MetadataObject.Parent != MetadataObjectCollection.Parent)
-                throw new InvalidOperationException();
+            if (!TOM_Contains(item.MetadataObject)) throw new InvalidOperationException();
 
-            MetadataObjectCollection.Remove(item.MetadataObject as TT);
+            TOM_Remove(item.MetadataObject);
             item.Collection = null;
 
             Handler.UndoManager.Add(new UndoAddRemoveAction(this, item, UndoAddRemoveActionType.Remove));
@@ -232,16 +230,16 @@ namespace TabularEditor.TOMWrapper
             return true;
         }
 
-        public virtual void Clear()
+        public void Clear()
         {
             Handler.UndoManager.Add(new UndoClearAction(this, this.ToArray()));
-            MetadataObjectCollection.Clear();
+            TOM_Clear();
         }
 
         [IntelliSense("Returns true if this collection contains the specified item.")]
-        public virtual bool Contains(T item)
+        public bool Contains(T item)
         {
-            return MetadataObjectCollection.Contains(item.MetadataObject);
+            return TOM_Contains(item.MetadataObject);
         }
 
         public void CopyTo(T[] array, int arrayIndex)
@@ -254,19 +252,16 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public virtual IEnumerator<T> GetEnumerator()
-        {
-            return MetadataObjectCollection.Select(obj => Handler.WrapperLookup[obj] as T).GetEnumerator();
-        }
+        public abstract IEnumerator<T> GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
-        public virtual int IndexOf(T item)
+        public int IndexOf(T item)
         {
-            return MetadataObjectCollection.IndexOf(item.MetadataObject as TT);
+            return IndexOf(item.MetadataObject);
         }
 
         public void Insert(int index, T item)
@@ -292,13 +287,12 @@ namespace TabularEditor.TOMWrapper
 
         public bool Contains(string name)
         {
-            return MetadataObjectCollection.ContainsName(name);
+            return TOM_ContainsName(name);
         }
 
-        public int IndexOf(object value)
-        {
-            throw new NotImplementedException();
-        }
+        protected abstract bool TOM_ContainsName(string name);
+
+        public abstract int IndexOf(TOM.MetadataObject value);
 
         public void Insert(int index, object value)
         {
@@ -315,7 +309,7 @@ namespace TabularEditor.TOMWrapper
             CopyTo(array as T[], index);
         }
 
-        public virtual string GetDisplayName(string key)
+        public string GetDisplayName(string key)
         {
             return key;
         }

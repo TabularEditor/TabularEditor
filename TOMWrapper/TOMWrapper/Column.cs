@@ -177,15 +177,30 @@ namespace TabularEditor.TOMWrapper
     {
         public override IEnumerator<Column> GetEnumerator()
         {
-            return MetadataObjectCollection
-                .Where(c => c.Type != TOM.ColumnType.RowNumber).Select(c => Handler.WrapperLookup[c] as Column).GetEnumerator();
+            return TOM_Collection.Where(c => c.Type != TOM.ColumnType.RowNumber).Select(c => Handler.WrapperLookup[c] as Column).GetEnumerator();
+        }
+
+        public override int IndexOf(TOM.MetadataObject value)
+        {
+            var ix = TOM_Collection.IndexOf(value as TOM.Column);
+            var rnIx = GetRnColIndex();
+            if (ix == rnIx) throw new KeyNotFoundException();
+            if (ix > rnIx) ix--;
+            return ix;
+        }
+
+        private int GetRnColIndex()
+        {
+            var rnCol = TOM_Collection.FirstOrDefault(c => c.Type == TOM.ColumnType.RowNumber);
+            if (rnCol != null) return TOM_Collection.IndexOf(rnCol);
+            return -1;
         }
 
         private bool HasRowNumColumn
         {
             get
             {
-                return (MetadataObjectCollection as TOM.ColumnCollection)?.Any(c => c.Type == TOM.ColumnType.RowNumber) ?? false;
+                return TOM_Collection.Any(c => c.Type == TOM.ColumnType.RowNumber);
             }
         }
 
@@ -193,7 +208,7 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                return HasRowNumColumn ? (base.Count - 1) : base.Count;
+                return HasRowNumColumn ? (TOM_Collection.Count - 1) : TOM_Collection.Count;
             }
         }
 
@@ -201,12 +216,7 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                var rnCol = MetadataObjectCollection.FirstOrDefault(c => c.Type == TOM.ColumnType.RowNumber);
-                if (rnCol != null)
-                {
-                    var rnColIndex = MetadataObjectCollection.IndexOf(rnCol);
-                    if (index >= rnColIndex) index++;
-                }
+                if(index >= GetRnColIndex()) index++;
                 return base[index];
             }
         }

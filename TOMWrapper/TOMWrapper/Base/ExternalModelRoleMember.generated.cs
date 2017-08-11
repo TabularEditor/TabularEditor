@@ -45,9 +45,9 @@ namespace TabularEditor.TOMWrapper
 /// <summary>Gets or sets the external role for the member type property.</summary><returns>The role member type property.</returns>
 		[DisplayName("Member Type")]
 		[Category("Other"),Description(@"Gets or sets the external role for the member type property."),IntelliSense("The Member Type of this ExternalModelRoleMember.")]
-		public TOM.RoleMemberType MemberType {
+		public RoleMemberType MemberType {
 			get {
-			    return MetadataObject.MemberType;
+			    return (RoleMemberType)MetadataObject.MemberType;
 			}
 			set {
 				var oldValue = MemberType;
@@ -56,7 +56,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.MEMBERTYPE, value, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.MemberType = value;
+				MetadataObject.MemberType = (TOM.RoleMemberType)value;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MEMBERTYPE, oldValue, value));
 				OnPropertyChanged(Properties.MEMBERTYPE, oldValue, value);
 			}
@@ -105,7 +105,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Members.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Members.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject (but don't init until after we add it to the parent):
 			var obj = CreateFromMetadata(tom, false);

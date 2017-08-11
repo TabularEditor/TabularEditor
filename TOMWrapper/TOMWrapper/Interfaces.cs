@@ -126,7 +126,7 @@ namespace TabularEditor.TOMWrapper
     public interface IFormattableObject
     {
         string FormatString { get; set; }
-        Microsoft.AnalysisServices.Tabular.DataType DataType { get; }
+        DataType DataType { get; }
     }
     #endregion
 

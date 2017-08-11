@@ -87,7 +87,7 @@ namespace TabularEditor.TOMWrapper
         {
             CreateTestModel(TestFileName);
             var tm = new TabularModelHandler(TestFileName);
-            TabularDeployer.Deploy(tm.Database, ServerName, TestDBName, DeploymentOptions.Full);
+            TabularDeployer.Deploy(tm, ServerName, TestDBName, DeploymentOptions.Full);
 
             return new TabularModelHandler(ServerName, TestDBName);
         }

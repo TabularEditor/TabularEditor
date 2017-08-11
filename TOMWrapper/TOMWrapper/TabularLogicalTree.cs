@@ -242,7 +242,7 @@ namespace TabularEditor.TOMWrapper
         public bool VisibleInTree(ITabularNamedObject tabularObject)
         {
             // Never show the RowNumber column:
-            if ((tabularObject as Column)?.Type == TOM.ColumnType.RowNumber) return false;
+            if ((tabularObject as Column)?.Type == ColumnType.RowNumber) return false;
 
             // Don't show invisible objects:
             if ((tabularObject is IHideableObject) && (tabularObject as IHideableObject).IsHidden && !Options.HasFlag(LogicalTreeOptions.ShowHidden)) return false;

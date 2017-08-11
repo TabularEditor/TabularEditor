@@ -7,7 +7,7 @@ using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.UndoFramework
 {
-    public class UndoAnnotationAction : IUndoAction
+    internal class UndoAnnotationAction : IUndoAction
     {
         IAnnotationObject Obj;
         string name;

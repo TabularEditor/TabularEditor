@@ -24,7 +24,7 @@ namespace TabularEditor.TOMWrapper
         private void UpdateName()
         {
             InternalName = string.Format("{0} {1} {2}", GetFullName(MetadataObject.FromColumn) ?? "(none)",
-                this.CrossFilteringBehavior == Microsoft.AnalysisServices.Tabular.CrossFilteringBehavior.OneDirection ? "-->" : "<-->",
+                this.CrossFilteringBehavior == CrossFilteringBehavior.OneDirection ? "-->" : "<-->",
                 GetFullName(MetadataObject.ToColumn) ?? "(none)");
         }
 

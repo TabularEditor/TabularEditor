@@ -115,7 +115,6 @@ class Rules {
 	public static string PropertyType(PropertyInfo p)
     {
 		if(Aliases.ContainsKey(p.PropertyType)) return Aliases[p.PropertyType];
-		if (p.PropertyType.IsEnum) return "TOM." + p.PropertyType.Name;
 		return p.PropertyType.Name;
     }
 
@@ -149,6 +148,7 @@ class Rules {
 					break;
 			}
         }
+		if(p.PropertyType.IsEnum) resolveObject = "(TOM." + p.PropertyType.Name + ")" + resolveObject;
 		
 		return string.Format(@"set {{
 				var oldValue = {0};
@@ -165,7 +165,8 @@ class Rules {
 			p.PropertyType.IsClass && p.PropertyType != typeof(string) ? "?.MetadataObject" : "",
 			p.Name == "DisplayFolder" ? "\n\t\t\t\tHandler.UpdateFolders(Table);" : "",
 			p.Name == "IsHidden" ? "\n\t\t\t\tHandler.UpdateObject(this);" : "",
-			resolveObject, "Properties." + p.Name.ToUpper());
+			resolveObject, 
+			"Properties." + p.Name.ToUpper());
     }
 
 	public static string PropertyGetter(PropertyInfo p)
@@ -176,6 +177,12 @@ class Rules {
 			    return Handler.WrapperLookup[MetadataObject.{0}] as {1};
             }}", p.Name, p.PropertyType.Name);
         } 
+		else if(p.PropertyType.IsEnum)
+		{
+			return string.Format(@"get {{
+			    return ({1})MetadataObject.{0};
+			}}", p.Name, p.PropertyType.Name);
+		}
 		else 
 		{
 			return string.Format(@"get {{
@@ -296,6 +303,27 @@ class Rules {
 		if(propertyName == "TrendGraphic") return "[TypeConverter(typeof(KPITrendGraphicConverter))]";
 		return "";
     }
+
+	public static readonly Type[] EnumTypes = new[] {
+		typeof(DataSourceType),
+		typeof(PartitionSourceType),
+		typeof(DataType),
+		typeof(ObjectState),
+		typeof(Alignment),
+		typeof(AggregateFunction),
+		typeof(ColumnType),
+		typeof(RoleMemberType),
+		typeof(ModeType),
+		typeof(DataViewType),
+		typeof(ModelPermission),
+		typeof(ImpersonationMode),
+		typeof(DatasourceIsolation),
+		typeof(RelationshipType),
+		typeof(CrossFilteringBehavior),
+		typeof(SecurityFilteringBehavior),
+		typeof(DateTimeRelationshipBehavior),
+		typeof(RelationshipEndCardinality)
+	};
 
 	public static readonly Dictionary<Type, string> Aliases = new Dictionary<Type, string>()
 	{

@@ -3,7 +3,7 @@ using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.UndoFramework
 {
-    public interface IUndoAction
+    internal interface IUndoAction
     {
         void Undo();
         void Redo();
