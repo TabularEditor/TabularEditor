@@ -322,7 +322,9 @@ class Rules {
 		typeof(CrossFilteringBehavior),
 		typeof(SecurityFilteringBehavior),
 		typeof(DateTimeRelationshipBehavior),
-		typeof(RelationshipEndCardinality)
+		typeof(RelationshipEndCardinality),
+		typeof(HierarchyHideMembersType),
+		typeof(EncodingHintType)
 	};
 
 	public static readonly Dictionary<Type, string> Aliases = new Dictionary<Type, string>()
@@ -348,6 +350,8 @@ class Rules {
 	// List of types to generate wrapper for:
 	public static readonly Dictionary<Type, string> ObjectTypes = new Dictionary<Type,string>()
 	{ 
+       { typeof(Variation), "TabularNamedObject" },
+       { typeof(StructuredDataSource), "DataSource" },
        { typeof(CalculatedColumn), "Column" },
        { typeof(CalculatedTableColumn), "Column" },
        { typeof(Column), "TabularNamedObject" },
@@ -386,7 +390,8 @@ class Rules {
        { typeof(Perspective), "Perspectives" },
        { typeof(Culture), "Cultures" },
 	   { typeof(Relationship), "Relationships" },
-	   { typeof(DataSource), "DataSources" }
+	   { typeof(DataSource), "DataSources" },
+	   { typeof(Variation), "Variations" }
    };
 
    public static string CollectionName(Type itemType) {
@@ -416,6 +421,9 @@ class Rules {
 
 	   // Collections owned by a ModelRole (order of items matters, as this is the order in which child objects will be initialized):
        { new KeyValuePair<Type, string>(typeof(ModelRoleMember), "ModelRole") },
+
+	   // Collections owned by a Hierarchy (order of items matters, as this is the order in which child objects will be initialized):
+       { new KeyValuePair<Type, string>(typeof(Variation), "Column") },
 
 	   // Collections owned by a Hierarchy (order of items matters, as this is the order in which child objects will be initialized):
        { new KeyValuePair<Type, string>(typeof(Level), "Hierarchy") }

@@ -22,7 +22,7 @@ namespace TabularEditor.PropertyGridUI
 #if CL1400
             if (TabularModelHandler.Singleton.Model.Database.CompatibilityLevel >= 1400)
             {
-                if (TabularModelHandler.Singleton.Model.DataSources.Any(ds => ds.Type == TOM.DataSourceType.Provider))
+                if (TabularModelHandler.Singleton.Model.DataSources.Any(ds => ds.Type == DataSourceType.Provider))
                     return new[] { typeof(Partition), typeof(MPartition) };
                 else
                     return new[] { typeof(MPartition) };

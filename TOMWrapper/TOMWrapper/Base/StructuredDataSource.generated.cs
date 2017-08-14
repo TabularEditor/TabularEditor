@@ -99,7 +99,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.DataSources.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.DataSources.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject (but don't init until after we add it to the parent):
 			var obj = CreateFromMetadata(tom, false);

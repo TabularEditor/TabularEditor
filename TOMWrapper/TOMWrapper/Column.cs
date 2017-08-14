@@ -220,35 +220,5 @@ namespace TabularEditor.TOMWrapper
                 return base[index];
             }
         }
-
-        private bool HasRowNumColumn
-        {
-            get
-            {
-                return (MetadataObjectCollection as TOM.ColumnCollection)?.Any(c => c.Type == TOM.ColumnType.RowNumber) ?? false;
-            }
-        }
-
-        public override int Count
-        {
-            get
-            {
-                return HasRowNumColumn ? (base.Count - 1) : base.Count;
-            }
-        }
-
-        public override Column this[int index]
-        {
-            get
-            {
-                var rnCol = MetadataObjectCollection.FirstOrDefault(c => c.Type == TOM.ColumnType.RowNumber);
-                if (rnCol != null)
-                {
-                    var rnColIndex = MetadataObjectCollection.IndexOf(rnCol);
-                    if (index >= rnColIndex) index++;
-                }
-                return base[index];
-            }
-        }
     }
 }

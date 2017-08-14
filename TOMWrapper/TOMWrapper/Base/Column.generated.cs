@@ -539,9 +539,9 @@ namespace TabularEditor.TOMWrapper
 
 		[DisplayName("Encoding Hint")]
 		[Category("Other"),Description(@""),IntelliSense("The Encoding Hint of this Column.")]
-		public TOM.EncodingHintType EncodingHint {
+		public EncodingHintType EncodingHint {
 			get {
-			    return MetadataObject.EncodingHint;
+			    return (EncodingHintType)MetadataObject.EncodingHint;
 			}
 			set {
 				var oldValue = EncodingHint;
@@ -550,7 +550,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ENCODINGHINT, value, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.EncodingHint = value;
+				MetadataObject.EncodingHint = (TOM.EncodingHintType)value;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ENCODINGHINT, oldValue, value));
 				OnPropertyChanged(Properties.ENCODINGHINT, oldValue, value);
 			}
@@ -903,7 +903,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		[Description("Sets the EncodingHint property of all objects in the collection at once.")]
-		public TOM.EncodingHintType EncodingHint {
+		public EncodingHintType EncodingHint {
 			set {
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("EncodingHint"));

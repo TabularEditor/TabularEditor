@@ -244,7 +244,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Variations.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Variations.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject (but don't init until after we add it to the parent):
 			var obj = CreateFromMetadata(tom, false);
@@ -325,15 +325,26 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for Variation. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public partial class VariationCollection: TabularObjectCollection<Variation, TOM.Variation, TOM.Column>
+	public sealed partial class VariationCollection: TabularObjectCollection<Variation>
 	{
-		public override TabularNamedObject Parent { get { return Column; } }
-		public Column Column { get; protected set; }
-		public VariationCollection(string collectionName, TOM.VariationCollection metadataObjectCollection, Column parent) : base(collectionName, metadataObjectCollection)
+		internal Column Column { get { return Parent as Column; } }
+		TOM.VariationCollection TOM_Collection;
+		internal VariationCollection(string collectionName, TOM.VariationCollection metadataObjectCollection, Column parent) : base(collectionName, parent)
 		{
-			Column = parent;
+			TOM_Collection = metadataObjectCollection;
 		}
 
+        protected override void TOM_Add(TOM.MetadataObject obj) { TOM_Collection.Add(obj as TOM.Variation); }
+        protected override bool TOM_Contains(TOM.MetadataObject obj) { return TOM_Collection.Contains(obj as TOM.Variation); }
+        protected override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.Variation); }
+        protected override void TOM_Clear() { TOM_Collection.Clear(); }
+        protected override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
+        protected override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+        protected override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        public override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        public override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Variation); }
+        public override int Count { get { return TOM_Collection.Count; } }
+        public override IEnumerator<Variation> GetEnumerator() { return TOM_Collection.Select(h => Handler.WrapperLookup[h]).OfType<Variation>().GetEnumerator(); }
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
@@ -343,7 +354,7 @@ namespace TabularEditor.TOMWrapper
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
 				item.Collection = this;
 			}
-			MetadataObjectCollection = Column.MetadataObject.Variations;
+			TOM_Collection = Column.MetadataObject.Variations;
 			foreach(var item in this) item.Reinit();
 		}
 
@@ -357,7 +368,7 @@ namespace TabularEditor.TOMWrapper
 		public override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in MetadataObjectCollection) {
+			foreach(var obj in TOM_Collection) {
 				Variation.CreateFromMetadata(obj).Collection = this;
 			}
 		}

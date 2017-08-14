@@ -178,9 +178,9 @@ namespace TabularEditor.TOMWrapper
 
 		[DisplayName("Hide Members")]
 		[Category("Other"),Description(@""),IntelliSense("The Hide Members of this Hierarchy.")]
-		public TOM.HierarchyHideMembersType HideMembers {
+		public HierarchyHideMembersType HideMembers {
 			get {
-			    return MetadataObject.HideMembers;
+			    return (HierarchyHideMembersType)MetadataObject.HideMembers;
 			}
 			set {
 				var oldValue = HideMembers;
@@ -189,7 +189,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.HIDEMEMBERS, value, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.HideMembers = value;
+				MetadataObject.HideMembers = (TOM.HierarchyHideMembersType)value;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.HIDEMEMBERS, oldValue, value));
 				OnPropertyChanged(Properties.HIDEMEMBERS, oldValue, value);
 			}
@@ -474,7 +474,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		[Description("Sets the HideMembers property of all objects in the collection at once.")]
-		public TOM.HierarchyHideMembersType HideMembers {
+		public HierarchyHideMembersType HideMembers {
 			set {
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("HideMembers"));
