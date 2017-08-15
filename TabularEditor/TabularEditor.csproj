@@ -290,6 +290,9 @@
     </Compile>
     <Compile Include="UI\Dialogs\ValidationEventArgs.cs" />
     <Compile Include="UI\Extensions\WatermarkTextBox.cs" />
+    <Compile Include="UI\ToolStripSearchBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\UIController.cs" />
     <Compile Include="UI\UIController_ContextMenu.cs" />
     <Compile Include="UI\UIController_Database.cs" />
