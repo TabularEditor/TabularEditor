@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Data;
+using System.Data.OleDb;
 using System.Drawing.Design;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
@@ -75,6 +77,7 @@ namespace TabularEditor.TOMWrapper
             return hierarchy;
         }
         
+        [IntelliSense("Adds a new hierarchy to the table.")]
         public Hierarchy AddHierarchy(string name, string displayFolder = null, params string[] levels)
         {
             return AddHierarchy(name, displayFolder, levels.Select(s => Columns[s]).ToArray());
@@ -106,40 +109,6 @@ namespace TabularEditor.TOMWrapper
             }
         }
         #endregion
-
-        /*public override TabularNamedObject Clone(string newName = null, bool includeTranslations = false)
-        {
-            Handler.BeginUpdate("duplicate table");
-
-            var mt = MetadataObject.Clone();
-            mt.Name = !string.IsNullOrEmpty(newName) ? newName : Model.MetadataObject.Tables.GetNewName(mt.Name);
-
-            Table t;
-            if (mt.GetSourceType() == TOM.PartitionSourceType.Calculated) t = new CalculatedTable(Handler, mt);
-            else t = new Table(Handler, mt);
-            Model.Tables.Add(t);
-            t.InitRLSIndexer();
-
-            // Update dependencies and do fix-up of calculated columns and measures on the cloned table:
-            t.Dependants = new HashSet<IExpressionObject>(
-                Dependants
-                    .Where(eo => eo is CalculatedColumn && (eo as CalculatedColumn).Table == this)
-                    .Select(eo => t.Columns[eo.Name]).OfType<IExpressionObject>());
-            foreach(var eo in t.Columns.OfType<CalculatedColumn>())
-            {
-                eo.Dependencies = (Columns[eo.Name] as CalculatedColumn).Dependencies.ToDictionary(kvp => kvp.Key == this ? t : kvp.Key, kvp => kvp.Value);
-            }
-            foreach (var m in t.Measures)
-            {
-                m.Dependencies = Measures[m.Name].Dependencies.ToDictionary(kvp => kvp.Key == this ? t : kvp.Key, kvp => kvp.Value);
-            }
-            Handler.DoFixup(t, t.Name);
-
-            Handler.UpdateTables();
-            Handler.EndUpdate();
-
-            return t;
-        }*/
 
         internal override void DeleteLinkedObjects(bool isChildOfDeleted)
         {
@@ -258,6 +227,61 @@ namespace TabularEditor.TOMWrapper
             RowLevelSecurity = new TableRLSIndexer(this);
         }
 
+        internal static readonly Dictionary<Type, DataType> DataTypeMapping =
+            new Dictionary<Type, DataType>() {
+                { typeof(string), DataType.String },
+                { typeof(char), DataType.String },
+                { typeof(byte), DataType.Int64 },
+                { typeof(sbyte), DataType.Int64 },
+                { typeof(short), DataType.Int64 },
+                { typeof(ushort), DataType.Int64 },
+                { typeof(int), DataType.Int64 },
+                { typeof(uint), DataType.Int64 },
+                { typeof(long), DataType.Int64 },
+                { typeof(ulong), DataType.Int64 },
+                { typeof(float), DataType.Double },
+                { typeof(double), DataType.Double },
+                { typeof(decimal), DataType.Decimal },
+                { typeof(bool), DataType.Boolean },
+                { typeof(DateTime), DataType.DateTime },
+                { typeof(byte[]), DataType.Binary },
+                { typeof(object), DataType.Variant }
+            };
+
+        [IntelliSense("Creates a Data Column of suitable type for each column in the source query. Only works for OLE DB partition sources.")]
+        public void RefreshDataColumns()
+        {
+            if (Partitions.Count == 0 || !(Partitions[0].DataSource is ProviderDataSource) || string.IsNullOrEmpty(Partitions[0].Query))
+                throw new InvalidOperationException("The first partition on this table must use a ProviderDataSource with a valid OLE DB query.");
+
+            try
+            {
+                using (var conn = new OleDbConnection((Partitions[0].DataSource as ProviderDataSource).ConnectionString))
+                {
+                    conn.Open();
+
+                    var cmd = new OleDbCommand(Partitions[0].Query, conn);
+                    var rdr = cmd.ExecuteReader(CommandBehavior.SchemaOnly);
+                    var schema = rdr.GetSchemaTable();
+
+                    foreach(DataRow row in schema.Rows)
+                    {
+                        var name = (string)row["ColumnName"];
+                        var type = (Type)row["DataType"];
+                        
+                        if(!Columns.Contains(name))
+                        {
+                            var col = AddDataColumn(name, name);
+                            col.DataType = DataTypeMapping.ContainsKey(type) ? DataTypeMapping[type] : DataType.Automatic;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Unable to generate metadata from partition source query: " + ex.Message);
+            }
+        }
 
         [Category("Metadata"),DisplayName("Error Message")]
         public virtual string ErrorMessage { get; protected set; }

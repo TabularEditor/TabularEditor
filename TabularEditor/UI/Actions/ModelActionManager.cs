@@ -46,7 +46,10 @@ namespace TabularEditor.UI.Actions
                 (s, m) => s.Table.AddHierarchy(displayFolder: s.CurrentFolder, levels: s.Direct.OfType<Column>().ToArray()).Expand().Edit(), 
                 (s, m) => @"Create New\Hierarchy", true, Context.Table | Context.TableObject));
             Add(new Separator(@"Create New"));
-            Add(new Action((s, m) => true, (s, m) => Partition.CreateNew(s.Table).Edit(), (s, m) => @"Create New\Partition", true, Context.Table));
+            Add(new Action(
+                (s, m) => s.Context == Context.Partition || (s.Context == Context.Table && s.Count == 1), 
+                (s, m) => Partition.CreateNew(s.Context == Context.Partition ? s.Partitions.First().Table : s.Table).Edit(), 
+                (s, m) => @"Create New\Partition", true, Context.Table | Context.Partition));
 
             Add(new Action((s, m) => true, (s, m) => m.AddDataSource().Edit(), (s, m) => @"Create New\Data Source", false, Context.DataSources | Context.Model));
 #if CL1400
