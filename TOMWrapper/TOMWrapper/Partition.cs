@@ -30,7 +30,7 @@ namespace TabularEditor.TOMWrapper
         }
 
         [Category("Basic"),Description("The query which is executed on the Data Source to populate this partition with data.")]
-        [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
+        [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor)), IntelliSense("Gets or sets the query which is executed on the Data Source to populate the partition with data.")]
         public string Query { get { return Expression; } set { Expression = value; } }
 
         [Category("Expression"), Description("The expression which is used to populate this partition with data.")]

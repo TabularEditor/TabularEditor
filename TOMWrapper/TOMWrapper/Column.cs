@@ -10,6 +10,32 @@ namespace TabularEditor.TOMWrapper
 {
     public abstract partial class Column: ITabularPerspectiveObject, IDaxObject
     {
+
+        #region Convenient Methods
+        [IntelliSense("Creates a relationship from the current column to another column.")]
+        public SingleColumnRelationship RelateTo(string tableName, string columnName) {
+            if (!Model.Tables.Contains(tableName)) throw new ArgumentException(string.Format("Model does not contain a table named '{0}'.", tableName), "tableName");
+            if (!Model.Tables[tableName].Columns.Contains(columnName)) throw new ArgumentException(string.Format("Table '{0}' does not contain a column named '{1}'.", tableName, columnName), "columnName");
+
+            return RelateTo(Model.Tables[tableName].Columns[columnName]);
+        }
+
+        [IntelliSense("Creates a relationship from the current column to another column.")]
+        public SingleColumnRelationship RelateTo(Column column)
+        {
+            if (column.DataType != DataType) throw new InvalidOperationException("Cannot create a relationship between columns of different data types.");
+            if (column.Table == Table) throw new InvalidOperationException("Cannot create a relationship between columns in the same table.");
+
+            Handler.BeginUpdate("Relate Column");
+            var sr = Model.AddRelationship();
+            sr.FromColumn = this;
+            sr.ToColumn = column;
+            Handler.EndUpdate();
+
+            return sr;
+        }
+        #endregion
+
         /// <summary>
         /// Collection of objects that depend on this column.
         /// </summary>

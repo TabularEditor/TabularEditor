@@ -163,7 +163,7 @@ namespace TabularEditor.TOMWrapper
                 model["roles"] = roles;
                 foreach (var role in orgDb.Model.Roles) roles.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(role)));
             }
-            else if (!options.DeployRoleMembers)
+            else if (roles != null && !options.DeployRoleMembers)
             {
                 foreach(var role in roles)
                 {

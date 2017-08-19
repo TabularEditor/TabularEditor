@@ -532,5 +532,23 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 File.WriteAllText(sfdScript.FileName, txtAdvanced.Text);
             }
         }
+
+        private void toolStripComboBox1_TextChanged(object sender, EventArgs e)
+        {
+            int zoom;
+            if(int.TryParse(toolStripComboBox1.Text.Replace("%", "").Trim(), out zoom))
+            {
+                txtAdvanced.Zoom = zoom;
+            } else
+            {
+                zoom = txtAdvanced.Zoom;
+            }
+        }
+
+        private void txtAdvanced_ZoomChanged(object sender, EventArgs e)
+        {
+            int zoom = txtAdvanced.Zoom;
+            toolStripComboBox1.Text = string.Format("{0} %", zoom);
+        }
     }
 }

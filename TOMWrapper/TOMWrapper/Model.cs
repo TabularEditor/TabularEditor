@@ -23,6 +23,7 @@ namespace TabularEditor.TOMWrapper
             return perspective;
         }
 
+        [IntelliSense("Adds a new calculated table to the model.")]
         public CalculatedTable AddCalculatedTable(string name = null, string expression = null)
         {
             Handler.BeginUpdate("add calculated table");
@@ -32,6 +33,7 @@ namespace TabularEditor.TOMWrapper
             return t;
         }
 
+        [IntelliSense("Adds a new table to the model.")]
         public Table AddTable(string name = null)
         {
             Handler.BeginUpdate("add table");
@@ -42,6 +44,7 @@ namespace TabularEditor.TOMWrapper
             return t;
         }
 
+        [IntelliSense("Adds a new relationship table to the model.")]
         public SingleColumnRelationship AddRelationship()
         {
             Handler.BeginUpdate("add relationship");
@@ -70,6 +73,7 @@ namespace TabularEditor.TOMWrapper
             return role;
         }
 
+        [IntelliSense("Adds a new data source to the model.")]
         public ProviderDataSource AddDataSource(string name = null)
         {
             Handler.BeginUpdate("add data source");
@@ -79,6 +83,7 @@ namespace TabularEditor.TOMWrapper
         }
 
 #if CL1400
+        [IntelliSense("Adds a new strucured data source to the model.")]
         public StructuredDataSource AddStructuredDataSource(string name = null)
         {
             Handler.BeginUpdate("add data source");
@@ -92,31 +97,31 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Iterates all hierarchies on all tables of the model.
         /// </summary>
-        [Browsable(false)]
+        [Browsable(false),IntelliSense("A collection of every hierarchy across all tables in the model.")]
         public IEnumerable<Hierarchy> AllHierarchies { get { return Tables.SelectMany(t => t.Hierarchies); } }
 
         /// <summary>
         /// Iterates all columns on all tables of the model.
         /// </summary>
-        [Browsable(false)]
+        [Browsable(false),IntelliSense("A collection of every column across all tables in the model.")]
         public IEnumerable<Column> AllColumns { get { return Tables.SelectMany(t => t.Columns); } }
 
         /// <summary>
         /// Iterates all partitions on all tables of the model.
         /// </summary>
-        [Browsable(false)]
+        [Browsable(false), IntelliSense("A collection of every partition across all tables in the model.")]
         public IEnumerable<Partition> AllPartitions { get { return Tables.SelectMany(t => t.Partitions); } }
 
         /// <summary>
         /// Iterates all measures on all tables of the model.
         /// </summary>
-        [Browsable(false)]
+        [Browsable(false), IntelliSense("A collection of every measure across all tables in the model.")]
         public IEnumerable<Measure> AllMeasures { get { return Tables.SelectMany(t => t.Measures); } }
 
         /// <summary>
         /// Iterates all levels on all hierarchies on all tables of the model.
         /// </summary>
-        [Browsable(false)]
+        [Browsable(false), IntelliSense("A collection of every level in every hierarchy across all tables in the model.")]
         public IEnumerable<Level> AllLevels { get { return Tables.SelectMany(t => t.Hierarchies).SelectMany(h => h.Levels); } }
         #endregion
 
@@ -157,6 +162,7 @@ namespace TabularEditor.TOMWrapper
         }
 
         [Category("Basic")]
+        [IntelliSense("Gets the database object of the model.")]
         public Database Database { get; internal set; }
 
         public void LoadChildObjects()
