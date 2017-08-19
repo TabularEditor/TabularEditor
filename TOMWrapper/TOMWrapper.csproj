@@ -68,6 +68,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Messages.resx</DependentUpon>
     </Compile>
+    <Compile Include="PropertyGridUI\CollectionEditors\VariationCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\Converters\AllRelationshipConverter.cs" />
     <Compile Include="PropertyGridUI\Converters\AllHierarchyConverter.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\AnnotationCollectionEditor.cs" />
@@ -154,6 +155,7 @@
     <Compile Include="TOMWrapper\CalculatedColumn.cs" />
     <Compile Include="TOMWrapper\CalculatedTable.cs" />
     <Compile Include="TOMWrapper\CalculatedTableColumn.cs" />
+    <Compile Include="TOMWrapper\TableOLSIndexer.cs" />
     <Compile Include="TOMWrapper\Database.cs" />
     <Compile Include="TOMWrapper\DataSource.cs" />
     <Compile Include="TOMWrapper\MetadataObjectHelper.cs" />
@@ -194,7 +196,7 @@
     <Compile Include="TOMWrapper\Model.cs" />
     <Compile Include="TOMWrapper\Perspective.cs" />
     <Compile Include="TOMWrapper\RoleRLSIndexer.cs" />
-    <Compile Include="TOMWrapper\RolePermissionIndexer.cs" />
+    <Compile Include="TOMWrapper\RoleOLSIndexer.cs" />
     <Compile Include="TOMWrapper\ColumnOLSIndexer.cs" />
     <Compile Include="TOMWrapper\TableRLSIndexer.cs" />
     <Compile Include="TOMWrapper\PerspectiveIndexer.cs" />

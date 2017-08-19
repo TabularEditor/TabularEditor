@@ -620,7 +620,7 @@ namespace TabularEditor.TOMWrapper
         /// The collection of Variation objects on this Column.
         /// </summary>
 		[DisplayName("Variations")]
-		[Category("Other"),IntelliSense("The collection of Variation objects on this Column.")][NoMultiselect(),Editor(typeof(ClonableObjectCollectionEditor<Variation>),typeof(UITypeEditor))]
+		[Category("Other"),IntelliSense("The collection of Variation objects on this Column.")][NoMultiselect(),Editor(typeof(VariationCollectionEditor),typeof(UITypeEditor))]
 		public VariationCollection Variations { get; protected set; }
 
 		/// <summary>

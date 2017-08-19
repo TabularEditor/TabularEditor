@@ -166,8 +166,9 @@ namespace TabularEditor.TOMWrapper
             switch (propertyName)
             {
 #if CL1400
+                case "ObjectLevelSecurity":
                 case Properties.VARIATIONS:
-                    return Model.Database.CompatibilityLevel >= 1400;
+                    return Model.Database.CompatibilityLevel >= 1400;                    
 #endif
                 default: return true;
             }
