@@ -15,7 +15,7 @@ namespace TabularEditor.TOMWrapper
     /// tables in the model, for one specific role.
     /// </summary>
     [TypeConverter(typeof(IndexerConverter))]
-    public class RolePermissionIndexer : IEnumerable<TOM.MetadataPermission>, IExpandableIndexer
+    public class RoleOLSIndexer : IEnumerable<TOM.MetadataPermission>, IExpandableIndexer
     {
         public void Refresh()
         {
@@ -26,7 +26,7 @@ namespace TabularEditor.TOMWrapper
         }
 
         [IntelliSense("Copies all RLSs from another RLS collection.")]
-        public void CopyFrom(RolePermissionIndexer source)
+        public void CopyFrom(RoleOLSIndexer source)
         {
             foreach(var p in source.Keys)
             {
@@ -54,7 +54,7 @@ namespace TabularEditor.TOMWrapper
             get
             {
                 Refresh();
-                return string.Format("Read permission set on {0} out of {1} tables", this.Count(p => p == TOM.MetadataPermission.Read), Role.Model.Tables.Count);
+                return string.Format("OLS defined on {0} out of {1} tables", this.Count(p => p != TOM.MetadataPermission.Default), Role.Model.Tables.Count);
             }
         }
 
@@ -92,7 +92,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public RolePermissionIndexer(ModelRole role)
+        public RoleOLSIndexer(ModelRole role)
         {
             Role = role;
             Refresh();

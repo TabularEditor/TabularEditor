@@ -12,11 +12,14 @@ namespace TabularEditor.TOMWrapper
 {
 	public enum DataSourceType {    
         Provider = 1,
+        Structured = 2,
 	}
 	public enum PartitionSourceType {    
         Query = 1,
         Calculated = 2,
         None = 3,
+        M = 4,
+        Entity = 5,
 	}
 	public enum DataType {    
         Automatic = 1,
@@ -115,5 +118,14 @@ namespace TabularEditor.TOMWrapper
         None = 0,
         One = 1,
         Many = 2,
+	}
+	public enum HierarchyHideMembersType {    
+        Default = 0,
+        HideBlankMembers = 1,
+	}
+	public enum EncodingHintType {    
+        Default = 0,
+        Hash = 1,
+        Value = 2,
 	}
 }

@@ -155,6 +155,7 @@ namespace TabularEditor.TOMWrapper
                 case "DefaultDetailRowsExpression":
                 case "ShowAsVariationsOnly":
                 case "IsPrivate":
+                case "ObjectLevelSecurity":
                     return Model.Database.CompatibilityLevel >= 1400;
                 case "RowLevelSecurity":
                     return Model.Roles.Any();
@@ -162,7 +163,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        [Browsable(true), DisplayName("Row Level Filters"), Category("Security")]
+        [Browsable(true), DisplayName("Row Level Security"), Category("Security")]
         public TableRLSIndexer RowLevelSecurity { get; private set; }
 
         [Browsable(false)]
@@ -225,7 +226,22 @@ namespace TabularEditor.TOMWrapper
         public void InitRLSIndexer()
         {
             RowLevelSecurity = new TableRLSIndexer(this);
+#if CL1400
+            InitOLSIndexer();
+            foreach (var c in Columns) c.InitOLSIndexer();
+#endif
         }
+
+#if CL1400
+        [Browsable(true), DisplayName("Object Level Security"), Category("Security")]
+        public TableOLSIndexer ObjectLevelSecurity { get; private set; }
+
+        public void InitOLSIndexer()
+        {
+            ObjectLevelSecurity = new TableOLSIndexer(this);
+        }
+#endif
+
 
         internal static readonly Dictionary<Type, DataType> DataTypeMapping =
             new Dictionary<Type, DataType>() {

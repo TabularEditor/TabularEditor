@@ -195,6 +195,26 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeErrorMessage() { return false; }
+
+		[DisplayName("Retain Data Till Force Calculate")]
+		[Category("Other"),Description(@""),IntelliSense("The Retain Data Till Force Calculate of this Partition.")]
+		public bool RetainDataTillForceCalculate {
+			get {
+			    return MetadataObject.RetainDataTillForceCalculate;
+			}
+			set {
+				var oldValue = RetainDataTillForceCalculate;
+				if (oldValue == value) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.RETAINDATATILLFORCECALCULATE, value, ref undoable, ref cancel);
+				if (cancel) return;
+				MetadataObject.RetainDataTillForceCalculate = value;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.RETAINDATATILLFORCECALCULATE, oldValue, value));
+				OnPropertyChanged(Properties.RETAINDATATILLFORCECALCULATE, oldValue, value);
+			}
+		}
+		private bool ShouldSerializeRetainDataTillForceCalculate() { return false; }
 		[Browsable(false)]
 		public Table Table
 		{ 
@@ -404,6 +424,15 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("DataView"));
 				this.ToList().ForEach(item => { item.DataView = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		[Description("Sets the RetainDataTillForceCalculate property of all objects in the collection at once.")]
+		public bool RetainDataTillForceCalculate {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("RetainDataTillForceCalculate"));
+				this.ToList().ForEach(item => { item.RetainDataTillForceCalculate = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}

@@ -234,6 +234,27 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeCollation() { return false; }
 
+		[DisplayName("Default Measure")]
+		[Category("Other"),Description(@""),IntelliSense("The Default Measure of this Model.")]
+		public Measure DefaultMeasure {
+			get {
+				if (MetadataObject.DefaultMeasure == null) return null;
+			    return Handler.WrapperLookup[MetadataObject.DefaultMeasure] as Measure;
+            }
+			set {
+				var oldValue = DefaultMeasure;
+				if (oldValue?.MetadataObject == value?.MetadataObject) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.DEFAULTMEASURE, value, ref undoable, ref cancel);
+				if (cancel) return;
+				MetadataObject.DefaultMeasure = value?.MetadataObject;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DEFAULTMEASURE, oldValue, value));
+				OnPropertyChanged(Properties.DEFAULTMEASURE, oldValue, value);
+			}
+		}
+		private bool ShouldSerializeDefaultMeasure() { return false; }
+
         /// <summary>
         /// Collection of localized descriptions for this Model.
         /// </summary>

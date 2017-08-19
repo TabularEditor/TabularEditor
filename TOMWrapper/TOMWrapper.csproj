@@ -20,7 +20,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;CL1400</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>LocateDeadCode.ruleset</CodeAnalysisRuleSet>
@@ -29,7 +29,7 @@
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;CL1400</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet />
@@ -39,17 +39,14 @@
     <Reference Include="Antlr4.Runtime">
       <HintPath>..\packages\Antlr4.Runtime.4.5.3\lib\net45\Antlr4.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Core, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.13.0.2150.2\lib\Microsoft.AnalysisServices.Core.DLL</HintPath>
+    <Reference Include="Microsoft.AnalysisServices.Server.Core">
+      <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Tabular, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.13.0.2150.2\lib\Microsoft.AnalysisServices.Tabular.DLL</HintPath>
+    <Reference Include="Microsoft.AnalysisServices.Server.Tabular">
+      <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Tabular.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Tabular.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.13.0.2150.2\lib\Microsoft.AnalysisServices.Tabular.Json.DLL</HintPath>
+    <Reference Include="Microsoft.AnalysisServices.Server.Tabular.Json">
+      <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Tabular.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -71,6 +68,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Messages.resx</DependentUpon>
     </Compile>
+    <Compile Include="PropertyGridUI\CollectionEditors\VariationCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\Converters\AllRelationshipConverter.cs" />
     <Compile Include="PropertyGridUI\Converters\AllHierarchyConverter.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\AnnotationCollectionEditor.cs" />
@@ -145,12 +143,19 @@
     <Compile Include="TOMWrapper\Base\ProviderDataSource.generated.cs">
       <DependentUpon>WrapperBase.tt</DependentUpon>
     </Compile>
+    <Compile Include="TOMWrapper\Base\StructuredDataSource.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TOMWrapper\Base\Variation.generated.cs">
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
     <Compile Include="TOMWrapper\Base\WindowsModelRoleMember.generated.cs">
       <DependentUpon>WrapperBase.tt</DependentUpon>
     </Compile>
     <Compile Include="TOMWrapper\CalculatedColumn.cs" />
     <Compile Include="TOMWrapper\CalculatedTable.cs" />
     <Compile Include="TOMWrapper\CalculatedTableColumn.cs" />
+    <Compile Include="TOMWrapper\TableOLSIndexer.cs" />
     <Compile Include="TOMWrapper\Database.cs" />
     <Compile Include="TOMWrapper\DataSource.cs" />
     <Compile Include="TOMWrapper\MetadataObjectHelper.cs" />
@@ -191,7 +196,7 @@
     <Compile Include="TOMWrapper\Model.cs" />
     <Compile Include="TOMWrapper\Perspective.cs" />
     <Compile Include="TOMWrapper\RoleRLSIndexer.cs" />
-    <Compile Include="TOMWrapper\RolePermissionIndexer.cs" />
+    <Compile Include="TOMWrapper\RoleOLSIndexer.cs" />
     <Compile Include="TOMWrapper\ColumnOLSIndexer.cs" />
     <Compile Include="TOMWrapper\TableRLSIndexer.cs" />
     <Compile Include="TOMWrapper\PerspectiveIndexer.cs" />

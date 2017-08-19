@@ -119,7 +119,7 @@ namespace TabularEditor.TOMWrapper
                     return SourceType == PartitionSourceType.Query;
                 case "Expression":
 #if CL1400
-                    return SourceType == PartitionSourceType.Calculated || SourceType == TOM.PartitionSourceType.M;
+                    return SourceType == PartitionSourceType.Calculated || SourceType == PartitionSourceType.M;
 #else
                     return SourceType == PartitionSourceType.Calculated;
 #endif

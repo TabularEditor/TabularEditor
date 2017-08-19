@@ -175,6 +175,26 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         [Browsable(true),DisplayName("Translated Display Folders"),Description("Shows all translated Display Folders of this object."),Category("Translations and Perspectives")]
 	    public TranslationIndexer TranslatedDisplayFolders { private set; get; }
+
+		[DisplayName("Hide Members")]
+		[Category("Other"),Description(@""),IntelliSense("The Hide Members of this Hierarchy.")]
+		public HierarchyHideMembersType HideMembers {
+			get {
+			    return (HierarchyHideMembersType)MetadataObject.HideMembers;
+			}
+			set {
+				var oldValue = HideMembers;
+				if (oldValue == value) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.HIDEMEMBERS, value, ref undoable, ref cancel);
+				if (cancel) return;
+				MetadataObject.HideMembers = (TOM.HierarchyHideMembersType)value;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.HIDEMEMBERS, oldValue, value));
+				OnPropertyChanged(Properties.HIDEMEMBERS, oldValue, value);
+			}
+		}
+		private bool ShouldSerializeHideMembers() { return false; }
 		[Browsable(false)]
 		public Table Table
 		{ 
@@ -450,6 +470,15 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("DisplayFolder"));
 				this.ToList().ForEach(item => { item.DisplayFolder = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		[Description("Sets the HideMembers property of all objects in the collection at once.")]
+		public HierarchyHideMembersType HideMembers {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("HideMembers"));
+				this.ToList().ForEach(item => { item.HideMembers = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}

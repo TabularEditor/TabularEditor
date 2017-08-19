@@ -280,7 +280,7 @@ namespace TabularEditor
                 if (!bpaResults.Any()) cw.WriteLine("No objects in violation of Best Practices.");
                 foreach(var res in bpaResults)
                 {
-                    Warning("{0} {1} violates rule {2}", res.Object.GetTypeName(), res.Object, res.RuleName);
+                    Warning("{0} {1} violates rule \"{2}\"", res.Object.GetTypeName(), (res.Object as IDaxObject)?.DaxObjectFullName ?? res.ObjectName, res.RuleName);
                 }
                 cw.WriteLine("=================================");
             }

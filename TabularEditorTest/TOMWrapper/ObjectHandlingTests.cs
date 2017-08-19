@@ -8,7 +8,7 @@ namespace TabularEditor.TOMWrapper
     [TestClass]
     public class ObjectHandlingTests
     {
-        const string ServerName = "localhost";
+        const string ServerName = @"localhost\Tabular2017";
         const string TestDBName = "testdb";
         const string TestFileName = "testmodel.bim";
 
@@ -18,7 +18,7 @@ namespace TabularEditor.TOMWrapper
         /// <param name="fileName"></param>
         public void CreateTestModel(string fileName)
         {
-            var tm = new TabularModelHandler();
+            var tm = new TabularModelHandler(1400);
 
             var ds = tm.Model.AddDataSource("Test Datasource");
             var r1 = tm.Model.AddRole("Test Role 1");

@@ -11,19 +11,19 @@ namespace TabularEditor.TOMWrapper
 {
     public partial class ModelRole
     {
-        [Browsable(true), DisplayName("Row Level Filters"), Category("Security")]
+        [Browsable(true), DisplayName("Row Level Security"), Category("Security")]
         public RoleRLSIndexer RowLevelSecurity { get; private set; }
 
 #if CL1400
-        [Browsable(true), DisplayName("Metadata Permissions"), Category("Security")]
-        public RolePermissionIndexer MetadataPermission { get; private set; }
+        [Browsable(true), DisplayName("Object Level Security"), Category("Security")]
+        public RoleOLSIndexer MetadataPermission { get; private set; }
 #endif
 
         public void InitRLSIndexer()
         {
             RowLevelSecurity = new RoleRLSIndexer(this);
 #if CL1400            
-            MetadataPermission = new RolePermissionIndexer(this);
+            MetadataPermission = new RoleOLSIndexer(this);
 #endif
         }
 

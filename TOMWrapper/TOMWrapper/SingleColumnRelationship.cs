@@ -12,6 +12,21 @@ namespace TabularEditor.TOMWrapper
 {
     public partial class SingleColumnRelationship
     {
+        internal override void DeleteLinkedObjects(bool isChildOfDeleted)
+        {
+            // Remove this relationship from any variations:
+            if (FromColumn != null && ToColumn != null) {
+                var allVariations =
+                    Model.AllColumns.SelectMany(c => c.Variations).Where(v => v.Relationship == this).ToList();
+
+                foreach(var v in allVariations)
+                {
+                    v.Relationship = null;
+                }
+            }
+            base.DeleteLinkedObjects(isChildOfDeleted);
+        }
+
         internal override void ReapplyReferences()
         {
             base.ReapplyReferences();
