@@ -629,7 +629,7 @@
             this.tbShowDisplayFolders.Image = global::TabularEditor.Resources.FolderOpen;
             this.tbShowDisplayFolders.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbShowDisplayFolders.Name = "tbShowDisplayFolders";
-            this.tbShowDisplayFolders.Size = new System.Drawing.Size(23, 20);
+            this.tbShowDisplayFolders.Size = new System.Drawing.Size(23, 22);
             this.tbShowDisplayFolders.Text = "Display Folders";
             this.tbShowDisplayFolders.ToolTipText = "Show/hide display folders";
             // 
@@ -643,7 +643,7 @@
             this.tbShowHidden.Image = global::TabularEditor.Resources.Hidden;
             this.tbShowHidden.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbShowHidden.Name = "tbShowHidden";
-            this.tbShowHidden.Size = new System.Drawing.Size(23, 20);
+            this.tbShowHidden.Size = new System.Drawing.Size(23, 22);
             this.tbShowHidden.Text = "Hidden Objects";
             this.tbShowHidden.ToolTipText = "Show/hide hidden objects";
             // 
@@ -659,7 +659,7 @@
             this.tbShowMeasures.Image = global::TabularEditor.Resources.Sigma;
             this.tbShowMeasures.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbShowMeasures.Name = "tbShowMeasures";
-            this.tbShowMeasures.Size = new System.Drawing.Size(23, 20);
+            this.tbShowMeasures.Size = new System.Drawing.Size(23, 22);
             this.tbShowMeasures.Text = "Measures";
             this.tbShowMeasures.ToolTipText = "Show/hide measures";
             // 
@@ -675,7 +675,7 @@
             this.tbShowColumns.Image = global::TabularEditor.Resources.Column;
             this.tbShowColumns.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbShowColumns.Name = "tbShowColumns";
-            this.tbShowColumns.Size = new System.Drawing.Size(23, 20);
+            this.tbShowColumns.Size = new System.Drawing.Size(23, 22);
             this.tbShowColumns.Text = "Columns";
             this.tbShowColumns.ToolTipText = "Show/hide columns";
             // 
@@ -691,7 +691,7 @@
             this.tbShowHierarchies.Image = global::TabularEditor.Resources.Hierarchy;
             this.tbShowHierarchies.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbShowHierarchies.Name = "tbShowHierarchies";
-            this.tbShowHierarchies.Size = new System.Drawing.Size(23, 20);
+            this.tbShowHierarchies.Size = new System.Drawing.Size(23, 22);
             this.tbShowHierarchies.Text = "Hierarchies";
             this.tbShowHierarchies.ToolTipText = "Show/hide hierarchies";
             // 
@@ -704,7 +704,7 @@
             this.tbApplyFilter.Image = global::TabularEditor.Resources.Filter;
             this.tbApplyFilter.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbApplyFilter.Name = "tbApplyFilter";
-            this.tbApplyFilter.Size = new System.Drawing.Size(23, 20);
+            this.tbApplyFilter.Size = new System.Drawing.Size(23, 22);
             this.tbApplyFilter.Text = "Filter";
             this.tbApplyFilter.ToolTipText = "Filter objects by name";
             // 
@@ -717,7 +717,7 @@
             this.toolStripButton6.Image = global::TabularEditor.Resources.Columns;
             this.toolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton6.Name = "toolStripButton6";
-            this.toolStripButton6.Size = new System.Drawing.Size(23, 20);
+            this.toolStripButton6.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton6.Text = "Metadata Information";
             this.toolStripButton6.ToolTipText = "Show/hide metadata information columns";
             // 
@@ -1037,7 +1037,7 @@
             this.tbShowAllObjectTypes.Image = global::TabularEditor.Resources.ShowDetails_16x;
             this.tbShowAllObjectTypes.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbShowAllObjectTypes.Name = "tbShowAllObjectTypes";
-            this.tbShowAllObjectTypes.Size = new System.Drawing.Size(23, 20);
+            this.tbShowAllObjectTypes.Size = new System.Drawing.Size(23, 22);
             this.tbShowAllObjectTypes.Text = "Show All Object Types";
             this.tbShowAllObjectTypes.ToolTipText = "Show/hide all object types (perspectives, roles, data sources, etc.) in addition " +
     "to tables";
@@ -1068,7 +1068,7 @@
             this.tbSortAlphabetically.Image = global::TabularEditor.Resources.SortAscending_16x;
             this.tbSortAlphabetically.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbSortAlphabetically.Name = "tbSortAlphabetically";
-            this.tbSortAlphabetically.Size = new System.Drawing.Size(23, 20);
+            this.tbSortAlphabetically.Size = new System.Drawing.Size(23, 22);
             this.tbSortAlphabetically.Text = "Sort alphabetically";
             this.tbSortAlphabetically.ToolTipText = "Toggle alphabetical/metadata ordering of items";
             // 
@@ -1260,7 +1260,7 @@
             this.tvModel.FullRowSelect = true;
             this.tvModel.Indent = 12;
             this.tvModel.LineColor = System.Drawing.SystemColors.ControlDark;
-            this.tvModel.Location = new System.Drawing.Point(0, 23);
+            this.tvModel.Location = new System.Drawing.Point(0, 25);
             this.tvModel.Model = null;
             this.tvModel.Name = "tvModel";
             this.tvModel.NodeControls.Add(this.nodeTextBox1);
@@ -1272,7 +1272,7 @@
             this.tvModel.ShowLines = false;
             this.tvModel.ShowNodeToolTips = true;
             this.tvModel.ShowPlusMinus = false;
-            this.tvModel.Size = new System.Drawing.Size(350, 546);
+            this.tvModel.Size = new System.Drawing.Size(350, 544);
             this.tvModel.TabIndex = 19;
             this.tvModel.Text = "treeViewAdv1";
             this.tvModel.UseColumns = true;
@@ -1342,6 +1342,7 @@
             // 
             // toolTreeView
             // 
+            this.toolTreeView.CanOverflow = false;
             this.toolTreeView.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolTreeView.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripLabel3,
@@ -1358,10 +1359,9 @@
             this.tbApplyFilter,
             this.toolStripSeparator6,
             this.toolStripButton6});
-            this.toolTreeView.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
             this.toolTreeView.Location = new System.Drawing.Point(0, 0);
             this.toolTreeView.Name = "toolTreeView";
-            this.toolTreeView.Size = new System.Drawing.Size(350, 23);
+            this.toolTreeView.Size = new System.Drawing.Size(350, 25);
             this.toolTreeView.Stretch = true;
             this.toolTreeView.TabIndex = 18;
             this.toolTreeView.Text = "Tree";
@@ -1370,24 +1370,24 @@
             // toolStripLabel3
             // 
             this.toolStripLabel3.Name = "toolStripLabel3";
-            this.toolStripLabel3.Size = new System.Drawing.Size(0, 0);
+            this.toolStripLabel3.Size = new System.Drawing.Size(0, 22);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 23);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 23);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
             // txtFilter
             // 
             this.txtFilter.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtFilter.MaxLength = 0;
             this.txtFilter.Name = "txtFilter";
-            this.txtFilter.Size = new System.Drawing.Size(100, 23);
+            this.txtFilter.Size = new System.Drawing.Size(100, 25);
             this.txtFilter.ToolTipText = "Only show measures, columns and hierarchies containing the filter text";
             this.txtFilter.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtFilter_KeyDown);
             this.txtFilter.TextChanged += new System.EventHandler(this.txtFilter_TextChanged);
@@ -1395,7 +1395,7 @@
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(6, 23);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
             // 
             // splitContainer2
             // 
@@ -1673,10 +1673,10 @@
             // propertyGrid1
             // 
             this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGrid1.LineColor = System.Drawing.SystemColors.ControlDark;
             this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid1.Name = "propertyGrid1";
             this.propertyGrid1.Size = new System.Drawing.Size(566, 292);
-            this.propertyGrid1.LineColor = System.Drawing.SystemColors.InactiveBorder;
             this.propertyGrid1.TabIndex = 14;
             // 
             // tvMenu
