@@ -1,10 +1,10 @@
 ﻿<#@ template debug="false" hostspecific="true" language="C#" #>
 <#@ assembly name="System.Core" #>
-<#@ assembly name="Microsoft.AnalysisServices.Tabular, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Reflection" #>
 <#@ import namespace="System.Collections.Generic" #>
+<#@include file="Config\$(Configuration).ttinclude"#>
 <#@ import namespace="Microsoft.AnalysisServices.Tabular" #>
 <#@include file="Manager.ttinclude"#>
 <#@include file="Rules.ttinclude"#>
@@ -29,7 +29,7 @@ namespace TabularEditor.TOMWrapper
    if(!File.Exists(Rules.XmlDocFile)) {
 	   throw new Exception("Could not locate file: " + Rules.XmlDocFile);
    }
-
+    
    manager.StartNewFile("Properties.generated.cs");
 #>    public static class Properties
     {

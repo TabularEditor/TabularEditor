@@ -6,6 +6,7 @@
       Crad.Windows.Forms.Actions
       FastColoredTextBox
       TOMWrapper
+      Microsoft.WindowsAPICodePack
     </IncludeAssemblies>
   </Costura>
 </Weavers>

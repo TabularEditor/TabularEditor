@@ -31,7 +31,7 @@
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>2.5.6431.17680</ApplicationVersion>
+    <ApplicationVersion>2.5.6440.37004</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -42,7 +42,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;CL1400</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -98,6 +98,28 @@
   <PropertyGroup>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-CL1400|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug-CL1400\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-CL1400|AnyCPU'">
+    <OutputPath>bin\Release-CL1400\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr4.Runtime, Version=4.5.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
       <HintPath>..\packages\Antlr4.Runtime.4.5.3\lib\net45\Antlr4.Runtime.dll</HintPath>
@@ -114,14 +136,45 @@
     <Reference Include="Antlr4.Runtime">
       <HintPath>..\packages\Antlr4.Runtime.4.5.3\lib\net45\Antlr4.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Server.Core">
-      <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Server.Tabular">
-      <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Tabular.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Server.Tabular.Json">
-      <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Tabular.Json.dll</HintPath>
+  </ItemGroup>
+  <Choose>
+    <When Condition="'$(Configuration)'=='Debug-CL1400' Or '$(Configuration)'=='Release-CL1400'">
+      <ItemGroup>
+        <Reference Include="Microsoft.AnalysisServices.Core, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Core.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.AnalysisServices.Tabular, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Tabular.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.AnalysisServices.Tabular.Json, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Tabular.Json.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <Reference Include="Microsoft.AnalysisServices.Core, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.13.0.2150.2\lib\Microsoft.AnalysisServices.Core.DLL</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.AnalysisServices.Tabular, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.13.0.2150.2\lib\Microsoft.AnalysisServices.Tabular.DLL</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.AnalysisServices.Tabular.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.13.0.2150.2\lib\Microsoft.AnalysisServices.Tabular.Json.DLL</HintPath>
+        </Reference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+  <ItemGroup>
+    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WindowsAPICodePack-Core.1.1.2\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -577,18 +630,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Core.dll">
-      <Link>Microsoft.AnalysisServices.Server.Core.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Tabular.dll">
-      <Link>Microsoft.AnalysisServices.Server.Tabular.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Tabular.Json.dll">
-      <Link>Microsoft.AnalysisServices.Server.Tabular.Json.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="CubeBuilderView.ico" />
     <Content Include="FodyWeavers.xml">
       <SubType>Designer</SubType>
@@ -717,10 +758,11 @@ foreach (var item in filesToCleanup)
       <PublishVersion>%(AssemblyInfo.Version)</PublishVersion>
     </PropertyGroup>
   </Target>
-  <Target Condition="$(DefineConstants.Contains(CL1400))" Name="CopyDependencyDLLs" AfterTargets="AfterBuild">
+  <!-- Uncomment below to automatically comment 14.0.0.0 dlls into target folder -->
+  <!--<Target Condition="$(DefineConstants.Contains(CL1400))" Name="CopyDependencyDLLs" AfterTargets="AfterBuild">
     <Copy SourceFiles="$(SolutionDir)packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Core.dll;$(SolutionDir)packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Tabular.dll;$(SolutionDir)packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Tabular.Json.dll" DestinationFolder="$(TargetDir)">
     </Copy>
-  </Target>
+  </Target>-->
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

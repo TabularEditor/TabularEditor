@@ -20,7 +20,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;CL1400</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>LocateDeadCode.ruleset</CodeAnalysisRuleSet>
@@ -29,25 +29,72 @@
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;CL1400</DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet />
     <DocumentationFile>bin\Release\TOMWrapper.XML</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-CL1400|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug-CL1400\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;CL1400</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>LocateDeadCode.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-CL1400|AnyCPU'">
+    <OutputPath>bin\Release-CL1400\</OutputPath>
+    <DefineConstants>CL1400</DefineConstants>
+    <DocumentationFile>bin\Release-CL1400\TOMWrapper.XML</DocumentationFile>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr4.Runtime">
       <HintPath>..\packages\Antlr4.Runtime.4.5.3\lib\net45\Antlr4.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Server.Core">
-      <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Server.Tabular">
-      <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Tabular.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Server.Tabular.Json">
-      <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Tabular.Json.dll</HintPath>
-    </Reference>
+  </ItemGroup>
+  <Choose>
+    <!-- Here, we choose the proper AS AMO version, depending on which build configuration is used -->
+    <When Condition="'$(Configuration)'=='Debug-CL1400' Or '$(Configuration)'=='Release-CL1400'">
+      <ItemGroup>
+        <Reference Include="Microsoft.AnalysisServices.Core, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Core.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.AnalysisServices.Tabular, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Tabular.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.AnalysisServices.Tabular.Json, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Tabular.Json.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <Reference Include="Microsoft.AnalysisServices.Core, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.13.0.2150.2\lib\Microsoft.AnalysisServices.Core.DLL</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.AnalysisServices.Tabular, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.13.0.2150.2\lib\Microsoft.AnalysisServices.Tabular.DLL</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.AnalysisServices.Tabular.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.13.0.2150.2\lib\Microsoft.AnalysisServices.Tabular.Json.DLL</HintPath>
+        </Reference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+  <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Design" />
@@ -92,66 +139,6 @@
     <Compile Include="StringHelper.cs" />
     <Compile Include="TextServices\DAXLexer.cs" />
     <Compile Include="TOMWrapper\AnnotationCollection.cs" />
-    <Compile Include="TOMWrapper\Base\CalculatedColumn.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\CalculatedTableColumn.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\Column.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\Culture.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\DataColumn.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\DataSource.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\Enums.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\ExternalModelRoleMember.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\Hierarchy.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\KPI.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\Level.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\Measure.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\Model.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\ModelRole.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\ModelRoleMember.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\Properties.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\ProviderDataSource.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\StructuredDataSource.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\Variation.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\WindowsModelRoleMember.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
     <Compile Include="TOMWrapper\CalculatedColumn.cs" />
     <Compile Include="TOMWrapper\CalculatedTable.cs" />
     <Compile Include="TOMWrapper\CalculatedTableColumn.cs" />
@@ -165,21 +152,6 @@
     <Compile Include="TOMWrapper\KPI.cs" />
     <Compile Include="TOMWrapper\ModelRole.cs" />
     <Compile Include="TOMWrapper\Partition.cs" />
-    <Compile Include="TOMWrapper\Base\Partition.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\Perspective.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\Relationship.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\SingleColumnRelationship.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TOMWrapper\Base\Table.generated.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
     <Compile Include="TOMWrapper\Base\WrapperBase.cs">
       <DependentUpon>WrapperBase.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -229,16 +201,20 @@
   <ItemGroup>
     <None Include="LocateDeadCode.ruleset" />
     <None Include="packages.config" />
+    <None Include="TOMWrapper\Base\Config\Debug-CL1400.ttinclude" />
+    <None Include="TOMWrapper\Base\Config\Release-CL1400.ttinclude" />
+    <None Include="TOMWrapper\Base\Config\Release.ttinclude" />
+    <None Include="TOMWrapper\Base\Config\Debug.ttinclude" />
     <None Include="TOMWrapper\Base\Manager.ttinclude" />
     <None Include="TOMWrapper\Base\Rules.ttinclude">
       <LastGenOutput>Rules.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TOMWrapper\Base\WrapperBase.tt">
+    <None Include="TOMWrapper\Base\WrapperBase.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>WrapperBase.cs</LastGenOutput>
-    </Content>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -249,8 +225,11 @@
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

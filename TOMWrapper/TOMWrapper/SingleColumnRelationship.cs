@@ -14,15 +14,16 @@ namespace TabularEditor.TOMWrapper
     {
         internal override void DeleteLinkedObjects(bool isChildOfDeleted)
         {
-            // Remove this relationship from any variations:
             if (FromColumn != null && ToColumn != null) {
+#if CL1400
+                // Remove this relationship from any variations:
                 var allVariations =
                     Model.AllColumns.SelectMany(c => c.Variations).Where(v => v.Relationship == this).ToList();
-
                 foreach(var v in allVariations)
                 {
                     v.Relationship = null;
                 }
+#endif
             }
             base.DeleteLinkedObjects(isChildOfDeleted);
         }

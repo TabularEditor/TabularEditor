@@ -304,28 +304,29 @@ class Rules {
 		return "";
     }
 
-	public static readonly Type[] EnumTypes = new[] {
-		typeof(DataSourceType),
-		typeof(PartitionSourceType),
-		typeof(DataType),
-		typeof(ObjectState),
-		typeof(Alignment),
-		typeof(AggregateFunction),
-		typeof(ColumnType),
-		typeof(RoleMemberType),
-		typeof(ModeType),
-		typeof(DataViewType),
-		typeof(ModelPermission),
-		typeof(ImpersonationMode),
-		typeof(DatasourceIsolation),
-		typeof(RelationshipType),
-		typeof(CrossFilteringBehavior),
-		typeof(SecurityFilteringBehavior),
-		typeof(DateTimeRelationshipBehavior),
-		typeof(RelationshipEndCardinality),
-		typeof(HierarchyHideMembersType),
-		typeof(EncodingHintType)
+	private static readonly string[] _enumTypes = new[] {
+		"DataSourceType",
+		"PartitionSourceType",
+		"DataType",
+		"ObjectState",
+		"Alignment",
+		"AggregateFunction",
+		"ColumnType",
+		"RoleMemberType",
+		"ModeType",
+		"DataViewType",
+		"ModelPermission",
+		"ImpersonationMode",
+		"DatasourceIsolation",
+		"RelationshipType",
+		"CrossFilteringBehavior",
+		"SecurityFilteringBehavior",
+		"DateTimeRelationshipBehavior",
+		"RelationshipEndCardinality",
+		"HierarchyHideMembersType",
+		"EncodingHintType"
 	};
+	public static readonly Type[] EnumTypes = _enumTypes.Select(t => ASType(t)).Where(t => t != null).ToArray();
 
 	public static readonly Dictionary<Type, string> Aliases = new Dictionary<Type, string>()
 	{
@@ -347,52 +348,65 @@ class Rules {
 		{ typeof(void), "void" }
 	};	
 
-	// List of types to generate wrapper for:
-	public static readonly Dictionary<Type, string> ObjectTypes = new Dictionary<Type,string>()
-	{ 
-       { typeof(Variation), "TabularNamedObject" },
-       { typeof(StructuredDataSource), "DataSource" },
-       { typeof(CalculatedColumn), "Column" },
-       { typeof(CalculatedTableColumn), "Column" },
-       { typeof(Column), "TabularNamedObject" },
-       { typeof(Culture), "TabularNamedObject" },
-       { typeof(DataColumn), "Column" },
-       { typeof(DataSource), "TabularNamedObject" },
-       { typeof(ExternalModelRoleMember), "ModelRoleMember" },
-       { typeof(Hierarchy), "TabularNamedObject" },
-       { typeof(KPI), "TabularObject" },
-       { typeof(Level), "TabularNamedObject" },
-       { typeof(Measure), "TabularNamedObject" },
-       { typeof(Model), "TabularNamedObject" },
-       { typeof(ModelRole), "TabularNamedObject" },
-       { typeof(ModelRoleMember), "TabularNamedObject" },
-       { typeof(Partition), "TabularNamedObject" },
-       { typeof(Perspective), "TabularNamedObject" },
-       { typeof(ProviderDataSource), "DataSource" },
-       { typeof(Relationship), "TabularNamedObject" },
-       { typeof(SingleColumnRelationship), "Relationship" },
-       { typeof(Table), "TabularNamedObject" },
-       { typeof(WindowsModelRoleMember), "ModelRoleMember" }
-   };
+	public static Type ASType(string type) {
+		var assembly = typeof(Model).Assembly;
+		return assembly.GetType("Microsoft.AnalysisServices.Tabular." + type, false);
+	}
+	public static IEnumerable<KeyValuePair<Type, string>> Convert(IEnumerable<KeyValuePair<string, string>> src) {
+		return src.Select(kvp => new KeyValuePair<Type, string>(ASType(kvp.Key), kvp.Value))
+			.Where(kvp => kvp.Key != null);
+	}
 
-   public static readonly Dictionary<Type, string> Collections = new Dictionary<Type,string>()
-   {
-       { typeof(ModelRoleMember), "Members" },
-       { typeof(ModelRole), "Roles" },
-       { typeof(Table), "Tables" },
-       { typeof(CalculatedColumn), "Columns" },
-       { typeof(CalculatedTableColumn), "Columns" },
-       { typeof(DataColumn), "Columns" },
-       { typeof(Level), "Levels" },
-       { typeof(Hierarchy), "Hierarchies" },
-       { typeof(Measure), "Measures" },
-       { typeof(Partition), "Partitions" },
-       { typeof(Perspective), "Perspectives" },
-       { typeof(Culture), "Cultures" },
-	   { typeof(Relationship), "Relationships" },
-	   { typeof(DataSource), "DataSources" },
-	   { typeof(Variation), "Variations" }
+	// List of types to generate wrapper for - resolved dynamically, depending on which version of
+	// the TOM API is referenced (13.0.0.0 or 14.0.0.0, since not all types exist in 13.0.0.0):
+	// 2nd parameter is the Parent that will be used within the TOMWrapper:
+	private static readonly Dictionary<string, string> _objectTypes = new Dictionary<string,string>()
+	{ 
+       { "Variation", "TabularNamedObject" },
+       { "StructuredDataSource", "DataSource" },
+       { "CalculatedColumn", "Column" },
+       { "CalculatedTableColumn", "Column" },
+       { "Column", "TabularNamedObject" },
+       { "Culture", "TabularNamedObject" },
+       { "DataColumn", "Column" },
+       { "DataSource", "TabularNamedObject" },
+       { "ExternalModelRoleMember", "ModelRoleMember" },
+       { "Hierarchy", "TabularNamedObject" },
+       { "KPI", "TabularObject" },
+       { "Level", "TabularNamedObject" },
+       { "Measure", "TabularNamedObject" },
+       { "Model", "TabularNamedObject" },
+       { "ModelRole", "TabularNamedObject" },
+       { "ModelRoleMember", "TabularNamedObject" },
+       { "Partition", "TabularNamedObject" },
+       { "Perspective", "TabularNamedObject" },
+       { "ProviderDataSource", "DataSource" },
+       { "Relationship", "TabularNamedObject" },
+       { "SingleColumnRelationship", "Relationship" },
+       { "Table", "TabularNamedObject" },
+       { "WindowsModelRoleMember", "ModelRoleMember" }
    };
+   public static Dictionary<Type, string> ObjectTypes = Convert(_objectTypes).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+   private static readonly Dictionary<string, string> _objectCollections = new Dictionary<string, string>()
+   {
+       { "ModelRoleMember", "Members" },
+       { "ModelRole", "Roles" },
+       { "Table", "Tables" },
+       { "CalculatedColumn", "Columns" },
+       { "CalculatedTableColumn", "Columns" },
+       { "DataColumn", "Columns" },
+       { "Level", "Levels" },
+       { "Hierarchy", "Hierarchies" },
+       { "Measure", "Measures" },
+       { "Partition", "Partitions" },
+       { "Perspective", "Perspectives" },
+       { "Culture", "Cultures" },
+	   { "Relationship", "Relationships" },
+	   { "DataSource", "DataSources" },
+	   { "Variation", "Variations" }
+   };
+   public static Dictionary<Type, string> Collections = Convert(_objectCollections).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
    public static string CollectionName(Type itemType) {
 	   switch(itemType.Name) {
@@ -403,31 +417,32 @@ class Rules {
        }
    }
 
-   public static readonly List<KeyValuePair<Type, string>> CollectionParent = new List<KeyValuePair<Type, string>>()
+   private static readonly List<KeyValuePair<string, string>> _collectionParent = new List<KeyValuePair<string, string>>()
    {
 	   // Collections owned by a Model (order of items matters, as this is the order in which child objects will be initialized):
-       { new KeyValuePair<Type, string>(typeof(Perspective), "Model") },
-       { new KeyValuePair<Type, string>(typeof(Culture), "Model") },
-	   { new KeyValuePair<Type, string>(typeof(DataSource), "Model") },
-       { new KeyValuePair<Type, string>(typeof(ModelRole), "Model") },
-       { new KeyValuePair<Type, string>(typeof(Table), "Model") },
-	   { new KeyValuePair<Type, string>(typeof(Relationship), "Model") },
+       { new KeyValuePair<string, string>("Perspective", "Model") },
+       { new KeyValuePair<string, string>("Culture", "Model") },
+	   { new KeyValuePair<string, string>("DataSource", "Model") },
+       { new KeyValuePair<string, string>("ModelRole", "Model") },
+       { new KeyValuePair<string, string>("Table", "Model") },
+	   { new KeyValuePair<string, string>("Relationship", "Model") },
 
 	   // Collections owned by a Table (order of items matters, as this is the order in which child objects will be initialized):
-       { new KeyValuePair<Type, string>(typeof(Partition), "Table") },
-       { new KeyValuePair<Type, string>(typeof(Column), "Table") },
-       { new KeyValuePair<Type, string>(typeof(Hierarchy), "Table") },
-       { new KeyValuePair<Type, string>(typeof(Measure), "Table") },
+       { new KeyValuePair<string, string>("Partition", "Table") },
+       { new KeyValuePair<string, string>("Column", "Table") },
+       { new KeyValuePair<string, string>("Hierarchy", "Table") },
+       { new KeyValuePair<string, string>("Measure", "Table") },
 
 	   // Collections owned by a ModelRole (order of items matters, as this is the order in which child objects will be initialized):
-       { new KeyValuePair<Type, string>(typeof(ModelRoleMember), "ModelRole") },
+       { new KeyValuePair<string, string>("ModelRoleMember", "ModelRole") },
 
 	   // Collections owned by a Hierarchy (order of items matters, as this is the order in which child objects will be initialized):
-       { new KeyValuePair<Type, string>(typeof(Variation), "Column") },
+       { new KeyValuePair<string, string>("Variation", "Column") },
 
 	   // Collections owned by a Hierarchy (order of items matters, as this is the order in which child objects will be initialized):
-       { new KeyValuePair<Type, string>(typeof(Level), "Hierarchy") }
+       { new KeyValuePair<string, string>("Level", "Hierarchy") }
    };
+   public static readonly List<KeyValuePair<Type, string>> CollectionParent = Convert(_collectionParent).ToList();
 
    private static string ParentOf(Type t) {
 	   return Rules.CollectionParent.FirstOrDefault(kvp => kvp.Key == t).Value;

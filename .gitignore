@@ -17,6 +17,7 @@
 /TOMWrapper/bin
 /TOMWrapper/obj
 /TOMWrapper/TOMWrapper.csproj.user
+/TOMWrapper/TOMWrapper/Base/Partition.generated.cs
 /packages
 /.vs/TabularEditor/v14
 /TabularEditor/publish
@@ -31,3 +32,4 @@
 /Plugins/VisualizeRelationships/bin/Release
 /Plugins/VisualizeRelationships/obj/Release
 /PluginTest/obj/Release
+/Plugins/VisualizeRelationships/obj
