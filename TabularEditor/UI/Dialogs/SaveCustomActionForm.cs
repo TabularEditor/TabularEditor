@@ -64,8 +64,11 @@ namespace TabularEditor.UI.Dialogs
 
         private void chkListboxContexts_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            this.BeginInvoke((MethodInvoker)(
-            () => ValidateOK()));
+            if (IsHandleCreated)
+            {
+                this.BeginInvoke((MethodInvoker)(
+                () => ValidateOK()));
+            }
         }
     }
 }
