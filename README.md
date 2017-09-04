@@ -34,4 +34,4 @@ View the article on www.kapacity.dk/tabular-editor for a general presentation of
 
 ## Roadmap
 
-View the full roadmap for upcoming features [here](https://github.com/otykier/TabularEditor/blob/master/Documentation/Roadmap.md).
+View the full roadmap for upcoming features [here](https://github.com/otykier/TabularEditor/wiki/Roadmap).
