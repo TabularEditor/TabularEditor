@@ -17,7 +17,7 @@
 /TOMWrapper/bin
 /TOMWrapper/obj
 /TOMWrapper/TOMWrapper.csproj.user
-/TOMWrapper/TOMWrapper/Base/Partition.generated.cs
+/TOMWrapper/TOMWrapper/Base/*.generated.cs
 /packages
 /.vs/TabularEditor/v14
 /TabularEditor/publish
