@@ -258,8 +258,6 @@ namespace TabularEditor.TOMWrapper
                             }
                         }
                         break;
-                    case DAXLexer.WHITESPACES:
-                        break;
                     default:
                         if (lastTableRef != null)
                         {
@@ -268,7 +266,11 @@ namespace TabularEditor.TOMWrapper
                         }
                         break;
                 }
-
+                if (lastTableRef != null)
+                {
+                    if (Model.Tables.Contains(lastTableRef.Text.NoQ(true))) expressionObj.AddDep(Model.Tables[lastTableRef.Text.NoQ(true)], lastTableRef.StartIndex, lastTableRef.StopIndex, true);
+                    lastTableRef = null;
+                }
             }
         }
 
