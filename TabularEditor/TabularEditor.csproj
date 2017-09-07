@@ -176,6 +176,10 @@
       <HintPath>..\packages\WindowsAPICodePack-Core.1.1.2\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WindowsAPICodePack-Shell.1.1.1\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
@@ -341,8 +345,15 @@
     <Compile Include="UI\Dialogs\SelectDatabaseForm.Designer.cs">
       <DependentUpon>SelectDatabaseForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Dialogs\SelectReferencesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\SelectReferencesForm.Designer.cs">
+      <DependentUpon>SelectReferencesForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Dialogs\ValidationEventArgs.cs" />
     <Compile Include="UI\Extensions\WatermarkTextBox.cs" />
+    <Compile Include="UI\Hourglass.cs" />
     <Compile Include="UI\ToolStripSearchBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -599,6 +610,9 @@
     <EmbeddedResource Include="UI\Dialogs\SelectDatabaseForm.resx">
       <DependentUpon>SelectDatabaseForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\SelectReferencesForm.resx">
+      <DependentUpon>SelectReferencesForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\DataSources\Microsoft.AnalysisServices.Tabular.Database.datasource" />
@@ -665,32 +679,32 @@
   <ItemGroup>
     <PublishFile Include="FodyWeavers.xml">
       <Visible>False</Visible>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="Microsoft.AnalysisServices.SPClient.Interfaces">
       <Visible>False</Visible>
-      <PublishState>Prerequisite</PublishState>
-      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Prerequisite</PublishState>
+      <IncludeHash>True</IncludeHash>
       <FileType>Assembly</FileType>
     </PublishFile>
     <PublishFile Include="TOMWrapper">
       <Visible>False</Visible>
-      <PublishState>Include</PublishState>
-      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Include</PublishState>
+      <IncludeHash>True</IncludeHash>
       <FileType>Assembly</FileType>
     </PublishFile>
   </ItemGroup>

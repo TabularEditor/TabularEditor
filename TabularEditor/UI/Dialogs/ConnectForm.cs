@@ -30,14 +30,14 @@ namespace TabularEditor.UI.Dialogs
         {
             if (DialogResult == DialogResult.Cancel) return;
 
-            Cursor = Cursors.WaitCursor;
-
-            ConnectionString = connectPage.GetConnectionString();
-            Server = connectPage.GetServer();
-            LocalInstanceName = connectPage.LocalInstanceName;
-            LocalInstanceType = connectPage.LocalInstanceType;
-            if (Server == null) e.Cancel = true;
-            Cursor = Cursors.Default;
+            using (new Hourglass())
+            {
+                ConnectionString = connectPage.GetConnectionString();
+                Server = connectPage.GetServer();
+                LocalInstanceName = connectPage.LocalInstanceName;
+                LocalInstanceType = connectPage.LocalInstanceType;
+                if (Server == null) e.Cancel = true;
+            }
         }
 
         private void connectPage_Validation(object sender, ValidationEventArgs e)

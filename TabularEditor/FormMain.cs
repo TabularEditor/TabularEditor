@@ -87,8 +87,8 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 ErrorLabel = lblErrors,
                 StatusLabel = lblStatus,
                 StatusExLabel = lblScriptStatus,
-                OpenBimDialog = openBimFile,
-                SaveBimDialog = saveBimFile,
+                OpenBimDialog = dlgOpenFile,
+                SaveBimDialog = dlgSaveFile,
                 TreeImages = tabularTreeImages,
                 CurrentMeasureLabel = lblCurrentMeasure,
                 ModelMenu = modelToolStripMenuItem,
@@ -549,6 +549,13 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         {
             int zoom = txtAdvanced.Zoom;
             toolStripComboBox1.Text = string.Format("{0} %", zoom);
+        }
+
+        private void toolStripButton3_Click(object sender, EventArgs e)
+        {
+            var srf = new SelectReferencesForm();
+            srf.checkedListBox1.Items.AddRange(ScriptEngine.PluginNamespaces.ToArray());
+            //if(srf.ShowDialog();
         }
     }
 }

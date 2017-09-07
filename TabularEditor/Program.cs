@@ -21,8 +21,8 @@ namespace TabularEditor
         {
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
-            SetupLibraries();
-            LoadPlugins();
+            var plugins = LoadPlugins();
+            SetupLibraries(plugins);
 
             var args = Environment.GetCommandLineArgs();
             if (args.Length > 1 && HandleCommandLine(args))
@@ -98,16 +98,18 @@ To obtain the files, download the SQL_AS_AMO library from the <A HREF=""https://
         /// Make sure that the TOMWrapper.dll is available in the current user's temp folder.
         /// Also, compiles current user's CustomActions.xml and loads them into the editor.
         /// </summary>
-        static void SetupLibraries()
+        static void SetupLibraries(IList<Assembly> plugins)
         {
-            ScriptEngine.InitScriptEngine();
+            ScriptEngine.InitScriptEngine(plugins);
         }
 
         /// <summary>
         /// Scans executable directory for .dll's to load
         /// </summary>
-        static void LoadPlugins()
+        static IList<Assembly> LoadPlugins()
         {
+            List<Assembly> pluginAssemblies = new List<Assembly>();
+
             foreach (var dll in Directory.EnumerateFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll"))
             {
                 try
@@ -122,6 +124,7 @@ To obtain the files, download the SQL_AS_AMO library from the <A HREF=""https://
                             if (plugin != null)
                             {
                                 Plugins.Add(plugin);
+                                pluginAssemblies.Add(pluginAssembly);
                                 Console.WriteLine("Succesfully loaded plugin " + pluginType.Name + " from assembly " + pluginAssembly.FullName);
                             }
                         }
@@ -132,6 +135,8 @@ To obtain the files, download the SQL_AS_AMO library from the <A HREF=""https://
 
                 }
             }
+
+            return pluginAssemblies;
         }
 
         public static List<ITabularEditorPlugin> Plugins = new List<ITabularEditorPlugin>();

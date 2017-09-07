@@ -7,6 +7,7 @@
       FastColoredTextBox
       TOMWrapper
       Microsoft.WindowsAPICodePack
+      Microsoft.WindowsAPICodePack.Shell
     </IncludeAssemblies>
   </Costura>
 </Weavers>

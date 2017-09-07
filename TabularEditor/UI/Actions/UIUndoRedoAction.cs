@@ -37,12 +37,11 @@ namespace TabularEditor.UI.Actions
                 else (ctr as RichTextBox)?.Redo();
             } else
             {
-                Cursor.Current = Cursors.WaitCursor;
-
-                if (Kind == UndoRedo.Undo) Handler.UndoManager.Undo();
-                else Handler.UndoManager.Redo();
-
-                Cursor.Current = Cursors.Default;
+                using (new Hourglass())
+                {
+                    if (Kind == UndoRedo.Undo) Handler.UndoManager.Undo();
+                    else Handler.UndoManager.Redo();
+                }
             }
 
             base.OnExecute(e);

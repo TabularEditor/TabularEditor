@@ -99,69 +99,69 @@ namespace TabularEditor.UI
 
         public void ScriptEditor_ExecuteScript(bool undoErrors)
         {
-            Cursor.Current = Cursors.WaitCursor;
+            using (new Hourglass())
+            {
 
-            System.CodeDom.Compiler.CompilerResults result;
+                System.CodeDom.Compiler.CompilerResults result;
 
-            var script = !string.IsNullOrEmpty(UI.ScriptEditor.SelectedText) ? UI.ScriptEditor.SelectedText : UI.ScriptEditor.Text;
-            var offset = (!string.IsNullOrEmpty(UI.ScriptEditor.SelectedText) ? UI.ScriptEditor.Selection.FromLine : 0);
+                var script = !string.IsNullOrEmpty(UI.ScriptEditor.SelectedText) ? UI.ScriptEditor.SelectedText : UI.ScriptEditor.Text;
+                var offset = (!string.IsNullOrEmpty(UI.ScriptEditor.SelectedText) ? UI.ScriptEditor.Selection.FromLine : 0);
 
-            Scripting.ScriptOutputForm.Reset();
-            var dyn = ScriptEngine.ScriptAction(script, out result);
-            if (result.Errors.Count > 0) {
-                foreach(System.CodeDom.Compiler.CompilerError err in result.Errors)
+                Scripting.ScriptOutputForm.Reset();
+                var dyn = ScriptEngine.ScriptAction(script, out result);
+                if (result.Errors.Count > 0)
                 {
-                    var line = err.Line - 12 + offset;
-
-                    if (line >= 0 && line < UI.ScriptEditor.LinesCount)
+                    foreach (System.CodeDom.Compiler.CompilerError err in result.Errors)
                     {
-                        UI.ScriptEditor.GetLine(line).SetStyle((StyleIndex)WAVY_STYLE);
-                        UI.ScriptEditor.Refresh();
-                        scriptEditorErrorsVisible = true;
-                    }
-                }
-                MessageBox.Show(result.Errors[0].ErrorText, "Syntax error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            if (dyn == null) return;
+                        var line = err.Line - 12 + offset;
 
-            Handler.BeginUpdate("script");
-            try
-            {
-                ScriptEditor_IsExecuting = true;
-                dyn.Invoke(Handler.Model, Selection);
-                var actionCount = Handler.EndUpdateAll();
-                UI.StatusExLabel.Text = string.Format("Script executed succesfully. {0} model change{1}.", actionCount, actionCount == 1 ? "" : "s");
-                UI.TreeView.Focus();
-            }
-            catch (Exception ex)
-            {
-                var st = new StackTrace(ex, true);
-                var msg = ex.Message;
-                if (st.FrameCount >= 2)
+                        if (line >= 0 && line < UI.ScriptEditor.LinesCount)
+                        {
+                            UI.ScriptEditor.GetLine(line).SetStyle((StyleIndex)WAVY_STYLE);
+                            UI.ScriptEditor.Refresh();
+                            scriptEditorErrorsVisible = true;
+                        }
+                    }
+                    MessageBox.Show(result.Errors[0].ErrorText, "Syntax error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                if (dyn == null) return;
+
+                Handler.BeginUpdate("script");
+                try
                 {
-                    var frame = st.GetFrame(st.FrameCount - 2);
-                    var line = frame.GetFileLineNumber() - 12 + offset; // TODO: Correct this if changes are made to generated code!
-                    if (line >= 0 && line < UI.ScriptEditor.LinesCount)
-                    {
-                        msg = string.Format("Error on line {0}:\n{1}", line + 1, msg);
-                        UI.ScriptEditor.GetLine(line).SetStyle((StyleIndex)WAVY_STYLE);
-                        UI.ScriptEditor.Refresh();
-                        scriptEditorErrorsVisible = true;
-                    }
+                    ScriptEditor_IsExecuting = true;
+                    dyn.Invoke(Handler.Model, Selection);
+                    var actionCount = Handler.EndUpdateAll();
+                    UI.StatusExLabel.Text = string.Format("Script executed succesfully. {0} model change{1}.", actionCount, actionCount == 1 ? "" : "s");
+                    UI.TreeView.Focus();
                 }
-                var actionCount = Handler.EndUpdateAll(undoErrors);
+                catch (Exception ex)
+                {
+                    var st = new StackTrace(ex, true);
+                    var msg = ex.Message;
+                    if (st.FrameCount >= 2)
+                    {
+                        var frame = st.GetFrame(st.FrameCount - 2);
+                        var line = frame.GetFileLineNumber() - 12 + offset; // TODO: Correct this if changes are made to generated code!
+                        if (line >= 0 && line < UI.ScriptEditor.LinesCount)
+                        {
+                            msg = string.Format("Error on line {0}:\n{1}", line + 1, msg);
+                            UI.ScriptEditor.GetLine(line).SetStyle((StyleIndex)WAVY_STYLE);
+                            UI.ScriptEditor.Refresh();
+                            scriptEditorErrorsVisible = true;
+                        }
+                    }
+                    var actionCount = Handler.EndUpdateAll(undoErrors);
 
-                MessageBox.Show(msg, "Error executing code", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                UI.StatusExLabel.Text = string.Format("Script execution failed. {0} model change{1}.", actionCount, actionCount == 1 ? "" : "s");
-            }
-            finally
-            {
-                ScriptEditor_IsExecuting = false;
-            }
+                    MessageBox.Show(msg, "Error executing code", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    UI.StatusExLabel.Text = string.Format("Script execution failed. {0} model change{1}.", actionCount, actionCount == 1 ? "" : "s");
+                }
+                finally
+                {
+                    ScriptEditor_IsExecuting = false;
+                }
 
-            Cursor.Current = Cursors.Default;
-            //UI.PropertyGrid.Refresh();
-            //UI.TreeView.Refresh();
+            }
         }
 
 

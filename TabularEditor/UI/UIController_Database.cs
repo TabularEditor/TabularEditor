@@ -28,28 +28,28 @@ namespace TabularEditor.UI
             }
 
 
-            UI.FormMain.Cursor = Cursors.WaitCursor;
             UI.StatusLabel.Text = "Deploying...";
             Application.DoEvents();
-            var df = new DeployingForm();
-            df.Cursor = Cursors.WaitCursor;
-            var error = false;
-            df.DeployAction = () =>
+            using (new Hourglass())
             {
-                try
+                var df = new DeployingForm();
+                var error = false;
+                df.DeployAction = () =>
                 {
-                    TabularDeployer.Deploy(Handler, f.DeployTargetServer.ConnectionString, f.DeployTargetDatabaseID, f.DeployOptions);
-                }
-                catch (Exception ex)
-                {
-                    error = true;
-                    df.ThreadClose();
-                    MessageBox.Show(ex.Message, "Error occured during deployment", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            };
-            df.ShowDialog();
-            UI.StatusLabel.Text = error ? "Deploy failed!" : "Deploy succeeded!";
-            UI.FormMain.Cursor = Cursors.Default;
+                    try
+                    {
+                        TabularDeployer.Deploy(Handler, f.DeployTargetServer.ConnectionString, f.DeployTargetDatabaseID, f.DeployOptions);
+                    }
+                    catch (Exception ex)
+                    {
+                        error = true;
+                        df.ThreadClose();
+                        MessageBox.Show(ex.Message, "Error occured during deployment", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                };
+                df.ShowDialog();
+                UI.StatusLabel.Text = error ? "Deploy failed!" : "Deploy succeeded!";
+            }
         }
 
         private string LocalInstanceName;
@@ -77,26 +77,27 @@ namespace TabularEditor.UI
             UI.StatusLabel.Text = "Opening Model from Database...";
             ClearUI();
             UpdateUIText();
-            Cursor.Current = Cursors.WaitCursor;
-
-            var oldHandler = Handler;
-
-            try
+            using (new Hourglass())
             {
-                Handler = new TabularModelHandler(ConnectForm.ConnectionString, string.IsNullOrEmpty(LocalInstanceName) ? SelectDatabaseForm.DatabaseName : null);
-                Handler.AutoFixup = Preferences.Current.FormulaFixup;
-                LoadTabularModelToUI();
-                File_Current = null;
-                File_SaveMode = ModelSourceType.Database;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error connecting to database", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Handler = oldHandler;
-                LoadTabularModelToUI();
-            }
 
-            Cursor.Current = Cursors.Default;
+                var oldHandler = Handler;
+
+                try
+                {
+                    Handler = new TabularModelHandler(ConnectForm.ConnectionString, string.IsNullOrEmpty(LocalInstanceName) ? SelectDatabaseForm.DatabaseName : null);
+                    Handler.AutoFixup = Preferences.Current.FormulaFixup;
+                    LoadTabularModelToUI();
+                    File_Current = null;
+                    File_SaveMode = ModelSourceType.Database;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error connecting to database", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Handler = oldHandler;
+                    LoadTabularModelToUI();
+                }
+
+            }
         }
 
         private void Database_Save()
@@ -114,35 +115,36 @@ namespace TabularEditor.UI
                 if (res == DialogResult.No) return;
             }
 
-            UI.FormMain.Cursor = Cursors.WaitCursor;
-            UI.StatusLabel.Text = "Saving changes to DB...";
-            Application.DoEvents();
-
-            if (Preferences.Current.BackupOnSave)
+            using (new Hourglass())
             {
-                var backupFilename = string.Format("{0}\\Backup_{1}_{2}.zip", Preferences.Current.BackupLocation, Handler.Database.Name, DateTime.Now.ToString("yyyyMMddhhmmssfff"));
+                UI.StatusLabel.Text = "Saving changes to DB...";
+                Application.DoEvents();
+
+                if (Preferences.Current.BackupOnSave)
+                {
+                    var backupFilename = string.Format("{0}\\Backup_{1}_{2}.zip", Preferences.Current.BackupLocation, Handler.Database.Name, DateTime.Now.ToString("yyyyMMddhhmmssfff"));
+                    try
+                    {
+                        TabularDeployer.SaveModelMetadataBackup(Handler.Database.Server.ConnectionString, Handler.Database.ID, backupFilename);
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message, "Unable to save metadata backup", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+
                 try
                 {
-                    TabularDeployer.SaveModelMetadataBackup(Handler.Database.Server.ConnectionString, Handler.Database.ID, backupFilename);
+                    Handler.SaveDB();
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show(e.Message, "Unable to save metadata backup", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(e.Message, "Could not save metadata changes to database", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-            }
 
-            try
-            {
-                Handler.SaveDB();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message, "Could not save metadata changes to database", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+                UI.TreeView.Refresh();
 
-            UI.TreeView.Refresh();
-
-            UI.FormMain.Cursor = Cursors.Default;
+            }
         }
     }
 }

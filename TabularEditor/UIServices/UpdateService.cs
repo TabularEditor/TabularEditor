@@ -5,6 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TabularEditor.UI;
 
 namespace TabularEditor.UIServices
 {
@@ -24,9 +25,10 @@ namespace TabularEditor.UIServices
         /// <returns>True if a newer version of Tabular Editor is available, false otherwise</returns>
         public static bool? Check(bool displayErrors = false)
         {
-            Cursor.Current = Cursors.WaitCursor;
-            UpdateAvailable = InternalCheck(displayErrors);
-            Cursor.Current = Cursors.Default;
+            using (new Hourglass())
+            {
+                UpdateAvailable = InternalCheck(displayErrors);
+            }
             return UpdateAvailable;
         }
 

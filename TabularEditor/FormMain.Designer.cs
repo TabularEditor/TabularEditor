@@ -167,6 +167,7 @@
             this.toolStripSeparator15 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator20 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripComboBox1 = new System.Windows.Forms.ToolStripComboBox();
+            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.propertyGrid1 = new TabularEditor.PropertyGridExtension.NavigatablePropertyGrid();
             this.tvMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -201,8 +202,8 @@
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bestPracticeAnalyzerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabularTreeImages = new System.Windows.Forms.ImageList(this.components);
-            this.saveBimFile = new System.Windows.Forms.SaveFileDialog();
-            this.openBimFile = new System.Windows.Forms.OpenFileDialog();
+            this.dlgSaveFile = new System.Windows.Forms.SaveFileDialog();
+            this.dlgOpenFile = new System.Windows.Forms.OpenFileDialog();
             this._type = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this._formatString = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this._dataType = new Aga.Controls.Tree.NodeControls.NodeTextBox();
@@ -388,7 +389,7 @@
             this.actOpenFile.Image = global::TabularEditor.Resources.Open;
             this.actOpenFile.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.actOpenFile.Text = "From File...";
-            this.actOpenFile.ToolTipText = "Open a Tabular Model from a Model.bim file";
+            this.actOpenFile.ToolTipText = "Open a Tabular Model from a Model.bim file or database.json folder structure";
             this.actOpenFile.Execute += new System.EventHandler(this.actOpenFile_Execute);
             // 
             // actOpenDB
@@ -572,7 +573,7 @@
             this.toolStripButton8.Name = "toolStripButton8";
             this.toolStripButton8.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton8.Text = "From File...";
-            this.toolStripButton8.ToolTipText = "Open a Tabular Model from a Model.bim file";
+            this.toolStripButton8.ToolTipText = "Open a Tabular Model from a Model.bim file or database.json folder structure";
             // 
             // fileToolStripMenuItem1
             // 
@@ -582,7 +583,7 @@
             this.fileToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.fileToolStripMenuItem1.Size = new System.Drawing.Size(204, 22);
             this.fileToolStripMenuItem1.Text = "From File...";
-            this.fileToolStripMenuItem1.ToolTipText = "Open a Tabular Model from a Model.bim file";
+            this.fileToolStripMenuItem1.ToolTipText = "Open a Tabular Model from a Model.bim file or database.json folder structure";
             // 
             // fromDBToolStripMenuItem
             // 
@@ -1176,7 +1177,7 @@
             this.toolStripSeparator10});
             this.toolStrip2.Location = new System.Drawing.Point(0, 24);
             this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(920, 25);
+            this.toolStrip2.Size = new System.Drawing.Size(1067, 25);
             this.toolStrip2.TabIndex = 13;
             this.toolStrip2.Text = "toolStrip2";
             // 
@@ -1239,8 +1240,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(920, 569);
-            this.splitContainer1.SplitterDistance = 350;
+            this.splitContainer1.Size = new System.Drawing.Size(1067, 569);
+            this.splitContainer1.SplitterDistance = 405;
             this.splitContainer1.TabIndex = 16;
             // 
             // tvModel
@@ -1272,7 +1273,7 @@
             this.tvModel.ShowLines = false;
             this.tvModel.ShowNodeToolTips = true;
             this.tvModel.ShowPlusMinus = false;
-            this.tvModel.Size = new System.Drawing.Size(350, 544);
+            this.tvModel.Size = new System.Drawing.Size(405, 544);
             this.tvModel.TabIndex = 19;
             this.tvModel.Text = "treeViewAdv1";
             this.tvModel.UseColumns = true;
@@ -1361,7 +1362,7 @@
             this.toolStripButton6});
             this.toolTreeView.Location = new System.Drawing.Point(0, 0);
             this.toolTreeView.Name = "toolTreeView";
-            this.toolTreeView.Size = new System.Drawing.Size(350, 25);
+            this.toolTreeView.Size = new System.Drawing.Size(405, 25);
             this.toolTreeView.Stretch = true;
             this.toolTreeView.TabIndex = 18;
             this.toolTreeView.Text = "Tree";
@@ -1387,7 +1388,7 @@
             this.txtFilter.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtFilter.MaxLength = 0;
             this.txtFilter.Name = "txtFilter";
-            this.txtFilter.Size = new System.Drawing.Size(100, 25);
+            this.txtFilter.Size = new System.Drawing.Size(146, 25);
             this.txtFilter.ToolTipText = "Only show measures, columns and hierarchies containing the filter text";
             this.txtFilter.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtFilter_KeyDown);
             this.txtFilter.TextChanged += new System.EventHandler(this.txtFilter_TextChanged);
@@ -1412,7 +1413,7 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.propertyGrid1);
-            this.splitContainer2.Size = new System.Drawing.Size(566, 569);
+            this.splitContainer2.Size = new System.Drawing.Size(658, 569);
             this.splitContainer2.SplitterDistance = 273;
             this.splitContainer2.TabIndex = 15;
             // 
@@ -1424,7 +1425,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(566, 273);
+            this.tabControl1.Size = new System.Drawing.Size(658, 273);
             this.tabControl1.TabIndex = 2;
             // 
             // tabPage1
@@ -1435,7 +1436,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(558, 247);
+            this.tabPage1.Size = new System.Drawing.Size(650, 247);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Expression Editor";
             // 
@@ -1471,7 +1472,7 @@
             this.txtExpression.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
             this.txtExpression.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtExpression.ServiceColors")));
             this.txtExpression.ShowLineNumbers = false;
-            this.txtExpression.Size = new System.Drawing.Size(552, 198);
+            this.txtExpression.Size = new System.Drawing.Size(644, 198);
             this.txtExpression.TabIndex = 23;
             this.txtExpression.Zoom = 100;
             // 
@@ -1482,7 +1483,7 @@
             this.lblCurrentMeasure.Location = new System.Drawing.Point(3, 28);
             this.lblCurrentMeasure.Name = "lblCurrentMeasure";
             this.lblCurrentMeasure.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-            this.lblCurrentMeasure.Size = new System.Drawing.Size(552, 18);
+            this.lblCurrentMeasure.Size = new System.Drawing.Size(644, 18);
             this.lblCurrentMeasure.TabIndex = 24;
             this.lblCurrentMeasure.Visible = false;
             this.lblCurrentMeasure.Paint += new System.Windows.Forms.PaintEventHandler(this.lblCurrentMeasure_Paint);
@@ -1503,7 +1504,7 @@
             this.toolStripButton2});
             this.toolStrip3.Location = new System.Drawing.Point(3, 3);
             this.toolStrip3.Name = "toolStrip3";
-            this.toolStrip3.Size = new System.Drawing.Size(552, 25);
+            this.toolStrip3.Size = new System.Drawing.Size(644, 25);
             this.toolStrip3.TabIndex = 22;
             this.toolStrip3.Text = "toolStrip3";
             // 
@@ -1529,7 +1530,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(558, 247);
+            this.tabPage2.Size = new System.Drawing.Size(650, 247);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Advanced Scripting";
             // 
@@ -1569,7 +1570,7 @@
             this.txtAdvanced.RightBracket2 = '}';
             this.txtAdvanced.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
             this.txtAdvanced.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtAdvanced.ServiceColors")));
-            this.txtAdvanced.Size = new System.Drawing.Size(552, 216);
+            this.txtAdvanced.Size = new System.Drawing.Size(644, 216);
             this.txtAdvanced.TabIndex = 16;
             this.txtAdvanced.Zoom = 100;
             this.txtAdvanced.ZoomChanged += new System.EventHandler(this.txtAdvanced_ZoomChanged);
@@ -1588,10 +1589,11 @@
             this.toolStripSeparator15,
             this.btnSaveCustomAction,
             this.toolStripSeparator20,
-            this.toolStripComboBox1});
+            this.toolStripComboBox1,
+            this.toolStripButton3});
             this.toolStrip4.Location = new System.Drawing.Point(3, 3);
             this.toolStrip4.Name = "toolStrip4";
-            this.toolStrip4.Size = new System.Drawing.Size(552, 25);
+            this.toolStrip4.Size = new System.Drawing.Size(644, 25);
             this.toolStrip4.TabIndex = 15;
             this.toolStrip4.Text = "toolStrip4";
             // 
@@ -1670,13 +1672,23 @@
             this.toolStripComboBox1.Text = "100 %";
             this.toolStripComboBox1.TextChanged += new System.EventHandler(this.toolStripComboBox1_TextChanged);
             // 
+            // toolStripButton3
+            // 
+            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
+            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton3.Name = "toolStripButton3";
+            this.toolStripButton3.Size = new System.Drawing.Size(77, 22);
+            this.toolStripButton3.Text = "References...";
+            this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
+            // 
             // propertyGrid1
             // 
             this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.propertyGrid1.LineColor = System.Drawing.SystemColors.ControlDark;
             this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(566, 292);
+            this.propertyGrid1.Size = new System.Drawing.Size(658, 292);
             this.propertyGrid1.TabIndex = 14;
             // 
             // tvMenu
@@ -1695,7 +1707,7 @@
             this.lblScriptStatus});
             this.statusStrip1.Location = new System.Drawing.Point(0, 618);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(920, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1067, 22);
             this.statusStrip1.TabIndex = 17;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -1730,7 +1742,7 @@
             | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
             this.lblScriptStatus.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
             this.lblScriptStatus.Name = "lblScriptStatus";
-            this.lblScriptStatus.Size = new System.Drawing.Size(605, 17);
+            this.lblScriptStatus.Size = new System.Drawing.Size(752, 17);
             this.lblScriptStatus.Spring = true;
             this.lblScriptStatus.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -1745,7 +1757,7 @@
             this.toolsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(920, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1067, 24);
             this.menuStrip1.TabIndex = 18;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -2000,17 +2012,16 @@
             this.tabularTreeImages.Images.SetKeyName(38, "partition");
             this.tabularTreeImages.Images.SetKeyName(39, "gauge");
             // 
-            // saveBimFile
+            // dlgSaveFile
             // 
-            this.saveBimFile.DefaultExt = "bim";
-            this.saveBimFile.FileName = "Model.bim";
-            this.saveBimFile.Filter = "Tabular Model Compatibility Level 1200 files|*.bim|All filer|*.*";
+            this.dlgSaveFile.DefaultExt = "bim";
+            this.dlgSaveFile.FileName = "Model.bim";
+            this.dlgSaveFile.Filter = "Tabular Model Files|*.bim|All files|*.*";
             // 
-            // openBimFile
+            // dlgOpenFile
             // 
-            this.openBimFile.FileName = "Model.bim";
-            this.openBimFile.Filter = "Tabular Model Compatibility Level 1200+ files|*.bim|Tabular Editor Folder Structu" +
-    "re|database.json|All files|*.*";
+            this.dlgOpenFile.FileName = "Model.bim";
+            this.dlgOpenFile.Filter = "Tabular Model Files|*.bim;database.json|All files|*.*";
             // 
             // _type
             // 
@@ -2061,7 +2072,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(920, 640);
+            this.ClientSize = new System.Drawing.Size(1067, 640);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.toolStrip2);
             this.Controls.Add(this.statusStrip1);
@@ -2219,8 +2230,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
         private System.Windows.Forms.ToolStripButton btnFind;
         private System.Windows.Forms.ToolStripButton btnReplace;
-        private System.Windows.Forms.SaveFileDialog saveBimFile;
-        private System.Windows.Forms.OpenFileDialog openBimFile;
+        private System.Windows.Forms.SaveFileDialog dlgSaveFile;
+        private System.Windows.Forms.OpenFileDialog dlgOpenFile;
         private Aga.Controls.Tree.TreeColumn treeColumn1;
         private UI.UIModelAction actExpressionFormatDAX;
         private UI.UIModelAction actFind;
@@ -2288,6 +2299,7 @@
         private ToolStripSpringTextBox txtFilter;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator20;
         private System.Windows.Forms.ToolStripComboBox toolStripComboBox1;
+        private System.Windows.Forms.ToolStripButton toolStripButton3;
     }
 }
 

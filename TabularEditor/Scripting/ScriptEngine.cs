@@ -15,6 +15,26 @@ using TabularEditor.UI.Actions;
 
 namespace TabularEditor
 {
+    public class AssemblyNamespace: IEquatable<AssemblyNamespace>
+    {
+        public Assembly Assembly;
+        public string Namespace;
+        public override int GetHashCode()
+        {
+            return Namespace.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return string.Format("({0}.dll) {1}", Assembly.GetName().Name, Namespace);
+        }
+
+        public bool Equals(AssemblyNamespace other)
+        {
+            return Namespace == other.Namespace;
+        }
+    }
+
     public static class ScriptEngine
     {
         static readonly string WrapperDllPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\TOMWrapper.dll";
@@ -185,6 +205,7 @@ namespace TabularEditor
                 // Allowed assemblies:
                 var tom = Assembly.GetAssembly(typeof(Microsoft.AnalysisServices.Tabular.Database)).Location;
                 var includeAssemblies = new HashSet<string>(new[] { "system.dll", "system.core.dll", Assembly.GetExecutingAssembly().Location, WrapperDllPath, tom });
+                foreach(var asm in Plugins) if(!includeAssemblies.Contains(asm.Location)) includeAssemblies.Add(asm.Location);
                 var cp = new CompilerParameters(includeAssemblies.ToArray()) { GenerateInMemory = true, IncludeDebugInformation = true };
 
                 result = compiler.CompileAssemblyFromSource(cp, source);
@@ -204,13 +225,19 @@ namespace TabularEditor
             return result.ToString();
         }
 
+        static IList<Assembly> Plugins = new List<Assembly>();
+        static IList<AssemblyNamespace> _pluginNamespaces = new List<AssemblyNamespace>();
+        static public IEnumerable<AssemblyNamespace> PluginNamespaces { get { return _pluginNamespaces; } }
+
         /// <summary>
         /// This method ensures that the TOMWrapper.dll file exists (needed for Advanced scripting).
         /// Furthermore, if a CustomActions.json file is provided, it is compiled into memory and
         /// loaded to the action manager.
         /// </summary>
-        public static void InitScriptEngine()
+        public static void InitScriptEngine(IList<Assembly> plugins)
         {
+            Plugins = plugins;
+            _pluginNamespaces = plugins.SelectMany(p => p.GetExportedTypes()).Select(t => new AssemblyNamespace { Assembly = t.Assembly, Namespace = t.Namespace }).Distinct().ToList();
             try
             {
 

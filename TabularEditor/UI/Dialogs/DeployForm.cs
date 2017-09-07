@@ -81,9 +81,10 @@ namespace TabularEditor.UI.Dialogs
         {
             if(_currentPage == 0)
             {
-                Cursor = Cursors.WaitCursor;
-                page2.Server = page1.GetServer();
-                Cursor = Cursors.Default;
+                using (new Hourglass())
+                {
+                    page2.Server = page1.GetServer();
+                }
                 if (page2.Server == null) return;
             }
             CurrentPage++;
@@ -167,13 +168,13 @@ namespace TabularEditor.UI.Dialogs
 
         private void btnTMSL_Click(object sender, EventArgs e)
         {
-            Cursor = Cursors.WaitCursor;
-            Application.DoEvents();
             var tmslForm = new ClipForm();
             tmslForm.Text = "TMSL Script";
-            tmslForm.txtCode.Text = TabularDeployer.GetTMSL(UIController.Current.Handler.Database,
-                DeployTargetServer, DeployTargetDatabaseID, DeployOptions);
-            Cursor = Cursors.Default;
+            using (new Hourglass())
+            {
+                tmslForm.txtCode.Text = TabularDeployer.GetTMSL(UIController.Current.Handler.Database,
+                    DeployTargetServer, DeployTargetDatabaseID, DeployOptions);
+            }
             tmslForm.ShowDialog();
         }
     }

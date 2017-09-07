@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.WindowsAPICodePack.Dialogs;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -64,8 +65,6 @@ namespace TabularEditor.UI
 
         string File_Current;
 
-        private FolderBrowserDialog OpenFolderDialog = new FolderBrowserDialog();
-
         public void File_Open(bool fromFolder = false)
         {
             if (DiscardChangesCheck()) return;
@@ -76,45 +75,55 @@ namespace TabularEditor.UI
             string fileName;
             if(fromFolder)
             {
-                if (OpenFolderDialog.ShowDialog() == DialogResult.Cancel) return;
-                fileName = OpenFolderDialog.SelectedPath;
+                using (var dlg = new CommonOpenFileDialog() { IsFolderPicker = true })
+                {
+                    if (dlg.ShowDialog() == CommonFileDialogResult.Cancel) return;
+                    fileName = dlg.FileName;
+                }
             } else
             {
                 if (UI.OpenBimDialog.ShowDialog() == DialogResult.Cancel) return;
                 fileName = UI.OpenBimDialog.FileName;
             }
 
-            try
+            using (new Hourglass())
             {
-                File_Open(fileName);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error loading Model from disk", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Handler = oldHandler;
-                File_Current = oldFile;
+                try
+                {
+                    File_Open(fileName);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error loading Model from disk", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Handler = oldHandler;
+                    File_Current = oldFile;
+                }
             }
         }
 
         public void File_SaveAs()
         {
             var res = UI.SaveBimDialog.ShowDialog();
+
             if (res == DialogResult.OK)
             {
-                UI.StatusLabel.Text = "Saving...";
-                Handler.SaveFile(UI.SaveBimDialog.FileName, Preferences.Current.GetSerializeOptions(false));
-
-                RecentFiles.Add(UI.SaveBimDialog.FileName);
-                UI.FormMain.PopulateRecentFilesList();
-
-                // If not connected to a database, change the current working file:
-                if (Handler.SourceType != ModelSourceType.Database)
+                using (new Hourglass())
                 {
-                    File_Current = UI.SaveBimDialog.FileName;
-                    File_SaveMode = ModelSourceType.File;
-                }
+                    UI.StatusLabel.Text = "Saving...";
+                    Handler.SaveFile(UI.SaveBimDialog.FileName, Preferences.Current.GetSerializeOptions(false));
 
-                UpdateUIText();
+                    RecentFiles.Add(UI.SaveBimDialog.FileName);
+                    UI.FormMain.PopulateRecentFilesList();
+
+                    // If not connected to a database, change the current working file:
+                    if (Handler.SourceType != ModelSourceType.Database)
+                    {
+                        File_Current = UI.SaveBimDialog.FileName;
+                        File_SaveMode = ModelSourceType.File;
+                    }
+
+                    UpdateUIText();
+                }
             }
         }
 
@@ -122,22 +131,22 @@ namespace TabularEditor.UI
 
         public void File_SaveToFolder()
         {
-            using (var fbd = new FolderBrowserDialog())
+            using (var fbd = new CommonOpenFileDialog() { IsFolderPicker = true })
             {
                 var res = fbd.ShowDialog();
-                if(res == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                if(res == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(fbd.FileName))
                 {
                     UI.StatusLabel.Text = "Saving...";
-                    Handler.SaveToFolder(fbd.SelectedPath, Preferences.Current.GetSerializeOptions(true));
+                    Handler.SaveToFolder(fbd.FileName, Preferences.Current.GetSerializeOptions(true));
 
-                    RecentFiles.Add(fbd.SelectedPath);
+                    RecentFiles.Add(fbd.FileName);
                     UI.FormMain.PopulateRecentFilesList();
 
                     // If working with a file, change the current file pointer:
                     if (Handler.SourceType != ModelSourceType.Database)
                     {
                         File_SaveMode = ModelSourceType.Folder;
-                        File_Current = fbd.SelectedPath;
+                        File_Current = fbd.FileName;
                     }
 
                     UpdateUIText();
