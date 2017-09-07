@@ -38,6 +38,13 @@ namespace TabularEditor.UI.Actions
             Add(new CreateRelationshipAction(CreateRelationshipDirection.From));
 
             // "Create New"
+            Add(new Action((s, m) => s.Count >= 1, (s, m) => {
+                var disp = (s.FirstOrDefault() as IDetailObject)?.DisplayFolder;
+                disp = string.IsNullOrWhiteSpace(disp) ? "New folder" : (disp + @"\New folder"); ;
+                Folder.CreateFolder(s.Table, disp).Edit();
+                s.DisplayFolder = disp;
+                
+            }, (s, m) => @"Create New\Display Folder", true, Context.TableObject));
             Add(new Action((s, m) => s.Count == 1 && s.Types == Types.Measure, (s, m) => s.Measure.AddKPI().Edit(), (s, m) => @"Create New\KPI", true, Context.DataObjects));
             Add(new Action((s, m) => true, (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Measure", true, Context.Table | Context.TableObject));
             Add(new Action((s, m) => true, (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Calculated Column", true, Context.Table | Context.TableObject));

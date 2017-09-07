@@ -25,7 +25,8 @@ namespace TabularEditor.TOMWrapper
                 return Tree.FolderCache[Table.Name.ConcatPath(DisplayFolder)];
             }
         }
-
+        
+        [Browsable(false)]
         public int MetadataIndex
         {
             get
@@ -37,6 +38,7 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public Table ParentTable { get { return Table; } }
 
+        [Browsable(false)]
         public string ErrorMessage { get; private set; }
 
         static public Folder CreateFolder(Table table, string path = "", bool useFixedCulture = false, Culture fixedCulture = null)
