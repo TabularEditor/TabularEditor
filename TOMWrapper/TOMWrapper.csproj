@@ -139,6 +139,11 @@
     <Compile Include="StringHelper.cs" />
     <Compile Include="TextServices\DAXLexer.cs" />
     <Compile Include="TOMWrapper\AnnotationCollection.cs" />
+    <Compile Include="TOMWrapper\Base\WrapperBase.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
     <Compile Include="TOMWrapper\CalculatedColumn.cs" />
     <Compile Include="TOMWrapper\CalculatedTable.cs" />
     <Compile Include="TOMWrapper\CalculatedTableColumn.cs" />
@@ -152,11 +157,6 @@
     <Compile Include="TOMWrapper\KPI.cs" />
     <Compile Include="TOMWrapper\ModelRole.cs" />
     <Compile Include="TOMWrapper\Partition.cs" />
-    <Compile Include="TOMWrapper\Base\WrapperBase.cs">
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="TOMWrapper\Column.cs" />
     <Compile Include="TOMWrapper\Culture.cs" />
     <Compile Include="TOMWrapper\Folder.cs" />
@@ -205,7 +205,6 @@
     <None Include="TOMWrapper\Base\Config\Release-CL1400.ttinclude" />
     <None Include="TOMWrapper\Base\Config\Release.ttinclude" />
     <None Include="TOMWrapper\Base\Config\Debug.ttinclude" />
-    <None Include="TOMWrapper\Base\Manager.ttinclude" />
     <None Include="TOMWrapper\Base\Rules.ttinclude">
       <LastGenOutput>Rules.cs</LastGenOutput>
     </None>
@@ -213,7 +212,7 @@
   <ItemGroup>
     <None Include="TOMWrapper\Base\WrapperBase.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>WrapperBase.cs</LastGenOutput>
+      <LastGenOutput>WrapperBase.generated.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
