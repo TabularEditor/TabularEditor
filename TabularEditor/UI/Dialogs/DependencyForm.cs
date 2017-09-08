@@ -29,10 +29,61 @@ namespace TabularEditor
             }
             set {
                 _rootObject = value;
+                if (_rootObject is PartitionViewTable) _rootObject = (_rootObject as PartitionViewTable).Table;
                 Text = "Object Dependencies for " + RootObject.DaxObjectFullName;
                 radioButton1.Text = string.Format("Show objects on which {0} depend", RootObject.DaxObjectName);
                 radioButton2.Text = string.Format("Show objects that depend on {0}", RootObject.DaxObjectName);
+                radioButton3.Text = string.Format("Show relationships starting from {0}", RootObject.DaxObjectName);
+                if (RootObject is Table)
+                {
+                    radioButton3.Enabled = true;
+                }
+                else
+                {
+                    radioButton3.Enabled = false;
+                    if (radioButton3.Checked) radioButton2.Checked = true;
+                }
                 RefreshTree();
+            }
+        }
+
+        HashSet<ITabularObject> VisitedRelationships;
+
+        private void CreateRelationshipTree(ITabularNamedObject startFrom, TreeNode node)
+        {
+            var q = new Queue<TreeNode>();
+            q.Enqueue(node);
+
+            if(startFrom is Table)
+            {
+                while (q.Count > 0)
+                {
+                    node = q.Dequeue();
+                    var obj = node.Tag as ITabularNamedObject;
+
+                    var relevantRelationships = obj.Model.Relationships.Where(r => (r.FromTable == obj || r.ToTable == obj)).OrderBy(r => !r.IsActive).ToList();
+
+                    foreach (var r in relevantRelationships)
+                    {
+                        var dstTable = r.FromTable == obj ? r.ToTable : r.FromTable;
+
+                        if (VisitedRelationships.Contains(r)) continue;
+                        VisitedRelationships.Add(r);
+
+                        var prefix = string.Format("({0} {2} {1}) ",
+                            (r.FromTable == obj ? r.FromCardinality : r.ToCardinality) == RelationshipEndCardinality.Many ? 'n' : '1',
+                            (r.FromTable == obj ? r.ToCardinality : r.FromCardinality) == RelationshipEndCardinality.Many ? 'n' : '1',
+                            r.CrossFilteringBehavior == CrossFilteringBehavior.BothDirections ? "\u2194" :
+                                r.FromTable == obj ? "\u2190" : "\u2192");
+
+                        var img = UI.Tree.TabularIcon.GetIconIndex(dstTable);
+                        var n = new TreeNode(prefix + dstTable.DaxObjectFullName, img, img) { Tag = dstTable };
+                        if (!r.IsActive) n.ForeColor = Color.Silver;
+                        n.ToolTipText = r.Name;
+                        node.Nodes.Add(n);
+                        q.Enqueue(n);
+                    }
+                }
             }
         }
 
@@ -99,12 +150,26 @@ namespace TabularEditor
         {
             treeObjects.Nodes.Clear();
 
+            currentDepth = 0;
             if (radioButton1.Checked)
             {
                 RecursiveAdd(RootObject, treeObjects.Nodes);
-            } else
+                treeObjects.Nodes[0].Expand();
+            }
+            else if (radioButton2.Checked)
             {
                 InverseRecursiveAdd(RootObject, treeObjects.Nodes);
+                treeObjects.Nodes[0].Expand();
+            }
+            else
+            {
+                VisitedRelationships = new HashSet<ITabularObject>();
+
+                var img = UI.Tree.TabularIcon.GetIconIndex(_rootObject);
+                var n = new TreeNode(((_rootObject as IDaxObject)?.DaxObjectFullName ?? _rootObject.Name), img, img) { Tag = _rootObject };
+                treeObjects.Nodes.Add(n);
+                CreateRelationshipTree(RootObject, n);
+                n.Expand();
             }
         }
 
@@ -115,7 +180,15 @@ namespace TabularEditor
 
         private void treeObjects_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            UI.UIController.Current.Goto(e.Node.Tag as TabularNamedObject);
+            if(mouseDownNode != null)
+                UI.UIController.Current.Goto(mouseDownNode.Tag as TabularNamedObject);
+        }
+
+        TreeNode mouseDownNode;
+
+        private void treeObjects_MouseDown(object sender, MouseEventArgs e)
+        {
+            mouseDownNode = treeObjects.GetNodeAt(e.Location);
         }
     }
 }

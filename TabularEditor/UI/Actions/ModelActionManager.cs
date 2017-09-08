@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
 using TabularEditor.UI.Dialogs;
+using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.UI.Actions
 {
@@ -26,6 +27,8 @@ namespace TabularEditor.UI.Actions
 
         public Action Delete { get; private set; }
 
+        public TabularModelHandler Handler { get { return UI.UIController.Current.Handler; } }
+
         public void CreateStandardActions()
         {
             var csDialog = new CultureSelectDialog();
@@ -33,9 +36,6 @@ namespace TabularEditor.UI.Actions
             // Options to add a Measure or a Calculated Column will only be available when the current select consists of exactly
             // 1 item, which is either a Table or a Folder:
             Action.EnabledDelegate calcContext = (s, m) => s.DirectCount == 1 && ( s.Types == Types.Folder);
-
-            Add(new CreateRelationshipAction(CreateRelationshipDirection.To));
-            Add(new CreateRelationshipAction(CreateRelationshipDirection.From));
 
             // "Create New"
             Add(new Action((s, m) => s.Count >= 1, (s, m) => {
@@ -75,41 +75,21 @@ namespace TabularEditor.UI.Actions
                 }
             }, (s, m) => @"Create New\Translation", true, Context.Model | Context.Translations | Context.Translation));
 
-            // "Duplicate Table Object";
-            Add(new Action((s, m) => true,
-                (s, m) => s.ForEach(i =>
-                {
-                    var obj = (i as IClonableObject).Clone(includeTranslations: i is ITranslatableObject);
-                    if (s.Count == 1) obj.Edit(); // Focuses the cloned item in the tree, and lets the user edit its name
-                }),
-                (s, m) => "Duplicate " + s.Summary(), true, Context.TableObject | Context.Partition ));
-
-            Add(new Action((s, m) => s.DirectCount == 1 && s.Direct.First() is IDaxObject, (s, m) =>
-            {
-                UIController.Current.ShowDependencies(s.Direct.First() as IDaxObject);
-            }, (s, m) => @"Show dependencies...", true, Context.Table | Context.TableObject));
-
-            // "Duplicate Table";
-            Add(new Action((s, m) => s.Count == 1, (s, m) => s.Table.Clone().Edit(), (s, m) => "Duplicate Table", true, Context.Table));
-
-            // "Duplicate Translation";
-            Add(new Action((s, m) => s.Count == 1,
-                (s, m) => s.ForEach(i =>
-                {
-                        var res = csDialog.ShowDialog();
-                        if (res == DialogResult.OK) (i as IClonableObject).Clone(csDialog.SelectedCulture.Name, false).Edit();
-                }),
-                (s, m) => "Duplicate " + s.Summary(), true, Context.Translation));
-
-            // "Duplicate Role / Perspective":
-            Add(new Action((s, m) => s.Count == 1, (s, m) => s.ForEach(i => (i as IClonableObject).Clone(null, true).Edit()), (s, m) => "Duplicate " + s.Summary(), true, Context.Role | Context.Perspective));
+            Add(new CreateRelationshipAction(CreateRelationshipDirection.To));
+            Add(new CreateRelationshipAction(CreateRelationshipDirection.From));
 
             // "Add to Hierarchy..."
-            Add(new Separator());
-            Add(new MultiAction((s, m, p) => p == null ? s.Direct.OfType<Column>().Any() : !(p as Hierarchy).Levels.Select(l => l.Column).Intersect(s.Direct.OfType<Column>()).Any(),
-                (s, m, p) => (p as Hierarchy).AddLevels(s.Direct.OfType<Column>()),
+            Add(new MultiAction((s, m, p) =>
+                // Action enabled only when table contains at least one hierarchy:
+                ((p == null) && s.Table.Hierarchies.Any()) ||
+                // ...and none of the selected columns are already present as levels in the hierarchy:
+                ((p != null) && !(p as Hierarchy).Levels.Select(l => l.Column).Intersect(s.Columns).Any()),
+
+                (s, m, p) => (p as Hierarchy).AddLevels(s.Columns),
                 (s, m, p) => (p as Hierarchy).Name,
-                (s, m) => s.Table.Hierarchies.AsEnumerable(), "Add to Hierarchy...", true, Context.TableObject | Context.Level));
+                (s, m) => s.Table.Hierarchies.AsEnumerable(), "Add to Hierarchy...", true, Context.Column));
+
+            Add(new Separator());
 
             // Visibility and perspectives
             Add(new Action((s, m) => s.OfType<IHideableObject>().Any(o => o.IsHidden), (s, m) => s.IsHidden = false, (s, m) => "Make visible", true, Context.TableObject | Context.Table));
@@ -132,6 +112,31 @@ namespace TabularEditor.UI.Actions
 
             // Rename Dialogs
             Add(new Separator());
+
+            // "Duplicate Table Object";
+            Add(new Action((s, m) => true,
+                (s, m) => s.ForEach(i =>
+                {
+                    var obj = (i as IClonableObject).Clone(includeTranslations: i is ITranslatableObject);
+                    if (s.Count == 1) obj.Edit(); // Focuses the cloned item in the tree, and lets the user edit its name
+                }),
+                (s, m) => "Duplicate " + s.Summary(), true, Context.TableObject | Context.Partition));
+
+            // "Duplicate Table";
+            Add(new Action((s, m) => s.Count == 1, (s, m) => s.Table.Clone().Edit(), (s, m) => "Duplicate Table", true, Context.Table));
+
+            // "Duplicate Translation";
+            Add(new Action((s, m) => s.Count == 1,
+                (s, m) => s.ForEach(i =>
+                {
+                    var res = csDialog.ShowDialog();
+                    if (res == DialogResult.OK) (i as IClonableObject).Clone(csDialog.SelectedCulture.Name, false).Edit();
+                }),
+                (s, m) => "Duplicate " + s.Summary(), true, Context.Translation));
+
+            // "Duplicate Role / Perspective":
+            Add(new Action((s, m) => s.Count == 1, (s, m) => s.ForEach(i => (i as IClonableObject).Clone(null, true).Edit()), (s, m) => "Duplicate " + s.Summary(), true, Context.Role | Context.Perspective));
+
             Add(new Action((s, m) => s.Count > 1, (s, m) =>
             {
                 var form = Dialogs.ReplaceForm.Singleton;
@@ -199,6 +204,38 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => true, (s, m) => UIController.Current.Translations_Import(), (s, m) => "Import translations...", true, Context.Translations | Context.Tool));
             Add(new Action((s, m) => true, (s, m) => UIController.Current.Translations_ExportSelected(), (s, m) => string.Format("Export {0} translation{1}...", s.Count, s.Count == 1 ? "" : "s"), true, Context.Translation));
 
+            // Show dependencies...
+            Add(new Action((s, m) => s.DirectCount == 1 && s.Direct.First() is IDaxObject, (s, m) =>
+            {
+                UIController.Current.ShowDependencies(s.Direct.First() as IDaxObject);
+            }, (s, m) => @"Show dependencies...", true, Context.Table | Context.TableObject));
+
+            Add(new Action((s, m) => s.DirectCount == 1, (s, m) => Clipboard.SetText(Handler.ScriptCreateOrReplace(s.OfType<TabularNamedObject>().FirstOrDefault())), (s, m) => @"Script\Create or Replace\To clipboard", true, Context.Scriptable));
+            Add(new Action((s, m) => s.DirectCount == 1, (s, m) => Clipboard.SetText(Handler.ScriptCreate(s.OfType<TabularNamedObject>().FirstOrDefault())), (s, m) => @"Script\Create\To clipboard", true, Context.Scriptable));
+            Add(new Action((s, m) => s.DirectCount == 1, (s, m) => Clipboard.SetText(Handler.ScriptAlter(s.OfType<TabularNamedObject>().FirstOrDefault())), (s, m) => @"Script\Alter\To clipboard", true, Context.Scriptable));
+            Add(new Action((s, m) => s.DirectCount == 1, (s, m) => Clipboard.SetText(Handler.ScriptDelete(s.OfType<TabularNamedObject>().FirstOrDefault())), (s, m) => @"Script\Delete\To clipboard", true, Context.Scriptable));
+            Add(new Action((s, m) => s.DirectCount == 1, (s, m) => SaveScriptToFile(Handler.ScriptCreateOrReplace(s.OfType<TabularNamedObject>().FirstOrDefault())), (s, m) => @"Script\Create or Replace\To file...", true, Context.Scriptable));
+            Add(new Action((s, m) => s.DirectCount == 1, (s, m) => SaveScriptToFile(Handler.ScriptCreate(s.OfType<TabularNamedObject>().FirstOrDefault())), (s, m) => @"Script\Create\To file...", true, Context.Scriptable));
+            Add(new Action((s, m) => s.DirectCount == 1, (s, m) => SaveScriptToFile(Handler.ScriptAlter(s.OfType<TabularNamedObject>().FirstOrDefault())), (s, m) => @"Script\Alter\To file...", true, Context.Scriptable));
+            Add(new Action((s, m) => s.DirectCount == 1, (s, m) => SaveScriptToFile(Handler.ScriptDelete(s.OfType<TabularNamedObject>().FirstOrDefault())), (s, m) => @"Script\Delete\To file...", true, Context.Scriptable));
+
+            Add(new Action((s, m) => s.DirectCount > 1, (s, m) => Clipboard.SetText(Handler.ScriptMergePartitions(s.OfType<Partition>().ToList())), (s, m) => @"Script\Merge Partitions\To clipboard", true, Context.Partition));
+            Add(new Action((s, m) => s.DirectCount > 1, (s, m) => SaveScriptToFile(Handler.ScriptMergePartitions(s.OfType<Partition>().ToList())), (s, m) => @"Script\Merge Partitions\To file...", true, Context.Partition));
+        }
+
+        private void SaveScriptToFile(string script)
+        {
+            var sfd = new SaveFileDialog()
+            {
+                Filter = "Tabular Model Scripting Language|*.tmsl|All files|*.*",
+                DefaultExt = "*.tmsl",
+                FileName = "script.tmsl",
+                Title = "Save script"
+            };
+            if(sfd.ShowDialog() == DialogResult.OK)
+            {
+                System.IO.File.WriteAllText(sfd.FileName, script);
+            }
         }
     }
 

@@ -10,7 +10,7 @@ namespace TabularEditor.UIServices
 {
     public class Preferences
     {
-    #region Serializable properties
+        #region Serializable properties
         public bool CheckForUpdates = false;
         public bool FormulaFixup = true;
         public string BackupLocation = string.Empty;
@@ -29,6 +29,17 @@ namespace TabularEditor.UIServices
         public bool SaveToFile_IgnoreTimestamps = true;
         public bool SaveToFile_SplitMultilineStrings = true;
 
+        public HashSet<string> Scripting_UsingNamespaces = new HashSet<string>();
+
+        public bool View_DisplayFolders = true;
+        public bool View_HiddenObjects = false;
+        public bool View_AllObjectTypes = true;
+        public bool View_SortAlphabetically = true;
+        public bool View_Measures = true;
+        public bool View_Columns = true;
+        public bool View_Hierarchies = true;
+        public bool View_MetadataInformation = false;
+
         public HashSet<string> SaveToFolder_Levels = new HashSet<string>() {
                     "Data Sources",
                     "Perspectives",
@@ -41,12 +52,13 @@ namespace TabularEditor.UIServices
                     "Tables/Partitions",
                     "Translations"
                 };
-    #endregion
+        #endregion
 
-    #region Serialization functionality
-    public static Preferences Default
+        #region Serialization functionality
+        public static Preferences Default
         {
-            get {
+            get
+            {
                 return new Preferences();
             }
         }

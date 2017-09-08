@@ -15,14 +15,29 @@ namespace TabularEditor.UI
     {
         public void File_Open(string fileName)
         {
-            Handler = new TabularModelHandler(fileName);
-            Handler.AutoFixup = Preferences.Current.FormulaFixup;
-            File_Current = Handler.Source;
-            File_SaveMode = Handler.SourceType;
+            var oldFile = File_Current;
+            var oldHandler = Handler;
 
-            LoadTabularModelToUI();
-            RecentFiles.Add(fileName);
-            UI.FormMain.PopulateRecentFilesList();
+            using (new Hourglass())
+            {
+                try
+                {
+                    Handler = new TabularModelHandler(fileName);
+                    Handler.AutoFixup = Preferences.Current.FormulaFixup;
+                    File_Current = Handler.Source;
+                    File_SaveMode = Handler.SourceType;
+
+                    LoadTabularModelToUI();
+                    RecentFiles.Add(fileName);
+                    UI.FormMain.PopulateRecentFilesList();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error loading Model from disk", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Handler = oldHandler;
+                    File_Current = oldFile;
+                }
+            }
         }
 
         public void File_New()
@@ -86,19 +101,7 @@ namespace TabularEditor.UI
                 fileName = UI.OpenBimDialog.FileName;
             }
 
-            using (new Hourglass())
-            {
-                try
-                {
-                    File_Open(fileName);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error loading Model from disk", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Handler = oldHandler;
-                    File_Current = oldFile;
-                }
-            }
+            File_Open(fileName);
         }
 
         public void File_SaveAs()

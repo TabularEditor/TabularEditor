@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using TabularEditor.PropertyGridExtension;
 using TabularEditor.TOMWrapper;
 using TabularEditor.UI.Actions;
+using TabularEditor.UIServices;
 
 namespace TabularEditor.UI
 {
@@ -119,7 +120,7 @@ namespace TabularEditor.UI
             ExpressionEditor_Current = null;
 
             ShowSelectionStatus = false;
-            Tree = new TabularUITree(Handler.Model) { Options = Tree?.Options ?? LogicalTreeOptions.Default, TreeView = UI.TreeView };
+            Tree = new TabularUITree(Handler.Model) { Options = CurrentOptions, TreeView = UI.TreeView };
             Tree.UpdateComplete += Tree_UpdateComplete;
 
             var sortedModel = new SortedTreeModel(Tree);

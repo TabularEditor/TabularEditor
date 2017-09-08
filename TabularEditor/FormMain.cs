@@ -24,7 +24,7 @@ namespace TabularEditor
             Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en-US");
             InitializeComponent();
             propertyGrid1.Site = new DesignerHost();
-            
+            toolStripButton3.Visible = ScriptEngine.PluginNamespaces.Count > 0;
 
             SetupUIController();
             txtFilter.Control.SetCueBanner("Filter");
@@ -104,6 +104,17 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             // code nicely separated.
             UI = new UIController(elements);
             UI.ModelLoaded += UI_ModelLoaded;
+
+            actToggleInfoColumns.Checked = Preferences.Current.View_MetadataInformation;
+            UI.SetInfoColumns(actToggleInfoColumns.Checked);
+            actToggleDisplayFolders.Checked = Preferences.Current.View_DisplayFolders;
+            actToggleHidden.Checked = Preferences.Current.View_HiddenObjects;
+            actToggleMeasures.Checked = Preferences.Current.View_Measures;
+            actToggleColumns.Checked = Preferences.Current.View_Columns;
+            actToggleHierarchies.Checked = Preferences.Current.View_Hierarchies;
+            actToggleAllObjectTypes.Checked = Preferences.Current.View_AllObjectTypes;
+            actToggleMetadataOrder.Checked = !Preferences.Current.View_SortAlphabetically;
+            actViewOptions_Execute(this, null);
         }
 
         private void UI_ModelLoaded(object sender, EventArgs e)
@@ -166,6 +177,15 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 actToggleMetadataOrder.Checked,
                 actToggleFilter.Checked ? txtFilter.Text : null
             );
+
+            Preferences.Current.View_HiddenObjects = actToggleHidden.Checked;
+            Preferences.Current.View_DisplayFolders = actToggleDisplayFolders.Checked;
+            Preferences.Current.View_Columns = actToggleColumns.Checked;
+            Preferences.Current.View_Measures = actToggleMeasures.Checked;
+            Preferences.Current.View_Hierarchies = actToggleHierarchies.Checked;
+            Preferences.Current.View_AllObjectTypes = actToggleAllObjectTypes.Checked;
+            Preferences.Current.View_SortAlphabetically = !actToggleMetadataOrder.Checked;
+            Preferences.Current.Save();
         }
 
         private void txtFilter_TextChanged(object sender, EventArgs e)
@@ -303,6 +323,8 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void actToggleInfoColumns_Execute(object sender, EventArgs e)
         {
             UI.SetInfoColumns(actToggleInfoColumns.Checked);
+            Preferences.Current.View_MetadataInformation = actToggleInfoColumns.Checked;
+            Preferences.Current.Save();
         }
 
         private void actToggleFilter_UpdateEx(object sender, UpdateExEventArgs e)
@@ -555,7 +577,20 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         {
             var srf = new SelectReferencesForm();
             srf.checkedListBox1.Items.AddRange(ScriptEngine.PluginNamespaces.ToArray());
-            //if(srf.ShowDialog();
+            for(var i = 0; i < srf.checkedListBox1.Items.Count; i++)
+            {
+                if (Preferences.Current.Scripting_UsingNamespaces.Contains(((AssemblyNamespace)srf.checkedListBox1.Items[i]).Namespace))
+                    srf.checkedListBox1.SetItemChecked(i, true);
+            }
+            if(srf.ShowDialog() == DialogResult.OK)
+            {
+                Preferences.Current.Scripting_UsingNamespaces.Clear();
+                foreach(AssemblyNamespace ns in srf.checkedListBox1.CheckedItems)
+                {
+                    Preferences.Current.Scripting_UsingNamespaces.Add(ns.Namespace);
+                }
+                Preferences.Current.Save();
+            }
         }
     }
 }

@@ -315,6 +315,25 @@ namespace TabularEditor.TOMWrapper
             return TOM.JsonScripter.ScriptCreateOrReplace(Database);
         }
 
+        public string ScriptAlter(TabularNamedObject obj)
+        {
+            return TOM.JsonScripter.ScriptAlter(obj.MetadataObject);
+        }
+
+        public string ScriptCreate(TabularNamedObject obj)
+        {
+            return TOM.JsonScripter.ScriptCreate(obj.MetadataObject);
+        }
+        public string ScriptDelete(TabularNamedObject obj)
+        {
+            return TOM.JsonScripter.ScriptDelete(obj.MetadataObject);
+        }
+        public string ScriptMergePartitions(IList<Partition> obj)
+        {
+            return TOM.JsonScripter.ScriptMergePartitions(obj.First().MetadataObject, obj.Skip(1).Select(p => p.MetadataObject));
+        }
+
+
         /// <summary>
         /// Scripts the object
         /// </summary>

@@ -284,7 +284,8 @@ namespace TabularEditor.UI
         TableObject = Measure | Column | Hierarchy,
         SingularObjects = Model | Table | TableObject | Level | Partition | Relationship | DataSource | Role | Perspective | Translation | KPI,
         Groups = Tables | Relationships | DataSources | Roles | Perspectives | Translations | TablePartitions,
-        DataObjects = Table | TableObject
+        DataObjects = Table | TableObject,
+        Scriptable = Table | Partition | DataSource | Role
     }
 
     /// <summary>

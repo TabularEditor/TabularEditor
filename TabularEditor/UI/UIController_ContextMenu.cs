@@ -86,7 +86,7 @@ namespace TabularEditor.UI
             if (Handler == null) return;
             var menu = (sender as ToolStripDropDown);
 
-            var originalItems = menu.Items.OfType<ToolStripItem>().Where(item => !(item.Tag is IBaseAction)).ToArray();
+            var originalItems = menu.Items.OfType<ToolStripItem>().Where(item => !(item.Tag is IBaseAction || item.Tag is DynamicMenuState)).ToArray();
             menu.Items.Clear();
             if (originalItems.Length > 0)
             {
@@ -147,7 +147,9 @@ namespace TabularEditor.UI
                     var act = action as IModelMultiAction;
                     if (act.HideWhenDisabled && !act.Enabled(null)) continue;
 
-                    var dict = act.ArgNames;
+                    ContextMenu_AddFromActionDynamic(act.Path, menu, act);
+
+                    /*var dict = act.ArgNames;
 
                     foreach (string argName in dict.Keys)
                     {
@@ -157,7 +159,7 @@ namespace TabularEditor.UI
                         item.Name = argName;
                         item.Enabled = act.Enabled(dict[argName]);
                         item.Click += ContextMenuItem_Click;
-                    }
+                    }*/
                 } else if (action is Separator)
                 {
                     var sep = action as Separator;
@@ -166,7 +168,81 @@ namespace TabularEditor.UI
                 }
             }
 
-            if (menu.Items.Count > 0 && menu.Items[menu.Items.Count - 1] is ToolStripSeparator) menu.Items.RemoveAt(menu.Items.Count - 1);
+            // Remove unnescessary separators:
+            RemoveSeparators(menu);
+        }
+
+        private void RemoveSeparators(ToolStripDropDown menu)
+        {
+            if (menu.Items.Count == 0) return;
+            if (menu.Items[0] is ToolStripSeparator) menu.Items.RemoveAt(0);
+
+            if (menu.Items.Count == 0) return;
+            if (menu.Items[menu.Items.Count - 1] is ToolStripSeparator) menu.Items.RemoveAt(menu.Items.Count - 1);
+
+            foreach(var item in menu.Items.OfType<ToolStripMenuItem>())
+            {
+                RemoveSeparators(item.DropDown);
+            }
+        }
+
+        class DynamicMenuState
+        {
+            public int FirstItemIndex;
+            public bool IsLoaded;
+            public IModelMultiAction Action;
+        }
+
+        private ToolStripItem ContextMenu_AddFromActionDynamic(string name, ToolStripDropDown parent, IModelMultiAction dynamicAction)
+        {
+            var submenu = ContextMenu_AddFromAction(name.ConcatPath("(No actions available)"), parent);
+            submenu.Enabled = false;
+            var menu = submenu.OwnerItem as ToolStripMenuItem;
+            var state = new DynamicMenuState()
+            {
+                FirstItemIndex = menu.DropDownItems.IndexOf(submenu),
+                IsLoaded = false,
+                Action = dynamicAction
+            };
+            menu.Tag = state;
+
+            menu.DropDownOpening += ContextMenu_DynamicMenuOpening;
+            Console.WriteLine("Added eventhandler for {0}", name);
+            return submenu;
+        }
+
+        private void ContextMenu_DynamicMenuOpening(object sender, EventArgs e)
+        {
+            var menu = sender as ToolStripMenuItem;
+            Console.WriteLine("Opening submenu for {0}", menu.Text);
+            var state = menu.Tag as DynamicMenuState;
+
+            if (state.IsLoaded) return;
+
+            var act = state.Action;
+
+            // Remove placeholder item / previously created items:
+            for (var ix = menu.DropDownItems.Count - 1; ix >= state.FirstItemIndex; ix--)
+            {
+                menu.DropDownItems.RemoveAt(ix);
+            }
+
+            var debug1 = menu.DropDownItems.Count;
+
+            foreach (string argName in act.ArgNames.Keys)
+            {
+                var item = ContextMenu_AddFromAction(argName, menu.DropDown);
+                if (!string.IsNullOrEmpty(act.ToolTip)) item.ToolTipText = act.ToolTip;
+                item.Tag = act;
+                item.Name = argName;
+                item.Enabled = act.Enabled(act.ArgNames[argName]);
+                item.Click += ContextMenuItem_Click;
+            }
+
+            var debug2 = menu.DropDownItems.Count;
+
+            Console.WriteLine("Populated submenu items for {0}. Items before: {1}, items after: {2}", menu.Text, debug1, debug2);
+            state.IsLoaded = true;
         }
 
         private ToolStripItem ContextMenu_AddFromAction(string name, ToolStripDropDown menu)

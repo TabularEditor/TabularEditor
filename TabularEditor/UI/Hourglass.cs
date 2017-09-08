@@ -28,7 +28,7 @@ namespace TabularEditor.UI
                 if (value == Application.UseWaitCursor) return;
                 Application.UseWaitCursor = value;
                 Form f = Form.ActiveForm;
-                if (f != null && f.Handle != IntPtr.Zero)   // Send WM_SETCURSOR
+                if (f != null && f.Name != "" && f.Handle != IntPtr.Zero)   // Send WM_SETCURSOR
                     SendMessage(f.Handle, 0x20, f.Handle, (IntPtr)1);
             }
         }

@@ -196,6 +196,7 @@ namespace TabularEditor
         {
             // Allowed namespaces:
             var includeUsings = new HashSet<string>(new[] { "System", "System.Linq", "TabularEditor.TOMWrapper", "TabularEditor.UI", "TOM = Microsoft.AnalysisServices.Tabular" });
+            foreach (var pluginNs in TabularEditor.UIServices.Preferences.Current.Scripting_UsingNamespaces) includeUsings.Add(pluginNs);
 
             CompilerResults result;
 
@@ -227,7 +228,7 @@ namespace TabularEditor
 
         static IList<Assembly> Plugins = new List<Assembly>();
         static IList<AssemblyNamespace> _pluginNamespaces = new List<AssemblyNamespace>();
-        static public IEnumerable<AssemblyNamespace> PluginNamespaces { get { return _pluginNamespaces; } }
+        static public IList<AssemblyNamespace> PluginNamespaces { get { return _pluginNamespaces; } }
 
         /// <summary>
         /// This method ensures that the TOMWrapper.dll file exists (needed for Advanced scripting).

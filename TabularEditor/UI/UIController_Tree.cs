@@ -12,6 +12,7 @@ using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper;
 using TabularEditor.UI.Actions;
 using TabularEditor.UI.Tree;
+using TabularEditor.UIServices;
 
 namespace TabularEditor.UI
 {
@@ -325,23 +326,29 @@ namespace TabularEditor.UI
             UI.PropertyGrid.Refresh();
         }
 
+        private LogicalTreeOptions CurrentOptions = LogicalTreeOptions.Default;
+
         public void SetDisplayOptions(bool showHidden, bool showDisplayFolders, bool showColumns, 
             bool showMeasures, bool showHierarchies, bool showAllObjectTypes, bool alphabeticalSort, string filter = null)
         {
+            CurrentOptions = 
+                (showHidden ? LogicalTreeOptions.ShowHidden : 0) |
+                (showDisplayFolders ? LogicalTreeOptions.DisplayFolders : 0) |
+                (showColumns ? LogicalTreeOptions.Columns : 0) |
+                (showMeasures ? LogicalTreeOptions.Measures : 0) |
+                (showHierarchies ? LogicalTreeOptions.Hierarchies : 0) |
+                (showAllObjectTypes ? LogicalTreeOptions.AllObjectTypes : 0) |
+                LogicalTreeOptions.ShowRoot;
+
+            if (Tree == null) return;
+
             var cmp = (UI.TreeView.Model as SortedTreeModel)?.Comparer as TabularObjectComparer;
             if(cmp != null)
             {
                 cmp.Order = alphabeticalSort ? ObjectOrder.Alphabetical : ObjectOrder.Metadata;
             }
 
-            Tree.Options =
-                      (showHidden ? LogicalTreeOptions.ShowHidden : 0) |
-                      (showDisplayFolders ? LogicalTreeOptions.DisplayFolders : 0) |
-                      (showColumns ? LogicalTreeOptions.Columns : 0) |
-                      (showMeasures ? LogicalTreeOptions.Measures : 0) |
-                      (showHierarchies ? LogicalTreeOptions.Hierarchies : 0) |
-                      (showAllObjectTypes ? LogicalTreeOptions.AllObjectTypes : 0) |
-                      LogicalTreeOptions.ShowRoot;
+            Tree.Options = CurrentOptions;
             Tree.Filter = filter;
         }
     }
