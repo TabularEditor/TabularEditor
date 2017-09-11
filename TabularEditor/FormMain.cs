@@ -576,18 +576,16 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void toolStripButton3_Click(object sender, EventArgs e)
         {
             var srf = new SelectReferencesForm();
-            srf.checkedListBox1.Items.AddRange(ScriptEngine.PluginNamespaces.ToArray());
-            for(var i = 0; i < srf.checkedListBox1.Items.Count; i++)
-            {
-                if (Preferences.Current.Scripting_UsingNamespaces.Contains(((AssemblyNamespace)srf.checkedListBox1.Items[i]).Namespace))
-                    srf.checkedListBox1.SetItemChecked(i, true);
-            }
-            if(srf.ShowDialog() == DialogResult.OK)
+            srf.lstReferences.Items.AddRange(ScriptEngine.PluginNamespaces
+                .Select(pn => new ListViewItem(new[] { pn.Namespace, Path.GetFileName(pn.Assembly.Location), pn.Assembly.GetName().Version.ToString() }) {
+                    Checked = Preferences.Current.Scripting_UsingNamespaces.Contains(pn.Namespace) }).ToArray());
+
+            if (srf.ShowDialog() == DialogResult.OK)
             {
                 Preferences.Current.Scripting_UsingNamespaces.Clear();
-                foreach(AssemblyNamespace ns in srf.checkedListBox1.CheckedItems)
+                foreach(ListViewItem item in srf.lstReferences.CheckedItems)
                 {
-                    Preferences.Current.Scripting_UsingNamespaces.Add(ns.Namespace);
+                    Preferences.Current.Scripting_UsingNamespaces.Add(item.SubItems[0].Text);
                 }
                 Preferences.Current.Save();
             }

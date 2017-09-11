@@ -28,20 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             this.label1 = new System.Windows.Forms.Label();
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.lstReferences = new System.Windows.Forms.ListView();
+            this.colAssembly = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colNamespace = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colVersion = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
-            // 
-            // checkedListBox1
-            // 
-            this.checkedListBox1.CheckOnClick = true;
-            this.checkedListBox1.FormattingEnabled = true;
-            this.checkedListBox1.Location = new System.Drawing.Point(12, 45);
-            this.checkedListBox1.Name = "checkedListBox1";
-            this.checkedListBox1.Size = new System.Drawing.Size(331, 154);
-            this.checkedListBox1.TabIndex = 0;
             // 
             // label1
             // 
@@ -54,8 +48,9 @@
             // 
             // btnOK
             // 
+            this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(268, 205);
+            this.btnOK.Location = new System.Drawing.Point(386, 268);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 2;
@@ -64,13 +59,46 @@
             // 
             // btnCancel
             // 
+            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(187, 205);
+            this.btnCancel.Location = new System.Drawing.Point(305, 268);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 3;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
+            // 
+            // lstReferences
+            // 
+            this.lstReferences.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lstReferences.CheckBoxes = true;
+            this.lstReferences.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.colNamespace,
+            this.colAssembly,
+            this.colVersion});
+            this.lstReferences.Location = new System.Drawing.Point(15, 45);
+            this.lstReferences.Name = "lstReferences";
+            this.lstReferences.Size = new System.Drawing.Size(446, 217);
+            this.lstReferences.TabIndex = 4;
+            this.lstReferences.UseCompatibleStateImageBehavior = false;
+            this.lstReferences.View = System.Windows.Forms.View.Details;
+            // 
+            // colAssembly
+            // 
+            this.colAssembly.Text = "Assembly";
+            this.colAssembly.Width = 223;
+            // 
+            // colNamespace
+            // 
+            this.colNamespace.Text = "Namespace";
+            this.colNamespace.Width = 146;
+            // 
+            // colVersion
+            // 
+            this.colVersion.Text = "Version";
+            this.colVersion.Width = 73;
             // 
             // SelectReferencesForm
             // 
@@ -78,14 +106,14 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(355, 240);
+            this.ClientSize = new System.Drawing.Size(473, 303);
+            this.Controls.Add(this.lstReferences);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.checkedListBox1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(400, 300);
             this.Name = "SelectReferencesForm";
             this.ShowIcon = false;
             this.Text = "Include Plug-in Namespaces";
@@ -97,6 +125,9 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Button btnCancel;
-        public System.Windows.Forms.CheckedListBox checkedListBox1;
+        private System.Windows.Forms.ColumnHeader colNamespace;
+        private System.Windows.Forms.ColumnHeader colAssembly;
+        public System.Windows.Forms.ListView lstReferences;
+        private System.Windows.Forms.ColumnHeader colVersion;
     }
 }
