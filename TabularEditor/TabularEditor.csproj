@@ -441,7 +441,6 @@
     <Compile Include="TreeViewAdv\Tree\IRowLayout.cs" />
     <Compile Include="TreeViewAdv\Tree\IToolTipProvider.cs" />
     <Compile Include="TreeViewAdv\Tree\ITreeModel.cs" />
-    <Compile Include="TreeViewAdv\Tree\ListModel.cs" />
     <Compile Include="TreeViewAdv\Tree\Node.cs" />
     <Compile Include="TreeViewAdv\Tree\NodeControlInfo.cs" />
     <Compile Include="TreeViewAdv\Tree\NodeControls\BaseTextControl.cs">
@@ -459,25 +458,13 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="TreeViewAdv\Tree\NodeControls\LabelEventArgs.cs" />
-    <Compile Include="TreeViewAdv\Tree\NodeControls\NodeComboBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="TreeViewAdv\Tree\NodeControls\NodeControl.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="TreeViewAdv\Tree\NodeControls\NodeControlsCollection.cs" />
     <Compile Include="TreeViewAdv\Tree\NodeControls\NodeControlValueEventArgs.cs" />
-    <Compile Include="TreeViewAdv\Tree\NodeControls\NodeDecimalTextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="TreeViewAdv\Tree\NodeControls\NodeEventArgs.cs" />
     <Compile Include="TreeViewAdv\Tree\NodeControls\NodeIcon.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TreeViewAdv\Tree\NodeControls\NodeIntegerTextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TreeViewAdv\Tree\NodeControls\NodeNumericUpDown.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="TreeViewAdv\Tree\NodeControls\NodePlusMinus.cs">
@@ -492,7 +479,6 @@
     </Compile>
     <Compile Include="TreeViewAdv\Tree\TreeColumnCollection.cs" />
     <Compile Include="TreeViewAdv\Tree\TreeColumnEventArgs.cs" />
-    <Compile Include="TreeViewAdv\Tree\TreeListAdapter.cs" />
     <Compile Include="TreeViewAdv\Tree\TreeModel.cs" />
     <Compile Include="TreeViewAdv\Tree\TreeModelBase.cs" />
     <Compile Include="TreeViewAdv\Tree\TreeModelEventArgs.cs" />

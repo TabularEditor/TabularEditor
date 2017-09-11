@@ -81,13 +81,16 @@ namespace Aga.Controls.Tree.NodeControls
 		public NodeControlCollectionEditor(Type type)
 			: base(type)
 		{
-			_types = new Type[] { typeof(NodeTextBox), typeof(NodeIntegerTextBox), typeof(NodeDecimalTextBox), 
-				typeof(NodeComboBox),
+			_types = new Type[] {
+                typeof(NodeTextBox),
+                /*typeof(NodeIntegerTextBox),*/
+                /*typeof(NodeDecimalTextBox), */
+				/*typeof(NodeComboBox),*/
                 /*typeof(NodeCheckBox),*/
                 /*typeof(NodeStateIcon),*/
-                typeof(NodeIcon),
+                typeof(NodeIcon)
                 /*typeof(ExpandingIcon),*/
-                typeof(NodeNumericUpDown)
+                /*typeof(NodeNumericUpDown)*/
                   };
 		}
 
