@@ -154,7 +154,7 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         private string GetStringExpression(Operator op)
         {
-            switch (Op)
+            switch (op)
             {
                 case Operator.NotStartsWith:
                     return "not {0}.StartsWith({1}," + (!CaseSensitive).ToString() + ",null)";
@@ -179,11 +179,11 @@ namespace TabularEditor.BestPracticeAnalyzer
                 case Operator.LToE:
                 case Operator.NE:
                     var res = "String.Compare({0},{1}," + (!CaseSensitive).ToString() + ")";
-                    if (Op == Operator.E) return res += " = 0";
-                    if (Op == Operator.GT) return res += " > 0";
-                    if (Op == Operator.GToE) return res += " >= 0";
-                    if (Op == Operator.LT) return res += " < 0";
-                    if (Op == Operator.LToE) return res += " <= 0";
+                    if (op == Operator.E) return res += " = 0";
+                    if (op == Operator.GT) return res += " > 0";
+                    if (op == Operator.GToE) return res += " >= 0";
+                    if (op == Operator.LT) return res += " < 0";
+                    if (op == Operator.LToE) return res += " <= 0";
                     else return res += " <> 0";
                 case Operator.IsBlank:
                     return "String.IsNullOrEmpty({0})";

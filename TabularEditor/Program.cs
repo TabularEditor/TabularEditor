@@ -141,9 +141,6 @@ To obtain the files, download the SQL_AS_AMO library from the <A HREF=""https://
 
         public static List<ITabularEditorPlugin> Plugins = new List<ITabularEditorPlugin>();
 
-        [System.Runtime.InteropServices.DllImport("kernel32.dll")]
-        private static extern bool AllocConsole();
-
         static bool enableVSTS;
         static int errorCount = 0;
         static int issueCount = 0;

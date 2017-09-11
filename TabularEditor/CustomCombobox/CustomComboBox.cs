@@ -80,11 +80,6 @@ namespace CustomComboBox
                 base.DroppedDown = false;
         }
 
-        private void m_dropDown_LostFocus(object sender, EventArgs e)
-        {
-            m_lastHideTime = DateTime.Now;
-        }
-
         #endregion
 
         #region Events
@@ -383,7 +378,7 @@ namespace CustomComboBox
         public new int ItemHeight
         {
             get { return base.ItemHeight; }
-            set { }
+            set { base.ItemHeight = value; }
         }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -391,7 +386,7 @@ namespace CustomComboBox
         public new int MaxDropDownItems
         {
             get { return base.MaxDropDownItems; }
-            set { }
+            set { base.MaxDropDownItems = value; }
         }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -399,7 +394,7 @@ namespace CustomComboBox
         public new string DisplayMember
         {
             get { return base.DisplayMember; }
-            set { }
+            set { base.DisplayMember = value; }
         }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -407,7 +402,7 @@ namespace CustomComboBox
         public new string ValueMember
         {
             get { return base.ValueMember; }
-            set { }
+            set { base.ValueMember = value; }
         }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -415,7 +410,7 @@ namespace CustomComboBox
         public new int DropDownWidth
         {
             get { return base.DropDownWidth; }
-            set { }
+            set { base.DropDownWidth = value; }
         }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -423,7 +418,7 @@ namespace CustomComboBox
         public new int DropDownHeight
         {
             get { return base.DropDownHeight; }
-            set { }
+            set { base.DropDownHeight = value; }
         }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -431,7 +426,7 @@ namespace CustomComboBox
         public new bool IntegralHeight
         {
             get { return base.IntegralHeight; }
-            set { }
+            set { base.IntegralHeight = value; }
         }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -439,7 +434,7 @@ namespace CustomComboBox
         public new bool Sorted
         {
             get { return base.Sorted; }
-            set { }
+            set { base.Sorted = value; }
         }
 
         #endregion

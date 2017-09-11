@@ -46,9 +46,6 @@ namespace TabularEditor.Dax
         public const string DaxTextFormatUri = "http://daxtest02.azurewebsites.net/api/daxformatter/DaxFormat";
         public const int DaxFormatterRequestTimeout = 10;
 
-        private static string redirectUrl = null;  // cache the redirected URL
-        private static string redirectHost = null;
-
         public static DaxFormatterResult FormatDax(string query)
         {
             string output = CallDaxFormatter(DaxTextFormatUri, query);
@@ -110,7 +107,7 @@ namespace TabularEditor.Dax
 
                 return output;
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }

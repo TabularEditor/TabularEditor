@@ -101,7 +101,7 @@ namespace TabularEditor.UIServices
                     Name = name;
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 Name = name;
             }
@@ -133,7 +133,7 @@ namespace TabularEditor.UIServices
                 {
 
                     // get the process pid
-                    System.UInt32 pid = (System.UInt32)process["ProcessId"];
+                    //System.UInt32 pid = (System.UInt32)process["ProcessId"];
                     var parentPid = int.Parse(process["ParentProcessId"].ToString());
                     var parentTitle = "";
                     if (parentPid > 0)
@@ -173,7 +173,7 @@ namespace TabularEditor.UIServices
                             {
                             }
                         }
-                        catch (Exception ex)
+                        catch
                         {
                         }
                     }

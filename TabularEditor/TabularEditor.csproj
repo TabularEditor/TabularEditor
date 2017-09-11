@@ -46,8 +46,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <CodeAnalysisRuleSet>
-    </CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\TOMWrapper\LocateDeadCode.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -442,7 +442,6 @@
     <Compile Include="TreeViewAdv\Tree\IToolTipProvider.cs" />
     <Compile Include="TreeViewAdv\Tree\ITreeModel.cs" />
     <Compile Include="TreeViewAdv\Tree\ListModel.cs" />
-    <Compile Include="TreeViewAdv\Tree\NativeMethods.cs" />
     <Compile Include="TreeViewAdv\Tree\Node.cs" />
     <Compile Include="TreeViewAdv\Tree\NodeControlInfo.cs" />
     <Compile Include="TreeViewAdv\Tree\NodeControls\BaseTextControl.cs">

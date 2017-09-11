@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace TabularEditor.TextServices
 {
-
     /// <summary>
     /// A simple parser for C# statements that are commonly used in the Script Editor.
     /// Supports variable assignments and lambda expressions. Used for AutoComplete in
@@ -58,6 +57,7 @@ namespace TabularEditor.TextServices
             return Find(tokens, fromIndex, findTokenType, false, true, out terminator);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals")]
         private int FindValid(IList<IToken> tokens, int fromIndex, bool backward, bool skipParens, out int terminator, params int[] terminators)
         {
             terminator = -1;
@@ -78,6 +78,7 @@ namespace TabularEditor.TextServices
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals")]
         private int Find(IList<IToken> tokens, int fromIndex, int findTokenType, bool backward, bool skipParens, out int terminator, params int[] terminators )
         {
             terminator = -1;
@@ -126,6 +127,7 @@ namespace TabularEditor.TextServices
             Ts.Fill();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "mx")]
         private MethodInfo GetLinqExtensionMethod(string name, Type collectionType)
         {
             var genericType = collectionType.GetGenericTypeDefinition();
@@ -255,6 +257,8 @@ namespace TabularEditor.TextServices
         }
         int[] objectTypes = new[] { CSharpLexer.IDENTIFIER, CSharpLexer.CHARACTER_LITERAL, CSharpLexer.INTEGER_LITERAL, CSharpLexer.REAL_LITERAL, CSharpLexer.HEX_INTEGER_LITERAL, CSharpLexer.REGULAR_STRING, CSharpLexer.VERBATIUM_STRING };
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "method")]
         private Stack<DotPath> GetPropPathFrom(int pos, IList<IToken> list)
         {
             var i = FindTokenAtPos(list, pos - 1);

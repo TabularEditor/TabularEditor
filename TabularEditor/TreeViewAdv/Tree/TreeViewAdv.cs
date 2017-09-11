@@ -254,50 +254,7 @@ namespace Aga.Controls.Tree
 			Font = _font;
 			//ExpandingIcon.IconChanged += ExpandingIconChanged;
 		}
-
-		void ExpandingIconChanged(object sender, EventArgs e)
-		{
-			if (IsHandleCreated && !IsDisposed)
-				BeginInvoke(new MethodInvoker(DrawIcons));
-		}
-
-		private void DrawIcons()
-		{
-			using (Graphics gr = Graphics.FromHwnd(this.Handle))
-			{
-				//Apply the same Graphics Transform logic as used in OnPaint.
-				int y = 0;
-				if (UseColumns)
-				{
-					y += ColumnHeaderHeight;
-					if (Columns.Count == 0)
-						return;
-				}
-				int firstRowY = _rowLayout.GetRowBounds(FirstVisibleRow).Y;
-				y -= firstRowY;
-				gr.ResetTransform();
-				gr.TranslateTransform(-OffsetX, y);
-
-				DrawContext context = new DrawContext();
-				context.Graphics = gr;
-				/*for (int i = 0; i < _expandingNodes.Count; i++)
-				{
-					foreach (NodeControlInfo item in GetNodeControls(_expandingNodes[i]))
-					{
-						if (item.Control is ExpandingIcon)
-						{
-							Rectangle bounds = item.Bounds;
-							if (item.Node.Parent == null && UseColumns)
-								bounds.Location = Point.Empty; // display root expanding icon at 0,0
-
-							context.Bounds = bounds;
-							item.Control.Draw(item.Node, context);
-						}
-					}
-				}*/
-			}
-		}
-
+        
 		#region Public Methods
 
 		public TreePath GetPath(TreeNodeAdv node)

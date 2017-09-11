@@ -21,7 +21,6 @@ namespace TabularEditor.UI.Dialogs
                 return _singleton;
             }
         }
-        public string Title { get { return this.Text; } set { this.Text = Title; } }
 
         public ReplaceForm()
         {

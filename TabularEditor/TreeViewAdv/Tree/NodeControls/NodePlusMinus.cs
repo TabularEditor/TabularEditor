@@ -12,8 +12,6 @@ namespace Aga.Controls.Tree.NodeControls
 	{
 		public const int ImageSize = 9;
 		public const int Width = 16;
-		private Bitmap _plus;
-		private Bitmap _minus;
 
 		private VisualStyleRenderer _openedRenderer;
 		private VisualStyleRenderer OpenedRenderer
@@ -40,8 +38,6 @@ namespace Aga.Controls.Tree.NodeControls
 
 		public NodePlusMinus()
 		{
-			//_plus = Resources.plus;
-			//_minus = Resources.minus;
 		}
 
 		public override Size MeasureSize(TreeNodeAdv node, DrawContext context)
@@ -63,15 +59,6 @@ namespace Aga.Controls.Tree.NodeControls
 					else
 						renderer = ClosedRenderer;
 					renderer.DrawBackground(context.Graphics, new Rectangle(r.X, r.Y + dy, ImageSize, ImageSize));
-				}
-				else
-				{
-					Image img;
-					if (node.IsExpanded)
-						img = _minus;
-					else
-						img = _plus;
-					context.Graphics.DrawImageUnscaled(img, new Point(r.X, r.Y + dy));
 				}
 			}
 		}

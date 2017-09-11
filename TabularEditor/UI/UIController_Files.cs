@@ -83,10 +83,7 @@ namespace TabularEditor.UI
         public void File_Open(bool fromFolder = false)
         {
             if (DiscardChangesCheck()) return;
-
-            var oldFile = File_Current;
-            var oldHandler = Handler;
-
+            
             string fileName;
             if(fromFolder)
             {

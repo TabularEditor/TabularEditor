@@ -97,16 +97,14 @@ namespace TabularEditor
         public static void CreateCustomActions(TabularEditor.UI.Actions.ModelActionManager am)
         {"
 );
-            var i = 0;
-            foreach (var act in actions.Actions)
+            for (var ix = 0; ix < actions.Actions.Length; ix++)
             {
                 sb.Append(t3 + "am.Add(CustomAction");
-                sb.Append(i);
+                sb.Append(ix);
                 sb.AppendLine("());");
-                i++;
             }
-            CustomActionCount = i;
-            i = 0;
+            CustomActionCount = actions.Actions.Length;
+            var i = 0;
             sb.AppendLine(t2 + "}"); // End Method
             foreach (var act in actions.Actions)
             {

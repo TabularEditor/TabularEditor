@@ -21,7 +21,7 @@ namespace TabularEditor.UI.Dialogs
 
         private void DeployingForm_Shown(object sender, EventArgs e)
         {
-            var r = DeployAction.BeginInvoke((ar) => {
+            DeployAction.BeginInvoke((ar) => {
                 ThreadClose();
             }, null);
         }

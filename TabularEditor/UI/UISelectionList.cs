@@ -224,7 +224,7 @@ namespace TabularEditor.UI
                             }
                         }
                     }
-                    catch (ArgumentException ex)
+                    catch
                     {
                         errCount++;
                     }
@@ -244,7 +244,7 @@ namespace TabularEditor.UI
                             }
                         }
                     }
-                    catch (ArgumentException ex)
+                    catch
                     {
                         errCount++;
                     }

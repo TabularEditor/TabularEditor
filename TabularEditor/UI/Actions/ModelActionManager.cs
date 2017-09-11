@@ -32,10 +32,6 @@ namespace TabularEditor.UI.Actions
         public void CreateStandardActions()
         {
             var csDialog = new CultureSelectDialog();
-            
-            // Options to add a Measure or a Calculated Column will only be available when the current select consists of exactly
-            // 1 item, which is either a Table or a Folder:
-            Action.EnabledDelegate calcContext = (s, m) => s.DirectCount == 1 && ( s.Types == Types.Folder);
 
             // "Create New"
             Add(new Action((s, m) => s.Count >= 1, (s, m) => {

@@ -243,12 +243,7 @@ namespace TabularEditor.UI
         bool ShowSelectionStatus = false;
 
         #endregion
-
-        private void RenameNode(object sender, EventArgs e)
-        {
-            UI.TreeView.NodeControls.OfType<TabularNodeTextBox>().First().BeginEdit();
-        }
-
+        
         private void TreeView_Leave(object sender, EventArgs e)
         {
             if (UI.TreeView.CurrentEditor != null)

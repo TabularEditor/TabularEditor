@@ -22,10 +22,6 @@ namespace TabularEditor
         public TreeNodeCollection FolderNodes { get { return treeFolders.Nodes; } }
         public string SelectedFolder {
             get { return string.Join("\\", treeFolders.SelectedNode?.FullPath.Split('\\').Skip(1)); }
-            set
-            {
-                
-            }
         }
 
         private void treeFolders_AfterExpand(object sender, TreeViewEventArgs e)

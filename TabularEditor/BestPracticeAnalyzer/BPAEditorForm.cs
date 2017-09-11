@@ -218,7 +218,7 @@ namespace TabularEditor.UI.Dialogs
         }
 
         MultiNode Root;
-        BaseNodePanel RootPanel;
+        //BaseNodePanel RootPanel;
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -307,11 +307,11 @@ namespace TabularEditor.UI.Dialogs
             }
         }
 
-        bool persistExpression;
+        //bool persistExpression;
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(tabControl1.SelectedIndex == 0)
+            /*if(tabControl1.SelectedIndex == 0)
             {
                 // Switched to visual mode:
                 Expression = txtExpression.Text;
@@ -332,7 +332,7 @@ namespace TabularEditor.UI.Dialogs
                 }
 
                 persistExpression = false;
-            }
+            }*/
         }
 
         private void txtExpression_TextChanged(object sender, EventArgs e)

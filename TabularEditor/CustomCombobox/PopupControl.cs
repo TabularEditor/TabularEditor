@@ -644,8 +644,6 @@ namespace CustomComboBox
 
         public void Show(Control control, int x, int y, int width, int height, PopupResizeMode resizeMode)
         {
-            Size controlSize = control.Size;
-
             InitializeHost(control);
 
             m_dropDown.ResizeMode = resizeMode;

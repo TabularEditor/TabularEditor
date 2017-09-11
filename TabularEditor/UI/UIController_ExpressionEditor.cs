@@ -111,10 +111,6 @@ namespace TabularEditor.UI
             }
         }
 
-        private void ExpressionEditor_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
-        {
-        }
-
         private void ExpressionEditor_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
         {
             if(!ExpressionEditor_IsEditing) ExpressionEditor_Edit(ExpressionEditor_Current, false);

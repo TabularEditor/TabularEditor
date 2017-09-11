@@ -309,7 +309,7 @@ namespace TabularEditor
             dragInfo.SourceHierarchy = (sourceNodes.First().Tag as Level)?.Hierarchy;
             dragInfo.TargetHierarchy = (targetNode.Tag as Level)?.Hierarchy ?? (position == NodePosition.Inside ? targetNode.Tag as Hierarchy : null);
 
-            dragInfo.TargetFolder = position == NodePosition.Inside ? targetNode.Tag as IDetailObjectContainer : (targetNode.Tag as IDetailObject)?.GetContainer();
+            //dragInfo.TargetFolder = position == NodePosition.Inside ? targetNode.Tag as IDetailObjectContainer : (targetNode.Tag as IDetailObject)?.GetContainer();
             dragInfo.TargetLevel = targetNode.Tag as Level;
 
             if (dragInfo.TargetLevel != null)
@@ -331,7 +331,6 @@ namespace TabularEditor
         public Hierarchy SourceHierarchy;
         public Hierarchy TargetHierarchy;
         public Level TargetLevel;
-        public IDetailObjectContainer TargetFolder;
 
         public bool SameTable { get
             {
