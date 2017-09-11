@@ -143,12 +143,11 @@ namespace TabularEditor.UI
 
             var obj = UI.TreeView.SelectedNode?.Tag as IExpressionObject;
 
-            if(!ExpressionEditor_IsEditing)
-            {
-                ExpressionEditor_Current = obj;
-                ExpressionEditor_SetText(obj != null);
-                UI.ExpressionEditor.Enabled = obj != null;
-            } 
+            if (ExpressionEditor_IsEditing) ExpressionEditor_AcceptEdit();
+
+            ExpressionEditor_Current = obj;
+            ExpressionEditor_SetText(obj != null);
+            UI.ExpressionEditor.Enabled = obj != null;
         }
 
         private void ExpressionEditor_Edit(IExpressionObject obj, bool switchToTab = true)

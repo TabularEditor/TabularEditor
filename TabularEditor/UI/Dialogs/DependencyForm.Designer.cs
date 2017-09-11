@@ -51,7 +51,10 @@
             this.treeObjects.ShowNodeToolTips = true;
             this.treeObjects.Size = new System.Drawing.Size(316, 200);
             this.treeObjects.TabIndex = 0;
+            this.treeObjects.BeforeCollapse += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeObjects_BeforeCollapse);
+            this.treeObjects.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeObjects_BeforeExpand);
             this.treeObjects.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeObjects_NodeMouseDoubleClick);
+            this.treeObjects.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.treeObjects_KeyPress);
             this.treeObjects.MouseDown += new System.Windows.Forms.MouseEventHandler(this.treeObjects_MouseDown);
             // 
             // tabularTreeImages

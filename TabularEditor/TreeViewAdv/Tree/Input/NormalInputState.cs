@@ -103,7 +103,7 @@ namespace Aga.Controls.Tree
 						else
 						{
 							_mouseDownFlag = false;
-							DoMouseOperation(args);
+							DoMouseOperation(args, args.Button == MouseButtons.Left);
 						}
 					}
 					finally
@@ -123,10 +123,10 @@ namespace Aga.Controls.Tree
 		public override void MouseUp(TreeNodeAdvMouseEventArgs args)
 		{
 			Tree.ItemDragMode = false;
-			if (_mouseDownFlag && args.Node != null)
+			if (/*_mouseDownFlag && */ args.Node != null)
 			{
-				if (args.Button == MouseButtons.Left)
-					DoMouseOperation(args);
+                if (args.Button == MouseButtons.Left)
+					DoMouseOperation(args, false);
 				else if (args.Button == MouseButtons.Right)
 					Tree.CurrentNode = args.Node;
 			}
@@ -186,23 +186,32 @@ namespace Aga.Controls.Tree
             return canSelect;
 		}
 
-		protected virtual void DoMouseOperation(TreeNodeAdvMouseEventArgs args)
+		protected virtual void DoMouseOperation(TreeNodeAdvMouseEventArgs args, bool focusOnly)
 		{
 			if (Tree.SelectedNodes.Count == 1 && args.Node != null && args.Node.IsSelected)
 				return;
 
-			Tree.SuspendSelectionEvent = true;
-			try
-			{
-				Tree.ClearSelectionInternal();
-				if (args.Node != null)
-					args.Node.IsSelected = true;
-				Tree.SelectionStart = args.Node;
-			}
-			finally
-			{
-				Tree.SuspendSelectionEvent = false;
-			}
+            if (focusOnly)
+            {
+                if (args.Node != null)
+                    Tree.CurrentNode = args.Node;
+            }
+            else
+            {
+
+                Tree.SuspendSelectionEvent = true;
+                try
+                {
+                    Tree.ClearSelectionInternal();
+                    if (args.Node != null)
+                        args.Node.IsSelected = true;
+                    Tree.SelectionStart = args.Node;
+                }
+                finally
+                {
+                    Tree.SuspendSelectionEvent = false;
+                }
+            }
 		}
 	}
 }

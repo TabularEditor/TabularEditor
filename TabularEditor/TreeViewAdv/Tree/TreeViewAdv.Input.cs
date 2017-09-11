@@ -164,10 +164,10 @@ namespace Aga.Controls.Tree
             if (!args.Handled)
                 Input.MouseDown(args);
 
-			base.OnMouseDown(e);
-		}
+            base.OnMouseDown(e);
+        }
 
-		protected override void OnMouseClick(MouseEventArgs e)
+        protected override void OnMouseClick(MouseEventArgs e)
 		{
 			//TODO: Disable when click on plusminus icon
 			TreeNodeAdvMouseEventArgs args = CreateMouseArgs(e);
@@ -230,7 +230,9 @@ namespace Aga.Controls.Tree
 			{
 				ItemDragMode = false;
 				_toolTip.Active = false;
-				OnItemDrag(e.Button, Selection.ToArray());
+
+                _draggedNodes = Selection.Contains(CurrentNode) ? Selection.ToArray() : new[] { CurrentNode };
+				OnItemDrag(e.Button, _draggedNodes);
 			}
 		}
 
@@ -549,8 +551,22 @@ namespace Aga.Controls.Tree
 		protected override void OnDragDrop(DragEventArgs drgevent)
 		{
 			DragMode = false;
+
+            base.OnDragDrop(drgevent);
+
+            SuspendSelectionEvent = true;
+            try
+            {
+                ClearSelectionInternal();
+                foreach (var n in _draggedNodes) FindNodeByTag(n.Tag).IsSelected = true;
+                SelectionStart = Selection[0];
+            }
+            finally
+            {
+                SuspendSelectionEvent = false;
+            }
+
 			UpdateView();
-			base.OnDragDrop(drgevent);
 		}
 
 		#endregion

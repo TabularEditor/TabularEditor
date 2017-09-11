@@ -30,11 +30,11 @@ namespace Aga.Controls.Tree
 			}
 		}
 
-		protected override void DoMouseOperation(TreeNodeAdvMouseEventArgs args)
+		protected override void DoMouseOperation(TreeNodeAdvMouseEventArgs args, bool focusOnly)
 		{
 			if (Tree.SelectionMode == TreeSelectionMode.Single || Tree.SelectionStart == null)
 			{
-				base.DoMouseOperation(args);
+				base.DoMouseOperation(args, focusOnly);
 			}
 			else if (CanSelect(args.Node))
 			{

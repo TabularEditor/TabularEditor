@@ -263,7 +263,7 @@ namespace TabularEditor.UI
         {
             Tree_CurrentDragObject = new DataObject();
 
-            draggedNodes = UI.TreeView.SelectedNodes.ToArray();
+            draggedNodes = UI.TreeView.SelectedNodes.Contains(UI.TreeView.CurrentNode) ? UI.TreeView.SelectedNodes.ToArray() : new[] { UI.TreeView.CurrentNode };
 
             var scriptableObjects = new HashSet<ObjectType>() { ObjectType.Table, ObjectType.Role, ObjectType.DataSource, ObjectType.Partition };
 
@@ -309,6 +309,12 @@ namespace TabularEditor.UI
                 Tree.DoDrop(draggedNodes, dropTarget, UI.TreeView.DropPosition.Position);
 
                 if (!dropTarget.IsLeaf) dropTarget.Expand();
+
+                /*
+                UI.TreeView.SuspendSelectionEvent = true;
+                UI.TreeView.ClearSelectionInternal();
+                UI.TreeView.Selection.AddRange(draggedNodes);
+                UI.TreeView.SuspendSelectionEvent = false;*/
             }
 
             Tree_CurrentDragObject = null;

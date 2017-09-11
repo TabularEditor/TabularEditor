@@ -51,6 +51,7 @@ namespace Aga.Controls.Tree
 			if (ItemDrag != null)
 				ItemDrag(this, new ItemDragEventArgs(buttons, item));
 		}
+        private TreeNodeAdv[] _draggedNodes;
 
 		[Category("Behavior")]
 		public event EventHandler<TreeNodeAdvMouseEventArgs> NodeMouseClick;
@@ -92,7 +93,7 @@ namespace Aga.Controls.Tree
 				ColumnClicked(this, new TreeColumnEventArgs(column));
 		}
 
-		[Category("Behavior")]
+        [Category("Behavior")]
 		public event EventHandler SelectionChanged;
 		internal void OnSelectionChanged()
 		{
@@ -101,9 +102,8 @@ namespace Aga.Controls.Tree
 			else
 			{
 				_fireSelectionEvent = false;
-				if (SelectionChanged != null)
-					SelectionChanged(this, EventArgs.Empty);
-			}
+                SelectionChanged?.Invoke(this, EventArgs.Empty);
+            }
 		}
 
         [Category("Behavior")]

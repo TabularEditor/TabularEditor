@@ -180,15 +180,39 @@ namespace TabularEditor
 
         private void treeObjects_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            if(mouseDownNode != null)
-                UI.UIController.Current.Goto(mouseDownNode.Tag as TabularNamedObject);
+            UI.UIController.Current.Goto(e.Node.Tag as TabularNamedObject);
         }
-
-        TreeNode mouseDownNode;
 
         private void treeObjects_MouseDown(object sender, MouseEventArgs e)
         {
-            mouseDownNode = treeObjects.GetNodeAt(e.Location);
+            if(e.Clicks > 1)
+            {
+                treeObjects_DoubleClick = true;
+            } else
+            {
+                treeObjects_DoubleClick = false;
+            }
+        }
+
+        private bool treeObjects_DoubleClick = false;
+
+        private void treeObjects_BeforeExpand(object sender, TreeViewCancelEventArgs e)
+        {
+            if (treeObjects_DoubleClick && e.Action == TreeViewAction.Expand) e.Cancel = true;
+        }
+
+        private void treeObjects_BeforeCollapse(object sender, TreeViewCancelEventArgs e)
+        {
+            if (treeObjects_DoubleClick && e.Action == TreeViewAction.Collapse) e.Cancel = true;
+        }
+
+        private void treeObjects_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if(e.KeyChar == (char)13 && treeObjects.SelectedNode != null)
+            {
+                UI.UIController.Current.Goto(treeObjects.SelectedNode.Tag as TabularNamedObject);
+                e.Handled = true;
+            }
         }
     }
 }
