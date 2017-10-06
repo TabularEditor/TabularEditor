@@ -249,6 +249,9 @@ namespace TabularEditor.UI
         private void UpdateUIText()
         {
             var appName = Application.ProductName + " " + string.Join(".", Application.ProductVersion.Split('.').Take(2));
+#if CL1400
+            appName += "-CL1400";
+#endif
 
             if (Handler == null)
             {
