@@ -8,9 +8,16 @@ namespace TabularEditor.TOMWrapper
     [TestClass]
     public class ObjectHandlingTests
     {
+#if CL1400
+        const int CompatibilityLevel = 1400;
         const string ServerName = @"localhost\Tabular2017";
+        const string TestFileName = "testmodel1400.bim";
+#else
+        const int CompatibilityLevel = 1200;
+        const string ServerName = @"localhost";
+        const string TestFileName = "testmodel1200.bim";
+#endif
         const string TestDBName = "testdb";
-        const string TestFileName = "testmodel.bim";
 
         /// <summary>
         /// Creates a simple model with a few tables, measures, hierarchies, relationships, cultures and perspectives.
@@ -18,7 +25,7 @@ namespace TabularEditor.TOMWrapper
         /// <param name="fileName"></param>
         public void CreateTestModel(string fileName)
         {
-            var tm = new TabularModelHandler(1400);
+            var tm = new TabularModelHandler(CompatibilityLevel);
 
             var ds = tm.Model.AddDataSource("Test Datasource");
             var r1 = tm.Model.AddRole("Test Role 1");
@@ -80,7 +87,7 @@ namespace TabularEditor.TOMWrapper
             // Include all items in table 1 in perspective:
             foreach(var item in t1.GetChildren().OfType<ITabularPerspectiveObject>()) item.InPerspective.All();
 
-            tm.SaveFile(fileName, SerializeOptions.Default);
+            tm.Save(fileName, SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
         }
 
         public TabularModelHandler ResetAndConnect()

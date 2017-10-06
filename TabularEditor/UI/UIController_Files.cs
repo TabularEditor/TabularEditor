@@ -199,9 +199,11 @@ namespace TabularEditor.UI
                         }
                         if (mr == DialogResult.OK)
                         {
+#if CL1400
                             if (File_SaveMode == ModelSourceType.Pbit)
                                 Handler.Save(File_Current, SaveFormat.PowerBiTemplate, SerializeOptions.PowerBi);
                             else
+#endif
                                 Handler.Save(File_Current, SaveFormat.ModelSchemaOnly, Preferences.Current.GetSerializeOptions(false), true);
                             File_LastWrite = DateTime.Now;
                         }

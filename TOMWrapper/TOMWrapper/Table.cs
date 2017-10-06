@@ -117,6 +117,9 @@ namespace TabularEditor.TOMWrapper
 
         internal override void DeleteLinkedObjects(bool isChildOfDeleted)
         {
+            // Clear folder cache:
+            Handler.Tree.FolderCache.Clear();
+
             // Remove row-level-security for this table:
             RowLevelSecurity.Clear();
 

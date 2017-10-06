@@ -85,7 +85,7 @@ namespace TabularEditor.TextServices.Tests
             Assert.AreEqual(typeof(string), LastPos("Selected.Measures.First((m) => m.Name."));
             Assert.AreEqual(typeof(string), LastPos("Selected.Measures.First((m) => { return m.Name."));
             Assert.AreEqual(typeof(MeasureCollection), LastPos("Selected.Measures.First(m => m.Table.Measures."));
-            Assert.AreEqual(typeof(TabularNamedObject), LastPos("Selected.ForEach(obj => obj."));
+            Assert.AreEqual(typeof(ITabularNamedObject), LastPos("Selected.ForEach(obj => obj."));
         }
 
         [TestMethod()]

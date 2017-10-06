@@ -12,7 +12,7 @@ namespace TabularEditor.UI.Actions
 {
     public abstract class ClipboardAction: Crad.Windows.Forms.Actions.Action
     {
-        private UIElements UI { get { return UIController.Current.Elements; } }
+        protected UIElements UI { get { return UIController.Current.Elements; } }
 
         /// <summary>
         /// Returns the currently selected nodes of the main form's TreeView, provided
@@ -22,11 +22,17 @@ namespace TabularEditor.UI.Actions
         {
             get
             {
-                if (Form.ActiveForm == UI.FormMain &&
+                return UI.TreeView.SelectedNodes;
+            }
+        }
+
+        public bool TreeHasFocus
+        {
+            get
+            {
+                return (Form.ActiveForm == UI.FormMain &&
                     UIHelper.GetFocusedControl(UI.FormMain) == UI.TreeView &&
-                    UI.TreeView.SelectedNodes.Count > 0)
-                    return UI.TreeView.SelectedNodes;
-                return null;
+                    UI.TreeView.SelectedNodes.Count > 0);
             }
         }
 

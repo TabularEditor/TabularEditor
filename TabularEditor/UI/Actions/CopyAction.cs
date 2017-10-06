@@ -51,7 +51,7 @@ namespace TabularEditor.UI.Actions
         protected override void OnUpdate(EventArgs e)
         {
             Enabled = (ActiveTextBox != null && ActiveTextBox.SelectionLength > 0) || 
-                (SelectedNodes != null && UIController.Current.Selection.All(obj => obj is IClonableObject));
+                (TreeHasFocus && UIController.Current.Selection.All(obj => obj is IClonableObject));
             base.OnUpdate(e);
         }
     }

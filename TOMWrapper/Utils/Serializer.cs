@@ -30,11 +30,13 @@ namespace TabularEditor.TOMWrapper.Utils
             if (includeTranslations) foreach (var obj in objects.OfType<ITranslatableObject>()) obj.SaveTranslations(true);
             if (includePerspectives) foreach (var obj in objects.OfType<ITabularPerspectiveObject>()) obj.SavePerspectives(true);
             if (includeRLS) foreach (var obj in objects.OfType<Table>()) obj.SaveRLS();
+#if CL1400
             if (includeOLS)
             {
                 foreach (var obj in objects.OfType<Table>()) obj.SaveOLS(true);
                 foreach (var obj in objects.OfType<Column>()) obj.SaveOLS();
             }
+#endif
 
             var byType = objects.GroupBy(obj => obj.GetType(), obj => TOM.JsonSerializer.SerializeObject(obj.MetadataObject));
 
@@ -137,7 +139,7 @@ namespace TabularEditor.TOMWrapper.Utils
                 });
         }
 
-        #region Individual object deserialization
+#region Individual object deserialization
         // TODO: Below code could maybe be auto-generated, as we know from reflection which properties
         // hold references to other objects, that needs to be looked up.
         public static Level DeserializeLevel(JObject json, Hierarchy target)
@@ -232,27 +234,102 @@ namespace TabularEditor.TOMWrapper.Utils
             var table = CalculatedTable.CreateFromMetadata(tom, false);
             model.Tables.Add(table);
             table.InitFromMetadata();
-            table.InitOLSIndexer();
             table.InitRLSIndexer();
 
-            return table as CalculatedTable;
+            return table;
         }
 
         public static Table DeserializeTable(JObject json, Model model)
         {
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.Table>(json.ToString());
             tom.Name = model.Tables.GetNewName(tom.Name);
+
+            // Make sure all measures in the table still have model-wide unique names:
             foreach (var m in tom.Measures.ToList()) m.Name = MeasureCollection.GetNewMeasureName(m.Name);
 
             var table = Table.CreateFromMetadata(tom, false);
             model.Tables.Add(table);
             table.InitFromMetadata();
-            table.InitOLSIndexer();
             table.InitRLSIndexer();
 
             return table;
         }
-        #endregion
+
+        public static SingleColumnRelationship DeserializeSingleColumnRelationship(JObject json, Model model)
+        {
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.SingleColumnRelationship>(json.ToString());
+            tom.Name = Guid.NewGuid().ToString();
+
+            var relationship = SingleColumnRelationship.CreateFromMetadata(tom, false);
+            model.Relationships.Add(relationship);
+            relationship.InitFromMetadata();
+
+            return relationship;
+        }
+
+        public static ModelRole DeserializeModelRole(JObject json, Model model)
+        {
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.ModelRole>(json.ToString());
+            tom.Name = model.Roles.GetNewName(tom.Name);
+
+            var role = ModelRole.CreateFromMetadata(tom, false);
+            model.Roles.Add(role);
+            role.InitFromMetadata();
+            role.InitRLSIndexer();
+
+            return role;
+        }
+
+        public static Perspective DeserializePerspective(JObject json, Model model)
+        {
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Perspective>(json.ToString());
+            tom.Name = model.Perspectives.GetNewName(tom.Name);
+
+            var perspective = Perspective.CreateFromMetadata(tom, false);
+            model.Perspectives.Add(perspective);
+            perspective.InitFromMetadata();
+
+            return perspective;
+        }
+
+        public static Culture DeserializeCulture(JObject json, Model model)
+        {
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Culture>(json.ToString());
+            tom.Name = model.Cultures.GetNewName(tom.Name);
+
+            var culture = Culture.CreateFromMetadata(tom, false);
+            model.Cultures.Add(culture);
+            culture.InitFromMetadata();
+
+            return culture;
+        }
+
+        public static ProviderDataSource DeserializeProviderDataSource(JObject json, Model model)
+        {
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.ProviderDataSource>(json.ToString());
+            tom.Name = model.DataSources.GetNewName(tom.Name);
+
+            var dataSource = ProviderDataSource.CreateFromMetadata(tom, false);
+            model.DataSources.Add(dataSource);
+            dataSource.InitFromMetadata();
+
+            return dataSource;
+        }
+
+#if CL1400
+        public static StructuredDataSource DeserializeStructuredDataSource(JObject json, Model model)
+        {
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.StructuredDataSource>(json.ToString());
+            tom.Name = model.DataSources.GetNewName(tom.Name);
+
+            var dataSource = StructuredDataSource.CreateFromMetadata(tom, false);
+            model.DataSources.Add(dataSource);
+            dataSource.InitFromMetadata();
+
+            return dataSource;
+        }
+#endif
+#endregion
     }
 
     public class ObjectJsonContainer : IReadOnlyDictionary<Type, JObject[]>

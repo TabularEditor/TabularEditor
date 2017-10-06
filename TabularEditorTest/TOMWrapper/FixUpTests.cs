@@ -12,7 +12,7 @@ namespace TabularEditor.TOMWrapper.Tests
         {
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
             handler.Tree = new MockTree(handler.Model);
-            handler.AutoFixup = true;
+            handler.Settings.AutoFixup = true;
 
             var sw = new Stopwatch();
             sw.Start();

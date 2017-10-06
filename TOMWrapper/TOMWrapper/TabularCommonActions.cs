@@ -97,7 +97,7 @@ namespace TabularEditor.TOMWrapper
 
             // Possible destinations:
             var destHier = (destination as Level)?.Hierarchy ?? (destination as Hierarchy);
-            var destTable = (destination as PartitionViewTable)?.Table ?? destHier?.Table ?? (destination as IDetailObject)?.Table ?? (destination as Table);
+            var destTable = (destination as Partition)?.Table ?? (destination as PartitionViewTable)?.Table ?? destHier?.Table ?? (destination as IDetailObject)?.Table ?? (destination as Table);
 
             if (destHier != null)
             {
@@ -106,26 +106,41 @@ namespace TabularEditor.TOMWrapper
                 destHier.CompactLevelOrdinals();
             }
 
-            if (destTable != null)
+            if (destTable?.GetType() == typeof(Table))
             {
-                // Hierarchies, columns, measures and partitions can only be deserialized on a Table destination:
+                // DataColumns and Partitions can only be deserialized onto a Table destination (not CalculatedTable):
                 foreach (var obj in objectContainer[typeof(DataColumn)]) inserted.Add(Serializer.DeserializeDataColumn(obj, destTable));
+                foreach (var obj in objectContainer[typeof(Partition)]) inserted.Add(Serializer.DeserializePartition(obj, destTable));
+            }
+            if (destTable is Table)
+            {
+                // Measures, Hierarchies and CalculatedColumns can be deserialized onto a Table (or Table derived) destinated:
                 foreach (var obj in objectContainer[typeof(CalculatedColumn)]) inserted.Add(Serializer.DeserializeCalculatedColumn(obj, destTable));
                 foreach (var obj in objectContainer[typeof(Hierarchy)]) inserted.Add(Serializer.DeserializeHierarchy(obj, destTable));
                 foreach (var obj in objectContainer[typeof(Measure)]) inserted.Add(Serializer.DeserializeMeasure(obj, destTable));
-                foreach (var obj in objectContainer[typeof(Partition)]) inserted.Add(Serializer.DeserializePartition(obj, destTable));
-
             }
+
             foreach (var obj in objectContainer[typeof(CalculatedTable)]) inserted.Add(Serializer.DeserializeCalculatedTable(obj, Handler.Model));
             foreach (var obj in objectContainer[typeof(Table)]) inserted.Add(Serializer.DeserializeTable(obj, Handler.Model));
 
-            foreach(var obj in inserted)
+            foreach (var obj in objectContainer[typeof(ModelRole)]) inserted.Add(Serializer.DeserializeModelRole(obj, Handler.Model));
+            foreach (var obj in objectContainer[typeof(ProviderDataSource)]) inserted.Add(Serializer.DeserializeProviderDataSource(obj, Handler.Model));
+            foreach (var obj in objectContainer[typeof(SingleColumnRelationship)]) inserted.Add(Serializer.DeserializeSingleColumnRelationship(obj, Handler.Model));
+            foreach (var obj in objectContainer[typeof(Perspective)]) inserted.Add(Serializer.DeserializePerspective(obj, Handler.Model));
+            foreach (var obj in objectContainer[typeof(Culture)]) inserted.Add(Serializer.DeserializeCulture(obj, Handler.Model));
+#if CL1400
+            foreach (var obj in objectContainer[typeof(StructuredDataSource)]) inserted.Add(Serializer.DeserializeStructuredDataSource(obj, Handler.Model));
+#endif
+
+            foreach (var obj in inserted)
             {
                 (obj as ITranslatableObject)?.LoadTranslations(true);
                 (obj as ITabularPerspectiveObject)?.LoadPerspectives(true);
                 (obj as Table)?.LoadRLS();
+#if CL1400
                 (obj as Table)?.LoadOLS(true);
                 (obj as Column)?.LoadOLS();
+#endif
                 (obj as IAnnotationObject)?.ClearTabularEditorAnnotations();
             }
 
@@ -186,7 +201,7 @@ namespace TabularEditor.TOMWrapper
                             if (res == System.Windows.Forms.DialogResult.Yes) existingMeasureTable.Measures[obj.Name].Delete();
                             else setNewName = true;
                         }
-                        newTable.Measures.Add(obj);
+                        newTable.Measures.Add(obj as Measure);
                         if (setNewName) obj.Name = NewMeasureName(name);
                     }
                     if (obj is CalculatedColumn)
@@ -196,7 +211,7 @@ namespace TabularEditor.TOMWrapper
                             if (res == System.Windows.Forms.DialogResult.Yes) newTable.Columns[obj.Name].Delete();
                             else setNewName = true;
                         }
-                        newTable.Columns.Add(obj);
+                        newTable.Columns.Add(obj as CalculatedColumn);
                         if (setNewName) obj.Name = NewColumnName(name, newTable);
                     }
                 }

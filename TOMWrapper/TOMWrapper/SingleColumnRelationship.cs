@@ -10,7 +10,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class SingleColumnRelationship
+    public partial class SingleColumnRelationship: IErrorMessageObject
     {
         internal override void DeleteLinkedObjects(bool isChildOfDeleted)
         {
@@ -87,6 +87,19 @@ namespace TabularEditor.TOMWrapper
             set
             {
                 // don't allow changing names of relationships.
+            }
+        }
+
+        public string ErrorMessage
+        {
+            get
+            {
+                if (Model.Relationships.Any(r => r != this && (
+                     (r.FromColumn == FromColumn && r.ToColumn == ToColumn) ||
+                     (r.ToColumn == FromColumn && r.FromColumn == ToColumn))))
+                    return "More than one relationship exists between the same two columns.";
+                else
+                    return null;
             }
         }
 

@@ -68,10 +68,10 @@ namespace TabularEditor.TOMWrapper
             return obj;
         }
 
-        public static CalculatedTable CreateFromMetadata(TOM.Table metadataObject)
+        public new static CalculatedTable CreateFromMetadata(TOM.Table metadataObject, bool init = true)
         {
-            var obj = new CalculatedTable(metadataObject);
-            obj.Init();
+            var obj = new CalculatedTable(metadataObject, false);
+            if (init) obj.InitFromMetadata();
             return obj;
         }
 
@@ -84,7 +84,7 @@ namespace TabularEditor.TOMWrapper
             return CreateNew(TabularModelHandler.Singleton.Model);
         }
 
-        public CalculatedTable(TOM.Table tableMetadataObject) : base(tableMetadataObject)
+        public CalculatedTable(TOM.Table tableMetadataObject, bool init = true) : base(tableMetadataObject, init)
         {
         }
 
