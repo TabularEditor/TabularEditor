@@ -48,6 +48,20 @@ class Rules {
 		return "";
     }
 
+	// Factory methods and the IClonableObject interface will only be generated on types that
+	// are "Creatable", according to the logic below, i.e. objects that belong to a collection,
+	// are not abstract, and are not auto-inferred by the SSAS engine:
+	public static bool IsCreatable(Type t) {
+		if(!InCollection(t) || t.IsAbstract) return false;
+
+		switch(t.Name) {
+			case "CalculatedTableColumn":
+				return false;
+			default:
+				return true;
+		}
+	}
+
 	public static bool IsTranslatable(Type t, bool includeAncestors = false) {
 		switch(t.Name) {
 			case "Model":

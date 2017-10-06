@@ -23,6 +23,15 @@ namespace TabularEditor
         {
             Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en-US");
             InitializeComponent();
+
+#if CL1400
+            dlgOpenFile.Filter = "Tabular Model Files|*.bim;database.json|Power BI Files|*.pbit|All files|*.*";
+            dlgSaveFile.Filter = "Tabular Model Files|*.bim|Power BI Files|*.pbit|All files|*.*";
+#else
+            dlgOpenFile.Filter = "Tabular Model Files|*.bim;database.json|All files|*.*";
+            dlgSaveFile.Filter = "Tabular Model Files|*.bim|All files|*.*";
+#endif
+
             propertyGrid1.Site = new DesignerHost();
             toolStripButton3.Visible = ScriptEngine.PluginNamespaces.Count > 0;
 
@@ -141,8 +150,9 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             if (UI.Handler?.Errors == null) return;
             var c = UI.Handler.Errors.Count;
             if (c == 0) return;
+            TabularEditor.Scripting.ScriptHelper.OutputErrors(UI.Handler.Errors.OfType<TOMWrapper.TabularNamedObject>());
             // TODO: Show error information
-            MessageBox.Show((c > 25 ? c + " errors in total. Only 25 first errors shown:\n\n" : "") + string.Join("\n", UI.Handler.Errors.Select(t => t.Item1.Name + ": " + t.Item2).Take(25)), "Error messages returned from server", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //MessageBox.Show((c > 25 ? c + " errors in total. Only 25 first errors shown:\n\n" : "") + string.Join("\n", UI.Handler.Errors.Select(t => t.Item1.Name + ": " + t.Item2).Take(25)), "Error messages returned from server", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
@@ -441,6 +451,11 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                     actSave.ToolTipText = "Saves the changes back to the currently loaded model folder structure";
                     actSave.Image = Resources.SaveFolderTree;
                     break;
+                case TOMWrapper.ModelSourceType.Pbit:
+                    actSave.Text = "Save";
+                    actSave.ToolTipText = "Saves the changes back to the currently loaded Power BI Template";
+                    actSave.Image = Resources.SaveToPBI;
+                    break;
             }
         }
 
@@ -455,7 +470,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             PreferencesForm.ShowDialog();
-            if(UI.Handler != null) UI.Handler.AutoFixup = Preferences.Current.FormulaFixup;
+            if(UI.Handler != null) UI.Handler.Settings = Preferences.Current.GetSettings();
         }
 
         private void FormMain_Shown(object sender, EventArgs e)
@@ -526,7 +541,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void actSaveToFolder_Execute(object sender, EventArgs e)
         {
-            UI.File_SaveToFolder();
+            UI.File_SaveAs_ToFolder();
         }
 
         private void actNewModel_Execute(object sender, EventArgs e)

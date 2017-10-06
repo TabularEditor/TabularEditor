@@ -11,6 +11,8 @@ using System.Diagnostics;
 using System.Text;
 using Newtonsoft.Json;
 using System.ComponentModel;
+using TabularEditor.TOMWrapper.PowerBI;
+using TabularEditor.TOMWrapper.Utils;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -83,15 +85,63 @@ namespace TabularEditor.TOMWrapper
 
     }
 
+    public enum SaveFormat
+    {
+        /// <summary>
+        /// Saves only the Model Schema as a Model.bim file
+        /// </summary>
+        ModelSchemaOnly,
+
+#if CL1400
+        /// <summary>
+        /// Saves the Model Schema to an existing .pbit (Power BI Template) file
+        /// </summary>
+        PowerBiTemplate,
+#endif
+
+        /// <summary>
+        /// Saves the Model Schema together with a Visual Studio Tabular Project file and user settings file
+        /// </summary>
+        VisualStudioProject,
+
+        /// <summary>
+        /// Saves the Model Schema as a Tabular Editor folder structure
+        /// </summary>
+        TabularEditorFolder
+    }
+
     public enum ModelSourceType
     {
+        /// <summary>
+        /// SSAS Tabular database Compatibility Level 1200 or 1400
+        /// </summary>
         Database,
+
+        /// <summary>
+        /// Model.bim Compatibility Level 1200 or 1400 JSON file
+        /// </summary>
         File,
-        Folder
+
+        /// <summary>
+        /// Model.bim exploded into a folder structure by Tabular Editor
+        /// </summary>
+        Folder,
+
+        /// <summary>
+        /// Power BI Template file (.pbit)
+        /// </summary>
+        Pbit
     }
 
     public class SerializeOptions
     {
+        public SerializeOptions Clone()
+        {
+            SerializeOptions other = (SerializeOptions)MemberwiseClone();
+            other.Levels = new HashSet<string>(Levels);
+            return other;
+        }
+
         public static SerializeOptions Default
         {
             get
@@ -110,6 +160,18 @@ namespace TabularEditor.TOMWrapper
                     "Translations"
                 };
                 return so;
+            }
+        }
+        public static SerializeOptions PowerBi
+        {
+            get
+            {
+                return new SerializeOptions()
+                {
+                    IgnoreInferredObjects = false,
+                    IgnoreInferredProperties = false,
+                    IgnoreTimestamps = false
+                };
             }
         }
         public bool IgnoreInferredObjects = true;
@@ -164,138 +226,17 @@ namespace TabularEditor.TOMWrapper
         public const string PROP_STATUS = "Status";
         public const string PROP_ERRORS = "Errors";
 
-        /// <summary>
-        /// Specifies whether object name changes (tables, column, measures) should result in 
-        /// automatic DAX expression updates to reflect the changed names. When set to true,
-        /// all expressions in the model are parsed, to build a dependency tree.
-        /// </summary>
-        public bool AutoFixup { get; set; }
-
-        /// <summary>
-        /// Changes all references to object "obj", to reflect "newName"
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="newName"></param>
-        public void DoFixup(IDaxObject obj)
+        private TabularModelHandlerSettings _settings = TabularModelHandlerSettings.Default;
+        public TabularModelHandlerSettings Settings
         {
-            //foreach (var d in obj.Model.Tables.OfType<IExpressionObject>().Concat(obj.Model.Tables.SelectMany(t => t.GetChildren().OfType<IExpressionObject>())))
-            foreach (var d in obj.Dependants.ToList())
+            get
+            { return _settings; }
+            set
             {
-                List<Dependency> depList;
-                if(d.Dependencies.TryGetValue(obj, out depList))
-                {
-                    var pos = 0;
-                    var sb = new StringBuilder();
-                    foreach(var dep in depList)
-                    {
-                        sb.Append(d.Expression.Substring(pos, dep.from - pos));
-                        sb.Append(dep.fullyQualified ? obj.DaxObjectFullName : obj.DaxObjectName);
-                        pos = dep.to + 1;
-                    }
-                    sb.Append(d.Expression.Substring(pos));
-                    d.Expression = sb.ToString();
-                }
+                _settings = value;
+                _tree?.OnStructureChanged();
             }
         }
-
-        public void BuildDependencyTree(IDAXExpressionObject expressionObj)
-        {
-            foreach (var d in expressionObj.Dependencies.Keys) d.Dependants.Remove(expressionObj);
-            expressionObj.Dependencies.Clear();
-
-            var tokens = new DAXLexer(new AntlrInputStream(expressionObj.Expression ?? "")).GetAllTokens();
-
-            IToken lastTableRef = null;
-
-            for (var i = 0; i < tokens.Count; i++)
-            {
-                // TODO: This parsing could be used to check for invalid object references, for example to use in syntax highlighting or validation of expressions
-
-                var tok = tokens[i];
-                switch (tok.Type)
-                {
-                    case DAXLexer.TABLE:
-                    case DAXLexer.TABLE_OR_VARIABLE:
-                        if (lastTableRef != null)
-                        {
-                            if (Model.Tables.Contains(lastTableRef.Text.NoQ(true))) expressionObj.AddDep(Model.Tables[lastTableRef.Text.NoQ(true)], lastTableRef.StartIndex, lastTableRef.StopIndex, true);
-                        }
-                        lastTableRef = tok;
-                        break;
-                    case DAXLexer.COLUMN_OR_MEASURE:
-                        var tableName = lastTableRef?.Text.NoQ(true);
-
-                        // Referencing a table just before the object reference
-                        if (tableName != null && Model.Tables.Contains(tableName))
-                        {
-                            var table = Model.Tables[tableName];
-                            // Referencing a column on a specific table
-                            if (table.Columns.Contains(tok.Text.NoQ()))
-                                expressionObj.AddDep(table.Columns[tok.Text.NoQ()], tok.StartIndex, tok.StopIndex, false);
-                            // Referencing a measure on a specific table
-                            else if (table.Measures.Contains(tok.Text.NoQ()))
-                                expressionObj.AddDep(table.Measures[tok.Text.NoQ()], tok.StartIndex, tok.StopIndex, false);
-                        }
-                        // No table reference before the object reference
-                        else
-                        {
-                            var table = (expressionObj as ITabularTableObject)?.Table;
-                            // Referencing a column without specifying a table (assume column in same table):
-                            if (table != null && table.Columns.Contains(tok.Text.NoQ()))
-                            {
-                                expressionObj.AddDep(table.Columns[tok.Text.NoQ()], tok.StartIndex, tok.StopIndex, false);
-                            }
-                            // Referencing a measure without specifying a table
-                            else
-                            {
-                                Measure m = null;
-                                if (table != null && table.Measures.Contains(tok.Text.NoQ())) m = table.Measures[tok.Text.NoQ()];
-                                else
-                                    m = Model.Tables.FirstOrDefault(t => t.Measures.Contains(tok.Text.NoQ()))?.Measures[tok.Text.NoQ()];
-
-                                if (m != null)
-                                    expressionObj.AddDep(m, tok.StartIndex, tok.StopIndex, false);
-                            }
-                        }
-                        break;
-                    default:
-                        if (lastTableRef != null)
-                        {
-                            if (Model.Tables.Contains(lastTableRef.Text.NoQ(true))) expressionObj.AddDep(Model.Tables[lastTableRef.Text.NoQ(true)], lastTableRef.StartIndex, lastTableRef.StopIndex, true);
-                            lastTableRef = null;
-                        }
-                        break;
-                }
-                if (lastTableRef != null)
-                {
-                    if (Model.Tables.Contains(lastTableRef.Text.NoQ(true))) expressionObj.AddDep(Model.Tables[lastTableRef.Text.NoQ(true)], lastTableRef.StartIndex, lastTableRef.StopIndex, true);
-                    lastTableRef = null;
-                }
-            }
-        }
-
-        public void BuildDependencyTree()
-        {
-            if (UndoManager.UndoInProgress)
-            {
-                DelayBuildDependencyTree = true;
-                UndoManager.RebuildDependencyTree = true;
-            }
-            if (DelayBuildDependencyTree) return;
-            var sw = new Stopwatch();
-            sw.Start();
-
-            foreach(var eo in Model.Tables.SelectMany(t => t.GetChildren()).Concat(Model.Tables).OfType<IDAXExpressionObject>())
-            {
-                BuildDependencyTree(eo);
-            }
-
-            sw.Stop();
-
-            Console.WriteLine("Dependency tree built in {0} ms", sw.ElapsedMilliseconds);
-        }
-
-        public bool DelayBuildDependencyTree { get; set; } = false;
 
         public UndoManager UndoManager { get; private set; }
         public TabularCommonActions Actions { get; private set; }
@@ -305,55 +246,6 @@ namespace TabularEditor.TOMWrapper
 
         public Model Model { get; private set; }
         public TOM.Database Database { get { return database; } }
-
-        /// <summary>
-        /// Scripts the entire database
-        /// </summary>
-        /// <returns></returns>
-        public string ScriptCreateOrReplace()
-        {
-            return TOM.JsonScripter.ScriptCreateOrReplace(Database);
-        }
-
-        public string ScriptAlter(TabularNamedObject obj)
-        {
-            return TOM.JsonScripter.ScriptAlter(obj.MetadataObject);
-        }
-
-        public string ScriptCreate(TabularNamedObject obj)
-        {
-            return TOM.JsonScripter.ScriptCreate(obj.MetadataObject);
-        }
-        public string ScriptDelete(TabularNamedObject obj)
-        {
-            return TOM.JsonScripter.ScriptDelete(obj.MetadataObject);
-        }
-        public string ScriptMergePartitions(IList<Partition> obj)
-        {
-            return TOM.JsonScripter.ScriptMergePartitions(obj.First().MetadataObject, obj.Skip(1).Select(p => p.MetadataObject));
-        }
-
-
-        /// <summary>
-        /// Scripts the object
-        /// </summary>
-        /// <param name="object"></param>
-        /// <returns></returns>
-        public string ScriptCreateOrReplace(TabularNamedObject obj)
-        {
-            return TOM.JsonScripter.ScriptCreateOrReplace(obj.MetadataObject);
-        }
-
-        public string SerializeObjects(IEnumerable<TabularNamedObject> objects)
-        {
-            var json = "[" + string.Join(",", objects.Select(obj => TOM.JsonSerializer.SerializeObject(obj.MetadataObject))) + "]";
-            return json;
-        }
-
-        public string ScriptTranslations(IEnumerable<Culture> translations)
-        {
-            return "{ cultures: " + SerializeObjects(translations) + "}";
-        }
 
         /// <summary>
         /// Applys translation from a JSON string.
@@ -373,43 +265,6 @@ namespace TabularEditor.TOMWrapper
             return result;
         }
 
-        public IList<TabularNamedObject> DeserializeObjects(string json)
-        {
-            var result = new List<TabularNamedObject>();
-
-            JArray jArr;
-            try
-            {
-                jArr = JArray.Parse(json);
-            }
-            catch
-            {
-                return result;
-            }
-
-            foreach (var jObj in jArr)
-            {
-                TabularNamedObject obj = null;
-
-                if (jObj["type"]?.Value<string>() == "calculated")
-                {
-                    // Calculated column
-                    var tom = TOM.JsonSerializer.DeserializeObject<TOM.CalculatedColumn>(jObj.ToString());
-                    obj = CalculatedColumn.CreateFromMetadata(tom);
-                }
-                else if (jObj["expression"] != null)
-                {
-                    // Measure
-                    var tom = TOM.JsonSerializer.DeserializeObject<TOM.Measure>(jObj.ToString());
-                    obj = Measure.CreateFromMetadata(tom);
-                }
-
-                if(obj != null) result.Add(obj);
-            }
-
-            return result;
-        }
-
         private void Init()
         {
             if (database.CompatibilityLevel < 1200) throw new InvalidOperationException("Tabular Databases of compatibility level 1100 or 1103 are not supported in Tabular Editor.");
@@ -420,10 +275,11 @@ namespace TabularEditor.TOMWrapper
             Model.LoadChildObjects();
             CheckErrors();
 
-            BuildDependencyTree();
+            FormulaFixup.BuildDependencyTree();
         }
 
         internal readonly Dictionary<string, ITabularObjectCollection> WrapperCollections = new Dictionary<string, ITabularObjectCollection>();
+        public TabularObject GetWrapperObject(TOM.MetadataObject obj) { return WrapperLookup[obj]; }
         internal readonly Dictionary<TOM.MetadataObject, TabularObject> WrapperLookup = new Dictionary<TOM.MetadataObject, TabularObject>();
 
         public ModelSourceType SourceType { get; private set; }
@@ -432,8 +288,10 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Creates a new blank Tabular Model
         /// </summary>
-        public TabularModelHandler(int compatibilityLevel = 1200)
+        public TabularModelHandler(int compatibilityLevel = 1200, TabularModelHandlerSettings settings = null)
         {
+            Settings = settings ?? TabularModelHandlerSettings.Default;
+
             Singleton = this;
             server = null;
 
@@ -451,17 +309,43 @@ namespace TabularEditor.TOMWrapper
         public SerializeOptions SerializeOptions { get; private set; } = SerializeOptions.Default;
 
         /// <summary>
+        /// Gets a value that indicates whether Power BI feature restriction is enforced for the
+        /// currently loaded model. When this is TRUE, some properties are read-only and certain
+        /// object types cannot be created/deleted.
+        /// </summary>
+        public bool UsePowerBIGovernance
+        {
+            get
+            {
+                return SourceType == ModelSourceType.Pbit && Settings.PBIFeaturesOnly;
+            }
+        }
+
+        /// <summary>
         /// Loads an Analysis Services tabular database (Compatibility Level 1200 or newer) from a file
         /// or folder.
         /// </summary>
         /// <param name="path"></param>
-        public TabularModelHandler(string path)
+        public TabularModelHandler(string path, TabularModelHandlerSettings settings = null)
         {
+            Settings = settings ?? TabularModelHandlerSettings.Default;
+
             Singleton = this;
             server = null;
 
             var fi = new FileInfo(path);
             string data;
+
+#if CL1400
+            if (fi.Exists && fi.Extension == ".pbit")
+            {
+                data = PowerBIHelper.LoadDatabaseFromPbitFile(path);
+                SourceType = ModelSourceType.Pbit;
+                Source = path;
+            }
+            else
+#endif
+                        
             if (!fi.Exists || fi.Name == "database.json")
             {
                 if (fi.Name == "database.json") path = fi.DirectoryName;
@@ -518,8 +402,10 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         /// <param name="serverName"></param>
         /// <param name="databaseName"></param>
-        public TabularModelHandler(string serverName, string databaseName)
+        public TabularModelHandler(string serverName, string databaseName, TabularModelHandlerSettings settings = null)
         {
+            Settings = settings ?? TabularModelHandlerSettings.Default;
+
             Singleton = this;
             server = new TOM.Server();
             server.Connect(serverName);
@@ -565,27 +451,77 @@ namespace TabularEditor.TOMWrapper
             return this.Model;
         }
 
-        public void SaveFile(string fileName, SerializeOptions options, bool useAnnotatedSerializeOptions = false)
+        public void Save(string path, SaveFormat format, SerializeOptions options, bool useAnnotatedSerializeOptions = false)
         {
             if (useAnnotatedSerializeOptions)
             {
                 var annotatedSerializeOptions = Model.GetAnnotation("TabularEditor_SerializeOptions");
                 if (annotatedSerializeOptions != null) options = JsonConvert.DeserializeObject<SerializeOptions>(annotatedSerializeOptions);
             }
-
             if (options == null) throw new ArgumentNullException("options");
-
             Model.SetAnnotation("TabularEditor_SerializeOptions", JsonConvert.SerializeObject(options), false);
 
-            var dbcontent = SerializeDB(options);
+            switch (format)
+            {
+                case SaveFormat.ModelSchemaOnly:
+                    SaveFile(path, options);
+                    break;
+#if CL1400
+                case SaveFormat.PowerBiTemplate:
+                    SavePbit(path);
+                    break;
+#endif
+                case SaveFormat.TabularEditorFolder:
+                    SaveFolder(path, options);
+                    break;
+
+                case SaveFormat.VisualStudioProject:
+                    // TODO
+                    throw new NotImplementedException();
+                    // break;
+            }
+        }
+
+#if CL1400
+        private void SavePbit(string fileName)
+        {
+            if (SourceType != ModelSourceType.Pbit)
+            {
+                Status = "Save failed!";
+                throw new InvalidOperationException("Tabular Editor cannot currently convert an Analysis Services Tabular model to a Power BI Template. Please choose a different save format.");
+            }
+
+            var fi = new FileInfo(fileName);
+
+            if (!fi.Exists)
+            {
+                Status = "Save failed!";
+                throw new InvalidOperationException("Tabular Editor cannot save a model as a new .pbit file. Please choose an existing .pbit file or save the model as a .bim file.");
+            }
+
+            var dbcontent = Serializer.SerializeDB(SerializeOptions.PowerBi);
+
+            // Save to .pbit file:
+            PowerBIHelper.SaveDatabaseToPbitFile(fileName, dbcontent);
+
+            Status = "File saved.";
+            if (!IsConnected) UndoManager.SetCheckpoint();
+        }
+#endif
+
+        private void SaveFile(string fileName, SerializeOptions options)
+        {
+            var dbcontent = Serializer.SerializeDB(options);
             (new FileInfo(fileName)).Directory.Create();
+
+            // Save to Model.bim:
             File.WriteAllText(fileName, dbcontent);
 
             Status = "File saved.";
             if (!IsConnected) UndoManager.SetCheckpoint();
         }
 
-        public IList<Tuple<TOM.NamedMetadataObject, string>> Errors { get; private set; }
+        public IList<IErrorMessageObject> Errors { get; private set; }
 
         public struct ConflictInfo {
             public long DatabaseVersion;
@@ -787,19 +723,6 @@ namespace TabularEditor.TOMWrapper
             return sb.ToString();
         }
 
-
-        private string SerializeDB(SerializeOptions options)
-        {
-            return TOM.JsonSerializer.SerializeDatabase(database,
-                new TOM.SerializeOptions()
-                {
-                    IgnoreInferredObjects = options.IgnoreInferredObjects,
-                    IgnoreTimestamps = options.IgnoreTimestamps,
-                    IgnoreInferredProperties = options.IgnoreInferredProperties,
-                    SplitMultilineStrings = options.SplitMultilineStrings
-                });
-        }
-
         internal IEnumerable<ITranslatableObject> AllTranslatableObjects
         {
             get
@@ -828,23 +751,11 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Saves the model to the specified folder using the specified serialize options.
         /// </summary>
-        public void SaveToFolder(string path, SerializeOptions options, bool useAnnotatedSerializeOptions = false)
+        private void SaveFolder(string path, SerializeOptions options)
         {
-            if (useAnnotatedSerializeOptions)
-            {
-                var annotatedSerializeOptions = Model.GetAnnotation("TabularEditor_SerializeOptions");
-                if (annotatedSerializeOptions != null) options = JsonConvert.DeserializeObject<SerializeOptions>(annotatedSerializeOptions);
-            }
-
-            if (options == null) throw new ArgumentNullException("options");
- 
-            Model.SetAnnotation("TabularEditor_SerializeOptions", JsonConvert.SerializeObject(options), false);
-
             if(options.LocalTranslations || options.LocalPerspectives)
             {
                 // Create local annotations with translations / perspective options for relevant items
-
-
                 if(options.LocalTranslations)
                 {
                     // Loop through all translatable objects and provide the translation in the annotation:
@@ -864,7 +775,7 @@ namespace TabularEditor.TOMWrapper
                 }
             }
 
-            var json = SerializeDB(options);
+            var json = Serializer.SerializeDB(options);
             var jobj = JObject.Parse(json);
 
             var model = jobj["model"] as JObject;
@@ -1028,13 +939,13 @@ namespace TabularEditor.TOMWrapper
 
         private void CheckErrors()
         {
-            var errorList = new List<Tuple<TOM.NamedMetadataObject, string>>();
+            var errorList = new List<IErrorMessageObject>();
 
             foreach (var t in database.Model.Tables)
             {
-                errorList.AddRange(t.Measures.Where(m => !string.IsNullOrEmpty(m.ErrorMessage)).Select(m => new Tuple<TOM.NamedMetadataObject, string>(m, m.ErrorMessage)));
-                errorList.AddRange(t.Columns.Where(c => !string.IsNullOrEmpty(c.ErrorMessage)).Select(c => new Tuple<TOM.NamedMetadataObject, string>(c, c.ErrorMessage)));
-                errorList.AddRange(t.Partitions.Where(p => !string.IsNullOrEmpty(p.ErrorMessage)).Select(p => new Tuple<TOM.NamedMetadataObject, string>(p, p.ErrorMessage)));
+                errorList.AddRange(t.Measures.Where(m => !string.IsNullOrEmpty(m.ErrorMessage)).Select(obj => GetWrapperObject(obj) as IErrorMessageObject));
+                errorList.AddRange(t.Columns.Where(c => !string.IsNullOrEmpty(c.ErrorMessage)).Select(obj => GetWrapperObject(obj) as IErrorMessageObject));
+                errorList.AddRange(t.Partitions.Where(p => !string.IsNullOrEmpty(p.ErrorMessage)).Select(obj => GetWrapperObject(obj) as IErrorMessageObject));
 
                 var table = (WrapperLookup[t] as Table);
                 

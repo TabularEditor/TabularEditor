@@ -147,7 +147,7 @@ namespace TabularEditor
             stack.Add(Model);
             if (item is PartitionViewTable || item is Partition)
             {
-                stack.Add(Model.GroupPartitions);
+                stack.Add(Model.Groups.Partitions);
                 if (item is Partition) stack.Add((item as Partition).Table.PartitionViewTable);
                 stack.Add(item);
                 return new TreePath(stack.ToArray());
@@ -160,14 +160,14 @@ namespace TabularEditor
                 // to get the complete path. The group can be determined from the type of object:
                 switch (item.ObjectType)
                 {
-                    case ObjectType.Culture: stack.Add(Model.GroupTranslations); break;
-                    case ObjectType.Role: stack.Add(Model.GroupRoles); break;
-                    case ObjectType.Perspective: stack.Add(Model.GroupPerspectives); break;
-                    case ObjectType.DataSource: stack.Add(Model.GroupDataSources); break;
-                    case ObjectType.Relationship: stack.Add(Model.GroupRelationships); break;
+                    case ObjectType.Culture: stack.Add(Model.Groups.Translations); break;
+                    case ObjectType.Role: stack.Add(Model.Groups.Roles); break;
+                    case ObjectType.Perspective: stack.Add(Model.Groups.Perspectives); break;
+                    case ObjectType.DataSource: stack.Add(Model.Groups.DataSources); break;
+                    case ObjectType.Relationship: stack.Add(Model.Groups.Relationships); break;
                     default:
                         // All other object types should appear in the "Tables" group:
-                        stack.Add(Model.GroupTables); break;
+                        stack.Add(Model.Groups.Tables); break;
                 }
             }
             if (item is Table)

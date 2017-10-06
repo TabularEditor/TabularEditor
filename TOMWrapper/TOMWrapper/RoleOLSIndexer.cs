@@ -17,6 +17,7 @@ namespace TabularEditor.TOMWrapper
     [TypeConverter(typeof(IndexerConverter))]
     public class RoleOLSIndexer : IEnumerable<TOM.MetadataPermission>, IExpandableIndexer
     {
+
         public void Refresh()
         {
             RLSMap = Role.Model.Tables.ToDictionary(

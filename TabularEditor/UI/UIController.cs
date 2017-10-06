@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.PropertyGridExtension;
 using TabularEditor.TOMWrapper;
+using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.UI.Actions;
 using TabularEditor.UIServices;
 
@@ -48,7 +49,9 @@ namespace TabularEditor.UI
             ExpressionEditor_Init();
             ScriptEditor_Init();
             PropertyGrid_Init();
-            
+
+            ClipboardListener.ClipboardUpdate += ClipboardListener_ClipboardUpdate;
+
             Current = this;
 
             Actions = new ModelActionManager();
@@ -69,6 +72,22 @@ namespace TabularEditor.UI
                 plugin.RegisterActions(RegisterPluginCallback);
             }
         }
+
+        private void ClipboardListener_ClipboardUpdate(object sender, EventArgs e)
+        {
+            if(Clipboard.ContainsText(TextDataFormat.UnicodeText))
+            {
+                if (Handler == null) return;
+
+                // Possible JSON serialization of Tabular objects
+                ClipboardObjects = Serializer.ParseObjectJsonContainer(Clipboard.GetText(TextDataFormat.UnicodeText));
+            } else
+            {
+                ClipboardObjects = null;
+            }
+        }
+
+        public ObjectJsonContainer ClipboardObjects { get; private set; }
 
         private void RegisterPluginCallback(string name, System.Action action)
         {
@@ -115,6 +134,8 @@ namespace TabularEditor.UI
             Handler.ObjectChanging += UIController_ObjectChanging;
             Handler.ObjectChanged += UIController_ObjectChanged;
             Handler.ObjectDeleting += UIController_ObjectDeleting;
+
+            ClipboardListener_ClipboardUpdate(this, new EventArgs());
 
             ExpressionEditor_CancelEdit();
             ExpressionEditor_Current = null;

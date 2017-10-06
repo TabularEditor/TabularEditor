@@ -35,8 +35,8 @@
             this.DataTextBox = new System.Windows.Forms.TextBox();
             this.DataPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.DataProperties = new System.Windows.Forms.Panel();
-            this.DataListView = new System.Windows.Forms.ListView();
             this.DataSplitter = new System.Windows.Forms.Splitter();
+            this.DataListView = new System.Windows.Forms.ListView();
             this.NameCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.TypeCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.DataProperties.SuspendLayout();
@@ -66,6 +66,7 @@
             this.btnClose.TabIndex = 2;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
             // DataTextBox
             // 
@@ -83,6 +84,7 @@
             // DataPropertyGrid
             // 
             this.DataPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.DataPropertyGrid.LineColor = System.Drawing.SystemColors.ControlDark;
             this.DataPropertyGrid.Location = new System.Drawing.Point(242, 0);
             this.DataPropertyGrid.Name = "DataPropertyGrid";
             this.DataPropertyGrid.Size = new System.Drawing.Size(269, 305);
@@ -102,6 +104,14 @@
             this.DataProperties.TabIndex = 5;
             this.DataProperties.Visible = false;
             // 
+            // DataSplitter
+            // 
+            this.DataSplitter.Location = new System.Drawing.Point(239, 0);
+            this.DataSplitter.Name = "DataSplitter";
+            this.DataSplitter.Size = new System.Drawing.Size(3, 305);
+            this.DataSplitter.TabIndex = 6;
+            this.DataSplitter.TabStop = false;
+            // 
             // DataListView
             // 
             this.DataListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -119,14 +129,7 @@
             this.DataListView.VirtualMode = true;
             this.DataListView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.DataListView_RetrieveVirtualItem);
             this.DataListView.SelectedIndexChanged += new System.EventHandler(this.DataListView_SelectedIndexChanged);
-            // 
-            // DataSplitter
-            // 
-            this.DataSplitter.Location = new System.Drawing.Point(239, 0);
-            this.DataSplitter.Name = "DataSplitter";
-            this.DataSplitter.Size = new System.Drawing.Size(3, 305);
-            this.DataSplitter.TabIndex = 6;
-            this.DataSplitter.TabStop = false;
+            this.DataListView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.DataListView_MouseDoubleClick);
             // 
             // NameCol
             // 

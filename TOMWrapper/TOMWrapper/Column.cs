@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
+using TabularEditor.TOMWrapper.Utils;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -73,7 +74,7 @@ namespace TabularEditor.TOMWrapper
             base.RemoveReferences();
         }
 
-        public override bool CanDelete(out string message)
+        protected override bool AllowDelete(out string message)
         {
             if(this is CalculatedTableColumn)
             {
@@ -128,11 +129,11 @@ namespace TabularEditor.TOMWrapper
         {
             if (propertyName == Properties.NAME)
             {
-                Handler.BuildDependencyTree();
+                FormulaFixup.BuildDependencyTree();
 
                 // When formula fixup is enabled, we need to begin a new batch of undo operations, as this
                 // name change could result in expression changes on multiple objects:
-                if (Handler.AutoFixup) Handler.UndoManager.BeginBatch("Set Property 'Name'");
+                if (Handler.Settings.AutoFixup) Handler.UndoManager.BeginBatch("Set Property 'Name'");
             }
             if(propertyName == Properties.ISKEY && (bool)newValue == true)
             {
@@ -153,9 +154,9 @@ namespace TabularEditor.TOMWrapper
             {
                 Handler.UndoManager.EndBatch();
             }
-            if (propertyName == Properties.NAME && Handler.AutoFixup)
+            if (propertyName == Properties.NAME && Handler.Settings.AutoFixup)
             {
-                Handler.DoFixup(this);
+                FormulaFixup.DoFixup(this);
                 Handler.UndoManager.EndBatch();
             }
             base.OnPropertyChanged(propertyName, oldValue, newValue);
@@ -243,7 +244,8 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                if(index >= GetRnColIndex()) index++;
+                var rnColIndex = GetRnColIndex();
+                if(rnColIndex > -1 && index >= rnColIndex) index++;
                 return base[index];
             }
         }

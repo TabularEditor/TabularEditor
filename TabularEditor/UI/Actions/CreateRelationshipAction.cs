@@ -28,28 +28,49 @@ namespace TabularEditor.UI.Actions
 
         private Column SelectedColumn { get { return UI.Selection.Columns.FirstOrDefault(); } }
 
+
         public IDictionary ArgNames
         {
             get
             {
                 var col = SelectedColumn;
+                var compactName = col.Name.Replace(" ", "");
                 if (col == null) return new Dictionary<string, object>();
+                var relatedTables = new HashSet<Table>(col.Table.RelatedTables);
 
                 var candidateCols = UI.Handler.Model.Tables
                     .Where(t => t != col.Table) // All tables except parent table of current column
-                    .Where(t => !col.Table.RelatedTables.Contains(t)) // Tables that are not already related
+                    .Where(t => !relatedTables.Contains(t)) // Tables that are not already related
                     .SelectMany(t => t.Columns)     // All columns of those tables
-                    .Where(c => c.DataType == col.DataType); // Matching data types
+                    .Where(c => c.DataType == col.DataType) // Matching data types
+                    .Select(c =>
+                        {
+                            var n = c.Name.Replace(" ", "");
+                            return new
+                            {
+                                column = c,
+                                nameMatch = n.EndsWith(compactName) || compactName.EndsWith(n)
+                            };
+                        }
+                    )
+                    .ToList();      // Materialise
 
                 var result = new OrderedDictionary();
 
-                var matchingNames = candidateCols.Where(c =>
-                    c.Name.Replace(" ", "").EndsWith(col.Name.Replace(" ", "")) ||
-                    col.Name.Replace(" ", "").EndsWith(c.Name.Replace(" ", ""))).OrderBy(c => c.Table.Name);
+                Table lastTable = null;
+                bool lastMatch = false;
+                // Populate the dictionary ordered by table names, columns with partial name match, column name:
+                foreach (var c in candidateCols.OrderBy(c => c.column.Table.Name).ThenBy(c => !c.nameMatch).ThenBy(c => c.column.Name))
+                {
+                    // This adds a seperator between the columns that have a partial name match:
+                    if (lastTable == c.column.Table && lastMatch && !c.nameMatch)
+                        result.Add(c.column.Table.Name.ConcatPath("---"), null);
 
-                foreach (var m in matchingNames) result.Add(m.Table.Name.ConcatPath(m.Name), m);
-                foreach (var m in matchingNames.Select(m => m.Table).Distinct()) result.Add(m.Name.ConcatPath("---"), null);
-                foreach (var m in candidateCols.Except(matchingNames).OrderBy(c => c.Table.Name + c.Name)) result.Add(m.Table.Name.ConcatPath(m.Name), m);
+                    result.Add(c.column.Table.Name.ConcatPath(c.column.Name), c.column);
+
+                    lastTable = c.column.Table;
+                    lastMatch = c.nameMatch;
+                }
 
                 return result;
             }

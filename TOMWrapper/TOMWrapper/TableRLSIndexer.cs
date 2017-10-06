@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Newtonsoft.Json;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -16,12 +17,26 @@ namespace TabularEditor.TOMWrapper
     [TypeConverter(typeof(IndexerConverter))]
     public class TableRLSIndexer : IEnumerable<string>, IExpandableIndexer
     {
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(Keys.Where(k => !string.IsNullOrEmpty(this[k])).ToDictionary(k => k, k => this[k]));
+        }
+
         public void Refresh()
         {
             RLSMap = Table.Model.Roles.ToDictionary(
                 r => r,
                 r => r.MetadataObject.TablePermissions.Contains(Table.Name) ? r.MetadataObject.TablePermissions[Table.Name].FilterExpression : null
                 );
+        }
+
+        public void CopyFrom(Dictionary<string, string> source)
+        {
+            Clear();
+            foreach(var r in Keys)
+            {
+                if (source.ContainsKey(r)) this[r] = source[r];
+            }
         }
 
         [IntelliSense("Copies all RLSs from another RLS collection.")]

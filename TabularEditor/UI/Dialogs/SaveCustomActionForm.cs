@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,6 +38,9 @@ namespace TabularEditor.UI.Dialogs
         {
             InitializeComponent();
 
+            linkLabel1.Links.Add(27, 29, Path.GetDirectoryName(ScriptEngine.CustomActionsJsonPath));
+            linkLabel1.Links.Add(73, 20, "https://github.com/otykier/TabularEditor/wiki/Advanced-Scripting#creating-custom-actions");
+
             chkListboxContexts.Items.AddRange(
                 Enum.GetValues(typeof(Context)).Cast<Context>()
                     .Where(v => v.Has1(Context.SingularObjects))
@@ -69,6 +73,11 @@ namespace TabularEditor.UI.Dialogs
                 this.BeginInvoke((MethodInvoker)(
                 () => ValidateOK()));
             }
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(e.Link.LinkData.ToString());
         }
     }
 }

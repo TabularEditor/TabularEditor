@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TabularEditor.TOMWrapper.Utils;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -18,7 +19,7 @@ namespace TabularEditor.TOMWrapper
             if (propertyName == Properties.EXPRESSION)
             {
                 NeedsValidation = true;
-                Handler.BuildDependencyTree(this);
+                FormulaFixup.BuildDependencyTree(this);
             }
 
             base.OnPropertyChanged(propertyName, oldValue, newValue);

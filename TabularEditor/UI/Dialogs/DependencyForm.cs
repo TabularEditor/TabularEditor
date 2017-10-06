@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -49,6 +50,12 @@ namespace TabularEditor
 
         HashSet<ITabularObject> VisitedRelationships;
 
+        private struct ObjectRel
+        {
+            public TabularNamedObject Object;
+            public SingleColumnRelationship Relationship;
+        }
+
         private void CreateRelationshipTree(ITabularNamedObject startFrom, TreeNode node)
         {
             var q = new Queue<TreeNode>();
@@ -59,9 +66,10 @@ namespace TabularEditor
                 while (q.Count > 0)
                 {
                     node = q.Dequeue();
-                    var obj = node.Tag as ITabularNamedObject;
+                    var obj = ObjFromNode(node);
 
-                    var relevantRelationships = obj.Model.Relationships.Where(r => (r.FromTable == obj || r.ToTable == obj)).OrderBy(r => !r.IsActive).ToList();
+                    var relevantRelationships = obj.Model.Relationships.Where(r => (r.FromTable == obj || r.ToTable == obj)
+                        && (chkShowInactive.Checked || r.IsActive)).OrderBy(r => !r.IsActive).ToList();
 
                     foreach (var r in relevantRelationships)
                     {
@@ -77,7 +85,7 @@ namespace TabularEditor
                                 r.FromTable == obj ? "\u2190" : "\u2192");
 
                         var img = UI.Tree.TabularIcon.GetIconIndex(dstTable);
-                        var n = new TreeNode(prefix + dstTable.DaxObjectFullName, img, img) { Tag = dstTable };
+                        var n = new TreeNode(prefix + dstTable.DaxObjectFullName, img, img) { Tag = new ObjectRel { Object = dstTable, Relationship = r } };
                         if (!r.IsActive) n.ForeColor = Color.Silver;
                         n.ToolTipText = r.Name;
                         node.Nodes.Add(n);
@@ -155,21 +163,25 @@ namespace TabularEditor
             {
                 RecursiveAdd(RootObject, treeObjects.Nodes);
                 treeObjects.Nodes[0].Expand();
+                chkShowInactive.Visible = false;
             }
             else if (radioButton2.Checked)
             {
                 InverseRecursiveAdd(RootObject, treeObjects.Nodes);
                 treeObjects.Nodes[0].Expand();
+                chkShowInactive.Visible = false;
             }
             else
             {
                 VisitedRelationships = new HashSet<ITabularObject>();
 
                 var img = UI.Tree.TabularIcon.GetIconIndex(_rootObject);
-                var n = new TreeNode(((_rootObject as IDaxObject)?.DaxObjectFullName ?? _rootObject.Name), img, img) { Tag = _rootObject };
+                var n = new TreeNode(((_rootObject as IDaxObject)?.DaxObjectFullName ?? _rootObject.Name), img, img) { Tag = new ObjectRel { Object = _rootObject as TabularNamedObject, Relationship = null } };
                 treeObjects.Nodes.Add(n);
                 CreateRelationshipTree(RootObject, n);
                 n.Expand();
+
+                chkShowInactive.Visible = true;
             }
         }
 
@@ -178,9 +190,20 @@ namespace TabularEditor
             this.Close();
         }
 
+        private TabularNamedObject ObjFromNode(TreeNode node)
+        {
+            var res = node.Tag as TabularNamedObject;
+            if (res != null) return res;
+
+            if (node.Tag is ObjectRel)
+                return ((ObjectRel)node.Tag).Object;
+
+            return null;
+        }
+
         private void treeObjects_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            UI.UIController.Current.Goto(e.Node.Tag as TabularNamedObject);
+            UI.UIController.Current.Goto(ObjFromNode(e.Node));
         }
 
         private void treeObjects_MouseDown(object sender, MouseEventArgs e)
@@ -190,6 +213,9 @@ namespace TabularEditor
                 treeObjects_DoubleClick = true;
             } else
             {
+                var clickedNode = treeObjects.GetNodeAt(e.X, e.Y);
+                if (clickedNode != null)
+                    treeObjects.SelectedNode = clickedNode;
                 treeObjects_DoubleClick = false;
             }
         }
@@ -210,9 +236,115 @@ namespace TabularEditor
         {
             if(e.KeyChar == (char)13 && treeObjects.SelectedNode != null)
             {
-                UI.UIController.Current.Goto(treeObjects.SelectedNode.Tag as TabularNamedObject);
+                UI.UIController.Current.Goto(ObjFromNode(treeObjects.SelectedNode));
                 e.Handled = true;
             }
+        }
+
+        private void chkShowInactive_CheckedChanged(object sender, EventArgs e)
+        {
+            RefreshTree();
+        }
+
+        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
+        {
+            if (treeObjects.SelectedNode == null) e.Cancel = true;
+        }
+
+        private void goToObjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (treeObjects.SelectedNode == null) return;
+            UI.UIController.Current.Goto(ObjFromNode(treeObjects.SelectedNode));
+        }
+
+        private void copyTreeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var node = treeObjects.SelectedNode;
+            if (node == null) return;
+        
+            var sb = new StringBuilder();
+            WriteTree(node, sb, 0);
+
+            Clipboard.SetText(sb.ToString());
+        }
+
+        private void WriteTree(TreeNode root, StringBuilder sb, int indentLevel)
+        {
+            sb.Append(new string(' ', indentLevel * 4));
+            sb.AppendLine(root.Text);
+
+            foreach (TreeNode node in root.Nodes) WriteTree(node, sb, indentLevel + 1);
+        }
+
+        private void copyTreeAsJSONToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var node = treeObjects.SelectedNode;
+            if (node == null) return;
+
+            using (var tw = new System.IO.StringWriter())
+            using (var jw = new JsonTextWriter(tw))
+            {
+                jw.Formatting = Formatting.Indented;
+
+                WriteTreeJson(node, jw, true);
+
+                jw.Flush();
+
+                Clipboard.SetText(tw.ToString());
+            }
+        }
+
+        private void WriteTreeJson(TreeNode root, JsonTextWriter jw, bool isRoot)
+        {
+            var tObj = ObjFromNode(root);
+
+            jw.WriteStartObject();
+            jw.WritePropertyName("ObjectType");
+            jw.WriteValue(tObj.ObjectTypeName);
+            jw.WritePropertyName("ObjectName");
+            jw.WriteValue(tObj.Name);
+
+            if(root.Tag is ObjectRel && !isRoot)
+            {
+                var rel = ((ObjectRel)root.Tag).Relationship;
+                if (rel != null) {
+                    jw.WritePropertyName("ByRelationship");
+                    jw.WriteStartObject();
+
+                        jw.WritePropertyName("DisplayName");
+                        jw.WriteValue(rel.Name);
+
+                        jw.WritePropertyName("IsActive");
+                        jw.WriteValue(rel.IsActive);
+
+                        jw.WritePropertyName("FromColumn");
+                        jw.WriteValue(rel.FromColumn.DaxObjectFullName);
+
+                        jw.WritePropertyName("FromCardinality");
+                        jw.WriteValue(rel.FromCardinality.ToString());
+
+                        jw.WritePropertyName("ToColumn");
+                        jw.WriteValue(rel.ToColumn.DaxObjectFullName);
+
+                        jw.WritePropertyName("ToCardinality");
+                        jw.WriteValue(rel.ToCardinality.ToString());
+
+                        jw.WritePropertyName("CrossFilteringBehavior");
+                        jw.WriteValue(rel.CrossFilteringBehavior.ToString());
+
+                    jw.WriteEndObject();
+                }
+            }
+
+            if (radioButton1.Checked) jw.WritePropertyName("DependsOn");
+            else if (radioButton2.Checked) jw.WritePropertyName("UsedBy");
+            else if (radioButton3.Checked) jw.WritePropertyName("RelatedTo");
+
+            jw.WriteStartArray();
+            foreach (TreeNode node in root.Nodes) WriteTreeJson(node, jw, false);
+            jw.WriteEndArray();
+
+            jw.WriteEndObject();
         }
     }
 }

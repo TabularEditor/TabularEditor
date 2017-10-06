@@ -6,6 +6,7 @@ using System.Drawing.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.UndoFramework;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
@@ -22,8 +23,7 @@ namespace TabularEditor.TOMWrapper
 
             if (Partitions.Count == 0) {
                 // Make sure the calculated table contains at least one partition:
-                var p = Partition.CreateNew(this, Name);
-                p.MetadataObject.Source = new TOM.CalculatedPartitionSource();
+                Partition.CreateCalculatedTablePartition(this);
             }
 
             Partitions[0].PropertyChanged += Partition_PropertyChanged;
@@ -57,7 +57,7 @@ namespace TabularEditor.TOMWrapper
         public static CalculatedTable CreateNew(Model parent, string name = null, string expression = null)
         {
             var metadataObject = new TOM.Table();
-            metadataObject.Name = parent.Tables.GetNewName(string.IsNullOrWhiteSpace(name) ? "New Table" : name);
+            metadataObject.Name = parent.Tables.GetNewName(string.IsNullOrWhiteSpace(name) ? "New Calculated Table" : name);
 
             var obj = new CalculatedTable(metadataObject);
             parent.Tables.Add(obj);
@@ -93,7 +93,7 @@ namespace TabularEditor.TOMWrapper
             if(propertyName == Properties.EXPRESSION)
             {
                 NeedsValidation = true;
-                Handler.BuildDependencyTree(this);
+                FormulaFixup.BuildDependencyTree(this);
             }
 
             base.OnPropertyChanged(propertyName, oldValue, newValue);

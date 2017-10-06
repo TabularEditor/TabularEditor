@@ -61,6 +61,9 @@
             this.chkIgnoreInfPropsFile = new System.Windows.Forms.CheckBox();
             this.chkIgnoreInfObjectsFile = new System.Windows.Forms.CheckBox();
             this.chkIgnoreTimestampsFile = new System.Windows.Forms.CheckBox();
+            this.chkLocalTranslations = new System.Windows.Forms.CheckBox();
+            this.chkLocalPerspectives = new System.Windows.Forms.CheckBox();
+            this.chkAllowUnsupportedPBIFeatures = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -76,13 +79,17 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.chkAutoUpdate = new System.Windows.Forms.CheckBox();
             this.btnVersionCheck = new System.Windows.Forms.Button();
             this.lblAvailableVersion = new System.Windows.Forms.Label();
             this.lblCurrentVersion = new System.Windows.Forms.Label();
-            this.chkLocalTranslations = new System.Windows.Forms.CheckBox();
-            this.chkLocalPerspectives = new System.Windows.Forms.CheckBox();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.chkCopyIncludeTranslations = new System.Windows.Forms.CheckBox();
+            this.chkCopyIncludePerspectives = new System.Windows.Forms.CheckBox();
+            this.chkCopyIncludeRLS = new System.Windows.Forms.CheckBox();
+            this.chkCopyIncludeOLS = new System.Windows.Forms.CheckBox();
             this.groupBox3.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -94,14 +101,16 @@
             this.groupBox2.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            this.groupBox6.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.groupBox7.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnOK
             // 
             this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(186, 377);
+            this.btnOK.Location = new System.Drawing.Point(186, 369);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 1;
@@ -112,7 +121,7 @@
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(267, 377);
+            this.btnCancel.Location = new System.Drawing.Point(267, 369);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 2;
@@ -248,15 +257,54 @@
             this.toolTip1.SetToolTip(this.chkIgnoreTimestampsFile, "If checked, editing timestamps are not serialized into the .json files");
             this.chkIgnoreTimestampsFile.UseVisualStyleBackColor = true;
             // 
+            // chkLocalTranslations
+            // 
+            this.chkLocalTranslations.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.chkLocalTranslations.AutoSize = true;
+            this.chkLocalTranslations.Location = new System.Drawing.Point(6, 202);
+            this.chkLocalTranslations.Name = "chkLocalTranslations";
+            this.chkLocalTranslations.Size = new System.Drawing.Size(171, 17);
+            this.chkLocalTranslations.TabIndex = 8;
+            this.chkLocalTranslations.Text = "Serialize translations per-object";
+            this.toolTip1.SetToolTip(this.chkLocalTranslations, "If checked, all translatable objects (measures, columns, etc.) will have their tr" +
+        "anslations stored in the annotations of the object itself.");
+            this.chkLocalTranslations.UseVisualStyleBackColor = true;
+            this.chkLocalTranslations.CheckedChanged += new System.EventHandler(this.chkLocalTranslations_CheckedChanged);
+            // 
+            // chkLocalPerspectives
+            // 
+            this.chkLocalPerspectives.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.chkLocalPerspectives.AutoSize = true;
+            this.chkLocalPerspectives.Location = new System.Drawing.Point(6, 179);
+            this.chkLocalPerspectives.Name = "chkLocalPerspectives";
+            this.chkLocalPerspectives.Size = new System.Drawing.Size(183, 17);
+            this.chkLocalPerspectives.TabIndex = 7;
+            this.chkLocalPerspectives.Text = "Serializes perspectives per-object";
+            this.toolTip1.SetToolTip(this.chkLocalPerspectives, "If checked, all objects that can be toggled in a perspective, will have its persp" +
+        "ective membership information stored in the annotations of the object itself.");
+            this.chkLocalPerspectives.UseVisualStyleBackColor = true;
+            this.chkLocalPerspectives.CheckedChanged += new System.EventHandler(this.chkLocalPerspectives_CheckedChanged);
+            // 
+            // chkAllowUnsupportedPBIFeatures
+            // 
+            this.chkAllowUnsupportedPBIFeatures.AutoSize = true;
+            this.chkAllowUnsupportedPBIFeatures.Location = new System.Drawing.Point(6, 29);
+            this.chkAllowUnsupportedPBIFeatures.Name = "chkAllowUnsupportedPBIFeatures";
+            this.chkAllowUnsupportedPBIFeatures.Size = new System.Drawing.Size(268, 17);
+            this.chkAllowUnsupportedPBIFeatures.TabIndex = 0;
+            this.chkAllowUnsupportedPBIFeatures.Text = "Allow unsupported Power BI features (experimental)";
+            this.toolTip1.SetToolTip(this.chkAllowUnsupportedPBIFeatures, "Checking this, will let you edit all TOM objects and properties when connected to" +
+        " a Power BI data model. USE ONLY FOR EXPERIMENTAL PURPOSES.");
+            this.chkAllowUnsupportedPBIFeatures.UseVisualStyleBackColor = true;
+            // 
             // groupBox3
             // 
-            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox3.Controls.Add(this.chkFixup);
             this.groupBox3.Location = new System.Drawing.Point(6, 6);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(310, 321);
+            this.groupBox3.Size = new System.Drawing.Size(310, 50);
             this.groupBox3.TabIndex = 4;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Editing";
@@ -274,7 +322,7 @@
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(330, 359);
+            this.tabControl1.Size = new System.Drawing.Size(330, 351);
             this.tabControl1.TabIndex = 2;
             // 
             // tabPage1
@@ -283,7 +331,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(322, 333);
+            this.tabPage1.Size = new System.Drawing.Size(322, 325);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Deployment";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -298,7 +346,7 @@
             this.grpDeployment.Controls.Add(this.chkAutoBackup);
             this.grpDeployment.Location = new System.Drawing.Point(7, 6);
             this.grpDeployment.Name = "grpDeployment";
-            this.grpDeployment.Size = new System.Drawing.Size(309, 321);
+            this.grpDeployment.Size = new System.Drawing.Size(309, 313);
             this.grpDeployment.TabIndex = 6;
             this.grpDeployment.TabStop = false;
             this.grpDeployment.Text = "Deployment Options";
@@ -330,7 +378,7 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(322, 333);
+            this.tabPage5.Size = new System.Drawing.Size(322, 325);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Save to File";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -357,7 +405,7 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(322, 333);
+            this.tabPage4.Size = new System.Drawing.Size(322, 325);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Save to Folder";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -373,7 +421,7 @@
             this.groupBox4.Controls.Add(this.label1);
             this.groupBox4.Location = new System.Drawing.Point(6, 100);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(310, 227);
+            this.groupBox4.Size = new System.Drawing.Size(310, 254);
             this.groupBox4.TabIndex = 4;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Serialization Levels";
@@ -460,25 +508,39 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.groupBox7);
             this.tabPage2.Controls.Add(this.groupBox3);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(322, 333);
+            this.tabPage2.Size = new System.Drawing.Size(322, 325);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "DAX";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.groupBox6);
             this.tabPage3.Controls.Add(this.groupBox1);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(322, 333);
+            this.tabPage3.Size = new System.Drawing.Size(322, 325);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "General";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // groupBox6
+            // 
+            this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox6.Controls.Add(this.chkAllowUnsupportedPBIFeatures);
+            this.groupBox6.Location = new System.Drawing.Point(6, 111);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(310, 58);
+            this.groupBox6.TabIndex = 2;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Power BI Support";
             // 
             // groupBox1
             // 
@@ -536,31 +598,66 @@
             this.lblCurrentVersion.TabIndex = 1;
             this.lblCurrentVersion.Text = "Current version: 2.0.0.0";
             // 
-            // chkLocalTranslations
+            // groupBox7
             // 
-            this.chkLocalTranslations.AutoSize = true;
-            this.chkLocalTranslations.Location = new System.Drawing.Point(6, 202);
-            this.chkLocalTranslations.Name = "chkLocalTranslations";
-            this.chkLocalTranslations.Size = new System.Drawing.Size(171, 17);
-            this.chkLocalTranslations.TabIndex = 8;
-            this.chkLocalTranslations.Text = "Serialize translations per-object";
-            this.toolTip1.SetToolTip(this.chkLocalTranslations, "If checked, all translatable objects (measures, columns, etc.) will have their tr" +
-        "anslations stored in the annotations of the object itself.");
-            this.chkLocalTranslations.UseVisualStyleBackColor = true;
-            this.chkLocalTranslations.CheckedChanged += new System.EventHandler(this.chkLocalTranslations_CheckedChanged);
+            this.groupBox7.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox7.Controls.Add(this.chkCopyIncludeOLS);
+            this.groupBox7.Controls.Add(this.chkCopyIncludeRLS);
+            this.groupBox7.Controls.Add(this.chkCopyIncludePerspectives);
+            this.groupBox7.Controls.Add(this.chkCopyIncludeTranslations);
+            this.groupBox7.Location = new System.Drawing.Point(6, 62);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(310, 117);
+            this.groupBox7.TabIndex = 5;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Clipboard Operations";
             // 
-            // chkLocalPerspectives
+            // chkCopyIncludeTranslations
             // 
-            this.chkLocalPerspectives.AutoSize = true;
-            this.chkLocalPerspectives.Location = new System.Drawing.Point(6, 179);
-            this.chkLocalPerspectives.Name = "chkLocalPerspectives";
-            this.chkLocalPerspectives.Size = new System.Drawing.Size(183, 17);
-            this.chkLocalPerspectives.TabIndex = 7;
-            this.chkLocalPerspectives.Text = "Serializes perspectives per-object";
-            this.toolTip1.SetToolTip(this.chkLocalPerspectives, "If checked, all objects that can be toggled in a perspective, will have its persp" +
-        "ective membership information stored in the annotations of the object itself.");
-            this.chkLocalPerspectives.UseVisualStyleBackColor = true;
-            this.chkLocalPerspectives.CheckedChanged += new System.EventHandler(this.chkLocalPerspectives_CheckedChanged);
+            this.chkCopyIncludeTranslations.AutoSize = true;
+            this.chkCopyIncludeTranslations.Location = new System.Drawing.Point(6, 19);
+            this.chkCopyIncludeTranslations.Name = "chkCopyIncludeTranslations";
+            this.chkCopyIncludeTranslations.Size = new System.Drawing.Size(117, 17);
+            this.chkCopyIncludeTranslations.TabIndex = 0;
+            this.chkCopyIncludeTranslations.Text = "Include translations";
+            this.toolTip1.SetToolTip(this.chkCopyIncludeTranslations, "Include translations when copying translatable objects");
+            this.chkCopyIncludeTranslations.UseVisualStyleBackColor = true;
+            // 
+            // chkCopyIncludePerspectives
+            // 
+            this.chkCopyIncludePerspectives.AutoSize = true;
+            this.chkCopyIncludePerspectives.Location = new System.Drawing.Point(6, 42);
+            this.chkCopyIncludePerspectives.Name = "chkCopyIncludePerspectives";
+            this.chkCopyIncludePerspectives.Size = new System.Drawing.Size(178, 17);
+            this.chkCopyIncludePerspectives.TabIndex = 1;
+            this.chkCopyIncludePerspectives.Text = "Include perspective membership";
+            this.toolTip1.SetToolTip(this.chkCopyIncludePerspectives, "Include perspective membership when copying objects that can be toggled in perspe" +
+        "ctives");
+            this.chkCopyIncludePerspectives.UseVisualStyleBackColor = true;
+            // 
+            // chkCopyIncludeRLS
+            // 
+            this.chkCopyIncludeRLS.AutoSize = true;
+            this.chkCopyIncludeRLS.Location = new System.Drawing.Point(6, 65);
+            this.chkCopyIncludeRLS.Name = "chkCopyIncludeRLS";
+            this.chkCopyIncludeRLS.Size = new System.Drawing.Size(145, 17);
+            this.chkCopyIncludeRLS.TabIndex = 2;
+            this.chkCopyIncludeRLS.Text = "Include row-level security";
+            this.toolTip1.SetToolTip(this.chkCopyIncludeRLS, "Include row-level security when copying tables.");
+            this.chkCopyIncludeRLS.UseVisualStyleBackColor = true;
+            // 
+            // chkCopyIncludeOLS
+            // 
+            this.chkCopyIncludeOLS.AutoSize = true;
+            this.chkCopyIncludeOLS.Location = new System.Drawing.Point(6, 88);
+            this.chkCopyIncludeOLS.Name = "chkCopyIncludeOLS";
+            this.chkCopyIncludeOLS.Size = new System.Drawing.Size(157, 17);
+            this.chkCopyIncludeOLS.TabIndex = 3;
+            this.chkCopyIncludeOLS.Text = "Include object-level security";
+            this.toolTip1.SetToolTip(this.chkCopyIncludeOLS, "Include object-level security when copying tables, columns, hierarchies or measur" +
+        "es (Compatibility Level 1400 only)");
+            this.chkCopyIncludeOLS.UseVisualStyleBackColor = true;
             // 
             // PreferencesForm
             // 
@@ -568,7 +665,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(354, 412);
+            this.ClientSize = new System.Drawing.Size(354, 404);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
@@ -599,8 +696,12 @@
             this.groupBox2.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -643,5 +744,12 @@
         private System.Windows.Forms.CheckBox chkIgnoreTimestampsFile;
         private System.Windows.Forms.CheckBox chkLocalTranslations;
         private System.Windows.Forms.CheckBox chkLocalPerspectives;
+        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.CheckBox chkAllowUnsupportedPBIFeatures;
+        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.CheckBox chkCopyIncludePerspectives;
+        private System.Windows.Forms.CheckBox chkCopyIncludeTranslations;
+        private System.Windows.Forms.CheckBox chkCopyIncludeOLS;
+        private System.Windows.Forms.CheckBox chkCopyIncludeRLS;
     }
 }

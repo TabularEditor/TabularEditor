@@ -14,6 +14,11 @@ namespace TabularEditor.UI.Dialogs
         public PreferencesForm()
         {
             InitializeComponent();
+#if CL1400
+            chkCopyIncludeOLS.Enabled = true;
+#else
+            chkCopyIncludeOLS.Enabled = false;
+#endif
         }
 
         private void PreferencesForm_Load(object sender, EventArgs e)
@@ -70,6 +75,13 @@ namespace TabularEditor.UI.Dialogs
             txtBackupPath.Text = Preferences.Current.BackupLocation;
             chkAutoUpdate.Checked = Preferences.Current.CheckForUpdates;
             chkFixup.Checked = Preferences.Current.FormulaFixup;
+            chkAllowUnsupportedPBIFeatures.Checked = Preferences.Current.AllowUnsupportedPBIFeatures;
+
+            chkCopyIncludeTranslations.Checked = Preferences.Current.Copy_IncludeTranslations;
+            chkCopyIncludePerspectives.Checked = Preferences.Current.Copy_IncludePerspectives;
+            chkCopyIncludeRLS.Checked = Preferences.Current.Copy_IncludeRLS;
+            chkCopyIncludeOLS.Checked = Preferences.Current.Copy_IncludeOLS;
+
             LoadCheckedNodes(treeView1.Nodes, Preferences.Current.SaveToFolder_Levels);
 
             chkIgnoreTimestamps.Checked = Preferences.Current.SaveToFolder_IgnoreTimestamps;
@@ -96,6 +108,8 @@ namespace TabularEditor.UI.Dialogs
                 Preferences.Current.BackupLocation = chkAutoBackup.Checked ? txtBackupPath.Text : string.Empty;
                 Preferences.Current.CheckForUpdates = chkAutoUpdate.Checked;
                 Preferences.Current.FormulaFixup = chkFixup.Checked;
+                Preferences.Current.AllowUnsupportedPBIFeatures = chkAllowUnsupportedPBIFeatures.Checked;
+
                 Preferences.Current.SaveToFolder_IgnoreTimestamps = chkIgnoreTimestamps.Checked;
                 Preferences.Current.SaveToFolder_IgnoreInferredObjects = chkIgnoreInfObjects.Checked;
                 Preferences.Current.SaveToFolder_IgnoreInferredProperties = chkIgnoreInfProps.Checked;
@@ -107,6 +121,10 @@ namespace TabularEditor.UI.Dialogs
                 Preferences.Current.SaveToFile_IgnoreInferredObjects = chkIgnoreInfObjectsFile.Checked;
                 Preferences.Current.SaveToFile_IgnoreInferredProperties = chkIgnoreInfPropsFile.Checked;
                 Preferences.Current.SaveToFile_SplitMultilineStrings = chkSplitMultilineFile.Checked;
+                Preferences.Current.Copy_IncludeTranslations = chkCopyIncludeTranslations.Checked;
+                Preferences.Current.Copy_IncludePerspectives = chkCopyIncludePerspectives.Checked;
+                Preferences.Current.Copy_IncludeRLS = chkCopyIncludeRLS.Checked;
+                Preferences.Current.Copy_IncludeOLS = chkCopyIncludeOLS.Checked;
 
                 Preferences.Current.SaveToFolder_Levels = new HashSet<string>();
                 SaveCheckedNodes(treeView1.Nodes, Preferences.Current.SaveToFolder_Levels);

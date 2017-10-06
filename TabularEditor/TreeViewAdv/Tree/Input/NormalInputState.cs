@@ -125,7 +125,7 @@ namespace Aga.Controls.Tree
 			Tree.ItemDragMode = false;
 			if (/*_mouseDownFlag && */ args.Node != null)
 			{
-                if (args.Button == MouseButtons.Left)
+                if (args.Button == MouseButtons.Left && !(this is InputWithControl))
 					DoMouseOperation(args, false);
 				else if (args.Button == MouseButtons.Right)
 					Tree.CurrentNode = args.Node;

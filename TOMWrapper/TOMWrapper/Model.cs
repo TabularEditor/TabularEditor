@@ -17,6 +17,9 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Adds a new perspective to the model.")]
         public Perspective AddPerspective(string name = null)
         {
+#if CL1400
+            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(DataColumn))) return null;
+#endif
             Handler.BeginUpdate("add perspective");
             var perspective = Perspective.CreateNew(this, name);
             Handler.EndUpdate();
@@ -36,6 +39,9 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Adds a new table to the model.")]
         public Table AddTable(string name = null)
         {
+#if CL1400
+            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(DataColumn))) return null;
+#endif
             Handler.BeginUpdate("add table");
             var t = Table.CreateNew(this, name);
             t.InitRLSIndexer();
@@ -56,6 +62,9 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Adds a new translation to the model.")]
         public Culture AddTranslation(string cultureId)
         {
+#if CL1400
+            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(DataColumn))) return null;
+#endif
             Handler.BeginUpdate("add translation");
             var culture = TOMWrapper.Culture.CreateNew(cultureId);
             Handler.EndUpdate();
@@ -76,7 +85,11 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Adds a new data source to the model.")]
         public ProviderDataSource AddDataSource(string name = null)
         {
+#if CL1400
+            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(DataSource))) return null;
+#endif
             Handler.BeginUpdate("add data source");
+
             var ds = ProviderDataSource.CreateNew(this, name);
             Handler.EndUpdate();
             return ds;
@@ -86,6 +99,8 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Adds a new strucured data source to the model.")]
         public StructuredDataSource AddStructuredDataSource(string name = null)
         {
+            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(DataColumn))) return null;
+
             Handler.BeginUpdate("add data source");
             var ds = StructuredDataSource.CreateNew(this, name);
             Handler.EndUpdate();
@@ -125,32 +140,12 @@ namespace TabularEditor.TOMWrapper
         public IEnumerable<Level> AllLevels { get { return Tables.SelectMany(t => t.Hierarchies).SelectMany(h => h.Levels); } }
         #endregion
 
-        public readonly LogicalGroup GroupTables = new LogicalGroup("Tables");
-        public readonly LogicalGroup GroupDataSources = new LogicalGroup("Data Sources");
-        public readonly LogicalGroup GroupPerspectives = new LogicalGroup("Perspectives");
-        public readonly LogicalGroup GroupRelationships = new LogicalGroup("Relationships");
-        public readonly LogicalGroup GroupTranslations = new LogicalGroup("Translations");
-        public readonly LogicalGroup GroupRoles = new LogicalGroup("Roles");
-        public readonly LogicalGroup GroupPartitions = new LogicalGroup("Table Partitions");
-
-        [Browsable(false)]
-        public IEnumerable<LogicalGroup> LogicalChildGroups { get
-            {
-                yield return GroupTables;
-                yield return GroupPartitions;
-                yield return GroupDataSources;
-                yield return GroupPerspectives;
-                yield return GroupRelationships;
-                yield return GroupTranslations;
-                yield return GroupRoles;
-            } }
-
         public IEnumerable<ITabularNamedObject> GetChildren()
         {
-            return LogicalChildGroups.AsEnumerable().Cast<ITabularNamedObject>();
+            return Groups;
         }
 
-        public override bool CanDelete(out string message)
+        protected override bool AllowDelete(out string message)
         {
             message = Messages.CannotDeleteObject;
             return false;
@@ -160,6 +155,8 @@ namespace TabularEditor.TOMWrapper
         {
             
         }
+
+        public LogicalGroups Groups { get { return LogicalGroups.Singleton; } }
 
         [Category("Basic")]
         [IntelliSense("Gets the database object of the model.")]

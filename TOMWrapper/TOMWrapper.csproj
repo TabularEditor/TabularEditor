@@ -109,6 +109,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TOMWrapper\TabularModelHandlerSettings.cs" />
     <Compile Include="IPlugin.cs" />
     <Compile Include="Messages.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -147,6 +148,8 @@
     <Compile Include="TOMWrapper\CalculatedColumn.cs" />
     <Compile Include="TOMWrapper\CalculatedTable.cs" />
     <Compile Include="TOMWrapper\CalculatedTableColumn.cs" />
+    <Compile Include="TOMWrapper\PowerBI\PowerBIGovernance.cs" />
+    <Compile Include="TOMWrapper\PowerBI\PowerBIHelper.cs" />
     <Compile Include="TOMWrapper\TableOLSIndexer.cs" />
     <Compile Include="TOMWrapper\Database.cs" />
     <Compile Include="TOMWrapper\DataSource.cs" />
@@ -197,6 +200,9 @@
     <Compile Include="TOMWrapper\TabularObjectComparer.cs" />
     <Compile Include="TOMWrapper\TabularObjectHelper.cs" />
     <Compile Include="TOMWrapper\TranslationIndexer.cs" />
+    <Compile Include="Utils\FormulaFixup.cs" />
+    <Compile Include="Utils\Scripter.cs" />
+    <Compile Include="Utils\Serializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="LocateDeadCode.ruleset" />

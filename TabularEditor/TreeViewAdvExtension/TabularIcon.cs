@@ -53,7 +53,11 @@ namespace TabularEditor.UI.Tree
                 {
                     return TabularIcons.ICON_CALCTABLE;
                 }
-                if (obj is Level) return TabularIcons.ICON_LEVEL1 + (obj as Level).Ordinal;
+                if (obj is Level)
+                {
+                    var icon = TabularIcons.ICON_LEVEL1 + (obj as Level).Ordinal;
+                    return icon > TabularIcons.ICON_LEVEL12 ? TabularIcons.ICON_LEVEL12 : icon;
+                }
 
                 int iconIndex;
                 if (IconMap.TryGetValue((obj as TabularObject).ObjectType, out iconIndex)) return iconIndex;

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TabularEditor.UI.Actions
 {
-    public class SelectAllAction: TextBoxAction
+    public class SelectAllAction: ClipboardAction
     {
         public SelectAllAction()
         {

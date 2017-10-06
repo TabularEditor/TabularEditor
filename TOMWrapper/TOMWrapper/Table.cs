@@ -8,6 +8,7 @@ using System.Drawing.Design;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.TextServices;
+using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.UndoFramework;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
@@ -19,7 +20,7 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public HashSet<IDAXExpressionObject> Dependants { get; } = new HashSet<IDAXExpressionObject>();
 
-        public override bool CanDelete(out string message)
+        protected override bool AllowDelete(out string message)
         {
             message = string.Empty;
             if (Dependants.Count > 0) message += Messages.ReferencedByDAX;
@@ -53,6 +54,10 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Adds a new Data column to the table.")]
         public DataColumn AddDataColumn(string name = null, string sourceColumn = null, string displayFolder = null)
         {
+#if CL1400
+            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(DataColumn))) return null;
+#endif
+
             Handler.BeginUpdate("add Data column");
             var column = DataColumn.CreateNew(this, name);
             column.DataType = DataType.String;
@@ -348,9 +353,9 @@ namespace TabularEditor.TOMWrapper
         {
             if (propertyName == Properties.NAME)
             {
-                if (Handler.AutoFixup)
+                if (Handler.Settings.AutoFixup)
                 {
-                    Handler.DoFixup(this);
+                    FormulaFixup.DoFixup(this);
                     Handler.UndoManager.EndBatch();
                 }
                 Handler.Tree.FolderCache.Clear(); // Clear folder cache when a table is renamed.
@@ -361,11 +366,11 @@ namespace TabularEditor.TOMWrapper
         {
             if (propertyName == Properties.NAME)
             {
-                Handler.BuildDependencyTree();
+                FormulaFixup.BuildDependencyTree();
 
                 // When formula fixup is enabled, we need to begin a new batch of undo operations, as this
                 // name change could result in expression changes on multiple objects:
-                if (Handler.AutoFixup) Handler.UndoManager.BeginBatch("Set Property 'Name'");
+                if (Handler.Settings.AutoFixup) Handler.UndoManager.BeginBatch("Set Property 'Name'");
             }
             base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TabularEditor.TOMWrapper;
+using TabularEditor.TOMWrapper.Utils;
 
 namespace TabularEditor.UndoFramework
 {
@@ -40,9 +41,9 @@ namespace TabularEditor.UndoFramework
 
             if (RebuildDependencyTree)
             {
-                _handler.DelayBuildDependencyTree = false;
+                FormulaFixup.DelayBuildDependencyTree = false;
                 RebuildDependencyTree = false;
-                _handler.BuildDependencyTree();
+                FormulaFixup.BuildDependencyTree();
             }
         }
 
@@ -158,9 +159,9 @@ namespace TabularEditor.UndoFramework
             XDo(false, true);
             if (RebuildDependencyTree)
             {
-                _handler.DelayBuildDependencyTree = false;
+                FormulaFixup.DelayBuildDependencyTree = false;
                 RebuildDependencyTree = false;
-                _handler.BuildDependencyTree();
+                FormulaFixup.BuildDependencyTree();
             }
         }
         public void Redo()
@@ -168,9 +169,9 @@ namespace TabularEditor.UndoFramework
             XDo(true, true);
             if (RebuildDependencyTree)
             {
-                _handler.DelayBuildDependencyTree = false;
+                FormulaFixup.DelayBuildDependencyTree = false;
                 RebuildDependencyTree = false;
-                _handler.BuildDependencyTree();
+                FormulaFixup.BuildDependencyTree();
             }
         }
         public void Clear()

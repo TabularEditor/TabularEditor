@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
+using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.UndoFramework;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
@@ -15,7 +16,7 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public HashSet<IDAXExpressionObject> Dependants { get; } = new HashSet<IDAXExpressionObject>();
 
-        public override bool CanDelete(out string message)
+        protected override bool AllowDelete(out string message)
         {
             message = string.Empty;
             if (Dependants.Count > 0) message += Messages.ReferencedByDAX;
@@ -104,11 +105,11 @@ namespace TabularEditor.TOMWrapper
             if (propertyName == Properties.EXPRESSION)
             {
                 NeedsValidation = true;
-                Handler.BuildDependencyTree(this);
+                FormulaFixup.BuildDependencyTree(this);
             }
-            if (propertyName == Properties.NAME && Handler.AutoFixup)
+            if (propertyName == Properties.NAME && Handler.Settings.AutoFixup)
             {
-                Handler.DoFixup(this);
+                FormulaFixup.DoFixup(this);
                 Handler.UndoManager.EndBatch();
             }
             if (propertyName == Properties.KPI)
@@ -123,11 +124,11 @@ namespace TabularEditor.TOMWrapper
         {
             if (propertyName == Properties.NAME)
             {
-                Handler.BuildDependencyTree();
+                FormulaFixup.BuildDependencyTree();
 
                 // When formula fixup is enabled, we need to begin a new batch of undo operations, as this
                 // name change could result in expression changes on multiple objects:
-                if (Handler.AutoFixup) Handler.UndoManager.BeginBatch("Set Property 'Name'");
+                if (Handler.Settings.AutoFixup) Handler.UndoManager.BeginBatch("Set Property 'Name'");
             }
             base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
         }

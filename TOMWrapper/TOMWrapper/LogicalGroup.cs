@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
@@ -9,9 +10,49 @@ using TabularEditor.PropertyGridUI;
 
 namespace TabularEditor.TOMWrapper
 {
+    public class LogicalGroups: IEnumerable<LogicalGroup>
+    {
+        public static readonly LogicalGroups Singleton = new LogicalGroups();
+
+        public readonly LogicalGroup Tables = new LogicalGroup("Tables");
+        public readonly LogicalGroup DataSources = new LogicalGroup("Data Sources");
+        public readonly LogicalGroup Perspectives = new LogicalGroup("Perspectives");
+        public readonly LogicalGroup Relationships = new LogicalGroup("Relationships");
+        public readonly LogicalGroup Translations = new LogicalGroup("Translations");
+        public readonly LogicalGroup Roles = new LogicalGroup("Roles");
+        public readonly LogicalGroup Partitions = new LogicalGroup("Table Partitions");
+
+        private IEnumerable<LogicalGroup> Groups()
+        {
+            yield return Tables;
+            yield return Partitions;
+            yield return DataSources;
+            yield return Perspectives;
+            yield return Relationships;
+            yield return Translations;
+            yield return Roles;
+        }
+
+        public IEnumerator<LogicalGroup> GetEnumerator()
+        {
+#if CL1400
+            if (TabularModelHandler.Singleton.UsePowerBIGovernance)
+                return Groups().Where(grp => PowerBI.PowerBIGovernance.AllowGroup(grp.Name)).GetEnumerator();
+#endif
+            return Groups().GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+    }
+
     [TypeConverter(typeof(DynamicPropertyConverter))]
     public class LogicalGroup: ITabularNamedObject, ITabularObjectContainer, IDynamicPropertyObject
     {
+
+
         public const string TABLES = "Tables";
         public const string ROLES = "Roles";
         public const string PERSPECTIVES = "Perspectives";

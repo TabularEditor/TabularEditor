@@ -207,7 +207,6 @@ namespace TabularEditor.UI
             menu.Tag = state;
 
             menu.DropDownOpening += ContextMenu_DynamicMenuOpening;
-            Console.WriteLine("Added eventhandler for {0}", name);
             return submenu;
         }
 
@@ -226,22 +225,20 @@ namespace TabularEditor.UI
             {
                 menu.DropDownItems.RemoveAt(ix);
             }
+            RemoveSeparators(menu.DropDown);
+            
+            var dict = act.ArgNames;
 
-            var debug1 = menu.DropDownItems.Count;
-
-            foreach (string argName in act.ArgNames.Keys)
+            foreach (string argName in dict.Keys)
             {
                 var item = ContextMenu_AddFromAction(argName, menu.DropDown);
                 if (!string.IsNullOrEmpty(act.ToolTip)) item.ToolTipText = act.ToolTip;
                 item.Tag = act;
                 item.Name = argName;
-                item.Enabled = act.Enabled(act.ArgNames[argName]);
+                item.Enabled = act.Enabled(dict[argName]);
                 item.Click += ContextMenuItem_Click;
             }
-
-            var debug2 = menu.DropDownItems.Count;
-
-            Console.WriteLine("Populated submenu items for {0}. Items before: {1}, items after: {2}", menu.Text, debug1, debug2);
+            
             state.IsLoaded = true;
         }
 

@@ -37,7 +37,11 @@ namespace TabularEditor
 
     public static class ScriptEngine
     {
+#if CL1400
+        static readonly string WrapperDllPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\TOMWrapper14.dll";
+#else
         static readonly string WrapperDllPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\TOMWrapper.dll";
+#endif
         public static readonly string CustomActionsJsonPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\CustomActions.json";
 
         public static Action<Model, UITreeSelection> ScriptAction(string script, out CompilerResults compilerResults)
@@ -165,10 +169,10 @@ namespace TabularEditor
 
             if(result.Errors.Count > 0)
             {
-                Debug.WriteLine("Could not compile Custom Actions.");
+                Console.WriteLine("Could not compile Custom Actions.");
                 foreach(CompilerError err in result.Errors)
                 {
-                    Debug.WriteLine("Line {0}, col {1}: {2}", err.Line, err.Column, err.ErrorText);
+                    Console.WriteLine("Line {0}, col {1}: {2}", err.Line, err.Column, err.ErrorText);
                 }
                 CustomActionError = true;
             } else
@@ -194,7 +198,8 @@ namespace TabularEditor
         {
             // Allowed namespaces:
             var includeUsings = new HashSet<string>(new[] { "System", "System.Linq", "TabularEditor.TOMWrapper", "TabularEditor.UI", "TOM = Microsoft.AnalysisServices.Tabular" });
-            foreach (var pluginNs in TabularEditor.UIServices.Preferences.Current.Scripting_UsingNamespaces) includeUsings.Add(pluginNs);
+            foreach (var pluginNs in TabularEditor.UIServices.Preferences.Current.Scripting_UsingNamespaces)
+                if(_pluginNamespaces.Any(an => an.Namespace == pluginNs)) includeUsings.Add(pluginNs);
 
             CompilerResults result;
 
@@ -247,7 +252,7 @@ namespace TabularEditor
                 }
                 else
                 {
-                    // Check if WrapperDll is of same version as the TabularEditor.exe. If not, output a new one:
+                    // Check if WrapperDll is of same version as the TabularEditor.exe and same Compatibility Level. If not, output a new one:
                     var wrapperVersion = FileVersionInfo.GetVersionInfo(WrapperDllPath);
                     var currentVersion = Assembly.GetAssembly(typeof(TabularModelHandler)).GetName().Version;
                     if (wrapperVersion.FileVersion != currentVersion.ToString()) OutputWrapperDll();
@@ -255,7 +260,10 @@ namespace TabularEditor
 
                 if (File.Exists(CustomActionsJsonPath))
                 {
-                    CompileCustomActions(CustomActionsJson.LoadFromJson(CustomActionsJsonPath));
+                    Console.WriteLine("Loading custom actions from: " + CustomActionsJsonPath);
+                    var actions = CustomActionsJson.LoadFromJson(CustomActionsJsonPath);
+                    actions.SaveToJson(@"C:\TE\testactions.json");
+                    CompileCustomActions(actions);
                 } else
                 {
                     ScriptEngineStatus = "File not found: " + CustomActionsJsonPath;

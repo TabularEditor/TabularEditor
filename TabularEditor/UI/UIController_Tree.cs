@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper;
+using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.UI.Actions;
 using TabularEditor.UI.Tree;
 using TabularEditor.UIServices;
@@ -20,7 +21,7 @@ namespace TabularEditor.UI
     {
         TabularNodeTextBox TreeView_NameCol;
 
-        public void Goto(TabularNamedObject obj)
+        public void Goto(ITabularNamedObject obj)
         {
             if (!Tree.VisibleInTree(obj))
             {
@@ -48,8 +49,6 @@ namespace TabularEditor.UI
             UI.TreeView.NodeControls.Insert(1, new TabularIcon { Images = UI.TreeImages.Images, ParentColumn = UI.TreeView.Columns[0] });
             TreeView_NameCol = new TabularNodeTextBox(this) { DataPropertyName = "LocalName", ParentColumn = UI.TreeView.Columns[0], Trimming = StringTrimming.EllipsisCharacter, EditEnabled = true };
             UI.TreeView.NodeControls.Insert(2, TreeView_NameCol);
-
-            SetInfoColumns(false);
 
             TreeView_NameCol.ChangesApplied += TvName_ChangesApplied;
 
@@ -117,7 +116,7 @@ namespace TabularEditor.UI
                 // the serialized string value:
                 if (e.Data.GetDataPresent("Text"))
                 {
-                    var objects = Handler.DeserializeObjects(e.Data.GetData("Text") as string);
+                    var objects = Serializer.DeserializeObjects(e.Data.GetData("Text") as string);
                     draggedNodes = objects.Select(obj => new TreeNodeAdv(obj)).ToArray();
                 }
             }
@@ -268,16 +267,14 @@ namespace TabularEditor.UI
             var scriptableObjects = new HashSet<ObjectType>() { ObjectType.Table, ObjectType.Role, ObjectType.DataSource, ObjectType.Partition };
 
             // Only generate TMSL script when dragging a single object:
-            if (draggedNodes.Length == 1 && UI.TreeView.CurrentNode.Tag is Model) Tree_CurrentDragObject.SetData(Handler.ScriptCreateOrReplace());
+            if (draggedNodes.Length == 1 && UI.TreeView.CurrentNode.Tag is Model) Tree_CurrentDragObject.SetData(Scripter.ScriptCreateOrReplace());
             else if (draggedNodes.Length == 1 && UI.TreeView.CurrentNode.Tag is LogicalGroup)
             {
-                Tree_CurrentDragObject.SetData(Handler.SerializeObjects(UI.TreeView.CurrentNode.Children.Select(n => n.Tag).OfType<TabularNamedObject>()));
+                Tree_CurrentDragObject.SetData(Serializer.SerializeObjects(UI.TreeView.CurrentNode.Children.Select(n => n.Tag).OfType<TabularObject>()));
             }
             else if (draggedNodes.Length == 1 && UI.TreeView.CurrentNode.Tag is TabularNamedObject && scriptableObjects.Contains((UI.TreeView.CurrentNode.Tag as TabularNamedObject).ObjectType))
-                Tree_CurrentDragObject.SetData(Handler.ScriptCreateOrReplace(UI.TreeView.CurrentNode.Tag as TabularNamedObject));
-            
-            // TODO: Handle KPI objects (which is not of type TabularNamedObject):
-            else Tree_CurrentDragObject.SetData(Handler.SerializeObjects(Selection.OfType<TabularNamedObject>()));
+                Tree_CurrentDragObject.SetData(Scripter.ScriptCreateOrReplace(UI.TreeView.CurrentNode.Tag as TabularNamedObject));
+            else Tree_CurrentDragObject.SetData(Serializer.SerializeObjects(Selection.OfType<TabularObject>()));
 
             Tree_CurrentDragObject.SetData(draggedNodes);
             UI.TreeView.DoDragDrop(Tree_CurrentDragObject, DragDropEffects.Move | DragDropEffects.Copy);

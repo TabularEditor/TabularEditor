@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Newtonsoft.Json;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -19,6 +20,10 @@ namespace TabularEditor.TOMWrapper
     [TypeConverter(typeof(IndexerConverter))]
     public class TableOLSIndexer : IEnumerable<TOM.MetadataPermission>, IExpandableIndexer
     {
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(Keys.Where(k => this[k] != TOM.MetadataPermission.Default).ToDictionary(k => k, k => this[k]));
+        }
         public void Refresh()
         {
             OLSMap = Table.Model.Roles.ToDictionary(
@@ -31,6 +36,15 @@ namespace TabularEditor.TOMWrapper
                     return tp.MetadataPermission;
                 }
                 );
+        }
+
+        public void CopyFrom(Dictionary<string, TOM.MetadataPermission> source)
+        {
+            Clear();
+            foreach(var k in Keys)
+            {
+                if (source.ContainsKey(k)) this[k] = source[k];
+            }
         }
 
         [IntelliSense("Copies all OLSs from another OLS collection.")]

@@ -18,7 +18,9 @@ namespace TabularEditor.Scripting
         {
             DontShow = !canShowOutputForm;
         }
-        private static ScriptOutputForm DormantForm = new ScriptOutputForm();
+        private static ScriptOutputForm DormantForm;
+        public bool ShowErrors;
+
         public static bool DontShow { get; set; }
 
         public ScriptOutputForm()
@@ -26,9 +28,26 @@ namespace TabularEditor.Scripting
             InitializeComponent();
         }
 
-        public static void ShowObject(object value, string caption)
+        public static void ShowObject(object value, string caption, bool errorObjects = false)
         {
+            if (DormantForm != null && DormantForm.Visible) DormantForm.Close();
+            DormantForm = new ScriptOutputForm();
+
             DormantForm.Text = caption;
+            DormantForm.ShowErrors = errorObjects;
+            if (DormantForm.ShowErrors)
+            {
+                DormantForm.chkDontShow.Visible = false;
+                DormantForm.DataListView.Width = (DormantForm.Width * 3) / 5;
+                DormantForm.DataListView.Columns[1].Name = "Error";
+                DormantForm.DataListView.Columns[1].Width = 500;
+            } else
+            {
+                DormantForm.chkDontShow.Visible = true;
+                DormantForm.DataListView.Width = DormantForm.Width / 2;
+                DormantForm.DataListView.Columns[1].Name = "Type";
+                DormantForm.DataListView.Columns[1].Width = DormantForm.DataListView.Width - DormantForm.DataListView.Columns[0].Width - 5;
+            }
 
             var testTabularObject = value as TabularObject;
             var testTabularCollection = value as IEnumerable<ITabularNamedObject>;
@@ -42,7 +61,18 @@ namespace TabularEditor.Scripting
             else if (testList != null) ShowObjectCollection(testList);
             else ShowString(value.ToString());
 
-            DormantForm.ShowDialog();
+            if (errorObjects)
+            {
+                DormantForm.Show();
+                DormantForm.BringToFront();
+                DormantForm.Activate();
+            }
+            else
+            {
+                if(DormantForm.Visible) DormantForm.Visible = false;
+                DormantForm.ShowDialog();
+            }
+
             DontShow = DormantForm.chkDontShow.Checked;
         }
 
@@ -130,7 +160,14 @@ namespace TabularEditor.Scripting
             if (Mode == ListMode.TabularObjects)
             {
                 var obj = objList[e.ItemIndex] as ITabularNamedObject;
-                e.Item = new ListViewItem(new[] { obj.Name, obj.GetTypeName() }, 15);
+                if (ShowErrors)
+                {
+                    e.Item = new ListViewItem(new[] { (obj as IDaxObject)?.DaxObjectFullName ?? obj.Name, (obj as IErrorMessageObject)?.ErrorMessage }, 15);
+                }
+                else
+                {
+                    e.Item = new ListViewItem(new[] { obj.Name, obj.GetTypeName() }, 15);
+                }
             } else if (Mode == ListMode.KeyValuePair) {
                 var obj = (KeyValuePair < object, object> )objList[e.ItemIndex];
                 e.Item = new ListViewItem(new[] { obj.Key.ToString(), obj.Value?.GetType()?.Name });
@@ -156,6 +193,23 @@ namespace TabularEditor.Scripting
             }
             else
                 DataPropertyGrid.SelectedObject = null;
+        }
+
+        private void DataListView_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            var item = DataListView.GetItemAt(e.X, e.Y);
+            if (item == null) return;
+
+            var obj = objList[item.Index] as TabularNamedObject;
+            if(obj != null)
+            {
+                UI.UIController.Current.Goto(obj);
+            }
+        }
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            DormantForm.Close();
         }
     }
 }

@@ -21,22 +21,46 @@ namespace TabularEditor.TOMWrapper
     {
         /// <summary>
         /// Derived classes should override this method to prevent an object from being deleted.
+        /// If left un-overridden, always returns TRUE and sets message to null.
         /// </summary>
         /// <param name="message">If an object CANNOT be deleted, this string should provide
         /// a reason why. If an object CAN be deleted, this string may optionally provide a
         /// suitable warning message that applies if the object is deleted immediately after
         /// the call to CanDelete.</param>
         /// <returns>True if an object can be deleted. False otherwise.</returns>
-        public virtual bool CanDelete(out string message)
+        protected virtual bool AllowDelete(out string message)
         {
             message = null;
             return true;
         }
 
+        /// <summary>
+        /// Indicates whether an object can be deleted or not.
+        /// </summary>
+        /// <returns>True if the object can currently be deleted. False, otherwise.</returns>
         public bool CanDelete()
         {
             string dummy;
             return CanDelete(out dummy);
+        }
+
+        /// <summary>
+        /// Indicates whether an object can be deleted or not.
+        /// </summary>
+        /// <param name="message">The reason why an object cannot be deleted, or in case the
+        /// method returns true, a warning message that should be displayed to the user before
+        /// deletion.</param>
+        /// <returns>True if the object can currently be deleted. False, otherwise.</returns>
+        public bool CanDelete(out string message)
+        {
+#if CL1400
+            if(Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowDelete(GetType()))
+            {
+                message = string.Format(Messages.CannotDeletePowerBIObject, GetType().GetTypeName());
+                return false;
+            }
+#endif
+            return AllowDelete(out message);
         }
 
         /// <summary>

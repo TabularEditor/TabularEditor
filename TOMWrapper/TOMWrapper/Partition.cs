@@ -13,6 +13,17 @@ namespace TabularEditor.TOMWrapper
 {
     public partial class Partition: IExpressionObject
     {
+        internal static void CreateCalculatedTablePartition(CalculatedTable calcTable)
+        {
+            var tomPartition = new TOM.Partition();
+            tomPartition.Name = calcTable.Name;
+            var partition = new Partition(tomPartition);
+
+            calcTable.Partitions.Add(partition);
+            partition.Init();
+            partition.MetadataObject.Source = new TOM.CalculatedPartitionSource();
+        }
+
         public Partition(): this(new TOM.Partition() { Source = new TOM.QueryPartitionSource() })
         {
             if (Model.DataSources.Count == 0) throw new Exception("Unable to create partitions on a model with no data sources.");
@@ -155,14 +166,14 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public override bool CanDelete(out string message)
+        protected override bool AllowDelete(out string message)
         {
             if(Table.Partitions.Count == 1)
             {
                 message = Messages.TableMustHaveAtLeastOnePartition;
                 return false;
             }
-            return base.CanDelete(out message);
+            return base.AllowDelete(out message);
         }
 
         protected override bool IsEditable(string propertyName)

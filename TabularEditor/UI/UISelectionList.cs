@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
+using TabularEditor.TOMWrapper.Utils;
 
 namespace TabularEditor.UI
 {
@@ -204,7 +205,7 @@ namespace TabularEditor.UI
         public void Rename(string pattern, string replacement, bool regex = false, bool includeNameTranslations = false)
         {
             var objects = this.ToList();
-            Handler.DelayBuildDependencyTree = true;
+            FormulaFixup.DelayBuildDependencyTree = true;
             Handler.BeginUpdate("rename" + (objects.Count > 1 ? " objects" : ""));
 
             int errCount = 0;
@@ -252,8 +253,8 @@ namespace TabularEditor.UI
             if (errCount > 0) System.Windows.Forms.MessageBox.Show(string.Format("{0} item{1} could not be renamed, since the replaced name was invalid.", errCount, errCount > 1 ? "s" : ""), "Errors during batch rename", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
             Handler.EndUpdate();
-            Handler.DelayBuildDependencyTree = false;
-            Handler.BuildDependencyTree();
+            FormulaFixup.DelayBuildDependencyTree = false;
+            FormulaFixup.BuildDependencyTree();
         }
 
         [IntelliSense("Specify a search pattern and a replacement value, that will be applied to the Expression of the objects in the collection.")]

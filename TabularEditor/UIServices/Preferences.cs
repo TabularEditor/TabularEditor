@@ -13,6 +13,7 @@ namespace TabularEditor.UIServices
         #region Serializable properties
         public bool CheckForUpdates = false;
         public bool FormulaFixup = true;
+        public bool AllowUnsupportedPBIFeatures = false;
         public string BackupLocation = string.Empty;
 
         public bool SaveToFolder_IgnoreInferredObjects = true;
@@ -28,6 +29,11 @@ namespace TabularEditor.UIServices
         public bool SaveToFile_IgnoreInferredProperties = true;
         public bool SaveToFile_IgnoreTimestamps = true;
         public bool SaveToFile_SplitMultilineStrings = true;
+
+        public bool Copy_IncludeTranslations = true;
+        public bool Copy_IncludePerspectives = true;
+        public bool Copy_IncludeRLS = true;
+        public bool Copy_IncludeOLS = true;
 
         public HashSet<string> Scripting_UsingNamespaces = new HashSet<string>();
 
@@ -113,8 +119,16 @@ namespace TabularEditor.UIServices
         #endregion
     }
 
-    public static class PreferencesSerializerOptions
+    public static class PreferencesConverter
     {
+        static public TabularEditor.TOMWrapper.TabularModelHandlerSettings GetSettings(this Preferences value)
+        {
+            return new TOMWrapper.TabularModelHandlerSettings {
+                AutoFixup = value.FormulaFixup,
+                PBIFeaturesOnly = !value.AllowUnsupportedPBIFeatures
+            };
+        }
+
         static public TabularEditor.TOMWrapper.SerializeOptions GetSerializeOptions(this Preferences value, bool SaveToFolder)
         {
             if (SaveToFolder)

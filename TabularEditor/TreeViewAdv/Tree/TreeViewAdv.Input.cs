@@ -552,14 +552,13 @@ namespace Aga.Controls.Tree
 		{
 			DragMode = false;
 
-            base.OnDragDrop(drgevent);
-
             SuspendSelectionEvent = true;
             try
             {
                 ClearSelectionInternal();
-                foreach (var n in _draggedNodes) FindNodeByTag(n.Tag).IsSelected = true;
-                SelectionStart = Selection[0];
+                foreach (var n in _draggedNodes) n.IsSelected = true;
+                if(Selection.Count > 0)
+                    SelectionStart = Selection[0];
             }
             finally
             {
@@ -567,8 +566,9 @@ namespace Aga.Controls.Tree
             }
 
 			UpdateView();
-		}
+            base.OnDragDrop(drgevent);
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

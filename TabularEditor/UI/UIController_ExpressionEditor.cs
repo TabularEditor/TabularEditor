@@ -124,7 +124,7 @@ namespace TabularEditor.UI
             UI.ExpressionEditor.TextChanged -= ExpressionEditor_TextChanged;
 
             var i = UI.ExpressionEditor.SelectionStart;
-            UI.ExpressionEditor.Text = fromMeasure ? ExpressionEditor_Current.Expression : "";
+            UI.ExpressionEditor.Text = (fromMeasure ? ExpressionEditor_Current.Expression : "") ?? "";
             if(!string.IsNullOrEmpty(UI.ExpressionEditor.Text)) ExpressionParser.SyntaxHighlight(UI.ExpressionEditor);
             UI.ExpressionEditor.ClearUndo();
             UI.ExpressionEditor.SelectionStart = i;
@@ -200,7 +200,7 @@ namespace TabularEditor.UI
             get
             {
                 if (ExpressionEditor_IsEditing)
-                    return ExpressionEditor_Current.Expression.Replace("\r", "") != UI.ExpressionEditor.Text.Replace("\r", "");
+                    return (ExpressionEditor_Current.Expression ?? "").Replace("\r", "") != UI.ExpressionEditor.Text.Replace("\r", "");
                 else return false;
             }
         }

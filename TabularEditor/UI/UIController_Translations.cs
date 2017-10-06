@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.UI.Dialogs;
 
 namespace TabularEditor.UI
@@ -21,7 +22,7 @@ namespace TabularEditor.UI
 
             var fileName = Translation_SaveDlg.FileName;
             (new FileInfo(fileName)).Directory.Create();
-            File.WriteAllText(fileName, Handler.ScriptTranslations(Handler.Model.Cultures));
+            File.WriteAllText(fileName, Scripter.ScriptTranslations(Handler.Model.Cultures));
         }
         public void Translations_ExportSelected()
         {
@@ -29,7 +30,7 @@ namespace TabularEditor.UI
             if (res == DialogResult.Cancel) return;
 
             var fileName = Translation_SaveDlg.FileName;
-            File.WriteAllText(fileName, Handler.ScriptTranslations(Selection.Cultures));
+            File.WriteAllText(fileName, Scripter.ScriptTranslations(Selection.Cultures));
         }
 
         public void Translations_Import()

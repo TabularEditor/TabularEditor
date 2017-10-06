@@ -44,7 +44,7 @@ namespace TabularEditor
         {
 #if CL1400
             var asmName = new AssemblyName(args.Name);
-            if(asmName.Name.StartsWith("Microsoft.AnalysisServices.Server.Tabular") && asmName.Version.Major == 14)
+            if(asmName.Name.StartsWith("Microsoft.AnalysisServices.Server.Tabular") && asmName.Version.Major != 14)
             {
                 var td = new TaskDialog();
                 td.Text = @"This version of Tabular Editor requires the SQL AS AMO library for Azure Analysis Services or SQL Server 2017. Make sure version 14.0.0.0 (or newer) of the following DLLs are installed in the GAC or located in the same folder as TabularEditor.exe:
@@ -65,7 +65,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             return null;
 #else
             var asmName = new AssemblyName(args.Name);
-            if(asmName.Name.StartsWith("Microsoft.AnalysisServices.Server.Tabular") && asmName.Version.Major == 13)
+            if(asmName.Name.StartsWith("Microsoft.AnalysisServices.Server.Tabular") && asmName.Version.Major != 13)
             {
                 var td = new TaskDialog();
                 td.Text = @"This version of Tabular Editor requires the SQL AS AMO library for SQL Server 2016. Make sure version 13.0.0.0 (or newer) of the following DLLs are installed in the GAC or located in the same folder as TabularEditor.exe:
@@ -295,8 +295,8 @@ To obtain the files, download the SQL_AS_AMO library from the <A HREF=""https://
 
             if(!string.IsNullOrEmpty(buildOutputPath))
             {
-                cw.WriteLine("Saving file...");
-                h.SaveFile(buildOutputPath, TOMWrapper.SerializeOptions.Default);
+                cw.WriteLine("Building Model.bim file...");
+                h.Save(buildOutputPath, SaveFormat.ModelSchemaOnly, TOMWrapper.SerializeOptions.Default);
             }
 
             var replaceMap = new Dictionary<string, string>();

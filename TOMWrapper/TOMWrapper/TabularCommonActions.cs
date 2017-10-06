@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TabularEditor.TOMWrapper.Utils;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -71,12 +72,66 @@ namespace TabularEditor.TOMWrapper
 
         public string NewMeasureName(string prefix)
         {
+            // TODO: Refactor this (similar code in Measure.cs)
             // Loop through all tables, as measures must be uniquely named across the model:
             return Handler.Model.Tables.Select(t => t.MetadataObject.Measures.GetNewName(prefix)).OrderByDescending(p => p.Length).First();
         }
         public string NewColumnName(string prefix, Table table)
         {
             return table.Columns.GetNewName(prefix);
+        }
+
+        /// <summary>
+        /// Inserts the specified list of objects into the model, at the optional destination. Objects that cannot
+        /// be meaningfully inserted in the destination, will be inserted at the destination parent (recursively).
+        /// If no suitable destination can be found, insertion will be ignored.
+        /// Useful for drag-and-drop or copy-paste operations.
+        /// </summary>
+        /// <param name="objects"></param>
+        /// <param name="destination"></param>
+        public List<TabularObject> InsertObjects(ObjectJsonContainer objectContainer, ITabularNamedObject destination = null)
+        {
+            Handler.BeginUpdate("Paste objects");
+
+            var inserted = new List<TabularObject>();
+
+            // Possible destinations:
+            var destHier = (destination as Level)?.Hierarchy ?? (destination as Hierarchy);
+            var destTable = (destination as PartitionViewTable)?.Table ?? destHier?.Table ?? (destination as IDetailObject)?.Table ?? (destination as Table);
+
+            if (destHier != null)
+            {
+                // Levels can only be deserialized on a Hierarchy destination:
+                foreach (var obj in objectContainer[typeof(Level)]) inserted.Add(Serializer.DeserializeLevel(obj, destHier));
+                destHier.CompactLevelOrdinals();
+            }
+
+            if (destTable != null)
+            {
+                // Hierarchies, columns, measures and partitions can only be deserialized on a Table destination:
+                foreach (var obj in objectContainer[typeof(DataColumn)]) inserted.Add(Serializer.DeserializeDataColumn(obj, destTable));
+                foreach (var obj in objectContainer[typeof(CalculatedColumn)]) inserted.Add(Serializer.DeserializeCalculatedColumn(obj, destTable));
+                foreach (var obj in objectContainer[typeof(Hierarchy)]) inserted.Add(Serializer.DeserializeHierarchy(obj, destTable));
+                foreach (var obj in objectContainer[typeof(Measure)]) inserted.Add(Serializer.DeserializeMeasure(obj, destTable));
+                foreach (var obj in objectContainer[typeof(Partition)]) inserted.Add(Serializer.DeserializePartition(obj, destTable));
+
+            }
+            foreach (var obj in objectContainer[typeof(CalculatedTable)]) inserted.Add(Serializer.DeserializeCalculatedTable(obj, Handler.Model));
+            foreach (var obj in objectContainer[typeof(Table)]) inserted.Add(Serializer.DeserializeTable(obj, Handler.Model));
+
+            foreach(var obj in inserted)
+            {
+                (obj as ITranslatableObject)?.LoadTranslations(true);
+                (obj as ITabularPerspectiveObject)?.LoadPerspectives(true);
+                (obj as Table)?.LoadRLS();
+                (obj as Table)?.LoadOLS(true);
+                (obj as Column)?.LoadOLS();
+                (obj as IAnnotationObject)?.ClearTabularEditorAnnotations();
+            }
+
+            Handler.EndUpdate();
+
+            return inserted;
         }
 
         public void MoveObjects(IEnumerable<IDetailObject> objects, Table newTable)
@@ -98,6 +153,12 @@ namespace TabularEditor.TOMWrapper
             Handler.BeginUpdate("move objects");
             foreach (var obj in objects)
             {
+                // TODO: When dragging between two tables, the original object (measure or calc column) is actually being deleted
+                // and a copy is created in the destination table. This means that the Tree Explorer cannot re-select the node
+                // corresponding to the created copy, as it searches for a node corresponding to an object that no longer exists
+                // in the logical TOM. This happens in the _model_StructureChanged method of TreeViewAdv.cs.
+                // In order to fix this, we would need a lookup mechanism that relies on the names of the objects within the TOM.
+
                 // Objects moved between two tables:
                 if(obj.Table != null || (obj as TabularNamedObject).MetadataObject.IsRemoved)
                 {

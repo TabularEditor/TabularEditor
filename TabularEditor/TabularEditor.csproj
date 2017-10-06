@@ -101,7 +101,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-CL1400|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Debug-CL1400\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;CL1400</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -111,7 +111,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-CL1400|AnyCPU'">
     <OutputPath>bin\Release-CL1400\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;CL1400</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -224,6 +224,7 @@
     <Compile Include="Scripting\ScriptOutputForm.Designer.cs">
       <DependentUpon>ScriptOutputForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UIServices\ClipboardListener.cs" />
     <Compile Include="UIServices\DynamicLinq.cs" />
     <Compile Include="UIServices\PowerBIHelper.cs" />
     <Compile Include="UIServices\Preferences.cs" />
@@ -599,7 +600,9 @@
       <DependentUpon>SelectReferencesForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
-    <None Include="Properties\app.manifest" />
+    <None Include="Properties\app.manifest">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\DataSources\Microsoft.AnalysisServices.Tabular.Database.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -633,6 +636,7 @@
     <Content Include="FodyWeavers.xml">
       <SubType>Designer</SubType>
     </Content>
+    <None Include="Resources\SaveToPBI.png" />
     <None Include="Resources\AutoSum_16x.png" />
     <None Include="Resources\SaveToFile.png" />
     <None Include="Resources\SaveToDB.png" />
@@ -758,10 +762,10 @@ foreach (var item in filesToCleanup)
     </PropertyGroup>
   </Target>
   <!-- Uncomment below to automatically comment 14.0.0.0 dlls into target folder -->
-  <!--<Target Condition="$(DefineConstants.Contains(CL1400))" Name="CopyDependencyDLLs" AfterTargets="AfterBuild">
+  <Target Condition="$(DefineConstants.Contains(CL1400))" Name="CopyDependencyDLLs" AfterTargets="AfterBuild">
     <Copy SourceFiles="$(SolutionDir)packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Core.dll;$(SolutionDir)packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Tabular.dll;$(SolutionDir)packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Tabular.Json.dll" DestinationFolder="$(TargetDir)">
     </Copy>
-  </Target>-->
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

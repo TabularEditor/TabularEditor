@@ -5,6 +5,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 using TabularEditor.UndoFramework;
 using System;
 using TabularEditor.PropertyGridUI;
+using Newtonsoft.Json.Linq;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -71,6 +72,7 @@ namespace TabularEditor.TOMWrapper
     /// </summary>
     public abstract class TabularObject: ITabularObject, INotifyPropertyChanged, INotifyPropertyChanging, IDynamicPropertyObject
     {
+        internal JObject SerializedFrom = null;
         internal ITabularObjectCollection Collection;
 
         private TOM.MetadataObject _metadataObject;
@@ -103,6 +105,14 @@ namespace TabularEditor.TOMWrapper
         /// <param name="cancel">Return true if the property change should not apply.</param>
         protected virtual void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
         {
+#if CL1400
+            if(Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowProperty(ObjectType, propertyName))
+            {
+                cancel = true;
+                return;
+            }
+#endif 
+
             PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
             if (cancel) return;
             Handler.DoObjectChanging(this, propertyName, newValue, ref cancel);
@@ -145,6 +155,10 @@ namespace TabularEditor.TOMWrapper
 
         public virtual bool Browsable(string propertyName)
         {
+#if CL1400
+            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowProperty(ObjectType, propertyName)) return false;
+#endif            
+
             return IsBrowsable(propertyName);
         }
         public virtual bool Editable(string propertyName)

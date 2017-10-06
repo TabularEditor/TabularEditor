@@ -4,10 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using TabularEditor.TOMWrapper;
+using TabularEditor.TOMWrapper.Utils;
+using TabularEditor.UIServices;
 
 namespace TabularEditor.UI.Actions
 {
-    public class CopyAction: TextBoxAction
+    public class CopyAction: ClipboardAction
     {
         public CopyAction()
         {
@@ -29,12 +33,25 @@ namespace TabularEditor.UI.Actions
                 if (!PropertyGridHelper.IsPropertyGridControl(ActiveTextBox.Parent))
                     ActiveTextBox.Copy();
             }
+            else if (SelectedNodes != null)
+            {
+                // Copy objects represented by selected nodes to clipboard
+                var json = Serializer.SerializeObjects(UIController.Current.Selection.OfType<TabularNamedObject>(),
+                    Preferences.Current.Copy_IncludeTranslations, Preferences.Current.Copy_IncludePerspectives,
+                    Preferences.Current.Copy_IncludeRLS
+#if CL1400
+                    , Preferences.Current.Copy_IncludeOLS
+#endif
+                    );
+                Clipboard.SetText(json, TextDataFormat.UnicodeText);
+            }
             base.OnExecute(e);
         }
 
         protected override void OnUpdate(EventArgs e)
         {
-            Enabled = (ActiveTextBox != null && ActiveTextBox.SelectionLength > 0);
+            Enabled = (ActiveTextBox != null && ActiveTextBox.SelectionLength > 0) || 
+                (SelectedNodes != null && UIController.Current.Selection.All(obj => obj is IClonableObject));
             base.OnUpdate(e);
         }
     }

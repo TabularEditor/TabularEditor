@@ -117,11 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CannotCreatePowerBIObject" xml:space="preserve">
+    <value>Adding a {0} to a Power BI Data Model is not allowed.</value>
+  </data>
   <data name="CannotDeleteCalculatedTableColumn" xml:space="preserve">
     <value>Calculated Table Columns cannot be deleted. Hide the column or revisit the Calculated Table expression instead.</value>
   </data>
   <data name="CannotDeleteObject" xml:space="preserve">
     <value>This object cannot be deleted.</value>
+  </data>
+  <data name="CannotDeletePowerBIObject" xml:space="preserve">
+    <value>Deleting a {0} from a Power BI Data Model is not allowed.</value>
   </data>
   <data name="ColumnUsedInHierarchy" xml:space="preserve">
     <value>This column is used in one or more hierarchies. The corresponding levels will also be deleted.</value>

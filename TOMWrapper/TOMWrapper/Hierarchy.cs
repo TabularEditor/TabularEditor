@@ -7,7 +7,7 @@ using TabularEditor.UndoFramework;
 
 namespace TabularEditor.TOMWrapper
 {
-    partial class Hierarchy: ITabularObjectContainer, ITabularPerspectiveObject
+    partial class Hierarchy: ITabularObjectContainer, ITabularPerspectiveObject, IErrorMessageObject
     {
         [Browsable(false)]
         public string DaxObjectFullName
@@ -98,6 +98,18 @@ namespace TabularEditor.TOMWrapper
                     Handler.Tree.OnStructureChanged(this);
                 }
                 _reordering = value;
+            }
+        }
+
+        public string ErrorMessage
+        {
+            get
+            {
+                if (Levels.GroupBy(l => l.Column).Any(g => g.Count() > 1))
+                {
+                    return "A hierarchy cannot have multiple levels that use the same column.";
+                }
+                else return null;
             }
         }
 

@@ -1260,6 +1260,7 @@
             this.tvModel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tvModel.FullRowSelect = true;
             this.tvModel.Indent = 12;
+            this.tvModel.LineColor = System.Drawing.SystemColors.ControlDark;
             this.tvModel.Location = new System.Drawing.Point(0, 25);
             this.tvModel.Model = null;
             this.tvModel.Name = "tvModel";
@@ -1687,8 +1688,8 @@
             this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid1.Name = "propertyGrid1";
             this.propertyGrid1.Size = new System.Drawing.Size(658, 292);
-            this.propertyGrid1.LineColor = System.Drawing.SystemColors.InactiveBorder;
             this.propertyGrid1.TabIndex = 14;
+            this.propertyGrid1.LineColor = System.Drawing.SystemColors.InactiveBorder;
             // 
             // tvMenu
             // 
@@ -2020,7 +2021,8 @@
             // dlgOpenFile
             // 
             this.dlgOpenFile.FileName = "Model.bim";
-            this.dlgOpenFile.Filter = "Tabular Model Files|*.bim;database.json|All files|*.*";
+            this.dlgOpenFile.Filter = "Tabular Model Files|*.bim;database.json|Power BI Files|*.pbix;*.pbit|All files|*." +
+    "*";
             // 
             // _type
             // 

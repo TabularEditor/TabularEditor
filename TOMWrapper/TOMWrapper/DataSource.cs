@@ -21,14 +21,14 @@ namespace TabularEditor.TOMWrapper
             get { return Model.AllPartitions.Where(p => p.DataSource == this); }
         }
 
-        public override bool CanDelete(out string message)
+        protected override bool AllowDelete(out string message)
         {
             if(UsedByPartitions.Any())
             {
                 message = Messages.DataSourceInUse;
                 return false;
             }
-            return base.CanDelete(out message);
+            return base.AllowDelete(out message);
         }
     }
 

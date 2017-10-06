@@ -61,6 +61,15 @@ namespace TabularEditor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Adding a {0} to a Power BI Data Model is not allowed..
+        /// </summary>
+        internal static string CannotCreatePowerBIObject {
+            get {
+                return ResourceManager.GetString("CannotCreatePowerBIObject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Calculated Table Columns cannot be deleted. Hide the column or revisit the Calculated Table expression instead..
         /// </summary>
         internal static string CannotDeleteCalculatedTableColumn {
@@ -75,6 +84,15 @@ namespace TabularEditor {
         internal static string CannotDeleteObject {
             get {
                 return ResourceManager.GetString("CannotDeleteObject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deleting a {0} from a Power BI Data Model is not allowed..
+        /// </summary>
+        internal static string CannotDeletePowerBIObject {
+            get {
+                return ResourceManager.GetString("CannotDeletePowerBIObject", resourceCulture);
             }
         }
         

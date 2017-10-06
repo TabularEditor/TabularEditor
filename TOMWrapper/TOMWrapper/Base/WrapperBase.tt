@@ -38,6 +38,35 @@ namespace TabularEditor.TOMWrapper
 	    public const string <#= pn.ToUpper() #> = "<#= pn #>";
 <# } #>
     }
+
+	internal static class ObjectMetadata
+	{
+		private static readonly Dictionary<Type, Type> TOMMap = new Dictionary<Type, Type>() {
+<# foreach(var t in Rules.ObjectTypes.Keys) { #>
+            { typeof(<#= t.Name #>) , typeof(TOM.<#= t.Name #>) },
+<# } #>	    };
+
+		public static Type ToTOM(Type wrapperType) {
+			return TOMMap[wrapperType];
+		}
+
+		public static Type FromTOM(Type tomType) {
+			return TOMMap.FirstOrDefault(kvp => kvp.Value == tomType).Key;
+		}
+
+		public static TabularObject CreateFromMetadata(TOM.MetadataObject obj) {
+<# foreach(var t in Rules.ObjectTypes.Keys.Where(obj => !obj.IsAbstract)) { #>
+            if(obj is TOM.<#= t.Name #>) return <#= t.Name #>.CreateFromMetadata(obj as TOM.<#= t.Name #>);
+<# } #>     
+			throw new InvalidOperationException("Unable to create wrapper object for type " + obj.GetType().Name);
+        }
+
+		public static readonly Type[] Creatable = {
+<# foreach(var t in Rules.ObjectTypes.Keys.Where(obj => Rules.IsCreatable(obj))) { #>
+            typeof(<#= t.Name #>),
+<# } #>	        typeof(CalculatedTable)
+        };
+	}
 <#
    foreach(var t in Rules.EnumTypes) {
 #>
@@ -64,7 +93,7 @@ namespace TabularEditor.TOMWrapper
 #><#= props.Any(p => p.Name == "Annotations") ? "\n\t\t\t, IAnnotationObject" : ""
 #><#= Rules.IsPerspectiveObject(t) ? "\n\t\t\t, ITabularPerspectiveObject" : ""
 #><#= Rules.IsTranslatable(t) ? "\n\t\t\t, ITranslatableObject" : ""
-#><#= Rules.InCollection(t) && !t.IsAbstract ? "\n\t\t\t, IClonableObject" : ""
+#><#= Rules.IsCreatable(t) ? "\n\t\t\t, IClonableObject" : ""
 #>
 	{
 	    protected internal new TOM.<#= t.Name #> MetadataObject { get { return base.MetadataObject as TOM.<#= t.Name #>; } internal set { base.MetadataObject = value; } }
@@ -197,16 +226,17 @@ namespace TabularEditor.TOMWrapper
 <# } if (!t.IsAbstract) { #>
 
 		public static <#= t.Name #> CreateFromMetadata(TOM.<#= t.Name #> metadataObject, bool init = true) {
-			var obj = new <#= t.Name #>(metadataObject, init);
-			if(init) 
-			{
-				obj.InternalInit();
-				obj.Init();
-			}
+			var obj = new <#= t.Name #>(metadataObject, false);
+			if(init) obj.InitFromMetadata();
 			return obj;
 		}
 
-<# if(Rules.InCollection(t)) { #>
+		public void InitFromMetadata() {
+			InternalInit();
+			Init();
+		}
+
+<# if(Rules.IsCreatable(t)) { #>
 
 		/// <summary>
 		/// Creates a new <#= t.Name #> and adds it to the parent <#= Rules.GetParent(t) #>.
@@ -214,8 +244,14 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static <#= t.Name #> CreateNew(<#= Rules.GetParent(t) #> parent, string name = null)
 		{
+#if CL1400
+			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(<#= t.Name #>))) {
+				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(<#= t.Name #>).GetTypeName()));
+			}
+#endif 
+
 			var metadataObject = new TOM.<#= t.Name #>();
-			metadataObject.Name = parent.<#= Rules.GetCollection(t) #>.GetNewName(string.IsNullOrWhiteSpace(name) ? "New <#= t.Name #>" : name);
+			metadataObject.Name = parent.<#= Rules.GetCollection(t) #>.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(<#= t.Name #>).GetTypeName() : name);
 
 			var obj = new <#= t.Name #>(metadataObject);
 
@@ -237,6 +273,12 @@ if(Rules.GetParent(t) == "Model") { #>
 		/// </summary>		
 		public static <#= t.Name #> CreateNew(string name = null)
 		{
+#if CL1400
+			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(<#= t.Name #>))) {
+				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(<#= t.Name #>).GetTypeName()));
+			}
+#endif 
+
 			var metadataObject = new TOM.<#= t.Name #>();
 			metadataObject.Name = TabularModelHandler.Singleton.Model.<#= Rules.GetCollection(t) #>.GetNewName(string.IsNullOrWhiteSpace(name) ? "New <#= t.Name #>" : name);
 
@@ -260,6 +302,12 @@ if(Rules.GetParent(t) == "Model") { #>
 		public <#= t.Name #> Clone(string newName = null<#= 
 Rules.IsTranslatable(t, true) ? ", bool includeTranslations = true" : "" #><#=
 Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" : "" #>) {
+#if CL1400
+			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(<#= t.Name #>))) {
+				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(<#= t.Name #>).GetTypeName()));
+			}
+#endif 
+
 		    Handler.BeginUpdate("Clone <#= t.Name #>");
 
 			// Create a clone of the underlying metadataobject:
@@ -267,7 +315,6 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 
 <# if(t.Name == "Table") { #>
 			// Make sure that measures on the table are renamed:
-			// TODO: This does not come up with a globally unique measure name.
 			foreach(var m in tom.Measures) m.Name = MeasureCollection.GetNewMeasureName(m.Name);
 <# } #>
 
@@ -293,13 +340,10 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 <# if (Rules.IsTranslatable(t, true)) { #>
 			// Copy translations, if applicable:
 			if(includeTranslations) {
-				// TODO: Copy translations of child objects
-
-				obj.TranslatedNames.CopyFrom(TranslatedNames);
-				obj.TranslatedDescriptions.CopyFrom(TranslatedDescriptions);
-<#     if (Rules.HasDisplayFolder(t)) { #>
-				obj.TranslatedDisplayFolders.CopyFrom(TranslatedDisplayFolders);
-<#     } #>
+				obj.CopyTranslationsFrom(this);
+<# foreach(var c in Rules.GetChildCollections(t).Where(c => Rules.IsTranslatable(c.Key))) { #>
+				foreach(var objChild in obj.<#= Rules.CollectionName(c.Key) #>) objChild.CopyTranslationsFrom(obj.<#= Rules.CollectionName(c.Key) #>[objChild.MetadataIndex]);
+<# } #>
 			}
 <# } if (Rules.IsPerspectiveObject(t, true)) { #>
 				

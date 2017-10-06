@@ -10,6 +10,16 @@ namespace TabularEditor.TOMWrapper
 {
     public static class TabularObjectHelper
     {
+        public static void CopyTranslationsFrom(this ITranslatableObject target, ITranslatableObject src)
+        {
+            target.TranslatedNames.CopyFrom(src.TranslatedNames);
+            target.TranslatedDescriptions.CopyFrom(src.TranslatedDescriptions);
+            if (target is IDetailObject && src is IDetailObject)
+            {
+                ((IDetailObject)target).TranslatedDisplayFolders.CopyFrom(((IDetailObject)src).TranslatedDisplayFolders);
+            }
+        }
+
         public static string GetLinqPath(this ITabularNamedObject obj)
         {
             switch (obj.ObjectType)
@@ -72,22 +82,34 @@ namespace TabularEditor.TOMWrapper
             );
         }
 
+        public static string Pluralize(this string str)
+        {
+            if (str.EndsWith("y")) return str.Substring(0, str.Length - 1) + "ies";
+            else if (!str.EndsWith("data")) return str + "s";
+            else return str;
+        }
+
         public static string GetTypeName(this ObjectType objType, bool plural = false)
         {
             if (objType == ObjectType.Culture) return "Translation" + (plural ? "s" : "");
 
             var result = SplitCamelCase(objType.ToString());
-            if (plural && result.EndsWith("chy")) result = result.Substring(0, result.Length - 3) + "chies";
-            else if (plural && !result.EndsWith("data")) result = result + "s";
-            return result;
+            return plural ? result.Pluralize() : result;
         }
 
         public static string GetTypeName(this ITabularObject obj, bool plural = false)
         {
+            if (obj is CalculatedTable) return "Calculated Table" + (plural ? "s" : "");
             if (obj is DataColumn) return "Column" + (plural ? "s" : "");
             if (obj is CalculatedColumn) return "Calculated Column" + (plural ? "s" : "");
             if (obj is CalculatedTableColumn) return "Calculated Table Column" + (plural ? "s" : "");
             else return obj.ObjectType.GetTypeName(plural);
+        }
+
+        public static string GetTypeName(this Type type, bool plural = false)
+        {
+            var n = type.Name.SplitCamelCase();
+            return plural ? n.Pluralize() : n;
         }
 
         public static string GetName(this ITabularNamedObject obj, Culture culture)

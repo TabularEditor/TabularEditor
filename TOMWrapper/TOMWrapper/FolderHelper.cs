@@ -17,7 +17,7 @@ namespace TabularEditor.TOMWrapper
 
         public static string GetFullPath(ITabularNamedObject obj)
         {
-            if (obj is Table) return (obj as Table).Name;
+            if (obj is TabularNamedObject) return (obj as TabularNamedObject).Name;
             else if (obj is Folder) return (obj as Folder).FullPath;
             else throw new ArgumentException("Argument must be of type Table or Folder.", "obj");
         }
