@@ -110,15 +110,17 @@ namespace TabularEditor.UI
                 e.Data.SetData("Aga.Controls.Tree.TreeNodeAdv[]", draggedNodes);
             } else if (e.Data.GetDataPresent("Aga.Controls.Tree.TreeNodeAdv[]"))
             {
+                // Disabled below with build v. 2.6 as drag/drop between instances is buggy. Use CTRL+C / CTRL+V instead.
+
                 // If the draggedNodes array is null, but the data object is supposed to contain tree nodes,
                 // it means that nodes are being dragged from another instance of Tabular Editor. In this case,
                 // we cannot deserialize the nodes on the data object, but will try to reconstruct them from
                 // the serialized string value:
-                if (e.Data.GetDataPresent("Text"))
-                {
-                    var objects = Serializer.DeserializeObjects(e.Data.GetData("Text") as string);
-                    draggedNodes = objects.Select(obj => new TreeNodeAdv(obj)).ToArray();
-                }
+                //if (e.Data.GetDataPresent("Text"))
+                //{
+                //    var objects = Serializer.DeserializeObjects(e.Data.GetData("Text") as string);
+                //    draggedNodes = objects.Select(obj => new TreeNodeAdv(obj)).ToArray();
+                //}
             }
         }
 
