@@ -107,7 +107,7 @@ namespace TabularEditor.TOMWrapper
             set
             {
                 var oldValue = this[table];
-                if (value == oldValue) return;
+                if (value == oldValue && !string.IsNullOrEmpty(value)) return;
 
                 RLSMap[table] = value;
                 SetRLS(table, value);

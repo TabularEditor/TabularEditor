@@ -121,9 +121,6 @@ namespace TabularEditor.TOMWrapper
             }
             set
             {
-                var oldValue = this[role];
-                if (value == oldValue) return;
-
                 RLSMap[role] = value;
                 SetRLS(role, value);
             }

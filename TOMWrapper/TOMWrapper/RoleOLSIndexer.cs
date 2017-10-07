@@ -120,7 +120,7 @@ namespace TabularEditor.TOMWrapper
         {
             var tps = Role.MetadataObject.TablePermissions;
             var tp = tps.Contains(table.Name) ? tps[table.Name] : null;
-
+            if (tp == null && permission == TOM.MetadataPermission.Default) return;
             if(tp == null)
             {
                 tp = new TOM.TablePermission() { Table = table.MetadataObject };

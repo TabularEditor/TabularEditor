@@ -129,9 +129,6 @@ namespace TabularEditor.TOMWrapper
             }
             set
             {
-                var oldValue = this[role];
-                if (value == oldValue) return;
-
                 OLSMap[role] = value;
                 SetOLS(role, value);
             }

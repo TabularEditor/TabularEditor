@@ -156,6 +156,7 @@ namespace TabularEditor.TOMWrapper
             
         }
 
+        [Browsable(false)]
         public LogicalGroups Groups { get { return LogicalGroups.Singleton; } }
 
         [Category("Basic")]
