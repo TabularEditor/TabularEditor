@@ -122,6 +122,9 @@ namespace TabularEditor.TOMWrapper
 
             // Remove row-level-security for this table:
             RowLevelSecurity.Clear();
+#if CL1400
+            ObjectLevelSecurity.Clear();
+#endif
 
             base.DeleteLinkedObjects(isChildOfDeleted);
         }

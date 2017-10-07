@@ -41,7 +41,7 @@ namespace TabularEditor.TOMWrapper
         public void CopyFrom(Dictionary<string, TOM.MetadataPermission> source)
         {
             Clear();
-            foreach(var k in Keys)
+            foreach(var k in Keys.ToList())
             {
                 if (source.ContainsKey(k)) this[k] = source[k];
             }
@@ -139,14 +139,15 @@ namespace TabularEditor.TOMWrapper
 
         protected void SetOLS(ModelRole role, TOM.MetadataPermission permission)
         {
-            var tps = role.MetadataObject.TablePermissions;
+            role.MetadataPermission[Table] = permission;
+            /*var tps = role.MetadataObject.TablePermissions;
             var tp = tps.Contains(Table.Name) ? tps[Table.Name] : null;
             if (tp == null && permission != TOM.MetadataPermission.Default) {
                 tp = new TOM.TablePermission { Table = Table.MetadataObject };
                 tps.Add(tp);
             }
 
-            Table.Handler.UndoManager.Add(new UndoPropertyChangedAction(Table, "ObjectLevelSecurity", tp.MetadataPermission, permission, Table.Name));
+            Table.Handler.UndoManager.Add(new UndoPropertyChangedAction(Table, "ObjectLevelSecurity", tp.MetadataPermission, permission, role.Name));
 
             if (permission != TOM.MetadataPermission.Default)
             {
@@ -155,7 +156,7 @@ namespace TabularEditor.TOMWrapper
             else if (tp != null)
             {
                 tps.Remove(tp);
-            }
+            }*/
         }
 
         public TOM.MetadataPermission this[string roleName]

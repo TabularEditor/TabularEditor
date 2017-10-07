@@ -98,6 +98,10 @@ namespace TabularEditor.TOMWrapper
 
             if(!isChildOfDeleted)
             {
+#if CL1400
+                ObjectLevelSecurity.Clear();
+#endif
+
                 // Remove any hierarchy levels this column is used in:
                 UsedInLevels.ToList().ForEach(l => l.Delete());
 

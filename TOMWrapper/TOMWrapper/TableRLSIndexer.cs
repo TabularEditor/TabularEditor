@@ -33,7 +33,7 @@ namespace TabularEditor.TOMWrapper
         public void CopyFrom(Dictionary<string, string> source)
         {
             Clear();
-            foreach(var r in Keys)
+            foreach(var r in Keys.ToList())
             {
                 if (source.ContainsKey(r)) this[r] = source[r];
             }

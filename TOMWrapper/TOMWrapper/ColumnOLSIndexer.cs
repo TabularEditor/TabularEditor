@@ -156,7 +156,7 @@ namespace TabularEditor.TOMWrapper
                 tp.ColumnPermissions.Add(cp);
             }
 
-            Column.Handler.UndoManager.Add(new UndoPropertyChangedAction(Column, "ObjectLevelSecurity", cp.MetadataPermission, permission, Column.Name));
+            Column.Handler.UndoManager.Add(new UndoPropertyChangedAction(Column, "ObjectLevelSecurity", cp.MetadataPermission, permission, role.Name));
             if (permission != TOM.MetadataPermission.Default)
             {
                 cp.MetadataPermission = permission;

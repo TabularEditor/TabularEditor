@@ -25,13 +25,13 @@ namespace TabularEditor.TOMWrapper
         void CreateChildrenFromMetadata();
     }
 
-    public abstract class TabularObjectCollection<T> : INotifyCollectionChanged, ICollection<T>, IList<T>, IExpandableIndexer, ITabularObjectCollection
+    public abstract class TabularObjectCollection<T> : IList, INotifyCollectionChanged, ICollection<T>, IList<T>, IExpandableIndexer, ITabularObjectCollection
         where T: TabularNamedObject
     {
-        //int IList.IndexOf(object value)
-        //{
-        //    return IndexOf(value as T);
-        //}
+        int IList.IndexOf(object value)
+        {
+            return IndexOf(value as T);
+        }
 
         internal abstract void Reinit();
         internal abstract void ReapplyReferences();
@@ -127,18 +127,18 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        //object IList.this[int index]
-        //{
-        //    get
-        //    {
-        //        return this[index];
-        //    }
+        object IList.this[int index]
+        {
+            get
+            {
+                return this[index];
+            }
 
-        //    set
-        //    {
-        //        throw new NotImplementedException();
-        //    }
-        //}
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         object IExpandableIndexer.this[string index]
         {
@@ -274,11 +274,11 @@ namespace TabularEditor.TOMWrapper
             Remove(this[index]);
         }
 
-        /*public int Add(object value)
+        public int Add(object value)
         {
             Add(value as T);
             return IndexOf(value as T);
-        }*/
+        }
 
         public bool Contains(object value)
         {
