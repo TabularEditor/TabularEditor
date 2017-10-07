@@ -67,10 +67,10 @@ namespace TabularEditor.UI
                     if (SelectDatabaseForm.Show(ConnectForm.Server) == DialogResult.Cancel) return;
                     break;
                 case EmbeddedInstanceType.PowerBI:
-                    MessageBox.Show("Warning! You are connecting to an embedded Tabular model in Power BI Desktop.\n\nTabular Editor uses the TOM to make changes to the model, which is UNSUPPORTED and could corrupt your .pbix file. Proceed at your own risk.", "Connecting to embedded model", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("You are connecting to a Tabular model in Power BI Desktop.\n\nTabular Editor uses the TOM to make changes to the model, which is UNSUPPORTED and could corrupt your .pbix file.\n\nPower BI Desktop will not synchronize the user interface with the changes you apply to the model until you manually refresh the model in Power BI Desktop.\n\nMake sure to keep a backup of the .pbix file, and proceed at your own risk.", "Connecting to embedded model", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     break;
                 case EmbeddedInstanceType.Devenv:
-                    MessageBox.Show("Warning! You are connecting to an integrated workspace in Visual Studio.\n\nChanges made through Tabular Editor may not be properly persisted to the Tabular Project in Visual Studio and may corrupt your model file. Proceed at your own risk.", "Connecting to embedded model", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("You are connecting to an integrated workspace in Visual Studio.\n\nChanges made through Tabular Editor may not be properly persisted to the Tabular Project in Visual Studio and may corrupt your model file.\n\nMake sure to keep a backup of the Model.bim file and proceed at your own risk.", "Connecting to embedded model", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     break;
             }
 

@@ -17,32 +17,58 @@ namespace TabularEditor.UI
         {
             var oldFile = File_Current;
             var oldLastWrite = File_LastWrite;
+            var oldSaveMode = File_SaveMode;
             var oldHandler = Handler;
+
+            var cancel = false;
 
             using (new Hourglass())
             {
                 try
                 {
                     Handler = new TabularModelHandler(fileName, Preferences.Current.GetSettings());
-                    File_Current = Handler.Source;
-                    File_SaveMode = Handler.SourceType;
-                    File_LastWrite = File_SaveMode == ModelSourceType.Folder ? GetLastDirChange(File_Current) : File.GetLastWriteTime(File_Current);
 
-                    LoadTabularModelToUI();
-                    RecentFiles.Add(fileName);
-                    UI.FormMain.PopulateRecentFilesList();
+                    if(Handler.SourceType == ModelSourceType.Pbit)
+                    {
+                        var msg = Preferences.Current.AllowUnsupportedPBIFeatures ?
+                            "You have selected a Power BI Template (.pbit) file.\n\nEditing the Data Model of a .pbit file inside Tabular Editor may cause issues when subsequently loading the file in Power BI Desktop.\n\nMake sure to keep a backup of the file, and proceed at your own risk." :
+                            "You have selected a Power BI Template (.pbit) file.\n\nEditing the Data Model of a .pbit file inside Tabular Editor may cause issues when subsequently loading the file in Power BI Desktop. Properties that are known to be unsupported (such as Display Folders) have been disabled, but there is still a risk that certain changes made with Tabular Editor can corrupt the file.\n\nMake sure to keep a backup of the file, and proceed at your own risk.";
+                        var mr = MessageBox.Show(msg,
+                            "Opening Power BI Template", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                        if(mr == DialogResult.Cancel)
+                        {
+                            cancel = true;
+                        }
+                    }
 
-                    // TODO: Use a FileSystemWatcher to watch for changes to the currently loaded file(s)
-                    // and handle them appropriately. For now, we just store the LastWriteDate of the loaded
-                    // file, to ensure that we don't accidentally overwrite newer changes when saving.
+                    if (!cancel)
+                    {
+                        File_Current = Handler.Source;
+                        File_SaveMode = Handler.SourceType;
+
+                        // TODO: Use a FileSystemWatcher to watch for changes to the currently loaded file(s)
+                        // and handle them appropriately. For now, we just store the LastWriteDate of the loaded
+                        // file, to ensure that we don't accidentally overwrite newer changes when saving.
+                        File_LastWrite = File_SaveMode == ModelSourceType.Folder ? GetLastDirChange(File_Current) : File.GetLastWriteTime(File_Current);
+
+                        LoadTabularModelToUI();
+                        RecentFiles.Add(fileName);
+                        UI.FormMain.PopulateRecentFilesList();
+                    }
                 }
                 catch (Exception ex)
                 {
+                    cancel = true;
                     MessageBox.Show(ex.Message, "Error loading Model from disk", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Handler = oldHandler;
-                    File_Current = oldFile;
-                    File_LastWrite = oldLastWrite;
                 }
+            }
+
+            if(cancel)
+            {
+                Handler = oldHandler;
+                File_Current = oldFile;
+                File_SaveMode = oldSaveMode;
+                File_LastWrite = oldLastWrite;
             }
         }
 
