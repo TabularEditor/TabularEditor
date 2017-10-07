@@ -317,7 +317,7 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                return SourceType == ModelSourceType.Pbit && Settings.PBIFeaturesOnly;
+                return (SourceType == ModelSourceType.Pbit || Database?.Server?.ServerMode == Microsoft.AnalysisServices.ServerMode.SharePoint) && Settings.PBIFeaturesOnly;
             }
         }
 
