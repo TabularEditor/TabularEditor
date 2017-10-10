@@ -30,22 +30,22 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PreferencesForm));
-            System.Windows.Forms.TreeNode treeNode12 = new System.Windows.Forms.TreeNode("Data Sources");
-            System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("Perspectives");
-            System.Windows.Forms.TreeNode treeNode14 = new System.Windows.Forms.TreeNode("Relationships");
-            System.Windows.Forms.TreeNode treeNode15 = new System.Windows.Forms.TreeNode("Roles");
-            System.Windows.Forms.TreeNode treeNode16 = new System.Windows.Forms.TreeNode("Annotations");
-            System.Windows.Forms.TreeNode treeNode17 = new System.Windows.Forms.TreeNode("Columns");
-            System.Windows.Forms.TreeNode treeNode18 = new System.Windows.Forms.TreeNode("Hierarchies");
-            System.Windows.Forms.TreeNode treeNode19 = new System.Windows.Forms.TreeNode("Measures");
-            System.Windows.Forms.TreeNode treeNode20 = new System.Windows.Forms.TreeNode("Partitions");
-            System.Windows.Forms.TreeNode treeNode21 = new System.Windows.Forms.TreeNode("Tables", new System.Windows.Forms.TreeNode[] {
-            treeNode16,
-            treeNode17,
-            treeNode18,
-            treeNode19,
-            treeNode20});
-            System.Windows.Forms.TreeNode treeNode22 = new System.Windows.Forms.TreeNode("Translations");
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Data Sources");
+            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Perspectives");
+            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Relationships");
+            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Roles");
+            System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Annotations");
+            System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Columns");
+            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Hierarchies");
+            System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("Measures");
+            System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("Partitions");
+            System.Windows.Forms.TreeNode treeNode10 = new System.Windows.Forms.TreeNode("Tables", new System.Windows.Forms.TreeNode[] {
+            treeNode5,
+            treeNode6,
+            treeNode7,
+            treeNode8,
+            treeNode9});
+            System.Windows.Forms.TreeNode treeNode11 = new System.Windows.Forms.TreeNode("Translations");
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
@@ -64,6 +64,10 @@
             this.chkLocalTranslations = new System.Windows.Forms.CheckBox();
             this.chkLocalPerspectives = new System.Windows.Forms.CheckBox();
             this.chkAllowUnsupportedPBIFeatures = new System.Windows.Forms.CheckBox();
+            this.chkCopyIncludeTranslations = new System.Windows.Forms.CheckBox();
+            this.chkCopyIncludePerspectives = new System.Windows.Forms.CheckBox();
+            this.chkCopyIncludeRLS = new System.Windows.Forms.CheckBox();
+            this.chkCopyIncludeOLS = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -78,6 +82,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -85,11 +90,6 @@
             this.btnVersionCheck = new System.Windows.Forms.Button();
             this.lblAvailableVersion = new System.Windows.Forms.Label();
             this.lblCurrentVersion = new System.Windows.Forms.Label();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.chkCopyIncludeTranslations = new System.Windows.Forms.CheckBox();
-            this.chkCopyIncludePerspectives = new System.Windows.Forms.CheckBox();
-            this.chkCopyIncludeRLS = new System.Windows.Forms.CheckBox();
-            this.chkCopyIncludeOLS = new System.Windows.Forms.CheckBox();
             this.groupBox3.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -100,10 +100,10 @@
             this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.groupBox7.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            this.groupBox7.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnOK
@@ -297,6 +297,52 @@
         " a Power BI data model. USE ONLY FOR EXPERIMENTAL PURPOSES.");
             this.chkAllowUnsupportedPBIFeatures.UseVisualStyleBackColor = true;
             // 
+            // chkCopyIncludeTranslations
+            // 
+            this.chkCopyIncludeTranslations.AutoSize = true;
+            this.chkCopyIncludeTranslations.Location = new System.Drawing.Point(6, 19);
+            this.chkCopyIncludeTranslations.Name = "chkCopyIncludeTranslations";
+            this.chkCopyIncludeTranslations.Size = new System.Drawing.Size(117, 17);
+            this.chkCopyIncludeTranslations.TabIndex = 0;
+            this.chkCopyIncludeTranslations.Text = "Include translations";
+            this.toolTip1.SetToolTip(this.chkCopyIncludeTranslations, "Include translations when copying translatable objects");
+            this.chkCopyIncludeTranslations.UseVisualStyleBackColor = true;
+            // 
+            // chkCopyIncludePerspectives
+            // 
+            this.chkCopyIncludePerspectives.AutoSize = true;
+            this.chkCopyIncludePerspectives.Location = new System.Drawing.Point(6, 42);
+            this.chkCopyIncludePerspectives.Name = "chkCopyIncludePerspectives";
+            this.chkCopyIncludePerspectives.Size = new System.Drawing.Size(178, 17);
+            this.chkCopyIncludePerspectives.TabIndex = 1;
+            this.chkCopyIncludePerspectives.Text = "Include perspective membership";
+            this.toolTip1.SetToolTip(this.chkCopyIncludePerspectives, "Include perspective membership when copying objects that can be toggled in perspe" +
+        "ctives");
+            this.chkCopyIncludePerspectives.UseVisualStyleBackColor = true;
+            // 
+            // chkCopyIncludeRLS
+            // 
+            this.chkCopyIncludeRLS.AutoSize = true;
+            this.chkCopyIncludeRLS.Location = new System.Drawing.Point(6, 65);
+            this.chkCopyIncludeRLS.Name = "chkCopyIncludeRLS";
+            this.chkCopyIncludeRLS.Size = new System.Drawing.Size(145, 17);
+            this.chkCopyIncludeRLS.TabIndex = 2;
+            this.chkCopyIncludeRLS.Text = "Include row-level security";
+            this.toolTip1.SetToolTip(this.chkCopyIncludeRLS, "Include row-level security when copying tables.");
+            this.chkCopyIncludeRLS.UseVisualStyleBackColor = true;
+            // 
+            // chkCopyIncludeOLS
+            // 
+            this.chkCopyIncludeOLS.AutoSize = true;
+            this.chkCopyIncludeOLS.Location = new System.Drawing.Point(6, 88);
+            this.chkCopyIncludeOLS.Name = "chkCopyIncludeOLS";
+            this.chkCopyIncludeOLS.Size = new System.Drawing.Size(157, 17);
+            this.chkCopyIncludeOLS.TabIndex = 3;
+            this.chkCopyIncludeOLS.Text = "Include object-level security";
+            this.toolTip1.SetToolTip(this.chkCopyIncludeOLS, "Include object-level security when copying tables, columns, hierarchies or measur" +
+        "es (Compatibility Level 1400 only)");
+            this.chkCopyIncludeOLS.UseVisualStyleBackColor = true;
+            // 
             // groupBox3
             // 
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -434,45 +480,45 @@
             this.treeView1.CheckBoxes = true;
             this.treeView1.Location = new System.Drawing.Point(6, 54);
             this.treeView1.Name = "treeView1";
-            treeNode12.Checked = true;
-            treeNode12.Name = "Data Sources";
-            treeNode12.Text = "Data Sources";
-            treeNode13.Checked = true;
-            treeNode13.Name = "Perspectives";
-            treeNode13.Text = "Perspectives";
-            treeNode14.Checked = true;
-            treeNode14.Name = "Relationships";
-            treeNode14.Text = "Relationships";
-            treeNode15.Checked = true;
-            treeNode15.Name = "Roles";
-            treeNode15.Text = "Roles";
-            treeNode16.Name = "Annotations";
-            treeNode16.Text = "Annotations";
-            treeNode17.Checked = true;
-            treeNode17.Name = "Columns";
-            treeNode17.Text = "Columns";
-            treeNode18.Checked = true;
-            treeNode18.Name = "Hierarchies";
-            treeNode18.Text = "Hierarchies";
-            treeNode19.Checked = true;
-            treeNode19.Name = "Measures";
-            treeNode19.Text = "Measures";
-            treeNode20.Checked = true;
-            treeNode20.Name = "Partitions";
-            treeNode20.Text = "Partitions";
-            treeNode21.Checked = true;
-            treeNode21.Name = "Tables";
-            treeNode21.Text = "Tables";
-            treeNode22.Checked = true;
-            treeNode22.Name = "Translations";
-            treeNode22.Text = "Translations";
+            treeNode1.Checked = true;
+            treeNode1.Name = "Data Sources";
+            treeNode1.Text = "Data Sources";
+            treeNode2.Checked = true;
+            treeNode2.Name = "Perspectives";
+            treeNode2.Text = "Perspectives";
+            treeNode3.Checked = true;
+            treeNode3.Name = "Relationships";
+            treeNode3.Text = "Relationships";
+            treeNode4.Checked = true;
+            treeNode4.Name = "Roles";
+            treeNode4.Text = "Roles";
+            treeNode5.Name = "Annotations";
+            treeNode5.Text = "Annotations";
+            treeNode6.Checked = true;
+            treeNode6.Name = "Columns";
+            treeNode6.Text = "Columns";
+            treeNode7.Checked = true;
+            treeNode7.Name = "Hierarchies";
+            treeNode7.Text = "Hierarchies";
+            treeNode8.Checked = true;
+            treeNode8.Name = "Measures";
+            treeNode8.Text = "Measures";
+            treeNode9.Checked = true;
+            treeNode9.Name = "Partitions";
+            treeNode9.Text = "Partitions";
+            treeNode10.Checked = true;
+            treeNode10.Name = "Tables";
+            treeNode10.Text = "Tables";
+            treeNode11.Checked = true;
+            treeNode11.Name = "Translations";
+            treeNode11.Text = "Translations";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode12,
-            treeNode13,
-            treeNode14,
-            treeNode15,
-            treeNode21,
-            treeNode22});
+            treeNode1,
+            treeNode2,
+            treeNode3,
+            treeNode4,
+            treeNode10,
+            treeNode11});
             this.treeView1.PathSeparator = "/";
             this.treeView1.ShowLines = false;
             this.treeView1.Size = new System.Drawing.Size(298, 119);
@@ -517,6 +563,21 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "DAX";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox7.Controls.Add(this.chkCopyIncludeOLS);
+            this.groupBox7.Controls.Add(this.chkCopyIncludeRLS);
+            this.groupBox7.Controls.Add(this.chkCopyIncludePerspectives);
+            this.groupBox7.Controls.Add(this.chkCopyIncludeTranslations);
+            this.groupBox7.Location = new System.Drawing.Point(6, 62);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(310, 117);
+            this.groupBox7.TabIndex = 5;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Clipboard Operations";
             // 
             // tabPage3
             // 
@@ -598,67 +659,6 @@
             this.lblCurrentVersion.TabIndex = 1;
             this.lblCurrentVersion.Text = "Current version: 2.0.0.0";
             // 
-            // groupBox7
-            // 
-            this.groupBox7.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox7.Controls.Add(this.chkCopyIncludeOLS);
-            this.groupBox7.Controls.Add(this.chkCopyIncludeRLS);
-            this.groupBox7.Controls.Add(this.chkCopyIncludePerspectives);
-            this.groupBox7.Controls.Add(this.chkCopyIncludeTranslations);
-            this.groupBox7.Location = new System.Drawing.Point(6, 62);
-            this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(310, 117);
-            this.groupBox7.TabIndex = 5;
-            this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "Clipboard Operations";
-            // 
-            // chkCopyIncludeTranslations
-            // 
-            this.chkCopyIncludeTranslations.AutoSize = true;
-            this.chkCopyIncludeTranslations.Location = new System.Drawing.Point(6, 19);
-            this.chkCopyIncludeTranslations.Name = "chkCopyIncludeTranslations";
-            this.chkCopyIncludeTranslations.Size = new System.Drawing.Size(117, 17);
-            this.chkCopyIncludeTranslations.TabIndex = 0;
-            this.chkCopyIncludeTranslations.Text = "Include translations";
-            this.toolTip1.SetToolTip(this.chkCopyIncludeTranslations, "Include translations when copying translatable objects");
-            this.chkCopyIncludeTranslations.UseVisualStyleBackColor = true;
-            // 
-            // chkCopyIncludePerspectives
-            // 
-            this.chkCopyIncludePerspectives.AutoSize = true;
-            this.chkCopyIncludePerspectives.Location = new System.Drawing.Point(6, 42);
-            this.chkCopyIncludePerspectives.Name = "chkCopyIncludePerspectives";
-            this.chkCopyIncludePerspectives.Size = new System.Drawing.Size(178, 17);
-            this.chkCopyIncludePerspectives.TabIndex = 1;
-            this.chkCopyIncludePerspectives.Text = "Include perspective membership";
-            this.toolTip1.SetToolTip(this.chkCopyIncludePerspectives, "Include perspective membership when copying objects that can be toggled in perspe" +
-        "ctives");
-            this.chkCopyIncludePerspectives.UseVisualStyleBackColor = true;
-            // 
-            // chkCopyIncludeRLS
-            // 
-            this.chkCopyIncludeRLS.AutoSize = true;
-            this.chkCopyIncludeRLS.Location = new System.Drawing.Point(6, 65);
-            this.chkCopyIncludeRLS.Name = "chkCopyIncludeRLS";
-            this.chkCopyIncludeRLS.Size = new System.Drawing.Size(145, 17);
-            this.chkCopyIncludeRLS.TabIndex = 2;
-            this.chkCopyIncludeRLS.Text = "Include row-level security";
-            this.toolTip1.SetToolTip(this.chkCopyIncludeRLS, "Include row-level security when copying tables.");
-            this.chkCopyIncludeRLS.UseVisualStyleBackColor = true;
-            // 
-            // chkCopyIncludeOLS
-            // 
-            this.chkCopyIncludeOLS.AutoSize = true;
-            this.chkCopyIncludeOLS.Location = new System.Drawing.Point(6, 88);
-            this.chkCopyIncludeOLS.Name = "chkCopyIncludeOLS";
-            this.chkCopyIncludeOLS.Size = new System.Drawing.Size(157, 17);
-            this.chkCopyIncludeOLS.TabIndex = 3;
-            this.chkCopyIncludeOLS.Text = "Include object-level security";
-            this.toolTip1.SetToolTip(this.chkCopyIncludeOLS, "Include object-level security when copying tables, columns, hierarchies or measur" +
-        "es (Compatibility Level 1400 only)");
-            this.chkCopyIncludeOLS.UseVisualStyleBackColor = true;
-            // 
             // PreferencesForm
             // 
             this.AcceptButton = this.btnOK;
@@ -695,13 +695,13 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.tabPage2.ResumeLayout(false);
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.groupBox7.ResumeLayout(false);
-            this.groupBox7.PerformLayout();
             this.ResumeLayout(false);
 
         }

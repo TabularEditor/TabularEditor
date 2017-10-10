@@ -32,7 +32,14 @@ namespace TabularEditor
             dlgSaveFile.Filter = "Tabular Model Files|*.bim|All files|*.*";
 #endif
 
+            // For some reason, Visual Studio sometimes removes this from the FormMain.Designer.cs, making the
+            // colors of the lines look ugly:
+            propertyGrid1.LineColor = System.Drawing.SystemColors.InactiveBorder;
+
+            // Assign our own custom Designer, to make sure we can handle property changes on multiple objects simultaneously:
             propertyGrid1.Site = new DesignerHost();
+
+            // "Select Namespace" button should only be visible if we have loaded any plug-ins:
             toolStripButton3.Visible = ScriptEngine.PluginNamespaces.Count > 0;
 
             SetupUIController();
@@ -59,20 +66,53 @@ namespace TabularEditor
                 item.Enabled = false;
             }
 
-            samplesMenu.DropDownItems.Add("Copy display folder to active translation", null, (s, e) =>
+            var tutorial = (samplesMenu.DropDownItems.Add("Tutorials") as ToolStripMenuItem).DropDownItems;
+            var translations = (samplesMenu.DropDownItems.Add("Translations") as ToolStripMenuItem).DropDownItems;
+
+            tutorial.Add("Loop through all selected columns", null, (s, e) =>
             {
-                txtAdvanced.Text =
+                txtAdvanced.InsertText(
+@"foreach(var column in Selected.Columns) {
+    // column.DisplayFolder = ""Test"";
+}");
+            });
+            tutorial.Add("Loop through all selected tables", null, (s, e) =>
+            {
+                txtAdvanced.InsertText(
+@"foreach(var table in Selected.Tables) {
+    // table.IsHidden = false;
+}");
+            });
+            tutorial.Add("Loop through columns on all selected tables", null, (s, e) =>
+            {
+                txtAdvanced.InsertText(
+@"foreach(var column in Selected.Tables.SelectMany(t => t.Columns)) {
+    // column.DisplayFolder = ""test"";
+}");
+            });
+            tutorial.Add("Loop through columns on all tables conditionally", null, (s, e) =>
+            {
+                txtAdvanced.InsertText(
+@"foreach(var column in Model.Tables.SelectMany(t => t.Columns)) {
+    if(column.Name.EndsWith(""Key"")) {
+        // column.IsHidden = true;
+    }
+}");
+            });
+            translations.Add("Copy display folder to active translation", null, (s, e) =>
+            {
+                txtAdvanced.InsertText(
 @"Selected.Measures.ForEach(item => item.TranslatedDisplayFolders[Selected.Culture] = item.DisplayFolder);
 Selected.Columns.ForEach(item => item.TranslatedDisplayFolders[Selected.Culture] = item.DisplayFolder);
-Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders[Selected.Culture] = item.DisplayFolder);";
+Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders[Selected.Culture] = item.DisplayFolder);");
             });
 
-            samplesMenu.DropDownItems.Add("Copy display folder to all translations", null, (s, e) =>
+            translations.Add("Copy display folder to all translations", null, (s, e) =>
             {
-                txtAdvanced.Text =
+                txtAdvanced.InsertText(
 @"Selected.Measures.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.DisplayFolder));
 Selected.Columns.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.DisplayFolder));
-Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.DisplayFolder));";
+Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.DisplayFolder));");
             });
         }
 
@@ -320,14 +360,21 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void actExpressionFormatDAX_Execute(object sender, EventArgs e)
         {
             var textToFormat = "x :=" + txtExpression.Text;
-            var result = TabularEditor.Dax.DaxFormatterProxy.FormatDax(textToFormat).FormattedDax;
-            if (string.IsNullOrWhiteSpace(result))
+            try
+            {
+                var result = TabularEditor.Dax.DaxFormatterProxy.FormatDax(textToFormat).FormattedDax;
+                if (string.IsNullOrWhiteSpace(result))
+                {
+                    lblStatus.Text = "Could not format DAX.";
+                    return;
+                }
+                lblStatus.Text = "DAX formatted succesfully";
+                txtExpression.Text = result.Substring(6);
+            }
+            catch
             {
                 lblStatus.Text = "Could not format DAX.";
-                return;
             }
-            lblStatus.Text = "DAX formatted succesfully";
-            txtExpression.Text = result.Substring(6);
         }
 
         private void actToggleInfoColumns_Execute(object sender, EventArgs e)

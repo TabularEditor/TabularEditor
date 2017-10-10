@@ -8,6 +8,7 @@
       TOMWrapper
       Microsoft.WindowsAPICodePack
       Microsoft.WindowsAPICodePack.Shell
+      Newtonsoft.Json
     </IncludeAssemblies>
   </Costura>
 </Weavers>

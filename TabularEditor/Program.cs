@@ -44,23 +44,35 @@ namespace TabularEditor
         {
 #if CL1400
             var asmName = new AssemblyName(args.Name);
-            if(asmName.Name.StartsWith("Microsoft.AnalysisServices.Server.Tabular") && asmName.Version.Major != 14)
+
+            if(asmName.Name.StartsWith("Microsoft.AnalysisServices.Server.Tabular"))
             {
-                var td = new TaskDialog();
-                td.Text = @"This version of Tabular Editor requires the SQL AS AMO library for Azure Analysis Services or SQL Server 2017. Make sure version 14.0.0.0 (or newer) of the following DLLs are installed in the GAC or located in the same folder as TabularEditor.exe:
+                // Since Microsoft is using the names "Microsoft.AnalysisServices.Server.Tabular" and "Microsoft.AnalysisServices.Tabular" interchangeably,
+                // let's try to modify the assemblyname that we're looking for, and load again:
+                try
+                {
+                    var alternateAssembly = Assembly.Load(asmName.FullName.Replace(".Server.", "."));
+                    
+                    return alternateAssembly;
+                }
+                catch (FileNotFoundException ex)
+                {
+                    var td = new TaskDialog();
+                    td.Text = @"This version of Tabular Editor requires the SQL AS AMO library for Azure Analysis Services or SQL Server 2017. Make sure version 14.0.0.0 (or newer) of the following DLLs are installed in the GAC or located in the same folder as TabularEditor.exe:
 
 Microsoft.AnalysisServices.Server.Core.dll
 Microsoft.AnalysisServices.Server.Tabular.dll
 Microsoft.AnalysisServices.Server.Tabular.Json.dll
 
 The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-us/azure/analysis-services/analysis-services-data-providers"">here</A>.";
-                td.Caption = "Missing DLL dependencies";
+                    td.Caption = "Missing DLL dependencies";
 
-                td.Icon = TaskDialogStandardIcon.Error;
-                td.HyperlinksEnabled = true;
-                td.HyperlinkClick += Td_HyperlinkClick;
-                td.Show();
-                Environment.Exit(1);
+                    td.Icon = TaskDialogStandardIcon.Error;
+                    td.HyperlinksEnabled = true;
+                    td.HyperlinkClick += Td_HyperlinkClick;
+                    td.Show();
+                    Environment.Exit(1);
+                }
             }
             return null;
 #else

@@ -64,37 +64,38 @@
     <When Condition="'$(Configuration)'=='Debug-CL1400' Or '$(Configuration)'=='Release-CL1400'">
       <ItemGroup>
         <Reference Include="Microsoft.AnalysisServices.Core, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Core.dll</HintPath>
+          <SpecificVersion>True</SpecificVersion>
         </Reference>
         <Reference Include="Microsoft.AnalysisServices.Tabular, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Tabular.dll</HintPath>
+          <SpecificVersion>True</SpecificVersion>
         </Reference>
         <Reference Include="Microsoft.AnalysisServices.Tabular.Json, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Tabular.Json.dll</HintPath>
+          <SpecificVersion>True</SpecificVersion>
         </Reference>
       </ItemGroup>
     </When>
     <Otherwise>
       <ItemGroup>
         <Reference Include="Microsoft.AnalysisServices.Core, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
+          <SpecificVersion>True</SpecificVersion>
           <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.13.0.2150.2\lib\Microsoft.AnalysisServices.Core.DLL</HintPath>
         </Reference>
         <Reference Include="Microsoft.AnalysisServices.Tabular, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
+          <SpecificVersion>True</SpecificVersion>
           <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.13.0.2150.2\lib\Microsoft.AnalysisServices.Tabular.DLL</HintPath>
         </Reference>
         <Reference Include="Microsoft.AnalysisServices.Tabular.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
+          <SpecificVersion>True</SpecificVersion>
           <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.13.0.2150.2\lib\Microsoft.AnalysisServices.Tabular.Json.DLL</HintPath>
         </Reference>
       </ItemGroup>
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Design" />
