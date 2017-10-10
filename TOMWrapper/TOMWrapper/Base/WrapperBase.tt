@@ -88,7 +88,7 @@ namespace TabularEditor.TOMWrapper
 #><#= props.Any(p => p.Name == "ErrorMessage") ? "\n\t\t\t, IErrorMessageObject" : ""
 #><#= props.Any(p => p.Name == "Table") ? "\n\t\t\t, ITabularTableObject" : ""
 #><#= props.Any(p => p.Name == "Description") ? "\n\t\t\t, IDescriptionObject" : ""
-#><#= props.Any(p => p.Name == "Expression") ? "\n\t\t\t, IDAXExpressionObject" : ""
+#><#= props.Any(p => p.Name == "Expression" && t.Name != "NamedExpression") ? "\n\t\t\t, IDAXExpressionObject" : ""
 #><#= props.Any(p => p.Name == "FormatString") ? "\n\t\t\t, IFormattableObject" : ""
 #><#= props.Any(p => p.Name == "Annotations") ? "\n\t\t\t, IAnnotationObject" : ""
 #><#= Rules.IsPerspectiveObject(t) ? "\n\t\t\t, ITabularPerspectiveObject" : ""

@@ -245,6 +245,7 @@ class Rules {
 			case "IsHidden":
 			case "Description":
 				return "Basic";
+			case "Kind":
 			case "Expression":
 			case "SortByColumn":
 			case "FormatString":
@@ -301,6 +302,7 @@ class Rules {
 		if(propertyName == "Perspectives") return "[Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<Perspective>),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Cultures") return "[Editor(typeof(TabularEditor.PropertyGridUI.CultureCollectionEditor),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Roles") return "[Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<ModelRole>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]";
+		if(propertyName == "Expressions") return "[Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<NamedExpression>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Partitions") return "[NoMultiselect(),Editor(typeof(PartitionCollectionEditor),typeof(UITypeEditor))]";
 		if(propertyName == "Variations") return "[NoMultiselect(),Editor(typeof(VariationCollectionEditor),typeof(UITypeEditor))]";
 		
@@ -319,6 +321,7 @@ class Rules {
     }
 
 	private static readonly string[] _enumTypes = new[] {
+		"ExpressionKind",
 		"DataSourceType",
 		"PartitionSourceType",
 		"DataType",
@@ -398,7 +401,8 @@ class Rules {
        { "Relationship", "TabularNamedObject" },
        { "SingleColumnRelationship", "Relationship" },
        { "Table", "TabularNamedObject" },
-       { "WindowsModelRoleMember", "ModelRoleMember" }
+       { "WindowsModelRoleMember", "ModelRoleMember" },
+	   { "NamedExpression", "TabularNamedObject" }
    };
    public static Dictionary<Type, string> ObjectTypes = Convert(_objectTypes).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
@@ -418,7 +422,8 @@ class Rules {
        { "Culture", "Cultures" },
 	   { "Relationship", "Relationships" },
 	   { "DataSource", "DataSources" },
-	   { "Variation", "Variations" }
+	   { "Variation", "Variations" },
+	   { "NamedExpression", "Expressions" }
    };
    public static Dictionary<Type, string> Collections = Convert(_objectCollections).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
@@ -427,6 +432,7 @@ class Rules {
 		   case "ModelRole": return "Roles";
 		   case "ModelRoleMember": return "Members";
 		   case "Hierarchy": return "Hierarchies";
+		   case "NamedExpression": return "Expressions";
 		   default: return itemType.Name + "s";
        }
    }
@@ -440,6 +446,7 @@ class Rules {
        { new KeyValuePair<string, string>("ModelRole", "Model") },
        { new KeyValuePair<string, string>("Table", "Model") },
 	   { new KeyValuePair<string, string>("Relationship", "Model") },
+	   { new KeyValuePair<string, string>("NamedExpression", "Model") },
 
 	   // Collections owned by a Table (order of items matters, as this is the order in which child objects will be initialized):
        { new KeyValuePair<string, string>("Partition", "Table") },

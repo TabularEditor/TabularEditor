@@ -215,6 +215,11 @@ namespace TabularEditor.UI
         TablePartitions = 1 << 7,
 
         /// <summary>
+        /// Context menu opened on the "Shared Expressions" group node
+        /// </summary>
+        Expressions = 1 << 8,
+
+        /// <summary>
         /// Context menu opened on one or more tables
         /// </summary>
         Table = 1 << 11,
@@ -274,6 +279,8 @@ namespace TabularEditor.UI
         /// </summary>
         KPI = 1 << 22,
 
+        Expression = 1 << 23,
+
         /// <summary>
         /// Special context for actions that can be executed regardless of the current selection,
         /// but where the action should show up in the "Tools" menu only.
@@ -282,8 +289,8 @@ namespace TabularEditor.UI
 
         Everywhere = 0x7FFFFFFF,
         TableObject = Measure | Column | Hierarchy,
-        SingularObjects = Model | Table | TableObject | Level | Partition | Relationship | DataSource | Role | Perspective | Translation | KPI,
-        Groups = Tables | Relationships | DataSources | Roles | Perspectives | Translations | TablePartitions,
+        SingularObjects = Model | Table | TableObject | Level | Partition | Relationship | DataSource | Role | Perspective | Translation | KPI | Expression,
+        Groups = Tables | Relationships | DataSources | Roles | Perspectives | Translations | TablePartitions | Expressions,
         DataObjects = Table | TableObject,
         Scriptable = Table | Partition | DataSource | Role
     }
@@ -359,6 +366,7 @@ namespace TabularEditor.UI
             var result = Context.None;
             switch ((node.Tag as ITabularNamedObject).ObjectType)
             {
+                case ObjectType.Expression: return Context.Expression;
                 case ObjectType.Model: return Context.Model;
                 case ObjectType.Culture: return Context.Translation;
                 case ObjectType.DataSource: return Context.DataSource;
@@ -375,13 +383,14 @@ namespace TabularEditor.UI
                 case ObjectType.Group:
                     switch ((node.Tag as LogicalGroup).Name)
                     {
-                        case "Tables": return Context.Tables;
-                        case "Data Sources": return Context.DataSources;
-                        case "Perspectives": return Context.Perspectives;
-                        case "Roles": return Context.Roles;
-                        case "Translations": return Context.Translations;
-                        case "Relationships": return Context.Relationships;
-                        case "Table Partitions": return Context.TablePartitions;
+                        case LogicalGroups.TABLES: return Context.Tables;
+                        case LogicalGroups.DATASOURCES: return Context.DataSources;
+                        case LogicalGroups.PERSPECTIVES: return Context.Perspectives;
+                        case LogicalGroups.ROLES: return Context.Roles;
+                        case LogicalGroups.TRANSLATIONS: return Context.Translations;
+                        case LogicalGroups.RELATIONSHIPS: return Context.Relationships;
+                        case LogicalGroups.TABLEPARTITIONS: return Context.TablePartitions;
+                        case LogicalGroups.EXPRESSIONS: return Context.Expressions;
                     }
                     break;                   
             }

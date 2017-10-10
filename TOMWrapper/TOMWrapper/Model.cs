@@ -18,12 +18,24 @@ namespace TabularEditor.TOMWrapper
         public Perspective AddPerspective(string name = null)
         {
 #if CL1400
-            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(DataColumn))) return null;
+            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Perspective))) return null;
 #endif
             Handler.BeginUpdate("add perspective");
             var perspective = Perspective.CreateNew(this, name);
             Handler.EndUpdate();
             return perspective;
+        }
+
+        [IntelliSense("Adds a new Named Expression to the model.")]
+        public NamedExpression AddExpression(string name = null, string expression = null)
+        {
+#if CL1400
+            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(NamedExpression))) return null;
+#endif
+            Handler.BeginUpdate("add shared expression");
+            var expr = NamedExpression.CreateNew(this, name);
+            Handler.EndUpdate();
+            return expr;
         }
 
         [IntelliSense("Adds a new calculated table to the model.")]
@@ -40,7 +52,7 @@ namespace TabularEditor.TOMWrapper
         public Table AddTable(string name = null)
         {
 #if CL1400
-            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(DataColumn))) return null;
+            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Table))) return null;
 #endif
             Handler.BeginUpdate("add table");
             var t = Table.CreateNew(this, name);
@@ -63,7 +75,7 @@ namespace TabularEditor.TOMWrapper
         public Culture AddTranslation(string cultureId)
         {
 #if CL1400
-            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(DataColumn))) return null;
+            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Culture))) return null;
 #endif
             Handler.BeginUpdate("add translation");
             var culture = TOMWrapper.Culture.CreateNew(cultureId);
@@ -86,7 +98,7 @@ namespace TabularEditor.TOMWrapper
         public ProviderDataSource AddDataSource(string name = null)
         {
 #if CL1400
-            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(DataSource))) return null;
+            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(ProviderDataSource))) return null;
 #endif
             Handler.BeginUpdate("add data source");
 
@@ -99,7 +111,7 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Adds a new strucured data source to the model.")]
         public StructuredDataSource AddStructuredDataSource(string name = null)
         {
-            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(DataColumn))) return null;
+            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(StructuredDataSource))) return null;
 
             Handler.BeginUpdate("add data source");
             var ds = StructuredDataSource.CreateNew(this, name);

@@ -61,6 +61,7 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => !Handler.UsePowerBIGovernance, (s, m) => m.AddStructuredDataSource().Edit(), (s, m) => @"Create New\Structured Data Source", false, Context.DataSources | Context.Model));
 #endif
             Add(new Action((s, m) => !Handler.UsePowerBIGovernance, (s, m) => m.AddPerspective().Edit(), (s, m) => @"Create New\Perspective", false, Context.Model | Context.Perspectives | Context.Perspective));
+            Add(new Action((s, m) => !Handler.UsePowerBIGovernance, (s, m) => m.AddExpression().Edit(), (s, m) => @"Create New\Shared Expression", false, Context.Model | Context.Expressions | Context.Expression));
             Add(new Action((s, m) => m.Tables.Count(t => t.Columns.Any()) >= 2, (s, m) => m.AddRelationship().Edit(), (s, m) => @"Create New\Relationship", false, Context.Relationship | Context.Relationships | Context.Model));
             Add(new Action((s, m) => true, (s, m) => m.AddRole().Edit(), (s, m) => @"Create New\Role", false, Context.Model | Context.Roles | Context.Role));
             Add(new Action((s, m) => m.DataSources.Any() && !Handler.UsePowerBIGovernance, (s, m) => m.AddTable().Edit(), (s, m) => @"Create New\Table", false, Context.Tables | Context.Model));

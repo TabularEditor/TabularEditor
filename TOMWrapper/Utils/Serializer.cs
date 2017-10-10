@@ -269,6 +269,17 @@ namespace TabularEditor.TOMWrapper.Utils
             return relationship;
         }
 
+        public static NamedExpression DeserializeNamedExpression(JObject json, Model model)
+        {
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.NamedExpression>(json.ToString());
+            tom.Name = model.Expressions.GetNewName(tom.Name);
+
+            var expr = NamedExpression.CreateFromMetadata(tom, false);
+            model.Expressions.Add(expr);
+            expr.InitFromMetadata();
+
+            return expr;
+        }
         public static ModelRole DeserializeModelRole(JObject json, Model model)
         {
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.ModelRole>(json.ToString());

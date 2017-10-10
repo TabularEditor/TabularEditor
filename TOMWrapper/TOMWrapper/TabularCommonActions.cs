@@ -123,6 +123,7 @@ namespace TabularEditor.TOMWrapper
             foreach (var obj in objectContainer[typeof(CalculatedTable)]) inserted.Add(Serializer.DeserializeCalculatedTable(obj, Handler.Model));
             foreach (var obj in objectContainer[typeof(Table)]) inserted.Add(Serializer.DeserializeTable(obj, Handler.Model));
 
+            foreach (var obj in objectContainer[typeof(NamedExpression)]) inserted.Add(Serializer.DeserializeNamedExpression(obj, Handler.Model));
             foreach (var obj in objectContainer[typeof(ModelRole)]) inserted.Add(Serializer.DeserializeModelRole(obj, Handler.Model));
             foreach (var obj in objectContainer[typeof(ProviderDataSource)]) inserted.Add(Serializer.DeserializeProviderDataSource(obj, Handler.Model));
             foreach (var obj in objectContainer[typeof(SingleColumnRelationship)]) inserted.Add(Serializer.DeserializeSingleColumnRelationship(obj, Handler.Model));

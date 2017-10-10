@@ -28,7 +28,8 @@ namespace TabularEditor.UI.Tree
             { ObjectType.Perspective, TabularIcons.ICON_PERSPECTIVE },
             { ObjectType.Role, TabularIcons.ICON_ROLE },
             { ObjectType.DataSource, TabularIcons.ICON_DATASOURCE },
-            { ObjectType.Partition, TabularIcons.ICON_PARTITION }
+            { ObjectType.Partition, TabularIcons.ICON_PARTITION },
+            { ObjectType.Expression, TabularIcons.ICON_EFFECTS }
         };
 
 
@@ -131,6 +132,7 @@ namespace TabularEditor.UI.Tree
 
         public const int ICON_PARTITION = 38;
         public const int ICON_KPI = 39;
+        public const int ICON_EFFECTS = 40;
 
     }
 

@@ -14,23 +14,34 @@ namespace TabularEditor.TOMWrapper
     {
         public static readonly LogicalGroups Singleton = new LogicalGroups();
 
-        public readonly LogicalGroup Tables = new LogicalGroup("Tables");
-        public readonly LogicalGroup DataSources = new LogicalGroup("Data Sources");
-        public readonly LogicalGroup Perspectives = new LogicalGroup("Perspectives");
-        public readonly LogicalGroup Relationships = new LogicalGroup("Relationships");
-        public readonly LogicalGroup Translations = new LogicalGroup("Translations");
-        public readonly LogicalGroup Roles = new LogicalGroup("Roles");
-        public readonly LogicalGroup Partitions = new LogicalGroup("Table Partitions");
+        public const string TABLES = "Tables";
+        public const string ROLES = "Roles";
+        public const string PERSPECTIVES = "Perspectives";
+        public const string TRANSLATIONS = "Translations";
+        public const string RELATIONSHIPS = "Relationships";
+        public const string DATASOURCES = "Data Sources";
+        public const string TABLEPARTITIONS = "Table Partitions";
+        public const string EXPRESSIONS = "Shared Expressions";
+
+        public readonly LogicalGroup DataSources = new LogicalGroup(DATASOURCES);
+        public readonly LogicalGroup Perspectives = new LogicalGroup(PERSPECTIVES);
+        public readonly LogicalGroup Relationships = new LogicalGroup(RELATIONSHIPS);
+        public readonly LogicalGroup Roles = new LogicalGroup(ROLES);
+        public readonly LogicalGroup Expressions = new LogicalGroup(EXPRESSIONS);
+        public readonly LogicalGroup Partitions = new LogicalGroup(TABLEPARTITIONS);
+        public readonly LogicalGroup Tables = new LogicalGroup(TABLES);
+        public readonly LogicalGroup Translations = new LogicalGroup(TRANSLATIONS);
 
         private IEnumerable<LogicalGroup> Groups()
         {
-            yield return Tables;
-            yield return Partitions;
             yield return DataSources;
             yield return Perspectives;
             yield return Relationships;
-            yield return Translations;
             yield return Roles;
+            if(TabularModelHandler.Singleton.Database.CompatibilityLevel >= 1400) yield return Expressions;
+            yield return Partitions;
+            yield return Tables;
+            yield return Translations;
         }
 
         public IEnumerator<LogicalGroup> GetEnumerator()
@@ -52,15 +63,6 @@ namespace TabularEditor.TOMWrapper
     public class LogicalGroup: ITabularNamedObject, ITabularObjectContainer, IDynamicPropertyObject
     {
 
-
-        public const string TABLES = "Tables";
-        public const string ROLES = "Roles";
-        public const string PERSPECTIVES = "Perspectives";
-        public const string TRANSLATIONS = "Translations";
-        public const string RELATIONSHIPS = "Relationships";
-        public const string DATASOURCES = "Data Sources";
-        public const string TABLEPARTITIONS = "Table Partitions";
-
         [ReadOnly(true)]
         public string Name { get; set; }
         public TranslationIndexer TranslatedNames { get { return null; } }
@@ -72,13 +74,14 @@ namespace TabularEditor.TOMWrapper
         {
             switch (Name)
             {
-                case TABLES: return Model.Tables;
-                case ROLES: return Model.Roles;
-                case PERSPECTIVES: return Model.Perspectives;
-                case TRANSLATIONS: return Model.Cultures;
-                case RELATIONSHIPS: return Model.Relationships;
-                case DATASOURCES: return Model.DataSources;
-                case TABLEPARTITIONS: return Model.Tables.Where(t => !(t is CalculatedTable)).Select(t => t.PartitionViewTable);
+                case LogicalGroups.TABLES: return Model.Tables;
+                case LogicalGroups.ROLES: return Model.Roles;
+                case LogicalGroups.EXPRESSIONS: return Model.Expressions;
+                case LogicalGroups.PERSPECTIVES: return Model.Perspectives;
+                case LogicalGroups.TRANSLATIONS: return Model.Cultures;
+                case LogicalGroups.RELATIONSHIPS: return Model.Relationships;
+                case LogicalGroups.DATASOURCES: return Model.DataSources;
+                case LogicalGroups.TABLEPARTITIONS: return Model.Tables.Where(t => !(t is CalculatedTable)).Select(t => t.PartitionViewTable);
             }
             return Enumerable.Empty<TabularNamedObject>();
         }
@@ -114,9 +117,9 @@ namespace TabularEditor.TOMWrapper
         {
             switch(Name)
             {
-                case PERSPECTIVES: return propertyName == "Perspectives";
-                case TRANSLATIONS: return propertyName == "Cultures";
-                case ROLES: return propertyName == "Roles";
+                case LogicalGroups.PERSPECTIVES: return propertyName == "Perspectives";
+                case LogicalGroups.TRANSLATIONS: return propertyName == "Cultures";
+                case LogicalGroups.ROLES: return propertyName == "Roles";
                 default:
                     return propertyName == "Name"; // For all other groups, only show the name.
             }

@@ -88,6 +88,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TOMWrapper\NamedExpression.cs" />
     <Compile Include="TOMWrapper\TabularModelHandlerSettings.cs" />
     <Compile Include="IPlugin.cs" />
     <Compile Include="Messages.Designer.cs">

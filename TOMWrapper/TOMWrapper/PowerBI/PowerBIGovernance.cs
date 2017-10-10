@@ -43,9 +43,10 @@ namespace TabularEditor.TOMWrapper.PowerBI
         {
             switch(groupName)
             {
-                case LogicalGroup.RELATIONSHIPS:
-                case LogicalGroup.ROLES:
-                case LogicalGroup.TABLES:
+                case LogicalGroups.RELATIONSHIPS:
+                case LogicalGroups.ROLES:
+                case LogicalGroups.TABLES:
+                case LogicalGroups.EXPRESSIONS:
                     return true;
 
                 //case LogicalGroup.DATASOURCES:
@@ -72,6 +73,9 @@ namespace TabularEditor.TOMWrapper.PowerBI
                 case Properties.SOURCEPROVIDERTYPE:
                 case Properties.CULTURES:
                     return false;
+                case Properties.EXPRESSION:
+                    // Only allow editing Expressions for Measures, Calc Columns and Calc Tables:
+                    return type == ObjectType.Measure || type == ObjectType.Table || type == ObjectType.Column;
             }
 
             return true;

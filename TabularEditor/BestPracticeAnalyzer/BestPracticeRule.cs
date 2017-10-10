@@ -118,6 +118,8 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         [JsonConverter(typeof(RuleScopeConverter))]
         public RuleScope Scope { get; set; }
+
+        [JsonIgnore]
         public string ScopeString
         {
             get {
@@ -133,6 +135,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         public string FixExpression { get; set; }
         public HashSet<int> Compatibility { get; set; }
 
+        [JsonIgnore]
         public bool IsValid { get; }
     }
 
