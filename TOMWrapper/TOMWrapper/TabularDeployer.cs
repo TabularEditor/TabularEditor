@@ -1,5 +1,7 @@
-﻿using Microsoft.AnalysisServices;
-using Newtonsoft.Json.Linq;
+﻿extern alias json;
+
+using Microsoft.AnalysisServices;
+using json.Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;

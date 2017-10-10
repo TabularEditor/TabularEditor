@@ -1,15 +1,17 @@
-﻿using System;
+﻿extern alias json;
+
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using TabularEditor.UndoFramework;
 using TOM = Microsoft.AnalysisServices.Tabular;
-using Newtonsoft.Json.Linq;
+using json.Newtonsoft.Json.Linq;
 using TabularEditor.TextServices;
 using Antlr4.Runtime;
 using System.Diagnostics;
 using System.Text;
-using Newtonsoft.Json;
+using json.Newtonsoft.Json;
 using System.ComponentModel;
 using TabularEditor.TOMWrapper.PowerBI;
 using TabularEditor.TOMWrapper.Utils;
@@ -787,7 +789,7 @@ namespace TabularEditor.TOMWrapper
             var roles = options.Levels.Contains("Roles") ? PopArray(model, "roles") : null;
 
             CurrentFiles = new HashSet<string>();
-            WriteIfChanged(path + "\\database.json", jobj.ToString(Newtonsoft.Json.Formatting.Indented));
+            WriteIfChanged(path + "\\database.json", jobj.ToString(Formatting.Indented));
 
             if (relationships != null) OutArray(path, "relationships", relationships, options);
             if (perspectives != null && !options.LocalPerspectives) OutArray(path, "perspectives", perspectives, options);
@@ -812,7 +814,7 @@ namespace TabularEditor.TOMWrapper
                     var p = tablePath + "\\" + tableName + ".json";
                     var fi = new FileInfo(p);
                     if (!fi.Directory.Exists) fi.Directory.Create();
-                    WriteIfChanged(p, t.ToString(Newtonsoft.Json.Formatting.Indented));
+                    WriteIfChanged(p, t.ToString(Formatting.Indented));
 
                     if (measures != null) OutArray(tablePath, "measures", measures, options);
                     if (columns != null) OutArray(tablePath, "columns", columns, options);
@@ -871,7 +873,7 @@ namespace TabularEditor.TOMWrapper
                 var p = path + "\\" + arrayName + "\\" + (options.PrefixFilenames ? n.ToString("D3") + " " : "") + Sanitize(t["name"].ToString()) + ".json";
                 var fi = new FileInfo(p);
                 if (!fi.Directory.Exists) fi.Directory.Create();
-                WriteIfChanged(p, t.ToString(Newtonsoft.Json.Formatting.Indented));
+                WriteIfChanged(p, t.ToString(Formatting.Indented));
                 n++;
             }
         }

@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿extern alias json;
+
+using json.Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;

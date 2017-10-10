@@ -1,4 +1,6 @@
-﻿using System;
+﻿extern alias json;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,9 +8,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Linq.Expressions;
 using System.IO;
-using Newtonsoft.Json;
+using json.Newtonsoft.Json;
 using TabularEditor.TOMWrapper;
-using Newtonsoft.Json.Converters;
+using json.Newtonsoft.Json.Converters;
 using System.ComponentModel;
 
 namespace TabularEditor.BestPracticeAnalyzer

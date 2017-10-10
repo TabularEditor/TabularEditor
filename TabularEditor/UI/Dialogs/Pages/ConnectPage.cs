@@ -1,4 +1,6 @@
-﻿using System;
+﻿extern alias json;
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -12,8 +14,8 @@ using TabularEditor.TOMWrapper;
 using TabularEditor.UIServices;
 using System.Drawing.Imaging;
 using System.IO;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
+using json.Newtonsoft.Json.Linq;
+using json.Newtonsoft.Json;
 
 namespace TabularEditor.UI.Dialogs.Pages
 {

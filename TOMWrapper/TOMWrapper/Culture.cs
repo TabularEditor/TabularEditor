@@ -1,4 +1,6 @@
-﻿using Microsoft.AnalysisServices.Tabular;
+﻿extern alias json;
+
+using Microsoft.AnalysisServices.Tabular;
 using System.ComponentModel;
 using TabularEditor.PropertyGridUI;
 using System;
@@ -7,7 +9,7 @@ using System.Linq;
 using System.Collections.Generic;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using TabularEditor.UndoFramework;
-using Newtonsoft.Json;
+using json.Newtonsoft.Json;
 
 namespace TabularEditor.TOMWrapper
 {

@@ -45,13 +45,17 @@ namespace TabularEditor
 #if CL1400
             var asmName = new AssemblyName(args.Name);
 
-            if(asmName.Name.StartsWith("Microsoft.AnalysisServices.Server.Tabular"))
+            if(
+                asmName.Name == "Microsoft.AnalysisServices.Core" ||
+                asmName.Name == "Microsoft.AnalysisServices.Tabular" ||
+                asmName.Name == "Microsoft.AnalysisServices.Tabular.Json"
+                )
             {
                 // Since Microsoft is using the names "Microsoft.AnalysisServices.Server.Tabular" and "Microsoft.AnalysisServices.Tabular" interchangeably,
-                // let's try to modify the assemblyname that we're looking for, and load again:
+                // let's try to modify the assemblyname that we're looking for to see if the other variant happens to be available in the GAC:
                 try
                 {
-                    var alternateAssembly = Assembly.Load(asmName.FullName.Replace(".Server.", "."));
+                    var alternateAssembly = Assembly.Load(asmName.FullName.Replace(".AnalysisServices.", ".AnalysisServices.Server."));
                     
                     return alternateAssembly;
                 }
