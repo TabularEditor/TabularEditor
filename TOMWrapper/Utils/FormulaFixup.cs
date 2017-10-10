@@ -89,7 +89,7 @@ namespace TabularEditor.TOMWrapper.Utils
                             {
                                 expressionObj.AddDep(table.Columns[tok.Text.NoQ()], tok.StartIndex, tok.StopIndex, false);
                             }
-                            // Referencing a measure without specifying a table
+                            // Referencing a measure or column without specifying a table
                             else
                             {
                                 Measure m = null;
@@ -101,6 +101,7 @@ namespace TabularEditor.TOMWrapper.Utils
                                     expressionObj.AddDep(m, tok.StartIndex, tok.StopIndex, false);
                             }
                         }
+                        lastTableRef = null;
                         break;
                     default:
                         if (lastTableRef != null)
@@ -113,7 +114,7 @@ namespace TabularEditor.TOMWrapper.Utils
                 if (lastTableRef != null)
                 {
                     if (Model.Tables.Contains(lastTableRef.Text.NoQ(true))) expressionObj.AddDep(Model.Tables[lastTableRef.Text.NoQ(true)], lastTableRef.StartIndex, lastTableRef.StopIndex, true);
-                    lastTableRef = null;
+                    //lastTableRef = null;
                 }
             }
         }
