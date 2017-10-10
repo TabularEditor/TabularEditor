@@ -669,7 +669,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:TOMWrapper, Version=2.5.6492.21511, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:TOMWrapper, Version=2.5.6492.25153, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_E8D4CDBD1C31AA76E5A6907170DAC386"
@@ -784,7 +784,7 @@
             "{836E08B8-0285-4809-BA42-01DB6754A45D}:_1DAE9B12DD4C4571930C788970DF69B6"
             {
             "Name" = "8:Microsoft Analysis Management Objects"
-            "Condition" = "8:1=1"
+            "Condition" = "8:REGISTRYVALUE1>=\"#234881024\""
             "Message" = "8:Tabular Editor requires Microsoft Analysis Management Objects (v. 14.0 or newer).\r\n\r\nWould you like to download and install this component now?\r\n\r\nhttps://go.microsoft.com/fwlink/?linkid=829578"
             "InstallUrl" = "8:https://go.microsoft.com/fwlink/?linkid=829578"
             }
@@ -816,7 +816,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Tabular Editor"
         "ProductCode" = "8:{8639D249-8CA9-4311-84CA-FDD90A1FEEE3}"
-        "PackageCode" = "8:{BF1F9BA9-88C4-4DEB-92AC-69C5DC9EA6F6}"
+        "PackageCode" = "8:{2CF33F7C-F241-4FA7-BABF-775B519B7D3E}"
         "UpgradeCode" = "8:{E20734F5-CD2A-4A76-AB20-014819FCDE35}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
