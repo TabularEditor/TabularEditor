@@ -42,7 +42,6 @@ namespace TabularEditor
 
         private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
-#if CL1400
             var asmName = new AssemblyName(args.Name);
 
             if(
@@ -62,13 +61,13 @@ namespace TabularEditor
                 catch (FileNotFoundException ex)
                 {
                     var td = new TaskDialog();
-                    td.Text = @"This version of Tabular Editor requires the SQL AS AMO library for Azure Analysis Services or SQL Server 2017. Make sure version 14.0.0.0 (or newer) of the following DLLs are installed in the GAC or located in the same folder as TabularEditor.exe:
+                    td.Text = @"This version of Tabular Editor requires the SQL AS AMO library for SQL Server 2017. Make sure version 14.0.0.0 (or newer) of the following DLLs are installed in the GAC or located in the same folder as TabularEditor.exe:
 
-Microsoft.AnalysisServices.Server.Core.dll
-Microsoft.AnalysisServices.Server.Tabular.dll
-Microsoft.AnalysisServices.Server.Tabular.Json.dll
+Microsoft.AnalysisServices.Core.dll
+Microsoft.AnalysisServices.Tabular.dll
+Microsoft.AnalysisServices.Tabular.Json.dll
 
-The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-us/azure/analysis-services/analysis-services-data-providers"">here</A>.";
+The AMO library may be downloaded from <A HREF=""https://go.microsoft.com/fwlink/?linkid=829578"">here</A>.";
                     td.Caption = "Missing DLL dependencies";
 
                     td.Icon = TaskDialogStandardIcon.Error;
@@ -79,28 +78,6 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 }
             }
             return null;
-#else
-            var asmName = new AssemblyName(args.Name);
-            if(asmName.Name.StartsWith("Microsoft.AnalysisServices.Server.Tabular") && asmName.Version.Major != 13)
-            {
-                var td = new TaskDialog();
-                td.Text = @"This version of Tabular Editor requires the SQL AS AMO library for SQL Server 2016. Make sure version 13.0.0.0 (or newer) of the following DLLs are installed in the GAC or located in the same folder as TabularEditor.exe:
-
-Microsoft.AnalysisServices.Server.Core.dll
-Microsoft.AnalysisServices.Server.Tabular.dll
-Microsoft.AnalysisServices.Server.Tabular.Json.dll
-
-To obtain the files, download the SQL_AS_AMO library from the <A HREF=""https://www.microsoft.com/en-us/download/details.aspx?id=52676"">SQL Server 2016 feature pack</A>.";
-                td.Caption = "Missing DLL dependencies";
-
-                td.Icon = TaskDialogStandardIcon.Error;
-                td.HyperlinksEnabled = true;
-                td.HyperlinkClick += Td_HyperlinkClick;
-                td.Show();
-                Environment.Exit(1);
-            }
-            return null;
-#endif
         }
 
         private static void Td_HyperlinkClick(object sender, TaskDialogHyperlinkClickedEventArgs e)
