@@ -39,7 +39,7 @@ Func<TabularObject, string, string> GetTsvForObject =
     return sb.ToString(); 
 };
 
-// public static string GetPropertyValues(this IEnumerable<ITabularNamedObject> objects, string properties)
+// public static string ExportProperties(this IEnumerable<ITabularNamedObject> objects, string properties)
 // --------------------------------------------------------------------------------------------------------
 // Arguments:
 //     * objects    : A collection of ITabularNamedObjects to consider.
@@ -48,7 +48,7 @@ Func<TabularObject, string, string> GetTsvForObject =
 // Output: 
 //     A tsv-formatted dataset as a string. The first column references the individual objects.
 //     Subsequent columns according to the 'properties' argument. The first row has headers.
-Func<System.Collections.Generic.IEnumerable<ITabularNamedObject>, string, string> GetPropertyValues = 
+Func<System.Collections.Generic.IEnumerable<ITabularNamedObject>, string, string> ExportProperties = 
 (objects,properties) => {
     var sb = new System.Text.StringBuilder();
     sb.Append("Object\t");
@@ -61,9 +61,9 @@ Func<System.Collections.Generic.IEnumerable<ITabularNamedObject>, string, string
 };
 
 // Sample usage 1: (outputs all selected objects as TSV)
-var tsv1 = GetPropertyValues(Selected, "Table,ObjectType,Name,FormatString,DisplayFolder,Description,IsHidden,Expression");
+var tsv1 = ExportProperties(Selected, "Table,ObjectType,Name,FormatString,DisplayFolder,Description,IsHidden,Expression");
 System.IO.File.WriteAllText(outputPath + "SelectedObjects.tsv", tsv1);
 
 // Sample usage 2: (outputs all model measures as TSV)
-var tsv2 = GetPropertyValues(Model.AllMeasures, "Name,FormatString,DisplayFolder,Description,IsHidden,Expression,DetailRowsExpression");
+var tsv2 = ExportProperties(Model.AllMeasures, "Name,FormatString,DisplayFolder,Description,IsHidden,Expression,DetailRowsExpression");
 System.IO.File.WriteAllText(outputPath + "AllMeasures.tsv", tsv2);
