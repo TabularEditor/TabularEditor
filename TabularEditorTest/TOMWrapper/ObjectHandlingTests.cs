@@ -23,9 +23,9 @@ namespace TabularEditor.TOMWrapper
         /// Creates a simple model with a few tables, measures, hierarchies, relationships, cultures and perspectives.
         /// </summary>
         /// <param name="fileName"></param>
-        public void CreateTestModel(string fileName)
+        public static TabularModelHandler CreateTestModel(string fileName, int compatibilityLevel = CompatibilityLevel)
         {
-            var tm = new TabularModelHandler(CompatibilityLevel);
+            var tm = new TabularModelHandler(compatibilityLevel);
 
             var ds = tm.Model.AddDataSource("Test Datasource");
             var r1 = tm.Model.AddRole("Test Role 1");
@@ -88,6 +88,8 @@ namespace TabularEditor.TOMWrapper
             foreach(var item in t1.GetChildren().OfType<ITabularPerspectiveObject>()) item.InPerspective.All();
 
             tm.Save(fileName, SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+
+            return tm;
         }
 
         public TabularModelHandler ResetAndConnect()

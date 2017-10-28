@@ -1,0 +1,123 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="$(SolutionDir)TOMWrapper\bin\Debug-CL1400\TOMWrapper.dll" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Reflection" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="TabularEditor.TOMWrapper" #>
+<#@ import namespace="TabularEditor.TOMWrapper.Tests" #>
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace TabularEditor.TOMWrapper.Tests
+{
+	[TestClass]
+	public class GeneratedTests
+	{
+
+<# 
+	Action<object> WriteObj = (input) => {
+		if(input is string) Write(string.Format("\"{0}\"", ((string)input).Replace("\"", "\\\"")));
+		else if(input is int) Write(input.ToString());
+	};
+	Action<MethodInfo> WriteCall = (m) => {
+		var attr = m.GetCustomAttributes(true).OfType<GenerateTestAttribute>().First();		
+
+		Write(m.Name + "(");
+		for(var i = 0; i < attr.TestArguments.Length; i++) 
+		{
+			if(i > 0) Write(", ");
+			WriteObj(attr.TestArguments[i]); 
+		}
+		Write(");\n");
+	};
+
+    var baseClasses = new Dictionary<Type, string>() { 
+		{ typeof(Model), "Model" },
+		{ typeof(Table), "Model.Tables[0]" },
+	};
+
+	foreach(var bc in baseClasses) {
+
+		var methods = bc.Key.GetMethods().Where(m => 
+			m.GetCustomAttributes(true).Any(attr => attr is GenerateTestAttribute));
+
+		// --------------------------------------------------
+		// Actual method generating code below
+		// --------------------------------------------------
+		foreach(var m in methods) { #>
+
+		[TestMethod]
+		public void <#= bc.Key.Name + "_" + m.Name #>_BaseTest() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", 1400);
+			tmh.<#= bc.Value #>.<# WriteCall(m); #>
+			tmh.Save("Test_<#= m.Name #>.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void <#= bc.Key.Name + "_" + m.Name #>_UndoTest() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", 1400);
+			tmh.<#= bc.Value #>.<# WriteCall(m); #>
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_<#= m.Name #>.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void <#= bc.Key.Name + "_" + m.Name #>_UndoRedoTest() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", 1400);
+			tmh.<#= bc.Value #>.<# WriteCall(m); #>
+			tmh.UndoManager.Undo();
+			tmh.UndoManager.Redo();
+			tmh.Save("Test_<#= m.Name #>.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void <#= bc.Key.Name + "_" + m.Name #>_DeleteTest() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", 1400);
+			var obj = tmh.<#= bc.Value #>.<# WriteCall(m); #>
+			obj.Delete();
+			tmh.Save("Test_<#= m.Name #>.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void <#= bc.Key.Name + "_" + m.Name #>_DeleteUndoTest() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", 1400);
+			var obj = tmh.<#= bc.Value #>.<# WriteCall(m); #>
+			obj.Delete();
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_<#= m.Name #>.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void <#= bc.Key.Name + "_" + m.Name #>_DeleteUndoRedoTest() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", 1400);
+			var obj = tmh.<#= bc.Value #>.<# WriteCall(m); #>
+			obj.Delete();
+			tmh.UndoManager.Undo();
+			tmh.UndoManager.Redo();
+			tmh.Save("Test_<#= m.Name #>.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void <#= bc.Key.Name + "_" + m.Name #>_DeleteUndoUndoTest() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", 1400);
+			var obj = tmh.<#= bc.Value #>.<# WriteCall(m); #>
+			obj.Delete();
+			tmh.UndoManager.Undo();
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_<#= m.Name #>.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void <#= bc.Key.Name + "_" + m.Name #>_RenameTest() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", 1400);
+			var obj = tmh.<#= bc.Value #>.<# WriteCall(m); #>
+			obj.Name = "ChangeName";
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_<#= m.Name #>.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+<#	}
+} #>
+	}
+}
