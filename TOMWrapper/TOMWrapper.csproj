@@ -92,6 +92,7 @@
     <Compile Include="TOMWrapper\DaxDependencyHelper.cs" />
     <Compile Include="TOMWrapper\Indexers\GenericIndexer.cs" />
     <Compile Include="TOMWrapper\Tests\GenerateTestAttribute.cs" />
+    <Compile Include="TOMWrapper\Tests\CompatibilityLevelAttribute.cs" />
     <Compile Include="Utils\DependencyList.cs" />
     <Compile Include="TOMWrapper\NamedExpression.cs" />
     <Compile Include="TOMWrapper\TabularModelHandlerSettings.cs" />

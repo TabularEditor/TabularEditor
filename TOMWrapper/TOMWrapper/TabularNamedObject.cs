@@ -69,16 +69,16 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         public void Delete()
         {
-            // CanDelete / CancelDelete logic and "OnObjectDeleting" event should not be handled while an Undo is in progress:
+            // CanDelete logic should not be handled while an Undo is in progress:
             if (!Handler.UndoManager.UndoInProgress)
             {
                 // Prevent deletion for certain object types
                 if (!CanDelete()) return;
-
-                bool cancelDelete = false;
-                Handler.DoObjectDeleting(this, ref cancelDelete);
-                if (cancelDelete) return;
             }
+
+            bool cancelDelete = false;
+            Handler.DoObjectDeleting(this, ref cancelDelete);
+            if (cancelDelete) return;
 
             Handler.UndoManager.BeginBatch(string.Format(Messages.OperationDelete, this.GetTypeName()));
 

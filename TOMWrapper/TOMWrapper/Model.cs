@@ -25,7 +25,7 @@ namespace TabularEditor.TOMWrapper
             return perspective;
         }
 
-        [IntelliSense("Adds a new Named Expression to the model."), Tests.GenerateTest()]
+        [IntelliSense("Adds a new Named Expression to the model."), Tests.GenerateTest(), Tests.CompatibilityLevel(1400)]
         public NamedExpression AddExpression(string name = null, string expression = null)
         {
             if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(NamedExpression))) return null;
@@ -107,7 +107,7 @@ namespace TabularEditor.TOMWrapper
             return ds;
         }
 
-        [IntelliSense("Adds a new strucured data source to the model."), Tests.GenerateTest()]
+        [IntelliSense("Adds a new strucured data source to the model."), Tests.GenerateTest(), Tests.CompatibilityLevel(1400)]
         public StructuredDataSource AddStructuredDataSource(string name = null)
         {
             if (Handler.CompatibilityLevel < 1400) throw new InvalidOperationException(Messages.CompatibilityError_StructuredDataSource);

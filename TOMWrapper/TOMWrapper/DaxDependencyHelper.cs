@@ -10,7 +10,10 @@ namespace TabularEditor.TOMWrapper
     {
         public static IEnumerable<DAXProperty> GetDAXProperties(this IDaxDependantObject obj)
         {
-            if (obj is Table || obj is Measure) yield return DAXProperty.DetailRowsExpression;
+            if (TabularModelHandler.Singleton.CompatibilityLevel >= 1400)
+            {
+                if (obj is Table || obj is Measure) yield return DAXProperty.DetailRowsExpression;
+            }
             if (obj is Measure || obj is CalculatedColumn || obj is CalculatedTable) yield return DAXProperty.Expression;
             if (obj is KPI)
             {

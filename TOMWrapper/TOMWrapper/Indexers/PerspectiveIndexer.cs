@@ -32,12 +32,16 @@ namespace TabularEditor.TOMWrapper
         protected override void SetValue(Perspective perspective, bool include)
         {
             var oldValue = this[perspective];
-            if (include == oldValue) return;
 
+            if (!(this is PerspectiveTableIndexer))
+                Handler.UndoManager.Add(
+                    new UndoPropertyChangedAction(ParentObject, "InPerspective", oldValue, include, perspective.Name));
+
+            // Call this method regardless of whether there was an actual change (that is, before we check
+            // if the new value is equal to oldValue). This is because a call to InPerspective.None() happens
+            // when an object is deleted, so we need to make sure this method is called, so that the actual
+            // metadata perspective objects are deleted.
             SetInPerspective(perspective, include);
-
-            Handler.UndoManager.Add(
-                new UndoPropertyChangedAction(ParentObject, "InPerspective", oldValue, include, perspective.Name));
 
             // Only apply structure change if the perspective that was changed is the currently visible perspective:
             if (Handler.Tree.Perspective == perspective) Handler.Tree.OnStructureChanged(Model);
