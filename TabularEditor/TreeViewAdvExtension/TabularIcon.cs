@@ -72,7 +72,7 @@ namespace TabularEditor.UI.Tree
             base.Draw(node, context);
 
             var err = (node.Tag as IErrorMessageObject)?.ErrorMessage;
-            var needsVal = (node.Tag as IDAXExpressionObject)?.NeedsValidation ?? false;
+            var needsVal = (node.Tag as IExpressionObject)?.NeedsValidation ?? false;
             if (needsVal)
             {
                 context.Graphics.DrawImage(Images[TabularIcons.ICON_QUESTION], 4 + context.Bounds.Left, 3 + context.Bounds.Top);
@@ -86,7 +86,7 @@ namespace TabularEditor.UI.Tree
         public override string GetToolTip(TreeNodeAdv node)
         {
             var err = (node.Tag as IErrorMessageObject)?.ErrorMessage;
-            var needsVal = (node.Tag as IDAXExpressionObject)?.NeedsValidation ?? false;
+            var needsVal = (node.Tag as IExpressionObject)?.NeedsValidation ?? false;
             return needsVal ? "Expression was changed. Deploy to validate." : err ?? string.Empty;
         }
     }

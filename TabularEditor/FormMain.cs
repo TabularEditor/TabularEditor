@@ -24,13 +24,8 @@ namespace TabularEditor
             Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en-US");
             InitializeComponent();
 
-#if CL1400
             dlgOpenFile.Filter = "Tabular Model Files|*.bim;database.json|Power BI Files|*.pbit|All files|*.*";
             dlgSaveFile.Filter = "Tabular Model Files|*.bim|Power BI Files|*.pbit|All files|*.*";
-#else
-            dlgOpenFile.Filter = "Tabular Model Files|*.bim;database.json|All files|*.*";
-            dlgSaveFile.Filter = "Tabular Model Files|*.bim|All files|*.*";
-#endif
 
             // For some reason, Visual Studio sometimes removes this from the FormMain.Designer.cs, making the
             // colors of the lines look ugly:
@@ -349,12 +344,28 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void actFind_Execute(object sender, EventArgs e)
         {
-            txtExpression.ShowFindDialog();
+            switch (tabControl1.SelectedIndex)
+            {
+                case 0:
+                    txtExpression.ShowFindDialog();
+                    break;
+                case 1:
+                    txtAdvanced.ShowFindDialog();
+                    break;
+            }
         }
 
         private void actReplace_Execute(object sender, EventArgs e)
         {
-            txtExpression.ShowReplaceDialog();
+            switch (tabControl1.SelectedIndex) {
+                case 0:
+                    UI.ExpressionEditor_BeginEdit();
+                    txtExpression.ShowReplaceDialog();
+                    break;
+                case 1:
+                    txtAdvanced.ShowReplaceDialog();
+                    break;
+            }
         }
 
         private void actExpressionFormatDAX_Execute(object sender, EventArgs e)

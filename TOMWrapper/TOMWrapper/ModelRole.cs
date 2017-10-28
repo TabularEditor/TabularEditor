@@ -14,43 +14,9 @@ namespace TabularEditor.TOMWrapper
         [Browsable(true), DisplayName("Row Level Security"), Category("Security")]
         public RoleRLSIndexer RowLevelSecurity { get; private set; }
 
-#if CL1400
         [Browsable(true), DisplayName("Object Level Security"), Category("Security")]
         public RoleOLSIndexer MetadataPermission { get; private set; }
-#endif
 
-        public void InitRLSIndexer()
-        {
-            RowLevelSecurity = new RoleRLSIndexer(this);
-#if CL1400            
-            MetadataPermission = new RoleOLSIndexer(this);
-#endif
-        }
-
-        /*public override TabularNamedObject Clone(string newName, bool includeTranslations)
-        {
-            Handler.BeginUpdate("duplicate role");
-            var tom = MetadataObject.Clone();
-            //tom.IsRemoved = false;
-            tom.Name = Model.Roles.MetadataObjectCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-            var r = new ModelRole(Handler, tom);
-            r.InitRLSIndexer();
-            Model.Roles.Add(r);
-
-            if (includeTranslations)
-            {
-                r.TranslatedDescriptions.CopyFrom(TranslatedDescriptions);
-                r.TranslatedDisplayFolders.CopyFrom(TranslatedDisplayFolders);
-                if (string.IsNullOrEmpty(newName))
-                    r.TranslatedNames.CopyFrom(TranslatedNames, n => n + " copy");
-                else
-                    r.TranslatedNames.CopyFrom(TranslatedNames, n => n.Replace(Name, newName));
-            }
-
-            Handler.EndUpdate();
-
-            return r;
-        }*/
 
         [Category("Security"), DisplayName("Members")]
         [Description("Specify domain/usernames of the members in this role. One member per line.")]
@@ -79,9 +45,17 @@ namespace TabularEditor.TOMWrapper
         protected override bool IsBrowsable(string propertyName)
         {
             switch (propertyName) {
-                case "MetadataPermission": return Model.Database.CompatibilityLevel >= 1400;
+                case "MetadataPermission": return Handler.CompatibilityLevel >= 1400;
                 default:  return true;
             }
+        }
+
+        protected override void Init()
+        {
+            RowLevelSecurity = new RoleRLSIndexer(this);
+            if (Handler.CompatibilityLevel >= 1400) MetadataPermission = new RoleOLSIndexer(this);
+
+            base.Init();
         }
     }
 }

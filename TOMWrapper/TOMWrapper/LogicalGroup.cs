@@ -38,7 +38,7 @@ namespace TabularEditor.TOMWrapper
             yield return Perspectives;
             yield return Relationships;
             yield return Roles;
-            if(TabularModelHandler.Singleton.Database.CompatibilityLevel >= 1400) yield return Expressions;
+            if(TabularModelHandler.Singleton.CompatibilityLevel >= 1400) yield return Expressions;
             yield return Partitions;
             yield return Tables;
             yield return Translations;
@@ -46,10 +46,9 @@ namespace TabularEditor.TOMWrapper
 
         public IEnumerator<LogicalGroup> GetEnumerator()
         {
-#if CL1400
             if (TabularModelHandler.Singleton.UsePowerBIGovernance)
                 return Groups().Where(grp => PowerBI.PowerBIGovernance.AllowGroup(grp.Name)).GetEnumerator();
-#endif
+
             return Groups().GetEnumerator();
         }
 

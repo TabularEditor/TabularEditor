@@ -28,10 +28,10 @@ namespace TabularEditor.UI
                 if (Selected.Count == 1 && Selected.Context.HasX(Context.DataObjects))
                 {
                     var d = (Selected.FirstOrDefault() as IDaxObject);
-                    if (d != null && d.Dependants.Count > 0)
+                    if (d != null && d.ReferencedBy.Count > 0)
                     {
-                        refs = "\n\nThis object is directly referenced in the DAX expression on " + d.Dependants.First().DaxObjectFullName;
-                        if (d.Dependants.Count > 1) refs += string.Format(" and {0} other object{1}.", d.Dependants.Count - 1, d.Dependants.Count == 2 ? "" : "s");
+                        refs = "\n\nThis object is directly referenced in the DAX expression on " + d.ReferencedBy.First().DaxObjectFullName;
+                        if (d.ReferencedBy.Count > 1) refs += string.Format(" and {0} other object{1}.", d.ReferencedBy.Count - 1, d.ReferencedBy.Count == 2 ? "" : "s");
                     } else
                     {
                         refs = "\n\nThis object does not appear to be referenced in DAX expressions of other objects.";

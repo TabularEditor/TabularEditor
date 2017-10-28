@@ -25,7 +25,7 @@ namespace TabularEditor.PropertyGridUI
         /// <param name="key"></param>
         /// <returns></returns>
         string GetDisplayName(string key);
-        void Refresh();
+        //void Refresh();
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ namespace TabularEditor.PropertyGridUI
         {
             var pdc = new PropertyDescriptorCollection(null);
             var dict = value as IExpandableIndexer;
-            dict.Refresh();
+            //dict.Refresh();
             foreach(var key in dict.Keys.OrderBy(k => dict.GetDisplayName(k)))
             {
                 PropertyDescriptor pd;

@@ -782,7 +782,8 @@ namespace System.Linq.Dynamic
             typeof(Convert),
 
             typeof(System.Text.RegularExpressions.Regex),
-            typeof(System.StringComparison)
+            typeof(System.StringComparison),
+            typeof(TabularEditor.TOMWrapper.DependencyHelper)
         };
 
         static readonly Expression trueLiteral = Expression.Constant(true);

@@ -8,6 +8,6 @@ namespace TabularEditor.TOMWrapper
 {
     public partial class NamedExpression: IExpressionObject
     {
-
+        public bool NeedsValidation { get { return false; } set { } }
     }
 }

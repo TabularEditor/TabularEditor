@@ -12,11 +12,8 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    public class CalculatedTable: Table, IDAXExpressionObject
+    public class CalculatedTable: Table, IExpressionObject
     {
-        [Browsable(false)]
-        public Dictionary<IDaxObject, List<Dependency>> Dependencies { get; } = new Dictionary<IDaxObject, List<Dependency>>();
-
         protected override void Init()
         {
             base.Init();
@@ -67,14 +64,7 @@ namespace TabularEditor.TOMWrapper
 
             return obj;
         }
-
-        public new static CalculatedTable CreateFromMetadata(TOM.Table metadataObject, bool init = true)
-        {
-            var obj = new CalculatedTable(metadataObject, false);
-            if (init) obj.InitFromMetadata();
-            return obj;
-        }
-
+        
         /// <summary>
         /// Creates a new Calculated Table and adds it to the current Model.
         /// Also creates the underlying metadataobject and adds it to the TOM tree.
@@ -84,7 +74,18 @@ namespace TabularEditor.TOMWrapper
             return CreateNew(TabularModelHandler.Singleton.Model);
         }
 
-        public CalculatedTable(TOM.Table tableMetadataObject, bool init = true) : base(tableMetadataObject, init)
+        public new static CalculatedTable CreateFromMetadata(Model parent, TOM.Table metadataObject)
+        {
+            if (metadataObject.GetSourceType() != TOM.PartitionSourceType.Calculated) throw new ArgumentException("Provided metadataObject is not a Calculated Table.");
+            var obj = new CalculatedTable(metadataObject);
+            parent.Tables.Add(obj);
+
+            obj.Init();
+
+            return obj;
+        }
+
+        public CalculatedTable(TOM.Table tableMetadataObject) : base(tableMetadataObject)
         {
         }
 

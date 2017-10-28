@@ -19,8 +19,7 @@ namespace TabularEditor.PropertyGridUI
 
         protected override Type[] CreateNewItemTypes()
         {
-#if CL1400
-            if (TabularModelHandler.Singleton.Model.Database.CompatibilityLevel >= 1400)
+            if (TabularModelHandler.Singleton.CompatibilityLevel >= 1400)
             {
                 if (TabularModelHandler.Singleton.Model.DataSources.Any(ds => ds.Type == DataSourceType.Provider))
                     return new[] { typeof(Partition), typeof(MPartition) };
@@ -29,9 +28,6 @@ namespace TabularEditor.PropertyGridUI
             }
             else
                 return base.CreateNewItemTypes();
-#else
-            return base.CreateNewItemTypes();
-#endif
         }
 
         protected override object SetItems(object editValue, object[] value)
@@ -52,11 +48,9 @@ namespace TabularEditor.PropertyGridUI
 
         protected override object CreateInstance(Type itemType)
         {
-#if CL1400
             if(itemType == typeof(MPartition)) {
                 return MPartition.CreateNew(table);
             }
-#endif
             if(itemType == typeof(Partition))
             {
                 return Partition.CreateNew(table);

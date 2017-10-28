@@ -97,7 +97,8 @@ namespace TabularEditor.TOMWrapper
 
             // Possible destinations:
             var destHier = (destination as Level)?.Hierarchy ?? (destination as Hierarchy);
-            var destTable = (destination as Partition)?.Table ?? (destination as PartitionViewTable)?.Table ?? destHier?.Table ?? (destination as IDetailObject)?.Table ?? (destination as Table);
+            var destTable = (destination as Folder)?.Table ?? (destination as Partition)?.Table ?? (destination as PartitionViewTable)?.Table ?? destHier?.Table ?? (destination as IDetailObject)?.Table ?? (destination as Table);
+            var folder = (destination as Folder)?.Path;
 
             if (destHier != null)
             {
@@ -123,29 +124,40 @@ namespace TabularEditor.TOMWrapper
             foreach (var obj in objectContainer[typeof(CalculatedTable)]) inserted.Add(Serializer.DeserializeCalculatedTable(obj, Handler.Model));
             foreach (var obj in objectContainer[typeof(Table)]) inserted.Add(Serializer.DeserializeTable(obj, Handler.Model));
 
-            foreach (var obj in objectContainer[typeof(NamedExpression)]) inserted.Add(Serializer.DeserializeNamedExpression(obj, Handler.Model));
             foreach (var obj in objectContainer[typeof(ModelRole)]) inserted.Add(Serializer.DeserializeModelRole(obj, Handler.Model));
             foreach (var obj in objectContainer[typeof(ProviderDataSource)]) inserted.Add(Serializer.DeserializeProviderDataSource(obj, Handler.Model));
             foreach (var obj in objectContainer[typeof(SingleColumnRelationship)]) inserted.Add(Serializer.DeserializeSingleColumnRelationship(obj, Handler.Model));
             foreach (var obj in objectContainer[typeof(Perspective)]) inserted.Add(Serializer.DeserializePerspective(obj, Handler.Model));
             foreach (var obj in objectContainer[typeof(Culture)]) inserted.Add(Serializer.DeserializeCulture(obj, Handler.Model));
-#if CL1400
-            foreach (var obj in objectContainer[typeof(StructuredDataSource)]) inserted.Add(Serializer.DeserializeStructuredDataSource(obj, Handler.Model));
-#endif
+
+            if(Handler.CompatibilityLevel >= 1400)
+            {
+                foreach (var obj in objectContainer[typeof(NamedExpression)]) inserted.Add(Serializer.DeserializeNamedExpression(obj, Handler.Model));
+                foreach (var obj in objectContainer[typeof(StructuredDataSource)]) inserted.Add(Serializer.DeserializeStructuredDataSource(obj, Handler.Model));
+            }
 
             foreach (var obj in inserted)
             {
                 (obj as ITranslatableObject)?.LoadTranslations(true);
                 (obj as ITabularPerspectiveObject)?.LoadPerspectives(true);
                 (obj as Table)?.LoadRLS();
-#if CL1400
-                (obj as Table)?.LoadOLS(true);
-                (obj as Column)?.LoadOLS();
-#endif
+
+                if (!string.IsNullOrEmpty(folder) && obj is IDetailObject)
+                {
+                    (obj as IDetailObject).DisplayFolder = folder;
+                }
+
+                if (Handler.CompatibilityLevel >= 1400)
+                {
+                    (obj as Table)?.LoadOLS(true);
+                    (obj as Column)?.LoadOLS();
+                }
+
                 (obj as IAnnotationObject)?.ClearTabularEditorAnnotations();
             }
 
             Handler.EndUpdate();
+            FormulaFixup.BuildDependencyTree();
 
             return inserted;
         }

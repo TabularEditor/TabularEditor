@@ -24,21 +24,20 @@ namespace TabularEditor.TOMWrapper.Utils
             , bool includeTranslations = true
             , bool includePerspectives = true
             , bool includeRLS = true
-#if CL1400
             , bool includeOLS = true
-#endif
             )
         {
+            var model = objects.FirstOrDefault()?.Model;
+            if (model == null) return "[]";
+
             if (includeTranslations) foreach (var obj in objects.OfType<ITranslatableObject>()) obj.SaveTranslations(true);
             if (includePerspectives) foreach (var obj in objects.OfType<ITabularPerspectiveObject>()) obj.SavePerspectives(true);
             if (includeRLS) foreach (var obj in objects.OfType<Table>()) obj.SaveRLS();
-#if CL1400
-            if (includeOLS)
+            if (includeOLS && model.Handler.CompatibilityLevel >= 1400)
             {
                 foreach (var obj in objects.OfType<Table>()) obj.SaveOLS(true);
                 foreach (var obj in objects.OfType<Column>()) obj.SaveOLS();
             }
-#endif
 
             var byType = objects.GroupBy(obj => obj.GetType(), obj => TOM.JsonSerializer.SerializeObject(obj.MetadataObject));
 
@@ -92,7 +91,7 @@ namespace TabularEditor.TOMWrapper.Utils
             return new ObjectJsonContainer(jObj);
         }
 
-        public static IList<TabularObject> DeserializeObjects(string json)
+        /*public static IList<TabularObject> DeserializeObjects(string json)
         {
             json = json.Trim();
             if (!(json.StartsWith("{") && json.EndsWith("}"))) return null; // Expect a JSON object
@@ -127,7 +126,7 @@ namespace TabularEditor.TOMWrapper.Utils
             }
 
             return result.Count > 0 ? result : null;
-        }
+        }*/
 
         public static string SerializeDB(SerializeOptions options)
         {
@@ -150,9 +149,7 @@ namespace TabularEditor.TOMWrapper.Utils
             tom.Name = target.Levels.GetNewName(tom.Name);
             tom.Column = target.Table.MetadataObject.Columns[json.Value<string>("column")];
 
-            var level = Level.CreateFromMetadata(tom, false);
-            target.Levels.Add(level);
-            level.InitFromMetadata();
+            var level = Level.CreateFromMetadata(target, tom);
 
             return level;
         }
@@ -163,26 +160,20 @@ namespace TabularEditor.TOMWrapper.Utils
             tom.Name = target.Columns.GetNewName(tom.Name);
             tom.SortByColumn = json["sortByColumn"] != null ? target.MetadataObject.Columns[json.Value<string>("sortByColumn")] : null;
 
-            var column = CalculatedColumn.CreateFromMetadata(tom, false);
-            target.Columns.Add(column);
-            column.InitFromMetadata();
+            var column = CalculatedColumn.CreateFromMetadata(target, tom);
 
             return column;
         }
 
         public static DataColumn DeserializeDataColumn(JObject json, Table target)
         {
-#if CL1400
             if (TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(DataColumn))) return null;
-#endif
 
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.DataColumn>(json.ToString());
             tom.Name = target.Columns.GetNewName(tom.Name);
             tom.SortByColumn = json["sortByColumn"] != null ? target.MetadataObject.Columns[json.Value<string>("sortByColumn")] : null;
 
-            var column = DataColumn.CreateFromMetadata(tom, false);
-            target.Columns.Add(column);
-            column.InitFromMetadata();
+            var column = DataColumn.CreateFromMetadata(target, tom);
 
             return column;
         }
@@ -192,9 +183,7 @@ namespace TabularEditor.TOMWrapper.Utils
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.Measure>(json.ToString());
             tom.Name = target.Measures.GetNewName(tom.Name);
 
-            var measure = Measure.CreateFromMetadata(tom, false);
-            target.Measures.Add(measure);
-            measure.InitFromMetadata();
+            var measure = Measure.CreateFromMetadata(target, tom);
 
             return measure;
         }
@@ -205,9 +194,7 @@ namespace TabularEditor.TOMWrapper.Utils
             tom.Name = target.Hierarchies.GetNewName(tom.Name);
             for(var i = 0; i < tom.Levels.Count; i++) tom.Levels[i].Column = target.MetadataObject.Columns[json["levels"][i].Value<string>("column")];
 
-            var hierarchy = Hierarchy.CreateFromMetadata(tom, false);
-            target.Hierarchies.Add(hierarchy);
-            hierarchy.InitFromMetadata();
+            var hierarchy = Hierarchy.CreateFromMetadata(target, tom);
 
             return hierarchy;
         }
@@ -221,9 +208,7 @@ namespace TabularEditor.TOMWrapper.Utils
                 (tom.Source as TOM.QueryPartitionSource).DataSource = target.MetadataObject.Model.DataSources[json["source"].Value<string>("dataSource")];
             }
 
-            var partition = Partition.CreateFromMetadata(tom, false);
-            target.Partitions.Add(partition);
-            partition.InitFromMetadata();
+            var partition = Partition.CreateFromMetadata(target, tom);
 
             return partition;
         }
@@ -233,10 +218,7 @@ namespace TabularEditor.TOMWrapper.Utils
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.Table>(json.ToString());
             tom.Name = model.Tables.GetNewName(tom.Name);
 
-            var table = CalculatedTable.CreateFromMetadata(tom, false);
-            model.Tables.Add(table);
-            table.InitFromMetadata();
-            table.InitRLSIndexer();
+            var table = CalculatedTable.CreateFromMetadata(model, tom);
 
             return table;
         }
@@ -249,10 +231,7 @@ namespace TabularEditor.TOMWrapper.Utils
             // Make sure all measures in the table still have model-wide unique names:
             foreach (var m in tom.Measures.ToList()) m.Name = MeasureCollection.GetNewMeasureName(m.Name);
 
-            var table = Table.CreateFromMetadata(tom, false);
-            model.Tables.Add(table);
-            table.InitFromMetadata();
-            table.InitRLSIndexer();
+            var table = Table.CreateFromMetadata(model, tom);
 
             return table;
         }
@@ -262,9 +241,7 @@ namespace TabularEditor.TOMWrapper.Utils
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.SingleColumnRelationship>(json.ToString());
             tom.Name = Guid.NewGuid().ToString();
 
-            var relationship = SingleColumnRelationship.CreateFromMetadata(tom, false);
-            model.Relationships.Add(relationship);
-            relationship.InitFromMetadata();
+            var relationship = SingleColumnRelationship.CreateFromMetadata(model, tom);
 
             return relationship;
         }
@@ -274,9 +251,8 @@ namespace TabularEditor.TOMWrapper.Utils
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.NamedExpression>(json.ToString());
             tom.Name = model.Expressions.GetNewName(tom.Name);
 
-            var expr = NamedExpression.CreateFromMetadata(tom, false);
+            var expr = NamedExpression.CreateFromMetadata(model, tom);
             model.Expressions.Add(expr);
-            expr.InitFromMetadata();
 
             return expr;
         }
@@ -285,10 +261,7 @@ namespace TabularEditor.TOMWrapper.Utils
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.ModelRole>(json.ToString());
             tom.Name = model.Roles.GetNewName(tom.Name);
 
-            var role = ModelRole.CreateFromMetadata(tom, false);
-            model.Roles.Add(role);
-            role.InitFromMetadata();
-            role.InitRLSIndexer();
+            var role = ModelRole.CreateFromMetadata(model, tom);
 
             return role;
         }
@@ -298,9 +271,7 @@ namespace TabularEditor.TOMWrapper.Utils
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.Perspective>(json.ToString());
             tom.Name = model.Perspectives.GetNewName(tom.Name);
 
-            var perspective = Perspective.CreateFromMetadata(tom, false);
-            model.Perspectives.Add(perspective);
-            perspective.InitFromMetadata();
+            var perspective = Perspective.CreateFromMetadata(model, tom);
 
             return perspective;
         }
@@ -310,9 +281,7 @@ namespace TabularEditor.TOMWrapper.Utils
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.Culture>(json.ToString());
             tom.Name = model.Cultures.GetNewName(tom.Name);
 
-            var culture = Culture.CreateFromMetadata(tom, false);
-            model.Cultures.Add(culture);
-            culture.InitFromMetadata();
+            var culture = Culture.CreateFromMetadata(model, tom);
 
             return culture;
         }
@@ -322,26 +291,19 @@ namespace TabularEditor.TOMWrapper.Utils
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.ProviderDataSource>(json.ToString());
             tom.Name = model.DataSources.GetNewName(tom.Name);
 
-            var dataSource = ProviderDataSource.CreateFromMetadata(tom, false);
-            model.DataSources.Add(dataSource);
-            dataSource.InitFromMetadata();
+            var dataSource = ProviderDataSource.CreateFromMetadata(model, tom);
 
             return dataSource;
         }
 
-#if CL1400
         public static StructuredDataSource DeserializeStructuredDataSource(JObject json, Model model)
         {
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.StructuredDataSource>(json.ToString());
             tom.Name = model.DataSources.GetNewName(tom.Name);
 
-            var dataSource = StructuredDataSource.CreateFromMetadata(tom, false);
-            model.DataSources.Add(dataSource);
-            dataSource.InitFromMetadata();
-
+            var dataSource = StructuredDataSource.CreateFromMetadata(model, tom);
             return dataSource;
         }
-#endif
 #endregion
     }
 

@@ -259,11 +259,13 @@ namespace TabularEditor.TOMWrapper
 
         private Culture GetCulture(string cultureName)
         {
+            // Get the actual value from the RoleOLSIndexer:
             return Cultures[cultureName];
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
+            // Get the a
             return GetEnumerator();
         }
     }

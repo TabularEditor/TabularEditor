@@ -61,6 +61,8 @@ namespace Aga.Controls.Tree
 			_linePen.DashStyle = DashStyle.Dot;
 		}
 
+
+
         protected override void OnPaint(PaintEventArgs e)
         {
             BeginPerformanceCount();

@@ -135,6 +135,12 @@
   <data name="ColumnUsedInRelationship" xml:space="preserve">
     <value>This column is used in one or more relationships. Deleting it will also remove the relationship from the model.</value>
   </data>
+  <data name="CompatibilityError_ObjectLevelSecurity" xml:space="preserve">
+    <value>Object Level Security requires Compatibility Level 1400 or higher.</value>
+  </data>
+  <data name="CompatibilityError_StructuredDataSource" xml:space="preserve">
+    <value>Structured Data Sources can only be added to Compatibility Level 1400 or higher models.</value>
+  </data>
   <data name="DataSourceInUse" xml:space="preserve">
     <value>A data source which is used by one or more partitions cannot be deleted.</value>
   </data>
@@ -143,6 +149,9 @@
   </data>
   <data name="DuplicateMeasureName" xml:space="preserve">
     <value>A measure with the name "{0}" already exists in the model. Choose a different name for this measure.</value>
+  </data>
+  <data name="InvalidExpressionProperty" xml:space="preserve">
+    <value>A {0} object does not have a DAX {1} property.</value>
   </data>
   <data name="OperationDelete" xml:space="preserve">
     <value>Delete {0}</value>

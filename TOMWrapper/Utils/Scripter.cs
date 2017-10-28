@@ -52,5 +52,14 @@ namespace TabularEditor.TOMWrapper.Utils
         {
             return Serializer.SerializeObjects(translations);
         }
+
+        public static string ScriptProcess(TabularNamedObject obj, RefreshType refreshType = RefreshType.Automatic)
+        {
+            return TOM.JsonScripter.ScriptRefresh(obj.MetadataObject, (TOM.RefreshType)refreshType);
+        }
+        public static string ScriptRefresh(IEnumerable<TabularNamedObject> objects, RefreshType refreshType = RefreshType.Automatic)
+        {
+            return TOM.JsonScripter.ScriptRefresh(objects.Select(o => o.MetadataObject).ToList(), (TOM.RefreshType)refreshType);
+        }
     }
 }

@@ -88,6 +88,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PropertyGridUI\DataTypeEnumConverter.cs" />
+    <Compile Include="TOMWrapper\DaxDependencyHelper.cs" />
+    <Compile Include="TOMWrapper\Indexers\GenericIndexer.cs" />
+    <Compile Include="TOMWrapper\Tests\GenerateTestAttribute.cs" />
+    <Compile Include="Utils\DependencyList.cs" />
     <Compile Include="TOMWrapper\NamedExpression.cs" />
     <Compile Include="TOMWrapper\TabularModelHandlerSettings.cs" />
     <Compile Include="IPlugin.cs" />
@@ -130,7 +135,7 @@
     <Compile Include="TOMWrapper\CalculatedTableColumn.cs" />
     <Compile Include="TOMWrapper\PowerBI\PowerBIGovernance.cs" />
     <Compile Include="TOMWrapper\PowerBI\PowerBIHelper.cs" />
-    <Compile Include="TOMWrapper\TableOLSIndexer.cs" />
+    <Compile Include="TOMWrapper\Indexers\TableOLSIndexer.cs" />
     <Compile Include="TOMWrapper\Database.cs" />
     <Compile Include="TOMWrapper\DataSource.cs" />
     <Compile Include="TOMWrapper\MetadataObjectHelper.cs" />
@@ -150,11 +155,11 @@
     <Compile Include="TOMWrapper\Measure.cs" />
     <Compile Include="TOMWrapper\Model.cs" />
     <Compile Include="TOMWrapper\Perspective.cs" />
-    <Compile Include="TOMWrapper\RoleRLSIndexer.cs" />
-    <Compile Include="TOMWrapper\RoleOLSIndexer.cs" />
-    <Compile Include="TOMWrapper\ColumnOLSIndexer.cs" />
-    <Compile Include="TOMWrapper\TableRLSIndexer.cs" />
-    <Compile Include="TOMWrapper\PerspectiveIndexer.cs" />
+    <Compile Include="TOMWrapper\Indexers\RoleRLSIndexer.cs" />
+    <Compile Include="TOMWrapper\Indexers\RoleOLSIndexer.cs" />
+    <Compile Include="TOMWrapper\Indexers\ColumnOLSIndexer.cs" />
+    <Compile Include="TOMWrapper\Indexers\TableRLSIndexer.cs" />
+    <Compile Include="TOMWrapper\Indexers\PerspectiveIndexer.cs" />
     <Compile Include="TOMWrapper\SingleColumnRelationship.cs" />
     <Compile Include="TOMWrapper\Table.cs" />
     <Compile Include="TOMWrapper\TabularCommonActions.cs" />
@@ -179,7 +184,7 @@
     <Compile Include="TOMWrapper\TabularObjectCollection.cs" />
     <Compile Include="TOMWrapper\TabularObjectComparer.cs" />
     <Compile Include="TOMWrapper\TabularObjectHelper.cs" />
-    <Compile Include="TOMWrapper\TranslationIndexer.cs" />
+    <Compile Include="TOMWrapper\Indexers\TranslationIndexer.cs" />
     <Compile Include="Utils\FormulaFixup.cs" />
     <Compile Include="Utils\Scripter.cs" />
     <Compile Include="Utils\Serializer.cs" />

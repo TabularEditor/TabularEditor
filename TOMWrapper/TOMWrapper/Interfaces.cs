@@ -92,16 +92,16 @@ namespace TabularEditor.TOMWrapper
     /// </summary>
     public interface IExpressionObject: ITabularNamedObject
     {
+        bool NeedsValidation { get; set; }
         string Expression { get; set; }
     }
 
     /// <summary>
-    /// Objects that have a DAX expression (measure, calculated column, calculated table)
+    /// Objects that can depend on one or more DAXObjects through expression dependencies
     /// </summary>
-    public interface IDAXExpressionObject: IDaxObject, IExpressionObject
+    public interface IDaxDependantObject: IDaxObject
     {
-        bool NeedsValidation { get; set; }
-        Dictionary<IDaxObject, List<Dependency>> Dependencies { get; }
+        DependsOnList DependsOn { get; }
     }
 
     /// <summary>
@@ -120,7 +120,7 @@ namespace TabularEditor.TOMWrapper
         string DaxObjectName { get; }
         string DaxObjectFullName { get; }
         string DaxTableName { get; }
-        HashSet<IDAXExpressionObject> Dependants { get; }
+        ReferencedByList ReferencedBy { get; }
     }
 
     public interface IFormattableObject

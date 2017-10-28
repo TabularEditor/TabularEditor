@@ -20,6 +20,13 @@ class Rules {
 		return "";
     }
 
+	public static IEnumerable<Type> GetDerivedTypes(Type t) {
+		var assembly = System.Reflection.Assembly.GetAssembly(t);
+		var types = assembly.GetTypes().Where(dt => dt != t && t.IsAssignableFrom(dt) && dt.Name != "RowNumberColumn");
+		if(!types.Any()) return Enumerable.Repeat(t, 1);
+		else return types;
+	}
+
     public static string GetPropertyXmlDoc(Type t, string propertyName) {
 		var xml = XElement.Load(XmlDocFile);
 		var node = xml?.Element("members")?.Elements("member")?.FirstOrDefault(e => ((string)e.Attribute("name")) == "P:Microsoft.AnalysisServices.Tabular." + t.Name + "." + propertyName);
@@ -293,6 +300,7 @@ class Rules {
 		if(className == "Level" && propertyName == "Ordinal") return "[NoMultiselect()]";
 		if(className == "Model" && propertyName == "Culture") return "[TypeConverter(typeof(CultureConverter))]";
 		if(className == "Column" && propertyName == "Type") return "[Browsable(false)]";
+		if(propertyName == "DataType") return "[TypeConverter(typeof(DataTypeEnumConverter))]";
 		if(propertyName.EndsWith("FormatString")) return "[TypeConverter(typeof(FormatStringConverter))]";
 		if(propertyName == "DisplayFolder") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]";
 		if(propertyName.EndsWith("Expression")) return "[Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]";
@@ -341,7 +349,8 @@ class Rules {
 		"DateTimeRelationshipBehavior",
 		"RelationshipEndCardinality",
 		"HierarchyHideMembersType",
-		"EncodingHintType"
+		"EncodingHintType",
+		"RefreshType"
 	};
 	public static readonly Type[] EnumTypes = _enumTypes.Select(t => ASType(t)).Where(t => t != null).ToArray();
 
@@ -470,8 +479,9 @@ class Rules {
    }
 
    public static string GetParent(Type t) {
-	   return Rules.CollectionParent.Any(kvp => kvp.Key == t) ? 
+	   var result = Rules.CollectionParent.Any(kvp => kvp.Key == t) ? 
 			ParentOf(t) : ParentOf(t.BaseType);
+	   return result;
    }
    public static bool InCollection(Type t) {
 	   return Rules.Collections.ContainsKey(t) || Rules.Collections.ContainsKey(t.BaseType);
@@ -480,8 +490,9 @@ class Rules {
 	   return Rules.CollectionParent.Any(kvp => kvp.Key == t);
    }
    public static string GetCollection(Type t) {
-	   return Rules.Collections.ContainsKey(t) ? 
+	   var result = Rules.Collections.ContainsKey(t) ? 
 			Rules.Collections[t] : Rules.Collections[t.BaseType];
+	   return result;
    }
    public static bool HasCollections(Type t) {
 	   return CollectionParent.Any(c => c.Value == t.Name);

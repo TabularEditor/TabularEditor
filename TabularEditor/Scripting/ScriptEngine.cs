@@ -37,11 +37,7 @@ namespace TabularEditor
 
     public static class ScriptEngine
     {
-#if CL1400
         static readonly string WrapperDllPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\TOMWrapper14.dll";
-#else
-        static readonly string WrapperDllPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\TOMWrapper.dll";
-#endif
         public static readonly string CustomActionsJsonPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\CustomActions.json";
 
         public static Action<Model, UITreeSelection> ScriptAction(string script, out CompilerResults compilerResults)

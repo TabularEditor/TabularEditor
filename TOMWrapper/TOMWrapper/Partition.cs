@@ -13,6 +13,7 @@ namespace TabularEditor.TOMWrapper
 {
     public partial class Partition: IExpressionObject
     {
+        public bool NeedsValidation { get { return false; } set { } }
         internal static void CreateCalculatedTablePartition(CalculatedTable calcTable)
         {
             var tomPartition = new TOM.Partition();
@@ -56,10 +57,8 @@ namespace TabularEditor.TOMWrapper
                         return (MetadataObject.Source as TOM.CalculatedPartitionSource)?.Expression;
                     case TOM.PartitionSourceType.Query:
                         return (MetadataObject.Source as TOM.QueryPartitionSource)?.Query;
-#if CL1400
                     case TOM.PartitionSourceType.M:
                         return (MetadataObject.Source as TOM.MPartitionSource)?.Expression;
-#endif
                 }
                 throw new NotSupportedException();
             }
@@ -78,10 +77,8 @@ namespace TabularEditor.TOMWrapper
                         (MetadataObject.Source as TOM.CalculatedPartitionSource).Expression = value; break;
                     case TOM.PartitionSourceType.Query:
                         (MetadataObject.Source as TOM.QueryPartitionSource).Query = value; break;
-#if CL1400
                     case TOM.PartitionSourceType.M:
                         (MetadataObject.Source as TOM.MPartitionSource).Expression = value; break;
-#endif
                     default:
                         throw new NotSupportedException();
                 }
@@ -129,11 +126,7 @@ namespace TabularEditor.TOMWrapper
                 case "Query":
                     return SourceType == PartitionSourceType.Query;
                 case "Expression":
-#if CL1400
                     return SourceType == PartitionSourceType.Calculated || SourceType == PartitionSourceType.M;
-#else
-                    return SourceType == PartitionSourceType.Calculated;
-#endif
                 case "Mode":
                 case "DataView":
                 case "Description":
@@ -194,7 +187,6 @@ namespace TabularEditor.TOMWrapper
         }
     }
 
-#if CL1400
     public class MPartition: Partition
     {
         public MPartition() : base(new TOM.Partition() { Source = new TOM.MPartitionSource() })
@@ -202,5 +194,4 @@ namespace TabularEditor.TOMWrapper
 
         }
     }
-#endif
 }

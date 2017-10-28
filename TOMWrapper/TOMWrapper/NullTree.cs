@@ -10,7 +10,7 @@ namespace TabularEditor.TOMWrapper
 
     public class NullTree : TOMWrapper.TabularTree
     {
-        public NullTree(Model model) : base(model)
+        public NullTree() : base(null)
         {
         }
 

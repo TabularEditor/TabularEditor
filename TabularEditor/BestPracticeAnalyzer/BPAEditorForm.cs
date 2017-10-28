@@ -14,6 +14,18 @@ namespace TabularEditor.UI.Dialogs
 {
     public partial class BPAEditorForm : Form
     {
+        public void PopulateCategories(IEnumerable<BestPracticeRule> collection)
+        {
+            var categories = collection
+                .Where(r => !string.IsNullOrEmpty(r.Category))
+                .Select(r => r.Category.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(c => c);
+
+            cmbCategory.Items.Clear();
+            cmbCategory.Items.AddRange(categories.ToArray());
+        }
+
         public bool EditRule(BestPracticeRule rule)
         {
             Expression = rule.Expression;
@@ -22,7 +34,9 @@ namespace TabularEditor.UI.Dialogs
             txtName.Text = rule.Name;
             txtID.Text = rule.ID;
             txtDescription.Text = rule.Description;
-            numSeverity.Value = rule.Severity;
+            numSeverity.Value = rule.Severity > 5 ? 5 : rule.Severity;
+            cmbCompatibility.SelectedIndex = rule.CompatibilityLevel == 1400 ? 1 : 0;
+            cmbCategory.Text = rule.Category?.Trim();
 
             btnOK.Enabled = ValidateRuleData();
 
@@ -31,8 +45,11 @@ namespace TabularEditor.UI.Dialogs
                 rule.Expression = Expression;
                 rule.Scope = Scope;
                 rule.Name = txtName.Text;
+                rule.ID = txtID.Text;
                 rule.Description = txtDescription.Text;
                 rule.Severity = (int)numSeverity.Value;
+                rule.CompatibilityLevel = cmbCompatibility.SelectedIndex == 0 ? 1200 : 1400;
+                rule.Category = cmbCategory.Text;
                 return true;
             }
             return false;
@@ -51,7 +68,8 @@ namespace TabularEditor.UI.Dialogs
             txtName.Text = name;
             txtID.Text = GetStandardIdFromName(name);
             txtDescription.Text = "";
-            numSeverity.Value = 10;
+            numSeverity.Value = 1;
+            cmbCompatibility.SelectedIndex = 0;
 
             btnOK.Enabled = ValidateRuleData();
 
@@ -64,8 +82,10 @@ namespace TabularEditor.UI.Dialogs
                     ID = txtID.Text,
                     Description = txtDescription.Text,
                     Severity = (int)numSeverity.Value,
-                    Enabled = true
-                };
+                    Enabled = true,
+                    CompatibilityLevel = cmbCompatibility.SelectedIndex == 0 ? 1200 : 1400,
+                    Category = cmbCategory.Text
+            };
             }
             else
                 return null;
@@ -147,6 +167,7 @@ namespace TabularEditor.UI.Dialogs
                 Root.AddNode(new CriteriaNode());
                 pnlInfo.Visible = false;
             }
+            pnlInfo.Visible = false;
             return true;
         }
 
@@ -364,6 +385,16 @@ namespace TabularEditor.UI.Dialogs
         private void txtID_TextChanged(object sender, EventArgs e)
         {
            btnOK.Enabled = ValidateRuleData();
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void numSeverity_ValueChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

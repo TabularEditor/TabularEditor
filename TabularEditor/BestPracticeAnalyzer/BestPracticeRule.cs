@@ -114,7 +114,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         public bool Enabled { get; set; }
 
         public string Description { get; set; }
-        public int Severity { get; set; } = 10;
+        public int Severity { get; set; } = 1;
 
         [JsonConverter(typeof(RuleScopeConverter))]
         public RuleScope Scope { get; set; }
@@ -133,7 +133,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         }
         public string Expression { get; set; }
         public string FixExpression { get; set; }
-        public HashSet<int> Compatibility { get; set; }
+        public int CompatibilityLevel { get; set; }
 
         [JsonIgnore]
         public bool IsValid { get; }
@@ -145,6 +145,8 @@ namespace TabularEditor.BestPracticeAnalyzer
         {
             var bpc = new BestPracticeCollection();
 
+            // These should be loaded from GitHub instead
+            /*
             bpc.Add(new BestPracticeRule
             {
                 Name = "Do not summarize key columns",
@@ -183,7 +185,8 @@ namespace TabularEditor.BestPracticeAnalyzer
                 Scope = RuleScope.Measure,
                 Expression = "!string.IsNullOrEmpty(Table.Name)",
                 Compatibility = new HashSet<int> { 1200, 1400 }
-            });
+            });*/
+
             return bpc;
         }
     }

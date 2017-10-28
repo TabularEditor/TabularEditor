@@ -25,7 +25,7 @@ namespace TabularEditor.TOMWrapper
         void CreateChildrenFromMetadata();
     }
 
-    public abstract class TabularObjectCollection<T> : IList, INotifyCollectionChanged, ICollection<T>, IList<T>, IExpandableIndexer, ITabularObjectCollection
+    public abstract class TabularObjectCollection<T> : IList, INotifyCollectionChanged, ICollection<T>, IList<T>, IExpandableIndexer, ITabularObjectCollection, IReadOnlyCollection<T>
         where T: TabularNamedObject
     {
         int IList.IndexOf(object value)
@@ -65,7 +65,6 @@ namespace TabularEditor.TOMWrapper
         }
 
         public TabularModelHandler Handler { get; private set; }
-        public Model Model { get { return Handler.Model; } }
         [IntelliSense("The name of this collection.")]
         public string CollectionName { get; private set; }
 
@@ -191,8 +190,12 @@ namespace TabularEditor.TOMWrapper
         #region Notifying child objects
         public virtual void Add(T item)
         {
-            if(item.MetadataObject.Parent != null)
+            if (item.MetadataObject.Parent != null)
+            {
+                if (Handler.WrapperLookup[item.MetadataObject.Parent] == Parent) return;
+
                 throw new ArgumentException("The item already belongs to a collection.");
+            }
 
             //item.RenewMetadataObject();
 

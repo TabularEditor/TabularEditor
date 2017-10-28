@@ -64,6 +64,10 @@ namespace TabularEditor.TOMWrapper
 
         public override string Name
         {
+            set
+            {
+                base.Name = value;
+            }
             get
             {
                 return IsPowerBIMashup && !string.IsNullOrEmpty(Location) ? Location : base.Name;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.WindowsAPICodePack.Dialogs;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -14,11 +15,7 @@ namespace TabularEditor.UI.Dialogs
         public PreferencesForm()
         {
             InitializeComponent();
-#if CL1400
             chkCopyIncludeOLS.Enabled = true;
-#else
-            chkCopyIncludeOLS.Enabled = false;
-#endif
         }
 
         private void PreferencesForm_Load(object sender, EventArgs e)
@@ -43,11 +40,13 @@ namespace TabularEditor.UI.Dialogs
 
         private void btnFolder_Click(object sender, EventArgs e)
         {
-            folderBrowserDialog1.SelectedPath = txtBackupPath.Text;
-            var res = folderBrowserDialog1.ShowDialog();
-            if(res == DialogResult.OK)
+            using (var fbd = new CommonOpenFileDialog() { IsFolderPicker = true, InitialDirectory = txtBackupPath.Text })
             {
-                txtBackupPath.Text = folderBrowserDialog1.SelectedPath;
+                var res = fbd.ShowDialog();
+                if (res == CommonFileDialogResult.Ok)
+                {
+                    txtBackupPath.Text = fbd.FileName;
+                }
             }
         }
 

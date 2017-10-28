@@ -57,19 +57,16 @@ namespace TabularEditor.UI.Dialogs
         {
             RuleIndex = analyzer.GlobalRules.Concat(analyzer.LocalRules).ToDictionary(r => r.ID, r => r);
 
-            listView1.Items.Clear();
-            listView1.Items.AddRange(analyzer.GlobalRules.OrderBy(r => r.Name).Select(r =>
-            {
-                var lvi = new ListViewItem(new[] { null, r.Name, r.ScopeString, r.Severity.ToString(), r.Description }, lvgGlobal) { Name = r.ID, Checked = r.Enabled, Tag = r };
-                return lvi;
-            }).ToArray());
-            listView1.Items.AddRange(analyzer.LocalRules.OrderBy(r => r.Name).Select(r =>
-            {
-                var lvi = new ListViewItem(new[] { null, r.Name, r.ScopeString, r.Severity.ToString(), r.Description }, lvgLocal) { Name = r.ID, Checked = r.Enabled, Tag = r };
-                return lvi;
-            }).ToArray());
+            populatingList = true;
 
-            
+            var newItems = analyzer.GlobalRules.Select(r =>
+                new ListViewItem(new[] { null, r.Name, r.ScopeString, r.Severity.ToString(), r.Category, r.Description }, lvgGlobal) { Name = r.ID, Checked = r.Enabled, Tag = r, ForeColor = Model.Database.CompatibilityLevel >= r.CompatibilityLevel ? Color.Black : Color.Gray })
+                .Concat(analyzer.LocalRules.Select(r =>
+                new ListViewItem(new[] { null, r.Name, r.ScopeString, r.Severity.ToString(), r.Category, r.Description }, lvgLocal) { Name = r.ID, Checked = r.Enabled, Tag = r, ForeColor = Model.Database.CompatibilityLevel >= r.CompatibilityLevel ? Color.Black : Color.Gray })).ToArray();
+
+            listView1.Items.Clear();
+            listView1.Items.AddRange(newItems);
+            populatingList = false;
         }
 
         BPAEditorForm editor = new BPAEditorForm();
@@ -120,7 +117,7 @@ namespace TabularEditor.UI.Dialogs
                 listView2.Items.Clear();
                 var results = analyzer.Analyze(rules).ToList();
                 listView2.Items.AddRange(
-                    results.Where(r => !r.RuleHasError && !r.Ignored).Select(r => new ListViewItem(new[] { r.ObjectName, r.Object.GetTypeName(), r.RuleName, r.Rule.ID }) { Tag = r.Object }).ToArray());
+                    results.Where(r => !r.InvalidCompatibilityLevel && !r.RuleHasError && !r.Ignored).Select(r => new ListViewItem(new[] { r.ObjectName, r.Object.GetTypeName(), r.RuleName, r.Rule.ID }) { Tag = r.Object }).ToArray());
 
                 var oC = listView2.Items.Count;
                 var rC = rules.Count();
@@ -129,6 +126,12 @@ namespace TabularEditor.UI.Dialogs
                 var ruleWithError = results.FirstOrDefault(r => r.RuleHasError);
                 if (ruleWithError != null)
                     toolStripStatusLabel1.Text = string.Format("Rule error: {0}", ruleWithError.RuleError);
+                else
+                {
+                    var ruleWithInvalidCL = results.FirstOrDefault(r => r.InvalidCompatibilityLevel);
+                    if (ruleWithInvalidCL != null)
+                        toolStripStatusLabel1.Text = string.Format("Rule '{0}' is not applicable to models of Compatibility Level {1}", ruleWithInvalidCL.Rule.Name, Model.Database.CompatibilityLevel);
+                }
             }
         }
 
@@ -142,8 +145,12 @@ namespace TabularEditor.UI.Dialogs
             Analyze(analyzer.GlobalRules.Concat(analyzer.LocalRules).Where(r => r.Enabled));
         }
 
+        private bool populatingList;
+
         private void listView1_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
+            if (populatingList) return;
+
             if (Model == null)
             {
                 e.Item.Checked = false;
@@ -151,8 +158,8 @@ namespace TabularEditor.UI.Dialogs
             else
             {
                 analyzer.IgnoreRule(e.Item.Tag as BestPracticeRule, !e.Item.Checked);
+                (e.Item.Tag as BestPracticeRule).Enabled = e.Item.Checked;
             }
-            //(e.Item.Tag as BestPracticeRule).Enabled = e.Item.Checked;
         }
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
@@ -236,6 +243,7 @@ namespace TabularEditor.UI.Dialogs
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
+            editor.PopulateCategories(analyzer.AllRules);
             var newRule = editor.NewRule(analyzer.GetUniqueId("New Rule"));
             if (newRule != null)
             {
@@ -249,6 +257,8 @@ namespace TabularEditor.UI.Dialogs
             if (listView1.SelectedItems.Count == 1)
             {
                 var rule = listView1.SelectedItems[0].Tag as BestPracticeRule;
+                editor.PopulateCategories(analyzer.AllRules);
+                var oldRuleId = rule.ID;
                 if(editor.EditRule(rule))
                 {
                     if(analyzer.LocalRules.Contains(rule))
@@ -262,6 +272,11 @@ namespace TabularEditor.UI.Dialogs
                         var globalRulesFile = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\BPARules.json";
 
                         bpc.AddFromJsonFile(globalRulesFile);
+                        if (oldRuleId != rule.ID) {
+                            // ID changed - let's delete the rule with the old ID:
+                            var oldRule = bpc.FirstOrDefault(r => r.ID == oldRuleId);
+                            if (oldRule != null) bpc.Remove(oldRule);
+                        }
                         bpc.SaveToFile(globalRulesFile);
                     }
 

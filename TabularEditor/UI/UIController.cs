@@ -130,6 +130,8 @@ namespace TabularEditor.UI
 
         public void LoadTabularModelToUI()
         {
+            if (Handler == null) return;
+
             Handler.UndoManager.UndoStateChanged += UndoManager_UndoActionAdded;
             Handler.ObjectChanging += UIController_ObjectChanging;
             Handler.ObjectChanged += UIController_ObjectChanged;
@@ -249,9 +251,7 @@ namespace TabularEditor.UI
         private void UpdateUIText()
         {
             var appName = Application.ProductName + " " + string.Join(".", Application.ProductVersion.Split('.').Take(2));
-#if CL1400
-            appName += "-CL1400";
-#endif
+            if (appName.EndsWith("2.6")) appName += ".1";
 
             if (Handler == null)
             {
@@ -265,7 +265,7 @@ namespace TabularEditor.UI
                 UI.FormMain.Text = string.Format("{0}{1} - {2}",
                     Handler.IsConnected ? (
                         string.IsNullOrEmpty(LocalInstanceName) ? Handler.Source : LocalInstanceName
-                        ) : File_Current,
+                        ) : (File_Current ?? "(Unsaved model)"),
                     Handler.HasUnsavedChanges ? "*" : "", appName);
 
                 UI.StatusLabel.Text = Handler.Status;

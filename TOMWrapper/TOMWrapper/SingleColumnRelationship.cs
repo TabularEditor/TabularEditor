@@ -33,8 +33,10 @@ namespace TabularEditor.TOMWrapper
             base.ReapplyReferences();
 
             // Restore from/to columns, as the related object could have been recreated in the TOM in the meantime:
-            MetadataObject.FromColumn = Handler.Model.Tables[MetadataObject.FromTable.Name].Columns[MetadataObject.FromColumn.Name].MetadataObject;
-            MetadataObject.ToColumn = Handler.Model.Tables[MetadataObject.ToTable.Name].Columns[MetadataObject.ToColumn.Name].MetadataObject;
+            if(MetadataObject.FromColumn != null)
+                MetadataObject.FromColumn = Handler.Model.Tables[MetadataObject.FromTable.Name].Columns[MetadataObject.FromColumn.Name].MetadataObject;
+            if(MetadataObject.ToColumn != null)
+                MetadataObject.ToColumn = Handler.Model.Tables[MetadataObject.ToTable.Name].Columns[MetadataObject.ToColumn.Name].MetadataObject;
         }
 
         private void UpdateName()

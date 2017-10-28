@@ -7,6 +7,7 @@ using Microsoft.AnalysisServices.Tabular.Helper;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.UndoFramework;
 using System.Collections.Specialized;
+using TabularEditor.TOMWrapper.Utils;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -68,11 +69,16 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         public void Delete()
         {
-            if (!CanDelete()) return;
+            // CanDelete / CancelDelete logic and "OnObjectDeleting" event should not be handled while an Undo is in progress:
+            if (!Handler.UndoManager.UndoInProgress)
+            {
+                // Prevent deletion for certain object types
+                if (!CanDelete()) return;
 
-            bool cancelDelete = false;
-            Handler.DoObjectDeleting(this, ref cancelDelete);
-            if (cancelDelete) return;
+                bool cancelDelete = false;
+                Handler.DoObjectDeleting(this, ref cancelDelete);
+                if (cancelDelete) return;
+            }
 
             Handler.UndoManager.BeginBatch(string.Format(Messages.OperationDelete, this.GetTypeName()));
 
@@ -95,16 +101,18 @@ namespace TabularEditor.TOMWrapper
             Handler.UndoManager.EndBatch();
         }
 
-        internal override void DeleteLinkedObjects(bool isChildOfDeleted)
-        {
-            var container = this as ITabularObjectContainer;
-            if (container != null) foreach (var child in container.GetChildren().OfType<TabularObject>()) child.DeleteLinkedObjects(true);
-        }
-
         internal override void ReapplyReferences()
         {
             var container = this as ITabularObjectContainer;
             if (container != null) foreach (var child in container.GetChildren().OfType<TabularObject>()) child.ReapplyReferences();
+
+            if (this is IDaxDependantObject || this is IDaxObject) FormulaFixup.BuildDependencyTree();
+        }
+
+        internal override void DeleteLinkedObjects(bool isChildOfDeleted)
+        {
+            var container = this as ITabularObjectContainer;
+            if (container != null) foreach (var child in container.GetChildren().OfType<TabularObject>()) child.DeleteLinkedObjects(true);
         }
 
         /// <summary>
@@ -123,11 +131,11 @@ namespace TabularEditor.TOMWrapper
         }
 
         /// <summary>
-        /// The BeforeRemoval method is called before an object is deleted. Derived classes
+        /// The RemoveReferences method is called before an object is deleted. Derived classes
         /// should override this to remove all references to this object, from other objects.
         /// When a parent object is deleted.
         /// 
-        /// Remember to call base.BeforeRemoval(), as this will take care of calling the same
+        /// Remember to call base.RemoveReferences(), as this will take care of calling the same
         /// method on any child objects, as well as removing the following references:
         ///  - Removing translations from the object (names, descriptions, display folders)
         ///  - Removing perspective memberships
@@ -151,18 +159,18 @@ namespace TabularEditor.TOMWrapper
             (this as ITabularPerspectiveObject)?.InPerspective?.None();
 
             // Let dependencies know that this object is no longer a dependant (if applicable):
-            var expObj = this as IDAXExpressionObject;
+            var expObj = this as IDaxDependantObject;
             if (expObj != null)
             {
-                expObj.Dependencies.Keys.ToList().ForEach(d => d.Dependants.Remove(expObj));
-                expObj.Dependencies.Clear();
+                expObj.DependsOn.Keys.ToList().ForEach(d => d.ReferencedBy.Remove(expObj));
+                expObj.DependsOn.Clear();
             }
 
             // Let dependants know that they can no longer depend on this object (if applicable):
             var daxObj = this as IDaxObject;
             if (daxObj != null)
             {
-                daxObj.Dependants.ToList().ForEach(d => d.Dependencies.Remove(daxObj));
+                daxObj.ReferencedBy.ToList().ForEach(d => d.DependsOn.Remove(daxObj));
             }
         }
 

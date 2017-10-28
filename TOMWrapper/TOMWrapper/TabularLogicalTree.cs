@@ -124,6 +124,7 @@ namespace TabularEditor.TOMWrapper
 
         public TabularTree(Model model)
         {
+            if (model == null) return;
             Model = model;
             model.Handler.Tree = this;
         }

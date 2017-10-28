@@ -9,17 +9,28 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class Measure : IDaxObject, ITabularObjectContainer
+    public partial class Measure : IDaxObject, ITabularObjectContainer, IDaxDependantObject
     {
+        private DependsOnList _dependsOn = null;
+
         [Browsable(false)]
-        public Dictionary<IDaxObject, List<Dependency>> Dependencies { get; } = new Dictionary<IDaxObject, List<Dependency>>();
+        public DependsOnList DependsOn
+        {
+            get
+            {
+                if (_dependsOn == null)
+                    _dependsOn = new DependsOnList(this);
+                return _dependsOn;
+            }
+        }
+
         [Browsable(false)]
-        public HashSet<IDAXExpressionObject> Dependants { get; } = new HashSet<IDAXExpressionObject>();
+        public ReferencedByList ReferencedBy { get; } = new ReferencedByList();
 
         protected override bool AllowDelete(out string message)
         {
             message = string.Empty;
-            if (Dependants.Count > 0) message += Messages.ReferencedByDAX;
+            if (ReferencedBy.Count > 0) message += Messages.ReferencedByDAX;
             if (message == string.Empty) message = null;
             return true;
         }
@@ -32,7 +43,7 @@ namespace TabularEditor.TOMWrapper
         public KPI AddKPI()
         {
             var kpi = new TOM.KPI() { };
-            KPI = KPI.CreateFromMetadata(kpi, true);
+            KPI = KPI.CreateFromMetadata(this, kpi);
             return KPI;
         }
         public void RemoveKPI()
@@ -97,24 +108,30 @@ namespace TabularEditor.TOMWrapper
 
         protected override void Init()
         {
-            if (MetadataObject.KPI != null) this.KPI = KPI.CreateFromMetadata(MetadataObject.KPI);
+            if (MetadataObject.KPI != null) this.KPI = KPI.CreateFromMetadata(this, MetadataObject.KPI);
         }
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
-            if (propertyName == Properties.EXPRESSION)
+            switch(propertyName)
             {
-                NeedsValidation = true;
-                FormulaFixup.BuildDependencyTree(this);
-            }
-            if (propertyName == Properties.NAME && Handler.Settings.AutoFixup)
-            {
-                FormulaFixup.DoFixup(this);
-                Handler.UndoManager.EndBatch();
-            }
-            if (propertyName == Properties.KPI)
-            {
-                Handler.Tree.OnStructureChanged(this);
+                case Properties.DETAILROWSEXPRESSION:
+                case Properties.EXPRESSION:
+                    NeedsValidation = true;
+                    FormulaFixup.BuildDependencyTree(this);
+                    break;
+
+                case Properties.KPI:
+                    Handler.Tree.OnStructureChanged(this);
+                    break;
+
+                case Properties.NAME:
+                    if(Handler.Settings.AutoFixup)
+                    {
+                        FormulaFixup.DoFixup(this);
+                        Handler.UndoManager.EndBatch(); // This batch was started in OnPropertyChanging
+                    }
+                    break;
             }
 
             base.OnPropertyChanged(propertyName, oldValue, newValue);
@@ -122,13 +139,16 @@ namespace TabularEditor.TOMWrapper
 
         protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
         {
-            if (propertyName == Properties.NAME)
+            switch (propertyName)
             {
-                FormulaFixup.BuildDependencyTree();
+                case Properties.NAME:
+                    FormulaFixup.BuildDependencyTree();
 
-                // When formula fixup is enabled, we need to begin a new batch of undo operations, as this
-                // name change could result in expression changes on multiple objects:
-                if (Handler.Settings.AutoFixup) Handler.UndoManager.BeginBatch("Set Property 'Name'");
+                    // When formula fixup is enabled, we need to begin a new batch of undo operations, as this
+                    // name change could result in expression changes on multiple objects:
+                    if (Handler.Settings.AutoFixup)
+                        Handler.UndoManager.BeginBatch("Set Property 'Name'"); // This batch will be ended in the corresponding OnPropertyChanged
+                    break;
             }
             base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
         }
@@ -140,11 +160,9 @@ namespace TabularEditor.TOMWrapper
         {
             switch (propertyName)
             {
-                case Properties.FORMATSTRING: return DataType != DataType.String && Description != "hej";
-#if CL1400
+                case Properties.FORMATSTRING: return DataType != DataType.String;
                 case Properties.DETAILROWSDEFINITION:
-                    return Model.Database.CompatibilityLevel >= 1400;
-#endif
+                    return Handler.CompatibilityLevel >= 1400;
                 default: return true;
             }
         }
@@ -155,11 +173,10 @@ namespace TabularEditor.TOMWrapper
             else return Enumerable.Repeat<ITabularNamedObject>(KPI, 1);
         }
 
-#if CL1400
         [DisplayName("Detail Rows Expression")]
         [Category("Options"), IntelliSense("A DAX expression specifying detail rows for this measure (drill-through in client tools).")]
         [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public string DetailRowsDefinition
+        public string DetailRowsExpression
         {
             get
             {
@@ -167,24 +184,25 @@ namespace TabularEditor.TOMWrapper
             }
             set
             {
-                var oldValue = DetailRowsDefinition;
+                var oldValue = DetailRowsExpression;
 
                 if (oldValue == value) return;
 
                 bool undoable = true;
                 bool cancel = false;
-                OnPropertyChanging(Properties.DETAILROWSDEFINITION, value, ref undoable, ref cancel);
+                OnPropertyChanging(Properties.DETAILROWSEXPRESSION, value, ref undoable, ref cancel);
                 if (cancel) return;
+
+                // TODO 01: Handle dependencies in the Detail Rows Expression
 
                 if (MetadataObject.DetailRowsDefinition == null) MetadataObject.DetailRowsDefinition = new TOM.DetailRowsDefinition();
                 MetadataObject.DetailRowsDefinition.Expression = value;
                 if (string.IsNullOrWhiteSpace(value)) MetadataObject.DetailRowsDefinition = null;
 
-                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DETAILROWSDEFINITION, oldValue, value));
-                OnPropertyChanged(Properties.DETAILROWSDEFINITION, oldValue, value);
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DETAILROWSEXPRESSION, oldValue, value));
+                OnPropertyChanged(Properties.DETAILROWSEXPRESSION, oldValue, value);
             }
         }
-#endif
 
         [Browsable(false)]
         public string DaxObjectName
@@ -214,6 +232,11 @@ namespace TabularEditor.TOMWrapper
         }
     }
 
+    internal static partial class Properties
+    {
+        public const string DETAILROWSEXPRESSION = "DetailRowsExpression";
+    }
+
     public partial class MeasureCollection
     {
         public override string GetNewName(string prefix = null)
@@ -229,7 +252,7 @@ namespace TabularEditor.TOMWrapper
 
             // Loop to determine if prefix + suffix is already in use - break, when we find a name
             // that's not being used anywhere:
-            while (Model.AllMeasures.Any(m => m.Name.Equals(testName, StringComparison.InvariantCultureIgnoreCase))
+            while (Table.Model.AllMeasures.Any(m => m.Name.Equals(testName, StringComparison.InvariantCultureIgnoreCase))
                 || Table.Columns.Any(c => c.Name.Equals(testName, StringComparison.InvariantCultureIgnoreCase)))
             {
                 suffix++;

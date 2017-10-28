@@ -94,7 +94,12 @@ namespace TabularEditor.TOMWrapper
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             Handler.DoObjectChanged(this, propertyName, oldValue, newValue);
-            Handler.UpdateObject(this);
+
+            // Below seems to cause a lot of flickering, since every property change will fire it.
+            // However, it should only be fired for property changes that require an UI update, and
+            // this has already been taken care of by calling the method suitable places within the
+            // individual property setters (such as the setter for Name, IsHidden, etc.):
+            // Handler.UpdateObject(this);
         }
 
         /// <summary>

@@ -68,7 +68,6 @@ A "contributor" is any person that distributes its contribution under this licen
 	fitness for a particular purpose and non-infringement.
  
 */
-
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -76,21 +75,22 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Management;
+using System.Linq;
 
 namespace TabularEditor.UIServices
 {
     public enum EmbeddedInstanceType
     {
-        None = 0,
-        Devenv = 1,
-        PowerBI = 2
+        PowerBI,
+        Devenv,
+        None
     }
     public class PowerBIInstance
     {
-        public PowerBIInstance(string name, int port, EmbeddedInstanceType instanceType)
+        public PowerBIInstance(string name, int port, EmbeddedInstanceType icon)
         {
             Port = port;
-            Icon = instanceType;
+            Icon = icon;
             try
             {
                 var dashPos = name.LastIndexOf(" - ");
@@ -98,11 +98,13 @@ namespace TabularEditor.UIServices
                 { Name = name.Substring(0, dashPos); }  // Strip "Power BI Designer" or "Power BI Desktop" off the end of the string
                 else
                 {
+                    //Log.Warning("{class} {method} {message} {dashPos}", "PowerBIInstance", "ctor", "Unable to find ' - ' in Power BI title", dashPos);
                     Name = name;
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                //Log.Error("{class} {method} {message} {stacktrace}", "PowerBIInstance", "ctor", ex.Message, ex.StackTrace);
                 Name = name;
             }
         }
@@ -117,7 +119,7 @@ namespace TabularEditor.UIServices
 
         private static List<PowerBIInstance> _instances = new List<PowerBIInstance>();
         private static bool _portSet = false;
-        public static void Refresh()
+        public static void RefreshOld()
         {
 
             _instances.Clear();
@@ -133,7 +135,7 @@ namespace TabularEditor.UIServices
                 {
 
                     // get the process pid
-                    //System.UInt32 pid = (System.UInt32)process["ProcessId"];
+                    System.UInt32 pid = (System.UInt32)process["ProcessId"];
                     var parentPid = int.Parse(process["ParentProcessId"].ToString());
                     var parentTitle = "";
                     if (parentPid > 0)
@@ -163,23 +165,81 @@ namespace TabularEditor.UIServices
                             var portFile = string.Format("{0}\\msmdsrv.port.txt", msmdsrvPath);
                             if (System.IO.File.Exists(portFile))
                             {
+                                //Log.Verbose("{class} {method} {message}", "PowerBIHelper", "Refresh", "port.txt found");
                                 string sPort = System.IO.File.ReadAllText(portFile, Encoding.Unicode);
                                 _port = int.Parse(sPort);
                                 _portSet = true;
                                 _instances.Add(new PowerBIInstance(parentTitle, _port, _icon));
+                                //Log.Debug("{class} {method} PowerBI found on port: {port}", "PowerBIHelper", "Refresh", _port);
                                 continue;
                             }
                             else
                             {
+                                //Log.Verbose("{class} {method} {message}", "PowerBIHelper", "Refresh", "no port.txt file found");
                             }
                         }
-                        catch
+                        catch (Exception ex)
                         {
+                            //Log.Error("{class} {Method} {Error} {StackTrace}", "PowerBIHelper", "Refresh", ex.Message, ex.StackTrace);
                         }
                     }
                 }
             }
         }
+
+
+        public static void Refresh()
+        {
+
+            _instances.Clear();
+
+            var dict = ManagedIpHelper.GetExtendedTcpDictionary();
+            foreach (var proc in Process.GetProcessesByName("msmdsrv"))
+            {
+                int _port = 0;
+                EmbeddedInstanceType _icon = EmbeddedInstanceType.PowerBI;
+                var parent = proc.GetParent();
+
+                // exit here if the parent == "services" then this is a SSAS instance
+                if (parent.ProcessName.Equals("services", StringComparison.OrdinalIgnoreCase)) continue;
+
+                // if the process was launched from Visual Studio change the icon
+                if (parent.ProcessName == "devenv") _icon = EmbeddedInstanceType.Devenv;
+
+                // get the window title so that we can parse out the file name
+                var parentTitle = parent.MainWindowTitle;
+                if (parentTitle.Length == 0)
+                {
+                    // for minimized windows we need to use some Win32 api calls to get the title
+                    parentTitle = GetWindowTitle(parent.Id);
+                }
+
+                // try and get the tcp port from the Win32 TcpTable API
+                try
+                {
+                    TcpRow tcpRow = null;
+                    dict.TryGetValue(proc.Id, out tcpRow);
+                    if (tcpRow != null)
+                    {
+                        _port = tcpRow.LocalEndPoint.Port;
+                        _portSet = true;
+                        _instances.Add(new PowerBIInstance(parentTitle, _port, _icon));
+                        //Log.Debug("{class} {method} PowerBI found on port: {port}", "PowerBIHelper", "Refresh", _port);
+                    }
+                    else
+                    {
+                        //Log.Debug("{class} {method} PowerBI port not found for process: {processName} PID: {pid}", "PowerBIHelper", "Refresh", proc.ProcessName, proc.Id);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //Log.Error("{class} {Method} {Error} {StackTrace}", "PowerBIHelper", "Refresh", ex.Message, ex.StackTrace);
+                }
+            }
+
+        }
+
+
 
         public static List<PowerBIInstance> Instances
         {
@@ -239,5 +299,30 @@ namespace TabularEditor.UIServices
         #endregion
 
 
+    }
+
+    public static class ProcessExtensions
+    {
+        public static Process GetParent(this Process process)
+        {
+            try
+            {
+                using (var query = new ManagementObjectSearcher(
+                  "SELECT ParentProcessId " +
+                  "FROM Win32_Process " +
+                  "WHERE ProcessId=" + process.Id))
+                {
+                    return query
+                      .Get()
+                      .OfType<ManagementObject>()
+                      .Select(p => Process.GetProcessById((int)(uint)p["ParentProcessId"]))
+                      .FirstOrDefault();
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
     }
 }

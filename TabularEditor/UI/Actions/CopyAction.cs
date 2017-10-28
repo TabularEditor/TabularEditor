@@ -38,10 +38,7 @@ namespace TabularEditor.UI.Actions
                 // Copy objects represented by selected nodes to clipboard
                 var json = Serializer.SerializeObjects(UIController.Current.Selection.OfType<TabularNamedObject>(),
                     Preferences.Current.Copy_IncludeTranslations, Preferences.Current.Copy_IncludePerspectives,
-                    Preferences.Current.Copy_IncludeRLS
-#if CL1400
-                    , Preferences.Current.Copy_IncludeOLS
-#endif
+                    Preferences.Current.Copy_IncludeRLS, Preferences.Current.Copy_IncludeOLS
                     );
                 Clipboard.SetText(json, TextDataFormat.UnicodeText);
             }

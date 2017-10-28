@@ -48,7 +48,6 @@
             System.Windows.Forms.TreeNode treeNode11 = new System.Windows.Forms.TreeNode("Translations");
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.chkFixup = new System.Windows.Forms.CheckBox();
             this.chkAutoBackup = new System.Windows.Forms.CheckBox();
@@ -150,6 +149,7 @@
             this.chkAutoBackup.Text = "Save Model.bim backup here:";
             this.toolTip1.SetToolTip(this.chkAutoBackup, resources.GetString("chkAutoBackup.ToolTip"));
             this.chkAutoBackup.UseVisualStyleBackColor = true;
+            this.chkAutoBackup.CheckedChanged += new System.EventHandler(this.chkAutoBackup_CheckedChanged);
             // 
             // chkIgnoreTimestamps
             // 
@@ -407,6 +407,7 @@
             this.btnFolder.TabIndex = 8;
             this.btnFolder.Text = "...";
             this.btnFolder.UseVisualStyleBackColor = true;
+            this.btnFolder.Click += new System.EventHandler(this.btnFolder_Click);
             // 
             // txtBackupPath
             // 
@@ -636,6 +637,7 @@
             this.btnVersionCheck.TabIndex = 3;
             this.btnVersionCheck.Text = "Check for updates";
             this.btnVersionCheck.UseVisualStyleBackColor = true;
+            this.btnVersionCheck.Click += new System.EventHandler(this.btnVersionCheck_Click);
             // 
             // lblAvailableVersion
             // 
@@ -649,6 +651,7 @@
             this.lblAvailableVersion.TabIndex = 2;
             this.lblAvailableVersion.Text = "Available version: 2.0.0.0";
             this.lblAvailableVersion.Visible = false;
+            this.lblAvailableVersion.Click += new System.EventHandler(this.lblAvailableVersion_Click);
             // 
             // lblCurrentVersion
             // 
@@ -709,7 +712,6 @@
         #endregion
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.CheckBox chkFixup;

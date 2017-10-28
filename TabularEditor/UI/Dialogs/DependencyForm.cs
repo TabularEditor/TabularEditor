@@ -97,17 +97,18 @@ namespace TabularEditor
             }
         }
 
-        private void RecursiveAdd(ITabularNamedObject obj, TreeNodeCollection nodes)
+        private void RecursiveAdd(ITabularNamedObject obj, TreeNodeCollection nodes, string toolTip = null)
         {
             var img = UI.Tree.TabularIcon.GetIconIndex(obj);
             var n = new TreeNode((obj as IDaxObject)?.DaxObjectFullName ?? obj.Name, img, img) { Tag = obj };
-            if(obj is IDAXExpressionObject) n.ToolTipText = (obj as IDAXExpressionObject).Expression;
+
+            n.ToolTipText = toolTip ?? (obj as IExpressionObject)?.Expression;
 
             nodes.Add(n);
 
-            if(obj is IDAXExpressionObject)
+            if(obj is IDaxDependantObject)
             {
-                foreach(var d in ((IDAXExpressionObject)obj).Dependencies.OrderBy(k => k.Key.ObjectType))
+                foreach(var d in ((IDaxDependantObject)obj).DependsOn.OrderBy(k => k.Key.ObjectType))
                 {
                     currentDepth++;
 
@@ -117,7 +118,13 @@ namespace TabularEditor
                         var node = new TreeNode(d.Key.Name + " (circular dependency)", i, i);
                         n.Nodes.Add(node);
                     }
-                    else if (currentDepth < MAX_LEVELS) RecursiveAdd(d.Key, n.Nodes);
+                    else if (currentDepth < MAX_LEVELS)
+                    {
+                        var daxProps = d.Value.Select(v => v.property).Distinct()
+                            .Select(p => p.ToString() + ": " + ((IDaxDependantObject)obj).GetDAX(p).Replace("\r\n", " ").Replace("\n", " ").Left(100)).ToArray();
+
+                        RecursiveAdd(d.Key, n.Nodes, string.Join("\n", daxProps));
+                    }
                     else n.Nodes.Add("(Infinite recursion)");
                     currentDepth--;
                 }
@@ -130,14 +137,13 @@ namespace TabularEditor
         {
             var img = UI.Tree.TabularIcon.GetIconIndex(obj);
             var n = new TreeNode((obj as IDaxObject)?.DaxObjectFullName ?? obj.Name, img, img) { Tag = obj };
-            if (obj is IDAXExpressionObject) n.ToolTipText = (obj as IDAXExpressionObject).Expression;
+            if (obj is IExpressionObject) n.ToolTipText = (obj as IExpressionObject).Expression;
 
             nodes.Add(n);
 
-            foreach(var d in obj.Dependants.OrderBy(o => o.ObjectType))
-            //foreach(var d in obj.Model.Tables.OfType<IExpressionObject>().Concat(obj.Model.Tables.SelectMany(t => t.GetChildren().OfType<IExpressionObject>())))
+            foreach(var d in obj.ReferencedBy.OrderBy(o => o.ObjectType))
             {
-                if(d.Dependencies.ContainsKey(obj))
+                if(d.DependsOn.ContainsKey(obj))
                 {
                     currentDepth++;
                     if (d == _rootObject)

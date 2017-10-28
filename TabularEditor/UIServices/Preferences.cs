@@ -102,7 +102,7 @@ namespace TabularEditor.UIServices
                         _current.IsLoaded = true;
                     }
                 }
-                catch { }
+                catch (Exception ex) { }
                 return _current;
             }
         }

@@ -30,7 +30,7 @@
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <AutorunEnabled>true</AutorunEnabled>
     <ApplicationRevision>37004</ApplicationRevision>
-    <ApplicationVersion>2.6.6489.37734</ApplicationVersion>
+    <ApplicationVersion>2.6.6499.37431</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -195,6 +195,11 @@
     </Compile>
     <Compile Include="CustomCombobox\OldNewEvent.cs" />
     <Compile Include="CustomCombobox\PopupControl.cs" />
+    <Compile Include="Strings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
     <Compile Include="Scripting\ScriptHelper.cs" />
     <Compile Include="Scripting\ScriptOutputForm.cs">
       <SubType>Form</SubType>
@@ -204,6 +209,7 @@
     </Compile>
     <Compile Include="UIServices\ClipboardListener.cs" />
     <Compile Include="UIServices\DynamicLinq.cs" />
+    <Compile Include="UIServices\ManagedIpHelper.cs" />
     <Compile Include="UIServices\PowerBIHelper.cs" />
     <Compile Include="UIServices\Preferences.cs" />
     <Compile Include="UIServices\RecentFiles.cs" />
@@ -217,6 +223,7 @@
     <Compile Include="TextServices\CSharpLexer.cs" />
     <Compile Include="TextServices\ExpressionParser.cs" />
     <Compile Include="UI\Actions\CreateRelationshipAction.cs" />
+    <Compile Include="UI\Actions\RefreshAction.cs" />
     <Compile Include="UI\Actions\SelectAllAction.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -503,6 +510,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="BestPracticeAnalyzer\BPAForm.resx">
       <DependentUpon>BPAForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Scripting\ScriptOutputForm.resx">
       <DependentUpon>ScriptOutputForm.cs</DependentUpon>

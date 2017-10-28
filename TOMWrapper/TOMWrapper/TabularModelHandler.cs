@@ -79,14 +79,6 @@ namespace TabularEditor.TOMWrapper
         Hierarchy = 3
     }
 
-    public struct Dependency
-    {
-        public int from;
-        public int to;
-        public bool fullyQualified;
-
-    }
-
     public enum SaveFormat
     {
         /// <summary>
@@ -187,37 +179,6 @@ namespace TabularEditor.TOMWrapper
         public HashSet<string> Levels = new HashSet<string>(); 
     }
 
-    public static class DependencyHelper
-    {
-        static public void AddDep(this IDAXExpressionObject target, IDaxObject dependsOn, int fromChar, int toChar, bool fullyQualified)
-        {
-            var dep = new Dependency { from = fromChar, to = toChar, fullyQualified = fullyQualified };
-            List<Dependency> depList;
-            if(!target.Dependencies.TryGetValue(dependsOn, out depList))
-            {
-                depList = new List<Dependency>();
-                target.Dependencies.Add(dependsOn, depList);
-            }
-            depList.Add(dep);
-            if(!dependsOn.Dependants.Contains(target)) dependsOn.Dependants.Add(target);
-        }
-
-        /// <summary>
-        /// Removes qualifiers such as ' ' and [ ] around a name.
-        /// </summary>
-        static public string NoQ(this string objectName, bool table = false)
-        {
-            if(table)
-            {
-                return objectName.StartsWith("'") ? objectName.Substring(1, objectName.Length - 2) : objectName;
-            }
-            else
-            {
-                return objectName.StartsWith("[") ? objectName.Substring(1, objectName.Length - 2) : objectName;
-            }
-        }
-    }
-
     /// <summary>
     /// 
     /// </summary>
@@ -249,6 +210,8 @@ namespace TabularEditor.TOMWrapper
         public Model Model { get; private set; }
         public TOM.Database Database { get { return database; } }
 
+        public int CompatibilityLevel { get; private set; }
+
         /// <summary>
         /// Applys translation from a JSON string.
         /// </summary>
@@ -269,12 +232,10 @@ namespace TabularEditor.TOMWrapper
 
         private void Init()
         {
-            if (database.CompatibilityLevel < 1200) throw new InvalidOperationException("Tabular Databases of compatibility level 1100 or 1103 are not supported in Tabular Editor.");
-            UndoManager = new UndoFramework.UndoManager(this);
+            UndoManager = new UndoManager(this);
             Actions = new TabularCommonActions(this);
             Model = Model.CreateFromMetadata(database.Model);
             Model.Database = new Database(database);
-            Model.LoadChildObjects();
             CheckErrors();
 
             FormulaFixup.BuildDependencyTree();
@@ -298,6 +259,7 @@ namespace TabularEditor.TOMWrapper
             server = null;
 
             database = new TOM.Database("New Tabular Database") { CompatibilityLevel = compatibilityLevel };
+            CompatibilityLevel = compatibilityLevel;
             database.Model = new TOM.Model();
 
             SourceType = ModelSourceType.File;
@@ -364,6 +326,7 @@ namespace TabularEditor.TOMWrapper
                 Source = path;
             }
             database = TOM.JsonSerializer.DeserializeDatabase(data);
+            CompatibilityLevel = database.CompatibilityLevel;
 
             Status = "File loaded succesfully.";
             Init();
@@ -421,8 +384,9 @@ namespace TabularEditor.TOMWrapper
             {
                 database = server.Databases[databaseName];
             }
+            CompatibilityLevel = database.CompatibilityLevel;
 
-            if (database.CompatibilityLevel < 1200) throw new InvalidOperationException("Only databases with Compatibility Level 1200 or higher can be loaded in Tabular Editor.");
+            if (CompatibilityLevel < 1200) throw new InvalidOperationException("Only databases with Compatibility Level 1200 or higher can be loaded in Tabular Editor.");
 
             SourceType = ModelSourceType.Database;
             Source = database.Server.Name + "." + database.Name;
@@ -952,7 +916,7 @@ namespace TabularEditor.TOMWrapper
                 var table = (WrapperLookup[t] as Table);
                 
                 table?.CheckChildrenErrors();
-                WrapperLookup.Values.OfType<IDAXExpressionObject>().ToList().ForEach(i => i.NeedsValidation = false);
+                WrapperLookup.Values.OfType<IExpressionObject>().ToList().ForEach(i => i.NeedsValidation = false);
             }
             if (errorList.Count > 0 || Errors?.Count > 0)
             {
@@ -982,7 +946,22 @@ namespace TabularEditor.TOMWrapper
             if(undoable || rollback) actionCount = UndoManager.EndBatch(rollback);
             Tree.EndUpdate();
 
+            if (!InsideTransaction) DoUpdateComplete();
+
             return actionCount;
+        }
+
+        internal bool EoB_BuildDependencyTree = false;
+        internal bool InsideTransaction { get { return Tree.UpdateLocks > 0; } }
+
+        /// <summary>
+        /// Triggers when a batch of operations has completed.
+        /// If any end-of-batch flags were set during the batch, these will be triggered now
+        /// and the flags will be reset.
+        /// </summary>
+        private void DoUpdateComplete()
+        {
+            if (EoB_BuildDependencyTree) { FormulaFixup.BuildDependencyTree(); EoB_BuildDependencyTree = false; }
         }
 
         /// <summary>
@@ -1034,7 +1013,7 @@ namespace TabularEditor.TOMWrapper
             {
                 if(_tree == null)
                 {
-                    _tree = new NullTree(Model);
+                    _tree = new NullTree();
                 }
                 return _tree;
             }

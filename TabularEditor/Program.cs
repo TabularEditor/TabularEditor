@@ -19,12 +19,19 @@ namespace TabularEditor
         [STAThread]
         static void Main()
         {
+            var args = Environment.GetCommandLineArgs();
+            if(args.Length > 1)
+            {
+                cw.WriteLine("");
+                cw.WriteLine(Application.ProductName + " " + Application.ProductVersion);
+                cw.WriteLine("--------------------------------");
+            }
+
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
             var plugins = LoadPlugins();
             SetupLibraries(plugins);
 
-            var args = Environment.GetCommandLineArgs();
             if (args.Length > 1 && HandleCommandLine(args))
             {
                 if(enableVSTS)
@@ -185,11 +192,6 @@ The AMO library may be downloaded from <A HREF=""https://go.microsoft.com/fwlink
 
         static bool HandleCommandLine(string[] args)
         {
-            cw.WriteLine("");
-            cw.WriteLine(Application.ProductName + " " + Application.ProductVersion);
-            cw.WriteLine("--------------------------------");
-
-
             var upperArgList = args.Select(arg => arg.ToUpper()).ToList();
             var argList = args.Select(arg => arg).ToList();
             if (upperArgList.Contains("-?") || upperArgList.Contains("/?") || upperArgList.Contains("-H") || upperArgList.Contains("/H") || upperArgList.Contains("HELP"))
@@ -257,7 +259,7 @@ The AMO library may be downloaded from <A HREF=""https://go.microsoft.com/fwlink
             cw.WriteLine("Loading model...");
 
             var h = new TOMWrapper.TabularModelHandler(fileName);
-            h.Tree = new TOMWrapper.NullTree(h.Model);
+            h.Tree = new TOMWrapper.NullTree();
 
             if (!string.IsNullOrEmpty(script))
             {

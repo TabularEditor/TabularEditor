@@ -141,6 +141,7 @@ namespace TabularEditor.UI
                     item.Tag = act;
                     item.Enabled = enabled;
                     item.Click += ContextMenuItem_Click;
+                    (act as ICustomMenuAction)?.InitMenu(item, Selection.Context);
 
                 } else if (action is IModelMultiAction)
                 {
@@ -148,18 +149,6 @@ namespace TabularEditor.UI
                     if (act.HideWhenDisabled && !act.Enabled(null)) continue;
 
                     ContextMenu_AddFromActionDynamic(act.Path, menu, act);
-
-                    /*var dict = act.ArgNames;
-
-                    foreach (string argName in dict.Keys)
-                    {
-                        var item = ContextMenu_AddFromAction(act.Path.ConcatPath(argName), menu);
-                        if (!string.IsNullOrEmpty(act.ToolTip)) item.ToolTipText = act.ToolTip;
-                        item.Tag = act;
-                        item.Name = argName;
-                        item.Enabled = act.Enabled(dict[argName]);
-                        item.Click += ContextMenuItem_Click;
-                    }*/
                 } else if (action is Separator)
                 {
                     var sep = action as Separator;

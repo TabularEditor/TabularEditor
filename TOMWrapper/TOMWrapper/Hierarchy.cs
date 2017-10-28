@@ -163,7 +163,7 @@ namespace TabularEditor.TOMWrapper
             switch(propertyName)
             {
                 case "HideMembers":
-                    return Model.Database.CompatibilityLevel >= 1400;
+                    return Handler.CompatibilityLevel >= 1400;
 
                 default: return true;
             }

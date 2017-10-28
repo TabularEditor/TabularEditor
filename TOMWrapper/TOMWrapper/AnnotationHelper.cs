@@ -115,7 +115,6 @@ namespace TabularEditor.TOMWrapper
             if (p != null) obj.RowLevelSecurity.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, string>>(p));
         }
 
-#if CL1400
         /// <summary>
         /// Stores all OLS information on the current table as annotations.
         /// </summary>
@@ -156,6 +155,5 @@ namespace TabularEditor.TOMWrapper
             var p = obj.GetAnnotation("TabularEditor_OLS");
             if (p != null) obj.ObjectLevelSecurity.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, Microsoft.AnalysisServices.Tabular.MetadataPermission>>(p));
         }
-#endif
     }
 }

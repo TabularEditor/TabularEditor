@@ -41,7 +41,7 @@ namespace TabularEditor.UI
         private void ExpressionEditor_Current_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "Name") UI.CurrentMeasureLabel.Text = 
-                    ((sender as IDAXExpressionObject)?.DaxObjectName ?? 
+                    ((sender as IDaxObject)?.DaxObjectName ?? 
                     ((sender as IExpressionObject).Name + ".Expression")) + " :=";
             if (e.PropertyName == "Expression")
             {
@@ -111,9 +111,14 @@ namespace TabularEditor.UI
             }
         }
 
+        public void ExpressionEditor_BeginEdit()
+        {
+            if (!ExpressionEditor_IsEditing) ExpressionEditor_Edit(ExpressionEditor_Current, false);
+        }
+
         private void ExpressionEditor_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
         {
-            if(!ExpressionEditor_IsEditing) ExpressionEditor_Edit(ExpressionEditor_Current, false);
+            ExpressionEditor_BeginEdit();
 
             if (!string.IsNullOrEmpty(UI.ExpressionEditor.Text)) ExpressionParser.SyntaxHighlight(UI.ExpressionEditor);
 

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DeployForm));
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
@@ -48,6 +49,7 @@
             this.pnlPage1 = new System.Windows.Forms.Panel();
             this.lblHint = new System.Windows.Forms.Label();
             this.page4 = new System.Windows.Forms.Panel();
+            this.btnExportBuild = new System.Windows.Forms.Button();
             this.btnTMSL = new System.Windows.Forms.Button();
             this.tvSummary = new System.Windows.Forms.TreeView();
             this.page3 = new System.Windows.Forms.Panel();
@@ -56,6 +58,7 @@
             this.chkDeployRoleMembers = new System.Windows.Forms.CheckBox();
             this.chkDeployRoles = new System.Windows.Forms.CheckBox();
             this.chkDeployConnections = new System.Windows.Forms.CheckBox();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.page2 = new TabularEditor.UI.Dialogs.Pages.DatabasePage();
             this.page1 = new TabularEditor.UI.Dialogs.Pages.ConnectPage();
             this.panel1.SuspendLayout();
@@ -257,6 +260,7 @@
             // 
             // page4
             // 
+            this.page4.Controls.Add(this.btnExportBuild);
             this.page4.Controls.Add(this.btnTMSL);
             this.page4.Controls.Add(this.tvSummary);
             this.page4.Location = new System.Drawing.Point(15, 63);
@@ -265,11 +269,24 @@
             this.page4.TabIndex = 3;
             this.page4.Visible = false;
             // 
+            // btnExportBuild
+            // 
+            this.btnExportBuild.Location = new System.Drawing.Point(248, 209);
+            this.btnExportBuild.Name = "btnExportBuild";
+            this.btnExportBuild.Size = new System.Drawing.Size(116, 23);
+            this.btnExportBuild.TabIndex = 2;
+            this.btnExportBuild.Text = "Export Build...";
+            this.toolTip1.SetToolTip(this.btnExportBuild, "A build consists of the following three files, which can be\r\ndeployed using MSBui" +
+        "ld or the AS Deployment Wizard:\r\n\r\n• Model.asdatabase\r\n• Model.deploymentoptions" +
+        "\r\n• Model.deploymenttargets");
+            this.btnExportBuild.UseVisualStyleBackColor = true;
+            this.btnExportBuild.Click += new System.EventHandler(this.btnExportBuild_Click);
+            // 
             // btnTMSL
             // 
-            this.btnTMSL.Location = new System.Drawing.Point(369, 209);
+            this.btnTMSL.Location = new System.Drawing.Point(370, 209);
             this.btnTMSL.Name = "btnTMSL";
-            this.btnTMSL.Size = new System.Drawing.Size(116, 23);
+            this.btnTMSL.Size = new System.Drawing.Size(115, 23);
             this.btnTMSL.TabIndex = 1;
             this.btnTMSL.Text = "TMSL Script";
             this.btnTMSL.UseVisualStyleBackColor = true;
@@ -371,7 +388,7 @@
             this.page1.MinimumSize = new System.Drawing.Size(232, 123);
             this.page1.Name = "page1";
             this.page1.Password = "";
-            this.page1.ServerName = "";
+            this.page1.ServerName = "localhost\\Tabular2017";
             this.page1.Size = new System.Drawing.Size(485, 232);
             this.page1.TabIndex = 0;
             this.page1.UserName = "";
@@ -442,5 +459,7 @@
         private System.Windows.Forms.Panel page4;
         private System.Windows.Forms.TreeView tvSummary;
         private System.Windows.Forms.Button btnTMSL;
+        private System.Windows.Forms.Button btnExportBuild;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }

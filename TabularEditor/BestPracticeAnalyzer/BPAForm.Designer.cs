@@ -38,6 +38,7 @@
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.listView2 = new System.Windows.Forms.ListView();
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.bpaResultGoTo = new System.Windows.Forms.ToolStripMenuItem();
@@ -59,7 +60,7 @@
             this.btnAnalyzeAll = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -73,6 +74,7 @@
             this.columnHeader2,
             this.columnHeader3,
             this.columnHeader4,
+            this.columnHeader9,
             this.columnHeader5});
             this.listView1.Dock = System.Windows.Forms.DockStyle.Top;
             this.listView1.FullRowSelect = true;
@@ -81,7 +83,7 @@
             this.listView1.Location = new System.Drawing.Point(0, 45);
             this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(686, 166);
+            this.listView1.Size = new System.Drawing.Size(753, 166);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -117,7 +119,7 @@
             this.splitter1.Dock = System.Windows.Forms.DockStyle.Top;
             this.splitter1.Location = new System.Drawing.Point(0, 211);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(686, 3);
+            this.splitter1.Size = new System.Drawing.Size(753, 3);
             this.splitter1.TabIndex = 4;
             this.splitter1.TabStop = false;
             // 
@@ -133,7 +135,7 @@
             this.listView2.GridLines = true;
             this.listView2.Location = new System.Drawing.Point(0, 214);
             this.listView2.Name = "listView2";
-            this.listView2.Size = new System.Drawing.Size(686, 184);
+            this.listView2.Size = new System.Drawing.Size(753, 184);
             this.listView2.TabIndex = 5;
             this.listView2.UseCompatibleStateImageBehavior = false;
             this.listView2.View = System.Windows.Forms.View.Details;
@@ -143,6 +145,11 @@
             // 
             this.columnHeader6.Text = "Object";
             this.columnHeader6.Width = 200;
+            // 
+            // columnHeader8
+            // 
+            this.columnHeader8.Text = "Object Type";
+            this.columnHeader8.Width = 100;
             // 
             // columnHeader7
             // 
@@ -253,7 +260,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(686, 45);
+            this.panel1.Size = new System.Drawing.Size(753, 45);
             this.panel1.TabIndex = 6;
             // 
             // btnDelete
@@ -301,7 +308,7 @@
             // btnAnalyzeAll
             // 
             this.btnAnalyzeAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAnalyzeAll.Location = new System.Drawing.Point(599, 12);
+            this.btnAnalyzeAll.Location = new System.Drawing.Point(666, 12);
             this.btnAnalyzeAll.Name = "btnAnalyzeAll";
             this.btnAnalyzeAll.Size = new System.Drawing.Size(75, 23);
             this.btnAnalyzeAll.TabIndex = 4;
@@ -315,7 +322,7 @@
             this.toolStripStatusLabel1});
             this.statusStrip1.Location = new System.Drawing.Point(0, 398);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(686, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(753, 22);
             this.statusStrip1.TabIndex = 7;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -324,16 +331,16 @@
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
             // 
-            // columnHeader8
+            // columnHeader9
             // 
-            this.columnHeader8.Text = "Object Type";
-            this.columnHeader8.Width = 100;
+            this.columnHeader9.Text = "Category";
+            this.columnHeader9.Width = 90;
             // 
             // BPAForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(686, 420);
+            this.ClientSize = new System.Drawing.Size(753, 420);
             this.Controls.Add(this.listView2);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.splitter1);
@@ -384,5 +391,6 @@
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnMakeLocal;
         private System.Windows.Forms.ColumnHeader columnHeader8;
+        private System.Windows.Forms.ColumnHeader columnHeader9;
     }
 }

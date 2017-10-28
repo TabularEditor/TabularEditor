@@ -22,7 +22,6 @@ namespace TabularEditor.UndoFramework
         Stack<IUndoAction> _UndoStack = new Stack<IUndoAction>();
         Stack<IUndoAction> _RedoStack = new Stack<IUndoAction>();
 
-        internal bool RebuildDependencyTree = false;
         /// <summary>
         /// Whether or not the undo manager is collecting operations.
         /// </summary>
@@ -37,13 +36,6 @@ namespace TabularEditor.UndoFramework
             while((toCheckPoint && !AtCheckpoint) || (!toCheckPoint && UndoSize > 0))
             {
                 XDo(false, true);
-            }
-
-            if (RebuildDependencyTree)
-            {
-                FormulaFixup.DelayBuildDependencyTree = false;
-                RebuildDependencyTree = false;
-                FormulaFixup.BuildDependencyTree();
             }
         }
 
@@ -157,22 +149,10 @@ namespace TabularEditor.UndoFramework
         public void Undo()
         {
             XDo(false, true);
-            if (RebuildDependencyTree)
-            {
-                FormulaFixup.DelayBuildDependencyTree = false;
-                RebuildDependencyTree = false;
-                FormulaFixup.BuildDependencyTree();
-            }
         }
         public void Redo()
         {
             XDo(true, true);
-            if (RebuildDependencyTree)
-            {
-                FormulaFixup.DelayBuildDependencyTree = false;
-                RebuildDependencyTree = false;
-                FormulaFixup.BuildDependencyTree();
-            }
         }
         public void Clear()
         {

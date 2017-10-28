@@ -29,7 +29,7 @@ namespace TabularEditor.TOMWrapper
 	   throw new Exception("Could not locate file: " + Rules.XmlDocFile);
    }
     
-#>    internal static class Properties
+#>    internal static partial class Properties
     {
 <# var TOMWrapperProperties = new[]{ "TranslatedNames", "TranslatedDescriptions", "TranslatedDisplayFolders", "InPerspective" };
    foreach(string pn in Rules.ObjectTypes.Keys
@@ -53,13 +53,6 @@ namespace TabularEditor.TOMWrapper
 		public static Type FromTOM(Type tomType) {
 			return TOMMap.FirstOrDefault(kvp => kvp.Value == tomType).Key;
 		}
-
-		public static TabularObject CreateFromMetadata(TOM.MetadataObject obj) {
-<# foreach(var t in Rules.ObjectTypes.Keys.Where(obj => !obj.IsAbstract)) { #>
-            if(obj is TOM.<#= t.Name #>) return <#= t.Name #>.CreateFromMetadata(obj as TOM.<#= t.Name #>);
-<# } #>     
-			throw new InvalidOperationException("Unable to create wrapper object for type " + obj.GetType().Name);
-        }
 
 		public static readonly Type[] Creatable = {
 <# foreach(var t in Rules.ObjectTypes.Keys.Where(obj => Rules.IsCreatable(obj))) { #>
@@ -88,7 +81,7 @@ namespace TabularEditor.TOMWrapper
 #><#= props.Any(p => p.Name == "ErrorMessage") ? "\n\t\t\t, IErrorMessageObject" : ""
 #><#= props.Any(p => p.Name == "Table") ? "\n\t\t\t, ITabularTableObject" : ""
 #><#= props.Any(p => p.Name == "Description") ? "\n\t\t\t, IDescriptionObject" : ""
-#><#= props.Any(p => p.Name == "Expression" && t.Name != "NamedExpression") ? "\n\t\t\t, IDAXExpressionObject" : ""
+#><#= props.Any(p => p.Name == "Expression" && t.Name != "NamedExpression") ? "\n\t\t\t, IExpressionObject" : ""
 #><#= props.Any(p => p.Name == "FormatString") ? "\n\t\t\t, IFormattableObject" : ""
 #><#= props.Any(p => p.Name == "Annotations") ? "\n\t\t\t, IAnnotationObject" : ""
 #><#= Rules.IsPerspectiveObject(t) ? "\n\t\t\t, ITabularPerspectiveObject" : ""
@@ -210,7 +203,8 @@ namespace TabularEditor.TOMWrapper
 		/// Collection of perspectives in which this <#= t.Name #> is visible.
 		/// </Summary>
 		[Browsable(true),DisplayName("Shown in Perspective"), Description("Provides an easy way to include or exclude this object from the perspectives of the model."), Category("Translations and Perspectives")]
-        public PerspectiveIndexer InPerspective { get; private set; }
+        public Perspective<#= t.Name #>Indexer InPerspective { get; private set; }
+		PerspectiveIndexer ITabularPerspectiveObject.InPerspective { get { return this.InPerspective; } }
 <# } if (Rules.IsTranslatable(t)) { #>
         /// <summary>
         /// Collection of localized descriptions for this <#= t.Name #>.
@@ -223,20 +217,17 @@ namespace TabularEditor.TOMWrapper
         [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of this object."),Category("Translations and Perspectives")]
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
-<# } if (!t.IsAbstract) { #>
+<# } if (!t.IsAbstract && Rules.InCollection(t)) { #>
+		public static <#= t.Name #> CreateFromMetadata(<#= Rules.GetParent(t) #> parent, TOM.<#= t.Name #> metadataObject) {
+			var obj = new <#= t.Name #>(metadataObject);
+			parent.<#= Rules.GetCollection(t) #>.Add(obj);
+			
+			obj.Init();
 
-		public static <#= t.Name #> CreateFromMetadata(TOM.<#= t.Name #> metadataObject, bool init = true) {
-			var obj = new <#= t.Name #>(metadataObject, false);
-			if(init) obj.InitFromMetadata();
 			return obj;
 		}
 
-		public void InitFromMetadata() {
-			InternalInit();
-			Init();
-		}
-
-<# if(Rules.IsCreatable(t)) { #>
+<# if (Rules.IsCreatable(t)) { #>
 
 		/// <summary>
 		/// Creates a new <#= t.Name #> and adds it to the parent <#= Rules.GetParent(t) #>.
@@ -244,11 +235,9 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static <#= t.Name #> CreateNew(<#= Rules.GetParent(t) #> parent, string name = null)
 		{
-#if CL1400
 			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(<#= t.Name #>))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(<#= t.Name #>).GetTypeName()));
 			}
-#endif 
 
 			var metadataObject = new TOM.<#= t.Name #>();
 			metadataObject.Name = parent.<#= Rules.GetCollection(t) #>.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(<#= t.Name #>).GetTypeName() : name);
@@ -258,9 +247,6 @@ namespace TabularEditor.TOMWrapper
 			parent.<#= Rules.GetCollection(t) #>.Add(obj);
 			
 			obj.Init();
-<# if(t.Name == "ModelRole") { #>
-			obj.InitRLSIndexer();
-<# } #>
 
 			return obj;
 		}
@@ -273,25 +259,7 @@ if(Rules.GetParent(t) == "Model") { #>
 		/// </summary>		
 		public static <#= t.Name #> CreateNew(string name = null)
 		{
-#if CL1400
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(<#= t.Name #>))) {
-				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(<#= t.Name #>).GetTypeName()));
-			}
-#endif 
-
-			var metadataObject = new TOM.<#= t.Name #>();
-			metadataObject.Name = TabularModelHandler.Singleton.Model.<#= Rules.GetCollection(t) #>.GetNewName(string.IsNullOrWhiteSpace(name) ? "New <#= t.Name #>" : name);
-
-			var obj = new <#= t.Name #>(metadataObject);
-
-			TabularModelHandler.Singleton.Model.<#= Rules.GetCollection(t) #>.Add(obj);
-
-			obj.Init();
-<# if(t.Name == "ModelRole") { #>
-			obj.InitRLSIndexer();
-<# } #>
-
-			return obj;
+			return CreateNew(TabularModelHandler.Singleton.Model, name);
 		}
 
 <# } #>
@@ -302,11 +270,9 @@ if(Rules.GetParent(t) == "Model") { #>
 		public <#= t.Name #> Clone(string newName = null<#= 
 Rules.IsTranslatable(t, true) ? ", bool includeTranslations = true" : "" #><#=
 Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" : "" #>) {
-#if CL1400
 			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(<#= t.Name #>))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(<#= t.Name #>).GetTypeName()));
 			}
-#endif 
 
 		    Handler.BeginUpdate("Clone <#= t.Name #>");
 
@@ -321,21 +287,8 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 			// Assign a new, unique name:
 			tom.Name = Parent.<#= Rules.GetCollection(t) #>.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
 				
-			// Create the TOM Wrapper object, representing the metadataobject (but don't init until after we add it to the parent):
-			var obj = CreateFromMetadata(tom, false);
-
-			// Add the object to the parent collection:
-<# if (Rules.GetParent(t) != "Model") { #>
-			if(newParent != null) 
-				newParent.<#= Rules.GetCollection(t)#>.Add(obj);
-			else
-    <# } #>			Parent.<#= Rules.GetCollection(t)#>.Add(obj);
-
-			obj.InternalInit();
-			obj.Init();
-<# if(t.Name == "ModelRole") { #>
-			obj.InitRLSIndexer();
-<# } #>
+			// Create the TOM Wrapper object, representing the metadataobject
+			var obj = CreateFromMetadata(<#= Rules.GetParent(t) != "Model" ? "newParent ?? " : "" #>Parent, tom);
 
 <# if (Rules.IsTranslatable(t, true)) { #>
 			// Copy translations, if applicable:
@@ -366,7 +319,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 			return Clone(newName<#= Rules.IsTranslatable(t) ? ", includeTranslations" : "" #>);
 		}
 
-<# } #>
+<# } } #>
 	
         internal override void RenewMetadataObject()
         {
@@ -375,7 +328,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
-<# } if (Rules.InCollection(t)) { #>
+<# if (Rules.InCollection(t)) { #>
 		public <#= Rules.GetParent(t) #> Parent { 
 			get {
 				return Handler.WrapperLookup[MetadataObject.Parent] as <#= Rules.GetParent(t) #>;
@@ -407,12 +360,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 		/// <summary>
 		/// CTOR - only called from static factory methods on the class
 		/// </summary>
-		protected <#= t.Name #>(TOM.<#= t.Name #> metadataObject, bool init = true) : base(metadataObject)
-		{
-			if(init) InternalInit();
-		}
-
-		private void InternalInit()
+		protected <#= t.Name #>(TOM.<#= t.Name #> metadataObject) : base(metadataObject)
 		{
 <# if(Rules.IsTranslatable(t)) { #>
 			// Create indexers for translations:
@@ -497,9 +445,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 	/// </summary>
 	public sealed partial class <#= t.Name #>Collection: TabularObjectCollection<<#= t.Name == "Relationship" ? "SingleColumnRelationship" : t.Name #>>
 	{
-<# if (Rules.GetParent(t) != "Model") { #>
 		internal <#= Rules.GetParent(t) #> <#= Rules.GetParent(t) #> { get { return Parent as <#= Rules.GetParent(t) #>; } }
-<# } #>
 		TOM.<#= t.Name #>Collection TOM_Collection;
 		internal <#= t.Name #>Collection(string collectionName, TOM.<#= t.Name #>Collection metadataObjectCollection, <#= Rules.GetParent(t) #> parent) : base(collectionName, parent)
 		{
@@ -513,8 +459,10 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
         protected override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
         protected override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         protected override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
-<# if (t.Name != "Measure") { #>
+<# if (t.Name != "Measure" && t.Name != "Relationship") { #>
         public override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+<# } if (t.Name == "Relationship") { #> 
+		public override string GetNewName(string prefix = null) { return Guid.NewGuid().ToString(); }
 <# } if (t.Name != "Column") { #>
         public override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.<#= t.Name #>); }
         public override int Count { get { return TOM_Collection.Count; } }
@@ -547,35 +495,9 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in TOM_Collection) {
-<# if(t.Name == "ModelRoleMember") { #>
-				if(obj is TOM.WindowsModelRoleMember) WindowsModelRoleMember.CreateFromMetadata(obj as TOM.WindowsModelRoleMember).Collection = this;
-				if(obj is TOM.ExternalModelRoleMember) ExternalModelRoleMember.CreateFromMetadata(obj as TOM.ExternalModelRoleMember).Collection = this;
-<# } else if(t.Name == "Column") { #>
-				switch(obj.Type) {
-				    case TOM.ColumnType.Data: DataColumn.CreateFromMetadata(obj as TOM.DataColumn).Collection = this; break;
-					case TOM.ColumnType.Calculated: CalculatedColumn.CreateFromMetadata(obj as TOM.CalculatedColumn).Collection = this; break;
-					case TOM.ColumnType.CalculatedTableColumn:CalculatedTableColumn.CreateFromMetadata(obj as TOM.CalculatedTableColumn).Collection = this; break;
-					default: break;
-				}
-<# } else if (t.Name == "Table") { #>
-				switch(obj.GetSourceType()) {
-				    case TOM.PartitionSourceType.Calculated: CalculatedTable.CreateFromMetadata(obj).Collection = this; break;
-					default: Table.CreateFromMetadata(obj).Collection = this; break;
-				}
-<# } else if (t.Name == "Relationship") { #>
-				switch((obj as TOM.Relationship).Type) {
-					case TOM.RelationshipType.SingleColumn: SingleColumnRelationship.CreateFromMetadata(obj as TOM.SingleColumnRelationship).Collection = this; break;
-				}
-<# } else if (t.Name == "DataSource") { #>
-				switch((obj as TOM.DataSource).Type) {
-					case TOM.DataSourceType.Provider: ProviderDataSource.CreateFromMetadata(obj as TOM.ProviderDataSource).Collection = this; break;
-#if CL1400
-					case TOM.DataSourceType.Structured: StructuredDataSource.CreateFromMetadata(obj as TOM.StructuredDataSource).Collection = this; break;
-#endif
-				}
-<# } else { #>
-				<#= t.Name #>.CreateFromMetadata(obj).Collection = this;
-<# } #>
+<# foreach(var derived in Rules.GetDerivedTypes(t)) { #>
+				if(obj is TOM.<#= derived.Name #>) <#= derived.Name #>.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj as TOM.<#= derived.Name #>);
+<# } #>				
 			}
 		}
 

@@ -36,6 +36,7 @@ namespace TabularEditor.BestPracticeAnalyzer
     public class AnalyzerResult
     {
         public bool RuleHasError { get { return !string.IsNullOrEmpty(RuleError); } }
+        public bool InvalidCompatibilityLevel { get; set; }
         public string RuleError { get; set; }
         public RuleScope RuleErrorScope { get; set; }
         public string ObjectName
@@ -196,6 +197,8 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         public IEnumerable<AnalyzerResult> Analyze(BestPracticeRule rule)
         {
+            if (rule.CompatibilityLevel > Model.Database.CompatibilityLevel) yield return new AnalyzerResult { Rule = rule, InvalidCompatibilityLevel = true };
+
             // Loop through the types of objects in scope for this rule:
             foreach (var currentScope in rule.Scope.Enumerate())
             {
@@ -225,14 +228,26 @@ namespace TabularEditor.BestPracticeAnalyzer
                 }
                 else
                 {
-
-                    var result = collection.Provider.CreateQuery(
-                        Expression.Call(
-                            typeof(Queryable), "Where",
-                            new Type[] { collection.ElementType },
-                            collection.Expression, Expression.Quote(lambda))).OfType<ITabularNamedObject>();
-
-                    foreach (var res in result) yield return new AnalyzerResult { Rule = rule, Object = res };
+                    var result = new List<ITabularNamedObject>();
+                    try
+                    {
+                        result = collection.Provider.CreateQuery(
+                            Expression.Call(
+                                typeof(Queryable), "Where",
+                                new Type[] { collection.ElementType },
+                                collection.Expression, Expression.Quote(lambda))).OfType<ITabularNamedObject>().ToList();
+                    }
+                    catch (Exception ex)
+                    {
+                        isError = true;
+                        errMessage = ex.Message;
+                    }
+                    if (isError)
+                    {
+                        yield return new AnalyzerResult { Rule = rule, RuleError = errMessage, RuleErrorScope = currentScope };
+                    }
+                    else
+                        foreach (var res in result) yield return new AnalyzerResult { Rule = rule, Object = res };
                 }
             }
         }

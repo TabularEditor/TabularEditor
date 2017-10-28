@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TabularEditor.TOMWrapper;
+using System.Windows.Forms;
 
 namespace TabularEditor.UI.Actions
 {
@@ -17,6 +18,10 @@ namespace TabularEditor.UI.Actions
         Context ValidContexts { get; }
     }
 
+    public interface ICustomMenuAction
+    {
+        void InitMenu(ToolStripItem item, Context currentContext);
+    }
     public interface IModelAction: IBaseAction
     {
         string Name { get; }

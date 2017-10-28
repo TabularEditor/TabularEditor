@@ -1,0 +1,246 @@
+﻿extern alias json;
+
+using json.Newtonsoft.Json;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using TabularEditor.PropertyGridUI;
+using TabularEditor.UndoFramework;
+using TOM = Microsoft.AnalysisServices.Tabular;
+using System;
+
+namespace TabularEditor.TOMWrapper
+{
+    [TypeConverter(typeof(IndexerConverter))]
+    public abstract class PerspectiveIndexer : GenericIndexer<Perspective, bool>
+    {
+        protected readonly ITabularPerspectiveObject PerspectiveObject;
+
+        public PerspectiveIndexer(ITabularPerspectiveObject perspectiveObject) : base(perspectiveObject as TabularObject)
+        {
+            PerspectiveObject = perspectiveObject;
+        }
+
+        protected override TabularObjectCollection<Perspective> GetCollection()
+        {
+            return Model.Perspectives;
+        }
+
+        protected abstract void SetInPerspective(Perspective perspective, bool include);
+
+        protected override void SetValue(Perspective perspective, bool include)
+        {
+            var oldValue = this[perspective];
+            if (include == oldValue) return;
+
+            SetInPerspective(perspective, include);
+
+            Handler.UndoManager.Add(
+                new UndoPropertyChangedAction(ParentObject, "InPerspective", oldValue, include, perspective.Name));
+
+            // Only apply structure change if the perspective that was changed is the currently visible perspective:
+            if (Handler.Tree.Perspective == perspective) Handler.Tree.OnStructureChanged(Model);
+        }
+
+        public void CopyFrom(string[] perspectives)
+        {
+            CopyFrom(perspectives.ToDictionary(s => s, s => true));
+        }
+
+        public override string ToJson()
+        {
+            return JsonConvert.SerializeObject(Keys.Where(k => this[k]).ToArray());
+        }
+
+        /// <summary>
+        /// Removes the object from all perspectives.
+        /// </summary>
+        [IntelliSense("Removes the object from all perspectives.")]
+        public void None()
+        {
+            Handler.BeginUpdate("no perspectives");
+            SetAll(false);
+            Handler.EndUpdate();
+        }
+
+        /// <summary>
+        /// Includes the object in all perspectives.
+        /// </summary>
+        [IntelliSense("Includes the object in all perspectives.")]
+        public void All()
+        {
+            Handler.BeginUpdate("all perspectives");
+            SetAll(true);
+            Handler.EndUpdate();
+        }
+
+        public override string Summary
+        {
+            get
+            {
+                return string.Format("Shown in {0} out of {1} perspectives", Keys.Count(k => this[k]), Model.Perspectives.Count);
+            }
+        }
+    }
+
+    public class PerspectiveTableIndexer : PerspectiveIndexer
+    {
+        protected Table Table { get { return PerspectiveObject as Table; } }
+
+        public PerspectiveTableIndexer(Table table) : base(table)
+        {
+        }
+
+        protected override bool GetValue(Perspective perspective)
+        {
+            return Table.GetChildren().OfType<ITabularPerspectiveObject>().Any(obj => obj.InPerspective[perspective]);
+        }
+
+        protected override void SetInPerspective(Perspective perspective, bool included)
+        {
+            // Including/excluding a table from a perspective, is equivalent to including/excluding all child
+            // objects. The PerspectiveTable will be created automatically if needed.
+            Table.Measures.InPerspective(perspective, included);
+            Table.Hierarchies.InPerspective(perspective, included);
+            Table.Columns.InPerspective(perspective, included);
+
+            var pts = perspective.MetadataObject.PerspectiveTables;
+            if (!included && pts.Contains(Table.Name)) pts.Remove(Table.Name);
+        }
+
+        public TOM.PerspectiveTable EnsurePTExists(Perspective perspective)
+        {
+            var pts = perspective.MetadataObject.PerspectiveTables;
+            var pt = pts.Find(Table.Name);
+
+            if(pt == null) {
+                pt = new TOM.PerspectiveTable { Table = Table.MetadataObject };
+                pts.Add(pt);
+            }
+            return pt;
+        }
+    }
+    public class PerspectiveColumnIndexer : PerspectiveIndexer
+    {
+        protected Column Column { get { return PerspectiveObject as Column; } }
+
+        public PerspectiveColumnIndexer(Column column) : base(column)
+        {
+        }
+
+        protected override bool GetValue(Perspective key)
+        {
+            var pTables = key.MetadataObject.PerspectiveTables.Find(Column.Table.Name);
+            if (pTables == null) return false;
+
+            var pColumns = pTables.PerspectiveColumns.Find(Column.Name);
+            return pColumns != null;
+        }
+
+        protected override void SetInPerspective(Perspective perspective, bool included)
+        {
+            var column = Column.MetadataObject;
+            var pColumns = perspective.MetadataObject.PerspectiveTables.Find(Column.Table.Name)?.PerspectiveColumns;
+
+            if (included)
+            {
+                pColumns = Column.Table.InPerspective.EnsurePTExists(perspective).PerspectiveColumns;
+
+                if (!pColumns.Contains(column.Name))
+                {
+                    pColumns.Add(new TOM.PerspectiveColumn { Column = column });
+                }
+            }
+            else
+            {
+                if (pColumns != null && pColumns.Contains(column.Name))
+                {
+                    pColumns.Remove(column.Name);
+                }
+            }
+        }
+    }
+
+    public class PerspectiveMeasureIndexer : PerspectiveIndexer
+    {
+        protected Measure Measure { get { return PerspectiveObject as Measure; } }
+
+        public PerspectiveMeasureIndexer(Measure Measure) : base(Measure)
+        {
+        }
+
+        protected override bool GetValue(Perspective key)
+        {
+            var pTables = key.MetadataObject.PerspectiveTables.Find(Measure.Table.Name);
+            if (pTables == null) return false;
+
+            var pMeasures = pTables.PerspectiveMeasures.Find(Measure.Name);
+            return pMeasures != null;
+        }
+
+        protected override void SetInPerspective(Perspective perspective, bool included)
+        {
+            var measure = Measure.MetadataObject;
+            var pMeasures = perspective.MetadataObject.PerspectiveTables.Find(Measure.Table.Name)?.PerspectiveMeasures;
+
+            if (included)
+            {
+                pMeasures = Measure.Table.InPerspective.EnsurePTExists(perspective).PerspectiveMeasures;
+
+                if (!pMeasures.Contains(measure.Name))
+                {
+                    pMeasures.Add(new TOM.PerspectiveMeasure { Measure = measure });
+                }
+            }
+            else
+            {
+                if (pMeasures != null && pMeasures.Contains(measure.Name))
+                {
+                    pMeasures.Remove(measure.Name);
+                }
+            }
+        }
+    }
+
+    public class PerspectiveHierarchyIndexer : PerspectiveIndexer
+    {
+        protected Hierarchy Hierarchy { get { return PerspectiveObject as Hierarchy; } }
+
+        public PerspectiveHierarchyIndexer(Hierarchy Hierarchy) : base(Hierarchy)
+        {
+        }
+
+        protected override bool GetValue(Perspective key)
+        {
+            var pTables = key.MetadataObject.PerspectiveTables.Find(Hierarchy.Table.Name);
+            if (pTables == null) return false;
+
+            var pHierarchys = pTables.PerspectiveHierarchies.Find(Hierarchy.Name);
+            return pHierarchys != null;
+        }
+
+        protected override void SetInPerspective(Perspective perspective, bool included)
+        {
+            var hierarchy = Hierarchy.MetadataObject;
+            var pHierarchys = perspective.MetadataObject.PerspectiveTables.Find(Hierarchy.Table.Name)?.PerspectiveHierarchies;
+
+            if (included)
+            {
+                pHierarchys = Hierarchy.Table.InPerspective.EnsurePTExists(perspective).PerspectiveHierarchies;
+
+                if (!pHierarchys.Contains(hierarchy.Name))
+                {
+                    pHierarchys.Add(new TOM.PerspectiveHierarchy { Hierarchy = hierarchy });
+                }
+            }
+            else
+            {
+                if (pHierarchys != null && pHierarchys.Contains(hierarchy.Name))
+                {
+                    pHierarchys.Remove(hierarchy.Name);
+                }
+            }
+        }
+    }
+}

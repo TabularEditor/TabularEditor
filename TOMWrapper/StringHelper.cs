@@ -11,6 +11,17 @@ namespace TabularEditor
 {
     public static class StringHelper
     {
+        public static string Left(this string value, int chars, bool addEllipsis = false)
+        {
+            if (string.IsNullOrEmpty(value)) return value;
+            return value.Length <= chars ? value : (value.Substring(0, chars) + (addEllipsis ? "..." : ""));
+        }
+        public static string Right(this string value, int chars)
+        {
+            if (string.IsNullOrEmpty(value)) return value;
+            return value.Length <= chars ? value : value.Substring(value.Length - chars, chars);
+        }
+
         public static string ToLiteral(object input)
         {
             using (var writer = new StringWriter())

@@ -115,6 +115,24 @@ namespace TabularEditor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Object Level Security requires Compatibility Level 1400 or higher..
+        /// </summary>
+        internal static string CompatibilityError_ObjectLevelSecurity {
+            get {
+                return ResourceManager.GetString("CompatibilityError_ObjectLevelSecurity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Structured Data Sources can only be added to Compatibility Level 1400 or higher models..
+        /// </summary>
+        internal static string CompatibilityError_StructuredDataSource {
+            get {
+                return ResourceManager.GetString("CompatibilityError_StructuredDataSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A data source which is used by one or more partitions cannot be deleted..
         /// </summary>
         internal static string DataSourceInUse {
@@ -138,6 +156,15 @@ namespace TabularEditor {
         internal static string DuplicateMeasureName {
             get {
                 return ResourceManager.GetString("DuplicateMeasureName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A {0} object does not have a DAX {1} property..
+        /// </summary>
+        internal static string InvalidExpressionProperty {
+            get {
+                return ResourceManager.GetString("InvalidExpressionProperty", resourceCulture);
             }
         }
         

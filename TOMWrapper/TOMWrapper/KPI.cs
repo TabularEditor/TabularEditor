@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TabularEditor.PropertyGridUI;
+using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -17,6 +18,16 @@ namespace TabularEditor.TOMWrapper
             {
                 return 0;
             }
+        }
+
+        public static KPI CreateFromMetadata(Measure parent, TOM.KPI metadataObject)
+        {
+            var obj = new KPI(metadataObject);
+            parent.MetadataObject.KPI = metadataObject;
+
+            obj.Init();
+
+            return obj;
         }
 
         [Browsable(false)]

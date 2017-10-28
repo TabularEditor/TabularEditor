@@ -41,7 +41,7 @@ namespace TabularEditor.TOMWrapper
         /// Collection of objects that depend on this column.
         /// </summary>
         [Browsable(false)]
-        public HashSet<IDAXExpressionObject> Dependants { get; } = new HashSet<IDAXExpressionObject>();
+        public ReferencedByList ReferencedBy { get; } = new ReferencedByList();
 
         #region Convenient collections
         /// <summary>
@@ -85,7 +85,7 @@ namespace TabularEditor.TOMWrapper
             message = string.Empty;
             if (UsedInHierarchies.Any()) message += Messages.ColumnUsedInHierarchy + " ";
             if (UsedInRelationships.Any()) message += Messages.ColumnUsedInRelationship + " ";
-            if (Dependants.Count > 0) message += Messages.ReferencedByDAX + " ";
+            if (ReferencedBy.Count > 0) message += Messages.ReferencedByDAX + " ";
 
             if (message == string.Empty) message = null;
             return true;
@@ -98,9 +98,7 @@ namespace TabularEditor.TOMWrapper
 
             if(!isChildOfDeleted)
             {
-#if CL1400
-                ObjectLevelSecurity.Clear();
-#endif
+                if(Handler.CompatibilityLevel >= 1400) ObjectLevelSecurity.Clear();
 
                 // Remove any hierarchy levels this column is used in:
                 UsedInLevels.ToList().ForEach(l => l.Delete());
@@ -112,21 +110,19 @@ namespace TabularEditor.TOMWrapper
             base.DeleteLinkedObjects(isChildOfDeleted);
         }
 
-#if CL1400
-        [Browsable(true), DisplayName("Object Level Security"), Category("Security")]
+        [DisplayName("Object Level Security"), Category("Security")]
         public ColumnOLSIndexer ObjectLevelSecurity { get; private set; }
-
-        public void InitOLSIndexer()
-        {
-            ObjectLevelSecurity = new ColumnOLSIndexer(this);
-        }
-#endif
+        
 
         protected override void Init()
         {
-#if CL1400
-            Variations = new VariationCollection("Variations", MetadataObject.Variations, this);
-#endif
+            if(Handler.CompatibilityLevel >= 1400)
+            {
+                Variations = new VariationCollection("Variations", MetadataObject.Variations, this);
+                ObjectLevelSecurity = new ColumnOLSIndexer(this);
+            }
+
+            base.Init();
         }
 
         protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
@@ -170,11 +166,11 @@ namespace TabularEditor.TOMWrapper
         {
             switch (propertyName)
             {
-#if CL1400
                 case "ObjectLevelSecurity":
+                    return Handler.CompatibilityLevel >= 1400 && Model.Roles.Any();
                 case Properties.VARIATIONS:
-                    return Model.Database.CompatibilityLevel >= 1400;                    
-#endif
+                case Properties.ENCODINGHINT:
+                    return Handler.CompatibilityLevel >= 1400;                    
                 default: return true;
             }
         }

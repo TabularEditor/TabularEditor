@@ -1,9 +1,11 @@
 ﻿using Microsoft.AnalysisServices.Tabular;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +16,8 @@ namespace TabularEditor.UI.Dialogs
 {
     public partial class DeployForm : Form
     {
+        TabularModelHandler Handler { get { return UIController.Current.Handler; } }
+
         public List<Label> Steps = new List<Label>();
         public List<Control> Pages = new List<Control>();
         public List<string> Hints = new List<string>() {
@@ -40,7 +44,7 @@ namespace TabularEditor.UI.Dialogs
                 _currentPage = value;
                 Steps[_currentPage].Font = new Font(lblStep1.Font, FontStyle.Bold);
                 Pages[_currentPage].Visible = true;
-                if(_currentPage == 1) Pages[_currentPage].Focus();
+                if (_currentPage == 1) Pages[_currentPage].Focus();
                 lblHint.Text = Hints[_currentPage];
 
                 btnPrev.Enabled = _currentPage > 0;
@@ -79,7 +83,7 @@ namespace TabularEditor.UI.Dialogs
 
         private void btnNext_Click(object sender, EventArgs e)
         {
-            if(_currentPage == 0)
+            if (_currentPage == 0)
             {
                 using (new Hourglass())
                 {
@@ -89,10 +93,10 @@ namespace TabularEditor.UI.Dialogs
             }
             CurrentPage++;
 
-            if(_currentPage == 2)
+            if (_currentPage == 2)
             {
                 DeployOptions.DeployMode = DeployTargetServer.Databases.Contains(DeployTargetDatabaseID) ? DeploymentMode.CreateOrAlter : DeploymentMode.CreateDatabase;
-                if(DeployOptions.DeployMode == DeploymentMode.CreateDatabase)
+                if (DeployOptions.DeployMode == DeploymentMode.CreateDatabase)
                 {
                     chkDeployConnections.Checked = true;
                     chkDeployPartitions.Checked = true;
@@ -172,10 +176,116 @@ namespace TabularEditor.UI.Dialogs
             tmslForm.Text = "TMSL Script";
             using (new Hourglass())
             {
-                tmslForm.txtCode.Text = TabularDeployer.GetTMSL(UIController.Current.Handler.Database,
+                tmslForm.txtCode.Text = TabularDeployer.GetTMSL(Handler.Database,
                     DeployTargetServer, DeployTargetDatabaseID, DeployOptions);
             }
             tmslForm.ShowDialog();
+        }
+
+        public const string ExportBuild_DatabaseFile = "Model.asdatabase";
+        public const string ExportBuild_OptionsFile = "Model.deploymentoptions";
+        public const string ExportBuild_TargetsFile = "Model.deploymenttargets";
+        public const string ExportBuild_ConfigsFile = "Model.configsettings";
+
+        private void btnExportBuild_Click(object sender, EventArgs e)
+        {
+            ExportBuild();
+        }
+        public void ExportBuild()
+        {
+            using (var dlg = new CommonOpenFileDialog()
+            {
+                IsFolderPicker = true,
+                Title = Strings.ExportBuildChooseFolderCaption
+            })
+            {
+                if (dlg.ShowDialog() != CommonFileDialogResult.Ok) return;
+                ExportBuild(dlg.FileName);
+            }
+        }
+
+        public void ExportBuild(string folder)
+        {
+            Directory.CreateDirectory(folder);
+
+            var databaseFile = folder.ConcatPath(ExportBuild_DatabaseFile);
+            var optionsFile = folder.ConcatPath(ExportBuild_OptionsFile);
+            var targetsFile = folder.ConcatPath(ExportBuild_TargetsFile);
+            var configsFile = folder.ConcatPath(ExportBuild_ConfigsFile);
+
+            if (File.Exists(databaseFile) || File.Exists(optionsFile) || File.Exists(targetsFile) || File.Exists(configsFile))
+            {
+                var dr = MessageBox.Show(
+                    Strings.ExportBuildConfirmOverwrite,
+                    Strings.ExportBuildConfirmOverwriteCaption,
+                    MessageBoxButtons.OKCancel,
+                    MessageBoxIcon.Warning
+                );
+                if (dr != DialogResult.OK) return;
+            }
+
+            ExportBuild_Database(databaseFile);
+            ExportBuild_Options(optionsFile);
+            ExportBuild_Targets(targetsFile);
+            if(DeployOptions.DeployConnections) ExportBuild_Configs(configsFile);
+
+            var allFiles = string.Format("{0}\n{1}\n{2}{3}", databaseFile, optionsFile, targetsFile, DeployOptions.DeployConnections ? "\n" + configsFile : "");
+
+            MessageBox.Show(string.Format(Strings.ExportBuildSuccess,allFiles), Strings.ExportBuildSuccessCaption, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        
+
+        private void ExportBuild_Database(string databaseFile)
+        {
+            Handler.Save(databaseFile, SaveFormat.ModelSchemaOnly, TOMWrapper.SerializeOptions.Default);
+        }
+        private void ExportBuild_Options(string optionsFile)
+        {
+            var transactionalDeployment = "true";
+            var partitionDeployment = DeployOptions.DeployPartitions ? "DeployPartitions" : "RetainPartitions";
+            var roleDeployment = DeployOptions.DeployRoles ? (DeployOptions.DeployRoleMembers ? "DeployRolesAndMembers" : "DeployRolesRetainMembers") : "RetainRoles";
+            var processingOptions = "DoNotProcess";
+            var configurationSettingsDeployment = DeployOptions.DeployConnections ? "Deploy" : "Retain";
+
+            var options =
+                string.Format(Strings.ExportBuildDeploymentOptions
+                    , transactionalDeployment
+                    , partitionDeployment
+                    , roleDeployment
+                    , processingOptions
+                    , configurationSettingsDeployment
+                );
+
+            File.WriteAllText(optionsFile, options);
+        }
+        private void ExportBuild_Targets(string targetsFile)
+        {
+            var targets =
+                string.Format(Strings.ExportBuildDeploymentTargets
+                    , DeployTargetDatabaseID
+                    , DeployTargetServer.Name);
+
+            File.WriteAllText(targetsFile, targets);
+        }
+
+        private void ExportBuild_Configs(string configsFile)
+        {
+            string dataSources = "";
+            foreach(var ds in Handler.Model.DataSources.OfType<TOMWrapper.ProviderDataSource>())
+            {
+                dataSources += string.Format(Strings.ExportBuildConfigDataSource
+                    , ds.Name
+                    , ds.ConnectionString
+                    , ds.ImpersonationMode.ToString()
+                    , ds.Account
+                    , ds.Password);
+            }
+
+            string config = string.Format(Strings.ExportBuildConfig
+                    , dataSources);
+
+            File.WriteAllText(configsFile, config);
         }
     }
 }

@@ -15,21 +15,34 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
     partial class Table: ITabularObjectContainer, IDetailObjectContainer, ITabularPerspectiveObject, IDaxObject,
-        IErrorMessageObject
+        IErrorMessageObject, IDaxDependantObject
     {
+        private DependsOnList _dependsOn = null;
+
         [Browsable(false)]
-        public HashSet<IDAXExpressionObject> Dependants { get; } = new HashSet<IDAXExpressionObject>();
+        public DependsOnList DependsOn
+        {
+            get
+            {
+                if (_dependsOn == null)
+                    _dependsOn = new DependsOnList(this);
+                return _dependsOn;
+            }
+        }
+
+        [Browsable(false)]
+        public ReferencedByList ReferencedBy { get; } = new ReferencedByList();
 
         protected override bool AllowDelete(out string message)
         {
             message = string.Empty;
-            if (Dependants.Count > 0) message += Messages.ReferencedByDAX;
+            if (ReferencedBy.Count > 0) message += Messages.ReferencedByDAX;
             if (message == string.Empty) message = null;
             return true;
         }
 
         #region Convenient methods
-        [IntelliSense("Adds a new measure to the table.")]
+        [IntelliSense("Adds a new measure to the table."), Tests.GenerateTest()]
         public Measure AddMeasure(string name = null, string expression = null, string displayFolder = null)
         {
             Handler.BeginUpdate("add measure");
@@ -40,7 +53,7 @@ namespace TabularEditor.TOMWrapper
             return measure;
         }
 
-        [IntelliSense("Adds a new calculated column to the table.")]
+        [IntelliSense("Adds a new calculated column to the table."),Tests.GenerateTest()]
         public CalculatedColumn AddCalculatedColumn(string name = null, string expression = null, string displayFolder = null)
         {
             Handler.BeginUpdate("add calculated column");
@@ -51,12 +64,10 @@ namespace TabularEditor.TOMWrapper
             return column;
         }
 
-        [IntelliSense("Adds a new Data column to the table.")]
+        [IntelliSense("Adds a new Data column to the table."), Tests.GenerateTest()]
         public DataColumn AddDataColumn(string name = null, string sourceColumn = null, string displayFolder = null)
         {
-#if CL1400
             if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(DataColumn))) return null;
-#endif
 
             Handler.BeginUpdate("add Data column");
             var column = DataColumn.CreateNew(this, name);
@@ -68,7 +79,7 @@ namespace TabularEditor.TOMWrapper
         }
 
 
-        [IntelliSense("Adds a new hierarchy to the table.")]
+        [IntelliSense("Adds a new hierarchy to the table."), Tests.GenerateTest()]
         public Hierarchy AddHierarchy(string name = null, string displayFolder = null, params Column[] levels)
         {
             Handler.BeginUpdate("add hierarchy");
@@ -122,9 +133,7 @@ namespace TabularEditor.TOMWrapper
 
             // Remove row-level-security for this table:
             RowLevelSecurity.Clear();
-#if CL1400
-            ObjectLevelSecurity.Clear();
-#endif
+            if(Handler.CompatibilityLevel >= 1400) ObjectLevelSecurity.Clear();
 
             base.DeleteLinkedObjects(isChildOfDeleted);
         }
@@ -157,17 +166,13 @@ namespace TabularEditor.TOMWrapper
             {
                 case "Source":
                 case "Partitions":
-#if CL1400
                     return SourceType == TOM.PartitionSourceType.Query || SourceType == TOM.PartitionSourceType.M;
-#else
-                    return SourceType == TOM.PartitionSourceType.Query;
-#endif
-                // Compatibility Level 1400-specific properties:
                 case "DefaultDetailRowsExpression":
                 case "ShowAsVariationsOnly":
                 case "IsPrivate":
+                    return Handler.CompatibilityLevel >= 1400;
                 case "ObjectLevelSecurity":
-                    return Model.Database.CompatibilityLevel >= 1400;
+                    return Handler.CompatibilityLevel >= 1400 && Model.Roles.Any();
                 case "RowLevelSecurity":
                     return Model.Roles.Any();
                 default: return true;
@@ -231,28 +236,33 @@ namespace TabularEditor.TOMWrapper
                 Partition.CreateNew(this, Name);
             }
 
-            CheckChildrenErrors();
-        }
-
-        public void InitRLSIndexer()
-        {
             RowLevelSecurity = new TableRLSIndexer(this);
-#if CL1400
-            InitOLSIndexer();
-            foreach (var c in Columns) c.InitOLSIndexer();
-#endif
+
+            if (Handler.CompatibilityLevel >= 1400)
+            {
+                ObjectLevelSecurity = new TableOLSIndexer(this);
+            }
+
+            CheckChildrenErrors();
+
+            base.Init();
         }
 
-#if CL1400
-        [Browsable(true), DisplayName("Object Level Security"), Category("Security")]
-        public TableOLSIndexer ObjectLevelSecurity { get; private set; }
-
-        public void InitOLSIndexer()
+        private TableOLSIndexer _objectLevelSecurtiy;
+        [DisplayName("Object Level Security"), Category("Security")]
+        public TableOLSIndexer ObjectLevelSecurity
         {
-            ObjectLevelSecurity = new TableOLSIndexer(this);
+            get
+            {
+                if (Handler.CompatibilityLevel < 1400) throw new InvalidOperationException(Messages.CompatibilityError_ObjectLevelSecurity);
+                return _objectLevelSecurtiy;
+            }
+            set
+            {
+                if (Handler.CompatibilityLevel < 1400) throw new InvalidOperationException(Messages.CompatibilityError_ObjectLevelSecurity);
+                _objectLevelSecurtiy = value;
+            }
         }
-#endif
-
 
         internal static readonly Dictionary<Type, DataType> DataTypeMapping =
             new Dictionary<Type, DataType>() {
@@ -316,7 +326,7 @@ namespace TabularEditor.TOMWrapper
         public virtual void CheckChildrenErrors()
         {
             var errObj = GetChildren().OfType<IErrorMessageObject>().FirstOrDefault(c => !string.IsNullOrEmpty(c.ErrorMessage));
-            if (errObj != null && (!(errObj as IDAXExpressionObject)?.NeedsValidation ?? true))
+            if (errObj != null && (!(errObj as IExpressionObject)?.NeedsValidation ?? true))
             {
                 ErrorMessage = "Error on " + (errObj as TabularNamedObject).Name + ": " + errObj.ErrorMessage;
             }
@@ -366,6 +376,11 @@ namespace TabularEditor.TOMWrapper
                 }
                 Handler.Tree.FolderCache.Clear(); // Clear folder cache when a table is renamed.
             }
+            if (propertyName == Properties.DEFAULTDETAILROWSEXPRESSION)
+            {
+                FormulaFixup.BuildDependencyTree(this);
+            }
+
             base.OnPropertyChanged(propertyName, oldValue, newValue);
         }
         protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
@@ -387,11 +402,10 @@ namespace TabularEditor.TOMWrapper
             '[', ']', '{', '}', '<', '>'
         };
 
-#if CL1400
         [DisplayName("Default Detail Rows Expression")]
         [Category("Options"), IntelliSense("A DAX expression specifying default detail rows for this table (drill-through in client tools).")]
         [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public string DefaultDetailRowsDefinition
+        public string DefaultDetailRowsExpression
         {
             get
             {
@@ -399,24 +413,23 @@ namespace TabularEditor.TOMWrapper
             }
             set
             {
-                var oldValue = DefaultDetailRowsDefinition;
+                var oldValue = DefaultDetailRowsExpression;
 
                 if (oldValue == value) return;
 
                 bool undoable = true;
                 bool cancel = false;
-                OnPropertyChanging(Properties.DEFAULTDETAILROWSDEFINITION, value, ref undoable, ref cancel);
+                OnPropertyChanging(Properties.DEFAULTDETAILROWSEXPRESSION, value, ref undoable, ref cancel);
                 if (cancel) return;
 
                 if (MetadataObject.DefaultDetailRowsDefinition == null) MetadataObject.DefaultDetailRowsDefinition = new TOM.DetailRowsDefinition();
                 MetadataObject.DefaultDetailRowsDefinition.Expression = value;
                 if (string.IsNullOrWhiteSpace(value)) MetadataObject.DefaultDetailRowsDefinition = null;
 
-                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DEFAULTDETAILROWSDEFINITION, oldValue, value));
-                OnPropertyChanged(Properties.DEFAULTDETAILROWSDEFINITION, oldValue, value);
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DEFAULTDETAILROWSEXPRESSION, oldValue, value));
+                OnPropertyChanged(Properties.DEFAULTDETAILROWSEXPRESSION, oldValue, value);
             }
         }
-#endif
     }
 
     /// <summary>
@@ -486,6 +499,11 @@ namespace TabularEditor.TOMWrapper
         {
             Table.Delete();
         }
+    }
+
+    internal static partial class Properties
+    {
+        public const string DEFAULTDETAILROWSEXPRESSION = "DefaultDetailRowsExpression";
     }
 
     public static class TableExtension

@@ -45,10 +45,14 @@
             this.pnlInfo = new System.Windows.Forms.Panel();
             this.lblInfo = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.cmbCompatibility = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.cmbCategory = new System.Windows.Forms.ComboBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.customComboBox1 = new CustomComboBox.CustomComboBox();
             this.label6 = new System.Windows.Forms.Label();
             this.txtID = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnOK = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numSeverity)).BeginInit();
@@ -71,9 +75,9 @@
             // numSeverity
             // 
             this.numSeverity.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numSeverity.Location = new System.Drawing.Point(588, 38);
+            this.numSeverity.Location = new System.Drawing.Point(422, 38);
             this.numSeverity.Maximum = new decimal(new int[] {
-            10,
+            5,
             0,
             0,
             0});
@@ -83,7 +87,7 @@
             0,
             0});
             this.numSeverity.Name = "numSeverity";
-            this.numSeverity.Size = new System.Drawing.Size(59, 20);
+            this.numSeverity.Size = new System.Drawing.Size(44, 20);
             this.numSeverity.TabIndex = 20;
             this.numSeverity.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.numSeverity.Value = new decimal(new int[] {
@@ -91,16 +95,18 @@
             0,
             0,
             0});
+            this.numSeverity.ValueChanged += new System.EventHandler(this.numSeverity_ValueChanged);
             // 
             // label3
             // 
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(537, 41);
+            this.label3.Location = new System.Drawing.Point(371, 41);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(45, 13);
             this.label3.TabIndex = 19;
             this.label3.Text = "Severity";
+            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // txtDescription
             // 
@@ -109,7 +115,7 @@
             this.txtDescription.Location = new System.Drawing.Point(78, 64);
             this.txtDescription.Multiline = true;
             this.txtDescription.Name = "txtDescription";
-            this.txtDescription.Size = new System.Drawing.Size(569, 59);
+            this.txtDescription.Size = new System.Drawing.Size(578, 59);
             this.txtDescription.TabIndex = 18;
             // 
             // label2
@@ -136,7 +142,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtName.Location = new System.Drawing.Point(78, 12);
             this.txtName.Name = "txtName";
-            this.txtName.Size = new System.Drawing.Size(569, 20);
+            this.txtName.Size = new System.Drawing.Size(578, 20);
             this.txtName.TabIndex = 15;
             this.txtName.TextChanged += new System.EventHandler(this.txtName_TextChanged);
             // 
@@ -173,7 +179,7 @@
             this.tabControl1.Location = new System.Drawing.Point(12, 154);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(635, 215);
+            this.tabControl1.Size = new System.Drawing.Size(644, 205);
             this.tabControl1.TabIndex = 27;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
@@ -183,7 +189,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(627, 189);
+            this.tabPage2.Size = new System.Drawing.Size(636, 179);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Rule Expression Editor";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -195,7 +201,7 @@
             this.txtExpression.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtExpression.Location = new System.Drawing.Point(3, 3);
             this.txtExpression.Name = "txtExpression";
-            this.txtExpression.Size = new System.Drawing.Size(621, 183);
+            this.txtExpression.Size = new System.Drawing.Size(630, 173);
             this.txtExpression.TabIndex = 0;
             this.txtExpression.Text = "";
             this.txtExpression.TextChanged += new System.EventHandler(this.txtExpression_TextChanged);
@@ -209,7 +215,7 @@
             this.pnlInfo.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlInfo.Location = new System.Drawing.Point(0, 0);
             this.pnlInfo.Name = "pnlInfo";
-            this.pnlInfo.Size = new System.Drawing.Size(659, 25);
+            this.pnlInfo.Size = new System.Drawing.Size(668, 25);
             this.pnlInfo.TabIndex = 28;
             this.pnlInfo.Visible = false;
             // 
@@ -224,6 +230,10 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.cmbCompatibility);
+            this.panel1.Controls.Add(this.label8);
+            this.panel1.Controls.Add(this.cmbCategory);
+            this.panel1.Controls.Add(this.label7);
             this.panel1.Controls.Add(this.label5);
             this.panel1.Controls.Add(this.customComboBox1);
             this.panel1.Controls.Add(this.label6);
@@ -241,19 +251,73 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 25);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(659, 410);
+            this.panel1.Size = new System.Drawing.Size(668, 400);
             this.panel1.TabIndex = 29;
+            // 
+            // cmbCompatibility
+            // 
+            this.cmbCompatibility.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.cmbCompatibility.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbCompatibility.FormattingEnabled = true;
+            this.cmbCompatibility.Items.AddRange(new object[] {
+            "CL 1200 (SQL Server 2016)",
+            "CL 1400 (SQL Server 2017 / Azure AS)"});
+            this.cmbCompatibility.Location = new System.Drawing.Point(159, 366);
+            this.cmbCompatibility.Name = "cmbCompatibility";
+            this.cmbCompatibility.Size = new System.Drawing.Size(231, 21);
+            this.cmbCompatibility.TabIndex = 37;
+            // 
+            // label8
+            // 
+            this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(13, 370);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(138, 13);
+            this.label8.TabIndex = 36;
+            this.label8.Text = "Minimum Compatibility Level";
+            // 
+            // cmbCategory
+            // 
+            this.cmbCategory.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbCategory.FormattingEnabled = true;
+            this.cmbCategory.Location = new System.Drawing.Point(527, 37);
+            this.cmbCategory.Name = "cmbCategory";
+            this.cmbCategory.Size = new System.Drawing.Size(129, 21);
+            this.cmbCategory.TabIndex = 35;
+            // 
+            // label7
+            // 
+            this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(472, 41);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(49, 13);
+            this.label7.TabIndex = 34;
+            this.label7.Text = "Category";
+            // 
+            // label5
+            // 
+            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(371, 133);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(149, 13);
+            this.label5.TabIndex = 30;
+            this.label5.Text = "satisfying the following criteria:";
             // 
             // customComboBox1
             // 
             this.customComboBox1.AllowResizeDropDown = true;
+            this.customComboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.customComboBox1.ControlSize = new System.Drawing.Size(1, 1);
             this.customComboBox1.DropDownControl = null;
             this.customComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.customComboBox1.DropSize = new System.Drawing.Size(121, 150);
             this.customComboBox1.Location = new System.Drawing.Point(78, 129);
             this.customComboBox1.Name = "customComboBox1";
-            this.customComboBox1.Size = new System.Drawing.Size(253, 21);
+            this.customComboBox1.Size = new System.Drawing.Size(287, 21);
             this.customComboBox1.TabIndex = 33;
             // 
             // label6
@@ -271,24 +335,15 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtID.Location = new System.Drawing.Point(78, 38);
             this.txtID.Name = "txtID";
-            this.txtID.Size = new System.Drawing.Size(453, 20);
+            this.txtID.Size = new System.Drawing.Size(287, 20);
             this.txtID.TabIndex = 31;
             this.txtID.TextChanged += new System.EventHandler(this.txtID_TextChanged);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(337, 133);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(149, 13);
-            this.label5.TabIndex = 30;
-            this.label5.Text = "satisfying the following criteria:";
             // 
             // btnCancel
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(558, 375);
+            this.btnCancel.Location = new System.Drawing.Point(567, 365);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(89, 23);
             this.btnCancel.TabIndex = 29;
@@ -299,7 +354,7 @@
             // 
             this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(463, 375);
+            this.btnOK.Location = new System.Drawing.Point(472, 365);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(89, 23);
             this.btnOK.TabIndex = 28;
@@ -312,12 +367,12 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(659, 435);
+            this.ClientSize = new System.Drawing.Size(668, 425);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.pnlInfo);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(560, 230);
+            this.MinimumSize = new System.Drawing.Size(610, 320);
             this.Name = "BPAEditorForm";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
@@ -357,5 +412,9 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox txtID;
         private CustomComboBox.CustomComboBox customComboBox1;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ComboBox cmbCategory;
+        private System.Windows.Forms.ComboBox cmbCompatibility;
+        private System.Windows.Forms.Label label8;
     }
 }

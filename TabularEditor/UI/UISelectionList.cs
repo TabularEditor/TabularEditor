@@ -133,14 +133,14 @@ namespace TabularEditor.UI
         {
             get
             {
-                var c = this.OfType<IDAXExpressionObject>();
+                var c = this.OfType<IExpressionObject>();
                 if (c.Count() > 1) throw new InvalidOperationException("Multiple objects selected");
                 return c.FirstOrDefault()?.Expression;
             }
             set
             {
                 Handler.BeginUpdate("expression");
-                this.OfType<IDAXExpressionObject>().ToList().ForEach(i => i.Expression = value);
+                this.OfType<IExpressionObject>().ToList().ForEach(i => i.Expression = value);
                 Handler.EndUpdate();
             }
         }
@@ -205,7 +205,6 @@ namespace TabularEditor.UI
         public void Rename(string pattern, string replacement, bool regex = false, bool includeNameTranslations = false)
         {
             var objects = this.ToList();
-            FormulaFixup.DelayBuildDependencyTree = true;
             Handler.BeginUpdate("rename" + (objects.Count > 1 ? " objects" : ""));
 
             int errCount = 0;
@@ -253,14 +252,12 @@ namespace TabularEditor.UI
             if (errCount > 0) System.Windows.Forms.MessageBox.Show(string.Format("{0} item{1} could not be renamed, since the replaced name was invalid.", errCount, errCount > 1 ? "s" : ""), "Errors during batch rename", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
             Handler.EndUpdate();
-            FormulaFixup.DelayBuildDependencyTree = false;
-            FormulaFixup.BuildDependencyTree();
         }
 
         [IntelliSense("Specify a search pattern and a replacement value, that will be applied to the Expression of the objects in the collection.")]
         public void ReplaceExpression(string pattern, string replacement, bool regex = false)
         {
-            var objects = this.OfType<IDAXExpressionObject>().ToList();
+            var objects = this.OfType<IExpressionObject>().ToList();
             Handler.BeginUpdate("replace expression");
 
             if (regex)
