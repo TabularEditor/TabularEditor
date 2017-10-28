@@ -38,34 +38,38 @@ namespace TabularEditor.TOMWrapper.Tests
 		{ typeof(Table), "Model.Tables[0]" },
 	};
 
-	foreach(var bc in baseClasses) {
+	foreach(var CL in new[]{1200,1400}) {
 
-		var methods = bc.Key.GetMethods().Where(m => 
-			m.GetCustomAttributes(true).Any(attr => attr is GenerateTestAttribute));
+		foreach(var bc in baseClasses) {
 
-		// --------------------------------------------------
-		// Actual method generating code below
-		// --------------------------------------------------
-		foreach(var m in methods) { #>
+			var methods = bc.Key.GetMethods().Where(m => 
+				m.GetCustomAttributes(true).Any(attr => attr is GenerateTestAttribute));
+
+			// --------------------------------------------------
+			// Actual method generating code below
+			// --------------------------------------------------
+			foreach(var m in methods) { 
+				if(m.GetCustomAttributes(true).Any(attr => (attr as CompatibilityLevelAttribute)?.MinimumCompatibilityLevel > CL)) continue;
+			#>
 
 		[TestMethod]
-		public void <#= bc.Key.Name + "_" + m.Name #>_BaseTest() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", 1400);
+		public void <#= bc.Key.Name + "_" + m.Name #>_BaseTest_<#= CL #>() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", <#= CL #>);
 			tmh.<#= bc.Value #>.<# WriteCall(m); #>
 			tmh.Save("Test_<#= m.Name #>.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
 		}
 
 		[TestMethod]
-		public void <#= bc.Key.Name + "_" + m.Name #>_UndoTest() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", 1400);
+		public void <#= bc.Key.Name + "_" + m.Name #>_UndoTest_<#= CL #>() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", <#= CL #>);
 			tmh.<#= bc.Value #>.<# WriteCall(m); #>
 			tmh.UndoManager.Undo();
 			tmh.Save("Test_<#= m.Name #>.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
 		}
 
 		[TestMethod]
-		public void <#= bc.Key.Name + "_" + m.Name #>_UndoRedoTest() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", 1400);
+		public void <#= bc.Key.Name + "_" + m.Name #>_UndoRedoTest_<#= CL #>() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", <#= CL #>);
 			tmh.<#= bc.Value #>.<# WriteCall(m); #>
 			tmh.UndoManager.Undo();
 			tmh.UndoManager.Redo();
@@ -73,16 +77,16 @@ namespace TabularEditor.TOMWrapper.Tests
 		}
 
 		[TestMethod]
-		public void <#= bc.Key.Name + "_" + m.Name #>_DeleteTest() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", 1400);
+		public void <#= bc.Key.Name + "_" + m.Name #>_DeleteTest_<#= CL #>() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", <#= CL #>);
 			var obj = tmh.<#= bc.Value #>.<# WriteCall(m); #>
 			obj.Delete();
 			tmh.Save("Test_<#= m.Name #>.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
 		}
 
 		[TestMethod]
-		public void <#= bc.Key.Name + "_" + m.Name #>_DeleteUndoTest() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", 1400);
+		public void <#= bc.Key.Name + "_" + m.Name #>_DeleteUndoTest_<#= CL #>() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", <#= CL #>);
 			var obj = tmh.<#= bc.Value #>.<# WriteCall(m); #>
 			obj.Delete();
 			tmh.UndoManager.Undo();
@@ -90,8 +94,8 @@ namespace TabularEditor.TOMWrapper.Tests
 		}
 
 		[TestMethod]
-		public void <#= bc.Key.Name + "_" + m.Name #>_DeleteUndoRedoTest() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", 1400);
+		public void <#= bc.Key.Name + "_" + m.Name #>_DeleteUndoRedoTest_<#= CL #>() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", <#= CL #>);
 			var obj = tmh.<#= bc.Value #>.<# WriteCall(m); #>
 			obj.Delete();
 			tmh.UndoManager.Undo();
@@ -100,8 +104,8 @@ namespace TabularEditor.TOMWrapper.Tests
 		}
 
 		[TestMethod]
-		public void <#= bc.Key.Name + "_" + m.Name #>_DeleteUndoUndoTest() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", 1400);
+		public void <#= bc.Key.Name + "_" + m.Name #>_DeleteUndoUndoTest_<#= CL #>() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", <#= CL #>);
 			var obj = tmh.<#= bc.Value #>.<# WriteCall(m); #>
 			obj.Delete();
 			tmh.UndoManager.Undo();
@@ -110,14 +114,15 @@ namespace TabularEditor.TOMWrapper.Tests
 		}
 
 		[TestMethod]
-		public void <#= bc.Key.Name + "_" + m.Name #>_RenameTest() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", 1400);
+		public void <#= bc.Key.Name + "_" + m.Name #>_RenameTest_<#= CL #>() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_<#= m.Name #>.bim", <#= CL #>);
 			var obj = tmh.<#= bc.Value #>.<# WriteCall(m); #>
 			obj.Name = "ChangeName";
 			tmh.UndoManager.Undo();
 			tmh.Save("Test_<#= m.Name #>.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
 		}
-<#	}
+<#		}
+	}
 } #>
 	}
 }

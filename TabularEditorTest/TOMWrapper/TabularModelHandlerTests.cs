@@ -213,17 +213,51 @@ namespace TabularEditor.TOMWrapper.Tests
             Assert.IsFalse(table.Hierarchies.Contains("Test Hierarchy"));
         }
 
-        public void ResetPerspectives()
+        public void DeleteTestPerspectives()
         {
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
             handler.Tree = new MockTree(handler.Model);
-            var p = handler.Model.Perspectives;
-            if (p.Contains("Test")) p["Test"].Delete();
-            if (p.Contains("Testx")) p["Testx"].Delete();
-            if (p.Contains("Test Perspective Inclusive")) p["Test Perspective Inclusive"].Delete();
-            if (p.Contains("Test Perspective Exclusive")) p["Test Perspective Exclusive"].Delete();
+            foreach (var p in handler.Model.Perspectives.ToList())
+            {
+                if (p.Name.Contains("Test")) p.Delete();
+            }
             handler.SaveDB();
 
+        }
+
+        [TestMethod()]
+        public void MinimalPerspectiveTest()
+        {
+            DeleteTestPerspectives();
+
+            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            handler.Tree = new MockTree(handler.Model);
+
+            var m = handler.Model;
+
+            // Perspective which includes everything except a few select items:
+            var pnEx = "Test Perspective Exclusive";
+            Perspective.CreateNew(pnEx);
+
+            m.Tables["Date 6"].InPerspective[pnEx] = true;
+            m.Tables["Currency"].InPerspective[pnEx] = true;
+
+            //m.Tables.InPerspective(pnEx, true);
+            //m.Tables["Reseller Sales"].InPerspective[pnEx] = true;
+
+            //m.Tables["Employee"].InPerspective[pnEx] = false;
+            //m.Tables["Date"].Hierarchies.InPerspective(pnEx, false);
+            //m.Tables["Internet Sales"].Measures.InPerspective(pnEx, false);
+            //m.Tables["Product"].Columns.InPerspective(pnEx, false);
+            //m.Tables["Reseller Sales"].Measures["Reseller Total Sales"].InPerspective[pnEx] = false;
+
+            handler.SaveDB();
+
+            handler.UndoManager.Rollback();
+            handler.SaveDB();
+
+            // Check that perspectives were succesfully deleted:
+            Assert.IsFalse(m.Perspectives.Contains(pnEx));
         }
 
         /// <summary>
@@ -236,6 +270,8 @@ namespace TabularEditor.TOMWrapper.Tests
         [TestMethod()]
         public void PerspectiveTest()
         {
+            DeleteTestPerspectives();
+
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
             handler.Tree = new MockTree(handler.Model);
 
