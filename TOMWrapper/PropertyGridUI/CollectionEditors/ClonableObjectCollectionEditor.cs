@@ -10,7 +10,7 @@ using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.PropertyGridUI
 {
-    public class ClonableObjectCollectionEditor<T> : RefreshGridCollectionEditor where T: class, IClonableObject
+    internal class ClonableObjectCollectionEditor<T> : RefreshGridCollectionEditor where T: class, IClonableObject
     {
         CollectionForm m_collectionForm;
         Button cloneButton;

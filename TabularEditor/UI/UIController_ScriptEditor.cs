@@ -142,7 +142,7 @@ namespace TabularEditor.UI
                     if (st.FrameCount >= 2)
                     {
                         var frame = st.GetFrame(st.FrameCount - 2);
-                        var line = frame.GetFileLineNumber() - 12 + offset; // TODO: Correct this if changes are made to generated code!
+                        var line = frame.GetFileLineNumber() - 13 + offset; // TODO: Correct this if changes are made to generated code!
                         if (line >= 0 && line < UI.ScriptEditor.LinesCount)
                         {
                             msg = string.Format("Error on line {0}:\n{1}", line + 1, msg);

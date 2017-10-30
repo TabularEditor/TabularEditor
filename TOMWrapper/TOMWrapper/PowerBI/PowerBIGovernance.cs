@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace TabularEditor.TOMWrapper.PowerBI
 {
-#if CL1400
     /// <summary>
     /// Contains methods that governs the rules when editing Power BI data models (such as
     /// when connected to a Power BI Desktop instance, or when a .pbit file has been loaded).
@@ -81,5 +80,4 @@ namespace TabularEditor.TOMWrapper.PowerBI
             return true;
         }
     }
-#endif
 }

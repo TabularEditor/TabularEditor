@@ -193,7 +193,14 @@ namespace TabularEditor
         private static CompilerResults Compile(string code)
         {
             // Allowed namespaces:
-            var includeUsings = new HashSet<string>(new[] { "System", "System.Linq", "TabularEditor.TOMWrapper", "TabularEditor.UI", "TOM = Microsoft.AnalysisServices.Tabular" });
+            var includeUsings = new HashSet<string>(new[] {
+                "System",
+                "System.Linq",
+                "TabularEditor.TOMWrapper",
+                "TabularEditor.TOMWrapper.Utils",
+                "TabularEditor.UI",
+                "TOM = Microsoft.AnalysisServices.Tabular"
+            });
             foreach (var pluginNs in TabularEditor.UIServices.Preferences.Current.Scripting_UsingNamespaces)
                 if(_pluginNamespaces.Any(an => an.Namespace == pluginNs)) includeUsings.Add(pluginNs);
 
@@ -204,7 +211,7 @@ namespace TabularEditor
             using (var compiler = new CSharpCodeProvider()) {
                 // Allowed assemblies:
                 var tom = Assembly.GetAssembly(typeof(Microsoft.AnalysisServices.Tabular.Database)).Location;
-                var includeAssemblies = new HashSet<string>(new[] { "system.dll", "system.core.dll", Assembly.GetExecutingAssembly().Location, WrapperDllPath, tom });
+                var includeAssemblies = new HashSet<string>(new[] { "system.dll", "system.windows.forms.dll", "system.core.dll", Assembly.GetExecutingAssembly().Location, WrapperDllPath, tom });
                 foreach(var asm in Plugins) if(!includeAssemblies.Contains(asm.Location)) includeAssemblies.Add(asm.Location);
                 var cp = new CompilerParameters(includeAssemblies.ToArray()) { GenerateInMemory = true, IncludeDebugInformation = true };
 

@@ -109,15 +109,6 @@ namespace TabularEditor.TOMWrapper
                     }
                 }
 
-                foreach (var r in model.A("roles"))
-                {
-                    var rn = r.Value<string>("name");
-                    if (Model.Roles.Contains(rn))
-                        ApplyTrans(cultureName, Model.Roles[rn], r, overwriteExisting);
-                    else if (haltOnError)
-                        return false;
-                }
-
 
                 foreach (var p in model.A("perspectives"))
                 {

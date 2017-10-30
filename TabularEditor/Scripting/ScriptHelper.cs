@@ -13,6 +13,8 @@ namespace TabularEditor.Scripting
     {
         public static void Output(this object value, int lineNumber = -1)
         {
+            // TODO: Make this output to the console, when running in command-line mode
+
             if (ScriptOutputForm.DontShow) return;
 
             var caption = string.Format("Script output{0}", lineNumber > 0 ? " at line " + lineNumber : "");

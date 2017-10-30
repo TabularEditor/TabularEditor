@@ -30,7 +30,7 @@ namespace TabularEditor.PropertyGridUI
     /// <summary>
     /// This TypeConverter 
     /// </summary>
-    public class DynamicPropertyConverter: ExpandableObjectConverter
+    internal class DynamicPropertyConverter: ExpandableObjectConverter
     {
         public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes)
         {
@@ -58,7 +58,7 @@ namespace TabularEditor.PropertyGridUI
         }
     }
 
-    public class DynamicPropertyDescriptor : PropertyDescriptor
+    internal class DynamicPropertyDescriptor : PropertyDescriptor
     {
         private PropertyDescriptor _descriptor;
         private bool _multiselect;

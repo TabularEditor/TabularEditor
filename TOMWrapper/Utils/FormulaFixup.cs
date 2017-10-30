@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TabularEditor.TextServices;
-using TabularEditor.UndoFramework;
+using TabularEditor.TOMWrapper.Undo;
 
 namespace TabularEditor.TOMWrapper.Utils
 {
-    public static class FormulaFixup
+    internal static class FormulaFixup
     {
         /// <summary>
         /// Changes all references to object "obj", to reflect "newName"
@@ -47,18 +47,31 @@ namespace TabularEditor.TOMWrapper.Utils
                     {
                         case DAXLexer.TABLE:
                         case DAXLexer.TABLE_OR_VARIABLE:
-                            if (lastTableRef != null)
+                            if (i < tokens.Count - 1 && tokens[i + 1].Type == DAXLexer.COLUMN_OR_MEASURE)
                             {
-                                if (Model.Tables.Contains(lastTableRef.Text.NoQ(true))) expressionObj.AddDep(Model.Tables[lastTableRef.Text.NoQ(true)], prop, lastTableRef.StartIndex, lastTableRef.StopIndex, true);
+                                // Keep the token reference, as the next token should be column (fully qualified).
+                                lastTableRef = tok;
                             }
-                            lastTableRef = tok;
+                            else
+                            {
+                                // Table referenced directly:
+                                lastTableRef = null;
+                                if (Model.Tables.Contains(tok.Text.NoQ(true)))
+                                    expressionObj.AddDep(Model.Tables[tok.Text.NoQ(true)], prop, tok.StartIndex, tok.StopIndex, true);
+                                else
+                                {
+                                    // Invalid reference (no table with that name) or possibly a variable or function ref
+                                }
+                            }
                             break;
                         case DAXLexer.COLUMN_OR_MEASURE:
-                            var tableName = lastTableRef?.Text.NoQ(true);
-
                             // Referencing a table just before the object reference
-                            if (tableName != null && Model.Tables.Contains(tableName))
+                            if (lastTableRef != null)
                             {
+                                var tableName = lastTableRef.Text.NoQ(true);
+                                lastTableRef = null;
+                                if (!Model.Tables.Contains(tableName)) return; // Invalid reference (no table with that name)
+
                                 var table = Model.Tables[tableName];
                                 // Referencing a column on a specific table
                                 if (table.Columns.Contains(tok.Text.NoQ()))
@@ -88,20 +101,10 @@ namespace TabularEditor.TOMWrapper.Utils
                                         expressionObj.AddDep(m, prop, tok.StartIndex, tok.StopIndex, false);
                                 }
                             }
-                            lastTableRef = null;
                             break;
                         default:
-                            if (lastTableRef != null)
-                            {
-                                if (Model.Tables.Contains(lastTableRef.Text.NoQ(true))) expressionObj.AddDep(Model.Tables[lastTableRef.Text.NoQ(true)], prop, lastTableRef.StartIndex, lastTableRef.StopIndex, true);
-                                lastTableRef = null;
-                            }
+                            lastTableRef = null;
                             break;
-                    }
-                    if (lastTableRef != null)
-                    {
-                        if (Model.Tables.Contains(lastTableRef.Text.NoQ(true))) expressionObj.AddDep(Model.Tables[lastTableRef.Text.NoQ(true)], prop, lastTableRef.StartIndex, lastTableRef.StopIndex, true);
-                        //lastTableRef = null;
                     }
                 }
             }

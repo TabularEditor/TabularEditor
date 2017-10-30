@@ -25,7 +25,6 @@ namespace TabularEditor.PropertyGridUI
         /// <param name="key"></param>
         /// <returns></returns>
         string GetDisplayName(string key);
-        //void Refresh();
     }
 
     /// <summary>
@@ -41,7 +40,7 @@ namespace TabularEditor.PropertyGridUI
 
     #region Handling string dictionaries in the PropertyGrid
 
-    public class IndexerConverter: ExpandableObjectConverter
+    internal class IndexerConverter: ExpandableObjectConverter
     {
         public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes)
         {

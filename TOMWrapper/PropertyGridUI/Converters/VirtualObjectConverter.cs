@@ -20,7 +20,7 @@ namespace TabularEditor.PropertyGridUI
     /// show a set of subproperties in the property grid. These subproperties are inferred from a
     /// complex class that can be converter to and from the FormatString string.
     /// </summary>
-    public abstract class VirtualObjectConverter: TypeConverter
+    internal abstract class VirtualObjectConverter: TypeConverter
     {
         public abstract object GetObject(ITypeDescriptorContext context, object value);
         object baseObject = null;

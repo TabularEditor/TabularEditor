@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
-namespace TabularEditor.TOMWrapper
+namespace TabularEditor.TOMWrapper.Utils
 {
     public class TabularDeployer
     {

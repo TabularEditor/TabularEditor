@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
+using TabularEditor.TOMWrapper.Utils;
 
 namespace TabularEditor.PropertyGridUI
 {
@@ -15,13 +17,30 @@ namespace TabularEditor.PropertyGridUI
     /// This ensures that no expanded items (using the DictionaryProperty) still show old (deleted) members after the
     /// form is closed.
     /// </summary>
-    public class RefreshGridCollectionEditor : CollectionEditor
+    internal class RefreshGridCollectionEditor : CollectionEditor
     {
         TabularModelHandler handler;
         bool canceled = false;
+        Type itemType = null;
 
-        public RefreshGridCollectionEditor(Type type) : base(type)
+
+
+        public RefreshGridCollectionEditor(Type type) : base(typeof(IList))
         {
+            while(type != null)
+            {
+                var genericEnumerableType = type.GetInterfaces()
+                    .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+                if(genericEnumerableType != null)
+                {
+                    itemType = genericEnumerableType.GetGenericArguments()[0];
+                    break;
+                }
+                type = type.BaseType;
+            }
+
+            if (itemType == null)
+                throw new NotSupportedException("This collection editor can only work with collections that derive from IEnumerable<T>.");
         }
 
         protected override CollectionForm CreateCollectionForm()
@@ -64,6 +83,16 @@ namespace TabularEditor.PropertyGridUI
             newItems.ForEach(i => col.Add(i));
 
             return col;
+        }
+
+        protected override object[] GetItems(object editValue)
+        {
+            return (editValue as ITabularObjectCollection).Cast<object>().ToArray();
+        }
+
+        protected override Type CreateCollectionItemType()
+        {
+            return itemType;
         }
 
         protected virtual void OnFormClosed(FormClosedEventArgs e)

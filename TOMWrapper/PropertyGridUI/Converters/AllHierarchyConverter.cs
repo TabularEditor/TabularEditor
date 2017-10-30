@@ -9,7 +9,7 @@ using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.PropertyGridUI
 {
-    public class AllHierarchyConverter : TypeConverter
+    internal class AllHierarchyConverter : TypeConverter
     {
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
         {

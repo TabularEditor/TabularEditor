@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TabularEditor.TOMWrapper.Utils;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -99,7 +100,7 @@ namespace TabularEditor.TOMWrapper
     /// <summary>
     /// Objects that can depend on one or more DAXObjects through expression dependencies
     /// </summary>
-    public interface IDaxDependantObject: IDaxObject
+    public interface IDaxDependantObject: ITabularNamedObject
     {
         DependsOnList DependsOn { get; }
     }

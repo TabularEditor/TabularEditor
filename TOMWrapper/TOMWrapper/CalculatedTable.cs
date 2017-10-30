@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TabularEditor.TOMWrapper.Utils;
-using TabularEditor.UndoFramework;
+using TabularEditor.TOMWrapper.Undo;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -74,7 +74,7 @@ namespace TabularEditor.TOMWrapper
             return CreateNew(TabularModelHandler.Singleton.Model);
         }
 
-        public new static CalculatedTable CreateFromMetadata(Model parent, TOM.Table metadataObject)
+        internal new static CalculatedTable CreateFromMetadata(Model parent, TOM.Table metadataObject)
         {
             if (metadataObject.GetSourceType() != TOM.PartitionSourceType.Calculated) throw new ArgumentException("Provided metadataObject is not a Calculated Table.");
             var obj = new CalculatedTable(metadataObject);
@@ -85,7 +85,7 @@ namespace TabularEditor.TOMWrapper
             return obj;
         }
 
-        public CalculatedTable(TOM.Table tableMetadataObject) : base(tableMetadataObject)
+        protected CalculatedTable(TOM.Table tableMetadataObject) : base(tableMetadataObject)
         {
         }
 
@@ -100,7 +100,7 @@ namespace TabularEditor.TOMWrapper
             base.OnPropertyChanged(propertyName, oldValue, newValue);
         }
 
-        public override void CheckChildrenErrors()
+        internal override void CheckChildrenErrors()
         {
             base.CheckChildrenErrors();
             if (Partitions.Count > 0 && !string.IsNullOrEmpty(Partitions[0].ErrorMessage)) ErrorMessage = Partitions[0].ErrorMessage;

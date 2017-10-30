@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using TabularEditor.TOMWrapper;
 
-namespace TabularEditor.UndoFramework
+namespace TabularEditor.TOMWrapper.Undo
 {
     internal class UndoHierarchyLevelOrderAction : IUndoAction
     {

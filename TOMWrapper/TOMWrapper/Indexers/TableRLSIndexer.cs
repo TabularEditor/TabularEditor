@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
-using TabularEditor.UndoFramework;
+using TabularEditor.TOMWrapper.Undo;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using System;
 
@@ -21,7 +21,7 @@ namespace TabularEditor.TOMWrapper
     public sealed class TableRLSIndexer : GenericIndexer<ModelRole, string>
     {
         public readonly Table Table;
-        public TableRLSIndexer(Table table) : base(table)
+        internal TableRLSIndexer(Table table) : base(table)
         {
             Table = table;
         }

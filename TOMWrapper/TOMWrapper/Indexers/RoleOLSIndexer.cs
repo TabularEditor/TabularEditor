@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
-using TabularEditor.UndoFramework;
+using TabularEditor.TOMWrapper.Undo;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -19,7 +19,7 @@ namespace TabularEditor.TOMWrapper
     {
         public readonly ModelRole Role;
 
-        public RoleOLSIndexer(ModelRole role) : base(role)
+        internal RoleOLSIndexer(ModelRole role) : base(role)
         {
             Role = role;
         }

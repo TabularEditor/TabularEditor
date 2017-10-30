@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper.Utils;
-using TabularEditor.UndoFramework;
+using TabularEditor.TOMWrapper.Undo;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -239,7 +239,7 @@ namespace TabularEditor.TOMWrapper
 
     public partial class MeasureCollection
     {
-        public override string GetNewName(string prefix = null)
+        internal override string GetNewName(string prefix = null)
         {
             // For measures, we must ensure that the new measure name is unique across all tables,
             // which is why we have to override the GetNewName method here. Also, we must make sure
@@ -254,26 +254,6 @@ namespace TabularEditor.TOMWrapper
             // that's not being used anywhere:
             while (Table.Model.AllMeasures.Any(m => m.Name.Equals(testName, StringComparison.InvariantCultureIgnoreCase))
                 || Table.Columns.Any(c => c.Name.Equals(testName, StringComparison.InvariantCultureIgnoreCase)))
-            {
-                suffix++;
-                testName = prefix + " " + suffix;
-            }
-            return testName;
-        }
-
-        public static string GetNewMeasureName(string prefix)
-        {
-            // For measures, we must ensure that the new measure name is unique across all tables,
-            // which is why we have to override the GetNewName method here.
-
-            if (string.IsNullOrWhiteSpace(prefix)) prefix = "New Measure";
-
-            string testName = prefix;
-            int suffix = 0;
-
-            // Loop to determine if prefix + suffix is already in use - break, when we find a name
-            // that's not being used anywhere:
-            while (TabularModelHandler.Singleton.Model.AllMeasures.Any(m => m.Name.Equals(testName, StringComparison.InvariantCultureIgnoreCase)))
             {
                 suffix++;
                 testName = prefix + " " + suffix;

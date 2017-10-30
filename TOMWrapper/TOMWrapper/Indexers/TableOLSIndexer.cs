@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
-using TabularEditor.UndoFramework;
+using TabularEditor.TOMWrapper.Undo;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -22,7 +22,7 @@ namespace TabularEditor.TOMWrapper
     {
         public readonly Table Table;
 
-        public TableOLSIndexer(Table table) : base(table)
+        internal TableOLSIndexer(Table table) : base(table)
         {
             if (Handler.CompatibilityLevel < 1400) throw new InvalidOperationException(Messages.CompatibilityError_ObjectLevelSecurity);
             Table = table;

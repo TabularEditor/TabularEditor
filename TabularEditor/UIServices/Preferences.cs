@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using TOM = Microsoft.AnalysisServices.Tabular;
+using TabularEditor.TOMWrapper.Utils;
 
 namespace TabularEditor.UIServices
 {
@@ -131,11 +133,11 @@ namespace TabularEditor.UIServices
             };
         }
 
-        static public TabularEditor.TOMWrapper.SerializeOptions GetSerializeOptions(this Preferences value, bool SaveToFolder)
+        static public SerializeOptions GetSerializeOptions(this Preferences value, bool SaveToFolder)
         {
             if (SaveToFolder)
             {
-                return new TOMWrapper.SerializeOptions
+                return new SerializeOptions
                 {
                     IgnoreInferredObjects = value.SaveToFolder_IgnoreInferredObjects,
                     IgnoreInferredProperties = value.SaveToFolder_IgnoreInferredProperties,
@@ -148,7 +150,7 @@ namespace TabularEditor.UIServices
                 };
             } else
             {
-                return new TOMWrapper.SerializeOptions
+                return new SerializeOptions
                 {
                     IgnoreInferredObjects = value.SaveToFile_IgnoreInferredObjects,
                     IgnoreInferredProperties = value.SaveToFile_IgnoreInferredProperties,

@@ -10,7 +10,7 @@ using TabularEditor.PropertyGridUI;
 
 namespace TabularEditor.TOMWrapper
 {
-    public class LogicalGroups: IEnumerable<LogicalGroup>
+    public sealed class LogicalGroups: IEnumerable<LogicalGroup>
     {
         public static readonly LogicalGroups Singleton = new LogicalGroups();
 
@@ -59,7 +59,7 @@ namespace TabularEditor.TOMWrapper
     }
 
     [TypeConverter(typeof(DynamicPropertyConverter))]
-    public class LogicalGroup: ITabularNamedObject, ITabularObjectContainer, IDynamicPropertyObject
+    public sealed class LogicalGroup: ITabularNamedObject, ITabularObjectContainer, IDynamicPropertyObject
     {
 
         [ReadOnly(true)]
@@ -136,7 +136,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public LogicalGroup(string name)
+        internal LogicalGroup(string name)
         {
             Name = name;
         }

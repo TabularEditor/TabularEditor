@@ -1,194 +1,50 @@
 ﻿using System;
-using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Collections;
-using TOM = Microsoft.AnalysisServices.Tabular;
+using System.Linq;
 using TabularEditor.PropertyGridUI;
-using TabularEditor.UndoFramework;
+using TabularEditor.TOMWrapper.Undo;
+using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    internal interface ITabularObjectCollection: IEnumerable
+    interface ITabularObjectCollection: INotifyCollectionChanged, IExpandableIndexer, IEnumerable
     {
         TabularModelHandler Handler { get; }
         void Add(TabularNamedObject obj);
-        void Remove(TabularNamedObject obj);
         void Clear();
-        IEnumerable<string> Keys { get; }
-        bool Contains(object value);
+        void Remove(TabularNamedObject obj);
+        bool Contains(TabularNamedObject obj);
         bool Contains(string key);
         string CollectionName { get; }
         ITabularObjectCollection GetCurrentCollection();
         int IndexOf(TabularNamedObject obj);
         TabularNamedObject Parent { get; }
         void CreateChildrenFromMetadata();
+        Type ItemType { get; }
     }
 
-    public abstract class TabularObjectCollection<T> : IList, INotifyCollectionChanged, ICollection<T>, IList<T>, IExpandableIndexer, ITabularObjectCollection, IReadOnlyCollection<T>
+    public abstract class TabularObjectCollection<T> : ITabularObjectCollection, IReadOnlyList<T>
         where T: TabularNamedObject
     {
-        int IList.IndexOf(object value)
-        {
-            return IndexOf(value as T);
-        }
-
-        internal abstract void Reinit();
-        internal abstract void ReapplyReferences();
-
-        TabularNamedObject _parent;
-        TabularNamedObject ITabularObjectCollection.Parent { get { return _parent; } }
-        internal protected TabularNamedObject Parent { get { return _parent; } }
-
-        int ITabularObjectCollection.IndexOf(TabularNamedObject obj)
-        {
-            return IndexOf(obj as T);
-        }
-
-        [IntelliSense("Provide a lambda statement that is executed once for each object in the collection.\nExample: .ForEach(obj => obj.Name += \" OLD\");")]
-        public void ForEach(Action<T> action)
-        {
-            if(this is ColumnCollection)
-            {
-                // When iterating column collections, make sure to not include the row number:
-                this.Where(obj => (obj as Column).Type != ColumnType.RowNumber).ToList().ForEach(action);
-            }
-            else
-                this.ToList().ForEach(action);
-        }
-
-        public abstract void CreateChildrenFromMetadata();
-
-        ITabularObjectCollection ITabularObjectCollection.GetCurrentCollection()
-        {
-            return Handler.WrapperCollections[CollectionName];
-        }
-
-        public TabularModelHandler Handler { get; private set; }
-        [IntelliSense("The name of this collection.")]
-        public string CollectionName { get; private set; }
-
-        public void Refresh()
-        {
-
-        }
-
-        [IntelliSense("The number of items in this collection.")]
-        public abstract int Count { get; }
-
-
-        [IntelliSense("Whether or not this collection is read-only.")]
-        public bool IsReadOnly
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        [IntelliSense("A summary of this collection's content.")]
-        public string Summary
-        {
-            get
-            {
-                return Count.ToString();
-            }
-        }
-
-        public IEnumerable<string> Keys {
-            get
-            {
-                return this.Select(obj => obj.Name);
-            }
-        }
-
-        public bool IsFixedSize
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public object SyncRoot
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public bool IsSynchronized
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        object IList.this[int index]
-        {
-            get
-            {
-                return this[index];
-            }
-
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        object IExpandableIndexer.this[string index]
-        {
-            get
-            {
-                return this[index];
-            }
-
-            set
-            {
-                throw new InvalidOperationException();
-            }
-        }
-
+        // Functionality:
+        #region CTOR
         protected TabularObjectCollection(string collectionName, TabularNamedObject parent)
         {
             _parent = parent;
-            Handler = TabularModelHandler.Singleton;
+            _handler = TabularModelHandler.Singleton;
             CollectionName = collectionName;
             Handler.WrapperCollections[CollectionName] = this;
         }
+        #endregion
+        #region Internal / private members
+        private TabularNamedObject _parent;
+        private TabularModelHandler _handler;
+        internal protected TabularNamedObject Parent { get { return _parent; } }
+        internal TabularModelHandler Handler { get { return _handler; } }
 
-        protected abstract TOM.MetadataObject TOM_Get(string name);
-        protected abstract TOM.MetadataObject TOM_Get(int index);
-
-        public T this[string name]
-        {
-            get
-            {
-                return Handler.WrapperLookup[TOM_Get(name)] as T;
-            }
-        }
-
-        public virtual T this[int index]
-        {
-            get
-            {
-                return Handler.WrapperLookup[TOM_Get(index)] as T;
-            }
-            set
-            {
-                throw new InvalidOperationException("");
-            }
-        }
-
-        public abstract string GetNewName(string prefix = null);
-
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
-
-        #region Notifying child objects
-        public virtual void Add(T item)
+        internal virtual void Add(T item)
         {
             if (item.MetadataObject.Parent != null)
             {
@@ -206,22 +62,7 @@ namespace TabularEditor.TOMWrapper
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
         }
 
-        protected abstract void TOM_Add(TOM.MetadataObject obj);
-        protected abstract void TOM_Remove(TOM.MetadataObject obj);
-        protected abstract void TOM_Clear();
-        protected abstract bool TOM_Contains(TOM.MetadataObject obj);
-
-        void ITabularObjectCollection.Add(TabularNamedObject item)
-        {
-            Add(item as T);
-        }
-
-        void ITabularObjectCollection.Remove(TabularNamedObject item)
-        {
-            Remove(item as T);
-        }
-
-        public virtual bool Remove(T item)
+        internal virtual bool Remove(T item)
         {
             if (!TOM_Contains(item.MetadataObject)) throw new InvalidOperationException();
 
@@ -233,10 +74,35 @@ namespace TabularEditor.TOMWrapper
             return true;
         }
 
-        public void Clear()
+        internal void Clear()
         {
             Handler.UndoManager.Add(new UndoClearAction(this, this.ToArray()));
             TOM_Clear();
+        }
+
+        internal void CopyTo(T[] array, int arrayIndex)
+        {
+            for (var i = 0; i < Count; i++)
+            {
+                array[i + arrayIndex] = this[i];
+            }
+        }
+        #endregion
+        #region Public members
+        public virtual T this[string name]
+        {
+            get
+            {
+                return Handler.WrapperLookup[TOM_Get(name)] as T;
+            }
+        }
+
+        public virtual T this[int index]
+        {
+            get
+            {
+                return Handler.WrapperLookup[TOM_Get(index)] as T;
+            }
         }
 
         [IntelliSense("Returns true if this collection contains the specified item.")]
@@ -245,76 +111,125 @@ namespace TabularEditor.TOMWrapper
             return TOM_Contains(item.MetadataObject);
         }
 
-        public void CopyTo(T[] array, int arrayIndex)
+        public bool Contains(string name)
         {
-            //if (array == null) return;
-
-            for(var i = 0; i < Count; i++)
-            {
-                array[i + arrayIndex] = this[i];
-            }
+            return TOM_ContainsName(name);
         }
 
-        public abstract IEnumerator<T> GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        [IntelliSense("The name of this collection.")]
+        public string CollectionName { get; private set; }
 
         public int IndexOf(T item)
         {
             return IndexOf(item.MetadataObject);
         }
 
-        public void Insert(int index, T item)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
 
-        public void RemoveAt(int index)
-        {
-            Remove(this[index]);
-        }
-
-        public int Add(object value)
-        {
-            Add(value as T);
-            return IndexOf(value as T);
-        }
-
-        public bool Contains(object value)
-        {
-            return Contains(value as T);
-        }
-
-        public bool Contains(string name)
-        {
-            return TOM_ContainsName(name);
-        }
-
-        protected abstract bool TOM_ContainsName(string name);
-
+        // Abstract members:
+        #region Public abstract members
+        [IntelliSense("The number of items in this collection.")]
+        public abstract int Count { get; }
+        public abstract IEnumerator<T> GetEnumerator();
         public abstract int IndexOf(TOM.MetadataObject value);
+        #endregion
+        #region Internal / protected abstract members
+        internal abstract string GetNewName(string prefix = null);
+        internal abstract void Reinit();
+        internal abstract void ReapplyReferences();
+        internal abstract void CreateChildrenFromMetadata();
+        internal abstract Type GetItemType();
+        protected abstract TOM.MetadataObject TOM_Get(string name);
+        protected abstract TOM.MetadataObject TOM_Get(int index);
+        protected abstract void TOM_Add(TOM.MetadataObject obj);
+        protected abstract void TOM_Remove(TOM.MetadataObject obj);
+        protected abstract void TOM_Clear();
+        protected abstract bool TOM_Contains(TOM.MetadataObject obj);
+        protected abstract bool TOM_ContainsName(string name);
+        #endregion
 
-        public void Insert(int index, object value)
+        // Interface implementations:
+        #region ITabularObjectCollection members
+        Type ITabularObjectCollection.ItemType { get { return GetItemType(); } }
+        void ITabularObjectCollection.Clear()
         {
-            throw new NotImplementedException();
+            Clear();
+        }
+        bool ITabularObjectCollection.Contains(string key)
+        {
+            return Contains(key);
+        }
+        bool ITabularObjectCollection.Contains(TabularNamedObject obj)
+        {
+            return Contains(obj as T);
         }
 
-        public void Remove(object value)
+        void ITabularObjectCollection.CreateChildrenFromMetadata()
         {
-            Remove(value as T);
+            CreateChildrenFromMetadata();
+        }
+        TabularModelHandler ITabularObjectCollection.Handler { get { return _handler; } }
+        TabularNamedObject ITabularObjectCollection.Parent { get { return _parent; } }
+        ITabularObjectCollection ITabularObjectCollection.GetCurrentCollection()
+        {
+            return Handler.WrapperCollections[CollectionName];
+        }
+        int ITabularObjectCollection.IndexOf(TabularNamedObject obj)
+        {
+            return IndexOf(obj as T);
+        }
+        void ITabularObjectCollection.Add(TabularNamedObject item)
+        {
+            Add(item as T);
         }
 
-        public void CopyTo(Array array, int index)
+        void ITabularObjectCollection.Remove(TabularNamedObject item)
         {
-            CopyTo(array as T[], index);
+            Remove(item as T);
         }
 
-        public string GetDisplayName(string key)
+        #endregion
+        #region IExpandableIndexer members
+
+        object IExpandableIndexer.this[string name]
+        {
+            get
+            {
+                return this[name];
+            }
+
+            set
+            {
+                throw new NotSupportedException();
+            }
+        }
+        string IExpandableIndexer.GetDisplayName(string key)
         {
             return key;
+        }
+
+        IEnumerable<string> IExpandableIndexer.Keys
+        {
+            get
+            {
+                return this.Select(obj => obj.Name);
+            }
+        }
+        string IExpandableIndexer.Summary
+        {
+            get
+            {
+                return string.Format("{0} {1}", Count, typeof(T).GetTypeName(Count != 1));
+            }
+        }
+        #endregion
+        #region INotifyCollectionChanged members
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        #endregion
+        #region IEnumerable members
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
         #endregion
     }

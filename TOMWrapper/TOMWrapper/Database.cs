@@ -9,12 +9,12 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class Database
+    public sealed class Database
     {
         [Browsable(false)]
         public TOM.Database TOMDatabase { get; private set; }
 
-        public Database(Microsoft.AnalysisServices.Core.Database tomDatabase)
+        internal Database(Microsoft.AnalysisServices.Core.Database tomDatabase)
         {
             var db = tomDatabase as TOM.Database;
             TOMDatabase = db;

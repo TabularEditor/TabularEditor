@@ -9,7 +9,7 @@ using System.Linq;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.TextServices;
 using TabularEditor.TOMWrapper.Utils;
-using TabularEditor.UndoFramework;
+using TabularEditor.TOMWrapper.Undo;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -263,6 +263,7 @@ namespace TabularEditor.TOMWrapper
                 _objectLevelSecurtiy = value;
             }
         }
+        private bool ShouldSerializeObjectLevelSecurity() { return false; }
 
         internal static readonly Dictionary<Type, DataType> DataTypeMapping =
             new Dictionary<Type, DataType>() {
@@ -323,7 +324,7 @@ namespace TabularEditor.TOMWrapper
         [Category("Metadata"),DisplayName("Error Message")]
         public virtual string ErrorMessage { get; protected set; }
 
-        public virtual void CheckChildrenErrors()
+        internal virtual void CheckChildrenErrors()
         {
             var errObj = GetChildren().OfType<IErrorMessageObject>().FirstOrDefault(c => !string.IsNullOrEmpty(c.ErrorMessage));
             if (errObj != null && (!(errObj as IExpressionObject)?.NeedsValidation ?? true))
@@ -506,7 +507,7 @@ namespace TabularEditor.TOMWrapper
         public const string DEFAULTDETAILROWSEXPRESSION = "DefaultDetailRowsExpression";
     }
 
-    public static class TableExtension
+    internal static class TableExtension
     {
         public static TOM.PartitionSourceType GetSourceType(this TOM.Table table)
         {

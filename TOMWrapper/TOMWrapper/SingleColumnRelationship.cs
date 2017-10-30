@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TabularEditor.PropertyGridUI;
-using TabularEditor.UndoFramework;
+using TabularEditor.TOMWrapper.Undo;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -15,15 +15,16 @@ namespace TabularEditor.TOMWrapper
         internal override void DeleteLinkedObjects(bool isChildOfDeleted)
         {
             if (FromColumn != null && ToColumn != null) {
-#if CL1400
-                // Remove this relationship from any variations:
-                var allVariations =
-                    Model.AllColumns.SelectMany(c => c.Variations).Where(v => v.Relationship == this).ToList();
-                foreach(var v in allVariations)
+                if (Handler.CompatibilityLevel >= 1400)
                 {
-                    v.Relationship = null;
+                    // Remove this relationship from any variations:
+                    var allVariations =
+                        Model.AllColumns.SelectMany(c => c.Variations).Where(v => v.Relationship == this).ToList();
+                    foreach (var v in allVariations)
+                    {
+                        v.Relationship = null;
+                    }
                 }
-#endif
             }
             base.DeleteLinkedObjects(isChildOfDeleted);
         }

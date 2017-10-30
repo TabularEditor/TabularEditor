@@ -10,7 +10,7 @@ using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.PropertyGridUI
 {
-    public class AnnotationCollectionEditor : RefreshGridCollectionEditor
+    internal class AnnotationCollectionEditor : RefreshGridCollectionEditor
     {
         AnnotationCollection Collection;
 

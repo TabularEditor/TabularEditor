@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TabularEditor.TOMWrapper;
 
-namespace TabularEditor.UndoFramework
+namespace TabularEditor.TOMWrapper.Undo
 {
     internal class UndoAnnotationAction : IUndoAction
     {

@@ -13,7 +13,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    public class Annotation
+    public sealed class Annotation
     {
         public string Name { get; set; }
         [Editor(typeof(MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
@@ -21,11 +21,11 @@ namespace TabularEditor.TOMWrapper
     }
 
     [TypeConverter(typeof(IndexerConverter))]
-    public class AnnotationCollection : IExpandableIndexer
+    public sealed class AnnotationCollection : IExpandableIndexer
     {
         public IAnnotationObject Parent { get; private set; }
 
-        public AnnotationCollection(IAnnotationObject parent)
+        internal AnnotationCollection(IAnnotationObject parent)
         {
             Parent = parent;
         }

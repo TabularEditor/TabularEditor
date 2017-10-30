@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace TabularEditor.PropertyGridUI
 {
-    public class DataTypeEnumConverter: EnumConverter
+    internal class DataTypeEnumConverter: EnumConverter
     {
         static public Dictionary<TOMWrapper.DataType, string> DataTypeStrings = new Dictionary<TOMWrapper.DataType, string>()
         {

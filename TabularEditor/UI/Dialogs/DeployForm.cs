@@ -1,4 +1,4 @@
-﻿using Microsoft.AnalysisServices.Tabular;
+﻿using TOM = Microsoft.AnalysisServices.Tabular;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
+using TabularEditor.TOMWrapper.Utils;
 
 namespace TabularEditor.UI.Dialogs
 {
@@ -73,7 +74,7 @@ namespace TabularEditor.UI.Dialogs
             btnNext.Enabled = e.IsValid;
         }
 
-        public Server DeployTargetServer { get { return page2.Server; } set { page2.Server = value; } }
+        public TOM.Server DeployTargetServer { get { return page2.Server; } set { page2.Server = value; } }
         public string DeployTargetDatabaseID { get { return page2.DatabaseID; } set { page2.DatabaseID = value; } }
 
         private void DeployForm_KeyDown(object sender, KeyEventArgs e)
@@ -238,7 +239,7 @@ namespace TabularEditor.UI.Dialogs
 
         private void ExportBuild_Database(string databaseFile)
         {
-            Handler.Save(databaseFile, SaveFormat.ModelSchemaOnly, TOMWrapper.SerializeOptions.Default);
+            Handler.Save(databaseFile, SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
         }
         private void ExportBuild_Options(string optionsFile)
         {

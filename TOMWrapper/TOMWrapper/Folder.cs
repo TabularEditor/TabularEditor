@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using TabularEditor.UndoFramework;
+using TabularEditor.TOMWrapper.Undo;
 
 namespace TabularEditor.TOMWrapper
 {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TabularEditor.TOMWrapper
+namespace TabularEditor.TOMWrapper.Utils
 {
     /// <summary>
     /// A DependsOnList holds a dictionary of all objects that a specific opject depends on. Each entry contains
@@ -13,15 +13,15 @@ namespace TabularEditor.TOMWrapper
     /// </summary>
     public class DependsOnList : IReadOnlyDictionary<IDaxObject, List<ObjectReference>>
     {
-        public readonly IDaxDependantObject Parent;
-        public DependsOnList(IDaxDependantObject parent)
+        internal readonly IDaxDependantObject Parent;
+        internal DependsOnList(IDaxDependantObject parent)
         {
             Parent = parent;
         }
 
         private Dictionary<IDaxObject, List<ObjectReference>> InternalDictionary = new Dictionary<IDaxObject, List<ObjectReference>>();
 
-        public void Add(IDaxObject dependsOn, DAXProperty property, int fromChar, int toChar, bool fullyQualified)
+        internal void Add(IDaxObject dependsOn, DAXProperty property, int fromChar, int toChar, bool fullyQualified)
         {
             var dep = new ObjectReference { property = property, from = fromChar, to = toChar, fullyQualified = fullyQualified };
             List<ObjectReference> depList;
@@ -33,7 +33,7 @@ namespace TabularEditor.TOMWrapper
             depList.Add(dep);
         }
 
-        public void UpdateRef(IDaxObject renamedObj)
+        internal void UpdateRef(IDaxObject renamedObj)
         {
             List<ObjectReference> depList;
             if (TryGetValue(renamedObj, out depList))
@@ -160,7 +160,7 @@ namespace TabularEditor.TOMWrapper
 
     }
 
-    public static class DependencyHelper
+    internal static class DependencyHelper
     {
         static public void AddDep(this IDaxDependantObject target, IDaxObject dependsOn, DAXProperty property, int fromChar, int toChar, bool fullyQualified)
         {

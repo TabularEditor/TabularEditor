@@ -13,7 +13,7 @@ namespace TabularEditor.TOMWrapper
     /// For example, these methods may be used to easily perform UI drag and drop operations that will change hierarchy levels,
     /// display folders, etc.
     /// </summary>
-    public class TabularCommonActions
+    public sealed class TabularCommonActions
     {
         public TabularModelHandler Handler { get; private set; }
         internal TabularCommonActions(TabularModelHandler handler)

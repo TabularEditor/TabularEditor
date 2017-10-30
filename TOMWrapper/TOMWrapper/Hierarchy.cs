@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
-using TabularEditor.UndoFramework;
+using TabularEditor.TOMWrapper.Undo;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -170,19 +170,6 @@ namespace TabularEditor.TOMWrapper
         }
 
         protected override bool IsEditable(string propertyName)
-        {
-            return true;
-        }
-    }
-
-    public class HierarchyColumnConverter: TableColumnConverter
-    {
-        public override bool IsValid(ITypeDescriptorContext context, object value)
-        {
-            return base.IsValid(context, value);
-        }
-
-        public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
         {
             return true;
         }

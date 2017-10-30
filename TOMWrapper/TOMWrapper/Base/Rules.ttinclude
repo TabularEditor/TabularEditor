@@ -72,7 +72,6 @@ class Rules {
 	public static bool IsTranslatable(Type t, bool includeAncestors = false) {
 		switch(t.Name) {
 			case "Model":
-			case "ModelRole":
 			case "Perspective":
 			case "Table":
 			case "Level":
@@ -414,6 +413,17 @@ class Rules {
 	   { "NamedExpression", "TabularNamedObject" }
    };
    public static Dictionary<Type, string> ObjectTypes = Convert(_objectTypes).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+   
+   public static bool Sealed(Type t) 
+   { 
+		var exceptions = new HashSet<string>() {
+			"Table",
+			"Partition"
+		};
+		if(exceptions.Contains(t.Name)) return false;
+
+	    return !ObjectTypes.Values.Any(v => v == t.Name); 
+   }
 
    private static readonly Dictionary<string, string> _objectCollections = new Dictionary<string, string>()
    {

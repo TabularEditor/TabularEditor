@@ -8,12 +8,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
-using TabularEditor.UndoFramework;
+using TabularEditor.TOMWrapper.Undo;
 
 namespace TabularEditor.TOMWrapper
 {
     [TypeConverter(typeof(IndexerConverter))]
-    public class TranslationIndexer : IEnumerable<string>, IExpandableIndexer
+    public sealed class TranslationIndexer : IEnumerable<string>, IExpandableIndexer
     {
         public string ToJson()
         {
@@ -204,8 +204,7 @@ namespace TabularEditor.TOMWrapper
             }
             set
             {
-                // TODO: Find a better way to avoid translations on objects that can't be translated
-                if (_tabularObject is ModelRole || _tabularObject is Partition || _tabularObject is Relationship) return;
+                if (!(_tabularObject is ITranslatableObject)) return;
 
                 var oldValue = this[culture];
                 if (value == oldValue) return;

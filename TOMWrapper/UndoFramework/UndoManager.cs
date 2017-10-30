@@ -5,7 +5,7 @@ using System.Text;
 using TabularEditor.TOMWrapper;
 using TabularEditor.TOMWrapper.Utils;
 
-namespace TabularEditor.UndoFramework
+namespace TabularEditor.TOMWrapper.Undo
 {
     /// <summary>
     /// UndoManager implements an undo/redo handling system. The system implements two stacks: One for undoable operations (i.e. "going back"),
@@ -16,7 +16,7 @@ namespace TabularEditor.UndoFramework
     /// stack of operations. Use "BeginBatch()" and "EndBatch()" to register batch of undoable operations that will be undone/redone together
     /// in a single batch.
     /// </summary>
-    public class UndoManager
+    public sealed class UndoManager
     {
         TabularModelHandler _handler;
         Stack<IUndoAction> _UndoStack = new Stack<IUndoAction>();

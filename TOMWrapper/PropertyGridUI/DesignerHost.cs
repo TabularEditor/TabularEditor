@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TabularEditor.TOMWrapper;
+using TabularEditor.TOMWrapper.Utils;
 
 namespace TabularEditor
 {
@@ -88,7 +89,7 @@ namespace TabularEditor
         #endregion
     }
 
-    public class UndoableDesignerTransaction : DesignerTransaction
+    internal class UndoableDesignerTransaction : DesignerTransaction
     {
         int originalBatchDepth;
         TabularModelHandler Handler { get { return TabularModelHandler.Singleton; } }

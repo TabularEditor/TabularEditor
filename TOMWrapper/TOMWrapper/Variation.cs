@@ -8,10 +8,9 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-#if CL1400
     public partial class Variation
     {
-        public bool IsBrowsable(string propertyName)
+        public new bool IsBrowsable(string propertyName)
         {
             switch(propertyName)
             {
@@ -23,10 +22,9 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public bool IsEditable(string propertyName)
+        public new bool IsEditable(string propertyName)
         {
             return true;
         }
     }
-#endif
 }

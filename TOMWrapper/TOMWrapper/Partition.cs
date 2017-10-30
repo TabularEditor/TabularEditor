@@ -5,7 +5,7 @@ using TabularEditor.PropertyGridUI;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using System.Diagnostics;
 using System.ComponentModel;
-using TabularEditor.UndoFramework;
+using TabularEditor.TOMWrapper.Undo;
 using System.ComponentModel.Design;
 using System.Drawing.Design;
 
@@ -23,12 +23,6 @@ namespace TabularEditor.TOMWrapper
             calcTable.Partitions.Add(partition);
             partition.Init();
             partition.MetadataObject.Source = new TOM.CalculatedPartitionSource();
-        }
-
-        public Partition(): this(new TOM.Partition() { Source = new TOM.QueryPartitionSource() })
-        {
-            if (Model.DataSources.Count == 0) throw new Exception("Unable to create partitions on a model with no data sources.");
-            DataSource = Model.DataSources.FirstOrDefault();
         }
 
         protected override void Init()
@@ -189,8 +183,27 @@ namespace TabularEditor.TOMWrapper
 
     public class MPartition: Partition
     {
-        public MPartition() : base(new TOM.Partition() { Source = new TOM.MPartitionSource() })
+        protected MPartition(TOM.Partition metadataObject) : base(metadataObject)
         {
+            metadataObject.Source = new TOM.MPartitionSource();
+        }
+        public new static MPartition CreateNew(Table parent, string name = null)
+        {
+            if (TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(MPartition)))
+            {
+                throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject, typeof(MPartition).GetTypeName()));
+            }
+
+            var metadataObject = new TOM.Partition();
+            metadataObject.Name = parent.Partitions.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(MPartition).GetTypeName() : name);
+
+            var obj = new MPartition(metadataObject);
+
+            parent.Partitions.Add(obj);
+
+            obj.Init();
+
+            return obj;
 
         }
     }

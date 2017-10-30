@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using TabularEditor.UndoFramework;
+using TabularEditor.TOMWrapper.Undo;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using json.Newtonsoft.Json.Linq;
 using TabularEditor.TextServices;
@@ -65,20 +65,6 @@ namespace TabularEditor.TOMWrapper
     public delegate void ObjectChangedEventHandler(object sender, ObjectChangedEventArgs e);
     public delegate void ObjectDeletingEventHandler(object sender, ObjectDeletingEventArgs e);
 
-    public enum DeploymentStatus
-    {
-        ChangesSaved,
-        DeployComplete,
-        DeployCancelled
-    }
-
-    public enum AddObjectType
-    {
-        Measure = 1,
-        CalculatedColumn = 2,
-        Hierarchy = 3
-    }
-
     public enum SaveFormat
     {
         /// <summary>
@@ -86,12 +72,10 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         ModelSchemaOnly,
 
-#if CL1400
         /// <summary>
         /// Saves the Model Schema to an existing .pbit (Power BI Template) file
         /// </summary>
         PowerBiTemplate,
-#endif
 
         /// <summary>
         /// Saves the Model Schema together with a Visual Studio Tabular Project file and user settings file
@@ -125,58 +109,6 @@ namespace TabularEditor.TOMWrapper
         /// Power BI Template file (.pbit)
         /// </summary>
         Pbit
-    }
-
-    public class SerializeOptions
-    {
-        public SerializeOptions Clone()
-        {
-            SerializeOptions other = (SerializeOptions)MemberwiseClone();
-            other.Levels = new HashSet<string>(Levels);
-            return other;
-        }
-
-        public static SerializeOptions Default
-        {
-            get
-            {
-                var so = new SerializeOptions();
-                so.Levels = new HashSet<string> {
-                    "Data Sources",
-                    "Perspectives",
-                    "Relationships",
-                    "Roles",
-                    "Tables",
-                    "Tables/Columns",
-                    "Tables/Hierarchies",
-                    "Tables/Measures",
-                    "Tables/Partitions",
-                    "Translations"
-                };
-                return so;
-            }
-        }
-        public static SerializeOptions PowerBi
-        {
-            get
-            {
-                return new SerializeOptions()
-                {
-                    IgnoreInferredObjects = false,
-                    IgnoreInferredProperties = false,
-                    IgnoreTimestamps = false
-                };
-            }
-        }
-        public bool IgnoreInferredObjects = true;
-        public bool IgnoreInferredProperties = true;
-        public bool IgnoreTimestamps = true;
-        public bool SplitMultilineStrings = true;
-        public bool PrefixFilenames = false;
-        public bool LocalTranslations = false;
-        public bool LocalPerspectives = false;
-
-        public HashSet<string> Levels = new HashSet<string>(); 
     }
 
     /// <summary>
@@ -300,7 +232,6 @@ namespace TabularEditor.TOMWrapper
             var fi = new FileInfo(path);
             string data;
 
-#if CL1400
             if (fi.Exists && fi.Extension == ".pbit")
             {
                 data = PowerBIHelper.LoadDatabaseFromPbitFile(path);
@@ -308,7 +239,6 @@ namespace TabularEditor.TOMWrapper
                 Source = path;
             }
             else
-#endif
                         
             if (!fi.Exists || fi.Name == "database.json")
             {
@@ -432,11 +362,9 @@ namespace TabularEditor.TOMWrapper
                 case SaveFormat.ModelSchemaOnly:
                     SaveFile(path, options);
                     break;
-#if CL1400
                 case SaveFormat.PowerBiTemplate:
                     SavePbit(path);
                     break;
-#endif
                 case SaveFormat.TabularEditorFolder:
                     SaveFolder(path, options);
                     break;
@@ -448,7 +376,6 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-#if CL1400
         private void SavePbit(string fileName)
         {
             if (SourceType != ModelSourceType.Pbit)
@@ -473,7 +400,6 @@ namespace TabularEditor.TOMWrapper
             Status = "File saved.";
             if (!IsConnected) UndoManager.SetCheckpoint();
         }
-#endif
 
         private void SaveFile(string fileName, SerializeOptions options)
         {

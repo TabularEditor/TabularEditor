@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TabularEditor.PropertyGridUI
 {
-    public class NoMultiselectAttribute: Attribute
+    internal class NoMultiselectAttribute: Attribute
     {
         public static NoMultiselectAttribute Default = new NoMultiselectAttribute();
     }

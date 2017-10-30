@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace TabularEditor.PropertyGridUI
 {
-    public class KPITrendGraphicConverter: TypeConverter
+    internal class KPITrendGraphicConverter: TypeConverter
     {
         public static string[] TrendValues = {
             "Faces",

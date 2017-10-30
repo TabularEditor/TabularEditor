@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
-using TabularEditor.UndoFramework;
+using TabularEditor.TOMWrapper.Undo;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using System;
 
@@ -17,7 +17,7 @@ namespace TabularEditor.TOMWrapper
     {
         protected readonly ITabularPerspectiveObject PerspectiveObject;
 
-        public PerspectiveIndexer(ITabularPerspectiveObject perspectiveObject) : base(perspectiveObject as TabularObject)
+        internal PerspectiveIndexer(ITabularPerspectiveObject perspectiveObject) : base(perspectiveObject as TabularObject)
         {
             PerspectiveObject = perspectiveObject;
         }
@@ -92,7 +92,7 @@ namespace TabularEditor.TOMWrapper
     {
         protected Table Table { get { return PerspectiveObject as Table; } }
 
-        public PerspectiveTableIndexer(Table table) : base(table)
+        internal PerspectiveTableIndexer(Table table) : base(table)
         {
         }
 
@@ -129,7 +129,7 @@ namespace TabularEditor.TOMWrapper
     {
         protected Column Column { get { return PerspectiveObject as Column; } }
 
-        public PerspectiveColumnIndexer(Column column) : base(column)
+        internal PerspectiveColumnIndexer(Column column) : base(column)
         {
         }
 
@@ -170,7 +170,7 @@ namespace TabularEditor.TOMWrapper
     {
         protected Measure Measure { get { return PerspectiveObject as Measure; } }
 
-        public PerspectiveMeasureIndexer(Measure Measure) : base(Measure)
+        internal PerspectiveMeasureIndexer(Measure Measure) : base(Measure)
         {
         }
 

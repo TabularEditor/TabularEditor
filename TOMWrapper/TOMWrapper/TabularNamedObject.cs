@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using Microsoft.AnalysisServices.Tabular.Helper;
 using TabularEditor.PropertyGridUI;
-using TabularEditor.UndoFramework;
+using TabularEditor.TOMWrapper.Undo;
 using System.Collections.Specialized;
 using TabularEditor.TOMWrapper.Utils;
 
@@ -54,13 +54,12 @@ namespace TabularEditor.TOMWrapper
         /// <returns>True if the object can currently be deleted. False, otherwise.</returns>
         public bool CanDelete(out string message)
         {
-#if CL1400
             if(Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowDelete(GetType()))
             {
                 message = string.Format(Messages.CannotDeletePowerBIObject, GetType().GetTypeName());
                 return false;
             }
-#endif
+
             return AllowDelete(out message);
         }
 

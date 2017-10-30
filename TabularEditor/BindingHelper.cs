@@ -39,7 +39,7 @@ namespace TabularEditor
             }
         }
 
-        public static void BindTo<T>(this ComboBox comboBox, IList<T> items, string displayMember, INotifyPropertyChanged currentObject, string currentMember, string nullDisplayValue = "")
+        public static void BindTo<T>(this ComboBox comboBox, IReadOnlyList<T> items, string displayMember, INotifyPropertyChanged currentObject, string currentMember, string nullDisplayValue = "")
             where T: class, INotifyPropertyChanged
         {
             comboBox.Items.Clear();

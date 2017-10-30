@@ -14,7 +14,7 @@ namespace TabularEditor.PropertyGridUI
     /// This Collection Editor for Cultures takes care of removing unassigned cultures
     /// when the Collection Editor is closed.
     /// </summary>
-    public class CultureCollectionEditor : ClonableObjectCollectionEditor<Culture>
+    internal class CultureCollectionEditor : ClonableObjectCollectionEditor<Culture>
     {
         public CultureCollectionEditor(Type type) : base(type) { }
 

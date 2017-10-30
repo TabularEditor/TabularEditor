@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using TabularEditor.TOMWrapper;
 
-namespace TabularEditor.UndoFramework
+namespace TabularEditor.TOMWrapper.Undo
 {
     internal interface IUndoAction
     {

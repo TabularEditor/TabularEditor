@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using TabularEditor.TOMWrapper;
 
-namespace TabularEditor.UndoFramework
+namespace TabularEditor.TOMWrapper.Undo
 {
     internal class UndoPropertyChangedAction : IUndoAction
     {

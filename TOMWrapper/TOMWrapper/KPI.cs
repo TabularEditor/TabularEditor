@@ -5,12 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TabularEditor.PropertyGridUI;
+using TabularEditor.TOMWrapper.Utils;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class KPI: ITabularNamedObject
+    public partial class KPI: ITabularNamedObject, IDaxDependantObject
     {
+
+
         [Browsable(false)]
         public int MetadataIndex
         {
@@ -41,6 +44,19 @@ namespace TabularEditor.TOMWrapper
             set
             {
                 
+            }
+        }
+
+        private DependsOnList _dependsOn = null;
+
+        [Browsable(false)]
+        public DependsOnList DependsOn
+        {
+            get
+            {
+                if (_dependsOn == null)
+                    _dependsOn = new DependsOnList(this);
+                return _dependsOn;
             }
         }
 

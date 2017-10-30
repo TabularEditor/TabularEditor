@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
-using TabularEditor.UndoFramework;
+using TabularEditor.TOMWrapper.Undo;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -18,11 +18,11 @@ namespace TabularEditor.TOMWrapper
     /// which browses the permissions across all tables for one specific role.
     /// </summary>
     [TypeConverter(typeof(IndexerConverter))]
-    public class ColumnOLSIndexer: GenericIndexer<ModelRole, TOM.MetadataPermission>
+    public sealed class ColumnOLSIndexer: GenericIndexer<ModelRole, TOM.MetadataPermission>
     {
         public readonly Column Column;
 
-        public ColumnOLSIndexer(Column column) : base(column)
+        internal ColumnOLSIndexer(Column column) : base(column)
         {
             if (Handler.CompatibilityLevel < 1400) throw new InvalidOperationException(Messages.CompatibilityError_ObjectLevelSecurity);
             Column = column;

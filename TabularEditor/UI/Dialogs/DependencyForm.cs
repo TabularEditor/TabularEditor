@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper;
+using TabularEditor.TOMWrapper.Utils;
 
 namespace TabularEditor
 {
@@ -151,7 +152,7 @@ namespace TabularEditor
                         var i = UI.Tree.TabularIcon.GetIconIndex(d);
                         n.Nodes.Add(new TreeNode(d.Name + " (circular dependency)", i, i));
                     }
-                    else if (currentDepth < MAX_LEVELS) InverseRecursiveAdd(d, n.Nodes);
+                    else if (currentDepth < MAX_LEVELS && d is IDaxObject) InverseRecursiveAdd(d as IDaxObject, n.Nodes);
                     else n.Nodes.Add("(Infinite recursion)");
                     currentDepth--;
                 }

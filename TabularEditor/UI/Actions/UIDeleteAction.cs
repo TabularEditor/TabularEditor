@@ -30,7 +30,8 @@ namespace TabularEditor.UI
                     var d = (Selected.FirstOrDefault() as IDaxObject);
                     if (d != null && d.ReferencedBy.Count > 0)
                     {
-                        refs = "\n\nThis object is directly referenced in the DAX expression on " + d.ReferencedBy.First().DaxObjectFullName;
+                        var dependent = d.ReferencedBy.First();
+                        refs = "\n\nThis object is directly referenced in the DAX expression on " + (dependent as IDaxObject)?.DaxObjectFullName ?? dependent.Name;
                         if (d.ReferencedBy.Count > 1) refs += string.Format(" and {0} other object{1}.", d.ReferencedBy.Count - 1, d.ReferencedBy.Count == 2 ? "" : "s");
                     } else
                     {
@@ -82,7 +83,7 @@ namespace TabularEditor.UI
                 else
                 {
                     Text = "Delete " + UIController.Current.Selection.Name + "...";
-                    Enabled = !UIController.Current.Selection.OfType<CalculatedTableColumn>().Any();
+                    Enabled = UIController.Current.Selection.Any(obj => obj.CanDelete());
                     Visible = true;
                 }
             }

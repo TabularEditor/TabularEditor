@@ -1,1 +1,0 @@
-<#@ assembly name="$(ProjectDir)..\packages\Microsoft.AnalysisServices.Tabular.13.0.2150.2\lib\Microsoft.AnalysisServices.Tabular.dll" #>

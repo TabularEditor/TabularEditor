@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace TabularEditor.PropertyGridUI
 {
-    public class KPIStatusGraphicConverter: TypeConverter
+    internal class KPIStatusGraphicConverter: TypeConverter
     {
         public static string[] StatusValues = {
             "Cylinder",

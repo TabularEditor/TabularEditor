@@ -1,4 +1,4 @@
-﻿namespace TabularEditor.UndoFramework
+﻿namespace TabularEditor.TOMWrapper.Undo
 {
     class UndoBatchAction : IUndoAction
     {

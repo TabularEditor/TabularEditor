@@ -6,8 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-#if CL1400
-
 namespace TabularEditor.TOMWrapper.PowerBI
 {
     internal static class PowerBIHelper
@@ -54,5 +52,3 @@ namespace TabularEditor.TOMWrapper.PowerBI
         }
     }
 }
-
-#endif

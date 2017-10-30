@@ -8,6 +8,7 @@ using System.IO;
 using TabularEditor.TOMWrapper;
 using BPA = TabularEditor.BestPracticeAnalyzer;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using TabularEditor.TOMWrapper.Utils;
 
 namespace TabularEditor
 {
@@ -291,7 +292,7 @@ The AMO library may be downloaded from <A HREF=""https://go.microsoft.com/fwlink
             if(!string.IsNullOrEmpty(buildOutputPath))
             {
                 cw.WriteLine("Building Model.bim file...");
-                h.Save(buildOutputPath, SaveFormat.ModelSchemaOnly, TOMWrapper.SerializeOptions.Default);
+                h.Save(buildOutputPath, SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
             }
 
             var replaceMap = new Dictionary<string, string>();
@@ -361,7 +362,7 @@ The AMO library may be downloaded from <A HREF=""https://go.microsoft.com/fwlink
 
                 string userName = null;
                 string password = null;
-                var options = TOMWrapper.DeploymentOptions.StructureOnly;
+                var options = DeploymentOptions.StructureOnly;
 
                 var switches = args.Skip(deploy + 1).Where(arg => arg.StartsWith("-")).Select(arg => arg.ToUpper()).ToList();
 
@@ -386,11 +387,11 @@ The AMO library may be downloaded from <A HREF=""https://go.microsoft.com/fwlink
                 }
                 if (switches.Contains("-O") || switches.Contains("-OVERWRITE"))
                 {
-                    options.DeployMode = TOMWrapper.DeploymentMode.CreateOrAlter;
+                    options.DeployMode = DeploymentMode.CreateOrAlter;
                     switches.Remove("-O"); switches.Remove("-OVERWRITE");
                 } else
                 {
-                    options.DeployMode = TOMWrapper.DeploymentMode.CreateDatabase;
+                    options.DeployMode = DeploymentMode.CreateDatabase;
                 }
                 if (switches.Contains("-P") || switches.Contains("-PARTITIONS"))
                 {
@@ -429,9 +430,9 @@ The AMO library may be downloaded from <A HREF=""https://go.microsoft.com/fwlink
                     }
 
                     cw.WriteLine("Deploying...");
-                    var cs = string.IsNullOrEmpty(userName) ? TOMWrapper.TabularConnection.GetConnectionString(serverName) :
-                        TOMWrapper.TabularConnection.GetConnectionString(serverName, userName, password);
-                    var deploymentResult = TOMWrapper.TabularDeployer.Deploy(h, cs, databaseID, options);
+                    var cs = string.IsNullOrEmpty(userName) ? TabularConnection.GetConnectionString(serverName) :
+                        TabularConnection.GetConnectionString(serverName, userName, password);
+                    var deploymentResult = TabularDeployer.Deploy(h, cs, databaseID, options);
                     cw.WriteLine("Deployment succeeded.");
                     foreach (var err in deploymentResult.Issues) Issue(err);
                     foreach (var err in deploymentResult.Warnings) Warning(err);

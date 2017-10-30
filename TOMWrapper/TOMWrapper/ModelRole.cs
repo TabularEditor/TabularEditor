@@ -33,7 +33,7 @@ namespace TabularEditor.TOMWrapper
                     throw new InvalidOperationException("This role uses External Role Members. These role members are not supported in this version of Tabular Editor.");
                 if (RoleMembers == value) return;
 
-                Handler.UndoManager.Add(new UndoFramework.UndoPropertyChangedAction(this, "RoleMembers", RoleMembers, value));
+                Handler.UndoManager.Add(new Undo.UndoPropertyChangedAction(this, "RoleMembers", RoleMembers, value));
                 MetadataObject.Members.Clear();
                 foreach (var member in value.Replace("\r", "").Split('\n'))
                 {

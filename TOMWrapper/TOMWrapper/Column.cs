@@ -205,7 +205,11 @@ namespace TabularEditor.TOMWrapper
     {
         public override IEnumerator<Column> GetEnumerator()
         {
-            return TOM_Collection.Where(c => c.Type != TOM.ColumnType.RowNumber).Select(c => Handler.WrapperLookup[c] as Column).GetEnumerator();
+            // Make sure we never enumerate the RowNumber column:
+            foreach (var c in TOM_Collection) {
+                if(c.Type != TOM.ColumnType.RowNumber)
+                yield return Handler.WrapperLookup[c] as Column;
+            }
         }
 
         public override int IndexOf(TOM.MetadataObject value)

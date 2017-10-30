@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TabularEditor.PropertyGridUI;
 using System.Collections;
+using TabularEditor.TOMWrapper.Utils;
 
 namespace TabularEditor.TOMWrapper
 {

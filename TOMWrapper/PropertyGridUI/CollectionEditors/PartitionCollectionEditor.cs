@@ -10,7 +10,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.PropertyGridUI
 {
-    public class PartitionCollectionEditor: ClonableObjectCollectionEditor<Partition>
+    internal class PartitionCollectionEditor: ClonableObjectCollectionEditor<Partition>
     {
         public PartitionCollectionEditor(Type type) : base(type)
         {
