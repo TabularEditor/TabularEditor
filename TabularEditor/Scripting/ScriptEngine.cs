@@ -12,6 +12,8 @@ using System.IO.Compression;
 using System.Diagnostics;
 using System.Windows.Forms;
 using TabularEditor.UI.Actions;
+using TabularEditor.Scripting;
+using TabularEditor.TextServices;
 
 namespace TabularEditor
 {
@@ -40,14 +42,57 @@ namespace TabularEditor
         static readonly string WrapperDllPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\TOMWrapper14.dll";
         public static readonly string CustomActionsJsonPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\CustomActions.json";
 
-        public static Action<Model, UITreeSelection> ScriptAction(string script, out CompilerResults compilerResults)
+        private static string AddOutputLineNumbers(string script)
         {
-            var lines = script.Split('\n');
-            for(int i = 0; i < lines.Length; i++)
+            var parser = new TextServices.ScriptParser();
+            parser.Lex(script);
+            var tokens = parser.GetTokens();
+
+            // Replace method calls: Output() --> Output(<linenumber>)
+            var methodCalls = tokens.FindMethodCall("Output", 0); // Find all parameter-less calls to "Output"
+            var sb = new StringBuilder();
+            var pos = 0;
+            foreach (var call in methodCalls)
             {
-                lines[i] = lines[i].Replace(".Output()",".Output(" + (i + 1) + ")");
+                sb.Append(script.Substring(pos, call.StopIndex + 1 - pos));
+                sb.Append("(" + (call.Line) + ")");
+                pos = tokens[call.TokenIndex + 2].StartIndex + 1;
             }
-            script = string.Join("\n", lines);
+            sb.Append(script.Substring(pos));
+            return sb.ToString();
+        }
+
+        private static string ReplaceGlobalMethodCalls(string script)
+        {
+            var parser = new TextServices.ScriptParser();
+            parser.Lex(script);
+            var tokens = parser.GetTokens();
+
+            // Replace method calls: Output() --> Output(<linenumber>)
+            var methodCalls = tokens.FindMethodCall();
+            var sb = new StringBuilder();
+            var pos = 0;
+            foreach (var call in methodCalls.Where(t => ScriptMethods.ContainsKey(t.Text)))
+            {
+                if(call.TokenIndex == 0 || tokens[call.TokenIndex - 1].Type != CSharpLexer.DOT)
+                {
+                    var method = ScriptMethods[call.Text];
+
+                    // Global method called directly:
+                    sb.Append(script.Substring(pos, call.StartIndex - pos));
+                    sb.Append(method.DeclaringType.FullName);
+                    sb.Append(".");
+                    pos = call.StartIndex;
+                }
+            }
+            sb.Append(script.Substring(pos));
+            return sb.ToString();
+        }
+
+        public static Action<Model, UITreeSelection> CompileScript(string script, out CompilerResults compilerResults)
+        {
+            script = AddOutputLineNumbers(script);
+            script = ReplaceGlobalMethodCalls(script);
 
             var code = string.Format(@"namespace TabularEditor.Scripting
 {{
@@ -236,12 +281,7 @@ namespace TabularEditor
         static IList<AssemblyNamespace> _pluginNamespaces = new List<AssemblyNamespace>();
         static public IList<AssemblyNamespace> PluginNamespaces { get { return _pluginNamespaces; } }
 
-        /// <summary>
-        /// This method ensures that the TOMWrapper.dll file exists (needed for Advanced scripting).
-        /// Furthermore, if a CustomActions.json file is provided, it is compiled into memory and
-        /// loaded to the action manager.
-        /// </summary>
-        public static void InitScriptEngine(IList<Assembly> plugins)
+        private static void InitPlugins(IList<Assembly> plugins)
         {
             Plugins = plugins;
             _pluginNamespaces = plugins.SelectMany(p => p.GetExportedTypes()).Select(t => new AssemblyNamespace { Assembly = t.Assembly, Namespace = t.Namespace }).Distinct().ToList();
@@ -267,7 +307,8 @@ namespace TabularEditor
                     var actions = CustomActionsJson.LoadFromJson(CustomActionsJsonPath);
                     actions.SaveToJson(@"C:\TE\testactions.json");
                     CompileCustomActions(actions);
-                } else
+                }
+                else
                 {
                     ScriptEngineStatus = "File not found: " + CustomActionsJsonPath;
                 }
@@ -277,6 +318,32 @@ namespace TabularEditor
                 Debug.WriteLine(ex.Message);
                 ScriptEngineStatus = "Error: " + ex.Message;
             }
+        }
+
+        public static Dictionary<string, MethodInfo> ScriptMethods;
+
+        private static void FindScriptMethods(IEnumerable<Assembly> assemblies)
+        {
+            ScriptMethods = new Dictionary<string, MethodInfo>();
+
+            foreach(var asm in assemblies)
+            {
+                asm.GetTypes()
+                    .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.Static))
+                    .Where(m => m.GetCustomAttributes(typeof(ScriptMethodAttribute), false).Length > 0)
+                    .ToList().ForEach(mi => ScriptMethods.Add(mi.Name, mi));
+            }
+        }
+
+        /// <summary>
+        /// This method ensures that the TOMWrapper.dll file exists (needed for Advanced scripting).
+        /// Furthermore, if a CustomActions.json file is provided, it is compiled into memory and
+        /// loaded to the action manager.
+        /// </summary>
+        public static void InitScriptEngine(IList<Assembly> plugins)
+        {
+            InitPlugins(plugins);
+            FindScriptMethods(plugins.Concat(Enumerable.Repeat(typeof(ScriptHelper).Assembly, 1)));
         }
 
         public static string ScriptEngineStatus { get; private set; }
