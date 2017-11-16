@@ -11,6 +11,26 @@ namespace TabularEditor.Scripting
 {
     public static class ScriptHelper
     {
+        [ScriptMethod]
+        public static string ReadFile(string filePath)
+        {
+            using (var fileStream = new System.IO.FileStream(filePath,
+                System.IO.FileMode.Open,
+                System.IO.FileAccess.Read,
+                System.IO.FileShare.ReadWrite))
+            using (var textReader = new System.IO.StreamReader(fileStream))
+            {
+                return textReader.ReadToEnd();
+            }
+        }
+
+        [ScriptMethod]
+        public static void SaveFile(string filePath, string content)
+        {
+            System.IO.File.WriteAllText(filePath, content);
+        }
+
+        [ScriptMethod]
         public static void Output(this object value, int lineNumber = -1)
         {
             // TODO: Make this output to the console, when running in command-line mode
