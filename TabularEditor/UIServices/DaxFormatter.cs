@@ -44,11 +44,11 @@ namespace TabularEditor.Dax
             this.CallerApp = assemblyName.Name;
             this.CallerVersion = assemblyName.Version.ToString();
 
-            var telemetry = UsageTelemetry.Collect();
+            var telemetry = ModelTelemetry.Collect();
             if(telemetry != null) PopulateFromTelemetry(telemetry);
         }
 
-        private void PopulateFromTelemetry(UsageTelemetry telemetry)
+        private void PopulateFromTelemetry(ModelTelemetry telemetry)
         {
             ServerName = telemetry.ServerName;
             ServerEdition = telemetry.ServerEdition;

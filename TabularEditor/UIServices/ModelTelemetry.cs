@@ -8,7 +8,7 @@ using TabularEditor.UI;
 
 namespace TabularEditor.UIServices
 {
-    public class UsageTelemetry
+    public class ModelTelemetry
     {
         public string ServerName { get; set; }
         public string ServerEdition { get; set; }
@@ -21,7 +21,7 @@ namespace TabularEditor.UIServices
 
         private UIController ui;
 
-        private UsageTelemetry(UIController ui)
+        private ModelTelemetry(UIController ui)
         {
             this.ui = ui;
         }
@@ -71,12 +71,12 @@ namespace TabularEditor.UIServices
             DatabaseCompatibilityLevel = ui.Handler.Database.CompatibilityLevel.ToString();
         }
 
-        public static UsageTelemetry Collect()
+        public static ModelTelemetry Collect()
         {
             // Do not collect telemetry data if not allowed according to preferences:
             if (!Preferences.Current.CollectTelemetry) return null;
 
-            var telemetry = new UsageTelemetry(UIController.Current);
+            var telemetry = new ModelTelemetry(UIController.Current);
 
             if (UIController.Current.Handler != null)
             {
