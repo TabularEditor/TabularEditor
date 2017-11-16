@@ -120,11 +120,19 @@ namespace TabularEditor.TextServices
         public Dictionary<string, Type> Types = new Dictionary<string, Type>();
         private Dictionary<string, Type> localTypes = new Dictionary<string, Type>();
 
+        private CSharpLexer _lexer;
+
         public void Lex(string script)
         {
-            var lexer = new CSharpLexer(new Antlr4.Runtime.AntlrInputStream(script));
-            Ts = new Antlr4.Runtime.CommonTokenStream(lexer, CSharpLexer.DefaultTokenChannel);
+            _lexer = new CSharpLexer(new Antlr4.Runtime.AntlrInputStream(script));
+            Ts = new Antlr4.Runtime.CommonTokenStream(_lexer, CSharpLexer.DefaultTokenChannel);
             Ts.Fill();
+        }
+
+        public IList<IToken> GetTokens()
+        {
+            return Ts.GetTokens().Where(t => t.Channel == 0)
+                .Select((t, index) => { (t as CommonToken).TokenIndex = index; return t; }).ToList();
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "mx")]
@@ -317,5 +325,50 @@ namespace TabularEditor.TextServices
             public int TokenType;
         }
 
+    }
+
+    public static class ScriptParserHelper
+    {
+        /// <summary>
+        /// Loops through the tokens and returns all tokens matching the pattern: IDENTIFIER(*)
+        /// These indicate method calls.
+        /// </summary>
+        /// <param name="tokens">The current tokens to scan through (as outputted from GetTokens)</param>
+        /// <param name="methodName">An optional method name to search for</param>
+        /// <param name="parameters">The number of parameters the method should have. Use -1 for any number of parameters.</param>
+        /// <returns></returns>
+        public static IList<IToken> FindMethodCall(this IList<IToken> tokens, string methodName = null, int parameters = -1)
+        {
+            var result = new List<IToken>();
+
+            for(int i = 0; i < tokens.Count; i++)
+            {
+                if(tokens[i].Type == CSharpLexer.IDENTIFIER &&
+                    (methodName == null || tokens[i].Text == methodName) && 
+                    i < tokens.Count - 2 && 
+                    tokens[i+1].Type == CSharpLexer.OPEN_PARENS)
+                {
+                    // Find the corresponding close parens:
+                    var parenDepth = 0;
+                    var paramCount = 0;
+                    for(int ix = i + 2; ix < tokens.Count; ix++)
+                    {
+                        if (tokens[ix].Type != CSharpLexer.CLOSE_PARENS && paramCount == 0) paramCount++;
+                        if (tokens[ix].Type == CSharpLexer.COMMA && parenDepth == 0) paramCount++;
+                        if (tokens[ix].Type == CSharpLexer.OPEN_PARENS) parenDepth++;
+                        if (tokens[ix].Type == CSharpLexer.CLOSE_PARENS)
+                        {
+                            if(parenDepth == 0)
+                            {
+                                if(parameters == -1 || paramCount == parameters) result.Add(tokens[i]);
+                                break;
+                            }
+                            parenDepth--;
+                        }
+                    }
+                }
+            }
+            return result;
+        }
     }
 }
