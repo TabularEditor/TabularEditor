@@ -270,7 +270,7 @@ namespace TabularEditor.BestPracticeAnalyzer
                 case RuleScope.KPI:
                     return Model.AllMeasures.Where(m => m.KPI != null).Select(m => m.KPI).AsQueryable();
                 case RuleScope.CalculatedColumn:
-                    return Model.Tables.SelectMany(t => t.Columns).OfType<CalculatedColumn>().AsQueryable();
+                    return Model.AllColumns.OfType<CalculatedColumn>().AsQueryable();
                 case RuleScope.CalculatedTable:
                     return Model.Tables.OfType<CalculatedTable>().AsQueryable();
                 case RuleScope.CalculatedTableColumn:
@@ -278,26 +278,33 @@ namespace TabularEditor.BestPracticeAnalyzer
                 case RuleScope.Culture:
                     return Model.Cultures.AsQueryable();
                 case RuleScope.DataColumn:
-                    return Model.Tables.SelectMany(t => t.Columns).OfType<DataColumn>().AsQueryable();
-                case RuleScope.DataSource:
-                    return Model.DataSources.AsQueryable();
+                    return Model.AllColumns.OfType<DataColumn>().AsQueryable();
+                case RuleScope.ProviderDataSource:
+                    return Model.DataSources.OfType<ProviderDataSource>().AsQueryable();
+                case RuleScope.StructuredDataSource:
+                    return Model.DataSources.OfType<StructuredDataSource>().AsQueryable();
                 case RuleScope.Hierarchy:
-                    return Model.Tables.SelectMany(t => t.Hierarchies).AsQueryable();
+                    return Model.AllHierarchies.AsQueryable();
                 case RuleScope.Level:
-                    return Model.Tables.SelectMany(t => t.Hierarchies).SelectMany(h => h.Levels).AsQueryable();
+                    return Model.AllLevels.AsQueryable();
                 case RuleScope.Measure:
-                    return Model.Tables.SelectMany(t => t.Measures).AsQueryable();
+                    return Model.AllMeasures.AsQueryable();
                 case RuleScope.Model:
                     return Enumerable.Repeat(Model, 1).AsQueryable();
                 case RuleScope.Partition:
-                    return Model.Tables.SelectMany(t => t.Partitions).AsQueryable();
+                    return Model.AllPartitions.AsQueryable();
                 case RuleScope.Perspective:
                     return Model.Perspectives.AsQueryable();
                 case RuleScope.Relationship:
                     return Model.Relationships.OfType<SingleColumnRelationship>().AsQueryable();
                 case RuleScope.Table:
                     return Model.Tables.Where(t => !(t is CalculatedTable)).AsQueryable();
-
+                case RuleScope.ModelRole:
+                    return Model.Roles.AsQueryable();
+                case RuleScope.NamedExpression:
+                    return Model.Expressions.AsQueryable();
+                case RuleScope.Variation:
+                    return Model.AllColumns.SelectMany(c => c.Variations).AsQueryable();
                 default:
                     return Enumerable.Empty<TabularNamedObject>().AsQueryable();
             }

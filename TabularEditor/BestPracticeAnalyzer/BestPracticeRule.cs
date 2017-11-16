@@ -27,12 +27,16 @@ namespace TabularEditor.BestPracticeAnalyzer
         Perspective             = 0x0040,
         Culture                 = 0x0080,
         Partition               = 0x0100,
-        DataSource              = 0x0200,
+        ProviderDataSource      = 0x0200,
         DataColumn              = 0x0400,
         CalculatedColumn        = 0x0800,
         CalculatedTable         = 0x1000,
         CalculatedTableColumn   = 0x2000,
-        KPI                     = 0x4000
+        KPI                     = 0x4000,
+        StructuredDataSource    = 0x8000,
+        Variation               = 0x10000,
+        NamedExpression         = 0x20000,
+        ModelRole               = 0x40000
     }
 
     public static class RuleScopeHelper
@@ -72,12 +76,14 @@ namespace TabularEditor.BestPracticeAnalyzer
                 case RuleScope.Perspective: return typeof(Perspective);
                 case RuleScope.Culture: return typeof(Culture);
                 case RuleScope.Partition: return typeof(Partition);
-                case RuleScope.DataSource: return typeof(DataSource);
+                case RuleScope.ProviderDataSource: return typeof(ProviderDataSource);
+                case RuleScope.StructuredDataSource: return typeof(StructuredDataSource);
                 case RuleScope.DataColumn: return typeof(DataColumn);
                 case RuleScope.CalculatedColumn: return typeof(CalculatedColumn);
                 case RuleScope.CalculatedTable: return typeof(CalculatedTable);
                 case RuleScope.CalculatedTableColumn: return typeof(CalculatedTableColumn);
                 case RuleScope.KPI: return typeof(KPI);
+                case RuleScope.Variation: return typeof(Variation);
                 default:
                     throw new InvalidOperationException("Unknown scope type");
             }
@@ -206,6 +212,12 @@ namespace TabularEditor.BestPracticeAnalyzer
                     types.Add("DataColumn");
                     types.Add("CalculatedColumn");
                     types.Add("CalculatedTableColumn");
+                }
+                // For backwards compatibility with rules created when "DataSource" existed as a RuleScope:
+                if (types.Contains("DataSource"))
+                {
+                    types.Remove("DataSource");
+                    types.Add("ProviderDataSource");
                 }
 
                 return types.Select(t => RuleScopeHelper.GetScope(t)).Combine();
