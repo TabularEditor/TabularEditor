@@ -15,8 +15,16 @@ namespace TabularEditor.UI.Actions
     {
         public static CustomActionsJson LoadFromJson(string jsonPath)
         {
-            var json = File.ReadAllText(jsonPath, Encoding.Default);
-            return JsonConvert.DeserializeObject<CustomActionsJson>(json);
+            try
+            {
+                var json = File.ReadAllText(jsonPath, Encoding.Default);
+                return JsonConvert.DeserializeObject<CustomActionsJson>(json);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Could not load custom actions from file '{0}'. Error message: {1}", jsonPath, e.Message);
+                return new CustomActionsJson() { Actions = new CustomActionJson[0] };
+            }
         }
 
         public void SaveToJson(string jsonPath)
