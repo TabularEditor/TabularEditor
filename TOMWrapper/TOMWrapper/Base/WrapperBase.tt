@@ -505,10 +505,16 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in TOM_Collection) {
-<# foreach(var derived in Rules.GetDerivedTypes(t)) { #>
+<# if (t.Name == "Table") { #>
+                if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.Calculated) CalculatedTable.CreateFromMetadata(Model, obj);
+                else Table.CreateFromMetadata(Model, obj);
+<# } 
+else
+{
+   foreach(var derived in Rules.GetDerivedTypes(t)) { #>
 				if(obj is TOM.<#= derived.Name #>) <#= derived.Name #>.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj as TOM.<#= derived.Name #>);
-<# } #>				
-			}
+<# }
+} #>		    }
 		}
 
 <#      foreach(PropertyInfo p in props) 

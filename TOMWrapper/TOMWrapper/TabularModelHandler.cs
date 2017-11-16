@@ -479,16 +479,16 @@ namespace TabularEditor.TOMWrapper
         }
 
         /// <summary>
-        /// Temporarily removes all perspective and translation information from the CalculatedTableColumns of a
-        /// CalculatedTable that has had its expression changed (NeedsValidation = true). Otherwise, we may get
-        /// errors when deploying the model, if the CalculatedTable expression have changed such that one or more
-        /// of these columns are removed.
+        /// Temporarily removes all perspective and translation information from the CalculatedTableColumns of
+        /// all CalculatedTables in the model. Otherwise, we may get errors when deploying the model, if the
+        /// CalculatedTable expression or the source objects have changed such that one or more columns on the
+        /// CalculatedTable is removed.
         /// </summary>
         private void DetachCalculatedTableMetadata()
         {
             CTCMetadataBackup = new List<CTCMetadata>();
 
-            foreach(var ctc in Model.Tables.OfType<CalculatedTable>().Where(ctc => ctc.NeedsValidation).SelectMany(t => t.Columns.OfType<CalculatedTableColumn>()).ToList())
+            foreach(var ctc in Model.Tables.OfType<CalculatedTable>().SelectMany(t => t.Columns.OfType<CalculatedTableColumn>()).ToList())
             {
                 CTCMetadataBackup.Add(new CTCMetadata(ctc));
                 ctc.InPerspective.None();
@@ -496,6 +496,12 @@ namespace TabularEditor.TOMWrapper
                 ctc.TranslatedDisplayFolders.Clear();
                 ctc.TranslatedDescriptions.Clear();
             }
+
+            // TODO: See issue https://github.com/otykier/TabularEditor/issues/110
+            // To handle all possible use cases, we should also clear all SortByColumn properties, Variations
+            // Levels in hierarchies, Relationships, and any other properties that reference columns on the
+            // calculated table, since we cannot know if these columns will still exist after the model is
+            // saved.
         }
 
         private List<CTCMetadata> CTCMetadataBackup;
@@ -526,7 +532,7 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         private void AttachCalculatedTableMetadata()
         {
-            foreach (var ct in Model.Tables.OfType<CalculatedTable>().Where(ctc => ctc.NeedsValidation))
+            foreach (var ct in Model.Tables.OfType<CalculatedTable>())
             {
                 ct.Columns.CreateChildrenFromMetadata();
                 Tree.OnStructureChanged(ct);
@@ -832,6 +838,8 @@ namespace TabularEditor.TOMWrapper
         private void CheckErrors()
         {
             var errorList = new List<IErrorMessageObject>();
+
+            Tree.ClearFolderErrors();
 
             foreach (var t in database.Model.Tables)
             {

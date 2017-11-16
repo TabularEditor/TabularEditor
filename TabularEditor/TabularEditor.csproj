@@ -29,8 +29,8 @@
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <AutorunEnabled>true</AutorunEnabled>
-    <ApplicationRevision>37004</ApplicationRevision>
-    <ApplicationVersion>2.6.6499.37431</ApplicationVersion>
+    <ApplicationRevision>20654</ApplicationRevision>
+    <ApplicationVersion>2.7.6514.20654</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -173,6 +173,8 @@
     </Compile>
     <Compile Include="CustomCombobox\OldNewEvent.cs" />
     <Compile Include="CustomCombobox\PopupControl.cs" />
+    <Compile Include="Scripting\ScriptMethodAttribute.cs" />
+    <Compile Include="Scripting\PropertySerializer.cs" />
     <Compile Include="Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -186,6 +188,7 @@
       <DependentUpon>ScriptOutputForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UIServices\ClipboardListener.cs" />
+    <Compile Include="UIServices\Crypto.cs" />
     <Compile Include="UIServices\DynamicLinq.cs" />
     <Compile Include="UIServices\ManagedIpHelper.cs" />
     <Compile Include="UIServices\PowerBIHelper.cs" />
@@ -200,6 +203,7 @@
     </Compile>
     <Compile Include="TextServices\CSharpLexer.cs" />
     <Compile Include="TextServices\ExpressionParser.cs" />
+    <Compile Include="UIServices\ModelTelemetry.cs" />
     <Compile Include="UI\Actions\CreateRelationshipAction.cs" />
     <Compile Include="UI\Actions\RefreshAction.cs" />
     <Compile Include="UI\Actions\SelectAllAction.cs">
@@ -704,7 +708,26 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <COMReference Include="ADODB">
+      <Guid>{B691E011-1797-432E-907A-4D8C69339129}</Guid>
+      <VersionMajor>6</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="MSDASC">
+      <Guid>{2206CEB0-19C1-11D1-89E0-00C04FD7A829}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <UsingTask TaskName="CosturaCleanup" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" TaskFactory="CodeTaskFactory">
     <ParameterGroup>

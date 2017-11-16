@@ -268,7 +268,7 @@ The AMO library may be downloaded from <A HREF=""https://go.microsoft.com/fwlink
 
                 System.CodeDom.Compiler.CompilerResults result;
                 Scripting.ScriptOutputForm.Reset(false);
-                var dyn = ScriptEngine.ScriptAction(script, out result);
+                var dyn = ScriptEngine.CompileScript(script, out result);
                 if (result.Errors.Count > 0)
                 {
                     cw.WriteLine("Script compilation errors:");

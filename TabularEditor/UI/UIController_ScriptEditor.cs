@@ -108,7 +108,7 @@ namespace TabularEditor.UI
                 var offset = (!string.IsNullOrEmpty(UI.ScriptEditor.SelectedText) ? UI.ScriptEditor.Selection.FromLine : 0);
 
                 Scripting.ScriptOutputForm.Reset();
-                var dyn = ScriptEngine.ScriptAction(script, out result);
+                var dyn = ScriptEngine.CompileScript(script, out result);
                 if (result.Errors.Count > 0)
                 {
                     foreach (System.CodeDom.Compiler.CompilerError err in result.Errors)
