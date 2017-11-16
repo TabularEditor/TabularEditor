@@ -17,6 +17,8 @@ namespace TabularEditor.UI
 
         public void Database_Deploy()
         {
+            ExpressionEditor_AcceptEdit();
+
             var f = new DeployForm();
             var res = f.ShowDialog();
             if (res == DialogResult.Cancel) return;
@@ -53,14 +55,14 @@ namespace TabularEditor.UI
             }
         }
 
-        private string LocalInstanceName;
+        public string LocalInstanceName { get; private set; }
+        public EmbeddedInstanceType LocalInstanceType { get; private set; }
 
         public void Database_Connect()
         {
             if (DiscardChangesCheck()) return;
 
             if (ConnectForm.Show() == DialogResult.Cancel) return;
-            LocalInstanceName = ConnectForm.LocalInstanceName;
 
             switch(ConnectForm.LocalInstanceType)
             {
@@ -87,11 +89,14 @@ namespace TabularEditor.UI
                 {
                     Handler = new TabularModelHandler(
                         ConnectForm.ConnectionString, 
-                        string.IsNullOrEmpty(LocalInstanceName) ? SelectDatabaseForm.DatabaseName : null);
+                        string.IsNullOrEmpty(ConnectForm.LocalInstanceName) ? SelectDatabaseForm.DatabaseName : null);
                     Handler.Settings.AutoFixup = Preferences.Current.FormulaFixup;
                     LoadTabularModelToUI();
                     File_Current = null;
                     File_SaveMode = ModelSourceType.Database;
+                    LocalInstanceName = ConnectForm.LocalInstanceName;
+                    LocalInstanceType = ConnectForm.LocalInstanceType;
+
                 }
                 catch (Exception ex)
                 {
@@ -106,8 +111,6 @@ namespace TabularEditor.UI
         private void Database_Save()
         {
             UI.ErrorLabel.Text = "";
-
-            ExpressionEditor_AcceptEdit();
 
             var conflictInfo = Handler.CheckConflicts();
             if (conflictInfo.Conflict)

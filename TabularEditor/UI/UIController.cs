@@ -251,7 +251,6 @@ namespace TabularEditor.UI
         private void UpdateUIText()
         {
             var appName = Application.ProductName + " " + string.Join(".", Application.ProductVersion.Split('.').Take(2));
-            if (appName.EndsWith("2.6")) appName += ".1";
 
             if (Handler == null)
             {

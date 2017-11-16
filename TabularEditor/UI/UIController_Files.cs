@@ -152,6 +152,8 @@ namespace TabularEditor.UI
 
         public void File_SaveAs()
         {
+            ExpressionEditor_AcceptEdit();
+
             var res = UI.SaveBimDialog.ShowDialog();
 
             if (res == DialogResult.OK)
@@ -206,7 +208,9 @@ namespace TabularEditor.UI
 
         public void Save()
         {
-            if(File_Current == null && File_SaveMode == ModelSourceType.File)
+            ExpressionEditor_AcceptEdit();
+
+            if (File_Current == null && File_SaveMode == ModelSourceType.File)
             {
                 File_SaveAs();
                 return;
