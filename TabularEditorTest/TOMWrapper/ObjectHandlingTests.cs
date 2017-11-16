@@ -2,28 +2,40 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using System.Linq;
+using TabularEditor.TOMWrapper.Utils;
 
 namespace TabularEditor.TOMWrapper
 {
     [TestClass]
     public class ObjectHandlingTests
     {
-#if CL1400
-        const int CompatibilityLevel = 1400;
-        const string ServerName = @"localhost\Tabular2017";
-        const string TestFileName = "testmodel1400.bim";
-#else
         const int CompatibilityLevel = 1200;
         const string ServerName = @"localhost";
         const string TestFileName = "testmodel1200.bim";
-#endif
-        const string TestDBName = "testdb";
-
+        const string TestDBName = "TestModel";
         /// <summary>
-        /// Creates a simple model with a few tables, measures, hierarchies, relationships, cultures and perspectives.
+        /// Creates a simple model for unit testing.
         /// </summary>
-        /// <param name="fileName"></param>
-        public static TabularModelHandler CreateTestModel(string fileName, int compatibilityLevel = CompatibilityLevel)
+        /// <remarks>
+        /// The model will contain:
+        ///   - 1 data source: "Test Datasource"
+        ///   - 2 roles: "Test Role 1", "Test Role 2"
+        ///   - 2 cultures: "da-DK", "en-US" (all objects translated in these)
+        ///   - 2 perspectives: "Test Perspective 1", "Test Perspective 2"
+        ///   - 2 tables: "Test Table 1", "Test Table 2"
+        ///   - 1 calculated table: "Test CalcTable 1"
+        ///   - "Test Table 1" contains:
+        ///         - 3 columns, 1 calculated column
+        ///         - 1 hierarchy (4 levels - one per column)
+        ///         - 2 measures, 1 with kpi
+        ///   - "Test Table 2" contains:
+        ///         - 3 columns, 1 calculated column
+        ///         - 1 hierarchy
+        ///   - 1 relationship
+        /// </remarks>
+        /// <param name="fileName">If specified, the model will be saved to this file.</param>
+        /// <param name="compatibilityLevel">Specify the compatibility level of the created model.</param>
+        public static TabularModelHandler CreateTestModel(string fileName = null, int compatibilityLevel = 1200)
         {
             var tm = new TabularModelHandler(compatibilityLevel);
 
@@ -87,7 +99,7 @@ namespace TabularEditor.TOMWrapper
             // Include all items in table 1 in perspective:
             foreach(var item in t1.GetChildren().OfType<ITabularPerspectiveObject>()) item.InPerspective.All();
 
-            tm.Save(fileName, SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+            if(!string.IsNullOrEmpty(fileName)) tm.Save(fileName, SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
 
             return tm;
         }

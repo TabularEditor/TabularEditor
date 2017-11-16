@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TabularEditor.TOMWrapper.Utils;
 
 namespace TabularEditor.TOMWrapper.Tests
 {
