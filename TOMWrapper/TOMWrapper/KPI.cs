@@ -12,7 +12,19 @@ namespace TabularEditor.TOMWrapper
 {
     public partial class KPI: ITabularNamedObject, IDaxDependantObject
     {
+        protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
+        {
+            switch(propertyName)
+            {
+                case Properties.STATUSEXPRESSION:
+                case Properties.TARGETEXPRESSION:
+                case Properties.TRENDEXPRESSION:
+                    FormulaFixup.BuildDependencyTree(this);
+                    break;
+            }
 
+            base.OnPropertyChanged(propertyName, oldValue, newValue);
+        }
 
         [Browsable(false)]
         public int MetadataIndex
