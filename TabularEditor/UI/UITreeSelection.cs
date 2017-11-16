@@ -424,6 +424,7 @@ namespace TabularEditor.UI
             Perspectives = new UISelectionList<Perspective>(this.OfType<Perspective>());
             CalculatedColumns = new UISelectionList<CalculatedColumn>(this.OfType<CalculatedColumn>());
             CalculatedTableColumns = new UISelectionList<CalculatedTableColumn>(this.OfType<CalculatedTableColumn>());
+            SingleColumnRelationships = new UISelectionList<SingleColumnRelationship>(this.OfType<SingleColumnRelationship>());
             DataColumns = new UISelectionList<DataColumn>(this.OfType<DataColumn>());
             Tables = new UISelectionList<Table>(this.OfType<Table>());
             Partitions = new UISelectionList<Partition>(this.OfType<Partition>());
@@ -505,6 +506,9 @@ namespace TabularEditor.UI
 
         [IntelliSense("All currently selected roles.")]
         public UISelectionList<ModelRole> Roles { get; private set; }
+
+        [IntelliSense("All currently selected relationships.")]
+        public UISelectionList<SingleColumnRelationship> SingleColumnRelationships { get; private set; }
 
         [IntelliSense("All currently selected perspectives.")]
         public UISelectionList<Perspective> Perspectives { get; private set; }

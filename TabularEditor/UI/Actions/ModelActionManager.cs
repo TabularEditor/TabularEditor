@@ -209,6 +209,14 @@ namespace TabularEditor.UI.Actions
                 UIController.Current.ShowDependencies(s.Direct.First() as IDaxObject);
             }, (s, m) => @"Show dependencies...", true, Context.Table | Context.TableObject));
 
+            // Reverse relationship:
+            Add(new Action((s, m) => true, (s, m) => s.SingleColumnRelationships.ForEach(r => {
+                var fc = r.FromColumn; r.FromColumn = null;
+                var tc = r.ToColumn; r.ToColumn = null;
+                r.FromColumn = tc;
+                r.ToColumn = fc;
+            }), (s, m) => "Reverse direction", false, Context.Relationship));
+
             // Script actions:
             Add(new Action((s, m) => s.DirectCount == 1, (s, m) => Clipboard.SetText(Scripter.ScriptCreateOrReplace(s.OfType<TabularNamedObject>().FirstOrDefault())), (s, m) => @"Script\Create or Replace\To clipboard", true, Context.Scriptable));
             Add(new Action((s, m) => s.DirectCount == 1, (s, m) => Clipboard.SetText(Scripter.ScriptCreate(s.OfType<TabularNamedObject>().FirstOrDefault())), (s, m) => @"Script\Create\To clipboard", true, Context.Scriptable));
