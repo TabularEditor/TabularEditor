@@ -16,6 +16,7 @@ namespace TabularEditor.UIServices
     {
         #region Serializable properties
         public bool CheckForUpdates = false;
+        public bool CollectTelemetry = true;
         public bool FormulaFixup = true;
         public bool AllowUnsupportedPBIFeatures = false;
         public string BackupLocation = string.Empty;

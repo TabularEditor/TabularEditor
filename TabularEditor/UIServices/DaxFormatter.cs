@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using TabularEditor.TOMWrapper;
+using TabularEditor.UIServices;
 
 namespace TabularEditor.Dax
 {
@@ -23,6 +25,15 @@ namespace TabularEditor.Dax
         public string CallerApp { get; set; }
         public string CallerVersion { get; set; }
 
+        public string ServerName { get; set; }
+        public string ServerEdition { get; set; }
+        public string ServerType { get; set; }
+        public string ServerMode { get; set; }
+        public string ServerLocation { get; set; }
+        public string ServerVersion { get; set; }
+        public string DatabaseName { get; set; }
+        public string DatabaseCompatibilityLevel { get; set; }
+
         public DaxFormatterRequest()
         {
             this.ListSeparator = ',';
@@ -32,6 +43,21 @@ namespace TabularEditor.Dax
             var assemblyName = System.Reflection.Assembly.GetEntryAssembly().GetName();
             this.CallerApp = assemblyName.Name;
             this.CallerVersion = assemblyName.Version.ToString();
+
+            var telemetry = UsageTelemetry.Collect();
+            if(telemetry != null) PopulateFromTelemetry(telemetry);
+        }
+
+        private void PopulateFromTelemetry(UsageTelemetry telemetry)
+        {
+            ServerName = telemetry.ServerName;
+            ServerEdition = telemetry.ServerEdition;
+            ServerType = telemetry.ServerType;
+            ServerMode = telemetry.ServerMode;
+            ServerLocation = telemetry.ServerLocation;
+            ServerVersion = telemetry.ServerVersion;
+            DatabaseName = telemetry.DatabaseName;
+            DatabaseCompatibilityLevel = telemetry.DatabaseCompatibilityLevel;
         }
     }
 
@@ -70,7 +96,7 @@ namespace TabularEditor.Dax
                 DaxFormatterRequest req = new DaxFormatterRequest();
                 req.Dax = query;
 
-                var data = JsonConvert.SerializeObject(req);
+                var data = JsonConvert.SerializeObject(req, Formatting.Indented);
 
                 var enc = System.Text.Encoding.UTF8;
                 var data1 = enc.GetBytes(data);
