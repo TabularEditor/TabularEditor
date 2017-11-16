@@ -20,6 +20,7 @@ namespace TabularEditor.TOMWrapper.Utils
         }
 
         private Dictionary<IDaxObject, List<ObjectReference>> InternalDictionary = new Dictionary<IDaxObject, List<ObjectReference>>();
+        private List<IDaxObject> InternalList = new List<IDaxObject>();
 
         internal void Add(IDaxObject dependsOn, DAXProperty property, int fromChar, int toChar, bool fullyQualified)
         {
@@ -29,6 +30,7 @@ namespace TabularEditor.TOMWrapper.Utils
             {
                 depList = new List<ObjectReference>();
                 InternalDictionary.Add(dependsOn, depList);
+                InternalList.Add(dependsOn);
             }
             depList.Add(dep);
         }
@@ -66,19 +68,21 @@ namespace TabularEditor.TOMWrapper.Utils
             }
         }
 
-        public IEnumerable<Measure> Measures { get { return Keys.OfType<Measure>(); } }
-        public IEnumerable<Column> Columns { get { return Keys.OfType<Column>(); } }
-        public IEnumerable<Table> Tables { get { return Keys.OfType<Table>(); } }
+        public IEnumerable<Measure> Measures { get { return InternalList.OfType<Measure>(); } }
+        public IEnumerable<Column> Columns { get { return InternalList.OfType<Column>(); } }
+        public IEnumerable<Table> Tables { get { return InternalList.OfType<Table>(); } }
 
 
         #region IDictionary members
         public void Clear()
         {
             InternalDictionary.Clear();
+            InternalList.Clear();
         }
         public void Remove(IDaxObject key)
         {
             InternalDictionary.Remove(key);
+            InternalList.Remove(key);
         }
 
         public List<ObjectReference> this[IDaxObject key]
@@ -101,7 +105,7 @@ namespace TabularEditor.TOMWrapper.Utils
         {
             get
             {
-                return InternalDictionary.Keys;
+                return InternalList;
             }
         }
 
@@ -113,14 +117,17 @@ namespace TabularEditor.TOMWrapper.Utils
             }
         }
 
+        public IDaxObject this[int index]
+        {
+            get
+            {
+                return InternalList[index];
+            }
+        }
+
         public bool ContainsKey(IDaxObject key)
         {
             return InternalDictionary.ContainsKey(key);
-        }
-
-        public IEnumerator<KeyValuePair<IDaxObject, List<ObjectReference>>> GetEnumerator()
-        {
-            return InternalDictionary.GetEnumerator();
         }
 
         public bool TryGetValue(IDaxObject key, out List<ObjectReference> value)
@@ -130,7 +137,12 @@ namespace TabularEditor.TOMWrapper.Utils
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return (InternalDictionary as IEnumerable).GetEnumerator();
+            return InternalList.GetEnumerator();
+        }
+        
+        public IEnumerator<KeyValuePair<IDaxObject, List<ObjectReference>>> GetEnumerator()
+        {
+            return ((IReadOnlyDictionary<IDaxObject, List<ObjectReference>>)InternalDictionary).GetEnumerator();
         }
         #endregion
     }

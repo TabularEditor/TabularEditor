@@ -37,6 +37,7 @@ namespace TabularEditor.TOMWrapper.Utils
                 var tokens = new DAXLexer(new AntlrInputStream(expressionObj.GetDAX(prop) ?? "")).GetAllTokens();
 
                 IToken lastTableRef = null;
+                int startTableIndex = 0;
 
                 for (var i = 0; i < tokens.Count; i++)
                 {
@@ -51,17 +52,19 @@ namespace TabularEditor.TOMWrapper.Utils
                             {
                                 // Keep the token reference, as the next token should be column (fully qualified).
                                 lastTableRef = tok;
+                                startTableIndex = tok.StartIndex;
                             }
                             else
                             {
-                                // Table referenced directly:
+                                // Table referenced directly, don't save the reference for the next token.
                                 lastTableRef = null;
-                                if (Model.Tables.Contains(tok.Text.NoQ(true)))
-                                    expressionObj.AddDep(Model.Tables[tok.Text.NoQ(true)], prop, tok.StartIndex, tok.StopIndex, true);
-                                else
-                                {
-                                    // Invalid reference (no table with that name) or possibly a variable or function ref
-                                }
+                            }
+
+                            if (Model.Tables.Contains(tok.Text.NoQ(true)))
+                                expressionObj.AddDep(Model.Tables[tok.Text.NoQ(true)], prop, tok.StartIndex, tok.StopIndex, true);
+                            else
+                            {
+                                // Invalid reference (no table with that name) or possibly a variable or function ref
                             }
                             break;
                         case DAXLexer.COLUMN_OR_MEASURE:
@@ -75,10 +78,10 @@ namespace TabularEditor.TOMWrapper.Utils
                                 var table = Model.Tables[tableName];
                                 // Referencing a column on a specific table
                                 if (table.Columns.Contains(tok.Text.NoQ()))
-                                    expressionObj.AddDep(table.Columns[tok.Text.NoQ()], prop, tok.StartIndex, tok.StopIndex, false);
+                                    expressionObj.AddDep(table.Columns[tok.Text.NoQ()], prop, startTableIndex, tok.StopIndex, true);
                                 // Referencing a measure on a specific table
                                 else if (table.Measures.Contains(tok.Text.NoQ()))
-                                    expressionObj.AddDep(table.Measures[tok.Text.NoQ()], prop, tok.StartIndex, tok.StopIndex, false);
+                                    expressionObj.AddDep(table.Measures[tok.Text.NoQ()], prop, startTableIndex, tok.StopIndex, true);
                             }
                             // No table reference before the object reference
                             else
