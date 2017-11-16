@@ -9,6 +9,17 @@ namespace TabularEditor.TOMWrapper
 {
     partial class Hierarchy: ITabularObjectContainer, ITabularPerspectiveObject, IErrorMessageObject
     {
+        internal override void DeleteLinkedObjects(bool isChildOfDeleted)
+        {
+            // Make sure the relationship is no longer used in any Variations:
+            if (Handler.CompatibilityLevel >= 1400)
+                UsedInVariations.ToList().ForEach(v => v.DefaultHierarchy = null);
+
+            base.DeleteLinkedObjects(isChildOfDeleted);
+        }
+        [Browsable(false)]
+        public IEnumerable<Variation> UsedInVariations { get { return Model.AllColumns.SelectMany(c => c.Variations).Where(v => v.DefaultHierarchy == this); } }
+
         [Browsable(false)]
         public string DaxObjectFullName
         {

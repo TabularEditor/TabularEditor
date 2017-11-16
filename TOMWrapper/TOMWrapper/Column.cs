@@ -59,6 +59,10 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         [Browsable(false)]
         public IEnumerable<Column> UsedInSortBy { get { return Table.Columns.Where(c => c.SortByColumn == this); } }
+
+        [Browsable(false)]
+        public IEnumerable<Variation> UsedInVariations { get { return Model.AllColumns.SelectMany(c => c.Variations).Where(v => v.DefaultColumn == this); } }
+
         /// <summary>
         /// Enumerates all relationships in which this column participates (either as <see cref="SingleColumnRelationship.FromColumn">FromColumn</see> or <see cref="SingleColumnRelationship.ToColumn">ToColumn</see>).
         /// </summary>
@@ -105,6 +109,10 @@ namespace TabularEditor.TOMWrapper
 
                 // Make sure the column is no longer used as a Sort By column:
                 UsedInSortBy.ToList().ForEach(c => c.SortByColumn = null);
+
+                // Make sure the column is no longer used in any Variations:
+                if(Handler.CompatibilityLevel >= 1400)
+                    UsedInVariations.ToList().ForEach(v => v.DefaultColumn = null);
             }
 
             base.DeleteLinkedObjects(isChildOfDeleted);
@@ -135,16 +143,6 @@ namespace TabularEditor.TOMWrapper
                 // name change could result in expression changes on multiple objects:
                 if (Handler.Settings.AutoFixup) Handler.UndoManager.BeginBatch("Set Property 'Name'");
             }
-            if(propertyName == Properties.ISKEY && (bool)newValue == true)
-            {
-                // When the IsKey column is set to "true", all other columns must have their IsKey set to false.
-                // This has to happen within one undo-batch, so the change can be perfectly restored.
-                Handler.UndoManager.BeginBatch("key column");
-                foreach(var col in Table.Columns.Where(c => c.IsKey))
-                {
-                    col.IsKey = false;
-                }
-            }
             base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
         }
 
@@ -152,7 +150,7 @@ namespace TabularEditor.TOMWrapper
         {
             if(propertyName == Properties.ISKEY && IsKey == true)
             {
-                Handler.UndoManager.EndBatch();
+                foreach (var c in Table.MetadataObject.Columns.Where(c => c.Type != TOM.ColumnType.RowNumber && c != this.MetadataObject)) c.IsKey = false;
             }
             if (propertyName == Properties.NAME && Handler.Settings.AutoFixup)
             {

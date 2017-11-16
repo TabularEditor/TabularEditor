@@ -15,6 +15,7 @@ using json.Newtonsoft.Json;
 using System.ComponentModel;
 using TabularEditor.TOMWrapper.PowerBI;
 using TabularEditor.TOMWrapper.Utils;
+using TabularEditor.Utils;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -448,14 +449,26 @@ namespace TabularEditor.TOMWrapper
                 throw new InvalidOperationException("The model is currently not connected to any server. Please use Deploy() instead of SaveDB().");
             }
 
+            _disableUpdates = true;
             UndoManager.Enabled = false;
-            DetachCalculatedTableMetadata();
+
+            var sw = Stopwatch.StartNew();
+
+            // TODO: The current detach/attach functionality for calculated tables is not good enough. A better approach is this:
+            // Upon saving the model (this method), for each calculated table that needs validation (= has its expression changed),
+            // a new calculated table is created, using the new DAX expression, where as the original DAX expression is kept on the
+            // original table. After saving, the new table will hold all columns produced by the DAX, which we can then use to check
+            // if columns on the original table are still valid. If the old table holds columns that do not appear in the new table,
+            // we can show a warning to the user - for example in cases where those columns have translations, perspectives or are
+            // used in hierarchies, as SortByColumn properties, etc...
+
+            //DetachCalculatedTableMetadata();
             try
             {
                 // TODO: Deleting a column with IsKey = true, then undoing, then saving causes an error... Check if this is still the case.
                 database.Model.SaveChanges();
 
-                AttachCalculatedTableMetadata();
+                //AttachCalculatedTableMetadata();
 
                 // If reattaching Calculated Table metadata caused local changes, let's save the model again:
                 if (database.Model.HasLocalChanges) database.Model.SaveChanges();
@@ -468,7 +481,11 @@ namespace TabularEditor.TOMWrapper
             finally
             {
                 UndoManager.Enabled = true;
+                _disableUpdates = false;
             }
+
+            sw.Stop();
+            Console.WriteLine("Save took: {0} ms", sw.ElapsedMilliseconds);
 
             Version = CheckConflicts().DatabaseVersion;
 
@@ -486,15 +503,16 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         private void DetachCalculatedTableMetadata()
         {
-            CTCMetadataBackup = new List<CTCMetadata>();
+            CTCMetadataBackup = new List<CTCBackup>();
 
-            foreach(var ctc in Model.Tables.OfType<CalculatedTable>().SelectMany(t => t.Columns.OfType<CalculatedTableColumn>()).ToList())
+            foreach (var ct in Model.Tables.OfType<CalculatedTable>().Where(ct => ct.NeedsValidation))
             {
-                CTCMetadataBackup.Add(new CTCMetadata(ctc));
-                ctc.InPerspective.None();
-                ctc.TranslatedNames.Clear();
-                ctc.TranslatedDisplayFolders.Clear();
-                ctc.TranslatedDescriptions.Clear();
+                foreach (var ctc in ct.Columns.OfType<CalculatedTableColumn>())
+                {
+                    var columnBackup = CTCBackup.BackupColumn(ctc);
+
+                    CTCMetadataBackup.Add(columnBackup);
+                }
             }
 
             // TODO: See issue https://github.com/otykier/TabularEditor/issues/110
@@ -504,27 +522,7 @@ namespace TabularEditor.TOMWrapper
             // saved.
         }
 
-        private List<CTCMetadata> CTCMetadataBackup;
-
-        private class CTCMetadata {
-            public CTCMetadata(CalculatedTableColumn ctc)
-            {
-                TableName = ctc.Table.Name;
-                ColumnName = ctc.Name;
-
-                InPerspective = ctc.InPerspective.Copy();
-                TranslatedNames = ctc.TranslatedNames.Copy();
-                TranslatedDisplayFolders = ctc.TranslatedDisplayFolders.Copy();
-                TranslatedDescriptions = ctc.TranslatedDescriptions.Copy();
-            }
-
-            public string TableName;
-            public string ColumnName;
-            public Dictionary<string, bool> InPerspective;
-            public Dictionary<string, string> TranslatedNames;
-            public Dictionary<string, string> TranslatedDisplayFolders;
-            public Dictionary<string, string> TranslatedDescriptions;
-        }
+        private List<CTCBackup> CTCMetadataBackup;
 
         /// <summary>
         /// Reattaches any metadata removed from CalculatedTableColumns that are still present (by name) after
@@ -540,18 +538,7 @@ namespace TabularEditor.TOMWrapper
 
             foreach (var ctcbackup in CTCMetadataBackup)
             {
-                if (Model.Tables.Contains(ctcbackup.TableName))
-                {
-                    var t = Model.Tables[ctcbackup.TableName];
-                    if (t.Columns.Contains(ctcbackup.ColumnName))
-                    {
-                        var ctc = t.Columns[ctcbackup.ColumnName];
-                        ctc.InPerspective.CopyFrom(ctcbackup.InPerspective);
-                        ctc.TranslatedNames.CopyFrom(ctcbackup.TranslatedNames);
-                        ctc.TranslatedDisplayFolders.CopyFrom(ctcbackup.TranslatedDisplayFolders);
-                        ctc.TranslatedDescriptions.CopyFrom(ctcbackup.TranslatedDescriptions);
-                    }
-                }
+                ctcbackup.Restore(Model);
             }
         }
 
@@ -858,12 +845,16 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        private bool _disableUpdates = false;
+
         /// <summary>
         /// Begins a batch update
         /// </summary>
         /// <param name="undoName"></param>
         public void BeginUpdate(string undoName)
         {
+            if (_disableUpdates) return;
+
             Tree.BeginUpdate();
             if(!string.IsNullOrEmpty(undoName)) UndoManager.BeginBatch(undoName);
         }
@@ -876,6 +867,8 @@ namespace TabularEditor.TOMWrapper
         /// <returns></returns>
         public int EndUpdate(bool undoable = true, bool rollback = false)
         {
+            if (_disableUpdates) return 0;
+
             var actionCount = 0;
             if(undoable || rollback) actionCount = UndoManager.EndBatch(rollback);
             Tree.EndUpdate();

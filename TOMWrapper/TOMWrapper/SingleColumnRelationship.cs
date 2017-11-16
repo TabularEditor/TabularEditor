@@ -12,23 +12,6 @@ namespace TabularEditor.TOMWrapper
 {
     public partial class SingleColumnRelationship: IErrorMessageObject
     {
-        internal override void DeleteLinkedObjects(bool isChildOfDeleted)
-        {
-            if (FromColumn != null && ToColumn != null) {
-                if (Handler.CompatibilityLevel >= 1400)
-                {
-                    // Remove this relationship from any variations:
-                    var allVariations =
-                        Model.AllColumns.SelectMany(c => c.Variations).Where(v => v.Relationship == this).ToList();
-                    foreach (var v in allVariations)
-                    {
-                        v.Relationship = null;
-                    }
-                }
-            }
-            base.DeleteLinkedObjects(isChildOfDeleted);
-        }
-
         internal override void ReapplyReferences()
         {
             base.ReapplyReferences();
@@ -107,6 +90,7 @@ namespace TabularEditor.TOMWrapper
         }
 
         private string InternalName = null;
+        public string ID { get { return MetadataObject.Name; } }
 
         protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
         {
