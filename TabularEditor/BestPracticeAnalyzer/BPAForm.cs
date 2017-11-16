@@ -53,6 +53,12 @@ namespace TabularEditor.UI.Dialogs
             PopulateListView();
         }
 
+        private Color GetColor(int compatibilityLevel)
+        {
+            if (Model == null) return Color.Black;
+            return Model.Database.CompatibilityLevel >= compatibilityLevel ? Color.Black : Color.Gray;
+        }
+
         public void PopulateListView()
         {
             RuleIndex = analyzer.GlobalRules.Concat(analyzer.LocalRules).ToDictionary(r => r.ID, r => r);
@@ -60,9 +66,9 @@ namespace TabularEditor.UI.Dialogs
             populatingList = true;
 
             var newItems = analyzer.GlobalRules.Select(r =>
-                new ListViewItem(new[] { null, r.Name, r.ScopeString, r.Severity.ToString(), r.Category, r.Description }, lvgGlobal) { Name = r.ID, Checked = r.Enabled, Tag = r, ForeColor = Model.Database.CompatibilityLevel >= r.CompatibilityLevel ? Color.Black : Color.Gray })
+                new ListViewItem(new[] { null, r.Name, r.ScopeString, r.Severity.ToString(), r.Category, r.Description }, lvgGlobal) { Name = r.ID, Checked = r.Enabled, Tag = r, ForeColor = GetColor(r.CompatibilityLevel) })
                 .Concat(analyzer.LocalRules.Select(r =>
-                new ListViewItem(new[] { null, r.Name, r.ScopeString, r.Severity.ToString(), r.Category, r.Description }, lvgLocal) { Name = r.ID, Checked = r.Enabled, Tag = r, ForeColor = Model.Database.CompatibilityLevel >= r.CompatibilityLevel ? Color.Black : Color.Gray })).ToArray();
+                new ListViewItem(new[] { null, r.Name, r.ScopeString, r.Severity.ToString(), r.Category, r.Description }, lvgLocal) { Name = r.ID, Checked = r.Enabled, Tag = r, ForeColor = GetColor(r.CompatibilityLevel) })).ToArray();
 
             listView1.Items.Clear();
             listView1.Items.AddRange(newItems);
