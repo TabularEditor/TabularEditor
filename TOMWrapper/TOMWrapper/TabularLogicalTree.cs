@@ -318,6 +318,10 @@ namespace TabularEditor.TOMWrapper
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected internal readonly Dictionary<string, Folder> FolderCache = new Dictionary<string, Folder>();
+        internal void ClearFolderErrors()
+        {
+            foreach (var f in FolderCache.Values) f.ClearError();
+        }
         internal void UpdateFolder(Folder folder, string oldFullPath = null)
         {
             if (!string.IsNullOrEmpty(oldFullPath)) FolderCache.Remove(oldFullPath);

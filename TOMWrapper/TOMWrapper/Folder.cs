@@ -60,7 +60,7 @@ namespace TabularEditor.TOMWrapper
             return result;
         }
 
-        public void CheckChildrenErrors()
+        internal void CheckChildrenErrors()
         {
             var errObj = GetChildren().OfType<IErrorMessageObject>().FirstOrDefault(c => !string.IsNullOrEmpty(c.ErrorMessage));
             if (errObj != null && (!(errObj as IExpressionObject)?.NeedsValidation ?? true))
@@ -71,6 +71,11 @@ namespace TabularEditor.TOMWrapper
             {
                 ErrorMessage = null;
             }
+        }
+
+        internal void ClearError()
+        {
+            ErrorMessage = null;
         }
 
         /// <summary>
