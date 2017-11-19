@@ -6,7 +6,7 @@
 <#+
 
 class Rules {
-	public const string XmlDocFile = @"C:\Users\do\Documents\GitHubVisualStudio\TabularEditor\packages\Microsoft.AnalysisServices.Tabular.13.0.2150.2\lib\Microsoft.AnalysisServices.Tabular.xml";
+	public const string XmlDocFile = @"C:\Program Files (x86)\Microsoft SQL Server\140\SDK\Assemblies\Microsoft.AnalysisServices.Tabular.xml";
 
 	public static string GetTypeXmlDoc(Type t) {
 		var xml = XElement.Load(XmlDocFile);
