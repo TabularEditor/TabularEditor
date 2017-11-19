@@ -468,10 +468,10 @@ namespace TabularEditor.TOMWrapper
                 // TODO: Deleting a column with IsKey = true, then undoing, then saving causes an error... Check if this is still the case.
                 database.Model.SaveChanges();
 
-                //AttachCalculatedTableMetadata();
+                AttachCalculatedTableMetadata();
 
                 // If reattaching Calculated Table metadata caused local changes, let's save the model again:
-                if (database.Model.HasLocalChanges) database.Model.SaveChanges();
+                //if (database.Model.HasLocalChanges) database.Model.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -505,7 +505,7 @@ namespace TabularEditor.TOMWrapper
         {
             CTCMetadataBackup = new List<CTCBackup>();
 
-            foreach (var ct in Model.Tables.OfType<CalculatedTable>().Where(ct => ct.NeedsValidation))
+            foreach (var ct in Model.Tables.OfType<CalculatedTable>())
             {
                 foreach (var ctc in ct.Columns.OfType<CalculatedTableColumn>())
                 {
@@ -535,11 +535,11 @@ namespace TabularEditor.TOMWrapper
                 ct.Columns.CreateChildrenFromMetadata();
                 Tree.OnStructureChanged(ct);
             }
-
+            /*if (CTCMetadataBackup == null) return;
             foreach (var ctcbackup in CTCMetadataBackup)
             {
                 ctcbackup.Restore(Model);
-            }
+            }*/
         }
 
         private string CombineFolderJson(string path)

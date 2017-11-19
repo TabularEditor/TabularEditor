@@ -110,10 +110,16 @@ namespace TabularEditor.TOMWrapper
                 // Make sure the column is no longer used as a Sort By column:
                 UsedInSortBy.ToList().ForEach(c => c.SortByColumn = null);
 
-                // Make sure the column is no longer used in any Variations:
-                if(Handler.CompatibilityLevel >= 1400)
-                    UsedInVariations.ToList().ForEach(v => v.DefaultColumn = null);
+                // Make sure the column is no longer used in any Calculated Tables:
+                foreach (var ctc in OriginForCalculatedTableColumns.ToList())
+                {
+                    ctc.InternalDelete();
+                }
             }
+
+            // Make sure the column is no longer used in any Variations:
+            if (Handler.CompatibilityLevel >= 1400)
+                UsedInVariations.ToList().ForEach(v => v.DefaultColumn = null);
 
             base.DeleteLinkedObjects(isChildOfDeleted);
         }
@@ -133,6 +139,18 @@ namespace TabularEditor.TOMWrapper
             base.Init();
         }
 
+        [Browsable(false)]
+        internal IEnumerable<CalculatedTableColumn> OriginForCalculatedTableColumns
+        {
+            get
+            {
+                return Model.Tables.OfType<CalculatedTable>()
+                    .SelectMany(t => t.Columns.OfType<CalculatedTableColumn>().Where(c => c.ColumnOrigin == this));
+            }
+        }
+
+        private List<CalculatedTableColumn> _originForCalculatedTableColumnsCache;
+
         protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
         {
             if (propertyName == Properties.NAME)
@@ -140,23 +158,43 @@ namespace TabularEditor.TOMWrapper
                 FormulaFixup.BuildDependencyTree();
 
                 // When formula fixup is enabled, we need to begin a new batch of undo operations, as this
-                // name change could result in expression changes on multiple objects:
-                if (Handler.Settings.AutoFixup) Handler.UndoManager.BeginBatch("Set Property 'Name'");
+                // name change could result in expression changes on multiple objects. We also need to
+                // start a new batch, in case this column is used as an origin for a calculated table column:
+                _originForCalculatedTableColumnsCache = OriginForCalculatedTableColumns.ToList();
+                if (Handler.Settings.AutoFixup || _originForCalculatedTableColumnsCache.Count > 0) Handler.UndoManager.BeginBatch("Set Property 'Name'");
             }
             base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
         }
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
+            // Make sure only one column has the IsKey property set:
             if(propertyName == Properties.ISKEY && IsKey == true)
             {
                 foreach (var c in Table.MetadataObject.Columns.Where(c => c.Type != TOM.ColumnType.RowNumber && c != this.MetadataObject)) c.IsKey = false;
             }
-            if (propertyName == Properties.NAME && Handler.Settings.AutoFixup)
+
+            // Make sure that Calculated Table Columns that originate from this column are updated to reflect name changes:
+            if (propertyName == Properties.NAME)
             {
-                FormulaFixup.DoFixup(this);
-                Handler.UndoManager.EndBatch();
+                // Do formula fixup if enabled:
+                if (Handler.Settings.AutoFixup) FormulaFixup.DoFixup(this);
+
+                foreach (var ctc in _originForCalculatedTableColumnsCache)
+                {
+                    if (ctc.IsNameInferred)
+                    {
+                        ctc.Name = Name;
+                        ctc.IsNameInferred = true;
+                    }
+                    // This will inform the TOM what the origin of the new column is:
+                    ctc.SourceColumn = ctc.SourceColumn.Replace($"[{oldValue}]", $"[{newValue}]");
+                }
+
+                // End the batch that was started in OnPropertyChanging:
+                if (Handler.Settings.AutoFixup || _originForCalculatedTableColumnsCache.Count > 0) Handler.UndoManager.EndBatch();
             }
+
             base.OnPropertyChanged(propertyName, oldValue, newValue);
         }
 

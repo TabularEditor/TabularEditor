@@ -79,6 +79,11 @@ namespace TabularEditor.TOMWrapper
             Handler.DoObjectDeleting(this, ref cancelDelete);
             if (cancelDelete) return;
 
+            InternalDelete();
+        }
+
+        internal void InternalDelete()
+        {
             Handler.UndoManager.BeginBatch(string.Format(Messages.OperationDelete, this.GetTypeName()));
 
             DeleteLinkedObjects(false);

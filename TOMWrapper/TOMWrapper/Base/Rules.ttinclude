@@ -321,6 +321,7 @@ class Rules {
 		if(propertyName == "Hierarchies") return "[Browsable(false)]";
 		if(propertyName == "Levels") return "[Browsable(false)]";
 		if(propertyName == "Tables") return "[Browsable(false)]";
+		if(propertyName == "ColumnOrigin") return "[Browsable(false)]";
 		
 		if(propertyName == "StatusGraphic") return "[TypeConverter(typeof(KPIStatusGraphicConverter))]";
 		if(propertyName == "TrendGraphic") return "[TypeConverter(typeof(KPITrendGraphicConverter))]";
