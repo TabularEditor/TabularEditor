@@ -178,7 +178,39 @@ namespace TabularEditor.UI
             }
         }
 
-        public ModelSourceType File_SaveMode { get; private set; }
+        private ModelSourceType _file_SaveMode;
+        public ModelSourceType File_SaveMode
+        {
+            get { return _file_SaveMode; }
+            private set {
+                _file_SaveMode = value;
+
+                var actSave = UI.FormMain.actSave;
+                switch (_file_SaveMode)
+                {
+                    case TOMWrapper.ModelSourceType.Database:
+                        actSave.Text = "Save";
+                        actSave.ToolTipText = "Saves the changes to the connected database";
+                        actSave.Image = Resources.SaveToDB;
+                        break;
+                    case TOMWrapper.ModelSourceType.File:
+                        actSave.Text = "Save";
+                        actSave.ToolTipText = "Saves the changes back to the currently loaded .bim file";
+                        actSave.Image = Resources.SaveToFile;
+                        break;
+                    case TOMWrapper.ModelSourceType.Folder:
+                        actSave.Text = "Save";
+                        actSave.ToolTipText = "Saves the changes back to the currently loaded model folder structure";
+                        actSave.Image = Resources.SaveFolderTree;
+                        break;
+                    case TOMWrapper.ModelSourceType.Pbit:
+                        actSave.Text = "Save";
+                        actSave.ToolTipText = "Saves the changes back to the currently loaded Power BI Template";
+                        actSave.Image = Resources.SaveToPBI;
+                        break;
+                }
+            }
+        }
         public DateTime File_LastWrite { get; private set; }
 
         public void File_SaveAs_ToFolder()

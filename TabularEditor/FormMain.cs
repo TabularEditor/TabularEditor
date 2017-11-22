@@ -488,39 +488,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         {
             actSaveCustomAction.Enabled = !string.IsNullOrEmpty(txtAdvanced.Text);
         }
-
-        private void actSave_UpdateEx(object sender, UpdateExEventArgs e)
-        {
-            if (UI.Handler == null) return;
-            switch(UI.File_SaveMode)
-            {
-                case TOMWrapper.ModelSourceType.Database:
-                    actSave.Text = "Save";
-                    actSave.ToolTipText = "Saves the changes to the connected database";
-                    actSave.Image = Resources.SaveToDB;
-                    break;
-                case TOMWrapper.ModelSourceType.File:
-                    actSave.Text = "Save";
-                    actSave.ToolTipText = "Saves the changes back to the currently loaded .bim file";
-                    actSave.Image = Resources.SaveToFile;
-                    break;
-                case TOMWrapper.ModelSourceType.Folder:
-                    actSave.Text = "Save";
-                    actSave.ToolTipText = "Saves the changes back to the currently loaded model folder structure";
-                    actSave.Image = Resources.SaveFolderTree;
-                    break;
-                case TOMWrapper.ModelSourceType.Pbit:
-                    actSave.Text = "Save";
-                    actSave.ToolTipText = "Saves the changes back to the currently loaded Power BI Template";
-                    actSave.Image = Resources.SaveToPBI;
-                    break;
-            }
-        }
-
-        private void tvModel_Click(object sender, EventArgs e)
-        {
-
-        }
+        
 
         PreferencesForm PreferencesForm = new PreferencesForm();
 
