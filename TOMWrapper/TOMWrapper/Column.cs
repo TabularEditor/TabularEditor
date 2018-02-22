@@ -258,6 +258,27 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        internal override string GetNewName(string prefix = null)
+        {
+            // For columns, we must ensure that the new column name is unique in the current table,
+            // and that no measure on the same table has the same name.
+
+            if (string.IsNullOrWhiteSpace(prefix)) prefix = "New Column";
+
+            string testName = prefix;
+            int suffix = 0;
+
+            // Loop to determine if prefix + suffix is already in use - break, when we find a name
+            // that's not being used anywhere:
+            while (Table.Columns.Any(c => c.Name.Equals(testName, StringComparison.InvariantCultureIgnoreCase))
+                || Table.Measures.Any(c => c.Name.Equals(testName, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                suffix++;
+                testName = prefix + " " + suffix;
+            }
+            return testName;
+        }
+
         public override int IndexOf(TOM.MetadataObject value)
         {
             var ix = TOM_Collection.IndexOf(value as TOM.Column);

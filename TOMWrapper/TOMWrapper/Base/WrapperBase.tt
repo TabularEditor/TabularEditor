@@ -469,7 +469,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
         protected override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
         protected override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         protected override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
-<# if (t.Name != "Measure" && t.Name != "Relationship") { #>
+<# if (t.Name != "Measure" && t.Name != "Relationship" && t.Name != "Column") { #>
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
 <# } if (t.Name == "Relationship") { #> 
 		internal override string GetNewName(string prefix = null) { return Guid.NewGuid().ToString(); }
