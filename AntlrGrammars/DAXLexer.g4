@@ -260,6 +260,22 @@ YEARFRAC:              [Yy][Ee][Aa][Rr][Ff][Rr][Aa][Cc]                         
 VAR:                   [Vv][Aa][Rr]                                                                             -> channel(KEYWORD_CHANNEL);
 RETURN:                [Rr][Ee][Tt][Uu][Rr][Nn]                                                                 -> channel(KEYWORD_CHANNEL);
 
+CONTAINSROW:           [Cc][Oo][Nn][Tt][Aa][Ii][Nn][Ss][Rr][Oo][Ww]                                             -> channel(KEYWORD_CHANNEL);
+ERROR:                 [Ee][Rr][Rr][Oo][Rr]                                                                     -> channel(KEYWORD_CHANNEL);
+USEROBJECTID:          [Uu][Ss][Ee][Rr][Oo][Bb][Jj][Ee][Cc][Tt][Ii][Dd]                                         -> channel(KEYWORD_CHANNEL);
+USERPRINCIPALNAME:     [Uu][Ss][Ee][Rr][Pp][Rr][Ii][Nn][Cc][Ii][Pp][Aa][Ll][Nn][Aa][Mm][Ee]                     -> channel(KEYWORD_CHANNEL);
+UNICHAR:               [Uu][Nn][Ii][Cc][Hh][Aa][Rr]                                                             -> channel(KEYWORD_CHANNEL);
+DETAILROWS:            [Dd][Ee][Tt][Aa][Ii][Ll][Rr][Oo][Ww][Ss]                                                 -> channel(KEYWORD_CHANNEL);
+GENERATESERIES:        [Gg][Ee][Nn][Ee][Rr][Aa][Tt][Ee][Ss][Ee][Rr][Ii][Ee][Ss]                                 -> channel(KEYWORD_CHANNEL);
+SELECTEDVALUE:         [Ss][Ee][Ll][Ee][Cc][Tt][Ee][Dd][Vv][Aa][Ll][Uu][Ee]                                     -> channel(KEYWORD_CHANNEL);
+TREATAS:               [Tt][Rr][Ee][Aa][Tt][Aa][Ss]                                                             -> channel(KEYWORD_CHANNEL);
+TOPNSKIP:              [Tt][Oo][Pp][Nn][Ss][Kk][Ii][Pp]                                                         -> channel(KEYWORD_CHANNEL);
+
+QUARTER:               [Qq][Uu][Aa][Rr][Tt][Ee][Rr]                                                             -> channel(KEYWORD_CHANNEL);
+BOTH:                  [Bb][Oo][Tt][Hh]                                                                         -> channel(KEYWORD_CHANNEL);
+NONE:                  [Nn][Oo][Nn][Ee]                                                                         -> channel(KEYWORD_CHANNEL);
+ONEWAY:                [Oo][Nn][Ee][Ww][Aa][Yy]                                                                 -> channel(KEYWORD_CHANNEL);
+
 INTEGER_LITERAL:       [0-9]+;
 REAL_LITERAL:          [0-9]* '.' [0-9]+;
 STRING_LITERAL:        '"' (~'"' | '""')* '"';
