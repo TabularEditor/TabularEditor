@@ -294,6 +294,7 @@ namespace TabularEditor.UI
         public ToolStripDropDownItem DynamicMenu;
         public ToolStripComboBox TranslationSelector;
         public ToolStripComboBox PerspectiveSelector;
+        public ToolStripComboBox ExpressionSelector;
         public Crad.Windows.Forms.Actions.ActionList ActionList;
     }
 }

@@ -139,7 +139,8 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 PerspectiveSelector = cmbPerspective,
                 TranslationSelector = cmbTranslation,
                 ToolsMenu = toolsToolStripMenuItem,
-                DynamicMenu = dynamicToolStripMenuItem
+                DynamicMenu = dynamicToolStripMenuItem,
+                ExpressionSelector = cmbExpressionSelector
             };
 
             // The UIController class sets up all bindings and event handlers needed for UI

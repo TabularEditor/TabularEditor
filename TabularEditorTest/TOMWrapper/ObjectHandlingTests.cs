@@ -56,10 +56,14 @@ namespace TabularEditor.TOMWrapper
     ""Decimal Column"", CURRENCY,
     ""Int Column"", INTEGER,
     ""Date Column"", DATETIME,
+    ""Boolean Column"", BOOLEAN,
+    ""Double Column"", DOUBLE,
     {
-        { ""Category A"", -50.1234, -5, ""2017-01-01"" }, 
-        { ""Category B"", 3.1415,    2, ""2017-01-02"" }, 
-        { ""Category C"", 45.9876,   8, ""2017-01-03"" }
+        { ""Category A"", -50.1234, -5, ""2017-01-01"", TRUE, 5.134E17 }, 
+        { ""Category B"", 3.1415, 2, ""2017-01-02"", FALSE, 9.761E-12 }, 
+        { ""Category C"", 45.9876, 8, ""2017-01-03"", TRUE, 1.654 },
+        { """", 0, 0, 0, FALSE, 0},
+        { , , , , , }
     }
 )");
 

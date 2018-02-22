@@ -10,11 +10,12 @@ namespace TabularEditor.TOMWrapper.Utils
     {
         public static IEnumerable<DAXProperty> GetDAXProperties(this IDaxDependantObject obj)
         {
+            if (obj is Measure || obj is CalculatedColumn || obj is CalculatedTable) yield return DAXProperty.Expression;
             if (TabularModelHandler.Singleton.CompatibilityLevel >= 1400)
             {
-                if (obj is Table || obj is Measure) yield return DAXProperty.DetailRowsExpression;
+                if (obj is Measure) yield return DAXProperty.DetailRowsExpression;
+                if (obj is Table) yield return DAXProperty.DefaultDetailRowsExpression;
             }
-            if (obj is Measure || obj is CalculatedColumn || obj is CalculatedTable) yield return DAXProperty.Expression;
             if (obj is KPI)
             {
                 yield return DAXProperty.StatusExpression;
@@ -22,6 +23,15 @@ namespace TabularEditor.TOMWrapper.Utils
                 yield return DAXProperty.TrendExpression;
             }
         }
+
+        public static DAXProperty GetDefaultDAXProperty(this IDaxDependantObject obj)
+        {
+            if (obj is CalculatedTable) return DAXProperty.Expression;
+            if (obj is Table) return DAXProperty.DefaultDetailRowsExpression;
+            if (obj is KPI) return DAXProperty.StatusExpression;
+            else return DAXProperty.Expression;
+        }
+
         public static string GetDAX(this IDaxDependantObject obj, DAXProperty property)
         {
             if(obj is KPI)
@@ -42,7 +52,7 @@ namespace TabularEditor.TOMWrapper.Utils
                 {
                     return (obj as Measure).DetailRowsExpression;
                 }
-                if (obj is Table && property == DAXProperty.DetailRowsExpression)
+                if (obj is Table && property == DAXProperty.DefaultDetailRowsExpression)
                 {
                     return (obj as Table).DefaultDetailRowsExpression;
                 }
@@ -71,7 +81,7 @@ namespace TabularEditor.TOMWrapper.Utils
                 (obj as Measure).DetailRowsExpression = expression;
                 return;
             }
-            if (obj is Table && property == DAXProperty.DetailRowsExpression)
+            if (obj is Table && property == DAXProperty.DefaultDetailRowsExpression)
             {
                 (obj as Table).DefaultDetailRowsExpression = expression;
                 return;

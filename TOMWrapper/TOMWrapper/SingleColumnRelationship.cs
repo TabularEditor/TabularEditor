@@ -23,11 +23,12 @@ namespace TabularEditor.TOMWrapper
                 MetadataObject.ToColumn = Handler.Model.Tables[MetadataObject.ToTable.Name].Columns[MetadataObject.ToColumn.Name].MetadataObject;
         }
 
-        private void UpdateName()
+        internal void UpdateName()
         {
             InternalName = string.Format("{0} {1} {2}", GetFullName(MetadataObject.FromColumn) ?? "(none)",
                 this.CrossFilteringBehavior == CrossFilteringBehavior.OneDirection ? "-->" : "<-->",
                 GetFullName(MetadataObject.ToColumn) ?? "(none)");
+            Handler.UpdateObject(this);
         }
 
         public override string ToString()
@@ -112,7 +113,6 @@ namespace TabularEditor.TOMWrapper
                     // Force an update of the relationship in the Explorer Tree, as the name string may have changed,
                     // if any of the properties above are changed:
                     UpdateName();
-                    Handler.UpdateObject(this);
                     break;
             }
         }

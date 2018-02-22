@@ -105,19 +105,14 @@ namespace TabularEditor.UI.Actions
             }
         }
         
-        public void DoExecute()
-        {
-            if (Enabled(null)) Execute(null);
-        }
-
-        public virtual void Execute(object arg)
+        private void InternalExecute(object arg, IEnumerable<ITabularNamedObject> alternateSelection = null)
         {
             ui.Actions.LastActionExecuted = this;
             EditObjectName = null;
             ExpandObject = null;
 
             ui.Handler.BeginUpdate(Name);
-            _execute(ui.Selection, ui.Handler.Model);
+            _execute(alternateSelection == null ? ui.Selection : new UITreeSelection(alternateSelection), ui.Handler.Model);
             ui.Handler.EndUpdate();
 
             if (ExpandObject != null)
@@ -128,7 +123,16 @@ namespace TabularEditor.UI.Actions
             {
                 ui.EditName(EditObjectName);
             }
-            //ui.Refresh();
+        }
+
+        public virtual void Execute(object arg)
+        {
+            InternalExecute(arg, null);
+        }
+
+        public void ExecuteWithSelection(object arg, IEnumerable<ITabularNamedObject> alternateSelection)
+        {
+            InternalExecute(arg, alternateSelection);
         }
 
         public Context ValidContexts { get; set; }

@@ -10,7 +10,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class KPI: ITabularNamedObject, IDaxDependantObject
+    public partial class KPI: ITabularNamedObject, IDaxDependantObject, IExpressionObject
     {
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
@@ -69,6 +69,34 @@ namespace TabularEditor.TOMWrapper
                 if (_dependsOn == null)
                     _dependsOn = new DependsOnList(this);
                 return _dependsOn;
+            }
+        }
+
+        [Browsable(false)]
+        public bool NeedsValidation
+        {
+            get
+            {
+                return false;
+            }
+
+            set
+            {
+                
+            }
+        }
+
+        [Browsable(false)]
+        public string Expression
+        {
+            get
+            {
+                return StatusExpression;
+            }
+
+            set
+            {
+                StatusExpression = value;
             }
         }
 

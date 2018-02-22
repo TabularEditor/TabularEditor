@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
 using TabularEditor.UI;
+using TabularEditor.UI.Actions;
 
 namespace TabularEditor.Scripting
 {
@@ -50,6 +51,28 @@ namespace TabularEditor.Scripting
 
             var caption = string.Format("Objects with errors ({0})", items.Count());
             ScriptOutputForm.ShowObject(items, caption, true);
+        }
+
+        [ScriptMethod, IntelliSense("Invoke the custom action with the given name.")]
+        public static void CustomAction(string actionName)
+        {
+            var act = UI.UIController.Current.Actions.OfType<CustomAction>().FirstOrDefault(a => a.BaseName == actionName);
+            if (act != null)
+            {
+                act.Execute(null);
+            }
+            else throw new InvalidOperationException(string.Format("There is no Custom Action with the name '{0}'.", actionName));
+        }
+
+        [ScriptMethod, IntelliSense("Invoke the custom action on the given set of objects with the given name.")]
+        public static void CustomAction(this IEnumerable<ITabularNamedObject> selection, string actionName)
+        {
+            var act = UI.UIController.Current.Actions.OfType<CustomAction>().FirstOrDefault(a => a.BaseName == actionName);
+            if (act != null)
+            {
+                act.ExecuteWithSelection(null, selection);
+            }
+            else throw new InvalidOperationException(string.Format("There is no Custom Action with the name '{0}'.", actionName));
         }
     }
 }

@@ -67,7 +67,7 @@ namespace TabularEditor.TOMWrapper
         /// Enumerates all relationships in which this column participates (either as <see cref="SingleColumnRelationship.FromColumn">FromColumn</see> or <see cref="SingleColumnRelationship.ToColumn">ToColumn</see>).
         /// </summary>
         [Browsable(false)]
-        public IEnumerable<Relationship> UsedInRelationships { get { return Model.Relationships.Where(r => r.FromColumn == this || r.ToColumn == this); } }
+        public IEnumerable<SingleColumnRelationship> UsedInRelationships { get { return Model.Relationships.Where(r => r.FromColumn == this || r.ToColumn == this); } }
         #endregion
 
         internal override void RemoveReferences()
@@ -155,6 +155,10 @@ namespace TabularEditor.TOMWrapper
         {
             if (propertyName == Properties.NAME)
             {
+                // TODO: Important!!!
+                // - Dependency Tree will be built once for every column that's had its name changed. This can be slow if many columns are renamed at once.
+                // - We don't need a full rebuild of the dependency tree. We can limit ourselves to those expressions that contain a token matching the new name of this column.
+                // - Also note that we should apply the fix-up before the tree is rebuilt.
                 FormulaFixup.BuildDependencyTree();
 
                 // When formula fixup is enabled, we need to begin a new batch of undo operations, as this
@@ -193,6 +197,12 @@ namespace TabularEditor.TOMWrapper
 
                 // End the batch that was started in OnPropertyChanging:
                 if (Handler.Settings.AutoFixup || _originForCalculatedTableColumnsCache.Count > 0) Handler.UndoManager.EndBatch();
+
+                // Update relationship "names" if this column participates in any relationships:
+                var rels = UsedInRelationships.ToList();
+                if (rels.Count > 1) Handler.Tree.BeginUpdate();
+                rels.ForEach(r => r.UpdateName());
+                if (rels.Count > 1) Handler.Tree.EndUpdate();
             }
 
             base.OnPropertyChanged(propertyName, oldValue, newValue);
@@ -253,7 +263,7 @@ namespace TabularEditor.TOMWrapper
             var ix = TOM_Collection.IndexOf(value as TOM.Column);
             var rnIx = GetRnColIndex();
             if (ix == rnIx) throw new KeyNotFoundException();
-            if (ix > rnIx) ix--;
+            if (ix > rnIx && rnIx > -1) ix--;
             return ix;
         }
 

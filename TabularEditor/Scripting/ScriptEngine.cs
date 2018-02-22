@@ -82,6 +82,7 @@ namespace TabularEditor
                     sb.Append(script.Substring(pos, call.StartIndex - pos));
                     sb.Append(method.DeclaringType.FullName);
                     sb.Append(".");
+
                     pos = call.StartIndex;
                 }
             }
@@ -204,6 +205,10 @@ namespace TabularEditor
             if (actions == null || actions.Actions.Length == 0) return;
 
             var code = GetCustomActionsCode(actions);
+
+            code = AddOutputLineNumbers(code);
+            code = ReplaceGlobalMethodCalls(code);
+
             var result = Compile(code);
 
             CustomActionError = false;
@@ -300,12 +305,22 @@ namespace TabularEditor
                     var currentVersion = Assembly.GetAssembly(typeof(TabularModelHandler)).GetName().Version;
                     if (wrapperVersion.FileVersion != currentVersion.ToString()) OutputWrapperDll();
                 }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                ScriptEngineStatus = "Error: " + ex.Message;
+            }
+        }
 
+        private static void InitCustomActions()
+        {
+            try
+            {
                 if (File.Exists(CustomActionsJsonPath))
                 {
                     Console.WriteLine("Loading custom actions from: " + CustomActionsJsonPath);
                     var actions = CustomActionsJson.LoadFromJson(CustomActionsJsonPath);
-                    actions.SaveToJson(@"C:\TE\testactions.json");
                     CompileCustomActions(actions);
                 }
                 else
@@ -320,18 +335,16 @@ namespace TabularEditor
             }
         }
 
-        public static Dictionary<string, MethodInfo> ScriptMethods;
+        public static Dictionary<string, MethodInfo> ScriptMethods = new Dictionary<string, MethodInfo>();
 
         private static void FindScriptMethods(IEnumerable<Assembly> assemblies)
         {
-            ScriptMethods = new Dictionary<string, MethodInfo>();
-
             foreach(var asm in assemblies)
             {
                 asm.GetTypes()
                     .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.Static))
                     .Where(m => m.GetCustomAttributes(typeof(ScriptMethodAttribute), false).Length > 0)
-                    .ToList().ForEach(mi => ScriptMethods.Add(mi.Name, mi));
+                    .ToList().ForEach(mi => { if (!ScriptMethods.ContainsKey(mi.Name)) ScriptMethods.Add(mi.Name, mi); });
             }
         }
 
@@ -344,6 +357,7 @@ namespace TabularEditor
         {
             InitPlugins(plugins);
             FindScriptMethods(plugins.Concat(Enumerable.Repeat(typeof(ScriptHelper).Assembly, 1)));
+            InitCustomActions();
         }
 
         public static string ScriptEngineStatus { get; private set; }

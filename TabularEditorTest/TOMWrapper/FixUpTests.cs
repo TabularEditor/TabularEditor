@@ -38,7 +38,7 @@ namespace TabularEditor.TOMWrapper.Tests
                 var references = obj.DependsOn[objRef];
                 Assert.AreEqual(1, references.Count);
                 Assert.AreEqual(property, references[0].property);
-                Assert.IsTrue(references[0].fullyQualified);
+                Assert.IsFalse(references[0].fullyQualified);
             }
 
             var expression = baseExpression;
@@ -60,7 +60,7 @@ namespace TabularEditor.TOMWrapper.Tests
 
             oldTableName = tableRef.Name;
             tableRef.Name = "a a";
-            expression = baseExpression.Replace(oldTableName, tableRef.Name);
+            var expr4 = expression = expression.Replace(oldTableName, tableRef.Name);
             Assert.AreEqual(expression, obj.GetDAX(property));
 
             tmh.UndoManager.Undo();

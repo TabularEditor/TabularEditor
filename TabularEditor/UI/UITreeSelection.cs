@@ -397,6 +397,13 @@ namespace TabularEditor.UI
             return result;
         }
 
+        public UITreeSelection(IEnumerable<ITabularNamedObject> selection) : base(selection)
+        {
+            Folders = this.OfType<Folder>();
+            Groups = this.OfType<LogicalGroup>();
+            Direct = new UISelectionList<ITabularNamedObject>(this.OfType<ITabularNamedObject>());
+        }
+
         public UITreeSelection(IReadOnlyCollection<TreeNodeAdv> selectedNodes)
         {
             var allNodes = GetDeep(selectedNodes).ToList();
@@ -414,6 +421,13 @@ namespace TabularEditor.UI
 
             Folders = selectedNodes.Select(n => n.Tag).OfType<Folder>();
             Groups = selectedNodes.Select(n => n.Tag).OfType<LogicalGroup>();
+            Direct = new UISelectionList<ITabularNamedObject>(selectedNodes.Select(n => n.Tag).OfType<ITabularNamedObject>());
+
+            AssignCollections();
+        }
+
+        private void AssignCollections()
+        {
             Measures = new UISelectionList<Measure>(this.OfType<Measure>());
             Hierarchies = new UISelectionList<Hierarchy>(this.OfType<Hierarchy>());
             Levels = new UISelectionList<Level>(this.OfType<Level>());
@@ -428,8 +442,6 @@ namespace TabularEditor.UI
             DataColumns = new UISelectionList<DataColumn>(this.OfType<DataColumn>());
             Tables = new UISelectionList<Table>(this.OfType<Table>());
             Partitions = new UISelectionList<Partition>(this.OfType<Partition>());
-
-            Direct = new UISelectionList<ITabularNamedObject>(selectedNodes.Select(n => n.Tag).OfType<ITabularNamedObject>());
         }
 
         private T One<T>() where T: TabularObject

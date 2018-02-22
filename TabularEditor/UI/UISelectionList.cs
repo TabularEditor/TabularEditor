@@ -116,6 +116,17 @@ namespace TabularEditor.UI
             }
         }
 
+        [IntelliSense("Sets the IsActive property of all relationships in the collection at once.")]
+        public bool IsActive
+        {
+            set
+            {
+                Handler.BeginUpdate("active");
+                this.OfType<SingleColumnRelationship>().ToList().ForEach(i => i.IsActive = value);
+                Handler.EndUpdate();
+            }
+        }
+
         [IntelliSense("Sets the FormatString property of all objects in the collection at once.")]
         public string FormatString
         {

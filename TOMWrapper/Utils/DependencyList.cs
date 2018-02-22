@@ -160,7 +160,8 @@ namespace TabularEditor.TOMWrapper.Utils
         DetailRowsExpression = 1,
         TargetExpression = 2,
         StatusExpression = 3,
-        TrendExpression = 4
+        TrendExpression = 4,
+        DefaultDetailRowsExpression = 5
     }
 
     public struct ObjectReference

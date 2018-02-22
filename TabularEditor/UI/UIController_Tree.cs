@@ -141,9 +141,9 @@ namespace TabularEditor.UI
             {
                 UI.FormMain.FocusFilter();
             }
-            if(e.KeyCode == Keys.Delete)
+            if(e.KeyCode == Keys.Delete && Actions.Delete.Enabled(null))
             {
-                Actions.Delete.DoExecute();
+                Actions.Delete.Execute(null);
             }
         }
 

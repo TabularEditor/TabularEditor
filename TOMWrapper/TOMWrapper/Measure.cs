@@ -142,6 +142,10 @@ namespace TabularEditor.TOMWrapper
             switch (propertyName)
             {
                 case Properties.NAME:
+                    // TODO: Important!!!
+                    // - Dependency Tree will be built once for every measure that's had its name changed. This can be slow if many measures are renamed at once.
+                    // - We don't need a full rebuild of the dependency tree. We can limit ourselves to those expressions that contain a token matching the new name of this measure.
+                    // - Also note that we should apply the fix-up before the tree is rebuilt.
                     FormulaFixup.BuildDependencyTree();
 
                     // When formula fixup is enabled, we need to begin a new batch of undo operations, as this

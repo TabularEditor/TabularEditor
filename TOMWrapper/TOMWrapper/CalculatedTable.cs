@@ -106,10 +106,10 @@ namespace TabularEditor.TOMWrapper
             if (Partitions.Count > 0 && !string.IsNullOrEmpty(Partitions[0].ErrorMessage)) ErrorMessage = Partitions[0].ErrorMessage;
         }
 
-        [DisplayName("Expression")]
+        [Browsable(true), DisplayName("Expression")]
         [Category("Options"), IntelliSense("The Expression of this Calculated Table. Read only.")]
         [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
-        public string Expression
+        public override string Expression
         {
             get
             {
@@ -131,7 +131,7 @@ namespace TabularEditor.TOMWrapper
         }
 
         [Browsable(false)]
-        public bool NeedsValidation { get; set; } = false;
+        public override bool NeedsValidation { get; set; } = false;
 
         public override string ObjectTypeName
         {

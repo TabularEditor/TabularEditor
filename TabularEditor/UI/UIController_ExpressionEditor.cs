@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.TextServices;
 using TabularEditor.TOMWrapper;
+using TabularEditor.TOMWrapper.Utils;
 
 namespace TabularEditor.UI
 {
@@ -34,7 +35,7 @@ namespace TabularEditor.UI
                 _expressionEditor_Current = value;
                 if (_expressionEditor_Current != null) _expressionEditor_Current.PropertyChanged += ExpressionEditor_Current_PropertyChanged;
 
-                ExpressionEditor_SetText(_expressionEditor_Current != null);
+                ExpressionEditor_SetText();
             }
         }
 
@@ -43,9 +44,9 @@ namespace TabularEditor.UI
             if (e.PropertyName == "Name") UI.CurrentMeasureLabel.Text = 
                     ((sender as IDaxObject)?.DaxObjectName ?? 
                     ((sender as IExpressionObject).Name + ".Expression")) + " :=";
-            if (e.PropertyName == "Expression")
+            if (e.PropertyName.EndsWith("Expression"))
             {
-                if (sender == ExpressionEditor_Current) UI.ExpressionEditor.Text = (sender as IExpressionObject).Expression;
+                if (sender == ExpressionEditor_Current) UI.ExpressionEditor.Text = GetText();
                 if (UI.PropertyGrid.SelectedObject == ExpressionEditor_Current) UI.PropertyGrid.Refresh();
                 ExpressionEditor_CancelEdit();
             }
@@ -60,6 +61,27 @@ namespace TabularEditor.UI
             UI.ExpressionEditor.KeyPress += ExpressionEditor_KeyPress;
             UI.ExpressionEditor.DragEnter += ExpressionEditor_DragEnter;
             UI.ExpressionEditor.DragLeave += ExpressionEditor_DragLeave;
+
+            UI.ExpressionSelector.ComboBox.ValueMember = "Value";
+            UI.ExpressionSelector.ComboBox.DisplayMember = "Description";
+        }
+
+        private void ExpressionEditor_ExpressionSelectorChanged(object sender, EventArgs e)
+        {
+            if (ExpressionEditor_Current is IDaxDependantObject)
+            {
+                ExpressionEditor_SetText();
+            }
+        }
+
+        sealed class DaxPropertyComboBoxItem
+        {
+            public string Description { get; private set; }
+            public DAXProperty Value { get; private set; }
+            public DaxPropertyComboBoxItem(DAXProperty value) { Value = value; Description = Enum.GetName(typeof(DAXProperty), value).SplitCamelCase(); }
+            public static Dictionary<DAXProperty, DaxPropertyComboBoxItem> Items = new Dictionary<DAXProperty, DaxPropertyComboBoxItem>(
+                Enum.GetValues(typeof(DAXProperty)).Cast<DAXProperty>().ToDictionary(v => v, v => new DaxPropertyComboBoxItem(v))
+                );
         }
 
         private void ExpressionEditor_KeyPress(object sender, KeyPressEventArgs e)
@@ -124,18 +146,61 @@ namespace TabularEditor.UI
 
         }
 
-        private void ExpressionEditor_SetText(bool fromMeasure)
+        private string GetText()
+        {
+            if(ExpressionEditor_Current is IDaxDependantObject)
+            {
+                return (ExpressionEditor_Current as IDaxDependantObject).GetDAX(CurrentDaxProperty) ?? "";
+            }
+            else if (ExpressionEditor_Current != null)
+            {
+                return ExpressionEditor_Current.Expression ?? "";
+            }
+            return "";
+        }
+        private void SetText(string value)
+        {
+            if (ExpressionEditor_Current is IDaxDependantObject)
+            {
+                (ExpressionEditor_Current as IDaxDependantObject).SetDAX(CurrentDaxProperty, value);
+            }
+            else if (ExpressionEditor_Current != null)
+            {
+                ExpressionEditor_Current.Expression = value;
+            }
+        }
+
+        private DAXProperty CurrentDaxProperty
+        {
+            get
+            {
+                return (UI.ExpressionSelector.SelectedItem as DaxPropertyComboBoxItem)?.Value ?? DAXProperty.Expression;
+            }
+            set
+            {
+                UI.ExpressionSelector.SelectedItem = DaxPropertyComboBoxItem.Items[value];
+            }
+        }
+
+        private void ExpressionEditor_SetText()
         {
             UI.ExpressionEditor.TextChanged -= ExpressionEditor_TextChanged;
 
             var i = UI.ExpressionEditor.SelectionStart;
-            UI.ExpressionEditor.Text = (fromMeasure ? ExpressionEditor_Current.Expression : "") ?? "";
+            UI.ExpressionEditor.Text = GetText();
             if(!string.IsNullOrEmpty(UI.ExpressionEditor.Text)) ExpressionParser.SyntaxHighlight(UI.ExpressionEditor);
             UI.ExpressionEditor.ClearUndo();
             UI.ExpressionEditor.SelectionStart = i;
 
-            UI.CurrentMeasureLabel.Text = fromMeasure ? (_expressionEditor_Current as IDaxObject)?.DaxObjectName + " :=" : "";
-            UI.CurrentMeasureLabel.Visible = fromMeasure && _expressionEditor_Current is IDaxObject;
+            // Only show label bar for DAX objects, when editing their expression:
+            if (_expressionEditor_Current is IDaxObject)
+            {
+                UI.CurrentMeasureLabel.Text = (_expressionEditor_Current as IDaxObject).DaxObjectName + " :=";
+                UI.CurrentMeasureLabel.Visible = true;
+            } else
+            {
+                UI.CurrentMeasureLabel.Visible = false;
+            }
 
             UI.ExpressionEditor.TextChanged += ExpressionEditor_TextChanged;
         }
@@ -148,10 +213,28 @@ namespace TabularEditor.UI
 
             var obj = UI.TreeView.SelectedNode?.Tag as IExpressionObject;
 
+            // Tables have "Default Detail Rows Expressions", but only for CompatibilityLevel 1400 or newer.
+            if (obj is Table && !(obj is CalculatedTable) && Handler.CompatibilityLevel < 1400) obj = null;
+
             if (ExpressionEditor_IsEditing) ExpressionEditor_AcceptEdit();
 
+            // Update the Expression Selector combobox:
+            UI.ExpressionSelector.ComboBox.SelectedValueChanged -= ExpressionEditor_ExpressionSelectorChanged;
+            UI.ExpressionSelector.Items.Clear();
+            var ddo = obj as IDaxDependantObject;
+            if (ddo != null)
+            {
+                UI.ExpressionSelector.Enabled = true;
+                foreach (var daxProp in ddo.GetDAXProperties()) UI.ExpressionSelector.Items.Add(DaxPropertyComboBoxItem.Items[daxProp]);
+                CurrentDaxProperty = ddo.GetDefaultDAXProperty();
+            }
+            else
+            {
+                UI.ExpressionSelector.Enabled = false;
+            }
+            UI.ExpressionSelector.ComboBox.SelectedValueChanged += ExpressionEditor_ExpressionSelectorChanged;
+
             ExpressionEditor_Current = obj;
-            ExpressionEditor_SetText(obj != null);
             UI.ExpressionEditor.Enabled = obj != null;
         }
 
@@ -171,7 +254,7 @@ namespace TabularEditor.UI
             if (ExpressionEditor_Current != obj)
             {
                 ExpressionEditor_Current = obj;
-                ExpressionEditor_SetText(true);
+                ExpressionEditor_SetText();
             }
             UI.StatusLabel.Text = "Editing " + (obj as IDaxObject)?.DaxObjectFullName ?? obj.Name;
             ExpressionEditor_IsEditing = true;
@@ -185,7 +268,7 @@ namespace TabularEditor.UI
             {
                 UI.StatusLabel.Text = "";
                 ExpressionEditor_IsEditing = false;
-                ExpressionEditor_SetText(true);
+                ExpressionEditor_SetText();
                 UI.TreeView.Focus();
             }
         }
@@ -195,7 +278,7 @@ namespace TabularEditor.UI
             if (ExpressionEditor_IsEditing)
             {
                 UI.StatusLabel.Text = "";
-                ExpressionEditor_Current.Expression = UI.ExpressionEditor.Text.Replace("\r", "");
+                SetText(UI.ExpressionEditor.Text.Replace("\r", ""));
                 ExpressionEditor_IsEditing = false;
             }
         }
@@ -205,7 +288,7 @@ namespace TabularEditor.UI
             get
             {
                 if (ExpressionEditor_IsEditing)
-                    return (ExpressionEditor_Current.Expression ?? "").Replace("\r", "") != UI.ExpressionEditor.Text.Replace("\r", "");
+                    return GetText().Replace("\r", "") != UI.ExpressionEditor.Text.Replace("\r", "");
                 else return false;
             }
         }
