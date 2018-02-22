@@ -117,6 +117,7 @@ namespace TabularEditor.TOMWrapper
     /// </summary>
     public sealed class TabularModelHandler: IDisposable
     {
+        internal Guid InstanceID = Guid.NewGuid();
         public const string PROP_HASUNSAVEDCHANGES = "HasUnsavedChanges";
         public const string PROP_ISCONNECTED = "IsConnected";
         public const string PROP_STATUS = "Status";

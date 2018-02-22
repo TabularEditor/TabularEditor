@@ -206,10 +206,18 @@ namespace TabularEditor
 
         public override void OnStructureChanged(ITabularNamedObject obj = null)
         {
-            if (obj == null)
-                OnStructureChanged(new TreePath(Model));
+            if (UpdateLocks > 0)
+            {
+                structureChangedItems.AddIfNotExists(obj);
+                return;
+            }
             else
-                OnStructureChanged(GetPath(obj));
+            {
+                if (obj == null)
+                    OnStructureChanged(new TreePath(Model));
+                else
+                    OnStructureChanged(GetPath(obj));
+            }
         }
 
         public override void OnNodesRemoved(ITabularObject parent, params ITabularObject[] children)

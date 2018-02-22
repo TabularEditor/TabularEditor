@@ -80,7 +80,7 @@ namespace TabularEditor.TOMWrapper
             Levels = new LevelCollection(this.GetObjectPath() + ".Levels", MetadataObject.Levels, this);
 
             // Loop through all levels, to make sure that they point to the current columns (i.e. not "deleted" columns):
-            foreach (var l in Levels) l.MetadataObject.Column = Table.Columns[l.MetadataObject.Column.Name].MetadataObject;
+            foreach (var l in Levels) l.MetadataObject.Column = l.MetadataObject.Column == null ? null : Table.Columns[l.MetadataObject.Column.Name].MetadataObject;
         }
 
         private bool _reordering = false;

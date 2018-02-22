@@ -25,6 +25,7 @@ namespace TabularEditor.TOMWrapper.Utils
             , bool includePerspectives = true
             , bool includeRLS = true
             , bool includeOLS = true
+            , bool includeInstanceID = false
             )
         {
             var model = objects.FirstOrDefault()?.Model;
@@ -47,6 +48,13 @@ namespace TabularEditor.TOMWrapper.Utils
                 {
                     jw.Formatting = Formatting.Indented;
                     jw.WriteStartObject();
+
+                    if (includeInstanceID)
+                    {
+                        jw.WritePropertyName("InstanceID");
+                        jw.WriteValue(model.Handler.InstanceID);
+                    }
+
                     foreach (var type in byType)
                     {
                         jw.WritePropertyName(TypeToJson(type.Key));
@@ -171,7 +179,13 @@ namespace TabularEditor.TOMWrapper.Utils
 
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.DataColumn>(json.ToString());
             tom.Name = target.Columns.GetNewName(tom.Name);
-            tom.SortByColumn = json["sortByColumn"] != null ? target.MetadataObject.Columns[json.Value<string>("sortByColumn")] : null;
+
+            if (json["sortByColumn"] != null)
+            {
+                var srcColumnName = json.Value<string>("sortByColumn");
+                if (target.MetadataObject.Columns.ContainsName(srcColumnName))
+                    tom.SortByColumn = target.MetadataObject.Columns[srcColumnName];
+            }
 
             var column = DataColumn.CreateFromMetadata(target, tom);
 
@@ -192,7 +206,12 @@ namespace TabularEditor.TOMWrapper.Utils
         {
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.Hierarchy>(json.ToString());
             tom.Name = target.Hierarchies.GetNewName(tom.Name);
-            for(var i = 0; i < tom.Levels.Count; i++) tom.Levels[i].Column = target.MetadataObject.Columns[json["levels"][i].Value<string>("column")];
+            for (var i = 0; i < tom.Levels.Count; i++)
+            {
+                var srcColumnName = json["levels"][i].Value<string>("column");
+                if (!target.MetadataObject.Columns.ContainsName(srcColumnName))
+                    tom.Levels[i].Column = target.MetadataObject.Columns.First(c => c.Type != TOM.ColumnType.RowNumber);
+            }
 
             var hierarchy = Hierarchy.CreateFromMetadata(target, tom);
 
@@ -307,15 +326,27 @@ namespace TabularEditor.TOMWrapper.Utils
 #endregion
     }
 
+    public static class ObjectJsonContainerHelper
+    {
+        public static IEnumerable<JObject> Get<T>(this ObjectJsonContainer container)
+        {
+            if (!container.ContainsKey(typeof(T))) yield break;
+            foreach (var obj in container[typeof(T)]) yield return obj;
+        }
+    }
+
+
     public class ObjectJsonContainer : IReadOnlyDictionary<Type, JObject[]>
     {
         private Dictionary<Type, JObject[]> Dict;
 
+        public Guid InstanceID = Guid.Empty;
+
         internal ObjectJsonContainer(JObject jObj)
         {
-            Dict = ObjectMetadata.Creatable.ToDictionary(t => t, t => 
-             jObj[Serializer.TypeToJson(t)] == null ? new JObject[0] :
-            (jObj[Serializer.TypeToJson(t)] as JArray).Cast<JObject>().ToArray());
+            InstanceID = jObj["InstanceID"] != null ? Guid.Parse(jObj["InstanceID"].ToString()) : Guid.Empty;
+            Dict = ObjectMetadata.Creatable.Where(t => jObj[Serializer.TypeToJson(t)] != null)
+                .ToDictionary(t => t, t => (jObj[Serializer.TypeToJson(t)] as JArray).Cast<JObject>().ToArray());
         }
 
         public JObject[] this[Type key]

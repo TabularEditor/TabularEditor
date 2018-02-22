@@ -1,8 +1,12 @@
-﻿using System;
+﻿extern alias json;
+
+using json::Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using TabularEditor.TOMWrapper.Utils;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
@@ -62,7 +66,7 @@ namespace TabularEditor.TOMWrapper
 
             Handler.BeginUpdate("folder structure change");
 
-            foreach(var obj in objects)
+            foreach (var obj in objects)
             {
                 obj.SetDisplayFolder((newContainer as Folder)?.Path ?? "", culture);
             }
@@ -91,49 +95,89 @@ namespace TabularEditor.TOMWrapper
         /// <param name="destination"></param>
         public List<TabularObject> InsertObjects(ObjectJsonContainer objectContainer, ITabularNamedObject destination = null)
         {
-            Handler.BeginUpdate("Paste objects");
-
-            var inserted = new List<TabularObject>();
-
             // Possible destinations:
             var destHier = (destination as Level)?.Hierarchy ?? (destination as Hierarchy);
             var destTable = (destination as Folder)?.Table ?? (destination as Partition)?.Table ?? (destination as PartitionViewTable)?.Table ?? destHier?.Table ?? (destination as IDetailObject)?.Table ?? (destination as Table);
             var folder = (destination as Folder)?.Path;
 
+            bool replaceTable = false;
+            string replaceTableName = "";
+            JObject replaceTableJobj = null;
+            bool replaceTableIsCalculated = false;
+
+            // If the object container only holds a single object, and that object is a table, let's ask the user if they want to
+            // replace the destination table with the table in the clipboard (unless of course it's the same table).
+            if (destTable != null && objectContainer.Count == 1 && (objectContainer.Get<CalculatedTable>().Count() == 1 || objectContainer.Get<Table>().Count() == 1))
+            {
+                replaceTableIsCalculated = objectContainer.Get<CalculatedTable>().Any();
+                replaceTableJobj = objectContainer.Get<CalculatedTable>().FirstOrDefault() ?? objectContainer.Get<Table>().FirstOrDefault();
+                replaceTableName = replaceTableJobj["name"].ToString();
+
+                // Check that the object came from a different instance, or that its another table:
+                if (objectContainer.InstanceID != Handler.InstanceID || !destTable.Name.StartsWith(replaceTableName))
+                {
+                    var result = MessageBox.Show($"Do you want to replace table '{destTable.Name}' with table '{replaceTableName}' from the clipboard?\n\nExisting relationships will be kept, provided participating columns have the same name and data types in both the replaced and the inserted table.", "Replace existing table?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information);
+                    if (result == DialogResult.Cancel) return new List<TabularObject>();
+                    if (result == DialogResult.Yes) replaceTable = true;
+                }
+            }
+
+            Handler.BeginUpdate("Paste objects");
+
+            var inserted = new List<TabularObject>();
+
             if (destHier != null)
             {
                 // Levels can only be deserialized on a Hierarchy destination:
-                foreach (var obj in objectContainer[typeof(Level)]) inserted.Add(Serializer.DeserializeLevel(obj, destHier));
+                foreach (var obj in objectContainer.Get<Level>()) inserted.Add(Serializer.DeserializeLevel(obj, destHier));
                 destHier.CompactLevelOrdinals();
             }
 
             if (destTable?.GetType() == typeof(Table))
             {
                 // DataColumns and Partitions can only be deserialized onto a Table destination (not CalculatedTable):
-                foreach (var obj in objectContainer[typeof(DataColumn)]) inserted.Add(Serializer.DeserializeDataColumn(obj, destTable));
-                foreach (var obj in objectContainer[typeof(Partition)]) inserted.Add(Serializer.DeserializePartition(obj, destTable));
+                foreach (var obj in objectContainer.Get<DataColumn>()) inserted.Add(Serializer.DeserializeDataColumn(obj, destTable));
+                foreach (var obj in objectContainer.Get<Partition>()) inserted.Add(Serializer.DeserializePartition(obj, destTable));
             }
+
             if (destTable is Table)
             {
                 // Measures, Hierarchies and CalculatedColumns can be deserialized onto a Table (or Table derived) destinated:
-                foreach (var obj in objectContainer[typeof(CalculatedColumn)]) inserted.Add(Serializer.DeserializeCalculatedColumn(obj, destTable));
-                foreach (var obj in objectContainer[typeof(Hierarchy)]) inserted.Add(Serializer.DeserializeHierarchy(obj, destTable));
-                foreach (var obj in objectContainer[typeof(Measure)]) inserted.Add(Serializer.DeserializeMeasure(obj, destTable));
+                foreach (var obj in objectContainer.Get<CalculatedColumn>()) inserted.Add(Serializer.DeserializeCalculatedColumn(obj, destTable));
+                foreach (var obj in objectContainer.Get<Hierarchy>()) inserted.Add(Serializer.DeserializeHierarchy(obj, destTable));
+                foreach (var obj in objectContainer.Get<Measure>()) inserted.Add(Serializer.DeserializeMeasure(obj, destTable));
             }
 
-            foreach (var obj in objectContainer[typeof(CalculatedTable)]) inserted.Add(Serializer.DeserializeCalculatedTable(obj, Handler.Model));
-            foreach (var obj in objectContainer[typeof(Table)]) inserted.Add(Serializer.DeserializeTable(obj, Handler.Model));
+            if (replaceTable)
+            {
+                if (destTable.Name == replaceTableName) destTable.Name = destTable.Name + "-" + Guid.NewGuid().ToString();
+                var newTable = replaceTableIsCalculated ?
+                    Serializer.DeserializeCalculatedTable(replaceTableJobj, Handler.Model) :
+                    Serializer.DeserializeTable(replaceTableJobj, Handler.Model);
+                inserted.Add(newTable);
+                foreach(var rel in destTable.UsedInRelationships.ToList())
+                {
+                    if (rel.FromTable == destTable && newTable.Columns.Contains(rel.FromColumn.Name) && rel.FromColumn.DataType == newTable.Columns[rel.FromColumn.Name].DataType) { rel.FromColumn = newTable.Columns[rel.FromColumn.Name]; }
+                    if (rel.ToTable == destTable && newTable.Columns.Contains(rel.ToColumn.Name) && rel.ToColumn.DataType == newTable.Columns[rel.ToColumn.Name].DataType) { rel.ToColumn = newTable.Columns[rel.ToColumn.Name]; }
+                }
+                destTable.Delete();
+            }
+            else
+            {
+                foreach (var obj in objectContainer.Get<CalculatedTable>()) inserted.Add(Serializer.DeserializeCalculatedTable(obj, Handler.Model));
+                foreach (var obj in objectContainer.Get<Table>()) inserted.Add(Serializer.DeserializeTable(obj, Handler.Model));
+            }
 
-            foreach (var obj in objectContainer[typeof(ModelRole)]) inserted.Add(Serializer.DeserializeModelRole(obj, Handler.Model));
-            foreach (var obj in objectContainer[typeof(ProviderDataSource)]) inserted.Add(Serializer.DeserializeProviderDataSource(obj, Handler.Model));
-            foreach (var obj in objectContainer[typeof(SingleColumnRelationship)]) inserted.Add(Serializer.DeserializeSingleColumnRelationship(obj, Handler.Model));
-            foreach (var obj in objectContainer[typeof(Perspective)]) inserted.Add(Serializer.DeserializePerspective(obj, Handler.Model));
-            foreach (var obj in objectContainer[typeof(Culture)]) inserted.Add(Serializer.DeserializeCulture(obj, Handler.Model));
+            foreach (var obj in objectContainer.Get<ModelRole>()) inserted.Add(Serializer.DeserializeModelRole(obj, Handler.Model));
+            foreach (var obj in objectContainer.Get<ProviderDataSource>()) inserted.Add(Serializer.DeserializeProviderDataSource(obj, Handler.Model));
+            foreach (var obj in objectContainer.Get<SingleColumnRelationship>()) inserted.Add(Serializer.DeserializeSingleColumnRelationship(obj, Handler.Model));
+            foreach (var obj in objectContainer.Get<Perspective>()) inserted.Add(Serializer.DeserializePerspective(obj, Handler.Model));
+            foreach (var obj in objectContainer.Get<Culture>()) inserted.Add(Serializer.DeserializeCulture(obj, Handler.Model));
 
             if(Handler.CompatibilityLevel >= 1400)
             {
-                foreach (var obj in objectContainer[typeof(NamedExpression)]) inserted.Add(Serializer.DeserializeNamedExpression(obj, Handler.Model));
-                foreach (var obj in objectContainer[typeof(StructuredDataSource)]) inserted.Add(Serializer.DeserializeStructuredDataSource(obj, Handler.Model));
+                foreach (var obj in objectContainer.Get<NamedExpression>()) inserted.Add(Serializer.DeserializeNamedExpression(obj, Handler.Model));
+                foreach (var obj in objectContainer.Get<StructuredDataSource>()) inserted.Add(Serializer.DeserializeStructuredDataSource(obj, Handler.Model));
             }
 
             foreach (var obj in inserted)
