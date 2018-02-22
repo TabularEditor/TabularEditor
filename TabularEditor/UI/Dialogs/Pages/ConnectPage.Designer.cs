@@ -110,6 +110,7 @@
             this.rdbUsernamePassword.TabIndex = 1;
             this.rdbUsernamePassword.Text = "Username and Password";
             this.rdbUsernamePassword.UseVisualStyleBackColor = true;
+            this.rdbUsernamePassword.CheckedChanged += new System.EventHandler(this.ValidateUI);
             // 
             // rdbIntegrated
             // 
@@ -122,6 +123,7 @@
             this.rdbIntegrated.TabStop = true;
             this.rdbIntegrated.Text = "Integrated Security";
             this.rdbIntegrated.UseVisualStyleBackColor = true;
+            this.rdbIntegrated.CheckedChanged += new System.EventHandler(this.ValidateUI);
             // 
             // label5
             // 
@@ -168,6 +170,7 @@
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.Size = new System.Drawing.Size(180, 20);
             this.txtUsername.TabIndex = 2;
+            this.txtUsername.TextChanged += new System.EventHandler(this.ValidateUI);
             // 
             // txtServer
             // 
