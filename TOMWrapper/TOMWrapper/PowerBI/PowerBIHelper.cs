@@ -13,19 +13,26 @@ namespace TabularEditor.TOMWrapper.PowerBI
 
         public static string LoadDatabaseFromPbitFile(string path)
         {
-            using (var fs = new FileStream(path, FileMode.Open))
-            using (var za = new ZipArchive(fs, ZipArchiveMode.Read))
+            try
             {
-                var modelEntry = za.Entries.FirstOrDefault(e => e.Name == "DataModelSchema");
-                if (modelEntry != null)
+                using (var fs = new FileStream(path, FileMode.Open))
+                using (var za = new ZipArchive(fs, ZipArchiveMode.Read))
                 {
-                    using (var sr = new StreamReader(modelEntry.Open(), Encoding.Unicode))
+                    var modelEntry = za.Entries.FirstOrDefault(e => e.Name == "DataModelSchema");
+                    if (modelEntry != null)
                     {
-                        return sr.ReadToEnd();
+                        using (var sr = new StreamReader(modelEntry.Open(), Encoding.Unicode))
+                        {
+                            return sr.ReadToEnd();
+                        }
                     }
+                    else
+                        throw new Exception();
                 }
-                else
-                    throw new InvalidOperationException("This file is not a valid PBIX / PBIT file.");
+            }
+            catch
+            {
+                throw new InvalidOperationException("This file is not a valid PBIX / PBIT file.");
             }
         }
 
