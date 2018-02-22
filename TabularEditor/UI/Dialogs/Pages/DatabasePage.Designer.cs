@@ -33,9 +33,10 @@
             this.databaseBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.pnlDatabaseID = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
-            this.txtDatabaseName = new System.Windows.Forms.TextBox();
+            this.txtDatabaseID = new System.Windows.Forms.TextBox();
             this.DatabaseIcon = new System.Windows.Forms.DataGridViewImageColumn();
             this.colID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CompatibilityLevel = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colLastUpdate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colLastProcessed = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -58,6 +59,7 @@
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.DatabaseIcon,
             this.colID,
+            this.colName,
             this.CompatibilityLevel,
             this.colLastUpdate,
             this.colLastProcessed,
@@ -87,7 +89,7 @@
             // pnlDatabaseID
             // 
             this.pnlDatabaseID.Controls.Add(this.label1);
-            this.pnlDatabaseID.Controls.Add(this.txtDatabaseName);
+            this.pnlDatabaseID.Controls.Add(this.txtDatabaseID);
             this.pnlDatabaseID.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pnlDatabaseID.Location = new System.Drawing.Point(0, 214);
             this.pnlDatabaseID.Name = "pnlDatabaseID";
@@ -104,15 +106,15 @@
             this.label1.TabIndex = 1;
             this.label1.Text = "Database ID";
             // 
-            // txtDatabaseName
+            // txtDatabaseID
             // 
-            this.txtDatabaseName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtDatabaseID.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtDatabaseName.Location = new System.Drawing.Point(79, 6);
-            this.txtDatabaseName.Name = "txtDatabaseName";
-            this.txtDatabaseName.Size = new System.Drawing.Size(428, 20);
-            this.txtDatabaseName.TabIndex = 0;
-            this.txtDatabaseName.TextChanged += new System.EventHandler(this.txtDatabaseID_TextChanged);
+            this.txtDatabaseID.Location = new System.Drawing.Point(79, 6);
+            this.txtDatabaseID.Name = "txtDatabaseID";
+            this.txtDatabaseID.Size = new System.Drawing.Size(428, 20);
+            this.txtDatabaseID.TabIndex = 0;
+            this.txtDatabaseID.TextChanged += new System.EventHandler(this.txtDatabaseID_TextChanged);
             // 
             // DatabaseIcon
             // 
@@ -130,7 +132,15 @@
             this.colID.HeaderText = "ID";
             this.colID.Name = "colID";
             this.colID.ReadOnly = true;
-            this.colID.Width = 200;
+            this.colID.Width = 160;
+            // 
+            // colName
+            // 
+            this.colName.DataPropertyName = "Name";
+            this.colName.HeaderText = "Name";
+            this.colName.Name = "colName";
+            this.colName.ReadOnly = true;
+            this.colName.Width = 160;
             // 
             // CompatibilityLevel
             // 
@@ -138,6 +148,7 @@
             this.CompatibilityLevel.HeaderText = "Compatibility";
             this.CompatibilityLevel.Name = "CompatibilityLevel";
             this.CompatibilityLevel.ReadOnly = true;
+            this.CompatibilityLevel.Width = 80;
             // 
             // colLastUpdate
             // 
@@ -181,10 +192,11 @@
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.Panel pnlDatabaseID;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txtDatabaseName;
+        private System.Windows.Forms.TextBox txtDatabaseID;
         private System.Windows.Forms.BindingSource databaseBindingSource;
         private System.Windows.Forms.DataGridViewImageColumn DatabaseIcon;
         private System.Windows.Forms.DataGridViewTextBoxColumn colID;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colName;
         private System.Windows.Forms.DataGridViewTextBoxColumn CompatibilityLevel;
         private System.Windows.Forms.DataGridViewTextBoxColumn colLastUpdate;
         private System.Windows.Forms.DataGridViewTextBoxColumn colLastProcessed;

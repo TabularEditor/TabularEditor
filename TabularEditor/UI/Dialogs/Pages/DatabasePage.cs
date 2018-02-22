@@ -54,7 +54,7 @@ namespace TabularEditor.UI.Dialogs.Pages
             {
                 suspendEvent = true;
 
-                txtDatabaseName.Text = (dataGridView1.SelectedRows[0].DataBoundItem as Database).ID;
+                txtDatabaseID.Text = (dataGridView1.SelectedRows[0].DataBoundItem as Database).ID;
                 OnValidation();
 
                 suspendEvent = false;
@@ -80,7 +80,7 @@ namespace TabularEditor.UI.Dialogs.Pages
 
         private void OnValidation()
         {
-            DatabaseID = string.IsNullOrWhiteSpace(txtDatabaseName.Text) ? null : txtDatabaseName.Text;
+            DatabaseID = string.IsNullOrWhiteSpace(txtDatabaseID.Text) ? null : txtDatabaseID.Text;
 
             var newValid = !string.IsNullOrEmpty(DatabaseID);
             if (valid != newValid)

@@ -89,7 +89,7 @@ namespace TabularEditor.UI
                 {
                     Handler = new TabularModelHandler(
                         ConnectForm.ConnectionString, 
-                        string.IsNullOrEmpty(ConnectForm.LocalInstanceName) ? SelectDatabaseForm.DatabaseName : null);
+                        string.IsNullOrEmpty(ConnectForm.LocalInstanceName) ? SelectDatabaseForm.DatabaseID : null);
                     Handler.Settings.AutoFixup = Preferences.Current.FormulaFixup;
                     LoadTabularModelToUI();
                     File_Current = null;
