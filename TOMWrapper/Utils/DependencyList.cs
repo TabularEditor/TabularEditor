@@ -40,9 +40,10 @@ namespace TabularEditor.TOMWrapper.Utils
             List<ObjectReference> depList;
             if (TryGetValue(renamedObj, out depList))
             {
-                var pos = new int[5];
-                var sbs = new StringBuilder[5];
-                for (var i = 0; i < 5; i++) sbs[i] = new StringBuilder();
+                var propertyCount = Enum.GetValues(typeof(DAXProperty)).Length;
+                var pos = new int[propertyCount];
+                var sbs = new StringBuilder[propertyCount];
+                for (var i = 0; i < propertyCount; i++) sbs[i] = new StringBuilder();
 
                 // Loop through all dependencies:
                 foreach (var dep in depList)
@@ -57,7 +58,7 @@ namespace TabularEditor.TOMWrapper.Utils
                 }
 
                 // Finalize:
-                for (var i = 0; i < 5; i++)
+                for (var i = 0; i < propertyCount; i++)
                 {
                     if (pos[i] > 0)
                     {
