@@ -298,7 +298,9 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 			tom.Name = Parent.<#= Rules.GetCollection(t) #>.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
-			var obj = CreateFromMetadata(<#= Rules.GetParent(t) != "Model" ? "newParent ?? " : "" #>Parent, tom);
+			<#= t.Name #> obj <# if(t.Name == "Table") { #>;
+			if(this is CalculatedTable) obj = CalculatedTable.CreateFromMetadata(Parent, tom);
+			else obj <# } #>= CreateFromMetadata(<#= Rules.GetParent(t) != "Model" ? "newParent ?? " : "" #>Parent, tom);
 
 <# if (Rules.IsTranslatable(t, true)) { #>
 			// Copy translations, if applicable:
