@@ -44,5 +44,10 @@ namespace TabularEditor.UI.Actions
                 UIController.Current.Handler.EndUpdateAll(true);
             }
         }
+
+        public void ExecuteInScript(object arg)
+        {
+            base.Execute(arg);
+        }
     }
 }

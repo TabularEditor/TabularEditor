@@ -266,7 +266,10 @@ namespace TabularEditor.TOMWrapper
                     if (obj is CalculatedColumn) { newObj = (obj as CalculatedColumn).Clone(newParent: newTable); }
 
                     (obj as TabularNamedObject).Delete();
+
+                    Handler.UndoManager.Enabled = false;
                     newObj.Name = name;
+                    Handler.UndoManager.Enabled = true;
                 }
                 else
                 // Objects moved between two instances of Tabular Editor (source Table will be null in this case):

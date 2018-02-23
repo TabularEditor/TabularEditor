@@ -42,24 +42,7 @@ namespace TabularEditor
 
             ///// Populate custom actions and samples /////
             // TODO: Do this somewhere else
-            if (File.Exists(ScriptEngine.CustomActionsJsonPath))
-            {
-                custActions = CustomActionsJson.LoadFromJson(ScriptEngine.CustomActionsJsonPath);
-                foreach (var act in custActions.Actions)
-                {
-                    customActionsToolStripMenuItem.DropDownItems.Add(act.Name, null, (s, e) =>
-                    {
-                        CurrentCustomAction = act.Name;
-                        txtAdvanced.Text = act.Execute;
-                    });
-                }
-            }
-
-            if (custActions == null || custActions.Actions.Length == 0)
-            {
-                var item = customActionsToolStripMenuItem.DropDownItems.Add("(No custom actions)");
-                item.Enabled = false;
-            }
+            PopulateCustomActionsDropDown();
 
             var tutorial = (samplesMenu.DropDownItems.Add("Tutorials") as ToolStripMenuItem).DropDownItems;
             var translations = (samplesMenu.DropDownItems.Add("Translations") as ToolStripMenuItem).DropDownItems;
@@ -112,6 +95,28 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         }
 
 
+        private void PopulateCustomActionsDropDown()
+        {
+            customActionsToolStripMenuItem.DropDownItems.Clear();
+            if (File.Exists(ScriptEngine.CustomActionsJsonPath))
+            {
+                custActions = CustomActionsJson.LoadFromJson(ScriptEngine.CustomActionsJsonPath);
+                foreach (var act in custActions.Actions)
+                {
+                    customActionsToolStripMenuItem.DropDownItems.Add(act.Name, null, (s, e) =>
+                    {
+                        CurrentCustomAction = act.Name;
+                        txtAdvanced.Text = act.Execute;
+                    });
+                }
+            }
+
+            if (custActions == null || custActions.Actions.Length == 0)
+            {
+                var item = customActionsToolStripMenuItem.DropDownItems.Add("(No custom actions)");
+                item.Enabled = false;
+            }
+        }
 
         CustomActionsJson custActions = null;
 
@@ -477,6 +482,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 // Compile and add the newly created action:
                 ScriptEngine.CompileCustomActions(new CustomActionsJson() { Actions = new []{ act } });
                 if (!ScriptEngine.CustomActionError) ScriptEngine.AddCustomActions(UI.Actions);
+                PopulateCustomActionsDropDown();
             }
         }
 
