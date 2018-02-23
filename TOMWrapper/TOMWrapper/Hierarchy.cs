@@ -11,9 +11,11 @@ namespace TabularEditor.TOMWrapper
     {
         internal override void DeleteLinkedObjects(bool isChildOfDeleted)
         {
-            // Make sure the relationship is no longer used in any Variations:
+            // Make sure the hierarchy is no longer used in any Variations:
             if (Handler.CompatibilityLevel >= 1400)
-                UsedInVariations.ToList().ForEach(v => v.DefaultHierarchy = null);
+            {
+                UsedInVariations.ToList().ForEach(v => v.Delete());
+            }
 
             base.DeleteLinkedObjects(isChildOfDeleted);
         }

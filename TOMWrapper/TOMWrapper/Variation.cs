@@ -26,5 +26,13 @@ namespace TabularEditor.TOMWrapper
         {
             return true;
         }
+
+        internal override void DeleteLinkedObjects(bool isChildOfDeleted)
+        {
+            DefaultColumn = null;
+            DefaultHierarchy = null;
+            Relationship = null;
+            base.DeleteLinkedObjects(isChildOfDeleted);
+        }
     }
 }
