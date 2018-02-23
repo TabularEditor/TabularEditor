@@ -8,22 +8,57 @@ using System.Threading.Tasks;
 
 namespace TabularEditor.TOMWrapper.PowerBI
 {
-    internal static class PowerBIHelper
+    public class PowerBiTemplate
     {
-
-        public static string LoadDatabaseFromPbitFile(string path)
+        MemoryStream fileData = new MemoryStream();
+        public PowerBiTemplate(string path)
         {
             try
             {
                 using (var fs = new FileStream(path, FileMode.Open))
-                using (var za = new ZipArchive(fs, ZipArchiveMode.Read))
+                {
+                    fs.CopyTo(fileData);
+                    fileData.Seek(0, SeekOrigin.Begin);
+                    using (var za = new ZipArchive(fileData, ZipArchiveMode.Read, true))
+                    {
+                        var modelEntry = za.Entries.FirstOrDefault(e => e.Name == "DataModelSchema");
+                        if (modelEntry != null)
+                        {
+                            using (var sr = new StreamReader(modelEntry.Open(), Encoding.Unicode, true, 1024, true))
+                            {
+                                ModelJson = sr.ReadToEnd();
+                            }
+                        }
+                        else
+                            throw new Exception();
+                    }
+                }
+            }
+            catch
+            {
+                throw new InvalidOperationException("This file is not a valid PBIX / PBIT file.");
+            }
+        }
+
+        public string ModelJson { get; private set; }
+
+        public void SetModelJson(string modelJson)
+        {
+            try
+            {
+                fileData.Seek(0, SeekOrigin.Begin);
+                using (var za = new ZipArchive(fileData, ZipArchiveMode.Update, true))
                 {
                     var modelEntry = za.Entries.FirstOrDefault(e => e.Name == "DataModelSchema");
                     if (modelEntry != null)
                     {
-                        using (var sr = new StreamReader(modelEntry.Open(), Encoding.Unicode))
+                        var modelEntryName = modelEntry.FullName;
+                        modelEntry.Delete();
+                        modelEntry = za.CreateEntry(modelEntryName);
+                        var unicodeNoBom = new UnicodeEncoding(false, false);
+                        using (var sw = new StreamWriter(modelEntry.Open(), unicodeNoBom, 1024, true))
                         {
-                            return sr.ReadToEnd();
+                            sw.Write(modelJson);
                         }
                     }
                     else
@@ -36,25 +71,13 @@ namespace TabularEditor.TOMWrapper.PowerBI
             }
         }
 
-        public static void SaveDatabaseToPbitFile(string path, string db)
+        public void SaveAs(string path)
         {
-            using (var fs = File.Open(path, FileMode.Open, FileAccess.ReadWrite))
-            using (var za = new ZipArchive(fs, ZipArchiveMode.Update))
+            fileData.Seek(0, SeekOrigin.Begin);
+            using (var fs = File.Open(path, FileMode.OpenOrCreate, FileAccess.Write))
             {
-                var modelEntry = za.Entries.FirstOrDefault(e => e.Name == "DataModelSchema");
-                if (modelEntry != null)
-                {
-                    var modelEntryName = modelEntry.FullName;
-                    modelEntry.Delete();
-                    modelEntry = za.CreateEntry(modelEntryName);
-                    var unicodeNoBom = new UnicodeEncoding(false, false);
-                    using (var sw = new StreamWriter(modelEntry.Open(), unicodeNoBom))
-                    {
-                        sw.Write(db);
-                    }
-                }
-                else
-                    throw new InvalidOperationException("This file is not a valid PBIX / PBIT file.");
+                fs.SetLength(0);
+                fileData.CopyTo(fs);
             }
         }
     }

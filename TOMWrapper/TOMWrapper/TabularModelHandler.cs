@@ -219,6 +219,8 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        private PowerBiTemplate pbit;
+
         /// <summary>
         /// Loads an Analysis Services tabular database (Compatibility Level 1200 or newer) from a file
         /// or folder.
@@ -236,7 +238,8 @@ namespace TabularEditor.TOMWrapper
 
             if (fi.Exists && fi.Extension == ".pbit")
             {
-                data = PowerBIHelper.LoadDatabaseFromPbitFile(path);
+                pbit = new PowerBiTemplate(path);
+                data = pbit.ModelJson;
                 SourceType = ModelSourceType.Pbit;
                 Source = path;
             }
@@ -357,7 +360,7 @@ namespace TabularEditor.TOMWrapper
                 if (annotatedSerializeOptions != null) options = JsonConvert.DeserializeObject<SerializeOptions>(annotatedSerializeOptions);
             }
             if (options == null) throw new ArgumentNullException("options");
-            Model.SetAnnotation("TabularEditor_SerializeOptions", JsonConvert.SerializeObject(options), false);
+            if(format != SaveFormat.PowerBiTemplate) Model.SetAnnotation("TabularEditor_SerializeOptions", JsonConvert.SerializeObject(options), false);
 
             switch (format)
             {
@@ -380,24 +383,17 @@ namespace TabularEditor.TOMWrapper
 
         private void SavePbit(string fileName)
         {
-            if (SourceType != ModelSourceType.Pbit)
+            if (SourceType != ModelSourceType.Pbit || pbit == null)
             {
                 Status = "Save failed!";
                 throw new InvalidOperationException("Tabular Editor cannot currently convert an Analysis Services Tabular model to a Power BI Template. Please choose a different save format.");
-            }
-
-            var fi = new FileInfo(fileName);
-
-            if (!fi.Exists)
-            {
-                Status = "Save failed!";
-                throw new InvalidOperationException("Tabular Editor cannot save a model as a new .pbit file. Please choose an existing .pbit file or save the model as a .bim file.");
-            }
+            }            
 
             var dbcontent = Serializer.SerializeDB(SerializeOptions.PowerBi);
 
             // Save to .pbit file:
-            PowerBIHelper.SaveDatabaseToPbitFile(fileName, dbcontent);
+            pbit.SetModelJson(dbcontent);
+            pbit.SaveAs(fileName);
 
             Status = "File saved.";
             if (!IsConnected) UndoManager.SetCheckpoint();
