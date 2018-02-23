@@ -154,6 +154,27 @@ namespace TabularEditor.UI
         {
             ExpressionEditor_AcceptEdit();
 
+            if(Handler.SourceType == ModelSourceType.Database)
+            {
+                UI.SaveBimDialog.FileName = "Model.bim";
+            }
+            else
+            {
+                UI.SaveBimDialog.FileName = File_Current;
+            }
+
+            if (Handler.SourceType == ModelSourceType.Pbit)
+            {
+                UI.SaveBimDialog.Filter = "Power BI Template|*.pbit|Tabular Model Files|*.bim|All files|*.*";
+            } else
+            {
+                UI.SaveBimDialog.Filter = "Tabular Model Files|*.bim|All files|*.*";
+            }
+            var fileType = UI.SaveBimDialog.Filter.Split('|')[UI.SaveBimDialog.FilterIndex];
+            var fn = UI.SaveBimDialog.FileName;
+            if (fileType == "*.bim" && fn.EndsWith(".pbit")) UI.SaveBimDialog.FileName = fn.Substring(0, fn.Length - 4) + "bim";
+            if (fileType == "*.pbit" && fn.EndsWith(".bim")) UI.SaveBimDialog.FileName = fn.Substring(0, fn.Length - 3) + "pbit";
+
             var res = UI.SaveBimDialog.ShowDialog();
 
             if (res == DialogResult.OK)
@@ -161,7 +182,10 @@ namespace TabularEditor.UI
                 using (new Hourglass())
                 {
                     UI.StatusLabel.Text = "Saving...";
-                    Handler.Save(UI.SaveBimDialog.FileName, SaveFormat.ModelSchemaOnly, Preferences.Current.GetSerializeOptions(false));
+
+                    fileType = UI.SaveBimDialog.Filter.Split('|')[UI.SaveBimDialog.FilterIndex];
+
+                    Handler.Save(UI.SaveBimDialog.FileName, fileType == "*.pbit" ? SaveFormat.PowerBiTemplate : SaveFormat.ModelSchemaOnly, Preferences.Current.GetSerializeOptions(false));
 
                     RecentFiles.Add(UI.SaveBimDialog.FileName);
                     UI.FormMain.PopulateRecentFilesList();
