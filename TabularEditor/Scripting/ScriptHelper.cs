@@ -59,7 +59,7 @@ namespace TabularEditor.Scripting
             var act = UI.UIController.Current.Actions.OfType<CustomAction>().FirstOrDefault(a => a.BaseName == actionName);
             if (act != null)
             {
-                act.Execute(null);
+                act.ExecuteInScript(null);
             }
             else throw new InvalidOperationException(string.Format("There is no Custom Action with the name '{0}'.", actionName));
         }
