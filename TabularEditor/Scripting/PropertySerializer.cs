@@ -35,7 +35,7 @@ namespace TabularEditor.Scripting
 
         [ScriptMethod]
         // TODO: Provide more formatting options
-        public static string ExportProperties(this IEnumerable<ITabularNamedObject> objects, string properties = "Name,Description,Expression,FormatString,DataType")
+        public static string ExportProperties(this IEnumerable<ITabularNamedObject> objects, string properties = "Name,Description,SourceColumn,Expression,FormatString,DataType")
         {
             var sb = new StringBuilder();
             sb.Append("Object\t");
