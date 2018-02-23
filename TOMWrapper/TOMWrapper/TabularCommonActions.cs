@@ -148,19 +148,45 @@ namespace TabularEditor.TOMWrapper
                 foreach (var obj in objectContainer.Get<Measure>()) inserted.Add(Serializer.DeserializeMeasure(obj, destTable));
             }
 
+            // Replace an existing table with the one from the clipboard:
             if (replaceTable)
             {
-                if (destTable.Name == replaceTableName) destTable.Name = destTable.Name + "-" + Guid.NewGuid().ToString();
+                if (destTable.Name == replaceTableName)
+                {
+                    // Similarly named tables - disable formula fixup:
+                    var fixupSetting = Handler.Settings.AutoFixup;
+                    Handler.Settings.AutoFixup = false;
+                    destTable.Name = destTable.Name + '-' + Guid.NewGuid().ToString();
+                    Handler.Settings.AutoFixup = true;
+                }
+                else
+                {
+                    // Differently named tables:
+                    // First, let's rename the destTable to match the new table (fix-up will handle DAX references):
+                    if (destTable.Name != replaceTableName) destTable.Name = replaceTableName;
+
+                    // Secondly, let's rename the table to be inserted (to avoid naming conflicts):
+                    replaceTableJobj["name"] = replaceTableName + '-' + Guid.NewGuid().ToString();
+                }
+
+                // Insert the table:
                 var newTable = replaceTableIsCalculated ?
                     Serializer.DeserializeCalculatedTable(replaceTableJobj, Handler.Model) :
                     Serializer.DeserializeTable(replaceTableJobj, Handler.Model);
                 inserted.Add(newTable);
+
+                // Update relationships to point to the inserted table:
                 foreach(var rel in destTable.UsedInRelationships.ToList())
                 {
                     if (rel.FromTable == destTable && newTable.Columns.Contains(rel.FromColumn.Name) && rel.FromColumn.DataType == newTable.Columns[rel.FromColumn.Name].DataType) { rel.FromColumn = newTable.Columns[rel.FromColumn.Name]; }
                     if (rel.ToTable == destTable && newTable.Columns.Contains(rel.ToColumn.Name) && rel.ToColumn.DataType == newTable.Columns[rel.ToColumn.Name].DataType) { rel.ToColumn = newTable.Columns[rel.ToColumn.Name]; }
                 }
+
+                // Delete original table:
                 destTable.Delete();
+
+                // Rename inserted table:
+                newTable.Name = replaceTableName;
             }
             else
             {

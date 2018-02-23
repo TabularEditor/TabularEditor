@@ -119,7 +119,7 @@ namespace TabularEditor.TOMWrapper
 
             // Make sure the column is no longer used in any Variations:
             if (Handler.CompatibilityLevel >= 1400)
-                UsedInVariations.ToList().ForEach(v => v.DefaultColumn = null);
+                UsedInVariations.ToList().ForEach(v => v.Delete());
 
             base.DeleteLinkedObjects(isChildOfDeleted);
         }

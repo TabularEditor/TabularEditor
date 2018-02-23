@@ -20,29 +20,36 @@ namespace TabularEditor.TextServices
 
         public static void SyntaxHighlight(FastColoredTextBox textbox)
         {
-            textbox.ClearStyle(StyleIndex.All);
-            var lexer = new DAXLexer(new AntlrInputStream(textbox.Text));
-
-            var tok = lexer.NextToken();
-            while (tok != null && tok.Type != DAXLexer.Eof)
+            try
             {
-                var range = textbox.GetRange(tok.StartIndex, tok.StopIndex + 1);
-                if (tok.Channel == DAXLexer.KEYWORD_CHANNEL) range.SetStyle(KeywordStyle);
-                else if (tok.Channel == DAXLexer.COMMENTS_CHANNEL) range.SetStyle(CommentStyle);
-                else switch (tok.Type)
-                    {
-                        case DAXLexer.INTEGER_LITERAL:
-                        case DAXLexer.REAL_LITERAL:
-                        case DAXLexer.STRING_LITERAL:
-                            range.SetStyle(LiteralStyle); break;
-                        case DAXLexer.OPEN_PARENS:
-                        case DAXLexer.CLOSE_PARENS:
-                            range.SetStyle(ParensStyle); break;
-                        default:
-                            range.SetStyle(PlainStyle); break;
-                    }
+                var lexer = new DAXLexer(new AntlrInputStream(textbox.Text));
 
-                tok = lexer.NextToken();
+                textbox.ClearStyle(StyleIndex.All);
+                var tok = lexer.NextToken();
+                while (tok != null && tok.Type != DAXLexer.Eof)
+                {
+                    var range = textbox.GetRange(tok.StartIndex, tok.StopIndex + 1);
+                    if (tok.Channel == DAXLexer.KEYWORD_CHANNEL) range.SetStyle(KeywordStyle);
+                    else if (tok.Channel == DAXLexer.COMMENTS_CHANNEL) range.SetStyle(CommentStyle);
+                    else switch (tok.Type)
+                        {
+                            case DAXLexer.INTEGER_LITERAL:
+                            case DAXLexer.REAL_LITERAL:
+                            case DAXLexer.STRING_LITERAL:
+                                range.SetStyle(LiteralStyle); break;
+                            case DAXLexer.OPEN_PARENS:
+                            case DAXLexer.CLOSE_PARENS:
+                                range.SetStyle(ParensStyle); break;
+                            default:
+                                range.SetStyle(PlainStyle); break;
+                        }
+
+                    tok = lexer.NextToken();
+                }
+            }
+            catch
+            {
+                // Ignore all errors encountered while doing async syntax highlighting
             }
         }
 

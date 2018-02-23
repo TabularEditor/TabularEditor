@@ -64,6 +64,21 @@ namespace TabularEditor.UI
 
             UI.ExpressionSelector.ComboBox.ValueMember = "Value";
             UI.ExpressionSelector.ComboBox.DisplayMember = "Description";
+
+            syntaxHighlightTimer.Tick += ExpressionEditor_SyntaxHighlightTick;
+        }
+
+        Task syntaxHighlightTask;
+
+        private void ExpressionEditor_SyntaxHighlightTick(object sender, EventArgs e)
+        {
+            if(syntaxHighlightTask == null || syntaxHighlightTask.Status != TaskStatus.Running)
+            {
+                syntaxHighlightTimer.Enabled = false;
+                syntaxHighlightTimer.Interval = 500;
+                syntaxHighlightTask = new Task(() => ExpressionParser.SyntaxHighlight(UI.ExpressionEditor));
+                syntaxHighlightTask.Start();
+            }
         }
 
         private void ExpressionEditor_ExpressionSelectorChanged(object sender, EventArgs e)
@@ -138,12 +153,22 @@ namespace TabularEditor.UI
             if (!ExpressionEditor_IsEditing) ExpressionEditor_Edit(ExpressionEditor_Current, false);
         }
 
+        Timer syntaxHighlightTimer = new Timer() { Interval = 500, Enabled = false };
+
         private void ExpressionEditor_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
         {
             ExpressionEditor_BeginEdit();
 
-            if (!string.IsNullOrEmpty(UI.ExpressionEditor.Text)) ExpressionParser.SyntaxHighlight(UI.ExpressionEditor);
+            if(syntaxHighlightTimer.Enabled) syntaxHighlightTimer.Enabled = false;
+            syntaxHighlightTimer.Interval = 500;
+            ExpressionEditor_SyntaxHighlight();
+        }
 
+        private void ExpressionEditor_SyntaxHighlight()
+        {
+            // For short DAX expressions, do synchronous syntax highlighting. Otherwise, do asynchrounous:
+            if (UI.ExpressionEditor.Text.Length < 2000) ExpressionParser.SyntaxHighlight(UI.ExpressionEditor);
+            else syntaxHighlightTimer.Enabled = true;
         }
 
         private string GetText()
@@ -188,7 +213,12 @@ namespace TabularEditor.UI
 
             var i = UI.ExpressionEditor.SelectionStart;
             UI.ExpressionEditor.Text = GetText();
-            if(!string.IsNullOrEmpty(UI.ExpressionEditor.Text)) ExpressionParser.SyntaxHighlight(UI.ExpressionEditor);
+            if (!string.IsNullOrEmpty(UI.ExpressionEditor.Text))
+            {
+                if (syntaxHighlightTimer.Enabled) syntaxHighlightTimer.Enabled = false;
+                syntaxHighlightTimer.Interval = 1;
+                ExpressionEditor_SyntaxHighlight();
+            }
             UI.ExpressionEditor.ClearUndo();
             UI.ExpressionEditor.SelectionStart = i;
 
