@@ -17,7 +17,7 @@ namespace TabularEditor.UI.Actions
         {
             try
             {
-                var json = File.ReadAllText(jsonPath, Encoding.Default);
+                var json = File.ReadAllText(jsonPath, Encoding.UTF8);
                 return JsonConvert.DeserializeObject<CustomActionsJson>(json);
             }
             catch (Exception e)
@@ -31,7 +31,7 @@ namespace TabularEditor.UI.Actions
         {
             var json = JsonConvert.SerializeObject(this, Formatting.Indented);
             (new FileInfo(jsonPath)).Directory.Create();
-            File.WriteAllText(jsonPath, json);
+            File.WriteAllText(jsonPath, json, Encoding.UTF8);
         }
 
         public CustomActionJson[] Actions;

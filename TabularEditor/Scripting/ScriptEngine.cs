@@ -174,8 +174,8 @@ namespace TabularEditor
 
                 if (!string.IsNullOrEmpty(act.Tooltip))
                 {
-                    sb.Append(t3 + "act.ToolTip = \"");
-                    sb.Append(act.Tooltip);
+                    sb.Append(t3 + "act.ToolTip = @\"");
+                    sb.Append(act.Tooltip.Replace("\"", "\"\""));
                     sb.AppendLine("\";");
                 }
 
