@@ -75,14 +75,24 @@ namespace TabularEditor.UI
 
         private void ClipboardListener_ClipboardUpdate(object sender, EventArgs e)
         {
-            if(Clipboard.ContainsText(TextDataFormat.UnicodeText))
+            try
             {
-                if (Handler == null) return;
+                if (Clipboard.ContainsText(TextDataFormat.UnicodeText))
+                {
+                    if (Handler == null) return;
 
-                // Possible JSON serialization of Tabular objects
-                ClipboardObjects = Serializer.ParseObjectJsonContainer(Clipboard.GetText(TextDataFormat.UnicodeText));
-            } else
+                    // Possible JSON serialization of Tabular objects
+                    ClipboardObjects = Serializer.ParseObjectJsonContainer(Clipboard.GetText(TextDataFormat.UnicodeText));
+                }
+                else
+                {
+                    ClipboardObjects = null;
+                }
+            }
+            catch
             {
+                // General catch-all for clipboard errors (should fix issue https://github.com/otykier/TabularEditor/issues/129)
+                // but not able to reproduce.
                 ClipboardObjects = null;
             }
         }
