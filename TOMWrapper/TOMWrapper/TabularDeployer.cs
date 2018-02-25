@@ -151,8 +151,11 @@ namespace TabularEditor.TOMWrapper.Utils
             var rawScript = TOM.JsonScripter.ScriptCreateOrReplace(db);
             var jObj = JObject.Parse(rawScript);
 
-            // Deployment target / existing database (note that TMSL uses the NAME of an existing database, not the ID!)
-            jObj["createOrReplace"]["object"]["database"] = server.Databases[dbId].Name;
+            // Deployment target / existing database (note that TMSL uses the NAME of an existing database, not the ID, to identify the object)
+            jObj["createOrReplace"]["object"]["database"] = orgDb.Name;
+
+            jObj["createOrReplace"]["database"]["id"] = orgDb.ID;
+            jObj["createOrReplace"]["database"]["name"] = orgDb.Name;
 
             var model = jObj.SelectToken("createOrReplace.database.model");
 
