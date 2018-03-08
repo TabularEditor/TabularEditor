@@ -25,7 +25,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\TabularEditor\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -49,6 +49,10 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -61,21 +65,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NodeEditor\NodeConnection.cs" />
-    <Compile Include="NodeEditor\NodesControl.cs">
-      <SubType>UserControl</SubType>
+    <Compile Include="AddTablesDialog.cs">
+      <SubType>Form</SubType>
     </Compile>
-    <Compile Include="NodeEditor\NodesControl.designer.cs">
-      <DependentUpon>NodesControl.cs</DependentUpon>
+    <Compile Include="AddTablesDialog.Designer.cs">
+      <DependentUpon>AddTablesDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="NodeEditor\NodesGraph.cs" />
-    <Compile Include="NodeEditor\NodeVisual.cs" />
-    <Compile Include="NodeEditor\SocketVisual.cs" />
+    <Compile Include="DiagramSerializer.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="TableVisual.cs" />
     <Compile Include="VisualizeRelationshipsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -93,8 +95,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="NodeEditor\NodesControl.resx">
-      <DependentUpon>NodesControl.cs</DependentUpon>
+    <EmbeddedResource Include="AddTablesDialog.resx">
+      <DependentUpon>AddTablesDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -103,15 +105,6 @@
     <EmbeddedResource Include="VisualizeRelationshipsForm.resx">
       <DependentUpon>VisualizeRelationshipsForm.cs</DependentUpon>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\exec.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\nodeed.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\socket.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
