@@ -62,9 +62,19 @@ namespace TabularEditor.TOMWrapper
         }
     }
 
+    public class ObjectDeletedEventArgs
+    {
+        public TabularObject TabularObject { get; private set; }
+        public ObjectDeletedEventArgs(TabularObject tabularObject)
+        {
+            TabularObject = tabularObject;
+        }
+    }
+
     public delegate void ObjectChangingEventHandler(object sender, ObjectChangingEventArgs e);
     public delegate void ObjectChangedEventHandler(object sender, ObjectChangedEventArgs e);
     public delegate void ObjectDeletingEventHandler(object sender, ObjectDeletingEventArgs e);
+    public delegate void ObjectDeletedEventHandler(object sender, ObjectDeletedEventArgs e);
 
     public enum SaveFormat
     {
@@ -768,12 +778,18 @@ namespace TabularEditor.TOMWrapper
         public event ObjectChangingEventHandler ObjectChanging;
         public event ObjectChangedEventHandler ObjectChanged;
         public event ObjectDeletingEventHandler ObjectDeleting;
+        public event ObjectDeletedEventHandler ObjectDeleted;
 
         internal void DoObjectDeleting(TabularObject obj, ref bool cancel)
         {
             var e = new ObjectDeletingEventArgs(obj);
             ObjectDeleting?.Invoke(this, e);
             cancel = e.Cancel;
+        }
+        internal void DoObjectDeleted(TabularObject obj)
+        {
+            var e = new ObjectDeletedEventArgs(obj);
+            ObjectDeleted?.Invoke(this, e);
         }
 
         internal void DoObjectChanging(TabularObject obj, string propertyName, object newValue, ref bool cancel)

@@ -80,6 +80,7 @@ namespace TabularEditor.TOMWrapper
             if (cancelDelete) return;
 
             InternalDelete();
+            Handler.DoObjectDeleted(this);
         }
 
         internal void InternalDelete()
