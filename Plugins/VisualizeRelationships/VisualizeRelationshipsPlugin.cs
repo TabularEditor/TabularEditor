@@ -11,11 +11,41 @@ namespace VisualizeRelationships
     {
         Model model;
         VisualizeRelationshipsForm form;
+        TabularModelHandler Handler;
 
         public void Init(TabularModelHandler handler)
         {
-            model = handler.Model;
+            if (form != null && form.Visible) form.Close();
+
+            if (Handler != null)
+            {
+                Handler.ObjectDeleted -= Handler_ObjectDeleted;
+                Handler.Tree.UpdateComplete -= Tree_UpdateComplete;
+            }
+            Handler = handler;
+            Handler.ObjectDeleted += Handler_ObjectDeleted;
+            Handler.Tree.UpdateComplete += Tree_UpdateComplete;
+
+            model = Handler.Model;
             form = new VisualizeRelationshipsForm();
+            form.Model = model;
+        }
+
+        private void Tree_UpdateComplete(object sender, EventArgs e)
+        {
+            if (form != null && form.Visible) form.Refresh();
+        }
+
+        private void Handler_ObjectDeleted(object sender, ObjectDeletedEventArgs e)
+        {
+            if(e.TabularObject is Table)
+            {
+                foreach (var d in form.AllDiagrams) d.Remove(e.TabularObject as Table);
+            }
+            else if (e.TabularObject is Relationship)
+            {
+                foreach (var d in form.AllDiagrams) d.Remove(e.TabularObject as Relationship);
+            }
         }
 
         public void RegisterActions(Action<string, Action> registerCallback)
@@ -25,7 +55,7 @@ namespace VisualizeRelationships
 
         public void ShowForm()
         {
-            form.ShowGraph(model);
+            if(form != null && Handler != null) form.Show();
         }
     }
 }
