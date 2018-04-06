@@ -142,7 +142,7 @@ class Rules {
     {
 		if (p.SetMethod == null || !p.SetMethod.IsPublic) return "";
 
-		string resolveObject = "value";
+		string resolveObject = "newValue";
 		if(p.PropertyType.IsClass && p.PropertyType != typeof(string)) {
 			switch(p.Name) {
 				case "SortByColumn":
@@ -172,21 +172,23 @@ class Rules {
 		
 		return string.Format(@"set {{
 				var oldValue = {0};
-				if (oldValue{1} == value{1}) return;
+				var newValue = value{6};
+				if (oldValue{1} == newValue{1}) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging({5}, value, ref undoable, ref cancel);
+				OnPropertyChanging({5}, newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				MetadataObject.{0} = {4};
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, {5}, oldValue, value));
-				OnPropertyChanged({5}, oldValue, value);{2}{3}
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, {5}, oldValue, newValue));
+				OnPropertyChanged({5}, oldValue, newValue);{2}{3}
 			}}", 
 			p.Name, 
 			p.PropertyType.IsClass && p.PropertyType != typeof(string) ? "?.MetadataObject" : "",
 			p.Name == "DisplayFolder" ? "\n\t\t\t\tHandler.UpdateFolders(Table);" : "",
 			p.Name == "IsHidden" ? "\n\t\t\t\tHandler.UpdateObject(this);" : "",
 			resolveObject, 
-			"Properties." + p.Name.ToUpper());
+			"Properties." + p.Name.ToUpper(),
+			p.PropertyType == typeof(string) ? ".Replace(\"\\r\", \"\")" : "");
     }
 
 	public static string PropertyGetter(PropertyInfo p)
