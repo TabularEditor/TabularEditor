@@ -138,7 +138,8 @@ namespace TabularEditor.TOMWrapper.Utils
 
         public static string SerializeDB(SerializeOptions options)
         {
-            return TOM.JsonSerializer.SerializeDatabase(TabularModelHandler.Singleton.Database,
+            var serializedDB = 
+                TOM.JsonSerializer.SerializeDatabase(TabularModelHandler.Singleton.Database,
                 new TOM.SerializeOptions()
                 {
                     IgnoreInferredObjects = options.IgnoreInferredObjects,
@@ -146,6 +147,12 @@ namespace TabularEditor.TOMWrapper.Utils
                     IgnoreInferredProperties = options.IgnoreInferredProperties,
                     SplitMultilineStrings = options.SplitMultilineStrings
                 });
+
+            // Hack: Remove \r characters from multiline strings in the BIM:
+            // "1 + 2\r", -> "1 + 2",
+            if(options.SplitMultilineStrings) serializedDB = serializedDB.Replace("\\r\",\r\n", "\",\r\n");
+
+            return serializedDB;
         }
 
 #region Individual object deserialization
