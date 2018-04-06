@@ -308,7 +308,7 @@ namespace TabularEditor.UI
             if (ExpressionEditor_IsEditing)
             {
                 UI.StatusLabel.Text = "";
-                SetText(UI.ExpressionEditor.Text.Replace("\r", ""));
+                SetText(UI.ExpressionEditor.Text);
                 ExpressionEditor_IsEditing = false;
             }
         }
@@ -318,7 +318,7 @@ namespace TabularEditor.UI
             get
             {
                 if (ExpressionEditor_IsEditing)
-                    return GetText().Replace("\r", "") != UI.ExpressionEditor.Text.Replace("\r", "");
+                    return GetText() != UI.ExpressionEditor.Text.Replace("\r", "");
                 else return false;
             }
         }
