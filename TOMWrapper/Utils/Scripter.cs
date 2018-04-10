@@ -59,7 +59,14 @@ namespace TabularEditor.TOMWrapper.Utils
         }
         public static string ScriptRefresh(IEnumerable<TabularNamedObject> objects, RefreshType refreshType = RefreshType.Automatic)
         {
-            return TOM.JsonScripter.ScriptRefresh(objects.Select(o => o.MetadataObject).ToList(), (TOM.RefreshType)refreshType);
+            if (objects.Count() == 1 && objects.First() is Model)
+            {
+                return TOM.JsonScripter.ScriptRefresh((objects.First().MetadataObject as TOM.Model).Database, (TOM.RefreshType)refreshType);
+            }
+            else
+            {
+                return TOM.JsonScripter.ScriptRefresh(objects.Where(o => o is Table || o is Partition).Select(o => o.MetadataObject).ToList(), (TOM.RefreshType)refreshType);
+            }
         }
     }
 }
