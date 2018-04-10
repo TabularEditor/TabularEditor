@@ -11,7 +11,7 @@
     <AssemblyName>TabularEditor</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -30,7 +30,7 @@
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <AutorunEnabled>true</AutorunEnabled>
     <ApplicationRevision>20654</ApplicationRevision>
-    <ApplicationVersion>2.7.6514.20654</ApplicationVersion>
+    <ApplicationVersion>2.7.6673.10259</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -59,6 +59,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <CodeAnalysisRuleSet />
+    <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -115,14 +116,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.AnalysisServices.Core, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>True</SpecificVersion>
+    <Reference Include="Microsoft.AnalysisServices.Core, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Tabular, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>True</SpecificVersion>
+    <Reference Include="Microsoft.AnalysisServices.Tabular, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Tabular.Json, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>True</SpecificVersion>
+    <Reference Include="Microsoft.AnalysisServices.Tabular.Json, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\WindowsAPICodePack-Core.1.1.2\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
@@ -154,6 +155,12 @@
   <ItemGroup>
     <Compile Include="BestPracticeAnalyzer\Analyzer.cs" />
     <Compile Include="BestPracticeAnalyzer\BestPracticeRule.cs" />
+    <Compile Include="BestPracticeAnalyzer\BPARuleManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BestPracticeAnalyzer\BPARuleManager.Designer.cs">
+      <DependentUpon>BPARuleManager.cs</DependentUpon>
+    </Compile>
     <Compile Include="BestPracticeAnalyzer\NodePanels\BaseNodePanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -493,6 +500,9 @@
     <EmbeddedResource Include="BestPracticeAnalyzer\BPAForm.resx">
       <DependentUpon>BPAForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="BestPracticeAnalyzer\BPARuleManager.resx">
+      <DependentUpon>BPARuleManager.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
@@ -574,7 +584,6 @@
     <None Include="Properties\app.manifest">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Properties\DataSources\Microsoft.AnalysisServices.Tabular.Database.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -586,9 +595,6 @@
     </Compile>
     <None Include="TreeViewAdv\Tree\ClassDiagram.cd" />
     <None Include="TreeViewAdv\Tree\NodeControls\ClassDiagram.cd" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6">

@@ -58,33 +58,23 @@ namespace TabularEditor
                 asmName.Name == "Microsoft.AnalysisServices.Tabular.Json"
                 )
             {
-                // Since Microsoft is using the names "Microsoft.AnalysisServices.Server.Tabular" and "Microsoft.AnalysisServices.Tabular" interchangeably,
-                // let's try to modify the assemblyname that we're looking for to see if the other variant happens to be available in the GAC:
-                try
-                {
-                    var alternateAssembly = Assembly.Load(asmName.FullName.Replace(".AnalysisServices.", ".AnalysisServices.Server."));
-                    
-                    return alternateAssembly;
-                }
-                catch (FileNotFoundException ex)
-                {
-                    var td = new TaskDialog();
-                    td.Text = @"This version of Tabular Editor requires the SQL AS AMO library for SQL Server 2017. Make sure version 14.0.0.0 (or newer) of the following DLLs are installed in the GAC or located in the same folder as TabularEditor.exe:
+                var td = new TaskDialog();
+                td.Text = @"This version of Tabular Editor requires the SQL AS AMO library version 15.0.0 (or newer).
 
 Microsoft.AnalysisServices.Core.dll
 Microsoft.AnalysisServices.Tabular.dll
 Microsoft.AnalysisServices.Tabular.Json.dll
 
-The AMO library may be downloaded from <A HREF=""https://go.microsoft.com/fwlink/?linkid=829578"">here</A>.";
-                    td.Caption = "Missing DLL dependencies";
+The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-us/azure/analysis-services/analysis-services-data-providers"">here</A>.";
+                td.Caption = "Missing DLL dependencies";
 
-                    td.Icon = TaskDialogStandardIcon.Error;
-                    td.HyperlinksEnabled = true;
-                    td.HyperlinkClick += Td_HyperlinkClick;
-                    td.Show();
-                    Environment.Exit(1);
-                }
+                td.Icon = TaskDialogStandardIcon.Error;
+                td.HyperlinksEnabled = true;
+                td.HyperlinkClick += Td_HyperlinkClick;
+                td.Show();
+                Environment.Exit(1);
             }
+
             return null;
         }
 
@@ -333,7 +323,15 @@ The AMO library may be downloaded from <A HREF=""https://go.microsoft.com/fwlink
                 if (!bpaResults.Any()) cw.WriteLine("No objects in violation of Best Practices.");
                 foreach(var res in bpaResults)
                 {
-                    Warning("{0} {1} violates rule \"{2}\"", res.Object.GetTypeName(), (res.Object as IDaxObject)?.DaxObjectFullName ?? res.ObjectName, res.RuleName);
+                    var text = string.Format("{0} {1} violates rule \"{2}\"",
+                        res.Object.GetTypeName(),
+                        (res.Object as IDaxObject)?.DaxObjectFullName ?? res.ObjectName,
+                        res.RuleName
+                        );
+
+                    if (res.Rule.Severity <= 1) cw.WriteLine(text);
+                    else if (res.Rule.Severity == 2) Warning(text);
+                    else if (res.Rule.Severity >= 3) Error(text);
                 }
                 cw.WriteLine("=================================");
             }
