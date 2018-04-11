@@ -155,12 +155,6 @@
   <ItemGroup>
     <Compile Include="BestPracticeAnalyzer\Analyzer.cs" />
     <Compile Include="BestPracticeAnalyzer\BestPracticeRule.cs" />
-    <Compile Include="BestPracticeAnalyzer\BPARuleManager.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="BestPracticeAnalyzer\BPARuleManager.Designer.cs">
-      <DependentUpon>BPARuleManager.cs</DependentUpon>
-    </Compile>
     <Compile Include="BestPracticeAnalyzer\NodePanels\BaseNodePanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -499,9 +493,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="BestPracticeAnalyzer\BPAForm.resx">
       <DependentUpon>BPAForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="BestPracticeAnalyzer\BPARuleManager.resx">
-      <DependentUpon>BPARuleManager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
