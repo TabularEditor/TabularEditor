@@ -321,17 +321,26 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 else bpaResults = analyzer.Analyze(suppliedRules.Concat(analyzer.LocalRules));
 
                 if (!bpaResults.Any()) cw.WriteLine("No objects in violation of Best Practices.");
+
+
                 foreach(var res in bpaResults)
                 {
-                    var text = string.Format("{0} {1} violates rule \"{2}\"",
-                        res.Object.GetTypeName(),
-                        (res.Object as IDaxObject)?.DaxObjectFullName ?? res.ObjectName,
-                        res.RuleName
-                        );
+                    if (res.RuleHasError)
+                    {
+                        Warning("Error on rule '{0}': {1}", res.RuleName, res.RuleError);
+                    }
+                    else
+                    {
+                        var text = string.Format("{0} {1} violates rule \"{2}\"",
+                            res.Object.GetTypeName(),
+                            (res.Object as IDaxObject)?.DaxObjectFullName ?? res.ObjectName,
+                            res.RuleName
+                            );
+                        if (res.Rule.Severity <= 1) cw.WriteLine(text);
+                        else if (res.Rule.Severity == 2) Warning(text);
+                        else if (res.Rule.Severity >= 3) Error(text);
+                    }
 
-                    if (res.Rule.Severity <= 1) cw.WriteLine(text);
-                    else if (res.Rule.Severity == 2) Warning(text);
-                    else if (res.Rule.Severity >= 3) Error(text);
                 }
                 cw.WriteLine("=================================");
             }
