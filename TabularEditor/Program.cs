@@ -194,17 +194,59 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             enableVSTS = upperArgList.IndexOf("-VSTS") > -1 || upperArgList.IndexOf("-V") > -1;
             var warnOnUnprocessed = upperArgList.IndexOf("-WARN") > -1 || upperArgList.IndexOf("-W") > -1;
 
-            if (!File.Exists(args[1]) && !File.Exists(args[1] + "\\database.json"))
+            TabularModelHandler h;
+            if (args.Length == 2 || args[2].StartsWith("-"))
             {
-                Error("File not found: {0}", args[1]);
-                return true;
-            } else
-            {
-                // If the file specified as 1st argument exists, and nothing else was specified on the command-line, open the UI:
-                if (args.Length == 2) return false;
-            }
+                // File argument provided (either alone or with switches), i.e.:
+                //      TabularEditor.exe myfile.bim
+                //      TabularEditor.exe myfile.bim -...
 
-            var fileName = args[1];
+                if (!File.Exists(args[1]) && !File.Exists(args[1] + "\\database.json"))
+                {
+                    Error("File not found: {0}", args[1]);
+                    return true;
+                }
+                else
+                {
+                    // If nothing else was specified on the command-line, open the UI:
+                    if (args.Length == 2) return false;
+                }
+
+                try
+                {
+                    h = new TOMWrapper.TabularModelHandler(args[1]);
+                }
+                catch (Exception e)
+                {
+                    Error("Error loading file: " + e.Message);
+                    return true;
+                }
+
+            }
+            else if(args.Length == 3 || args[3].StartsWith("-"))
+            {
+                // Server + Database argument provided (either alone or with switches), i.e.:
+                //      TabularEditor.exe localhost AdventureWorks
+                //      TabularEditor.exe localhost AdventureWorks -...
+
+                try
+                {
+                    h = new TOMWrapper.TabularModelHandler(args[1], args[2]);
+                }
+                catch (Exception e)
+                {
+                    Error("Error loading model: " + e.Message);
+                    return true;
+                }
+
+                // If nothing else was specified on the command-line, open the UI:
+                if (args.Length == 3) return false;
+            }
+            else
+            {
+                // Otherwise, it's nonsensical
+                return false;
+            }
 
             string script = null;
             string scriptFile = null;
@@ -249,7 +291,6 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             // Load model:
             cw.WriteLine("Loading model...");
 
-            var h = new TOMWrapper.TabularModelHandler(fileName);
             h.Tree = new TOMWrapper.NullTree();
 
             if (!string.IsNullOrEmpty(script))
@@ -460,35 +501,36 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
         {
             cw.WriteLine(@"Usage:
 
-TABULAREDITOR file [-S script] [-B output] [-D server database [-L username password]
-    [-O [-C [placeholder1 value1 [placeholder2 value2 [...]]]] [-P]] [-R [-M]]] [-V] [-W]
-    [-A [rulefile]]
+TABULAREDITOR ( file | server database ) [-S script] [-B output] [-A [rulefile]] [-V]
+    [-D server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]] [-P]] [-R [-M]] [-W]]
 
 file                Full path of the Model.bim file or database.json model folder to load.
+server              Server\instance name or connection string from which to load the model
+database            Database ID of the model to load
 -S / -SCRIPT        Execute the specified script on the model after loading.
   script              Full path of a file containing a C# script to execute.
 -B / -BUILD         Saves the model (after optional script execution) as a Model.bim file.
   output              Full path of the Model.bim file to save to.
--D / -DEPLOY        Command-line deployment
-  server              Name of server to deploy to.
-  database            ID of the database to deploy (create/overwrite).
--L / -LOGIN         Disables integrated security when connecting to the server. Specify:
-  username            Username (must be a user with admin rights on the server)
-  password            Password
--O / -OVERWRITE     Allow deploy (overwrite) of an existing database.
--C / -CONNECTIONS   Deploy (overwrite) existing data sources in the model. After the -C
-                    switch, you can (optionally) specify any number of placeholder-value
-                    pairs. Doing so, will replace any occurrence of the specified
-                    ""placeholder"" in the connection strings of every data source in
-                    the model, with the specified ""value"".                    
--P / -PARTITIONS    Deploy (overwrite) existing table partitions in the model.
--R / -ROLES         Deploy roles.
--M / -MEMBERS       Deploy role members.
 -V / -VSTS          Output Visual Studio Team Services logging commands.
--W / -WARN          Outputs information about unprocessed objects as warnings.
 -A / -ANALYZE       Runs Best Practice Analyzer and outputs the result to the console.
   rulefile            Optional path of file containing BPA rules to be analyzed. If not
-                      specified, model is analyzed against global rules on the machine.");
+                      specified, model is analyzed against global rules on the machine.
+-D / -DEPLOY        Command-line deployment
+  server              Name of server to deploy to or connection string to Analysis Services.
+  database            ID of the database to deploy (create/overwrite).
+  -L / -LOGIN         Disables integrated security when connecting to the server. Specify:
+    user                Username (must be a user with admin rights on the server)
+    pass                Password
+  -O / -OVERWRITE     Allow deploy (overwrite) of an existing database.
+    -C / -CONNECTIONS   Deploy (overwrite) existing data sources in the model. After the -C
+                        switch, you can (optionally) specify any number of placeholder-value
+                        pairs. Doing so, will replace any occurrence of the specified
+                        placeholders (plch1, plch2, ...) in the connection strings of every
+                        data source in the model, with the specified values (value1, value2, ...).                    
+    -P / -PARTITIONS    Deploy (overwrite) existing table partitions in the model.
+  -R / -ROLES         Deploy roles.
+    -M / -MEMBERS       Deploy role members.
+  -W / -WARN          Outputs information about unprocessed objects as warnings.");
         }
     }
 }
