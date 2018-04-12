@@ -80,6 +80,13 @@ namespace TabularEditor.UI
             UI.StatusLabel.Text = "Opening Model from Database...";
             ClearUI();
             UpdateUIText();
+
+            Database_Open(ConnectForm.ConnectionString,
+                string.IsNullOrEmpty(ConnectForm.LocalInstanceName) ? SelectDatabaseForm.DatabaseID : null);
+        }
+
+        public void Database_Open(string connectionString, string databaseId)
+        {
             using (new Hourglass())
             {
 
@@ -87,9 +94,7 @@ namespace TabularEditor.UI
 
                 try
                 {
-                    Handler = new TabularModelHandler(
-                        ConnectForm.ConnectionString, 
-                        string.IsNullOrEmpty(ConnectForm.LocalInstanceName) ? SelectDatabaseForm.DatabaseID : null);
+                    Handler = new TabularModelHandler(connectionString, databaseId);
                     Handler.Settings.AutoFixup = Preferences.Current.FormulaFixup;
                     LoadTabularModelToUI();
                     File_Current = null;

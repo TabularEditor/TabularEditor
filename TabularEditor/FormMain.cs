@@ -263,6 +263,10 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             {
                 UI.File_Open(args[1]);
             }
+            if (args.Length == 3)
+            {
+                UI.Database_Open(args[1], args[2]);
+            }
 
             // Populate list of recent files...
             PopulateRecentFilesList();
