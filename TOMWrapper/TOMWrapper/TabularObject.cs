@@ -78,6 +78,7 @@ namespace TabularEditor.TOMWrapper
         internal JObject SerializedFrom = null;
         internal ITabularObjectCollection Collection;
 
+        public bool IsRemoved => _metadataObject.IsRemoved;
         private TOM.MetadataObject _metadataObject;
         protected internal TOM.MetadataObject MetadataObject { get { return _metadataObject; } protected set { _metadataObject = value; } }
         protected internal TabularModelHandler Handler;

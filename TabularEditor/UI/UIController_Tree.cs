@@ -44,6 +44,87 @@ namespace TabularEditor.UI
             }
         }
 
+        private Stack<ITabularNamedObject> Back;
+        private Stack<ITabularNamedObject> Forward;
+
+        public bool CanNavigateForward => Forward != null && Forward.Count > 0;
+        public bool CanNavigateBack => Back != null && Back.Count > 0;
+        private bool IsNavigating = false;
+
+        public void Tree_NavigateForward()
+        {
+            bool firstUnknown = true;
+
+            while (Forward.Count > 0)
+            {
+                var obj = Forward.Pop();
+                if (obj.IsRemoved) continue;
+
+                var node = UI.TreeView.FindNodeByTag(obj);
+                if (node == null && firstUnknown)
+                {
+                    firstUnknown = false;
+                    if (!Tree.VisibleInTree(obj))
+                    {
+                        Tree.BeginUpdate();
+                        Tree.Options = LogicalTreeOptions.Default | LogicalTreeOptions.ShowHidden;
+                        Tree.Filter = "";
+                        UI.FormMain.UpdateTreeUIButtons();
+                        Tree.EndUpdate();
+                    }
+                    node = UI.TreeView.FindNodeByTag(obj);
+                }
+                if(node != null)
+                {
+                    if (UI.TreeView.SelectedNode != null) Back.Push(UI.TreeView.SelectedNode.Tag as ITabularNamedObject);
+                    IsNavigating = true;
+                    UI.TreeView.EnsureVisible(node);
+                    UI.TreeView.SelectedNode = node;
+                    UI.FormMain.Activate();
+                    UI.TreeView.Focus();
+                    IsNavigating = false;
+                    break;
+                }
+            }
+        }
+
+        public void Tree_NavigateBack()
+        {
+            bool firstUnknown = true;
+
+            while (Back.Count > 0)
+            {
+                var obj = Back.Pop();
+                if (obj.IsRemoved) continue;
+
+                var node = UI.TreeView.FindNodeByTag(obj);
+                if (node == null && firstUnknown)
+                {
+                    firstUnknown = false;
+                    if (!Tree.VisibleInTree(obj))
+                    {
+                        Tree.BeginUpdate();
+                        Tree.Options = LogicalTreeOptions.Default | LogicalTreeOptions.ShowHidden;
+                        Tree.Filter = "";
+                        UI.FormMain.UpdateTreeUIButtons();
+                        Tree.EndUpdate();
+                    }
+                    node = UI.TreeView.FindNodeByTag(obj);
+                }
+                if (node != null)
+                {
+                    if(UI.TreeView.SelectedNode != null) Forward.Push(UI.TreeView.SelectedNode.Tag as ITabularNamedObject);
+                    IsNavigating = true;
+                    UI.TreeView.EnsureVisible(node);
+                    UI.TreeView.SelectedNode = node;
+                    UI.FormMain.Activate();
+                    UI.TreeView.Focus();
+                    IsNavigating = false;
+                    break;
+                }
+            }
+        }
+
         private void Tree_Init()
         {
             // Set up custom node controls:
@@ -141,9 +222,13 @@ namespace TabularEditor.UI
             {
                 UI.FormMain.FocusFilter();
             }
-            if(e.KeyCode == Keys.Delete && Actions.Delete.Enabled(null))
+            if (e.KeyCode == Keys.Delete && Actions.Delete.Enabled(null))
             {
                 Actions.Delete.Execute(null);
+            }
+            if (e.Modifiers.HasFlag(Keys.Alt) && (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right))
+            {
+                e.Handled = true; return;
             }
         }
 
@@ -226,6 +311,8 @@ namespace TabularEditor.UI
             }
         }
 
+        private ITabularNamedObject PreviousSelection;
+
         #region TreeView events
         private void TreeView_SelectionChanged(object sender, EventArgs e)
         {
@@ -238,7 +325,14 @@ namespace TabularEditor.UI
             {
                 UI.StatusLabel.Text = Selection.Summary(true) + " selected.";
                 ShowSelectionStatus = true;
+
+                if(UI.TreeView.SelectedNode != null && !IsNavigating && PreviousSelection != null && PreviousSelection != UI.TreeView.SelectedNode.Tag as ITabularNamedObject)
+                {
+                    Forward.Clear();
+                    if(Back.Count == 0 || Back.Peek() != PreviousSelection) Back.Push(PreviousSelection);
+                }
             }
+            PreviousSelection = UI.TreeView.SelectedNode?.Tag as ITabularNamedObject;
 
             DynamicMenu_Update();
         }
