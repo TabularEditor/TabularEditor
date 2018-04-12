@@ -25,6 +25,7 @@ namespace TabularEditor.TOMWrapper
                 return Tree.FolderCache[Table.Name.ConcatPath(DisplayFolder)];
             }
         }
+        public bool IsRemoved => false;
         
         [Browsable(false)]
         public int MetadataIndex

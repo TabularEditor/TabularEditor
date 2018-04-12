@@ -20,6 +20,7 @@ namespace TabularEditor.TOMWrapper
     {
         ObjectType ObjectType { get; }
         Model Model { get; }
+        bool IsRemoved { get; }
     }
 
     /// <summary>

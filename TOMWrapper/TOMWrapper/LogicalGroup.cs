@@ -69,6 +69,8 @@ namespace TabularEditor.TOMWrapper
         public Model Model { get { return TabularModelHandler.Singleton.Model; } }
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public bool IsRemoved => false;
+
         public IEnumerable<ITabularNamedObject> GetChildren()
         {
             switch (Name)

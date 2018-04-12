@@ -638,5 +638,25 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 Preferences.Current.Save();
             }
         }
+
+        private void actBack_Update(object sender, EventArgs e)
+        {
+            actBack.Enabled = UI.CanNavigateBack;
+        }
+
+        private void actForward_Update(object sender, EventArgs e)
+        {
+            actForward.Enabled = UI.CanNavigateForward;
+        }
+
+        private void actBack_Execute(object sender, EventArgs e)
+        {
+            UI.Tree_NavigateBack();
+        }
+
+        private void actForward_Execute(object sender, EventArgs e)
+        {
+            UI.Tree_NavigateForward();
+        }
     }
 }

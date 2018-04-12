@@ -478,6 +478,7 @@ namespace TabularEditor.TOMWrapper
     public class PartitionViewTable: ITabularNamedObject, ITabularObjectContainer, IDynamicPropertyObject
     {
         public Table Table { get; private set; }
+        public bool IsRemoved => Table.IsRemoved;
         internal PartitionViewTable(Table table)
         {
             Table = table;

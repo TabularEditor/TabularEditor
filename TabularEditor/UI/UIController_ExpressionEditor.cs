@@ -57,7 +57,7 @@ namespace TabularEditor.UI
         private void ExpressionEditor_Init()
         {
             UI.ExpressionEditor.TextChanged += ExpressionEditor_TextChanged;
-            //UI.ExpressionEditor.KeyUp += ExpressionEditor_KeyUp;
+            UI.ExpressionEditor.KeyUp += ExpressionEditor_KeyUp;
             UI.ExpressionEditor.KeyPress += ExpressionEditor_KeyPress;
             UI.ExpressionEditor.DragEnter += ExpressionEditor_DragEnter;
             UI.ExpressionEditor.DragLeave += ExpressionEditor_DragLeave;
@@ -66,6 +66,22 @@ namespace TabularEditor.UI
             UI.ExpressionSelector.ComboBox.DisplayMember = "Description";
 
             syntaxHighlightTimer.Tick += ExpressionEditor_SyntaxHighlightTick;
+        }
+
+        private void ExpressionEditor_KeyUp(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.F12)
+            {
+                // Navigate to symbol under cursor
+                var obj = ExpressionEditor_Current as IDaxDependantObject;
+                var dependsOnList = DependsOnList.GetDependencies(obj, UI.ExpressionEditor.Text, CurrentDaxProperty);
+
+                var dest = dependsOnList.GetObjectAt(CurrentDaxProperty, UI.ExpressionEditor.SelectionStart);
+                if (dest == null)
+                    UI.StatusLabel.Text = "Cannot navigate to symbol under cursor.";
+                else
+                    Goto(dest);
+            }
         }
 
         Task syntaxHighlightTask;

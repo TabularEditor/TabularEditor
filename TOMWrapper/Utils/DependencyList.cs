@@ -13,6 +13,22 @@ namespace TabularEditor.TOMWrapper.Utils
     /// </summary>
     public class DependsOnList : IReadOnlyDictionary<IDaxObject, List<ObjectReference>>
     {
+        public static DependsOnList GetDependencies(IDaxDependantObject obj, string dax, DAXProperty prop)
+        {
+            return FormulaFixup.GetDependencies(obj, dax, prop);
+        }
+
+        public IDaxObject GetObjectAt(DAXProperty property, int charIndex)
+        {
+            foreach(var kvp in InternalDictionary)
+            {
+                if (kvp.Value.Any(r => r.property == property && charIndex >= r.from && charIndex <= r.to))
+                    return kvp.Key;
+            }
+            return null;
+        }
+        // TODO: Add method (to dependency builder) to build a temporary DependsOnList from a string
+
         internal readonly IDaxDependantObject Parent;
         internal DependsOnList(IDaxDependantObject parent)
         {
