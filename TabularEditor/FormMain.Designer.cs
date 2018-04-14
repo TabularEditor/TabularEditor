@@ -80,7 +80,6 @@
             this.tbShowMeasures = new System.Windows.Forms.ToolStripButton();
             this.tbShowColumns = new System.Windows.Forms.ToolStripButton();
             this.tbShowHierarchies = new System.Windows.Forms.ToolStripButton();
-            this.tbApplyFilter = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
             this.btnSave = new System.Windows.Forms.ToolStripButton();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -121,21 +120,24 @@
             this.newModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnSaveScript = new System.Windows.Forms.ToolStripButton();
             this.btnOpenScript = new System.Windows.Forms.ToolStripButton();
+            this.tbApplyFilter = new System.Windows.Forms.ToolStripButton();
             this.btnBack = new System.Windows.Forms.ToolStripButton();
             this.btnForward = new System.Windows.Forms.ToolStripButton();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator22 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.cmbPerspective = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
             this.cmbTranslation = new System.Windows.Forms.ToolStripComboBox();
-            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.txtFilter = new TabularEditor.ToolStripSpringTextBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tvModel = new Aga.Controls.Tree.TreeViewAdv();
             this._colName = new Aga.Controls.Tree.TreeColumn();
+            this._colTable = new Aga.Controls.Tree.TreeColumn();
             this._colType = new Aga.Controls.Tree.TreeColumn();
             this._colFormatString = new Aga.Controls.Tree.TreeColumn();
             this._colDataType = new Aga.Controls.Tree.TreeColumn();
@@ -147,11 +149,11 @@
             this.nodeTextBox4 = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeTextBox5 = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeTextBox6 = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.nodeTextBox7 = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.toolTreeView = new System.Windows.Forms.ToolStrip();
             this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.txtFilter = new TabularEditor.ToolStripSpringTextBox();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -304,6 +306,7 @@
             this.actToggleHidden.Image = global::TabularEditor.Resources.Hidden;
             this.actToggleHidden.Text = "Hidden Objects";
             this.actToggleHidden.ToolTipText = "Show/hide hidden objects";
+            this.actToggleHidden.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.DisableIfLinqMode);
             this.actToggleHidden.Execute += new System.EventHandler(this.actViewOptions_Execute);
             // 
             // actToggleMetadataOrder
@@ -315,6 +318,7 @@
             this.actToggleMetadataOrder.Image = global::TabularEditor.Resources.SortAscending_16x;
             this.actToggleMetadataOrder.Text = "Sort alphabetically";
             this.actToggleMetadataOrder.ToolTipText = "Toggle alphabetical/metadata ordering of items";
+            this.actToggleMetadataOrder.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.DisableIfLinqMode);
             this.actToggleMetadataOrder.Execute += new System.EventHandler(this.actViewOptions_Execute);
             // 
             // actToggleMeasures
@@ -356,6 +360,7 @@
             this.actToggleInfoColumns.Image = global::TabularEditor.Resources.Columns;
             this.actToggleInfoColumns.Text = "Metadata Information";
             this.actToggleInfoColumns.ToolTipText = "Show/hide metadata information columns";
+            this.actToggleInfoColumns.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.DisableIfLinqMode);
             this.actToggleInfoColumns.Execute += new System.EventHandler(this.actToggleInfoColumns_Execute);
             // 
             // actToggleFilter
@@ -377,6 +382,7 @@
             this.actToggleAllObjectTypes.Text = "Show All Object Types";
             this.actToggleAllObjectTypes.ToolTipText = "Show/hide all object types (perspectives, roles, data sources, etc.) in addition " +
     "to tables";
+            this.actToggleAllObjectTypes.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.DisableIfLinqMode);
             this.actToggleAllObjectTypes.Execute += new System.EventHandler(this.actViewOptions_Execute);
             // 
             // actExpressionAcceptEdit
@@ -628,6 +634,7 @@
             // exitToolStripMenuItem
             // 
             actionsMain.SetAction(this.exitToolStripMenuItem, this.actExit);
+            this.exitToolStripMenuItem.AutoToolTip = true;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
@@ -723,19 +730,6 @@
             this.tbShowHierarchies.Text = "Hierarchies";
             this.tbShowHierarchies.ToolTipText = "Show/hide hierarchies";
             // 
-            // tbApplyFilter
-            // 
-            actionsMain.SetAction(this.tbApplyFilter, this.actToggleFilter);
-            this.tbApplyFilter.AutoToolTip = false;
-            this.tbApplyFilter.CheckOnClick = true;
-            this.tbApplyFilter.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tbApplyFilter.Image = global::TabularEditor.Resources.Filter;
-            this.tbApplyFilter.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbApplyFilter.Name = "tbApplyFilter";
-            this.tbApplyFilter.Size = new System.Drawing.Size(23, 22);
-            this.tbApplyFilter.Text = "Filter";
-            this.tbApplyFilter.ToolTipText = "Filter objects by name";
-            // 
             // toolStripButton6
             // 
             actionsMain.SetAction(this.toolStripButton6, this.actToggleInfoColumns);
@@ -752,7 +746,6 @@
             // btnSave
             // 
             actionsMain.SetAction(this.btnSave, this.actSave);
-            this.btnSave.AutoToolTip = false;
             this.btnSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnSave.Image = global::TabularEditor.Resources.Save;
             this.btnSave.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -763,7 +756,6 @@
             // saveToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveToolStripMenuItem, this.actSave);
-            this.saveToolStripMenuItem.AutoToolTip = true;
             this.saveToolStripMenuItem.Image = global::TabularEditor.Resources.Save;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+S";
@@ -774,7 +766,6 @@
             // saveAsToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveAsToolStripMenuItem, this.actSaveAs);
-            this.saveAsToolStripMenuItem.AutoToolTip = true;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.saveAsToolStripMenuItem.Text = "Save As...";
@@ -782,6 +773,7 @@
             // undoToolStripMenuItem
             // 
             actionsMain.SetAction(this.undoToolStripMenuItem, this.actUndo);
+            this.undoToolStripMenuItem.AutoToolTip = true;
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Z";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
@@ -791,6 +783,7 @@
             // redoToolStripMenuItem
             // 
             actionsMain.SetAction(this.redoToolStripMenuItem, this.actRedo);
+            this.redoToolStripMenuItem.AutoToolTip = true;
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Y";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
@@ -884,6 +877,7 @@
             // expandAllToolStripMenuItem
             // 
             actionsMain.SetAction(this.expandAllToolStripMenuItem, this.actExpandAll);
+            this.expandAllToolStripMenuItem.AutoToolTip = true;
             this.expandAllToolStripMenuItem.Image = global::TabularEditor.Resources.ExpandAll;
             this.expandAllToolStripMenuItem.Name = "expandAllToolStripMenuItem";
             this.expandAllToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
@@ -892,6 +886,7 @@
             // collapseAllToolStripMenuItem
             // 
             actionsMain.SetAction(this.collapseAllToolStripMenuItem, this.actCollapseAll);
+            this.collapseAllToolStripMenuItem.AutoToolTip = true;
             this.collapseAllToolStripMenuItem.Image = global::TabularEditor.Resources.CollapseAll;
             this.collapseAllToolStripMenuItem.Name = "collapseAllToolStripMenuItem";
             this.collapseAllToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
@@ -924,6 +919,7 @@
             // btnFind
             // 
             actionsMain.SetAction(this.btnFind, this.actFind);
+            this.btnFind.AutoToolTip = false;
             this.btnFind.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnFind.Image = global::TabularEditor.Resources.Find;
             this.btnFind.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -934,6 +930,7 @@
             // btnReplace
             // 
             actionsMain.SetAction(this.btnReplace, this.actReplace);
+            this.btnReplace.AutoToolTip = false;
             this.btnReplace.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnReplace.Image = global::TabularEditor.Resources.Replace;
             this.btnReplace.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -944,6 +941,7 @@
             // findToolStripMenuItem
             // 
             actionsMain.SetAction(this.findToolStripMenuItem, this.actFind);
+            this.findToolStripMenuItem.AutoToolTip = true;
             this.findToolStripMenuItem.Image = global::TabularEditor.Resources.Find;
             this.findToolStripMenuItem.Name = "findToolStripMenuItem";
             this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
@@ -953,6 +951,7 @@
             // replaceToolStripMenuItem
             // 
             actionsMain.SetAction(this.replaceToolStripMenuItem, this.actReplace);
+            this.replaceToolStripMenuItem.AutoToolTip = true;
             this.replaceToolStripMenuItem.Image = global::TabularEditor.Resources.Replace;
             this.replaceToolStripMenuItem.Name = "replaceToolStripMenuItem";
             this.replaceToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.H)));
@@ -983,7 +982,6 @@
             // btnRun
             // 
             actionsMain.SetAction(this.btnRun, this.actExecuteScript);
-            this.btnRun.AutoToolTip = false;
             this.btnRun.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnRun.Image = global::TabularEditor.Resources.Run;
             this.btnRun.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -1003,6 +1001,7 @@
             // btnSaveCustomAction
             // 
             actionsMain.SetAction(this.btnSaveCustomAction, this.actSaveCustomAction);
+            this.btnSaveCustomAction.AutoToolTip = false;
             this.btnSaveCustomAction.Image = global::TabularEditor.Resources.action_add_16xLG;
             this.btnSaveCustomAction.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSaveCustomAction.Name = "btnSaveCustomAction";
@@ -1136,6 +1135,7 @@
             // saveToFolderToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveToFolderToolStripMenuItem, this.actSaveToFolder);
+            this.saveToFolderToolStripMenuItem.AutoToolTip = true;
             this.saveToFolderToolStripMenuItem.Name = "saveToFolderToolStripMenuItem";
             this.saveToFolderToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.saveToFolderToolStripMenuItem.Text = "Save to Folder...";
@@ -1174,9 +1174,23 @@
             this.btnOpenScript.ToolTipText = "Opens a C# script from a file";
             this.btnOpenScript.Click += new System.EventHandler(this.btnOpenScript_Click);
             // 
+            // tbApplyFilter
+            // 
+            actionsMain.SetAction(this.tbApplyFilter, this.actToggleFilter);
+            this.tbApplyFilter.AutoToolTip = false;
+            this.tbApplyFilter.CheckOnClick = true;
+            this.tbApplyFilter.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbApplyFilter.Image = global::TabularEditor.Resources.Filter;
+            this.tbApplyFilter.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbApplyFilter.Name = "tbApplyFilter";
+            this.tbApplyFilter.Size = new System.Drawing.Size(23, 22);
+            this.tbApplyFilter.Text = "Filter";
+            this.tbApplyFilter.ToolTipText = "Filter objects by name";
+            // 
             // btnBack
             // 
             actionsMain.SetAction(this.btnBack, this.actBack);
+            this.btnBack.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.btnBack.AutoToolTip = false;
             this.btnBack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnBack.Image = global::TabularEditor.Resources.Prev;
@@ -1189,6 +1203,7 @@
             // btnForward
             // 
             actionsMain.SetAction(this.btnForward, this.actForward);
+            this.btnForward.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.btnForward.AutoToolTip = false;
             this.btnForward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnForward.Image = global::TabularEditor.Resources.Next;
@@ -1213,15 +1228,15 @@
             this.btnConnect,
             this.toolStripSeparator3,
             this.btnSave,
-            this.toolStripSeparator4,
+            this.toolStripSeparator22,
             this.toolStripLabel1,
             this.cmbPerspective,
             this.toolStripSeparator5,
             this.toolStripLabel2,
             this.cmbTranslation,
-            this.toolStripSeparator10,
-            this.btnBack,
-            this.btnForward});
+            this.toolStripSeparator4,
+            this.txtFilter,
+            this.tbApplyFilter});
             this.toolStrip2.Location = new System.Drawing.Point(0, 24);
             this.toolStrip2.Name = "toolStrip2";
             this.toolStrip2.Size = new System.Drawing.Size(1067, 25);
@@ -1233,10 +1248,10 @@
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
             // 
-            // toolStripSeparator4
+            // toolStripSeparator22
             // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator22.Name = "toolStripSeparator22";
+            this.toolStripSeparator22.Size = new System.Drawing.Size(6, 25);
             // 
             // toolStripLabel1
             // 
@@ -1268,10 +1283,20 @@
             this.cmbTranslation.Name = "cmbTranslation";
             this.cmbTranslation.Size = new System.Drawing.Size(200, 25);
             // 
-            // toolStripSeparator10
+            // toolStripSeparator4
             // 
-            this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
+            // 
+            // txtFilter
+            // 
+            this.txtFilter.MaxLength = 0;
+            this.txtFilter.Name = "txtFilter";
+            this.txtFilter.Size = new System.Drawing.Size(454, 25);
+            this.txtFilter.ToolTipText = "Filter objects by name. Put a \':\' as the first character to filter using Dynamic " +
+    "LINQ";
+            this.txtFilter.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtFilter_KeyDown);
+            this.txtFilter.TextChanged += new System.EventHandler(this.txtFilter_TextChanged);
             // 
             // splitContainer1
             // 
@@ -1296,6 +1321,7 @@
             this.tvModel.AllowDrop = true;
             this.tvModel.BackColor = System.Drawing.SystemColors.Window;
             this.tvModel.Columns.Add(this._colName);
+            this.tvModel.Columns.Add(this._colTable);
             this.tvModel.Columns.Add(this._colType);
             this.tvModel.Columns.Add(this._colFormatString);
             this.tvModel.Columns.Add(this._colDataType);
@@ -1318,6 +1344,7 @@
             this.tvModel.NodeControls.Add(this.nodeTextBox4);
             this.tvModel.NodeControls.Add(this.nodeTextBox5);
             this.tvModel.NodeControls.Add(this.nodeTextBox6);
+            this.tvModel.NodeControls.Add(this.nodeTextBox7);
             this.tvModel.SelectedNode = null;
             this.tvModel.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.MultiSameParent;
             this.tvModel.ShowLines = false;
@@ -1333,7 +1360,14 @@
             this._colName.Header = "Name";
             this._colName.SortOrder = System.Windows.Forms.SortOrder.None;
             this._colName.TooltipText = null;
-            this._colName.Width = 200;
+            this._colName.Width = 150;
+            // 
+            // _colTable
+            // 
+            this._colTable.Header = "Table";
+            this._colTable.SortOrder = System.Windows.Forms.SortOrder.None;
+            this._colTable.TooltipText = null;
+            this._colTable.Width = 100;
             // 
             // _colType
             // 
@@ -1415,6 +1449,15 @@
             this.nodeTextBox6.ParentColumn = this._colSource;
             this.nodeTextBox6.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
+            // nodeTextBox7
+            // 
+            this.nodeTextBox7.IncrementalSearchEnabled = true;
+            this.nodeTextBox7.LeftMargin = 3;
+            this.nodeTextBox7.ParentColumn = this._colTable;
+            this.nodeTextBox7.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            this.nodeTextBox7.VirtualMode = true;
+            this.nodeTextBox7.ValueNeeded += new System.EventHandler<Aga.Controls.Tree.NodeControls.NodeControlValueEventArgs>(this.nodeTextBox7_ValueNeeded);
+            // 
             // toolTreeView
             // 
             this.toolTreeView.CanOverflow = false;
@@ -1430,10 +1473,10 @@
             this.tbShowColumns,
             this.tbShowHierarchies,
             this.toolStripSeparator2,
-            this.txtFilter,
-            this.tbApplyFilter,
             this.toolStripSeparator6,
-            this.toolStripButton6});
+            this.toolStripButton6,
+            this.btnForward,
+            this.btnBack});
             this.toolTreeView.Location = new System.Drawing.Point(0, 0);
             this.toolTreeView.Name = "toolTreeView";
             this.toolTreeView.Size = new System.Drawing.Size(405, 25);
@@ -1456,16 +1499,6 @@
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
-            // 
-            // txtFilter
-            // 
-            this.txtFilter.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtFilter.MaxLength = 0;
-            this.txtFilter.Name = "txtFilter";
-            this.txtFilter.Size = new System.Drawing.Size(146, 25);
-            this.txtFilter.ToolTipText = "Only show measures, columns and hierarchies containing the filter text";
-            this.txtFilter.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtFilter_KeyDown);
-            this.txtFilter.TextChanged += new System.EventHandler(this.txtFilter_TextChanged);
             // 
             // toolStripSeparator6
             // 
@@ -1654,7 +1687,6 @@
             this.txtAdvanced.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtAdvanced.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
             this.txtAdvanced.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtAdvanced.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtAdvanced.IsReplaceMode = false;
             this.txtAdvanced.Language = FastColoredTextBoxNS.Language.CSharp;
             this.txtAdvanced.LeftBracket = '(';
@@ -2228,7 +2260,6 @@
         private System.Windows.Forms.ContextMenuStrip tvMenu;
         private System.Windows.Forms.ToolStripStatusLabel lblScriptStatus;
         private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
@@ -2307,7 +2338,6 @@
         private System.Windows.Forms.ToolStripButton tbShowColumns;
         private System.Windows.Forms.ToolStripButton tbShowHierarchies;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripButton tbApplyFilter;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripButton toolStripButton6;
         private FastColoredTextBoxNS.FastColoredTextBox txtExpression;
@@ -2385,7 +2415,6 @@
         public UI.UIModelAction actSave;
         private System.Windows.Forms.OpenFileDialog ofdScript;
         private System.Windows.Forms.SaveFileDialog sfdScript;
-        private ToolStripSpringTextBox txtFilter;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator20;
         private System.Windows.Forms.ToolStripComboBox toolStripComboBox1;
         private System.Windows.Forms.ToolStripButton toolStripButton3;
@@ -2397,8 +2426,13 @@
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodeTextBox6;
         private Crad.Windows.Forms.Actions.Action actBack;
         private Crad.Windows.Forms.Actions.Action actForward;
-        private System.Windows.Forms.ToolStripButton btnBack;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator22;
+        private ToolStripSpringTextBox txtFilter;
+        private System.Windows.Forms.ToolStripButton tbApplyFilter;
         private System.Windows.Forms.ToolStripButton btnForward;
+        private System.Windows.Forms.ToolStripButton btnBack;
+        private Aga.Controls.Tree.NodeControls.NodeTextBox nodeTextBox7;
+        public Aga.Controls.Tree.TreeColumn _colTable;
     }
 }
 

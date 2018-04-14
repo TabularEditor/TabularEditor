@@ -84,6 +84,8 @@ namespace TabularEditor.BestPracticeAnalyzer
                 case RuleScope.CalculatedTableColumn: return typeof(CalculatedTableColumn);
                 case RuleScope.KPI: return typeof(KPI);
                 case RuleScope.Variation: return typeof(Variation);
+                case RuleScope.NamedExpression: return typeof(NamedExpression);
+                case RuleScope.ModelRole: return typeof(ModelRole);
                 default:
                     throw new InvalidOperationException("Unknown scope type");
             }

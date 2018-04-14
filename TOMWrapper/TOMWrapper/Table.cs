@@ -19,6 +19,8 @@ namespace TabularEditor.TOMWrapper
     {
         private DependsOnList _dependsOn = null;
 
+        string IExpressionObject.Expression { get { return ""; } set { } }
+
         [Browsable(false)]
         public DependsOnList DependsOn
         {
@@ -453,20 +455,6 @@ namespace TabularEditor.TOMWrapper
             set
             {
                 
-            }
-        }
-
-        [Browsable(false)]
-        public virtual string Expression
-        {
-            get
-            {
-                return DefaultDetailRowsExpression;
-            }
-
-            set
-            {
-                DefaultDetailRowsExpression = value;
             }
         }
     }
