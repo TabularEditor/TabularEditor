@@ -109,7 +109,7 @@ namespace TabularEditor.TOMWrapper
         [Browsable(true), DisplayName("Expression")]
         [Category("Options"), IntelliSense("The Expression of this Calculated Table. Read only.")]
         [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
-        public override string Expression
+        public string Expression
         {
             get
             {

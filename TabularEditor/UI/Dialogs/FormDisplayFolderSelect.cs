@@ -75,12 +75,14 @@ namespace TabularEditor
             {
                 treeFolders.SelectedNode = null;
                 btnOK.Enabled = false;
+                btnNewFolder.Enabled = false;
             }
         }
 
         private void treeFolders_AfterSelect(object sender, TreeViewEventArgs e)
         {
             btnOK.Enabled = e.Node != null;
+            btnNewFolder.Enabled = e.Node != null;
         }
 
         private TreeNode rootNode;
@@ -108,6 +110,8 @@ namespace TabularEditor
                 rootNode = FolderNodes.Add(table.Name, table.Name, 2, 2);
 
                 AddChildren(rootNode.Nodes, Folder.CreateFolder(table, "", true, null));
+
+                treeFolders.SelectedNode = rootNode;
 
                 cancel = ShowDialog() == DialogResult.Cancel;
                 if (!cancel) value = SelectedFolder;

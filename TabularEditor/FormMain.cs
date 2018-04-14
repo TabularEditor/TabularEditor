@@ -241,8 +241,14 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void txtFilter_TextChanged(object sender, EventArgs e)
         {
-            actToggleFilter.DoExecute();        
+            // Only update filter results continously when we're not in LINQ mode:
+            if(!LinqMode) actToggleFilter.DoExecute();        
         }
+
+        /// <summary>
+        /// Returns true only when there's an active Dynamic LINQ Filter
+        /// </summary>
+        private bool LinqMode => txtFilter.Text.StartsWith(":") && actToggleFilter.Checked;
 
         private void actExit_Execute(object sender, EventArgs e)
         {
@@ -661,6 +667,21 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void actForward_Execute(object sender, EventArgs e)
         {
             UI.Tree_NavigateForward();
+        }
+
+        private void nodeTextBox7_ValueNeeded(object sender, Aga.Controls.Tree.NodeControls.NodeControlValueEventArgs e)
+        {
+            e.Value = (e.Node.Tag as TOMWrapper.ITabularTableObject)?.Table.Name;
+        }
+
+        private void actToggleColumns_Update(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void DisableIfLinqMode(object sender, UpdateExEventArgs e)
+        {
+            e.Enabled = !LinqMode;
         }
     }
 }

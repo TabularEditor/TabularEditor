@@ -2,9 +2,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Linq.Dynamic;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using TabularEditor.BestPracticeAnalyzer;
 using TabularEditor.TOMWrapper;
 using TabularEditor.TreeViewAdvExtension;
 
@@ -12,7 +16,43 @@ namespace TabularEditor
 {
     public class TabularUITree : TabularTree, ITreeModel
     {
+
         public TreeViewAdv TreeView { get; set; }
+
+        private string linqFilter;
+        public string LinqFilter
+        {
+            get
+            {
+                return linqFilter;
+            }
+
+            set
+            {
+                if (linqFilter == value) return;
+                linqFilter = value;
+
+                FilterItems.Clear();
+                if(!string.IsNullOrEmpty(LinqFilter))
+                {
+                    var sw = new Stopwatch();
+                    sw.Start();
+                    // Do Dynamic Linq search for each type of object (based on the types available for Best Practice Analyzer):
+                    foreach (RuleScope scope in Enum.GetValues(typeof(RuleScope)))
+                    {
+                        FilterItems.AddRange(Linq(Analyzer.GetCollection(Model, scope), scope.GetScopeType()));
+                    }
+                    sw.Stop();
+                    FilterExecutionTime = sw.ElapsedMilliseconds;
+                }
+
+                OnStructureChanged();
+            }
+        }
+        public long FilterExecutionTime { get; private set; }
+        public int FilterResultCount => FilterItems.Count;
+        bool LinqMode => !string.IsNullOrEmpty(linqFilter);
+
         public override void OnNodesChanged()
         {
             //if (UpdateLocks == 0) TreeView?.Invalidate();
@@ -20,19 +60,28 @@ namespace TabularEditor
         }
 
         public TabularUITree(Model model) : base(model) { }
+        public List<TabularNamedObject> FilterItems = new List<TabularNamedObject>();
 
-        public IEnumerable GetChildren(TreePath treePath)
+        public virtual IEnumerable GetChildren(TreePath treePath)
         {
             if (UpdateLocks > 0) throw new InvalidOperationException("Tree enumeration attempted while update in progress");
 
             List<TabularNamedObject> items = new List<TabularNamedObject>();
+
             if (treePath.IsEmpty())
             {
-                // If no root was specified, use the entire model
-                if (Options.HasFlag(LogicalTreeOptions.ShowRoot))
-                    items.Add(Model);
+                if (LinqMode)
+                {
+                    return FilterItems;
+                }
                 else
-                    return GetChildren(Model);
+                {
+                    // If no root was specified, use the entire model
+                    if (Options.HasFlag(LogicalTreeOptions.ShowRoot))
+                        items.Add(Model);
+                    else
+                        return GetChildren(Model);
+                }
             }
             else
             {
@@ -40,6 +89,21 @@ namespace TabularEditor
             }
 
             return items;
+        }
+
+        private IEnumerable<TabularNamedObject> Linq(IEnumerable collection, Type type)
+        {
+            try
+            {
+                var queryable = collection.AsQueryable();
+                var lambda = System.Linq.Dynamic.DynamicExpression.ParseLambda(type, typeof(bool), linqFilter);
+                return
+                    queryable.Provider.CreateQuery(
+                        Expression.Call(typeof(Queryable), "Where", new Type[] { type }, queryable.Expression, Expression.Quote(lambda))
+                    ).OfType<TabularNamedObject>();
+            }
+            catch { }
+            return Enumerable.Empty<TabularNamedObject>();
         }
 
         TreeDragInformation DragInfo;
@@ -60,7 +124,7 @@ namespace TabularEditor
         /// <param name="position"></param>
         /// <param name="doDrop"></param>
         /// <returns></returns>
-        public bool CanDrop(TreeNodeAdv[] sourceNodes, TreeNodeAdv targetNode, NodePosition position)
+        public virtual bool CanDrop(TreeNodeAdv[] sourceNodes, TreeNodeAdv targetNode, NodePosition position)
         {
             if (sourceNodes == null || sourceNodes.Length == 0) return false;
             DragInfo = TreeDragInformation.FromNodes(sourceNodes, targetNode, position);
@@ -214,7 +278,7 @@ namespace TabularEditor
             else
             {
                 if (obj == null)
-                    OnStructureChanged(new TreePath(Model));
+                    OnStructureChanged(new TreePath());
                 else
                     OnStructureChanged(GetPath(obj));
             }

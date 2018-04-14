@@ -110,6 +110,8 @@ namespace Aga.Controls.Tree.NodeControls
 
 		public bool IsVisible(TreeNodeAdv node)
 		{
+            if (ParentColumn?.IsVisible == false) return false;
+
 			NodeControlValueEventArgs args = new NodeControlValueEventArgs(node);
 			args.Value = true;
 			OnIsVisibleValueNeeded(args);

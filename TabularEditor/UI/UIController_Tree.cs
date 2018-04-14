@@ -285,30 +285,17 @@ namespace TabularEditor.UI
             if (node != null) node.Expand();
         }
 
-        private List<Aga.Controls.Tree.NodeControls.NodeControl> orgControls;
         public void SetInfoColumns(bool showInfoColumns)
         {
-            if (UI.TreeView.UseColumns)
+            if (UI.TreeView.UseColumns == showInfoColumns) return;
+
+            for (int i = 1; i < UI.TreeView.Columns.Count; i++)
             {
-                orgControls = UI.TreeView.NodeControls.ToList();
+                UI.TreeView.Columns[i].IsVisible = (showInfoColumns && UI.TreeView.Columns[i] != UI.FormMain._colTable) || LinqMode;
             }
-            UI.TreeView.UseColumns = showInfoColumns;
-            UI.TreeView.FullRowSelect = UI.TreeView.UseColumns;
-            if (!UI.TreeView.UseColumns)
-            {
-                orgControls = UI.TreeView.NodeControls.ToList();
-                UI.TreeView.NodeControls.Clear();
-                UI.TreeView.NodeControls.Add(orgControls[0]);
-                UI.TreeView.NodeControls.Add(orgControls[1]);
-                UI.TreeView.NodeControls.Add(orgControls[2]);
-            }
-            else
-            {
-                for (var i = 3; i < orgControls.Count; i++)
-                {
-                    UI.TreeView.NodeControls.Add(orgControls[i]);
-                }
-            }
+
+            UI.TreeView.UseColumns = showInfoColumns || LinqMode;
+            UI.TreeView.FullRowSelect = showInfoColumns || LinqMode;
         }
 
         private ITabularNamedObject PreviousSelection;
@@ -445,7 +432,49 @@ namespace TabularEditor.UI
             }
 
             Tree.Options = CurrentOptions;
-            Tree.Filter = filter;
+
+            // Regular name filtering:
+            if (string.IsNullOrEmpty(filter) || !filter.StartsWith(":"))
+            {
+                Tree.Filter = filter;
+            }
+
+            // LINQ filter (filter string starts with ":"):
+            if (!string.IsNullOrEmpty(filter) && filter.StartsWith(":"))
+            {
+                EnableLinqMode(filter.Substring(1));
+            }
+            // LINQ filter removed (filter string empty or no longer starts with ":"):
+            else if ((string.IsNullOrEmpty(filter) || !filter.StartsWith(":")) && LinqMode)
+            {
+                DisableLinqMode();
+            }
         }
+
+        private void EnableLinqMode(string filter)
+        {
+            if (!LinqMode)
+            {
+                LinqMode = true;
+                var useInfoColumns = UI.TreeView.UseColumns;
+                UI.FormMain._colTable.IsVisible = true;
+                SetInfoColumns(true);
+            }
+            Tree.LinqFilter = filter;
+            UI.StatusLabel.Text = string.Format("Search completed in {0} ms", Tree.FilterExecutionTime);
+        }
+
+        private void DisableLinqMode()
+        {
+            LinqMode = false;
+
+            UI.FormMain._colTable.IsVisible = false;
+            SetInfoColumns(Preferences.Current.View_MetadataInformation);
+
+            Tree.LinqFilter = null;
+            UI.TreeView.Root.Children[0].Expand(); // TODO: Expand same as before
+        }
+
+        private bool LinqMode = false;
     }
 }

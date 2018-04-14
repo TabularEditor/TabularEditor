@@ -138,9 +138,13 @@ namespace TabularEditor.UI
 
         public ModelActionManager Actions { get; private set; }
 
+        private SortedTreeModel SortedModel;
+
         public void LoadTabularModelToUI()
         {
             if (Handler == null) return;
+
+            LinqMode = false;
 
             Handler.UndoManager.UndoStateChanged += UndoManager_UndoActionAdded;
             Handler.ObjectChanging += UIController_ObjectChanging;
@@ -159,12 +163,10 @@ namespace TabularEditor.UI
             Tree = new TabularUITree(Handler.Model) { Options = CurrentOptions, TreeView = UI.TreeView };
             Tree.UpdateComplete += Tree_UpdateComplete;
 
-            var sortedModel = new SortedTreeModel(Tree);
-
-            var cmp = (UI.TreeView?.Model as SortedTreeModel)?.Comparer as TabularObjectComparer;
-
-            sortedModel.Comparer = new TabularObjectComparer(Tree, cmp == null ? ObjectOrder.Alphabetical : cmp.Order );
-            UI.TreeView.Model = sortedModel;
+            var cmp = SortedModel?.Comparer as TabularObjectComparer;
+            SortedModel = new SortedTreeModel(Tree);
+            SortedModel.Comparer = new TabularObjectComparer(Tree, cmp == null ? ObjectOrder.Alphabetical : cmp.Order );
+            UI.TreeView.Model = SortedModel;
             UI.TreeView.FindNode(new TreePath(Handler.Model))?.Expand();
 
             UI.ScriptEditor.Enabled = true;
