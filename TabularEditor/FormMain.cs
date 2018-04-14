@@ -671,7 +671,10 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void nodeTextBox7_ValueNeeded(object sender, Aga.Controls.Tree.NodeControls.NodeControlValueEventArgs e)
         {
-            e.Value = (e.Node.Tag as TOMWrapper.ITabularTableObject)?.Table.Name;
+            e.Value = (e.Node.Tag is TOMWrapper.Model) ? "" : (e.Node.Tag as TOMWrapper.KPI)?.MeasureName ?? 
+                (e.Node.Tag as TOMWrapper.Level)?.Hierarchy?.Name ??
+                (e.Node.Tag as TOMWrapper.ITabularTableObject)?.Table?.DaxTableName ??
+                "Model";
         }
 
         private void actToggleColumns_Update(object sender, EventArgs e)
