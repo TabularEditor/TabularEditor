@@ -461,11 +461,16 @@ namespace TabularEditor.UI
                 SetInfoColumns(true);
             }
             Tree.LinqFilter = filter;
-            UI.StatusLabel.Text = string.Format("Search completed in {0} ms", Tree.FilterExecutionTime);
+            UI.StatusLabel.Text = string.Format("Found {0} object{1} in {2} ms", 
+                Tree.FilterResultCount,
+                Tree.FilterResultCount == 1 ? "" : "s", 
+                Tree.FilterExecutionTime);
         }
 
         private void DisableLinqMode()
         {
+            if (!LinqMode) return;
+
             LinqMode = false;
 
             UI.FormMain._colTable.IsVisible = false;

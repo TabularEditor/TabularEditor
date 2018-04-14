@@ -60,7 +60,7 @@ namespace TabularEditor
         }
 
         public TabularUITree(Model model) : base(model) { }
-        public List<TabularNamedObject> FilterItems = new List<TabularNamedObject>();
+        public List<ITabularNamedObject> FilterItems = new List<ITabularNamedObject>();
 
         public virtual IEnumerable GetChildren(TreePath treePath)
         {
@@ -91,7 +91,7 @@ namespace TabularEditor
             return items;
         }
 
-        private IEnumerable<TabularNamedObject> Linq(IEnumerable collection, Type type)
+        private IEnumerable<ITabularNamedObject> Linq(IEnumerable collection, Type type)
         {
             try
             {
@@ -100,10 +100,10 @@ namespace TabularEditor
                 return
                     queryable.Provider.CreateQuery(
                         Expression.Call(typeof(Queryable), "Where", new Type[] { type }, queryable.Expression, Expression.Quote(lambda))
-                    ).OfType<TabularNamedObject>();
+                    ).OfType<ITabularNamedObject>();
             }
             catch { }
-            return Enumerable.Empty<TabularNamedObject>();
+            return Enumerable.Empty<ITabularNamedObject>();
         }
 
         TreeDragInformation DragInfo;

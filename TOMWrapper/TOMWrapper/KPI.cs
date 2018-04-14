@@ -12,6 +12,12 @@ namespace TabularEditor.TOMWrapper
 {
     public partial class KPI: ITabularNamedObject, IDaxDependantObject, IExpressionObject
     {
+        [Browsable(false)]
+        public Table Table => Measure.Table;
+
+        [DisplayName("Parent Measure"), Category("Basic")]
+        public string MeasureName => Measure?.DaxObjectName;
+
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
             switch(propertyName)

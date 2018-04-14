@@ -144,7 +144,8 @@ namespace TabularEditor.UI
         {
             if (Handler == null) return;
 
-            LinqMode = false;
+            UI.FormMain.actToggleFilter.Checked = false;
+            DisableLinqMode();
 
             Handler.UndoManager.UndoStateChanged += UndoManager_UndoActionAdded;
             Handler.ObjectChanging += UIController_ObjectChanging;
