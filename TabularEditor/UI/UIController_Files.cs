@@ -244,20 +244,23 @@ namespace TabularEditor.UI
                 var res = fbd.ShowDialog();
                 if(res == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(fbd.FileName))
                 {
-                    UI.StatusLabel.Text = "Saving...";
-                    Handler.Save(fbd.FileName, SaveFormat.TabularEditorFolder, Preferences.Current.GetSerializeOptions(true));
-
-                    RecentFiles.Add(fbd.FileName);
-                    UI.FormMain.PopulateRecentFilesList();
-
-                    // If working with a file, change the current file pointer:
-                    if (Handler.SourceType != ModelSourceType.Database)
+                    using (new Hourglass())
                     {
-                        File_SaveMode = ModelSourceType.Folder;
-                        File_Current = fbd.FileName;
-                    }
+                        UI.StatusLabel.Text = "Saving...";
+                        Handler.Save(fbd.FileName, SaveFormat.TabularEditorFolder, Preferences.Current.GetSerializeOptions(true));
 
-                    UpdateUIText();
+                        RecentFiles.Add(fbd.FileName);
+                        UI.FormMain.PopulateRecentFilesList();
+
+                        // If working with a file, change the current file pointer:
+                        if (Handler.SourceType != ModelSourceType.Database)
+                        {
+                            File_SaveMode = ModelSourceType.Folder;
+                            File_Current = fbd.FileName;
+                        }
+
+                        UpdateUIText();
+                    }
                 }
             }
         }
@@ -273,52 +276,56 @@ namespace TabularEditor.UI
             }
 
             UI.StatusLabel.Text = "Saving...";
+            using (new Hourglass())
+            {
 
-            if (File_SaveMode == ModelSourceType.Database)
-            {
-                Database_Save();
-            }
-            else
-            {
-                try
+                if (File_SaveMode == ModelSourceType.Database)
                 {
-                    DialogResult mr = DialogResult.OK;
-                    if (File_SaveMode == ModelSourceType.Folder)
+                    Database_Save();
+                }
+                else
+                {
+                    try
                     {
-                        if (GetLastDirChange(File_Current, File_LastWrite) > File_LastWrite)
+                        DialogResult mr = DialogResult.OK;
+                        if (File_SaveMode == ModelSourceType.Folder)
                         {
-                            mr = MessageBox.Show(
-                                "Changes were made to the currently loaded folder structure after the model was loaded in Tabular Editor. Overwrite these changes?", "Overwriting folder structure changes", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                            if (GetLastDirChange(File_Current, File_LastWrite) > File_LastWrite)
+                            {
+                                mr = MessageBox.Show(
+                                    "Changes were made to the currently loaded folder structure after the model was loaded in Tabular Editor. Overwrite these changes?", "Overwriting folder structure changes", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                            }
+                            if (mr == DialogResult.OK)
+                            {
+                                Handler.Save(File_Current, SaveFormat.TabularEditorFolder, Preferences.Current.GetSerializeOptions(true), true);
+                                File_LastWrite = DateTime.Now;
+                            }
                         }
-                        if (mr == DialogResult.OK)
+                        else
                         {
-                            Handler.Save(File_Current, SaveFormat.TabularEditorFolder, Preferences.Current.GetSerializeOptions(true), true);
-                            File_LastWrite = DateTime.Now;
+                            if (File.GetLastWriteTime(File_Current) > File_LastWrite)
+                            {
+                                mr = MessageBox.Show(
+                                    "Changes were made to the currently loaded file after the model was loaded in Tabular Editor. Overwrite these changes?", "Overwriting file changes", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                            }
+                            if (mr == DialogResult.OK)
+                            {
+                                if (File_SaveMode == ModelSourceType.Pbit)
+                                    Handler.Save(File_Current, SaveFormat.PowerBiTemplate, SerializeOptions.PowerBi);
+                                else
+                                    Handler.Save(File_Current, SaveFormat.ModelSchemaOnly, Preferences.Current.GetSerializeOptions(false), true);
+                                File_LastWrite = DateTime.Now;
+                            }
                         }
                     }
-                    else {
-                        if (File.GetLastWriteTime(File_Current) > File_LastWrite)
-                        {
-                            mr = MessageBox.Show(
-                                "Changes were made to the currently loaded file after the model was loaded in Tabular Editor. Overwrite these changes?", "Overwriting file changes", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
-                        }
-                        if (mr == DialogResult.OK)
-                        {
-                            if (File_SaveMode == ModelSourceType.Pbit)
-                                Handler.Save(File_Current, SaveFormat.PowerBiTemplate, SerializeOptions.PowerBi);
-                            else
-                                Handler.Save(File_Current, SaveFormat.ModelSchemaOnly, Preferences.Current.GetSerializeOptions(false), true);
-                            File_LastWrite = DateTime.Now;
-                        }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message, "Could not save metadata to file", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
+
                 }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.Message, "Could not save metadata to file", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                
+                UpdateUIText();
             }
-            UpdateUIText();
         }
 
         private DateTime GetLastDirChange(string path)
