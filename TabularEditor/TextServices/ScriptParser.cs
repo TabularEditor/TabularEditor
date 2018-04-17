@@ -180,10 +180,13 @@ namespace TabularEditor.TextServices
                     if (localTypes.TryGetValue(p, out type)) continue;
                     if (!Types.TryGetValue(p, out type))
                     {
-                        // Type not found. Perhaps we're looking at an assignment?
-                        type = GetAssignmentType(list, path.TokenIndex);
-                        // TODO: Recurse upwards
-                        if(type == null) return null;
+                        return null;
+                        
+                        // Uncommented below because it could sometimes cause a StackOverflowException.
+                        //// Type not found. Perhaps we're looking at an assignment?
+                        //type = GetAssignmentType(list, path.TokenIndex);
+                        //// TODO: Recurse upwards
+                        //if(type == null) return null;
                     }
                     continue;
                 } else {
