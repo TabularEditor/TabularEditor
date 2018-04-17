@@ -239,17 +239,16 @@ namespace TabularEditor.TOMWrapper.Tests
             var pnEx = "Test Perspective Exclusive";
             Perspective.CreateNew(pnEx);
 
-            m.Tables["Date 6"].InPerspective[pnEx] = true;
             m.Tables["Currency"].InPerspective[pnEx] = true;
 
-            //m.Tables.InPerspective(pnEx, true);
-            //m.Tables["Reseller Sales"].InPerspective[pnEx] = true;
+            m.Tables.InPerspective(pnEx, true);
+            m.Tables["Reseller Sales"].InPerspective[pnEx] = true;
 
-            //m.Tables["Employee"].InPerspective[pnEx] = false;
-            //m.Tables["Date"].Hierarchies.InPerspective(pnEx, false);
-            //m.Tables["Internet Sales"].Measures.InPerspective(pnEx, false);
-            //m.Tables["Product"].Columns.InPerspective(pnEx, false);
-            //m.Tables["Reseller Sales"].Measures["Reseller Total Sales"].InPerspective[pnEx] = false;
+            m.Tables["Employee"].InPerspective[pnEx] = false;
+            m.Tables["Date"].Hierarchies.InPerspective(pnEx, false);
+            m.Tables["Internet Sales"].Measures.InPerspective(pnEx, false);
+            m.Tables["Product"].Columns.InPerspective(pnEx, false);
+            m.Tables["Reseller Sales"].Measures["Reseller Total Sales"].InPerspective[pnEx] = false;
 
             handler.SaveDB();
 

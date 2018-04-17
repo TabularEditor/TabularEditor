@@ -104,6 +104,9 @@
       <LastGenOutput>TestGenerator.cs</LastGenOutput>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="AdventureWorks.bim" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
