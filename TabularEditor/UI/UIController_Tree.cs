@@ -339,7 +339,10 @@ namespace TabularEditor.UI
 
         private void TreeView_NodeMouseDoubleClick(object sender, TreeNodeAdvMouseEventArgs e)
         {
-            if(e.Node.Tag is IExpressionObject)
+            // Tables shouldn't be editable in the Expression Editor in CL 1200 or less (as they don't have Detail Rows Expressions).
+            if (e.Node.Tag is Table && Handler.CompatibilityLevel < 1400) return;
+
+            if (e.Node.Tag is IExpressionObject)
                 ExpressionEditor_Edit(e.Node.Tag as IExpressionObject);
         }
 
