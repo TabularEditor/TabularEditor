@@ -49,6 +49,12 @@ namespace TabularEditor.UI.Tree
         {
             if (obj is TabularObject)
             {
+                if(obj is Table)
+                {
+                    var t = obj as Table;
+                    if (t.DataCategory == "Time" && t.Columns.Any(c => c.IsKey))
+                        return obj is CalculatedTable ? TabularIcons.ICON_CALCTIMETABLE : TabularIcons.ICON_TIMETABLE;
+                }
                 if (obj is CalculatedColumn) return TabularIcons.ICON_CALCCOLUMN;
                 if (obj is CalculatedTable)
                 {
@@ -133,7 +139,8 @@ namespace TabularEditor.UI.Tree
         public const int ICON_PARTITION = 38;
         public const int ICON_KPI = 39;
         public const int ICON_EFFECTS = 40;
-
+        public const int ICON_TIMETABLE = 41;
+        public const int ICON_CALCTIMETABLE = 42;
     }
 
 }

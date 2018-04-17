@@ -30,7 +30,7 @@
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <AutorunEnabled>true</AutorunEnabled>
     <ApplicationRevision>20654</ApplicationRevision>
-    <ApplicationVersion>2.7.6678.30860</ApplicationVersion>
+    <ApplicationVersion>2.7.6678.31584</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -277,6 +277,12 @@
     </Compile>
     <Compile Include="UI\Dialogs\ImportTranslationsForm.Designer.cs">
       <DependentUpon>ImportTranslationsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Dialogs\MarkAsDateTableForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\MarkAsDateTableForm.Designer.cs">
+      <DependentUpon>MarkAsDateTableForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Dialogs\Pages\ConnectPage.cs">
       <SubType>UserControl</SubType>
@@ -549,6 +555,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\ImportTranslationsForm.resx">
       <DependentUpon>ImportTranslationsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\MarkAsDateTableForm.resx">
+      <DependentUpon>MarkAsDateTableForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\Pages\ConnectPage.resx">
       <DependentUpon>ConnectPage.cs</DependentUpon>

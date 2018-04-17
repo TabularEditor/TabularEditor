@@ -634,6 +634,7 @@
             // exitToolStripMenuItem
             // 
             actionsMain.SetAction(this.exitToolStripMenuItem, this.actExit);
+            this.exitToolStripMenuItem.AutoToolTip = true;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
@@ -745,7 +746,6 @@
             // btnSave
             // 
             actionsMain.SetAction(this.btnSave, this.actSave);
-            this.btnSave.AutoToolTip = false;
             this.btnSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnSave.Image = global::TabularEditor.Resources.Save;
             this.btnSave.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -756,7 +756,6 @@
             // saveToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveToolStripMenuItem, this.actSave);
-            this.saveToolStripMenuItem.AutoToolTip = true;
             this.saveToolStripMenuItem.Image = global::TabularEditor.Resources.Save;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+S";
@@ -767,7 +766,6 @@
             // saveAsToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveAsToolStripMenuItem, this.actSaveAs);
-            this.saveAsToolStripMenuItem.AutoToolTip = true;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.saveAsToolStripMenuItem.Text = "Save As...";
@@ -775,6 +773,7 @@
             // undoToolStripMenuItem
             // 
             actionsMain.SetAction(this.undoToolStripMenuItem, this.actUndo);
+            this.undoToolStripMenuItem.AutoToolTip = true;
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Z";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
@@ -784,6 +783,7 @@
             // redoToolStripMenuItem
             // 
             actionsMain.SetAction(this.redoToolStripMenuItem, this.actRedo);
+            this.redoToolStripMenuItem.AutoToolTip = true;
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Y";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
@@ -877,6 +877,7 @@
             // expandAllToolStripMenuItem
             // 
             actionsMain.SetAction(this.expandAllToolStripMenuItem, this.actExpandAll);
+            this.expandAllToolStripMenuItem.AutoToolTip = true;
             this.expandAllToolStripMenuItem.Image = global::TabularEditor.Resources.ExpandAll;
             this.expandAllToolStripMenuItem.Name = "expandAllToolStripMenuItem";
             this.expandAllToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
@@ -885,6 +886,7 @@
             // collapseAllToolStripMenuItem
             // 
             actionsMain.SetAction(this.collapseAllToolStripMenuItem, this.actCollapseAll);
+            this.collapseAllToolStripMenuItem.AutoToolTip = true;
             this.collapseAllToolStripMenuItem.Image = global::TabularEditor.Resources.CollapseAll;
             this.collapseAllToolStripMenuItem.Name = "collapseAllToolStripMenuItem";
             this.collapseAllToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
@@ -917,6 +919,7 @@
             // btnFind
             // 
             actionsMain.SetAction(this.btnFind, this.actFind);
+            this.btnFind.AutoToolTip = false;
             this.btnFind.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnFind.Image = global::TabularEditor.Resources.Find;
             this.btnFind.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -927,6 +930,7 @@
             // btnReplace
             // 
             actionsMain.SetAction(this.btnReplace, this.actReplace);
+            this.btnReplace.AutoToolTip = false;
             this.btnReplace.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnReplace.Image = global::TabularEditor.Resources.Replace;
             this.btnReplace.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -937,6 +941,7 @@
             // findToolStripMenuItem
             // 
             actionsMain.SetAction(this.findToolStripMenuItem, this.actFind);
+            this.findToolStripMenuItem.AutoToolTip = true;
             this.findToolStripMenuItem.Image = global::TabularEditor.Resources.Find;
             this.findToolStripMenuItem.Name = "findToolStripMenuItem";
             this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
@@ -946,6 +951,7 @@
             // replaceToolStripMenuItem
             // 
             actionsMain.SetAction(this.replaceToolStripMenuItem, this.actReplace);
+            this.replaceToolStripMenuItem.AutoToolTip = true;
             this.replaceToolStripMenuItem.Image = global::TabularEditor.Resources.Replace;
             this.replaceToolStripMenuItem.Name = "replaceToolStripMenuItem";
             this.replaceToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.H)));
@@ -976,7 +982,6 @@
             // btnRun
             // 
             actionsMain.SetAction(this.btnRun, this.actExecuteScript);
-            this.btnRun.AutoToolTip = false;
             this.btnRun.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnRun.Image = global::TabularEditor.Resources.Run;
             this.btnRun.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -996,6 +1001,7 @@
             // btnSaveCustomAction
             // 
             actionsMain.SetAction(this.btnSaveCustomAction, this.actSaveCustomAction);
+            this.btnSaveCustomAction.AutoToolTip = false;
             this.btnSaveCustomAction.Image = global::TabularEditor.Resources.action_add_16xLG;
             this.btnSaveCustomAction.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSaveCustomAction.Name = "btnSaveCustomAction";
@@ -1129,6 +1135,7 @@
             // saveToFolderToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveToFolderToolStripMenuItem, this.actSaveToFolder);
+            this.saveToFolderToolStripMenuItem.AutoToolTip = true;
             this.saveToFolderToolStripMenuItem.Name = "saveToFolderToolStripMenuItem";
             this.saveToFolderToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.saveToFolderToolStripMenuItem.Text = "Save to Folder...";
@@ -1680,7 +1687,6 @@
             this.txtAdvanced.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtAdvanced.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
             this.txtAdvanced.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtAdvanced.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtAdvanced.IsReplaceMode = false;
             this.txtAdvanced.Language = FastColoredTextBoxNS.Language.CSharp;
             this.txtAdvanced.LeftBracket = '(';
@@ -2126,6 +2132,8 @@
             this.tabularTreeImages.Images.SetKeyName(38, "partition");
             this.tabularTreeImages.Images.SetKeyName(39, "gauge");
             this.tabularTreeImages.Images.SetKeyName(40, "effects");
+            this.tabularTreeImages.Images.SetKeyName(41, "timetable");
+            this.tabularTreeImages.Images.SetKeyName(42, "calctimetable");
             // 
             // dlgSaveFile
             // 
