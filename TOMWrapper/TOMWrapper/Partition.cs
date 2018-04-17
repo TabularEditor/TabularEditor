@@ -29,8 +29,8 @@ namespace TabularEditor.TOMWrapper
         {
             if (MetadataObject.Source == null && !(Parent is CalculatedTable))
             {
-                if (Model.DataSources.Count == 0) Model.AddDataSource();
-                MetadataObject.Source = new TOM.QueryPartitionSource() { DataSource = Model.DataSources[0].MetadataObject };
+                if (Model.DataSources.Count(ds => ds is ProviderDataSource) == 0) Model.AddDataSource();
+                MetadataObject.Source = new TOM.QueryPartitionSource() { DataSource = Model.DataSources.First(ds => ds is ProviderDataSource).MetadataObject };
             }
             base.Init();
         }
@@ -183,10 +183,22 @@ namespace TabularEditor.TOMWrapper
 
     public class MPartition: Partition
     {
+
+        protected override void Init()
+        {
+            if (MetadataObject.Source == null && !(Parent is CalculatedTable))
+            {
+                if (Model.DataSources.Count == 0) StructuredDataSource.CreateNew(Model);
+                MetadataObject.Source = new TOM.MPartitionSource();
+            }
+            base.Init();
+        }
+
         protected MPartition(TOM.Partition metadataObject) : base(metadataObject)
         {
             metadataObject.Source = new TOM.MPartitionSource();
         }
+
         public new static MPartition CreateNew(Table parent, string name = null)
         {
             if (TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(MPartition)))
@@ -205,6 +217,16 @@ namespace TabularEditor.TOMWrapper
 
             return obj;
 
+        }
+
+        internal new static MPartition CreateFromMetadata(Table parent, TOM.Partition metadataObject)
+        {
+            var obj = new MPartition(metadataObject);
+            parent.Partitions.Add(obj);
+
+            obj.Init();
+
+            return obj;
         }
     }
 }

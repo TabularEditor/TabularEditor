@@ -52,12 +52,16 @@ namespace TabularEditor.UI.Actions
                 (s, m) => @"Create New\Hierarchy", true, Context.Table | Context.TableObject));
             Add(new Separator(@"Create New"));
             Add(new Action(
-                (s, m) => (s.Context == Context.Partition || (s.Context == Context.Table && s.Count == 1)) && !Handler.UsePowerBIGovernance, 
+                (s, m) => (s.Context == Context.Partition || (s.Context == Context.Table && s.Count == 1)) && !Handler.UsePowerBIGovernance && Handler.Model.DataSources.Any(ds => ds is ProviderDataSource), 
                 (s, m) => Partition.CreateNew(s.Context == Context.Partition ? s.Partitions.First().Table : s.Table).Edit(), 
-                (s, m) => @"Create New\Partition", true, Context.Table | Context.Partition));
+                (s, m) => @"Create New\Partition (Legacy)", true, Context.Table | Context.Partition));
+            Add(new Action(
+                (s, m) => (s.Context == Context.Partition || (s.Context == Context.Table && s.Count == 1)) && !Handler.UsePowerBIGovernance && Handler.Model.DataSources.Any(ds => ds is StructuredDataSource),
+                (s, m) => MPartition.CreateNew(s.Context == Context.Partition ? s.Partitions.First().Table : s.Table).Edit(),
+                (s, m) => @"Create New\Partition (Power Query)", true, Context.Table | Context.Partition));
 
-            Add(new Action((s, m) => !Handler.UsePowerBIGovernance, (s, m) => m.AddDataSource().Edit(), (s, m) => @"Create New\Data Source", false, Context.DataSources | Context.Model));
-            Add(new Action((s, m) => Handler.CompatibilityLevel >= 1400 && !Handler.UsePowerBIGovernance, (s, m) => m.AddStructuredDataSource().Edit(), (s, m) => @"Create New\Structured Data Source", false, Context.DataSources | Context.Model));
+            Add(new Action((s, m) => !Handler.UsePowerBIGovernance, (s, m) => m.AddDataSource().Edit(), (s, m) => @"Create New\Data Source (Legacy)", false, Context.DataSources | Context.Model));
+            Add(new Action((s, m) => Handler.CompatibilityLevel >= 1400 && !Handler.UsePowerBIGovernance, (s, m) => m.AddStructuredDataSource().Edit(), (s, m) => @"Create New\Data Source (Power Query)", false, Context.DataSources | Context.Model));
             Add(new Action((s, m) => !Handler.UsePowerBIGovernance, (s, m) => m.AddPerspective().Edit(), (s, m) => @"Create New\Perspective", false, Context.Model | Context.Perspectives | Context.Perspective));
             Add(new Action((s, m) => !Handler.UsePowerBIGovernance, (s, m) => m.AddExpression().Edit(), (s, m) => @"Create New\Shared Expression", false, Context.Model | Context.Expressions | Context.Expression));
             Add(new Action((s, m) => m.Tables.Count(t => t.Columns.Any()) >= 2, (s, m) => m.AddRelationship().Edit(), (s, m) => @"Create New\Relationship", false, Context.Relationship | Context.Relationships | Context.Model));

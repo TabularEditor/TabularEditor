@@ -235,7 +235,11 @@ namespace TabularEditor.TOMWrapper
             if (Partitions.Count == 0 && !(this is CalculatedTable))
             {
                 // Make sure the table contains at least one partition (Calculated Tables handles this on their own):
-                Partition.CreateNew(this, Name);
+
+                if (Model.DataSources.Any(ds => ds.Type == DataSourceType.Structured))
+                    MPartition.CreateNew(this, Name);
+                else
+                    Partition.CreateNew(this, Name);
             }
 
             RowLevelSecurity = new TableRLSIndexer(this);

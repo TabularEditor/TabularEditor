@@ -107,6 +107,11 @@ class Rules {
 	public static bool ShouldWrapProperty(PropertyInfo p, Type t)
     {
 		if(p.Name == "KPI") return false;
+		if(p.Name == "RefreshPolicy") return false;
+		if(p.Name == "RangeGranularity") return false;
+		if(p.Name == "RetainDataTillForceCalculate") return false;
+		if(p.Name == "RefreshBookmark") return false;
+		if(p.Name == "DefaultPowerBIDataSourceVersion") return false;
 		return p.Name != "Name" && (
 				Aliases.ContainsKey(p.PropertyType) ||
 				(p.Name != "Table" && p.PropertyType.IsClass && ObjectTypes.ContainsKey(p.PropertyType)) ||
@@ -124,12 +129,7 @@ class Rules {
             }
         }
 
-		return p.Name != "Name" && (
-				Aliases.ContainsKey(p.PropertyType) ||
-				(p.Name != "Table" && p.PropertyType.IsClass && ObjectTypes.ContainsKey(p.PropertyType)) ||
-				(p.Name != "ObjectType" && p.PropertyType.IsEnum)
-			) &&
-			p.SetMethod != null && p.SetMethod.IsPublic;
+		return ShouldWrapProperty(p, t) && p.SetMethod != null && p.SetMethod.IsPublic;
     }
 
 	public static string PropertyType(PropertyInfo p)
