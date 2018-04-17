@@ -160,8 +160,9 @@ namespace TabularEditor.UI
             ExpressionEditor_CancelEdit();
             ExpressionEditor_Current = null;
 
-            Forward = new Stack<ITabularNamedObject>();
-            Back = new Stack<ITabularNamedObject>();
+            Forward = new Stack<Navigation>();
+            Back = new Stack<Navigation>();
+            CurrentFilter = null;
 
             ShowSelectionStatus = false;
             Tree = new TabularUITree(Handler.Model) { Options = CurrentOptions, TreeView = UI.TreeView };

@@ -44,85 +44,98 @@ namespace TabularEditor.UI
             }
         }
 
-        private Stack<ITabularNamedObject> Back;
-        private Stack<ITabularNamedObject> Forward;
+        struct Navigation
+        {
+            public ITabularNamedObject Object;
+            public string CurrentFilter;
+            public Navigation(TreeNodeAdv node, string currentFilter)
+            {
+                Object = node?.Tag as ITabularNamedObject;
+                CurrentFilter = currentFilter;
+            }
+        }
+
+        private Stack<Navigation> Back;
+        private Stack<Navigation> Forward;
 
         public bool CanNavigateForward => Forward != null && Forward.Count > 0;
-        public bool CanNavigateBack => Back != null && Back.Count > 0;
+        public bool CanNavigateBack => Back != null && Back.Count > 1;
         private bool IsNavigating = false;
 
         public void Tree_NavigateForward()
         {
             bool firstUnknown = true;
+            IsNavigating = true;
 
             while (Forward.Count > 0)
             {
-                var obj = Forward.Pop();
-                if (obj.IsRemoved) continue;
+                var nav = Forward.Pop();
+                ApplyFilter(nav.CurrentFilter);
+                if (nav.Object == null || nav.Object.IsRemoved) continue;
 
-                var node = UI.TreeView.FindNodeByTag(obj);
+                var node = UI.TreeView.FindNodeByTag(nav.Object);
                 if (node == null && firstUnknown)
                 {
                     firstUnknown = false;
-                    if (!Tree.VisibleInTree(obj))
+                    if (!Tree.VisibleInTree(nav.Object))
                     {
                         Tree.BeginUpdate();
                         Tree.Options = LogicalTreeOptions.Default | LogicalTreeOptions.ShowHidden;
-                        Tree.Filter = "";
                         UI.FormMain.UpdateTreeUIButtons();
                         Tree.EndUpdate();
                     }
-                    node = UI.TreeView.FindNodeByTag(obj);
+                    node = UI.TreeView.FindNodeByTag(nav.Object);
                 }
                 if(node != null)
                 {
-                    if (UI.TreeView.SelectedNode != null) Back.Push(UI.TreeView.SelectedNode.Tag as ITabularNamedObject);
-                    IsNavigating = true;
                     UI.TreeView.EnsureVisible(node);
                     UI.TreeView.SelectedNode = node;
                     UI.FormMain.Activate();
                     UI.TreeView.Focus();
-                    IsNavigating = false;
+                    Back.Push(nav);
                     break;
                 }
             }
+            IsNavigating = false;
         }
 
         public void Tree_NavigateBack()
         {
             bool firstUnknown = true;
+            IsNavigating = true;
 
-            while (Back.Count > 0)
+            while (Back.Count > 1)
             {
-                var obj = Back.Pop();
-                if (obj.IsRemoved) continue;
+                // Transfer current to forward stack:
+                if (firstUnknown) Forward.Push(Back.Pop()); else Back.Pop();
 
-                var node = UI.TreeView.FindNodeByTag(obj);
+                var nav = Back.Peek();
+                ApplyFilter(nav.CurrentFilter);
+                if (nav.Object == null || nav.Object.IsRemoved) continue;
+
+                var node = UI.TreeView.FindNodeByTag(nav.Object);
                 if (node == null && firstUnknown)
                 {
                     firstUnknown = false;
-                    if (!Tree.VisibleInTree(obj))
+                    if (!Tree.VisibleInTree(nav.Object))
                     {
                         Tree.BeginUpdate();
                         Tree.Options = LogicalTreeOptions.Default | LogicalTreeOptions.ShowHidden;
-                        Tree.Filter = "";
                         UI.FormMain.UpdateTreeUIButtons();
                         Tree.EndUpdate();
                     }
-                    node = UI.TreeView.FindNodeByTag(obj);
+                    node = UI.TreeView.FindNodeByTag(nav.Object);
                 }
                 if (node != null)
                 {
-                    if(UI.TreeView.SelectedNode != null) Forward.Push(UI.TreeView.SelectedNode.Tag as ITabularNamedObject);
-                    IsNavigating = true;
                     UI.TreeView.EnsureVisible(node);
                     UI.TreeView.SelectedNode = node;
                     UI.FormMain.Activate();
                     UI.TreeView.Focus();
-                    IsNavigating = false;
                     break;
                 }
             }
+            IsNavigating = false;
         }
 
         private void Tree_Init()
@@ -298,8 +311,6 @@ namespace TabularEditor.UI
             UI.TreeView.FullRowSelect = showInfoColumns || LinqMode;
         }
 
-        private ITabularNamedObject PreviousSelection;
-
         #region TreeView events
         private void TreeView_SelectionChanged(object sender, EventArgs e)
         {
@@ -313,13 +324,12 @@ namespace TabularEditor.UI
                 UI.StatusLabel.Text = Selection.Summary(true) + " selected.";
                 ShowSelectionStatus = true;
 
-                if(UI.TreeView.SelectedNode != null && !IsNavigating && PreviousSelection != null && PreviousSelection != UI.TreeView.SelectedNode.Tag as ITabularNamedObject)
+                if(UI.TreeView.SelectedNode != null && !IsNavigating)
                 {
                     Forward.Clear();
-                    if(Back.Count == 0 || Back.Peek() != PreviousSelection) Back.Push(PreviousSelection);
+                    Back.Push(new Navigation(UI.TreeView.SelectedNode, CurrentFilter));
                 }
             }
-            PreviousSelection = UI.TreeView.SelectedNode?.Tag as ITabularNamedObject;
 
             DynamicMenu_Update();
         }
@@ -414,6 +424,37 @@ namespace TabularEditor.UI
 
         private LogicalTreeOptions CurrentOptions = LogicalTreeOptions.Default;
 
+        public void ApplyFilter(string filter)
+        {
+            UI.FormMain.txtFilter.Text = filter;
+            UI.FormMain.actToggleFilter.Checked = !string.IsNullOrEmpty(filter);
+            InternalApplyFilter(filter);
+        }
+
+        private string CurrentFilter;
+        private void InternalApplyFilter(string filter)
+        {
+            // Regular name filtering:
+            if (string.IsNullOrEmpty(filter) || !filter.StartsWith(":"))
+            {
+                Tree.Filter = filter;
+            }
+
+            // LINQ filter (filter string starts with ":"):
+            if (!string.IsNullOrEmpty(filter) && filter.StartsWith(":"))
+            {
+                EnableLinqMode(filter.Substring(1));
+            }
+            // LINQ filter removed (filter string empty or no longer starts with ":"):
+            else if ((string.IsNullOrEmpty(filter) || !filter.StartsWith(":")) && LinqMode)
+            {
+                DisableLinqMode();
+            }
+
+            CurrentFilter = filter;
+            if (!IsNavigating) Back.Push(new Navigation { CurrentFilter = filter });
+        }
+
         public void SetDisplayOptions(bool showHidden, bool showDisplayFolders, bool showColumns, 
             bool showMeasures, bool showHierarchies, bool showAllObjectTypes, bool alphabeticalSort, string filter = null)
         {
@@ -436,22 +477,7 @@ namespace TabularEditor.UI
 
             Tree.Options = CurrentOptions;
 
-            // Regular name filtering:
-            if (string.IsNullOrEmpty(filter) || !filter.StartsWith(":"))
-            {
-                Tree.Filter = filter;
-            }
-
-            // LINQ filter (filter string starts with ":"):
-            if (!string.IsNullOrEmpty(filter) && filter.StartsWith(":"))
-            {
-                EnableLinqMode(filter.Substring(1));
-            }
-            // LINQ filter removed (filter string empty or no longer starts with ":"):
-            else if ((string.IsNullOrEmpty(filter) || !filter.StartsWith(":")) && LinqMode)
-            {
-                DisableLinqMode();
-            }
+            InternalApplyFilter(filter);
         }
 
         private void EnableLinqMode(string filter)
@@ -480,7 +506,8 @@ namespace TabularEditor.UI
             SetInfoColumns(Preferences.Current.View_MetadataInformation);
 
             Tree.LinqFilter = null;
-            UI.TreeView.Root.Children[0].Expand(); // TODO: Expand same as before
+            if(UI.TreeView.Root.Children.Count > 0)
+                UI.TreeView.Root.Children[0].Expand(); // TODO: Expand same as before
         }
 
         private bool LinqMode = false;

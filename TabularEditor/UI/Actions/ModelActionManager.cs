@@ -47,6 +47,7 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => true, (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Measure", true, Context.Table | Context.TableObject));
             Add(new Action((s, m) => true, (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Calculated Column", true, Context.Table | Context.TableObject));
             Add(new Action((s, m) => !Handler.UsePowerBIGovernance, (s, m) => s.Table.AddDataColumn(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Data Column", true, Context.Table | Context.TableObject));
+
             Add(new Action((s, m) => true || s.Direct.OfType<Column>().Any(), 
                 (s, m) => s.Table.AddHierarchy(displayFolder: s.CurrentFolder, levels: s.Direct.OfType<Column>().ToArray()).Expand().Edit(), 
                 (s, m) => @"Create New\Hierarchy", true, Context.Table | Context.TableObject));
@@ -92,8 +93,6 @@ namespace TabularEditor.UI.Actions
 
             Add(new Separator());
 
-            // Table actions:
-            Add(new Action((s, m) => s.Tables.Count == 1 && s.Table.Columns.Any(c => c.DataType == DataType.DateTime), (s, m) => UIController.Current.MarkAsDateTableDialog.Go(s.Table), (s,m)=>"Mark as Date Table...", true, Context.Table));
             // Relationship actions:
             Add(new Action((s, m) => s.SingleColumnRelationships.Any(o => !o.IsActive), (s, m) => s.SingleColumnRelationships.IsActive = true, (s, m) => "Activate", true, Context.Relationship));
             Add(new Action((s, m) => s.SingleColumnRelationships.Any(o => o.IsActive), (s, m) => s.SingleColumnRelationships.IsActive = false, (s, m) => "Deactivate", true, Context.Relationship));
@@ -220,11 +219,19 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => true, (s, m) => UIController.Current.Translations_Import(), (s, m) => "Import translations...", true, Context.Translations | Context.Tool));
             Add(new Action((s, m) => true, (s, m) => UIController.Current.Translations_ExportSelected(), (s, m) => string.Format("Export {0} translation{1}...", s.Count, s.Count == 1 ? "" : "s"), true, Context.Translation));
 
+            // Table actions:
+            Add(new Action((s, m) => s.DirectCount == 1 && s.Table.Columns.Any(c => c.DataType == DataType.DateTime), (s, m) => UIController.Current.MarkAsDateTableDialog.Go(s.Table), (s, m) => "Mark as Date Table...", true, Context.Table));
+
             // Show dependencies...
             Add(new Action((s, m) => s.DirectCount == 1 && s.Direct.First() is IDaxObject, (s, m) =>
             {
                 UIController.Current.ShowDependencies(s.Direct.First() as IDaxObject);
             }, (s, m) => @"Show dependencies...", true, Context.Table | Context.TableObject));
+
+            // Filter related...
+            Add(new Action((s, m) => s.DirectCount == 1, (s, m) => UIController.Current.ApplyFilter(":RelatedTables.Any(Name = \"" + s.Table.Name + "\")"), 
+                (s, m) => @"Filter related", true, Context.Table));
+
 
             // Script actions:
             Add(new Action((s, m) => s.DirectCount == 1, (s, m) => Clipboard.SetText(Scripter.ScriptCreateOrReplace(s.OfType<TabularNamedObject>().FirstOrDefault())), (s, m) => @"Script\Create or Replace\To clipboard", true, Context.Scriptable));
