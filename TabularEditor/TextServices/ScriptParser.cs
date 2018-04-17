@@ -48,10 +48,12 @@ namespace TabularEditor.TextServices
         {
             terminator = -1;
             if (fromIndex <= 0) return -1;
-            return FindValid(tokens, fromIndex-1, true, true, out terminator, new[] { CSharpLexer.SEMICOLON, CSharpLexer.OP_LAMBDA, CSharpLexer.ASSIGNMENT });
+            return FindValid(tokens, fromIndex-1, true, true, out terminator, DefaultTerminators);
         }
 
-        private int FindNext(IList<IToken> tokens, int fromIndex, int findTokenType)
+        private readonly int[] DefaultTerminators = new[] { CSharpLexer.SEMICOLON, CSharpLexer.OP_LAMBDA, CSharpLexer.ASSIGNMENT };
+
+    private int FindNext(IList<IToken> tokens, int fromIndex, int findTokenType)
         {
             int terminator = 0;
             return Find(tokens, fromIndex, findTokenType, false, true, out terminator);
@@ -180,13 +182,10 @@ namespace TabularEditor.TextServices
                     if (localTypes.TryGetValue(p, out type)) continue;
                     if (!Types.TryGetValue(p, out type))
                     {
-                        return null;
-                        
-                        // Uncommented below because it could sometimes cause a StackOverflowException.
-                        //// Type not found. Perhaps we're looking at an assignment?
-                        //type = GetAssignmentType(list, path.TokenIndex);
-                        //// TODO: Recurse upwards
-                        //if(type == null) return null;
+                        // Type not found. Perhaps we're looking at an assignment?
+                        type = GetAssignmentType(list, path.TokenIndex);
+                        // TODO: Recurse upwards
+                        if (type == null) return null;
                     }
                     continue;
                 } else {
@@ -247,7 +246,13 @@ namespace TabularEditor.TextServices
 
         private Type GetAssignmentType(IList<IToken> list, int identifierToken)
         {
-            for(int i = identifierToken - 1; i >= 0; i--)
+            // Only search tokens that occurred before the last terminator:
+            int terminatorType;
+            var lastTerminator = Find(list, identifierToken, CSharpLexer.SEMICOLON, true, false, out terminatorType, new[] { CSharpLexer.OP_LAMBDA, CSharpLexer.SEMICOLON });
+
+            if (lastTerminator <= 0) return null;
+
+            for(int i = lastTerminator - 1; i >= 0; i--)
             {
                 if(list[i].Type == CSharpLexer.IDENTIFIER && list[i].Text == list[identifierToken].Text && list[i+1].Type == CSharpLexer.ASSIGNMENT)
                 {
