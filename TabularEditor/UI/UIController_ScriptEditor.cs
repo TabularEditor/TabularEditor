@@ -196,7 +196,7 @@ namespace TabularEditor.UI
             parser.Types.Add("Selected", typeof(UITreeSelection));
             parser.Types.Add("Model", typeof(Model));
             parser.Types.Add("Types", typeof(Types));
-            
+            foreach (var t in typeof(Model).Assembly.ExportedTypes.Where(t => t.IsEnum)) parser.Types.Add(t.Name, t);
         }
 
         public void Update(string script, int pos)
