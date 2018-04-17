@@ -26,6 +26,8 @@ namespace TabularEditor.TOMWrapper
             ParentObject = parent;
             Handler = parent.Handler;
         }
+        protected virtual bool EnableMultiLine => false;
+        bool IExpandableIndexer.EnableMultiLine => EnableMultiLine;
 
         protected virtual T1 EmptyValue { get { return default(T1); } }
         protected abstract void SetValue(T key, T1 value);

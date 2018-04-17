@@ -30,6 +30,8 @@ namespace TabularEditor.TOMWrapper
             Parent = parent;
         }
 
+        public bool EnableMultiLine => true;
+
         public object this[string index]
         {
             get
