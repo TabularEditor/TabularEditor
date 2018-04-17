@@ -107,6 +107,10 @@ namespace TabularEditor.TOMWrapper
             if (obj is DataColumn) return "Column" + (plural ? "s" : "");
             if (obj is CalculatedColumn) return "Calculated Column" + (plural ? "s" : "");
             if (obj is CalculatedTableColumn) return "Calculated Table Column" + (plural ? "s" : "");
+            if (obj is StructuredDataSource) return "Data Source (Power Query)";
+            if (obj is ProviderDataSource) return "Data Source (Legacy)";
+            if (obj is MPartition) return "Partition (Power Query)";
+            if (obj is Partition) return "Partition (Legacy)";
             else return obj.ObjectType.GetTypeName(plural);
         }
 

@@ -4,7 +4,7 @@
 <#@ assembly name="System.Data.Linq" #>
 <#@ assembly name="System.Xml" #>
 <#@ assembly name="System.Xml.Linq" #>
-<#@ assembly name="Microsoft.AnalysisServices.Tabular" #>
+<#@ assembly name="Microsoft.AnalysisServices.Tabular" version="15.0.0.0" #>
 <#@ assembly name="EnvDTE" #>
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System.Linq" #>
@@ -510,8 +510,10 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 <# if (t.Name == "Table") { #>
                 if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.Calculated) CalculatedTable.CreateFromMetadata(Model, obj);
                 else Table.CreateFromMetadata(Model, obj);
-<# } 
-else
+<# } else if (t.Name == "Partition") { #>
+				if(obj.SourceType == TOM.PartitionSourceType.M) MPartition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
+				if(obj.SourceType == TOM.PartitionSourceType.Query) Partition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
+<# } else
 {
    foreach(var derived in Rules.GetDerivedTypes(t)) { #>
 				if(obj is TOM.<#= derived.Name #>) <#= derived.Name #>.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj as TOM.<#= derived.Name #>);
