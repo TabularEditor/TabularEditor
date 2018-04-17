@@ -23,6 +23,8 @@ namespace TabularEditor.TOMWrapper
                 );
         }
 
+        bool IExpandableIndexer.EnableMultiLine => false;
+
         public Dictionary<string, string> Copy()
         {
             return Keys.ToDictionary(k => k, k => this[k]);

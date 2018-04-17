@@ -97,6 +97,8 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        bool IExpandableIndexer.EnableMultiLine => false;
+
         public virtual T this[int index]
         {
             get

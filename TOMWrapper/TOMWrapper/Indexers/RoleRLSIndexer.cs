@@ -24,6 +24,8 @@ namespace TabularEditor.TOMWrapper
             Role = role;
         }
 
+        protected override bool EnableMultiLine => true;
+
         protected override TabularObjectCollection<Table> GetCollection()
         {
             return Model.Tables;

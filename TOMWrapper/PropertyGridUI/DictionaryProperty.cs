@@ -25,6 +25,7 @@ namespace TabularEditor.PropertyGridUI
         /// <param name="key"></param>
         /// <returns></returns>
         string GetDisplayName(string key);
+        bool EnableMultiLine { get; }
     }
 
     /// <summary>
@@ -104,8 +105,7 @@ namespace TabularEditor.PropertyGridUI
         {
             attributeList.Add(new NotifyParentPropertyAttribute(true));
 
-            // For annotations, make sure we enable multiline string editing:
-            if(_dictionary is AnnotationCollection)
+            if(_dictionary.EnableMultiLine)
                 attributeList.Add(new EditorAttribute(typeof(MultilineStringEditor), typeof(UITypeEditor)));
 
             base.FillAttributes(attributeList);
