@@ -512,7 +512,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
                 else Table.CreateFromMetadata(Model, obj);
 <# } else if (t.Name == "Partition") { #>
 				if(obj.SourceType == TOM.PartitionSourceType.M) MPartition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
-				if(obj.SourceType == TOM.PartitionSourceType.Query) Partition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
+				else Partition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
 <# } else
 {
    foreach(var derived in Rules.GetDerivedTypes(t)) { #>
