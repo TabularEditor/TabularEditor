@@ -10,6 +10,7 @@ using TabularEditor.PropertyGridExtension;
 using TabularEditor.TOMWrapper;
 using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.UI.Actions;
+using TabularEditor.UI.Dialogs;
 using TabularEditor.UIServices;
 
 namespace TabularEditor.UI
@@ -22,6 +23,8 @@ namespace TabularEditor.UI
 
         private UIElements UI;
         public UIElements Elements { get { return UI; } }
+
+        public readonly MarkAsDateTableForm MarkAsDateTableDialog = new MarkAsDateTableForm();
 
         public event EventHandler ModelLoaded;
 

@@ -92,6 +92,8 @@ namespace TabularEditor.UI.Actions
 
             Add(new Separator());
 
+            // Table actions:
+            Add(new Action((s, m) => s.Tables.Count == 1 && s.Table.Columns.Any(c => c.DataType == DataType.DateTime), (s, m) => UIController.Current.MarkAsDateTableDialog.Go(s.Table), (s,m)=>"Mark as Date Table...", true, Context.Table));
             // Relationship actions:
             Add(new Action((s, m) => s.SingleColumnRelationships.Any(o => !o.IsActive), (s, m) => s.SingleColumnRelationships.IsActive = true, (s, m) => "Activate", true, Context.Relationship));
             Add(new Action((s, m) => s.SingleColumnRelationships.Any(o => o.IsActive), (s, m) => s.SingleColumnRelationships.IsActive = false, (s, m) => "Deactivate", true, Context.Relationship));

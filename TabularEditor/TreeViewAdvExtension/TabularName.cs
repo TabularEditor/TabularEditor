@@ -37,19 +37,26 @@ namespace TabularEditor.UI.Tree
         {
             bool hasTrans = ((e.Node.Tag as ITranslatableObject)?.TranslatedNames?.TranslatedCount > 0);
 
+            if ((e.Node.Tag as Column)?.IsKey == true)
+                e.Font = BoldFont;
+
             if (e.Node.Tag is IHideableObject)
             {
-                e.TextColor = (e.Node.Tag as IHideableObject).IsHidden ? 
-                    (hasTrans ? Color.FromArgb(127,127,255) : Color.Gray) : 
+                e.TextColor = (e.Node.Tag as IHideableObject).IsHidden ?
+                    (hasTrans ? Color.FromArgb(127, 127, 255) : Color.Gray) :
                     (hasTrans ? Color.Blue : e.Node.Tree.ForeColor);
-            } else if (e.Node.Tag is Relationship)
+            }
+            else if (e.Node.Tag is Relationship)
             {
                 e.TextColor = !(e.Node.Tag as Relationship).IsActive ? Color.Gray : e.Node.Tree.ForeColor;
-            }  else
+            }
+            else
             {
                 e.TextColor = hasTrans ? Color.Blue : e.Node.Tree.ForeColor;
             }
         }
+
+        private readonly Font BoldFont = new Font(SystemFonts.DefaultFont, FontStyle.Bold);
 
         public override string GetToolTip(TreeNodeAdv node)
         {
