@@ -74,6 +74,7 @@
     <Compile Include="PropertyGridUI\Converters\HierarchyColumnConverter.cs" />
     <Compile Include="PropertyGridUI\DataTypeEnumConverter.cs" />
     <Compile Include="TOMWrapper\CalculatedTableColumn.cs" />
+    <Compile Include="TOMWrapper\StructuredDataSource.cs" />
     <Compile Include="Utils\DaxDependencyHelper.cs" />
     <Compile Include="TOMWrapper\Indexers\GenericIndexer.cs" />
     <Compile Include="TOMWrapper\Relationship.cs" />
