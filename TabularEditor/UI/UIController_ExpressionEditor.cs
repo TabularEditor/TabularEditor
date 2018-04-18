@@ -101,6 +101,7 @@ namespace TabularEditor.UI
         {
             if (ExpressionEditor_Current is IDaxDependantObject)
             {
+                SetText(UI.ExpressionEditor.Text, LastDaxProperty);
                 ExpressionEditor_SetText();
             }
         }
@@ -211,6 +212,18 @@ namespace TabularEditor.UI
             }
         }
 
+        private void SetText(string value, DAXProperty prop)
+        {
+            if (ExpressionEditor_Current is IDaxDependantObject)
+            {
+                (ExpressionEditor_Current as IDaxDependantObject).SetDAX(prop, value);
+            }
+            else if (ExpressionEditor_Current != null)
+            {
+                ExpressionEditor_Current.Expression = value;
+            }
+        }
+
         private DAXProperty CurrentDaxProperty
         {
             get
@@ -222,6 +235,7 @@ namespace TabularEditor.UI
                 UI.ExpressionSelector.SelectedItem = DaxPropertyComboBoxItem.Items[value];
             }
         }
+        private DAXProperty LastDaxProperty;
 
         private void ExpressionEditor_SetText()
         {
@@ -243,12 +257,15 @@ namespace TabularEditor.UI
             {
                 UI.CurrentMeasureLabel.Text = (_expressionEditor_Current as IDaxObject).DaxObjectName + " :=";
                 UI.CurrentMeasureLabel.Visible = true;
-            } else
+            }
+            else
             {
                 UI.CurrentMeasureLabel.Visible = false;
             }
 
             UI.ExpressionEditor.TextChanged += ExpressionEditor_TextChanged;
+
+            LastDaxProperty = CurrentDaxProperty;
         }
 
         private void ExpressionEditor_Preview()
