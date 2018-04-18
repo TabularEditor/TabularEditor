@@ -32,6 +32,7 @@ namespace TabularEditor.TOMWrapper
 
     public enum ObjectType
     {
+        KPIMeasure = -3,
         Group = -2,
         Folder = -1,
 
