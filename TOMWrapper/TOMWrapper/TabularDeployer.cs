@@ -15,7 +15,7 @@ namespace TabularEditor.TOMWrapper.Utils
 {
     public class TabularDeployer
     {
-        public static string GetTMSL(TOM.Database db, TOM.Server server, string targetDatabaseID, DeploymentOptions options)
+        public static string GetTMSL(TOM.Database db, TOM.Server server, string targetDatabaseID, DeploymentOptions options, bool includeRestricted = false)
         {
             if (db == null) throw new ArgumentNullException("db");
             if (string.IsNullOrWhiteSpace(targetDatabaseID)) throw new ArgumentNullException("targetDatabaseID");
@@ -23,15 +23,11 @@ namespace TabularEditor.TOMWrapper.Utils
 
             if (server.Databases.Contains(targetDatabaseID) && options.DeployMode == DeploymentMode.CreateDatabase) throw new ArgumentException("The specified database already exists.");
 
-            string result;
-
-            if (!server.Databases.Contains(targetDatabaseID)) result = DeployNewTMSL(db, targetDatabaseID, options);
-            else result = DeployExistingTMSL(db, server, targetDatabaseID, options);
+            if (!server.Databases.Contains(targetDatabaseID)) return DeployNewTMSL(db, targetDatabaseID, options, includeRestricted);
+            else return DeployExistingTMSL(db, server, targetDatabaseID, options, includeRestricted);
 
             // TODO: Check if invalid CalculatedTableColumn perspectives/translations can give us any issues here
             // Should likely be handled similar to what we do in TabularModelHandler.SaveDB()
-
-            return result;
         }
 
         public static DeploymentResult Deploy(TabularModelHandler handler, string targetConnectionString, string targetDatabaseName)
@@ -96,7 +92,7 @@ namespace TabularEditor.TOMWrapper.Utils
             var s = new TOM.Server();
             s.Connect(targetConnectionString);
 
-            var tmsl = GetTMSL(db, s, targetDatabaseID, options);
+            var tmsl = GetTMSL(db, s, targetDatabaseID, options, true);
             var result = s.Execute(tmsl);
 
             if(result.ContainsErrors)
@@ -126,38 +122,49 @@ namespace TabularEditor.TOMWrapper.Utils
             else return string.Format("{0} '{1}'", ((ObjectType)obj.ObjectType).GetTypeName(), obj.Name);
         }
 
-        private static string DeployNewTMSL(TOM.Database db, string newDbID, DeploymentOptions options)
+        /// <summary>
+        /// This method transforms a JObject representing a Create TMSL script, so that the database is deployed
+        /// using the proper ID and Name values. In addition, of the DeploymentOptions specify that roles should
+        /// not be deployed, they are stripped from the TMSL script.
+        /// </summary>
+        private static JObject TransformCreateTmsl(JObject tmslJObj, string newDbId, DeploymentOptions options)
         {
-            var rawScript = TOM.JsonScripter.ScriptCreate(db);
-            var jObj = JObject.Parse(rawScript);
-
-            jObj["create"]["database"]["id"] = newDbID;
-            jObj["create"]["database"]["name"] = newDbID;
+            tmslJObj["create"]["database"]["id"] = newDbId;
+            tmslJObj["create"]["database"]["name"] = newDbId;
 
             if (!options.DeployRoles)
             {
                 // Remove roles if present
-                var roles = jObj.SelectToken("create.database.model.roles") as JArray;
-                if(roles != null) roles.Clear();
+                var roles = tmslJObj.SelectToken("create.database.model.roles") as JArray;
+                if (roles != null) roles.Clear();
             }
 
-            return jObj.ToString();
+            return tmslJObj;
         }
 
-        private static string DeployExistingTMSL(TOM.Database db, TOM.Server server, string dbId, DeploymentOptions options)
+        private static string DeployNewTMSL(TOM.Database db, string newDbId, DeploymentOptions options, bool includeRestricted)
         {
-            var orgDb = server.Databases[dbId];
+            var rawTmsl = TOM.JsonScripter.ScriptCreate(db, includeRestricted);
 
-            var rawScript = TOM.JsonScripter.ScriptCreateOrReplace(db);
-            var jObj = JObject.Parse(rawScript);
+            var jTmsl = JObject.Parse(rawTmsl);
 
+            return TransformCreateTmsl(jTmsl, newDbId, options).ToString();
+        }
+
+        /// <summary>
+        /// This method transforms a JObject representing a CreateOrReplace TMSL script, so that the script points
+        /// to the correct database to be overwritten, and that the correct ID and Name properties are set. In
+        /// addition, the method will replace any Roles, RoleMembers, Data Sources and Partitions in the TMSL with
+        /// the corresponding TMSL from the specified orgDb, depending on the provided DeploymentOptions.
+        /// </summary>
+        private static JObject TransformCreateOrReplaceTmsl(JObject tmslJObj, TOM.Database orgDb, DeploymentOptions options)
+        {
             // Deployment target / existing database (note that TMSL uses the NAME of an existing database, not the ID, to identify the object)
-            jObj["createOrReplace"]["object"]["database"] = orgDb.Name;
+            tmslJObj["createOrReplace"]["object"]["database"] = orgDb.Name;
+            tmslJObj["createOrReplace"]["database"]["id"] = orgDb.ID;
+            tmslJObj["createOrReplace"]["database"]["name"] = orgDb.Name;
 
-            jObj["createOrReplace"]["database"]["id"] = orgDb.ID;
-            jObj["createOrReplace"]["database"]["name"] = orgDb.Name;
-
-            var model = jObj.SelectToken("createOrReplace.database.model");
+            var model = tmslJObj.SelectToken("createOrReplace.database.model");
 
             var roles = model["roles"] as JArray;
             if (!options.DeployRoles)
@@ -169,7 +176,7 @@ namespace TabularEditor.TOMWrapper.Utils
             }
             else if (roles != null && !options.DeployRoleMembers)
             {
-                foreach(var role in roles)
+                foreach (var role in roles)
                 {
                     var members = new JArray();
                     role["members"] = members;
@@ -194,11 +201,12 @@ namespace TabularEditor.TOMWrapper.Utils
 
             if (!options.DeployPartitions)
             {
-                var tables = jObj.SelectToken("createOrReplace.database.model.tables") as JArray;
+                var tables = tmslJObj.SelectToken("createOrReplace.database.model.tables") as JArray;
                 foreach (var table in tables)
                 {
                     var tableName = table["name"].Value<string>();
-                    if (orgDb.Model.Tables.Contains(tableName)) {
+                    if (orgDb.Model.Tables.Contains(tableName))
+                    {
                         var t = orgDb.Model.Tables[tableName];
 
                         var partitions = new JArray();
@@ -208,7 +216,18 @@ namespace TabularEditor.TOMWrapper.Utils
                 }
             }
 
-            return jObj.ToString();
+            return tmslJObj;
+        }
+
+        private static string DeployExistingTMSL(TOM.Database db, TOM.Server server, string dbId, DeploymentOptions options, bool includeRestricted)
+        {
+            var rawTmsl = TOM.JsonScripter.ScriptCreateOrReplace(db, includeRestricted);
+
+            var orgDb = server.Databases[dbId];
+
+            var jTmsl = JObject.Parse(rawTmsl);
+
+            return TransformCreateOrReplaceTmsl(jTmsl, orgDb, options).ToString();
         }
     }
 
