@@ -196,7 +196,6 @@ namespace TabularEditor.TOMWrapper
 
         protected MPartition(TOM.Partition metadataObject) : base(metadataObject)
         {
-            metadataObject.Source = new TOM.MPartitionSource();
         }
 
         public new static MPartition CreateNew(Table parent, string name = null)
@@ -208,6 +207,7 @@ namespace TabularEditor.TOMWrapper
 
             var metadataObject = new TOM.Partition();
             metadataObject.Name = parent.Partitions.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(MPartition).GetTypeName() : name);
+            metadataObject.Source = new TOM.MPartitionSource();
 
             var obj = new MPartition(metadataObject);
 
