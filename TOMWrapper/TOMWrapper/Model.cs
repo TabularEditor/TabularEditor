@@ -164,7 +164,8 @@ namespace TabularEditor.TOMWrapper
 
         protected override void Init()
         {
-            
+            if (Handler.CompatibilityLevel >= 1400 && MetadataObject.DataAccessOptions == null)
+                MetadataObject.DataAccessOptions = new TOM.DataAccessOptions();
         }
 
         protected override bool IsBrowsable(string propertyName)
@@ -173,6 +174,10 @@ namespace TabularEditor.TOMWrapper
             {
                 // Compatibility Level 1400 (or newer) features:
                 case Properties.EXPRESSIONS:
+                case Properties.FASTCOMBINE:
+                case Properties.RETURNERRORVALUESASNULL:
+                case Properties.LEGACYREDIRECTS:
+
                     return Handler.CompatibilityLevel >= 1400;
                 default:
                     return base.IsBrowsable(propertyName);
@@ -185,5 +190,33 @@ namespace TabularEditor.TOMWrapper
         [Category("Basic")]
         [IntelliSense("Gets the database object of the model.")]
         public Database Database { get; internal set; }
+
+        [Category("Data Access Options"),DisplayName("Enable Fast Combine")]
+        public bool FastCombine {
+            get { return MetadataObject.DataAccessOptions.FastCombine; } 
+            set { SetValue(FastCombine, value, v => MetadataObject.DataAccessOptions.FastCombine = (bool)v, Properties.FASTCOMBINE); }
+        }
+        private bool ShouldSerializeFastCombine() { return false; }
+        [Category("Data Access Options"),DisplayName("Enable Legacy Redirects")]
+        public bool LegacyRedirects {
+            get { return MetadataObject.DataAccessOptions.LegacyRedirects; } 
+            set { SetValue(LegacyRedirects, value, v => MetadataObject.DataAccessOptions.LegacyRedirects = (bool)v, Properties.LEGACYREDIRECTS); }
+        }
+        private bool ShouldSerializeLegacyRedirects() { return false; }
+        [Category("Data Access Options"), DisplayName("Return Error Values As Nulll")]
+        public bool ReturnErrorValuesAsNull
+        {
+            get { return MetadataObject.DataAccessOptions.ReturnErrorValuesAsNull; }
+            set { SetValue(ReturnErrorValuesAsNull, value, v => MetadataObject.DataAccessOptions.ReturnErrorValuesAsNull = (bool)v, Properties.RETURNERRORVALUESASNULL); }
+        }
+        private bool ShouldSerializeReturnErrorValuesAsNull() { return false; }
     }
+
+    internal static partial class Properties
+    {
+        public const string FASTCOMBINE = "FastCombine";
+        public const string LEGACYREDIRECTS = "LegacyRedirects";
+        public const string RETURNERRORVALUESASNULL = "ReturnErrorValuesAsNull";
+    }
+
 }
