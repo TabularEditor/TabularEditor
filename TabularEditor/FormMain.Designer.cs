@@ -294,7 +294,7 @@
             this.actToggleDisplayFolders.CheckState = System.Windows.Forms.CheckState.Checked;
             this.actToggleDisplayFolders.Enabled = false;
             this.actToggleDisplayFolders.Image = global::TabularEditor.Resources.FolderOpen;
-            this.actToggleDisplayFolders.Text = "Display Folders";
+            this.actToggleDisplayFolders.Text = "&Display Folders";
             this.actToggleDisplayFolders.ToolTipText = "Show/hide display folders";
             this.actToggleDisplayFolders.Execute += new System.EventHandler(this.actViewOptions_Execute);
             // 
@@ -303,7 +303,7 @@
             this.actToggleHidden.CheckOnClick = true;
             this.actToggleHidden.Enabled = false;
             this.actToggleHidden.Image = global::TabularEditor.Resources.Hidden;
-            this.actToggleHidden.Text = "Hidden Objects";
+            this.actToggleHidden.Text = "&Hidden Objects";
             this.actToggleHidden.ToolTipText = "Show/hide hidden objects";
             this.actToggleHidden.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.DisableIfLinqMode);
             this.actToggleHidden.Execute += new System.EventHandler(this.actViewOptions_Execute);
@@ -315,7 +315,7 @@
             this.actToggleMetadataOrder.CheckState = System.Windows.Forms.CheckState.Checked;
             this.actToggleMetadataOrder.Enabled = false;
             this.actToggleMetadataOrder.Image = global::TabularEditor.Resources.SortAscending_16x;
-            this.actToggleMetadataOrder.Text = "Sort alphabetically";
+            this.actToggleMetadataOrder.Text = "Sort &alphabetically";
             this.actToggleMetadataOrder.ToolTipText = "Toggle alphabetical/metadata ordering of items";
             this.actToggleMetadataOrder.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.DisableIfLinqMode);
             this.actToggleMetadataOrder.Execute += new System.EventHandler(this.actViewOptions_Execute);
@@ -327,7 +327,7 @@
             this.actToggleMeasures.CheckState = System.Windows.Forms.CheckState.Checked;
             this.actToggleMeasures.Enabled = false;
             this.actToggleMeasures.Image = global::TabularEditor.Resources.Sigma;
-            this.actToggleMeasures.Text = "Measures";
+            this.actToggleMeasures.Text = "&Measures";
             this.actToggleMeasures.ToolTipText = "Show/hide measures";
             this.actToggleMeasures.Execute += new System.EventHandler(this.actViewOptions_Execute);
             // 
@@ -338,7 +338,7 @@
             this.actToggleColumns.CheckState = System.Windows.Forms.CheckState.Checked;
             this.actToggleColumns.Enabled = false;
             this.actToggleColumns.Image = global::TabularEditor.Resources.Column;
-            this.actToggleColumns.Text = "Columns";
+            this.actToggleColumns.Text = "&Columns";
             this.actToggleColumns.ToolTipText = "Show/hide columns";
             this.actToggleColumns.Execute += new System.EventHandler(this.actViewOptions_Execute);
             // 
@@ -349,7 +349,7 @@
             this.actToggleHierarchies.CheckState = System.Windows.Forms.CheckState.Checked;
             this.actToggleHierarchies.Enabled = false;
             this.actToggleHierarchies.Image = global::TabularEditor.Resources.Hierarchy;
-            this.actToggleHierarchies.Text = "Hierarchies";
+            this.actToggleHierarchies.Text = "H&ierarchies";
             this.actToggleHierarchies.ToolTipText = "Show/hide hierarchies";
             this.actToggleHierarchies.Execute += new System.EventHandler(this.actViewOptions_Execute);
             // 
@@ -357,7 +357,7 @@
             // 
             this.actToggleInfoColumns.CheckOnClick = true;
             this.actToggleInfoColumns.Image = global::TabularEditor.Resources.Columns;
-            this.actToggleInfoColumns.Text = "Metadata Information";
+            this.actToggleInfoColumns.Text = "Meta&data Information";
             this.actToggleInfoColumns.ToolTipText = "Show/hide metadata information columns";
             this.actToggleInfoColumns.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.DisableIfLinqMode);
             this.actToggleInfoColumns.Execute += new System.EventHandler(this.actToggleInfoColumns_Execute);
@@ -378,7 +378,7 @@
             this.actToggleAllObjectTypes.CheckState = System.Windows.Forms.CheckState.Checked;
             this.actToggleAllObjectTypes.Enabled = false;
             this.actToggleAllObjectTypes.Image = global::TabularEditor.Resources.ShowDetails_16x;
-            this.actToggleAllObjectTypes.Text = "Show All Object Types";
+            this.actToggleAllObjectTypes.Text = "&Show All Object Types";
             this.actToggleAllObjectTypes.ToolTipText = "Show/hide all object types (perspectives, roles, data sources, etc.) in addition " +
     "to tables";
             this.actToggleAllObjectTypes.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.DisableIfLinqMode);
@@ -404,7 +404,7 @@
             // 
             this.actOpenFile.Image = global::TabularEditor.Resources.Open;
             this.actOpenFile.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.actOpenFile.Text = "From File...";
+            this.actOpenFile.Text = "From &File...";
             this.actOpenFile.ToolTipText = "Open a Tabular Model from a Model.bim file or database.json folder structure";
             this.actOpenFile.Execute += new System.EventHandler(this.actOpenFile_Execute);
             // 
@@ -413,7 +413,7 @@
             this.actOpenDB.Image = global::TabularEditor.Resources.CubeOpen;
             this.actOpenDB.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.O)));
-            this.actOpenDB.Text = "From DB...";
+            this.actOpenDB.Text = "From &DB...";
             this.actOpenDB.ToolTipText = "Open a Tabular Model from an existing database";
             this.actOpenDB.Execute += new System.EventHandler(this.btnConnect_Click);
             // 
@@ -421,35 +421,35 @@
             // 
             this.actSave.Image = global::TabularEditor.Resources.Save;
             this.actSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.actSave.Text = "Save .bim file";
+            this.actSave.Text = "&Save .bim file";
             this.actSave.Execute += new System.EventHandler(this.actSave_Execute);
             // 
             // actSaveAs
             // 
-            this.actSaveAs.Text = "Save As...";
+            this.actSaveAs.Text = "Save &As...";
             this.actSaveAs.Execute += new System.EventHandler(this.actSaveAs_Execute);
             // 
             // actSaveToFolder
             // 
-            this.actSaveToFolder.Text = "Save to Folder...";
+            this.actSaveToFolder.Text = "Save to &Folder...";
             this.actSaveToFolder.Execute += new System.EventHandler(this.actSaveToFolder_Execute);
             // 
             // actExit
             // 
             this.actExit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.actExit.Text = "Exit";
+            this.actExit.Text = "E&xit";
             this.actExit.Execute += new System.EventHandler(this.actExit_Execute);
             // 
             // actCollapseAll
             // 
             this.actCollapseAll.Image = global::TabularEditor.Resources.CollapseAll;
-            this.actCollapseAll.Text = "Collapse All";
+            this.actCollapseAll.Text = "C&ollapse All";
             this.actCollapseAll.Execute += new System.EventHandler(this.actCollapseExpand_Execute);
             // 
             // actExpandAll
             // 
             this.actExpandAll.Image = global::TabularEditor.Resources.ExpandAll;
-            this.actExpandAll.Text = "Expand All";
+            this.actExpandAll.Text = "&Expand All";
             this.actExpandAll.Execute += new System.EventHandler(this.actCollapseExpand_Execute);
             // 
             // actDelete
@@ -462,14 +462,14 @@
             // 
             this.actUndo.Kind = TabularEditor.UI.Actions.UndoRedo.Undo;
             this.actUndo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.actUndo.Text = "Undo";
+            this.actUndo.Text = "&Undo";
             this.actUndo.Execute += new System.EventHandler(this.actUndoRedo_Execute);
             // 
             // actRedo
             // 
             this.actRedo.Kind = TabularEditor.UI.Actions.UndoRedo.Redo;
             this.actRedo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.actRedo.Text = "Redo";
+            this.actRedo.Text = "&Redo";
             this.actRedo.Execute += new System.EventHandler(this.actUndoRedo_Execute);
             // 
             // actExpressionFormatDAX
@@ -484,7 +484,7 @@
             // 
             this.actFind.Image = global::TabularEditor.Resources.Find;
             this.actFind.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-            this.actFind.Text = "Find";
+            this.actFind.Text = "&Find";
             this.actFind.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.actExpression_UpdateEx);
             this.actFind.Execute += new System.EventHandler(this.actFind_Execute);
             // 
@@ -492,7 +492,7 @@
             // 
             this.actReplace.Image = global::TabularEditor.Resources.Replace;
             this.actReplace.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.H)));
-            this.actReplace.Text = "Replace";
+            this.actReplace.Text = "R&eplace";
             this.actReplace.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.actExpression_UpdateEx);
             this.actReplace.Execute += new System.EventHandler(this.actReplace_Execute);
             // 
@@ -506,7 +506,7 @@
             // actDeploy
             // 
             this.actDeploy.Image = global::TabularEditor.Resources.Deploy;
-            this.actDeploy.Text = "Deploy...";
+            this.actDeploy.Text = "&Deploy...";
             this.actDeploy.ToolTipText = "Lets you deploy the currently loaded model to an SSAS Tabular Server.";
             this.actDeploy.Execute += new System.EventHandler(this.actDeploy_Execute);
             // 
@@ -562,7 +562,7 @@
             // 
             // actNewModel
             // 
-            this.actNewModel.Text = "New model";
+            this.actNewModel.Text = "&New model";
             this.actNewModel.ToolTipText = "Creates a new blank Model.bim file";
             this.actNewModel.Execute += new System.EventHandler(this.actNewModel_Execute);
             // 
@@ -603,7 +603,7 @@
             this.toolStripButton8.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton8.Name = "toolStripButton8";
             this.toolStripButton8.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton8.Text = "From File...";
+            this.toolStripButton8.Text = "From &File...";
             this.toolStripButton8.ToolTipText = "Open a Tabular Model from a Model.bim file or database.json folder structure";
             // 
             // fileToolStripMenuItem1
@@ -613,7 +613,7 @@
             this.fileToolStripMenuItem1.Name = "fileToolStripMenuItem1";
             this.fileToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.fileToolStripMenuItem1.Size = new System.Drawing.Size(204, 22);
-            this.fileToolStripMenuItem1.Text = "From File...";
+            this.fileToolStripMenuItem1.Text = "From &File...";
             this.fileToolStripMenuItem1.ToolTipText = "Open a Tabular Model from a Model.bim file or database.json folder structure";
             // 
             // fromDBToolStripMenuItem
@@ -625,7 +625,7 @@
             this.fromDBToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.O)));
             this.fromDBToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
-            this.fromDBToolStripMenuItem.Text = "From DB...";
+            this.fromDBToolStripMenuItem.Text = "From &DB...";
             this.fromDBToolStripMenuItem.ToolTipText = "Open a Tabular Model from an existing database";
             // 
             // exitToolStripMenuItem
@@ -635,7 +635,7 @@
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Text = "E&xit";
             // 
             // btnConnect
             // 
@@ -646,7 +646,7 @@
             this.btnConnect.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnConnect.Name = "btnConnect";
             this.btnConnect.Size = new System.Drawing.Size(23, 22);
-            this.btnConnect.Text = "From DB...";
+            this.btnConnect.Text = "From &DB...";
             this.btnConnect.ToolTipText = "Open a Tabular Model from an existing database";
             // 
             // tbShowDisplayFolders
@@ -662,7 +662,7 @@
             this.tbShowDisplayFolders.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbShowDisplayFolders.Name = "tbShowDisplayFolders";
             this.tbShowDisplayFolders.Size = new System.Drawing.Size(23, 22);
-            this.tbShowDisplayFolders.Text = "Display Folders";
+            this.tbShowDisplayFolders.Text = "&Display Folders";
             this.tbShowDisplayFolders.ToolTipText = "Show/hide display folders";
             // 
             // tbShowHidden
@@ -676,7 +676,7 @@
             this.tbShowHidden.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbShowHidden.Name = "tbShowHidden";
             this.tbShowHidden.Size = new System.Drawing.Size(23, 22);
-            this.tbShowHidden.Text = "Hidden Objects";
+            this.tbShowHidden.Text = "&Hidden Objects";
             this.tbShowHidden.ToolTipText = "Show/hide hidden objects";
             // 
             // tbShowMeasures
@@ -692,7 +692,7 @@
             this.tbShowMeasures.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbShowMeasures.Name = "tbShowMeasures";
             this.tbShowMeasures.Size = new System.Drawing.Size(23, 22);
-            this.tbShowMeasures.Text = "Measures";
+            this.tbShowMeasures.Text = "&Measures";
             this.tbShowMeasures.ToolTipText = "Show/hide measures";
             // 
             // tbShowColumns
@@ -708,7 +708,7 @@
             this.tbShowColumns.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbShowColumns.Name = "tbShowColumns";
             this.tbShowColumns.Size = new System.Drawing.Size(23, 22);
-            this.tbShowColumns.Text = "Columns";
+            this.tbShowColumns.Text = "&Columns";
             this.tbShowColumns.ToolTipText = "Show/hide columns";
             // 
             // tbShowHierarchies
@@ -724,7 +724,7 @@
             this.tbShowHierarchies.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbShowHierarchies.Name = "tbShowHierarchies";
             this.tbShowHierarchies.Size = new System.Drawing.Size(23, 22);
-            this.tbShowHierarchies.Text = "Hierarchies";
+            this.tbShowHierarchies.Text = "H&ierarchies";
             this.tbShowHierarchies.ToolTipText = "Show/hide hierarchies";
             // 
             // toolStripButton6
@@ -737,7 +737,7 @@
             this.toolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton6.Name = "toolStripButton6";
             this.toolStripButton6.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton6.Text = "Metadata Information";
+            this.toolStripButton6.Text = "Meta&data Information";
             this.toolStripButton6.ToolTipText = "Show/hide metadata information columns";
             // 
             // btnSave
@@ -748,7 +748,7 @@
             this.btnSave.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(23, 22);
-            this.btnSave.Text = "Save .bim file";
+            this.btnSave.Text = "&Save .bim file";
             // 
             // saveToolStripMenuItem
             // 
@@ -758,14 +758,14 @@
             this.saveToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+S";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.saveToolStripMenuItem.Text = "Save .bim file";
+            this.saveToolStripMenuItem.Text = "&Save .bim file";
             // 
             // saveAsToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveAsToolStripMenuItem, this.actSaveAs);
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.saveAsToolStripMenuItem.Text = "Save As...";
+            this.saveAsToolStripMenuItem.Text = "Save &As...";
             // 
             // undoToolStripMenuItem
             // 
@@ -775,7 +775,7 @@
             this.undoToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Z";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
             this.undoToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
-            this.undoToolStripMenuItem.Text = "Undo";
+            this.undoToolStripMenuItem.Text = "&Undo";
             // 
             // redoToolStripMenuItem
             // 
@@ -785,7 +785,7 @@
             this.redoToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Y";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
             this.redoToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
-            this.redoToolStripMenuItem.Text = "Redo";
+            this.redoToolStripMenuItem.Text = "&Redo";
             // 
             // deleteToolStripMenuItem
             // 
@@ -808,7 +808,7 @@
             this.displayFoldersToolStripMenuItem.Image = global::TabularEditor.Resources.FolderOpen;
             this.displayFoldersToolStripMenuItem.Name = "displayFoldersToolStripMenuItem";
             this.displayFoldersToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
-            this.displayFoldersToolStripMenuItem.Text = "Display Folders";
+            this.displayFoldersToolStripMenuItem.Text = "&Display Folders";
             this.displayFoldersToolStripMenuItem.ToolTipText = "Show/hide display folders";
             // 
             // hiddenObjectsToolStripMenuItem
@@ -819,7 +819,7 @@
             this.hiddenObjectsToolStripMenuItem.Image = global::TabularEditor.Resources.Hidden;
             this.hiddenObjectsToolStripMenuItem.Name = "hiddenObjectsToolStripMenuItem";
             this.hiddenObjectsToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
-            this.hiddenObjectsToolStripMenuItem.Text = "Hidden Objects";
+            this.hiddenObjectsToolStripMenuItem.Text = "&Hidden Objects";
             this.hiddenObjectsToolStripMenuItem.ToolTipText = "Show/hide hidden objects";
             // 
             // mEasToolStripMenuItem
@@ -832,7 +832,7 @@
             this.mEasToolStripMenuItem.Image = global::TabularEditor.Resources.Sigma;
             this.mEasToolStripMenuItem.Name = "mEasToolStripMenuItem";
             this.mEasToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
-            this.mEasToolStripMenuItem.Text = "Measures";
+            this.mEasToolStripMenuItem.Text = "&Measures";
             this.mEasToolStripMenuItem.ToolTipText = "Show/hide measures";
             // 
             // xToolStripMenuItem
@@ -845,7 +845,7 @@
             this.xToolStripMenuItem.Image = global::TabularEditor.Resources.Column;
             this.xToolStripMenuItem.Name = "xToolStripMenuItem";
             this.xToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
-            this.xToolStripMenuItem.Text = "Columns";
+            this.xToolStripMenuItem.Text = "&Columns";
             this.xToolStripMenuItem.ToolTipText = "Show/hide columns";
             // 
             // yToolStripMenuItem
@@ -858,7 +858,7 @@
             this.yToolStripMenuItem.Image = global::TabularEditor.Resources.Hierarchy;
             this.yToolStripMenuItem.Name = "yToolStripMenuItem";
             this.yToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
-            this.yToolStripMenuItem.Text = "Hierarchies";
+            this.yToolStripMenuItem.Text = "H&ierarchies";
             this.yToolStripMenuItem.ToolTipText = "Show/hide hierarchies";
             // 
             // metadataInformationToolStripMenuItem
@@ -868,7 +868,7 @@
             this.metadataInformationToolStripMenuItem.Image = global::TabularEditor.Resources.Columns;
             this.metadataInformationToolStripMenuItem.Name = "metadataInformationToolStripMenuItem";
             this.metadataInformationToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
-            this.metadataInformationToolStripMenuItem.Text = "Metadata Information";
+            this.metadataInformationToolStripMenuItem.Text = "Meta&data Information";
             this.metadataInformationToolStripMenuItem.ToolTipText = "Show/hide metadata information columns";
             // 
             // expandAllToolStripMenuItem
@@ -878,7 +878,7 @@
             this.expandAllToolStripMenuItem.Image = global::TabularEditor.Resources.ExpandAll;
             this.expandAllToolStripMenuItem.Name = "expandAllToolStripMenuItem";
             this.expandAllToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
-            this.expandAllToolStripMenuItem.Text = "Expand All";
+            this.expandAllToolStripMenuItem.Text = "&Expand All";
             // 
             // collapseAllToolStripMenuItem
             // 
@@ -887,7 +887,7 @@
             this.collapseAllToolStripMenuItem.Image = global::TabularEditor.Resources.CollapseAll;
             this.collapseAllToolStripMenuItem.Name = "collapseAllToolStripMenuItem";
             this.collapseAllToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
-            this.collapseAllToolStripMenuItem.Text = "Collapse All";
+            this.collapseAllToolStripMenuItem.Text = "C&ollapse All";
             // 
             // toolStripButton9
             // 
@@ -922,7 +922,7 @@
             this.btnFind.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnFind.Name = "btnFind";
             this.btnFind.Size = new System.Drawing.Size(23, 22);
-            this.btnFind.Text = "Find";
+            this.btnFind.Text = "&Find";
             // 
             // btnReplace
             // 
@@ -933,7 +933,7 @@
             this.btnReplace.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnReplace.Name = "btnReplace";
             this.btnReplace.Size = new System.Drawing.Size(23, 22);
-            this.btnReplace.Text = "Replace";
+            this.btnReplace.Text = "R&eplace";
             // 
             // findToolStripMenuItem
             // 
@@ -943,7 +943,7 @@
             this.findToolStripMenuItem.Name = "findToolStripMenuItem";
             this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
             this.findToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
-            this.findToolStripMenuItem.Text = "Find";
+            this.findToolStripMenuItem.Text = "&Find";
             // 
             // replaceToolStripMenuItem
             // 
@@ -953,7 +953,7 @@
             this.replaceToolStripMenuItem.Name = "replaceToolStripMenuItem";
             this.replaceToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.H)));
             this.replaceToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
-            this.replaceToolStripMenuItem.Text = "Replace";
+            this.replaceToolStripMenuItem.Text = "R&eplace";
             // 
             // formatDAXToolStripMenuItem
             // 
@@ -992,7 +992,7 @@
             this.deployToolStripMenuItem.Image = global::TabularEditor.Resources.Deploy;
             this.deployToolStripMenuItem.Name = "deployToolStripMenuItem";
             this.deployToolStripMenuItem.Size = new System.Drawing.Size(120, 22);
-            this.deployToolStripMenuItem.Text = "Deploy...";
+            this.deployToolStripMenuItem.Text = "&Deploy...";
             this.deployToolStripMenuItem.ToolTipText = "Lets you deploy the currently loaded model to an SSAS Tabular Server.";
             // 
             // btnSaveCustomAction
@@ -1057,7 +1057,7 @@
             this.tbShowAllObjectTypes.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbShowAllObjectTypes.Name = "tbShowAllObjectTypes";
             this.tbShowAllObjectTypes.Size = new System.Drawing.Size(23, 22);
-            this.tbShowAllObjectTypes.Text = "Show All Object Types";
+            this.tbShowAllObjectTypes.Text = "&Show All Object Types";
             this.tbShowAllObjectTypes.ToolTipText = "Show/hide all object types (perspectives, roles, data sources, etc.) in addition " +
     "to tables";
             // 
@@ -1071,7 +1071,7 @@
             this.showAllObjectTypesToolStripMenuItem.Image = global::TabularEditor.Resources.ShowDetails_16x;
             this.showAllObjectTypesToolStripMenuItem.Name = "showAllObjectTypesToolStripMenuItem";
             this.showAllObjectTypesToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
-            this.showAllObjectTypesToolStripMenuItem.Text = "Show All Object Types";
+            this.showAllObjectTypesToolStripMenuItem.Text = "&Show All Object Types";
             this.showAllObjectTypesToolStripMenuItem.ToolTipText = "Show/hide all object types (perspectives, roles, data sources, etc.) in addition " +
     "to tables";
             // 
@@ -1088,7 +1088,7 @@
             this.tbSortAlphabetically.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbSortAlphabetically.Name = "tbSortAlphabetically";
             this.tbSortAlphabetically.Size = new System.Drawing.Size(23, 22);
-            this.tbSortAlphabetically.Text = "Sort alphabetically";
+            this.tbSortAlphabetically.Text = "Sort &alphabetically";
             this.tbSortAlphabetically.ToolTipText = "Toggle alphabetical/metadata ordering of items";
             // 
             // sortAlphabeticalToolStripMenuItem
@@ -1101,7 +1101,7 @@
             this.sortAlphabeticalToolStripMenuItem.Image = global::TabularEditor.Resources.SortAscending_16x;
             this.sortAlphabeticalToolStripMenuItem.Name = "sortAlphabeticalToolStripMenuItem";
             this.sortAlphabeticalToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
-            this.sortAlphabeticalToolStripMenuItem.Text = "Sort alphabetically";
+            this.sortAlphabeticalToolStripMenuItem.Text = "Sort &alphabetically";
             this.sortAlphabeticalToolStripMenuItem.ToolTipText = "Toggle alphabetical/metadata ordering of items";
             // 
             // toolStripButton1
@@ -1135,14 +1135,14 @@
             this.saveToFolderToolStripMenuItem.AutoToolTip = true;
             this.saveToFolderToolStripMenuItem.Name = "saveToFolderToolStripMenuItem";
             this.saveToFolderToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.saveToFolderToolStripMenuItem.Text = "Save to Folder...";
+            this.saveToFolderToolStripMenuItem.Text = "Save to &Folder...";
             // 
             // newModelToolStripMenuItem
             // 
             actionsMain.SetAction(this.newModelToolStripMenuItem, this.actNewModel);
             this.newModelToolStripMenuItem.Name = "newModelToolStripMenuItem";
             this.newModelToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.newModelToolStripMenuItem.Text = "New model";
+            this.newModelToolStripMenuItem.Text = "&New model";
             this.newModelToolStripMenuItem.ToolTipText = "Creates a new blank Model.bim file";
             // 
             // btnSaveScript
@@ -1214,7 +1214,7 @@
             // 
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
             this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.preferencesToolStripMenuItem.Text = "Preferences...";
+            this.preferencesToolStripMenuItem.Text = "&Preferences...";
             this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
             // 
             // toolStrip2
@@ -1907,13 +1907,13 @@
             this.fromFolderToolStripMenuItem});
             this.openToolStripMenuItem1.Name = "openToolStripMenuItem1";
             this.openToolStripMenuItem1.Size = new System.Drawing.Size(184, 22);
-            this.openToolStripMenuItem1.Text = "Open";
+            this.openToolStripMenuItem1.Text = "&Open";
             // 
             // fromFolderToolStripMenuItem
             // 
             this.fromFolderToolStripMenuItem.Name = "fromFolderToolStripMenuItem";
             this.fromFolderToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
-            this.fromFolderToolStripMenuItem.Text = "From Folder...";
+            this.fromFolderToolStripMenuItem.Text = "From F&older...";
             this.fromFolderToolStripMenuItem.Click += new System.EventHandler(this.fromFolderToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
@@ -1935,7 +1935,7 @@
             // 
             this.recentFilesToolStripMenuItem.Name = "recentFilesToolStripMenuItem";
             this.recentFilesToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.recentFilesToolStripMenuItem.Text = "Recent Files";
+            this.recentFilesToolStripMenuItem.Text = "&Recent Files";
             // 
             // toolStripSeparator12
             // 
@@ -1963,7 +1963,7 @@
             this.dAXExpressionToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
-            this.editToolStripMenuItem.Text = "Edit";
+            this.editToolStripMenuItem.Text = "&Edit";
             // 
             // toolStripSeparator16
             // 
@@ -2023,7 +2023,7 @@
             this.collapseAllToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.viewToolStripMenuItem.Text = "View";
+            this.viewToolStripMenuItem.Text = "&View";
             // 
             // toolStripMenuItem4
             // 
@@ -2047,7 +2047,7 @@
             this.modelToolStripMenuItem.Enabled = false;
             this.modelToolStripMenuItem.Name = "modelToolStripMenuItem";
             this.modelToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
-            this.modelToolStripMenuItem.Text = "Model";
+            this.modelToolStripMenuItem.Text = "&Model";
             // 
             // dynamicToolStripMenuItem
             // 
@@ -2069,13 +2069,13 @@
             this.bestPracticeAnalyzerToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
-            this.toolsToolStripMenuItem.Text = "Tools";
+            this.toolsToolStripMenuItem.Text = "T&ools";
             // 
             // bestPracticeAnalyzerToolStripMenuItem
             // 
             this.bestPracticeAnalyzerToolStripMenuItem.Name = "bestPracticeAnalyzerToolStripMenuItem";
             this.bestPracticeAnalyzerToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.bestPracticeAnalyzerToolStripMenuItem.Text = "Best Practice Analyzer...";
+            this.bestPracticeAnalyzerToolStripMenuItem.Text = "&Best Practice Analyzer...";
             this.bestPracticeAnalyzerToolStripMenuItem.Click += new System.EventHandler(this.bestPracticeAnalyzerToolStripMenuItem_Click);
             // 
             // tabularTreeImages

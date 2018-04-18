@@ -226,11 +226,11 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => s.DirectCount == 1 && s.Direct.First() is IDaxObject, (s, m) =>
             {
                 UIController.Current.ShowDependencies(s.Direct.First() as IDaxObject);
-            }, (s, m) => @"Show dependencies...", true, Context.Table | Context.TableObject));
+            }, (s, m) => @"Show &dependencies...", true, Context.Table | Context.TableObject));
 
             // Filter related...
             Add(new Action((s, m) => s.DirectCount == 1, (s, m) => UIController.Current.ApplyFilter(":RelatedTables.Any(Name = \"" + s.Table.Name + "\")"), 
-                (s, m) => @"Filter related", true, Context.Table));
+                (s, m) => @"Filter &related", true, Context.Table));
 
 
             // Script actions:
