@@ -21,7 +21,7 @@ namespace TabularEditor.UI
             if (c.Has1(Context.SingularObjects | (Context.Groups ^ Context.TablePartitions)) && c != Context.Model)
             {
                 UI.DynamicMenu.Visible = true;
-                UI.DynamicMenu.Text = c.ToString().SplitCamelCase();
+                UI.DynamicMenu.Text = "&" + c.ToString().SplitCamelCase();
                 return;
             }
 
