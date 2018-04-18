@@ -56,7 +56,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(343, 73);
+            this.ClientSize = new System.Drawing.Size(339, 69);
             this.ControlBox = false;
             this.Controls.Add(this.label1);
             this.Controls.Add(this.pictureBox1);
@@ -67,7 +67,6 @@
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.TopMost = true;
             this.Shown += new System.EventHandler(this.DeployingForm_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
