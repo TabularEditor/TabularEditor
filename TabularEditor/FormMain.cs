@@ -686,5 +686,37 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         {
             e.Enabled = !LinqMode;
         }
+
+        private void nodeTextBox5_ValueNeeded(object sender, Aga.Controls.Tree.NodeControls.NodeControlValueEventArgs e)
+        {
+            e.Value = (e.Node.Tag as TOMWrapper.Table)?.Source ??
+                (e.Node.Tag as TOMWrapper.Partition)?.Expression ??
+                (e.Node.Tag as TOMWrapper.DataColumn)?.SourceColumn ??
+                (e.Node.Tag as TOMWrapper.CalculatedTableColumn)?.SourceColumn ??
+                (e.Node.Tag as TOMWrapper.Level)?.Column?.DaxObjectName ??
+                (e.Node.Tag as TOMWrapper.IExpressionObject)?.Expression;
+        }
+
+        private void toolStrip2_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+        }
+
+        private void toolStrip2_KeyDown(object sender, KeyEventArgs e)
+        {
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            // Global keyboard shortcuts (if this method returns TRUE, then the key press will not be propagated to form controls)
+            switch(keyData)
+            {
+                case (Keys.Alt | Keys.Left):
+                    UI.Tree_NavigateBack(); return true;
+                case (Keys.Alt | Keys.Right):
+                    UI.Tree_NavigateForward(); return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
     }
 }

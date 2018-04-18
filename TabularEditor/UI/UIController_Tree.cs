@@ -64,6 +64,8 @@ namespace TabularEditor.UI
 
         public void Tree_NavigateForward()
         {
+            if (!CanNavigateForward) return;
+
             bool firstUnknown = true;
             IsNavigating = true;
 
@@ -101,6 +103,8 @@ namespace TabularEditor.UI
 
         public void Tree_NavigateBack()
         {
+            if (!CanNavigateBack) return;
+
             bool firstUnknown = true;
             IsNavigating = true;
 
