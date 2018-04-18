@@ -54,6 +54,7 @@ namespace TabularEditor.UI
 
                         LoadTabularModelToUI();
                         RecentFiles.Add(fileName);
+                        RecentFiles.Save();
                         UI.FormMain.PopulateRecentFilesList();
                     }
                 }
@@ -188,6 +189,7 @@ namespace TabularEditor.UI
                     Handler.Save(UI.SaveBimDialog.FileName, fileType == "*.pbit" ? SaveFormat.PowerBiTemplate : SaveFormat.ModelSchemaOnly, Preferences.Current.GetSerializeOptions(false));
 
                     RecentFiles.Add(UI.SaveBimDialog.FileName);
+                    RecentFiles.Save();
                     UI.FormMain.PopulateRecentFilesList();
 
                     // If not connected to a database, change the current working file:
@@ -250,6 +252,7 @@ namespace TabularEditor.UI
                         Handler.Save(fbd.FileName, SaveFormat.TabularEditorFolder, Preferences.Current.GetSerializeOptions(true));
 
                         RecentFiles.Add(fbd.FileName);
+                        RecentFiles.Save();
                         UI.FormMain.PopulateRecentFilesList();
 
                         // If working with a file, change the current file pointer:

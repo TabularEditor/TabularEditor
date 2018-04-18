@@ -212,8 +212,6 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                     if (res == DialogResult.Cancel) e.Cancel = true;
                 }
             }
-
-            RecentFiles.Save();
         }
 
         private void actViewOptions_Execute(object sender, EventArgs e)
