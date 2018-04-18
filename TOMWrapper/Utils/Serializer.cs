@@ -138,14 +138,16 @@ namespace TabularEditor.TOMWrapper.Utils
 
         public static string SerializeDB(SerializeOptions options)
         {
-            var serializedDB = 
-                TOM.JsonSerializer.SerializeDatabase(TabularModelHandler.Singleton.Database,
+            var db = TabularModelHandler.Singleton.Database;
+            var serializedDB =
+                TOM.JsonSerializer.SerializeDatabase(db,
                 new TOM.SerializeOptions()
                 {
                     IgnoreInferredObjects = options.IgnoreInferredObjects,
                     IgnoreTimestamps = options.IgnoreTimestamps,
                     IgnoreInferredProperties = options.IgnoreInferredProperties,
-                    SplitMultilineStrings = options.SplitMultilineStrings
+                    SplitMultilineStrings = options.SplitMultilineStrings,
+                    IncludeRestrictedInformation = db.Model.Annotations.Contains("TabularEditor_SaveSensitive") && db.Model.Annotations["TabularEditor_SaveSensitive"].Value == "1"
                 });
 
             // Hack: Remove \r characters from multiline strings in the BIM:
