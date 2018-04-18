@@ -78,6 +78,19 @@ namespace TabularEditor.TOMWrapper
         internal JObject SerializedFrom = null;
         internal ITabularObjectCollection Collection;
 
+        protected void SetValue(object org, object value, Action<object> setter, string propertyName)
+        {
+            var oldValue = org;
+            if (oldValue == value) return;
+            bool undoable = true;
+            bool cancel = false;
+            OnPropertyChanging(propertyName, value, ref undoable, ref cancel);
+            if (cancel) return;
+            setter(value);
+            if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, propertyName, oldValue, value));
+            OnPropertyChanged(propertyName, oldValue, value);
+        }
+
         public bool IsRemoved => _metadataObject.IsRemoved;
         private TOM.MetadataObject _metadataObject;
         protected internal TOM.MetadataObject MetadataObject { get { return _metadataObject; } protected set { _metadataObject = value; } }
