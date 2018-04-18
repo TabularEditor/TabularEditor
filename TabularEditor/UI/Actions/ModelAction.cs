@@ -112,7 +112,8 @@ namespace TabularEditor.UI.Actions
             ExpandObject = null;
 
             ui.Handler.BeginUpdate(Name);
-            _execute(alternateSelection == null ? ui.Selection : new UITreeSelection(alternateSelection), ui.Handler.Model);
+            var selection = alternateSelection == null ? ui.Selection : new UITreeSelection(alternateSelection);
+            _execute(selection, ui.Handler.Model);
             ui.Handler.EndUpdate();
 
             if (ExpandObject != null)

@@ -74,5 +74,16 @@ namespace TabularEditor.Scripting
             }
             else throw new InvalidOperationException(string.Format("There is no Custom Action with the name '{0}'.", actionName));
         }
+
+        [ScriptMethod, IntelliSense("Invoke the custom action on the given object with the given name.")]
+        public static void CustomAction(this ITabularNamedObject selection, string actionName)
+        {
+            var act = UI.UIController.Current.Actions.OfType<CustomAction>().FirstOrDefault(a => a.BaseName == actionName);
+            if (act != null)
+            {
+                act.ExecuteWithSelection(null, Enumerable.Repeat(selection, 1));
+            }
+            else throw new InvalidOperationException(string.Format("There is no Custom Action with the name '{0}'.", actionName));
+        }
     }
 }

@@ -402,6 +402,7 @@ namespace TabularEditor.UI
             Folders = this.OfType<Folder>();
             Groups = this.OfType<LogicalGroup>();
             Direct = new UISelectionList<ITabularNamedObject>(this.OfType<ITabularNamedObject>());
+            AssignCollections();
         }
 
         public UITreeSelection(IReadOnlyCollection<TreeNodeAdv> selectedNodes)
