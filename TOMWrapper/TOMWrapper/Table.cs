@@ -106,17 +106,17 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Enumerates all levels across all hierarchies on this table.
         /// </summary>
-        [Browsable(false)]
+        [Browsable(false),IntelliSense("Enumerates all levels across all hierarchies on this table.")]
         public IEnumerable<Level> AllLevels { get { return Hierarchies.SelectMany(h => h.Levels); } }
         /// <summary>
         /// Enumerates all relationships in which this table participates.
         /// </summary>
-        [Browsable(false)]
+        [Browsable(false),IntelliSense("Enumerates all relationships in which this table participates.")]
         public IEnumerable<SingleColumnRelationship> UsedInRelationships { get { return Model.Relationships.Where(r => r.FromTable == this || r.ToTable == this); } }
         /// <summary>
         /// Enumerates all tables related to or from this table.
         /// </summary>
-        [Browsable(false)]
+        [Browsable(false), IntelliSense("Enumerates all tables related to or from this table.")]
         public IEnumerable<Table> RelatedTables
         {
             get
