@@ -246,6 +246,9 @@ namespace TabularEditor.TOMWrapper.Utils
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.Table>(json.ToString());
             tom.Name = model.Tables.GetNewName(tom.Name);
 
+            // Make sure all measures in the table still have model-wide unique names:
+            foreach (var m in tom.Measures.ToList()) m.Name = MeasureCollection.GetNewName(model, m.Name);
+
             var table = CalculatedTable.CreateFromMetadata(model, tom);
 
             return table;
@@ -257,7 +260,7 @@ namespace TabularEditor.TOMWrapper.Utils
             tom.Name = model.Tables.GetNewName(tom.Name);
 
             // Make sure all measures in the table still have model-wide unique names:
-            foreach (var m in tom.Measures.ToList()) m.Name = tom.Measures.GetNewName(m.Name);
+            foreach (var m in tom.Measures.ToList()) m.Name = MeasureCollection.GetNewName(model, m.Name);
 
             var table = Table.CreateFromMetadata(model, tom);
 
