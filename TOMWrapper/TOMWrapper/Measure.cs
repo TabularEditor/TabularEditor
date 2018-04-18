@@ -243,12 +243,8 @@ namespace TabularEditor.TOMWrapper
 
     public partial class MeasureCollection
     {
-        internal override string GetNewName(string prefix = null)
+        internal static string GetNewName(Table table, string prefix = null)
         {
-            // For measures, we must ensure that the new measure name is unique across all tables,
-            // which is why we have to override the GetNewName method here. Also, we must make sure
-            // that no columns on the same table, have the same name as the measure.
-
             if (string.IsNullOrWhiteSpace(prefix)) prefix = "New Measure";
 
             string testName = prefix;
@@ -256,13 +252,38 @@ namespace TabularEditor.TOMWrapper
 
             // Loop to determine if prefix + suffix is already in use - break, when we find a name
             // that's not being used anywhere:
-            while (Table.Model.AllMeasures.Any(m => m.Name.Equals(testName, StringComparison.InvariantCultureIgnoreCase))
-                || Table.Columns.Any(c => c.Name.Equals(testName, StringComparison.InvariantCultureIgnoreCase)))
+            while (table.Model.AllMeasures.Any(m => m.Name.Equals(testName, StringComparison.InvariantCultureIgnoreCase))
+                || table.Columns.Any(c => c.Name.Equals(testName, StringComparison.InvariantCultureIgnoreCase)))
             {
                 suffix++;
                 testName = prefix + " " + suffix;
             }
             return testName;
+        }
+
+        internal static string GetNewName(Model model, string prefix = null)
+        {
+            if (string.IsNullOrWhiteSpace(prefix)) prefix = "New Measure";
+
+            string testName = prefix;
+            int suffix = 0;
+
+            // Loop to determine if prefix + suffix is already in use - break, when we find a name
+            // that's not being used anywhere:
+            while (model.AllMeasures.Any(m => m.Name.Equals(testName, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                suffix++;
+                testName = prefix + " " + suffix;
+            }
+            return testName;
+        }
+
+        internal override string GetNewName(string prefix = null)
+        {
+            // For measures, we must ensure that the new measure name is unique across all tables,
+            // which is why we have to override the GetNewName method here. Also, we must make sure
+            // that no columns on the same table, have the same name as the measure.
+            return GetNewName(Table, prefix);
         }
     }
 }

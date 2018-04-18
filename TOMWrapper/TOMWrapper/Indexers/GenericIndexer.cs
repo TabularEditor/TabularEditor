@@ -75,7 +75,8 @@ namespace TabularEditor.TOMWrapper
         {
             foreach(var kvp in source)
             {
-                this[kvp.Key] = kvp.Value;
+                if(Keys.Any(k => k == kvp.Key))
+                    this[kvp.Key] = kvp.Value;
             }
         }
 
