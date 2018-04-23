@@ -6,7 +6,7 @@ Tabular Editor is a tool that lets you easily manipulate and manage measures, ca
 * [Download Tabular Editor v. 2.7.1 for SQL Server 2016, 2017 or Azure Analysis Services](https://github.com/otykier/TabularEditor/releases/latest)
 
 ### Prerequisites
-Tabular Editor uses the [Tabular Object Model](https://msdn.microsoft.com/en-us/library/mt706505.aspx) to load and save metadata to and from Model.bim files or existing databases. For this reason, make sure you have the latest AMO libraries available before installing Tabular Editor. They can be downloaded from the [SQL Server 2017 Feature Pack](https://go.microsoft.com/fwlink/?linkid=829578). The .msi installer will prompt you to download these, if you do not already have them.
+Tabular Editor uses the [Tabular Object Model](https://msdn.microsoft.com/en-us/library/mt706505.aspx) to load and save metadata to and from Model.bim files or existing databases. For this reason, make sure you have the latest AMO libraries available before installing Tabular Editor. They can be downloaded from the [Azure Analysis Services Client Libraries](https://docs.microsoft.com/en-us/azure/analysis-services/analysis-services-data-providers) page (Click "AMO" version 15.0.2 or newer). The .msi installer for Tabular Editor includes these libraries.
 
 ## Introduction
 View the article on www.kapacity.dk/tabular-editor for a general presentation of the tool and the motivations behind it.
