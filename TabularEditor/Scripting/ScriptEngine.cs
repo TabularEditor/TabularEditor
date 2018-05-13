@@ -366,7 +366,8 @@ namespace TabularEditor
         {
             // Export the TOMWrapper library to a .DLL for use with the custom script execution:
             MemoryStream memory = new MemoryStream();
-            DeflateStream stream = new DeflateStream(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("costura.tomwrapper.dll.zip"), CompressionMode.Decompress);
+            var currentAssembly = Assembly.GetAssembly(typeof(TabularEditor.Program));
+            DeflateStream stream = new DeflateStream(currentAssembly.GetManifestResourceStream("costura.tomwrapper.dll.compressed"), CompressionMode.Decompress);
             if (stream != null)
             {
                 using (stream)
