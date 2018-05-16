@@ -14,9 +14,9 @@ namespace TabularEditor.TOMWrapper
         {
             target.TranslatedNames.CopyFrom(src.TranslatedNames);
             target.TranslatedDescriptions.CopyFrom(src.TranslatedDescriptions);
-            if (target is IDetailObject && src is IDetailObject)
+            if (target is IFolderObject && src is IFolderObject)
             {
-                ((IDetailObject)target).TranslatedDisplayFolders.CopyFrom(((IDetailObject)src).TranslatedDisplayFolders);
+                ((IFolderObject)target).TranslatedDisplayFolders.CopyFrom(((IFolderObject)src).TranslatedDisplayFolders);
             }
         }
 

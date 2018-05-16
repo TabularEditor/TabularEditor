@@ -71,7 +71,7 @@ namespace TabularEditor.TOMWrapper
                 case TranslatedProperty.Description:
                     SetAll((_tabularObject as IDescriptionObject).Description); break;
                 case TranslatedProperty.DisplayFolder:
-                    SetAll((_tabularObject as IDetailObject).DisplayFolder); break;
+                    SetAll((_tabularObject as IFolderObject).DisplayFolder); break;
             }
             _tabularObject.Handler.EndUpdate();
         }
@@ -113,7 +113,7 @@ namespace TabularEditor.TOMWrapper
                 {
                     case TranslatedProperty.Caption: return (_tabularObject as TabularNamedObject).Name;
                     case TranslatedProperty.Description: return (_tabularObject as IDescriptionObject).Description;
-                    case TranslatedProperty.DisplayFolder: return (_tabularObject as IDetailObject).DisplayFolder;
+                    case TranslatedProperty.DisplayFolder: return (_tabularObject as IFolderObject).DisplayFolder;
                     default:
                         return null;
                 }
@@ -236,7 +236,7 @@ namespace TabularEditor.TOMWrapper
                     if (_translatedProperty == TranslatedProperty.DisplayFolder)
                         _tabularObject.Handler.UpdateFolders((_tabularObject as ITabularTableObject).Table);
                     else if (_translatedProperty == TranslatedProperty.Caption)
-                        _tabularObject.Handler.UpdateObject(_tabularObject);
+                        _tabularObject.Handler.UpdateObjectName(_tabularObject as TabularNamedObject);
                 }
             }
         }

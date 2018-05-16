@@ -122,17 +122,14 @@
   <ItemGroup>
     <Reference Include="Microsoft.AnalysisServices.Core, Version=15.0.2.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.15.0.2\lib\net45\Microsoft.AnalysisServices.Core.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AnalysisServices.Tabular, Version=15.0.2.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.15.0.2\lib\net45\Microsoft.AnalysisServices.Tabular.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AnalysisServices.Tabular.Json, Version=15.0.2.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.15.0.2\lib\net45\Microsoft.AnalysisServices.Tabular.Json.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">

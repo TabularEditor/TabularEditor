@@ -113,7 +113,7 @@ namespace TabularEditor.UI.Actions
 
         public bool Enabled(object arg)
         {
-            return UI.Selection.Types.HasFlag(Types.Column) && UI.Selection.Count == 1;
+            return UI.Selection.Context == Context.Column && UI.Selection.Count == 1;
         }
 
         public void Execute(object arg)

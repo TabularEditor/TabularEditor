@@ -28,7 +28,7 @@ namespace TabularEditor.TOMWrapper
             InternalName = string.Format("{0} {1} {2}", GetFullName(MetadataObject.FromColumn) ?? "(none)",
                 this.CrossFilteringBehavior == CrossFilteringBehavior.OneDirection ? "-->" : "<-->",
                 GetFullName(MetadataObject.ToColumn) ?? "(none)");
-            Handler.UpdateObject(this);
+            Handler.UpdateObjectName(this);
         }
 
         public override string ToString()

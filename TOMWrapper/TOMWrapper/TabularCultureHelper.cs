@@ -17,9 +17,9 @@ namespace TabularEditor.TOMWrapper
             if (overwrite || string.IsNullOrEmpty(obj.TranslatedDescriptions[cultureName]))
                 obj.TranslatedDescriptions[cultureName] = trans.Value<string>("translatedDescription");
 
-            if (obj is IDetailObject)
+            if (obj is IFolderObject)
             {
-                var o = obj as IDetailObject;
+                var o = obj as IFolderObject;
                 if (overwrite || string.IsNullOrEmpty(o.TranslatedDisplayFolders[cultureName]))
                     o.TranslatedDisplayFolders[cultureName] = trans.Value<string>("translatedDisplayFolder");
             }

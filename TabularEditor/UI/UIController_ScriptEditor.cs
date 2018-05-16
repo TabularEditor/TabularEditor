@@ -38,7 +38,7 @@ namespace TabularEditor.UI
             popupMenu.AppearInterval = 100;
             popupMenu.SearchPattern = @"[\w\]\)\.]";
             popupMenu.AllowTabKey = true;
-            popupMenu.ImageList = UI.TreeImages;
+            popupMenu.ImageList = FormMain.Singleton.tabularTreeImages;
             //popupMenu.Items.SetAutocompleteItems(new DynamicCollection(popupMenu, UI.ScriptEditor).OrderBy(m => m.Text));
             popupMenu.Items.SetAutocompleteItems(currentContext);
         }
@@ -195,7 +195,6 @@ namespace TabularEditor.UI
             parser = new TextServices.ScriptParser();
             parser.Types.Add("Selected", typeof(UITreeSelection));
             parser.Types.Add("Model", typeof(Model));
-            parser.Types.Add("Types", typeof(Types));
             foreach (var t in typeof(Model).Assembly.ExportedTypes.Where(t => t.IsEnum)) parser.Types.Add(t.Name, t);
         }
 

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper.Undo;
@@ -118,7 +119,7 @@ namespace TabularEditor.TOMWrapper
             return TOM_ContainsName(name);
         }
 
-        [IntelliSense("The name of this collection.")]
+        [IntelliSense("The name of this collection."),Browsable(false)]
         public string CollectionName { get; private set; }
 
         public int IndexOf(T item)
@@ -130,7 +131,7 @@ namespace TabularEditor.TOMWrapper
 
         // Abstract members:
         #region Public abstract members
-        [IntelliSense("The number of items in this collection.")]
+        [IntelliSense("The number of items in this collection."),Browsable(false)]
         public abstract int Count { get; }
         public abstract IEnumerator<T> GetEnumerator();
         public abstract int IndexOf(TOM.MetadataObject value);

@@ -23,6 +23,8 @@ namespace TabularEditor
         public DependencyForm()
         {
             InitializeComponent();
+
+            treeObjects.ImageList = FormMain.Singleton.tabularTreeImages;
         }
 
         private int currentDepth = 0;
@@ -33,7 +35,7 @@ namespace TabularEditor
             }
             set {
                 _rootObject = value;
-                if (_rootObject is PartitionViewTable) _rootObject = (_rootObject as PartitionViewTable).Table;
+                //if (_rootObject is PartitionViewTable) _rootObject = (_rootObject as PartitionViewTable).Table;
                 Text = "Object Dependencies for " + RootObject.DaxObjectFullName;
                 radioButton1.Text = string.Format("Show objects on which {0} depend", RootObject.DaxObjectName);
                 radioButton2.Text = string.Format("Show objects that depend on {0}", RootObject.DaxObjectName);

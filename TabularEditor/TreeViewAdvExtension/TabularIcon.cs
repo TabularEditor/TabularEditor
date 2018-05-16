@@ -29,7 +29,8 @@ namespace TabularEditor.UI.Tree
             { ObjectType.Role, TabularIcons.ICON_ROLE },
             { ObjectType.DataSource, TabularIcons.ICON_DATASOURCE },
             { ObjectType.Partition, TabularIcons.ICON_PARTITION },
-            { ObjectType.Expression, TabularIcons.ICON_EFFECTS }
+            { ObjectType.Expression, TabularIcons.ICON_EFFECTS },
+            { ObjectType.PartitionCollection, TabularIcons.ICON_PARTITION }
         };
 
 
@@ -37,40 +38,37 @@ namespace TabularEditor.UI.Tree
 
         protected override Image GetIcon(TreeNodeAdv node)
         {
-            var iconIndex = GetIconIndex(node.Tag as ITabularNamedObject);
-            if(node.Tag is Folder || node.Tag is LogicalGroup)
-            {
-                iconIndex = node.IsExpanded ? TabularIcons.ICON_FOLDEROPEN : TabularIcons.ICON_FOLDER;
-            }
+            var iconIndex = GetIconIndex(node.Tag as ITabularNamedObject, node.IsExpanded);
             return iconIndex >= 0 ? Images[iconIndex] : base.GetIcon(node);
         }
 
-        public static int GetIconIndex(ITabularNamedObject obj)
+        public static int GetIconIndex(ITabularNamedObject obj, bool isExpanded = false)
         {
-            if (obj is TabularObject)
+            int iconIndex = -1;
+
+            switch (obj.ObjectType)
             {
-                if(obj is Table)
-                {
+                case ObjectType.Table:
                     var t = obj as Table;
                     if (t.DataCategory == "Time" && t.Columns.Any(c => c.IsKey))
                         return obj is CalculatedTable ? TabularIcons.ICON_CALCTIMETABLE : TabularIcons.ICON_TIMETABLE;
-                }
-                if (obj is CalculatedColumn) return TabularIcons.ICON_CALCCOLUMN;
-                if (obj is CalculatedTable)
-                {
-                    return TabularIcons.ICON_CALCTABLE;
-                }
-                if (obj is Level)
-                {
-                    var icon = TabularIcons.ICON_LEVEL1 + (obj as Level).Ordinal;
-                    return icon > TabularIcons.ICON_LEVEL12 ? TabularIcons.ICON_LEVEL12 : icon;
-                }
+                    return obj is CalculatedTable ? TabularIcons.ICON_CALCTABLE : TabularIcons.ICON_TABLE;
 
-                int iconIndex;
-                if (IconMap.TryGetValue((obj as TabularObject).ObjectType, out iconIndex)) return iconIndex;
+                case ObjectType.Column:
+                    return obj is CalculatedColumn ? TabularIcons.ICON_CALCCOLUMN : TabularIcons.ICON_COLUMN;
+
+                case ObjectType.Level:
+                    iconIndex = TabularIcons.ICON_LEVEL1 + (obj as Level).Ordinal;
+                    return iconIndex > TabularIcons.ICON_LEVEL12 ? TabularIcons.ICON_LEVEL12 : iconIndex;
+
+                case ObjectType.Folder:
+                case ObjectType.Group:
+                    return isExpanded ? TabularIcons.ICON_FOLDEROPEN : TabularIcons.ICON_FOLDER;
+
+                default:
+                    IconMap.TryGetValue(obj.ObjectType, out iconIndex);
+                    return iconIndex;
             }
-            if (obj is PartitionViewTable) return GetIconIndex((obj as PartitionViewTable).Table);
-            return -1;
         }
 
         public override void Draw(TreeNodeAdv node, DrawContext context)

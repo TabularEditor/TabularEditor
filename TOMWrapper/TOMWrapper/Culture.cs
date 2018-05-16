@@ -169,7 +169,7 @@ namespace TabularEditor.TOMWrapper
                 UpdateDisplayName();
 
                 Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.NAME, oldValue, value));
-                Handler.UpdateObject(this);
+                Handler.UpdateObjectName(this);
                 OnPropertyChanged(Properties.NAME, oldValue, value);
             }
         }

@@ -229,4 +229,73 @@ namespace TabularEditor.TOMWrapper
             return obj;
         }
     }
+
+    public partial class PartitionCollection : ITabularNamedObject, ITabularObjectContainer, ITabularTableObject
+    {
+        /// <summary>
+        /// This property points to the PartitionCollection itself. It is used only to display a clickable
+        /// "Partitions" property in the Property Grid, which will open the PartitionCollectionEditor when
+        /// clicked.
+        /// </summary>
+        [DisplayName("Partitions"),Description("The collection of Partition objects on this Table.")]
+        [Category("Data Source"), IntelliSense("The collection of Partition objects on this Table.")]
+        [NoMultiselect(), Editor(typeof(PartitionCollectionEditor), typeof(UITypeEditor))]
+        public PartitionCollection PropertyGridPartitions => this;
+
+        bool ITabularObject.IsRemoved => false;
+
+        int ITabularNamedObject.MetadataIndex => -1;
+
+        Model ITabularObject.Model => Table.Model;
+
+        [ReadOnly(true)]
+        string ITabularNamedObject.Name
+        {
+            get
+            {
+                return "Partitions";
+            }
+            set
+            {
+
+            }
+        }
+
+        ObjectType ITabularObject.ObjectType => ObjectType.PartitionCollection;
+
+        Table ITabularTableObject.Table => Table;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
+        {
+            add
+            {
+                throw new NotImplementedException();
+            }
+
+            remove
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        bool ITabularNamedObject.CanDelete() => false;
+
+        bool ITabularNamedObject.CanDelete(out string message)
+        {
+            message = Messages.CannotDeleteObject;
+            return false;
+        }
+
+        void ITabularNamedObject.Delete()
+        {
+            throw new NotSupportedException();
+        }
+
+        IEnumerable<ITabularNamedObject> ITabularObjectContainer.GetChildren()
+        {
+            return this;
+        }
+    }
 }

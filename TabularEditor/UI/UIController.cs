@@ -29,7 +29,7 @@ namespace TabularEditor.UI
         public event EventHandler ModelLoaded;
 
         public TabularModelHandler Handler { get; private set; }
-        public TabularUITree Tree { get; private set; }
+        public TabularUITree TreeModel { get; private set; }
 
         private UITreeSelection _selection;
         public UITreeSelection Selection {
@@ -141,8 +141,6 @@ namespace TabularEditor.UI
 
         public ModelActionManager Actions { get; private set; }
 
-        private SortedTreeModel SortedModel;
-
         public void LoadTabularModelToUI()
         {
             if (Handler == null) return;
@@ -165,13 +163,10 @@ namespace TabularEditor.UI
             CurrentFilter = null;
 
             ShowSelectionStatus = false;
-            Tree = new TabularUITree(Handler.Model) { Options = CurrentOptions, TreeView = UI.TreeView };
-            Tree.UpdateComplete += Tree_UpdateComplete;
+            TreeModel = new TabularUITree(Handler.Model) { Options = CurrentOptions, TreeView = UI.TreeView };
+            TreeModel.UpdateComplete += Tree_UpdateComplete;
 
-            var cmp = SortedModel?.Comparer as TabularObjectComparer;
-            SortedModel = new SortedTreeModel(Tree);
-            SortedModel.Comparer = new TabularObjectComparer(Tree, cmp == null ? ObjectOrder.Alphabetical : cmp.Order );
-            UI.TreeView.Model = SortedModel;
+            UI.TreeView.Model = TreeModel;
             UI.TreeView.FindNode(new TreePath(Handler.Model))?.Expand();
 
             UI.ScriptEditor.Enabled = true;
@@ -180,8 +175,8 @@ namespace TabularEditor.UI
             // Takes care of simple 1:1 bindings in the UI, once a Tabular Model has been loaded.
             // "Simple" binding is for UI elements where we can use standard Windows Forms binding
             // since the underlying objects support it.
-            UI.TranslationSelector.ComboBox.BindTo(Handler.Model.Cultures, "DisplayName", Tree, "Culture", "(No translation)");
-            UI.PerspectiveSelector.ComboBox.BindTo(Handler.Model.Perspectives, "Name", Tree, "Perspective", "(All objects)");
+            UI.TranslationSelector.ComboBox.BindTo(Handler.Model.Cultures, "DisplayName", TreeModel, "Culture", "(No translation)");
+            UI.PerspectiveSelector.ComboBox.BindTo(Handler.Model.Perspectives, "Name", TreeModel, "Perspective", "(All objects)");
 
             UpdateUIText();
 
@@ -308,7 +303,6 @@ namespace TabularEditor.UI
         public ToolStripLabel ErrorLabel;
         public Label CurrentMeasureLabel;
         public FormMain FormMain;
-        public ImageList TreeImages;
         public ToolStripDropDownItem ModelMenu;
         public ToolStripDropDownItem ToolsMenu;
         public ToolStripDropDownItem DynamicMenu;

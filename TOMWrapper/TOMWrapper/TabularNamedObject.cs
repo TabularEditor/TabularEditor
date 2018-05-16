@@ -158,7 +158,7 @@ namespace TabularEditor.TOMWrapper
             (this as ITranslatableObject)?.TranslatedDescriptions?.Clear();
 
             // Remove translations for Display Folders, if this object has Display Folders:
-            (this as IDetailObject)?.TranslatedDisplayFolders?.Clear();
+            (this as IFolderObject)?.TranslatedDisplayFolders?.Clear();
 
             // Remove perspective membership if this object supports perspectives:
             (this as ITabularPerspectiveObject)?.InPerspective?.None();
@@ -265,7 +265,7 @@ namespace TabularEditor.TOMWrapper
                 MetadataObject.SetName(value, null);
                 
                 Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.NAME, oldValue, value));
-                Handler.UpdateObject(this);
+                Handler.UpdateObjectName(this);
                 OnPropertyChanged(Properties.NAME, oldValue, value);
 
             }

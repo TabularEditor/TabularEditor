@@ -22,23 +22,45 @@ namespace TabularEditor.TOMWrapper
             else throw new ArgumentException("Argument must be of type Table or Folder.", "obj");
         }
 
-        public static IDetailObjectContainer GetContainer(this IDetailObject obj)
+        public static ITabularNamedObject GetContainer(this ITabularNamedObject obj)
         {
-            var tree = obj.Table.Handler.Tree;
-            var path = ((tree.Culture == null || obj is Folder) ? obj.DisplayFolder : obj.TranslatedDisplayFolders[tree.Culture]).TrimFolder();
-            if (string.IsNullOrEmpty(path)) return obj.Table;
-            var fullPath = obj.Table.Name.ConcatPath(path);
-            Folder result;
-            if (tree.FolderCache.TryGetValue(fullPath, out result)) return result;
-            return obj.Table;
+            var tree = TabularModelHandler.Singleton.Tree;
+
+            if (obj is Model) return null;
+            if (obj is Partition) return (obj as Partition).Table.Partitions;
+            if (obj is KPI) return (obj as KPI).Measure;
+
+            if(tree.Options.HasFlag(LogicalTreeOptions.AllObjectTypes))
+            {
+                if (obj is DataSource) return LogicalGroups.Singleton.DataSources;
+                if (obj is Relationship) return LogicalGroups.Singleton.Relationships;
+                if (obj is ModelRole) return LogicalGroups.Singleton.Roles;
+                if (obj is Perspective) return LogicalGroups.Singleton.Perspectives;
+                if (obj is Culture) return LogicalGroups.Singleton.Translations;
+                if (obj is Table) return LogicalGroups.Singleton.Tables;
+                if (obj is NamedExpression) return LogicalGroups.Singleton.Expressions;
+            }
+
+            if (obj is IFolderObject)
+            {
+                var dObj = obj as IFolderObject;
+                var path = ((tree.Culture == null || obj is Folder) ? dObj.DisplayFolder : dObj.TranslatedDisplayFolders[tree.Culture]).TrimFolder();
+                if (string.IsNullOrEmpty(path)) return dObj.Table;
+                var fullPath = dObj.Table.Name.ConcatPath(path);
+                Folder result;
+                if (tree.FolderCache.TryGetValue(fullPath, out result)) return result;
+                return dObj.Table;
+            }
+
+            return obj.Model;
         }
 
-        public static string GetDisplayFolder(this IDetailObject folderObject, Culture culture)
+        public static string GetDisplayFolder(this IFolderObject folderObject, Culture culture)
         {
             if (culture == null) return folderObject.DisplayFolder.TrimFolder();
             return folderObject.TranslatedDisplayFolders[culture]?.TrimFolder() ?? "";
         }
-        public static void SetDisplayFolder(this IDetailObject folderObject, string newFolderName, Culture culture)
+        public static void SetDisplayFolder(this IFolderObject folderObject, string newFolderName, Culture culture)
         {
             if (folderObject is Folder)
             {
@@ -67,14 +89,14 @@ namespace TabularEditor.TOMWrapper
             return string.Join("\\", pathBits);
         }
 
-        public static bool HasAncestor(this IDetailObject child, ITabularNamedObject ancestor, Culture culture)
+        public static bool HasAncestor(this IFolderObject child, ITabularNamedObject ancestor, Culture culture)
         {
             string ancestorPath = GetFullPath(ancestor);
 
             return (child.Table.Name.ConcatPath(child.GetDisplayFolder(culture)) + "\\").StartsWith(ancestorPath + "\\");
         }
 
-        public static bool HasParent(this IDetailObject child, ITabularNamedObject parent, Culture culture)
+        public static bool HasParent(this IFolderObject child, ITabularNamedObject parent, Culture culture)
         {
             string parentPath = GetFullPath(parent);
 

@@ -37,8 +37,8 @@ namespace TabularEditor.TOMWrapper
                 obj.SetAnnotation("TabularEditor_TranslatedNames", obj.TranslatedNames.ToJson(), false);
             if (!obj.TranslatedDescriptions.IsEmpty)
                 obj.SetAnnotation("TabularEditor_TranslatedDescriptions", obj.TranslatedDescriptions.ToJson(), false);
-            if (obj is IDetailObject && !(obj as IDetailObject).TranslatedDisplayFolders.IsEmpty)
-                obj.SetAnnotation("TabularEditor_TranslatedDisplayFolders", (obj as IDetailObject).TranslatedDisplayFolders.ToJson(), false);
+            if (obj is IFolderObject && !(obj as IFolderObject).TranslatedDisplayFolders.IsEmpty)
+                obj.SetAnnotation("TabularEditor_TranslatedDisplayFolders", (obj as IFolderObject).TranslatedDisplayFolders.ToJson(), false);
 
             if (includeChildren && obj is ITabularObjectContainer)
             {
@@ -60,7 +60,7 @@ namespace TabularEditor.TOMWrapper
             if (td != null) obj.TranslatedDescriptions.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, string>>(td));
 
             var tdf = obj.GetAnnotation("TabularEditor_TranslatedDisplayFolders");
-            if (tdf != null && obj is IDetailObject) (obj as IDetailObject).TranslatedDisplayFolders.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, string>>(tdf));
+            if (tdf != null && obj is IFolderObject) (obj as IFolderObject).TranslatedDisplayFolders.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, string>>(tdf));
 
             if (includeChildren && obj is ITabularObjectContainer)
             {
