@@ -33,7 +33,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.actToggleDisplayFolders = new TabularEditor.UI.UIModelAction();
             this.actToggleHidden = new TabularEditor.UI.UIModelAction();
-            this.actToggleMetadataOrder = new TabularEditor.UI.UIModelAction();
+            this.actToggleOrderByName = new TabularEditor.UI.UIModelAction();
             this.actToggleMeasures = new TabularEditor.UI.UIModelAction();
             this.actToggleColumns = new TabularEditor.UI.UIModelAction();
             this.actToggleHierarchies = new TabularEditor.UI.UIModelAction();
@@ -248,7 +248,7 @@
             // 
             actionsMain.Actions.Add(this.actToggleDisplayFolders);
             actionsMain.Actions.Add(this.actToggleHidden);
-            actionsMain.Actions.Add(this.actToggleMetadataOrder);
+            actionsMain.Actions.Add(this.actToggleOrderByName);
             actionsMain.Actions.Add(this.actToggleMeasures);
             actionsMain.Actions.Add(this.actToggleColumns);
             actionsMain.Actions.Add(this.actToggleHierarchies);
@@ -308,17 +308,17 @@
             this.actToggleHidden.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.DisableIfLinqMode);
             this.actToggleHidden.Execute += new System.EventHandler(this.actViewOptions_Execute);
             // 
-            // actToggleMetadataOrder
+            // actToggleOrderByName
             // 
-            this.actToggleMetadataOrder.Checked = true;
-            this.actToggleMetadataOrder.CheckOnClick = true;
-            this.actToggleMetadataOrder.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.actToggleMetadataOrder.Enabled = false;
-            this.actToggleMetadataOrder.Image = global::TabularEditor.Resources.SortAscending_16x;
-            this.actToggleMetadataOrder.Text = "Sort &alphabetically";
-            this.actToggleMetadataOrder.ToolTipText = "Toggle alphabetical/metadata ordering of items";
-            this.actToggleMetadataOrder.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.DisableIfLinqMode);
-            this.actToggleMetadataOrder.Execute += new System.EventHandler(this.actViewOptions_Execute);
+            this.actToggleOrderByName.Checked = true;
+            this.actToggleOrderByName.CheckOnClick = true;
+            this.actToggleOrderByName.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.actToggleOrderByName.Enabled = false;
+            this.actToggleOrderByName.Image = global::TabularEditor.Resources.SortAscending_16x;
+            this.actToggleOrderByName.Text = "Sort &alphabetically";
+            this.actToggleOrderByName.ToolTipText = "Toggle alphabetical/metadata ordering of items";
+            this.actToggleOrderByName.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.DisableIfLinqMode);
+            this.actToggleOrderByName.Execute += new System.EventHandler(this.actViewOptions_Execute);
             // 
             // actToggleMeasures
             // 
@@ -1077,7 +1077,7 @@
             // 
             // tbSortAlphabetically
             // 
-            actionsMain.SetAction(this.tbSortAlphabetically, this.actToggleMetadataOrder);
+            actionsMain.SetAction(this.tbSortAlphabetically, this.actToggleOrderByName);
             this.tbSortAlphabetically.AutoToolTip = false;
             this.tbSortAlphabetically.Checked = true;
             this.tbSortAlphabetically.CheckOnClick = true;
@@ -1093,7 +1093,7 @@
             // 
             // sortAlphabeticalToolStripMenuItem
             // 
-            actionsMain.SetAction(this.sortAlphabeticalToolStripMenuItem, this.actToggleMetadataOrder);
+            actionsMain.SetAction(this.sortAlphabeticalToolStripMenuItem, this.actToggleOrderByName);
             this.sortAlphabeticalToolStripMenuItem.Checked = true;
             this.sortAlphabeticalToolStripMenuItem.CheckOnClick = true;
             this.sortAlphabeticalToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -2261,7 +2261,7 @@
         private System.Windows.Forms.ToolStripButton btnRun;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
         private TabularEditor.UI.UIModelAction actToggleDisplayFolders;
-        private TabularEditor.UI.UIModelAction actToggleMetadataOrder;
+        private TabularEditor.UI.UIModelAction actToggleOrderByName;
         private TabularEditor.UI.UIModelAction actToggleInfoColumns;
         private TabularEditor.UI.UIModelAction actExpressionAcceptEdit;
         private TabularEditor.UI.UIModelAction actExpressionCancelEdit;
@@ -2312,7 +2312,6 @@
         private TabularEditor.UI.Actions.UIUndoRedoAction actRedo;
         private System.Windows.Forms.ToolStripButton btnUndoErrors;
         private FastColoredTextBoxNS.FastColoredTextBox txtAdvanced;
-        private System.Windows.Forms.ImageList tabularTreeImages;
         private Aga.Controls.Tree.TreeViewAdv tvModel;
         private Aga.Controls.Tree.TreeColumn _colName;
         private Aga.Controls.Tree.TreeColumn _colType;
@@ -2425,6 +2424,7 @@
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodeTextBox7;
         public Aga.Controls.Tree.TreeColumn _colTable;
         public ToolStripSpringTextBox txtFilter;
+        internal System.Windows.Forms.ImageList tabularTreeImages;
     }
 }
 

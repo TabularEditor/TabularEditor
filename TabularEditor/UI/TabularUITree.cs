@@ -137,9 +137,9 @@ namespace TabularEditor
             if (DragInfo.SameTable)
             {
                 // Dragging foldered objects into or out of folders:
-                if (sourceNodes.All(n => n.Tag is IDetailObject))
+                if (sourceNodes.All(n => n.Tag is IFolderObject))
                 {
-                    if (targetNode.Tag is IDetailObjectContainer) return SetDropMode(DropMode.Folder);
+                    if (targetNode.Tag is IFolder) return SetDropMode(DropMode.Folder);
                 }
 
                 // Dragging into a hierarchy:
@@ -183,9 +183,9 @@ namespace TabularEditor
                 case DropMode.ReorderLevels: Handler.Actions.ReorderLevels(sourceNodes.Select(n => n.Tag as Level), DragInfo.TargetOrdinal); break;
                 case DropMode.LevelMove: Handler.Actions.AddColumnsToHierarchy(sourceNodes.Select(n => (n.Tag as Level).Column), DragInfo.TargetHierarchy, DragInfo.TargetOrdinal); break;
                 case DropMode.AddColumns: Handler.Actions.AddColumnsToHierarchy(sourceNodes.Select(n => n.Tag as Column), DragInfo.TargetHierarchy, DragInfo.TargetOrdinal); break;
-                case DropMode.Folder: Handler.Actions.SetContainer(sourceNodes.Select(n => n.Tag as IDetailObject), targetNode.Tag as IDetailObjectContainer, Culture); break;
+                case DropMode.Folder: Handler.Actions.SetContainer(sourceNodes.Select(n => n.Tag as IFolderObject), targetNode.Tag as IFolder, Culture); break;
                 case DropMode.MoveObject:
-                    Handler.Actions.MoveObjects(sourceNodes.Select(n => n.Tag as IDetailObject), targetNode.Tag as Table);
+                    Handler.Actions.MoveObjects(sourceNodes.Select(n => n.Tag as IFolderObject), targetNode.Tag as Table);
                     break;
             }
         }
@@ -209,10 +209,9 @@ namespace TabularEditor
             var stack = new List<object>();
 
             stack.Add(Model);
-            if (item is PartitionViewTable || item is Partition)
+            if (item is Partition)
             {
-                stack.Add(Model.Groups.Partitions);
-                if (item is Partition) stack.Add((item as Partition).Table.PartitionViewTable);
+                stack.Add((item as Partition).Table.Partitions);
                 stack.Add(item);
                 return new TreePath(stack.ToArray());
             }
@@ -245,9 +244,9 @@ namespace TabularEditor
                 var level = item as Level;
                 if (level != null) item = level.Hierarchy;
 
-                if (item is IDetailObject && Options.HasFlag(LogicalTreeOptions.DisplayFolders))
+                if (item is IFolderObject && Options.HasFlag(LogicalTreeOptions.DisplayFolders))
                 {
-                    var dfo = item as IDetailObject;
+                    var dfo = item as IFolderObject;
 
                     var pathBits = dfo.Table.Name.ConcatPath(dfo.GetDisplayFolder(Culture)).Split('\\');
                     var folderPath = dfo.Table.Name;

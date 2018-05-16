@@ -19,8 +19,11 @@ namespace TabularEditor
 
         private string CurrentCustomAction;
 
+        public static FormMain Singleton;
+
         public FormMain()
         {
+            Singleton = this;
             Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en-US");
             InitializeComponent();
 
@@ -163,7 +166,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             actToggleColumns.Checked = Preferences.Current.View_Columns;
             actToggleHierarchies.Checked = Preferences.Current.View_Hierarchies;
             actToggleAllObjectTypes.Checked = Preferences.Current.View_AllObjectTypes;
-            actToggleMetadataOrder.Checked = !Preferences.Current.View_SortAlphabetically;
+            actToggleOrderByName.Checked = !Preferences.Current.View_SortAlphabetically;
             actViewOptions_Execute(this, null);
         }
 
@@ -223,7 +226,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 actToggleMeasures.Checked,
                 actToggleHierarchies.Checked,
                 actToggleAllObjectTypes.Checked,
-                actToggleMetadataOrder.Checked,
+                actToggleOrderByName.Checked,
                 actToggleFilter.Checked ? txtFilter.Text : null
             );
 
@@ -233,7 +236,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             Preferences.Current.View_Measures = actToggleMeasures.Checked;
             Preferences.Current.View_Hierarchies = actToggleHierarchies.Checked;
             Preferences.Current.View_AllObjectTypes = actToggleAllObjectTypes.Checked;
-            Preferences.Current.View_SortAlphabetically = !actToggleMetadataOrder.Checked;
+            Preferences.Current.View_SortAlphabetically = !actToggleOrderByName.Checked;
             Preferences.Current.Save();
         }
 
@@ -540,7 +543,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         public void UpdateTreeUIButtons()
         {
-            var treeModel = (tvModel.Model as Aga.Controls.Tree.SortedTreeModel).InnerModel as TabularUITree;
+            var treeModel = tvModel.Model as TabularUITree;
             tbShowDisplayFolders.Checked = treeModel.Options.HasFlag(TOMWrapper.LogicalTreeOptions.DisplayFolders);
             tbShowHidden.Checked = treeModel.Options.HasFlag(TOMWrapper.LogicalTreeOptions.ShowHidden);
             tbShowAllObjectTypes.Checked = treeModel.Options.HasFlag(TOMWrapper.LogicalTreeOptions.AllObjectTypes);

@@ -14,11 +14,11 @@ namespace TabularEditor.TOMWrapper
     /// Implements IParentObject since a Folder can contain child objects.
     /// </summary>
     [DebuggerDisplay("{ObjectType} {Path}")]
-    public class Folder : IDetailObject, ITabularObjectContainer, IDetailObjectContainer, ITabularNamedObject, ITabularTableObject,
+    public class Folder : IFolderObject, ITabularObjectContainer, IFolder, ITabularNamedObject, ITabularTableObject,
         IErrorMessageObject
     {
         [Browsable(false)]
-        public IDetailObjectContainer Container
+        public IFolder Container
         {
             get
             {
@@ -206,11 +206,11 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public IEnumerable<IDetailObject> GetChildrenByFolders(bool recursive = false)
+        public IEnumerable<IFolderObject> GetChildrenByFolders(bool recursive = false)
         {
-            var allChildren = Table.GetChildren().OfType<IDetailObject>();
+            var allChildren = Table.GetChildren().OfType<IFolderObject>();
             var folders = Enumerable.Empty<Folder>();
-            IEnumerable<IDetailObject> children;
+            IEnumerable<IFolderObject> children;
 
             if (recursive)
             {
@@ -222,14 +222,16 @@ namespace TabularEditor.TOMWrapper
                 folders = GetChildPaths().Select(f => CreateFolder(Table, f));
             }
 
-            return folders.Concat(children);
+            var items = folders.Concat(children).OrderBy(i => i.GetDisplayOrder());
+            if (Tree.Options.HasFlag(LogicalTreeOptions.OrderByName)) items = items.ThenBy(i => i.Name);
+            return items;
         }
 
         private IEnumerable<string> GetChildPaths()
         {
             var level = Path.Level();
 
-            var result = Table.GetChildren().OfType<IDetailObject>().Where(c => c.HasAncestor(this, Culture))
+            var result = Table.GetChildren().OfType<IFolderObject>().Where(c => c.HasAncestor(this, Culture))
                 .Select(c => c.GetDisplayFolder(Culture))
                 .Where(f => f.Level() > level)
                 .Select(f => f.Split('\\').Take(level + 1).ConcatPath()).Distinct();

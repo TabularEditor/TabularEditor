@@ -14,7 +14,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    partial class Table: ITabularObjectContainer, IDetailObjectContainer, ITabularPerspectiveObject, IDaxObject,
+    partial class Table: ITabularObjectContainer, IFolder, ITabularPerspectiveObject, IDaxObject,
         IErrorMessageObject, IDaxDependantObject, IExpressionObject
     {
         private DependsOnList _dependsOn = null;
@@ -113,6 +113,13 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         [Browsable(false),IntelliSense("Enumerates all relationships in which this table participates.")]
         public IEnumerable<SingleColumnRelationship> UsedInRelationships { get { return Model.Relationships.Where(r => r.FromTable == this || r.ToTable == this); } }
+
+        [Browsable(false), IntelliSense("Enumerates only the Data Columns on this table.")]
+        public IEnumerable<DataColumn> DataColumns => Columns.OfType<DataColumn>();
+
+        [Browsable(false), IntelliSense("Enumerates only the Calculated Columns on this table.")]
+        public IEnumerable<CalculatedColumn> CalculatedColumns => Columns.OfType<CalculatedColumn>();
+
         /// <summary>
         /// Enumerates all tables related to or from this table.
         /// </summary>
@@ -217,10 +224,13 @@ namespace TabularEditor.TOMWrapper
         /// <returns></returns>
         public IEnumerable<ITabularNamedObject> GetChildren()
         {
-            return Columns.Concat<TabularNamedObject>(Measures).Concat(Hierarchies);
+            foreach (var m in Measures) yield return m;
+            foreach (var c in Columns) yield return c;
+            foreach (var h in Hierarchies) yield return h;
+            yield break;
         }
 
-        public IEnumerable<IDetailObject> GetChildrenByFolders(bool recursive)
+        public IEnumerable<IFolderObject> GetChildrenByFolders(bool recursive)
         {
             throw new InvalidOperationException();
         }

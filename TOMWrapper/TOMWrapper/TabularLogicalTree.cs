@@ -19,7 +19,24 @@ namespace TabularEditor.TOMWrapper
         ShowHidden = 0x40,
         AllObjectTypes = 0x80,
         ShowRoot = 0x100,
+        OrderByName = 0x200,
         Default = DisplayFolders | Columns | Measures | KPIs | Hierarchies | Levels | ShowRoot | AllObjectTypes
+    }
+
+    internal static class ObjectOrderHelper
+    {
+        public static int GetDisplayOrder(this ITabularNamedObject item)
+        {
+            switch(item.ObjectType)
+            {
+                case ObjectType.PartitionCollection: return 0;
+                case ObjectType.Folder: return 1;
+                case ObjectType.Measure: return 2;
+                case ObjectType.Column: return 3;
+                case ObjectType.Hierarchy: return 4;
+                default: return 5;
+            }
+        }
     }
 
     /// <summary>
@@ -157,7 +174,7 @@ namespace TabularEditor.TOMWrapper
         public void ModifyDisplayFolder(Table table, string oldPath, string newPath, Culture culture)
         {
             var tab = table;
-            foreach(var c in tab.GetChildren().OfType<IDetailObject>())
+            foreach(var c in tab.GetChildren().OfType<IFolderObject>())
             {
                 var currentPath = c.GetDisplayFolder(culture) + "\\";
                 if (currentPath.StartsWith(oldPath + "\\", StringComparison.InvariantCultureIgnoreCase))
@@ -187,17 +204,41 @@ namespace TabularEditor.TOMWrapper
 
         #region ITreeModel implementation
         
+        private IEnumerable GetChildrenForTable(Table table)
+        {
+            if (table.SourceType != TOM.PartitionSourceType.Calculated)
+                yield return table.Partitions;
+
+            IEnumerable<ITabularNamedObject> items;
+
+            if (Options.HasFlag(LogicalTreeOptions.DisplayFolders))
+            {
+                var rootFolder = Folder.CreateFolder(table, "");
+                items = rootFolder.GetChildrenByFolders();
+            }
+            else
+            {
+                items = table.GetChildren();
+                if (Options.HasFlag(LogicalTreeOptions.OrderByName))
+                    items = items.OrderBy(i => i.GetDisplayOrder()).ThenBy(i => i.Name);
+            }
+            items = items.Where(i => VisibleInTree(i));
+
+            foreach (var item in items)
+                yield return item;
+            yield break;
+        }
 
         /// <summary>
         /// This method encapsulates the logic of how the tree representation of the tabular model should be structured
         /// </summary>
         protected IEnumerable GetChildren(ITabularObjectContainer tabularObject)
         {
-            bool useDF = Options.HasFlag(LogicalTreeOptions.DisplayFolders);
 
             if(tabularObject is LogicalGroup)
             {
-                return (tabularObject as LogicalGroup).GetChildren().Where(o => VisibleInTree(o));
+                var children = (tabularObject as LogicalGroup).GetChildren().Where(o => VisibleInTree(o));
+                return Options.HasFlag(LogicalTreeOptions.OrderByName) ? children.OrderBy(o => o.Name) : children;
             }
             if(tabularObject is Model)
             {
@@ -214,14 +255,7 @@ namespace TabularEditor.TOMWrapper
             {
                 var table = tabularObject as Table;
 
-                if (useDF)
-                {
-                    var rootFolder = Folder.CreateFolder(table, "");
-                    return rootFolder.GetChildrenByFolders().Where(c => VisibleInTree(c));
-                } else
-                {
-                    return table.GetChildren().Where(c => VisibleInTree(c));
-                }
+                return GetChildrenForTable(table);
             }
             if (tabularObject is Folder)
             {
@@ -354,7 +388,27 @@ namespace TabularEditor.TOMWrapper
 
         public virtual void OnNodesChanged() { }
 
+        /// <summary>
+        /// Call this method to signal to the TreeView that a node needs repaint, typically
+        /// because a property was changed that affects how the node should be rendered (but not
+        /// WHERE the node should be rendered).
+        /// </summary>
+        /// <param name="nodeItem"></param>
         public abstract void OnNodesChanged(ITabularObject nodeItem);
+
+        /// <summary>
+        /// Call this method to signal to the TreeView that a nodes name was changed. When
+        /// using the OrderByName option, this typically requires a call to OnStructureChanged
+        /// on the parent node.
+        /// </summary>
+        /// <param name="nodeItem"></param>
+        public void OnNodeNameChanged(ITabularNamedObject nodeItem)
+        {
+            if (Options.HasFlag(LogicalTreeOptions.OrderByName))
+                OnStructureChanged(nodeItem.GetContainer());
+            else
+                OnNodesChanged(nodeItem);
+        }
 
         #endregion
 

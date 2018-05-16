@@ -28,10 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormDisplayFolderSelect));
             this.treeFolders = new System.Windows.Forms.TreeView();
-            this.tabularTreeImages = new System.Windows.Forms.ImageList(this.components);
             this.label1 = new System.Windows.Forms.Label();
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
@@ -44,11 +41,8 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.treeFolders.HideSelection = false;
-            this.treeFolders.ImageIndex = 0;
-            this.treeFolders.ImageList = this.tabularTreeImages;
             this.treeFolders.Location = new System.Drawing.Point(12, 33);
             this.treeFolders.Name = "treeFolders";
-            this.treeFolders.SelectedImageIndex = 0;
             this.treeFolders.Size = new System.Drawing.Size(316, 252);
             this.treeFolders.TabIndex = 0;
             this.treeFolders.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeFolders_BeforeLabelEdit);
@@ -57,14 +51,6 @@
             this.treeFolders.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.treeFolders_AfterExpand);
             this.treeFolders.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeFolders_AfterSelect);
             this.treeFolders.MouseDown += new System.Windows.Forms.MouseEventHandler(this.treeFolders_MouseDown);
-            // 
-            // tabularTreeImages
-            // 
-            this.tabularTreeImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("tabularTreeImages.ImageStream")));
-            this.tabularTreeImages.TransparentColor = System.Drawing.Color.Transparent;
-            this.tabularTreeImages.Images.SetKeyName(0, "folder");
-            this.tabularTreeImages.Images.SetKeyName(1, "folderOpen");
-            this.tabularTreeImages.Images.SetKeyName(2, "Table_16x.png");
             // 
             // label1
             // 
@@ -136,6 +122,5 @@
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnNewFolder;
-        private System.Windows.Forms.ImageList tabularTreeImages;
     }
 }

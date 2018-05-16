@@ -139,20 +139,20 @@ namespace TabularEditor.TOMWrapper
     ///  - Hierarchies
     ///  - Folders
     /// </summary>
-    public interface IDetailObject : ITabularTableObject
+    public interface IFolderObject : ITabularTableObject
     {
         string DisplayFolder { get; set; }
         TranslationIndexer TranslatedDisplayFolders { get; }
     }
 
     /// <summary>
-    /// Represents an objects that can contain other objects as well as display folders. Examples:
+    /// Represents an objects that can contain IFolderObject's
     ///  - Folders
     ///  - Table
     /// </summary>
-    public interface IDetailObjectContainer : ITabularNamedObject
+    public interface IFolder : ITabularNamedObject
     {
-        IEnumerable<IDetailObject> GetChildrenByFolders(bool recursive = false);
+        IEnumerable<IFolderObject> GetChildrenByFolders(bool recursive = false);
         Table ParentTable { get; }
     }
 }

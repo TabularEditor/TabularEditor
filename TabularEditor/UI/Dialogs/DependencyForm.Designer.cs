@@ -29,18 +29,16 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DependencyForm));
             this.treeObjects = new System.Windows.Forms.TreeView();
-            this.tabularTreeImages = new System.Windows.Forms.ImageList(this.components);
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.copyTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyTreeAsJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.goToObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnCancel = new System.Windows.Forms.Button();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton3 = new System.Windows.Forms.RadioButton();
             this.chkShowInactive = new System.Windows.Forms.CheckBox();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.copyTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.goToObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.copyTreeAsJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -50,11 +48,8 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.treeObjects.ContextMenuStrip = this.contextMenuStrip1;
-            this.treeObjects.ImageIndex = 0;
-            this.treeObjects.ImageList = this.tabularTreeImages;
             this.treeObjects.Location = new System.Drawing.Point(12, 85);
             this.treeObjects.Name = "treeObjects";
-            this.treeObjects.SelectedImageIndex = 0;
             this.treeObjects.ShowNodeToolTips = true;
             this.treeObjects.Size = new System.Drawing.Size(316, 200);
             this.treeObjects.TabIndex = 0;
@@ -64,47 +59,39 @@
             this.treeObjects.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.treeObjects_KeyPress);
             this.treeObjects.MouseDown += new System.Windows.Forms.MouseEventHandler(this.treeObjects_MouseDown);
             // 
-            // tabularTreeImages
+            // contextMenuStrip1
             // 
-            this.tabularTreeImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("tabularTreeImages.ImageStream")));
-            this.tabularTreeImages.TransparentColor = System.Drawing.Color.Transparent;
-            this.tabularTreeImages.Images.SetKeyName(0, "folder");
-            this.tabularTreeImages.Images.SetKeyName(1, "folderOpen");
-            this.tabularTreeImages.Images.SetKeyName(2, "table");
-            this.tabularTreeImages.Images.SetKeyName(3, "hierarchy");
-            this.tabularTreeImages.Images.SetKeyName(4, "column");
-            this.tabularTreeImages.Images.SetKeyName(5, "calculator");
-            this.tabularTreeImages.Images.SetKeyName(6, "kpi");
-            this.tabularTreeImages.Images.SetKeyName(7, "measure");
-            this.tabularTreeImages.Images.SetKeyName(8, "sigma");
-            this.tabularTreeImages.Images.SetKeyName(9, "cube");
-            this.tabularTreeImages.Images.SetKeyName(10, "link");
-            this.tabularTreeImages.Images.SetKeyName(11, "level");
-            this.tabularTreeImages.Images.SetKeyName(12, "calccolumn");
-            this.tabularTreeImages.Images.SetKeyName(13, "level01");
-            this.tabularTreeImages.Images.SetKeyName(14, "level02");
-            this.tabularTreeImages.Images.SetKeyName(15, "level03");
-            this.tabularTreeImages.Images.SetKeyName(16, "level04");
-            this.tabularTreeImages.Images.SetKeyName(17, "level05");
-            this.tabularTreeImages.Images.SetKeyName(18, "level06");
-            this.tabularTreeImages.Images.SetKeyName(19, "level07");
-            this.tabularTreeImages.Images.SetKeyName(20, "level08");
-            this.tabularTreeImages.Images.SetKeyName(21, "level09");
-            this.tabularTreeImages.Images.SetKeyName(22, "level10");
-            this.tabularTreeImages.Images.SetKeyName(23, "level11");
-            this.tabularTreeImages.Images.SetKeyName(24, "level12");
-            this.tabularTreeImages.Images.SetKeyName(25, "warning");
-            this.tabularTreeImages.Images.SetKeyName(26, "question");
-            this.tabularTreeImages.Images.SetKeyName(27, "method");
-            this.tabularTreeImages.Images.SetKeyName(28, "property");
-            this.tabularTreeImages.Images.SetKeyName(29, "exmethod");
-            this.tabularTreeImages.Images.SetKeyName(30, "enum");
-            this.tabularTreeImages.Images.SetKeyName(31, "calctable");
-            this.tabularTreeImages.Images.SetKeyName(32, "perspective");
-            this.tabularTreeImages.Images.SetKeyName(33, "translation");
-            this.tabularTreeImages.Images.SetKeyName(34, "role");
-            this.tabularTreeImages.Images.SetKeyName(35, "culture");
-            this.tabularTreeImages.Images.SetKeyName(36, "datasource");
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.copyTreeToolStripMenuItem,
+            this.copyTreeAsJSONToolStripMenuItem,
+            this.goToObjectToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(215, 70);
+            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
+            // 
+            // copyTreeToolStripMenuItem
+            // 
+            this.copyTreeToolStripMenuItem.Name = "copyTreeToolStripMenuItem";
+            this.copyTreeToolStripMenuItem.ShortcutKeyDisplayString = "";
+            this.copyTreeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+            this.copyTreeToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
+            this.copyTreeToolStripMenuItem.Text = "Copy Tree as ASCII";
+            this.copyTreeToolStripMenuItem.Click += new System.EventHandler(this.copyTreeToolStripMenuItem_Click);
+            // 
+            // copyTreeAsJSONToolStripMenuItem
+            // 
+            this.copyTreeAsJSONToolStripMenuItem.Name = "copyTreeAsJSONToolStripMenuItem";
+            this.copyTreeAsJSONToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
+            this.copyTreeAsJSONToolStripMenuItem.Text = "Copy Tree as JSON";
+            this.copyTreeAsJSONToolStripMenuItem.Click += new System.EventHandler(this.copyTreeAsJSONToolStripMenuItem_Click);
+            // 
+            // goToObjectToolStripMenuItem
+            // 
+            this.goToObjectToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.goToObjectToolStripMenuItem.Name = "goToObjectToolStripMenuItem";
+            this.goToObjectToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
+            this.goToObjectToolStripMenuItem.Text = "Go to Object";
+            this.goToObjectToolStripMenuItem.Click += new System.EventHandler(this.goToObjectToolStripMenuItem_Click);
             // 
             // btnCancel
             // 
@@ -169,40 +156,6 @@
             this.chkShowInactive.Visible = false;
             this.chkShowInactive.CheckedChanged += new System.EventHandler(this.chkShowInactive_CheckedChanged);
             // 
-            // contextMenuStrip1
-            // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.copyTreeToolStripMenuItem,
-            this.copyTreeAsJSONToolStripMenuItem,
-            this.goToObjectToolStripMenuItem});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(215, 92);
-            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
-            // 
-            // copyTreeToolStripMenuItem
-            // 
-            this.copyTreeToolStripMenuItem.Name = "copyTreeToolStripMenuItem";
-            this.copyTreeToolStripMenuItem.ShortcutKeyDisplayString = "";
-            this.copyTreeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.copyTreeToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
-            this.copyTreeToolStripMenuItem.Text = "Copy Tree as ASCII";
-            this.copyTreeToolStripMenuItem.Click += new System.EventHandler(this.copyTreeToolStripMenuItem_Click);
-            // 
-            // goToObjectToolStripMenuItem
-            // 
-            this.goToObjectToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.goToObjectToolStripMenuItem.Name = "goToObjectToolStripMenuItem";
-            this.goToObjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.goToObjectToolStripMenuItem.Text = "Go to Object";
-            this.goToObjectToolStripMenuItem.Click += new System.EventHandler(this.goToObjectToolStripMenuItem_Click);
-            // 
-            // copyTreeAsJSONToolStripMenuItem
-            // 
-            this.copyTreeAsJSONToolStripMenuItem.Name = "copyTreeAsJSONToolStripMenuItem";
-            this.copyTreeAsJSONToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
-            this.copyTreeAsJSONToolStripMenuItem.Text = "Copy Tree as JSON";
-            this.copyTreeAsJSONToolStripMenuItem.Click += new System.EventHandler(this.copyTreeAsJSONToolStripMenuItem_Click);
-            // 
             // DependencyForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -232,7 +185,6 @@
 
         private System.Windows.Forms.TreeView treeObjects;
         private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.ImageList tabularTreeImages;
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.RadioButton radioButton2;
         private System.Windows.Forms.RadioButton radioButton3;

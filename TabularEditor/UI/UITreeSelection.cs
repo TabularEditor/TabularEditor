@@ -67,42 +67,8 @@ namespace TabularEditor.UI
         }
     }
 
-    /// <summary>
-    /// A bit mask of Table Object types that can be simultaneously selected in the Explorer Tree.
-    /// Only relevant when Context = TableObject.
-    /// </summary>
-    [Flags]
-    public enum Types
-    {
-        None = 0,
-        Folder =                1 << 0,
-        Hierarchy =             1 << 1,
-        Measure =               1 << 2,
-        Column =                1 << 3,
-        CalculatedColumn =      1 << 4,
-        DataColumn =            1 << 5,
-        CalculatedTableColumn = 1 << 6,
-        KPI =                   1 << 7
-    }
-
     public static class TypesHelper
     {
-        /// <summary>
-        /// Returns true if types contains one or more of the specified flags.
-        /// </summary>
-        public static bool HasX(this Types types, Types flags)
-        {
-            return (types & flags) != 0;
-        }
-        /// <summary>
-        /// Returns true if types contains exactly one of the specified flags.
-        /// </summary>
-        public static bool Has1(this Types types, Types flags)
-        {
-            var x = (types & flags);
-            return x != 0 && (x & (x - 1)) == 0;
-        }
-
         /// <summary>
         /// Returns true if context contains one or more of the specified flags.
         /// </summary>
@@ -132,27 +98,6 @@ namespace TabularEditor.UI
         {
             var x = context;
             return x != 0 && (x & (x - 1)) == 0;
-        }
-
-        /// <summary>
-        /// Returns the number of flags set.
-        /// </summary>
-        public static int Count(this Types types)
-        {
-            int count = 0;
-            while (types != 0)
-            {
-                count++;
-                types &= (types - 1);
-            }
-            return count;
-        }
-        /// <summary>
-        /// Returns true if types contains none of the specified flags.
-        /// </summary>
-        public static bool Has0(this Types types, Types flags)
-        {
-            return (types & flags) == 0;
         }
     }
 
@@ -210,9 +155,9 @@ namespace TabularEditor.UI
         Relationships = 1 << 6,
 
         /// <summary>
-        /// Context menu opened on the "Table Partitions" group node
+        /// Context menu opened on the "Partitions" node
         /// </summary>
-        TablePartitions = 1 << 7,
+        PartitionCollection = 1 << 7,
 
         /// <summary>
         /// Context menu opened on the "Shared Expressions" group node
@@ -290,7 +235,7 @@ namespace TabularEditor.UI
         Everywhere = 0x7FFFFFFF,
         TableObject = Measure | Column | Hierarchy,
         SingularObjects = Model | Table | TableObject | Level | Partition | Relationship | DataSource | Role | Perspective | Translation | KPI | Expression,
-        Groups = Tables | Relationships | DataSources | Roles | Perspectives | Translations | TablePartitions | Expressions,
+        Groups = Tables | Relationships | DataSources | Roles | Perspectives | Translations | Expressions,
         DataObjects = Table | TableObject,
         Scriptable = Table | Partition | DataSource | Role
     }
@@ -314,36 +259,6 @@ namespace TabularEditor.UI
         [IntelliSense("Indicates where in the Explorer Tree the current selection has been made.")]
         public Context Context { get; private set; } = Context.None;
 
-        [IntelliSense("A bit mask specifiying which TableObjects are currently selected.\nExample: if(Selected.Types.HasFlag(Types.Measure)) { ... }")]
-        public Types Types { get; private set; } = Types.None;
-
-        /// <summary>
-        /// Returns a bitmask of Table Object types present in the collection of Explorer Tree nodes
-        /// </summary>
-        /// <param name="nodes"></param>
-        /// <returns></returns>
-        static public Types GetNodeTypes(IReadOnlyCollection<TreeNodeAdv> nodes)
-        {
-            var result = Types.None;
-            foreach(var item in GetDeep(nodes).Select(n => n.Tag).OfType<TabularNamedObject>())
-            {
-                switch(item.ObjectType)
-                {
-                    case ObjectType.Measure: result |= Types.Measure; break;
-                    case ObjectType.Hierarchy: result |= Types.Hierarchy; break;
-                    case ObjectType.Folder: result |= Types.Folder; break;
-                    case ObjectType.Column:
-                        result |= Types.Column;
-                        if (item is CalculatedColumn) result |= Types.CalculatedColumn;
-                        else if (item is DataColumn) result |= Types.DataColumn;
-                        else if (item is CalculatedTableColumn) result |= Types.CalculatedTableColumn;
-                        break;
-                    case ObjectType.KPI: result |= Types.KPI; break;
-                }
-            }
-            return result;
-        }
-
         /// <summary>
         /// Iterates through the passed list of nodes, to return the combined context of the items represented by the nodes.
         /// </summary>
@@ -366,6 +281,7 @@ namespace TabularEditor.UI
             var result = Context.None;
             switch ((node.Tag as ITabularNamedObject).ObjectType)
             {
+                case ObjectType.PartitionCollection: return Context.PartitionCollection;
                 case ObjectType.Expression: return Context.Expression;
                 case ObjectType.Model: return Context.Model;
                 case ObjectType.Culture: return Context.Translation;
@@ -389,7 +305,6 @@ namespace TabularEditor.UI
                         case LogicalGroups.ROLES: return Context.Roles;
                         case LogicalGroups.TRANSLATIONS: return Context.Translations;
                         case LogicalGroups.RELATIONSHIPS: return Context.Relationships;
-                        case LogicalGroups.TABLEPARTITIONS: return Context.TablePartitions;
                         case LogicalGroups.EXPRESSIONS: return Context.Expressions;
                     }
                     break;                   
@@ -417,8 +332,6 @@ namespace TabularEditor.UI
             if (Count == 0) Context = Context.None;
             else if (Count == 1) Context = GetNodeContext(allNodes[0]);
             else Context = GetNodeContexts(allNodes);
-
-            Types = GetNodeTypes(selectedNodes);
 
             Folders = selectedNodes.Select(n => n.Tag).OfType<Folder>();
             Groups = selectedNodes.Select(n => n.Tag).OfType<LogicalGroup>();
@@ -474,13 +387,13 @@ namespace TabularEditor.UI
                 {
                     var obj = Direct.First();
                     if (obj is Folder) return (obj as Folder).Path;
-                    if (obj is IDetailObject) return (obj as IDetailObject).DisplayFolder;
+                    if (obj is IFolderObject) return (obj as IFolderObject).DisplayFolder;
                     if (obj is Level) return (obj as Level).Hierarchy.DisplayFolder;
                     return "";
                 } else
                 {
                     var obj = Direct.First();
-                    if (obj is IDetailObject) return (obj as IDetailObject).DisplayFolder;
+                    if (obj is IFolderObject) return (obj as IFolderObject).DisplayFolder;
                     if (obj is Level) return (obj as Level).Hierarchy.DisplayFolder;
                     return "";
                 }
@@ -553,8 +466,8 @@ namespace TabularEditor.UI
         {
             get
             {
-                if (UIController.Current.Tree.Perspective == null) throw new Exception("No perspective is currently selected in Tabular Editor.");
-                return UIController.Current.Tree.Perspective;
+                if (UIController.Current.TreeModel.Perspective == null) throw new Exception("No perspective is currently selected in Tabular Editor.");
+                return UIController.Current.TreeModel.Perspective;
             }
         }
         [IntelliSense("The currently selected culture in Tabular Editor.")]
@@ -562,8 +475,8 @@ namespace TabularEditor.UI
         {
             get
             {
-                if (UIController.Current.Tree.Culture == null) throw new Exception("No culture is currently selected in Tabular Editor.");
-                return UIController.Current.Tree.Culture;
+                if (UIController.Current.TreeModel.Culture == null) throw new Exception("No culture is currently selected in Tabular Editor.");
+                return UIController.Current.TreeModel.Culture;
             }
         }
 

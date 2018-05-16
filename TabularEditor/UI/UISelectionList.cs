@@ -93,14 +93,14 @@ namespace TabularEditor.UI
         {
             get
             {
-                var c = this.OfType<IDetailObject>();
+                var c = this.OfType<IFolderObject>();
                 if (c.Count() != 1) throw new Exception("The collection does not contain exactly one object with the DisplayFolder property.");
                 return c.First().DisplayFolder;
             }
             set
             {
                 Handler.BeginUpdate("display folder");
-                this.OfType<IDetailObject>().ToList().ForEach(i => i.DisplayFolder = value);
+                this.OfType<IFolderObject>().ToList().ForEach(i => i.DisplayFolder = value);
                 Handler.EndUpdate();
             }
         }

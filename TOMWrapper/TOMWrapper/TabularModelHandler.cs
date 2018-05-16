@@ -929,7 +929,11 @@ namespace TabularEditor.TOMWrapper
 
             Tree.OnNodesChanged(obj);
         }
-
+        internal void UpdateObjectName(ITabularNamedObject obj)
+        {
+            Tree.OnNodeNameChanged(obj);
+        }
+ 
         internal void UpdateFolders(Table table)
         {
             Tree.OnStructureChanged(table);

@@ -18,10 +18,10 @@ namespace TabularEditor.UI
         private void DynamicMenu_Update()
         {
             var c = Selection.Context;
-            if (c.Has1(Context.SingularObjects | (Context.Groups ^ Context.TablePartitions)) && c != Context.Model)
+            if (c.Has1(Context.SingularObjects | Context.Groups | Context.PartitionCollection) && c != Context.Model)
             {
                 UI.DynamicMenu.Visible = true;
-                UI.DynamicMenu.Text = "&" + c.ToString().SplitCamelCase();
+                UI.DynamicMenu.Text = c == Context.PartitionCollection ? "&Partitions" : "&" + c.ToString().SplitCamelCase();
                 return;
             }
 

@@ -76,7 +76,7 @@ namespace TabularEditor.TOMWrapper
 	<#= Rules.GetTypeXmlDoc(t) #>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public <#= t.IsAbstract ? "abstract " : (Rules.Sealed(t) ? "sealed " : "") #>partial class <#= t.Name #>: <#= Rules.ObjectTypes[t]
-#><#= props.Any(p => p.Name == "DisplayFolder") ? "\n\t\t\t, IDetailObject" : ""
+#><#= props.Any(p => p.Name == "DisplayFolder") ? "\n\t\t\t, IFolderObject" : ""
 #><#= props.Any(p => p.Name == "IsHidden") ? "\n\t\t\t, IHideableObject" : ""
 #><#= props.Any(p => p.Name == "ErrorMessage") ? "\n\t\t\t, IErrorMessageObject" : ""
 #><#= props.Any(p => p.Name == "Table") ? "\n\t\t\t, ITabularTableObject" : ""

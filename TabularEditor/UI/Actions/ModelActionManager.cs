@@ -37,13 +37,13 @@ namespace TabularEditor.UI.Actions
             // "Create New"
             Add(new Action((s, m) => s.Count >= 1 && !Handler.UsePowerBIGovernance, 
                 (s, m) => {
-                var disp = (s.FirstOrDefault() as IDetailObject)?.DisplayFolder;
+                var disp = (s.FirstOrDefault() as IFolderObject)?.DisplayFolder;
                 disp = string.IsNullOrWhiteSpace(disp) ? "New folder" : (disp + @"\New folder"); ;
                 Folder.CreateFolder(s.Table, disp).Edit();
                 s.DisplayFolder = disp;
                 
             }, (s, m) => @"Create New\Display Folder", true, Context.TableObject));
-            Add(new Action((s, m) => s.Count == 1 && s.Types == Types.Measure, (s, m) => s.Measure.AddKPI().Edit(), (s, m) => @"Create New\KPI", true, Context.DataObjects));
+            Add(new Action((s, m) => s.Count == 1, (s, m) => s.Measure.AddKPI().Edit(), (s, m) => @"Create New\KPI", true, Context.Measure));
             Add(new Action((s, m) => true, (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Measure", true, Context.Table | Context.TableObject));
             Add(new Action((s, m) => true, (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Calculated Column", true, Context.Table | Context.TableObject));
             Add(new Action((s, m) => !Handler.UsePowerBIGovernance, (s, m) => s.Table.AddDataColumn(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Data Column", true, Context.Table | Context.TableObject));
@@ -52,14 +52,24 @@ namespace TabularEditor.UI.Actions
                 (s, m) => s.Table.AddHierarchy(displayFolder: s.CurrentFolder, levels: s.Direct.OfType<Column>().ToArray()).Expand().Edit(), 
                 (s, m) => @"Create New\Hierarchy", true, Context.Table | Context.TableObject));
             Add(new Separator(@"Create New"));
+
             Add(new Action(
-                (s, m) => (s.Context == Context.Partition || (s.Context == Context.Table && s.Count == 1)) && !Handler.UsePowerBIGovernance && Handler.Model.DataSources.Any(ds => ds is ProviderDataSource), 
-                (s, m) => Partition.CreateNew(s.Context == Context.Partition ? s.Partitions.First().Table : s.Table).Edit(), 
-                (s, m) => @"Create New\Partition (Legacy)", true, Context.Table | Context.Partition));
+                (s, m) => s.Count == 1 && !Handler.UsePowerBIGovernance, 
+                (s, m) => Partition.CreateNew(s.Table).Edit(), 
+                (s, m) => @"Create New\Partition" + (Handler.CompatibilityLevel >= 1400 ? " (Legacy)" : ""), true, Context.Table));
             Add(new Action(
-                (s, m) => (s.Context == Context.Partition || (s.Context == Context.Table && s.Count == 1)) && !Handler.UsePowerBIGovernance && Handler.Model.DataSources.Any(ds => ds is StructuredDataSource),
-                (s, m) => MPartition.CreateNew(s.Context == Context.Partition ? s.Partitions.First().Table : s.Table).Edit(),
-                (s, m) => @"Create New\Partition (Power Query)", true, Context.Table | Context.Partition));
+                (s, m) => s.Count == 1 && !Handler.UsePowerBIGovernance && Handler.CompatibilityLevel >= 1400,
+                (s, m) => MPartition.CreateNew(s.Table).Edit(),
+                (s, m) => @"Create New\Partition (Power Query)", true, Context.Table));
+
+            Add(new Action(
+                (s, m) => !Handler.UsePowerBIGovernance,
+                (s, m) => Partition.CreateNew(s.Table).Edit(),
+                (s, m) => @"New Partition" + (Handler.CompatibilityLevel >= 1400 ? " (Legacy)" : ""), true, Context.PartitionCollection | Context.Partition));
+            Add(new Action(
+                (s, m) => !Handler.UsePowerBIGovernance && Handler.CompatibilityLevel >= 1400,
+                (s, m) => MPartition.CreateNew(s.Table).Edit(),
+                (s, m) => @"New Partition (Power Query)", true, Context.PartitionCollection | Context.Partition));
 
             Add(new Action((s, m) => !Handler.UsePowerBIGovernance, (s, m) => m.AddDataSource().Edit(), (s, m) => @"Create New\Data Source (Legacy)", false, Context.DataSources | Context.Model));
             Add(new Action((s, m) => Handler.CompatibilityLevel >= 1400 && !Handler.UsePowerBIGovernance, (s, m) => m.AddStructuredDataSource().Edit(), (s, m) => @"Create New\Data Source (Power Query)", false, Context.DataSources | Context.Model));

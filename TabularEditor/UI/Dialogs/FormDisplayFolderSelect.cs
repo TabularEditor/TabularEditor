@@ -17,6 +17,7 @@ namespace TabularEditor
         public FormDisplayFolderSelect()
         {
             InitializeComponent();
+            treeFolders.ImageList = FormMain.Singleton.tabularTreeImages;
         }
 
         public TreeNodeCollection FolderNodes { get { return treeFolders.Nodes; } }
@@ -94,13 +95,13 @@ namespace TabularEditor
             Table table = null;
 
             var arr = instance as object[];
-            if (arr != null && arr.Length > 0 && arr.All(obj => obj is IDetailObject))
+            if (arr != null && arr.Length > 0 && arr.All(obj => obj is IFolderObject))
             {
-                table = (arr[0] as IDetailObject).Table;
+                table = (arr[0] as IFolderObject).Table;
             }
-            else if (instance is IDetailObject)
+            else if (instance is IFolderObject)
             {
-                table = (instance as IDetailObject).Table;
+                table = (instance as IFolderObject).Table;
             }
 
             if(table != null)

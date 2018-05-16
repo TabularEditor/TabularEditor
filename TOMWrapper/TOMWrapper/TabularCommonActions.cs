@@ -57,7 +57,7 @@ namespace TabularEditor.TOMWrapper
             return hierarchy.AddLevel(column, ordinal: ordinal);
         }
 
-        public void SetContainer(IEnumerable<IDetailObject> objects, IDetailObjectContainer newContainer, Culture culture)
+        public void SetContainer(IEnumerable<IFolderObject> objects, IFolder newContainer, Culture culture)
         {
             if (objects == null) throw new ArgumentNullException("objects");
             if (newContainer == null) throw new ArgumentNullException("newContainer");
@@ -97,7 +97,7 @@ namespace TabularEditor.TOMWrapper
         {
             // Possible destinations:
             var destHier = (destination as Level)?.Hierarchy ?? (destination as Hierarchy);
-            var destTable = (destination as Folder)?.Table ?? (destination as Partition)?.Table ?? (destination as PartitionViewTable)?.Table ?? destHier?.Table ?? (destination as IDetailObject)?.Table ?? (destination as Table);
+            var destTable = (destination as Folder)?.Table ?? (destination as Partition)?.Table ?? (destination as PartitionViewTable)?.Table ?? destHier?.Table ?? (destination as IFolderObject)?.Table ?? (destination as Table);
             var folder = (destination as Folder)?.Path;
 
             bool replaceTable = false;
@@ -212,9 +212,9 @@ namespace TabularEditor.TOMWrapper
                 (obj as ITabularPerspectiveObject)?.LoadPerspectives(true);
                 (obj as Table)?.LoadRLS();
 
-                if (!string.IsNullOrEmpty(folder) && obj is IDetailObject)
+                if (!string.IsNullOrEmpty(folder) && obj is IFolderObject)
                 {
-                    (obj as IDetailObject).DisplayFolder = folder;
+                    (obj as IFolderObject).DisplayFolder = folder;
                 }
 
                 if (Handler.CompatibilityLevel >= 1400)
@@ -232,7 +232,7 @@ namespace TabularEditor.TOMWrapper
             return inserted;
         }
 
-        public void MoveObjects(IEnumerable<IDetailObject> objects, Table newTable)
+        public void MoveObjects(IEnumerable<IFolderObject> objects, Table newTable)
         {
             if (objects == null) throw new ArgumentNullException("objects");
             if (newTable == null) throw new ArgumentNullException("newContainer");

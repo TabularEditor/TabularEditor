@@ -69,14 +69,14 @@ namespace TabularEditor.UI.Tree
             var level = node?.Tag as Level;
             if(level != null)
             {
-                return string.Format("{0} ({1})", level.GetName(UI.Tree?.Culture), level.Column.GetName(UI.Tree?.Culture));
+                return string.Format("{0} ({1})", level.GetName(UI.TreeModel?.Culture), level.Column.GetName(UI.TreeModel?.Culture));
             }
-            return (node?.Tag as ITabularNamedObject)?.GetName(UI.Tree?.Culture);
+            return (node?.Tag as ITabularNamedObject)?.GetName(UI.TreeModel?.Culture);
         }
 
         public override void SetValue(TreeNodeAdv node, object value)
         {
-            (node.Tag as ITabularNamedObject).SetName((string)value, UI.Tree?.Culture);
+            (node.Tag as ITabularNamedObject).SetName((string)value, UI.TreeModel?.Culture);
         }
 
         protected override Control CreateEditor(TreeNodeAdv node)
@@ -84,7 +84,7 @@ namespace TabularEditor.UI.Tree
             var ctr = base.CreateEditor(node) as TextBox;
             if(node?.Tag is Level)
             {
-                ctr.Text = (node.Tag as Level).GetName(UI.Tree?.Culture);
+                ctr.Text = (node.Tag as Level).GetName(UI.TreeModel?.Culture);
             }
             return ctr;
         }
