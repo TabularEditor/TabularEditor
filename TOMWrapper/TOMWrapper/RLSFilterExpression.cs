@@ -13,7 +13,17 @@ namespace TabularEditor.TOMWrapper
         public ModelRole Role;
         public Table Table;
 
-        internal RLSFilterExpression(ModelRole role, Table table)
+        static internal RLSFilterExpression Get(ModelRole role, Table table)
+        {
+            RLSFilterExpression result;
+            if(!role.RowLevelSecurity.FilterExpressions.TryGetValue(table, out result)) {
+                result = new RLSFilterExpression(role, table);
+                role.RowLevelSecurity.FilterExpressions.Add(table, result);
+            }
+            return result;
+        }
+
+        private RLSFilterExpression(ModelRole role, Table table)
         {
             Role = role;
             Table = table;

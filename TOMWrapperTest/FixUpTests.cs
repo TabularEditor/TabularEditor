@@ -330,6 +330,51 @@ namespace TabularEditor.TOMWrapper.Tests
             Assert.AreEqual("DISTINCTCOUNT('Test Table 1 XXX'[Column 1])", m1.Expression);
         }
 
+        [TestMethod]
+        public void FixupRLSExpression()
+        {
+            var handler = ObjectHandlingTests.CreateTestModel(compatibilityLevel: 1400);
+            var model = handler.Model;
+
+            var r1 = model.Roles["Test Role 1"];
+            r1.RowLevelSecurity["Test Table 1"] = "[Column 2] = \"Test\"";
+
+            var c2 = model.Tables["Test Table 1"].Columns["Column 2"];
+            Assert.AreEqual(1, c2.ReferencedBy.Count);
+            Assert.AreSame(r1, c2.ReferencedBy.Roles.First());
+
+            // Test rename fix-up:
+            c2.Name = "Column 2 New Name";
+            Assert.AreEqual(1, c2.ReferencedBy.Count);
+            Assert.AreSame(r1, c2.ReferencedBy.Roles.First());
+            Assert.AreEqual("[Column 2 New Name] = \"Test\"", r1.RowLevelSecurity["Test Table 1"]);
+
+            handler.UndoManager.Undo();
+            Assert.AreEqual(1, c2.ReferencedBy.Count);
+            Assert.AreSame(r1, c2.ReferencedBy.Roles.First());
+            Assert.AreEqual("[Column 2] = \"Test\"", r1.RowLevelSecurity["Test Table 1"]);
+
+            c2.Name = "C2";
+            Assert.AreEqual(1, c2.ReferencedBy.Count);
+            Assert.AreSame(r1, c2.ReferencedBy.Roles.First());
+            Assert.AreEqual("[C2] = \"Test\"", r1.RowLevelSecurity["Test Table 1"]);
+
+            handler.UndoManager.Undo();
+            Assert.AreEqual(1, c2.ReferencedBy.Count);
+            Assert.AreSame(r1, c2.ReferencedBy.Roles.First());
+            Assert.AreEqual("[Column 2] = \"Test\"", r1.RowLevelSecurity["Test Table 1"]);
+
+            // Delete+Undo column fixup test:
+            c2.Delete();
+            Assert.AreEqual("[Column 2] = \"Test\"", r1.RowLevelSecurity["Test Table 1"]);
+            handler.UndoManager.Undo();
+
+            c2 = model.Tables["Test Table 1"].Columns["Column 2"];
+            Assert.AreEqual(1, c2.ReferencedBy.Count);
+            Assert.AreSame(r1, c2.ReferencedBy.Roles.First());
+            Assert.AreEqual("[Column 2] = \"Test\"", r1.RowLevelSecurity["Test Table 1"]);
+        }
+
         private void Dax_SingleRefAssert(IDaxDependantObject dependant, IDaxObject reference)
         {
             Assert.AreEqual(1, dependant.DependsOn.Count);

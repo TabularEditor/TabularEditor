@@ -148,13 +148,20 @@ namespace TabularEditor
             {
                 if(d.DependsOn.ContainsKey(obj))
                 {
+                    var i = UI.Tree.TabularIcon.GetIconIndex(d);
+
                     currentDepth++;
                     if (d == _rootObject)
                     {
-                        var i = UI.Tree.TabularIcon.GetIconIndex(d);
-                        n.Nodes.Add(new TreeNode(d.InferName() + " (circular dependency)", i, i));
+                        n.Nodes.Add(new TreeNode(d.GetName() + " (circular dependency)", i, i));
                     }
                     else if (currentDepth < MAX_LEVELS && d is IDaxObject) InverseRecursiveAdd(d as IDaxObject, n.Nodes);
+                    else if (currentDepth < MAX_LEVELS && d is RLSFilterExpression)
+                    {
+                        var newNode = new TreeNode(d.GetName(), i, i);
+                        newNode.Tag = (d as RLSFilterExpression).Role;
+                        n.Nodes.Add(newNode);
+                    }
                     else n.Nodes.Add("(Infinite recursion)");
                     currentDepth--;
                 }
@@ -311,9 +318,9 @@ namespace TabularEditor
 
             jw.WriteStartObject();
             jw.WritePropertyName("ObjectType");
-            jw.WriteValue(tObj.ObjectTypeName);
+            jw.WriteValue(tObj.GetTypeName());
             jw.WritePropertyName("ObjectName");
-            jw.WriteValue(tObj.Name);
+            jw.WriteValue(tObj.GetName());
 
             if(root.Tag is ObjectRel && !isRoot)
             {
