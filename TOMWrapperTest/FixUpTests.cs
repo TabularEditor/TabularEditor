@@ -307,6 +307,29 @@ namespace TabularEditor.TOMWrapper.Tests
             Dax_SingleRefAssert(k3, t1);
         }
 
+        [TestMethod]
+        public void FixupInitialNoMatchAndUndo()
+        {
+            var handler = ObjectHandlingTests.CreateTestModel(compatibilityLevel: 1400);
+            var model = handler.Model;
+
+            var t1 = model.Tables["Test Table 1"];
+            var dax = "DISTINCTCOUNT('Test Table 1 XXX'[Column 1])";
+            var m1 = t1.AddMeasure("m1", dax);
+
+            t1.Name = "Test Table 1 XXX";
+            Assert.AreEqual("DISTINCTCOUNT('Test Table 1 XXX'[Column 1])", m1.Expression);
+
+            t1.Name = "Test Table 1 YYY";
+            Assert.AreEqual("DISTINCTCOUNT('Test Table 1 YYY'[Column 1])", m1.Expression);
+
+            handler.UndoManager.Undo();
+            Assert.AreEqual("DISTINCTCOUNT('Test Table 1 XXX'[Column 1])", m1.Expression);
+
+            handler.UndoManager.Undo();
+            Assert.AreEqual("DISTINCTCOUNT('Test Table 1 XXX'[Column 1])", m1.Expression);
+        }
+
         private void Dax_SingleRefAssert(IDaxDependantObject dependant, IDaxObject reference)
         {
             Assert.AreEqual(1, dependant.DependsOn.Count);

@@ -213,7 +213,6 @@ namespace TabularEditor.TOMWrapper
             Init();
         }
 
-        // TODO: Make public setter - remove options for setting this elsewhere
         public SerializeOptions SerializeOptions { get; private set; } = SerializeOptions.Default;
 
         /// <summary>
@@ -859,6 +858,7 @@ namespace TabularEditor.TOMWrapper
         }
 
         private bool _disableUpdates = false;
+        internal bool NameChangeInProgress = false;
 
         /// <summary>
         /// Begins a batch update
@@ -887,6 +887,12 @@ namespace TabularEditor.TOMWrapper
             Tree.EndUpdate();
 
             if (!InsideTransaction) DoUpdateComplete();
+
+            if(NameChangeInProgress && Tree.UpdateLocks == 0)
+            {
+                NameChangeInProgress = false;
+                if (Settings.AutoFixup) FormulaFixup.BuildDependencyTree();
+            }
 
             return actionCount;
         }

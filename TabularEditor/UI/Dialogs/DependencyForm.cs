@@ -152,7 +152,7 @@ namespace TabularEditor
                     if (d == _rootObject)
                     {
                         var i = UI.Tree.TabularIcon.GetIconIndex(d);
-                        n.Nodes.Add(new TreeNode(d.Name + " (circular dependency)", i, i));
+                        n.Nodes.Add(new TreeNode(d.InferName() + " (circular dependency)", i, i));
                     }
                     else if (currentDepth < MAX_LEVELS && d is IDaxObject) InverseRecursiveAdd(d as IDaxObject, n.Nodes);
                     else n.Nodes.Add("(Infinite recursion)");

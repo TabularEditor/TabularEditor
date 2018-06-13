@@ -42,7 +42,7 @@ namespace TabularEditor.UI.Tree
             return iconIndex >= 0 ? Images[iconIndex] : base.GetIcon(node);
         }
 
-        public static int GetIconIndex(ITabularNamedObject obj, bool isExpanded = false)
+        public static int GetIconIndex(ITabularObject obj, bool isExpanded = false)
         {
             int iconIndex = -1;
 

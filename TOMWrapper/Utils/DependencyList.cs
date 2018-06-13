@@ -13,6 +13,30 @@ namespace TabularEditor.TOMWrapper.Utils
     /// </summary>
     public class DependsOnList : IReadOnlyDictionary<IDaxObject, List<ObjectReference>>
     {
+        /// <summary>
+        /// Returns all objects used by the current object (directly or indirectly through other objects).
+        /// </summary>
+        public HashSet<IDaxObject> Deep()
+        {
+            var uniqueOnly = new HashSet<IDaxObject>();
+            Deep_Internal(uniqueOnly);
+            return uniqueOnly;
+        }
+
+        private void Deep_Internal(HashSet<IDaxObject> uniqueOnly)
+        {
+            foreach (var child in Keys)
+            {
+                if (uniqueOnly.Add(child))
+                {
+                    if ((child is IDaxDependantObject))
+                    {
+                        (child as IDaxDependantObject)?.DependsOn.Deep_Internal(uniqueOnly);
+                    }
+                }
+            }
+        }
+
         public static DependsOnList GetDependencies(IDaxDependantObject obj, string dax, DAXProperty prop)
         {
             return FormulaFixup.GetDependencies(obj, dax, prop);
@@ -28,6 +52,7 @@ namespace TabularEditor.TOMWrapper.Utils
             return null;
         }
         // TODO: Add method (to dependency builder) to build a temporary DependsOnList from a string
+        // 2018-05-18: Why? What would that be needed for?
 
         internal readonly IDaxDependantObject Parent;
         internal DependsOnList(IDaxDependantObject parent)
@@ -88,7 +113,6 @@ namespace TabularEditor.TOMWrapper.Utils
         public IEnumerable<Measure> Measures { get { return InternalList.OfType<Measure>(); } }
         public IEnumerable<Column> Columns { get { return InternalList.OfType<Column>(); } }
         public IEnumerable<Table> Tables { get { return InternalList.OfType<Table>(); } }
-
 
         #region IDictionary members
         public void Clear()
@@ -166,6 +190,55 @@ namespace TabularEditor.TOMWrapper.Utils
 
     public class ReferencedByList : HashSet<IDaxDependantObject>
     {
+        /// <summary>
+        /// Returns all objects that reference the current object (directly or indirectly through other objects).
+        /// </summary>
+        /// <returns></returns>
+        public HashSet<IDaxDependantObject> Deep()
+        {
+            var uniqueOnly = new HashSet<IDaxDependantObject>(this);
+            Deep_Internal(uniqueOnly);
+            return uniqueOnly;
+        }
+
+        private void Deep_Internal(HashSet<IDaxDependantObject> uniqueOnly)
+        {
+            foreach (var child in this)
+            {
+                if (uniqueOnly.Add(child))
+                {
+                    if ((child is IDaxObject))
+                    {
+                        (child as IDaxObject)?.ReferencedBy.Deep_Internal(uniqueOnly);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Iterates the entire dependency tree and determines if any objects referencing the current object
+        /// (directly or indirectly through other objects) are visible. This may be used, for example, to
+        /// create a Best Practice Rule that allows you to detect objects that can safely be removed since
+        /// they do not have any references.
+        /// </summary>
+        public bool AnyVisible
+        {
+            get
+            {
+                foreach(var obj in Deep())
+                {
+                    if ((obj as IHideableObject)?.IsHidden == false && (obj as ITabularTableObject)?.Table?.IsHidden == false) return true;
+                    if ((obj as KPI)?.Measure?.IsHidden == false && (obj as KPI)?.Measure?.Table?.IsHidden == false) return true;
+
+                }
+                return false;
+            }
+        }
+
+        public IEnumerable<Measure> AllMeasures { get { return Deep().OfType<Measure>(); } }
+        public IEnumerable<CalculatedColumn> AllColumns { get { return Deep().OfType<CalculatedColumn>(); } }
+        public IEnumerable<CalculatedTable> AllTables { get { return Deep().OfType<CalculatedTable>(); } }
+
         public IEnumerable<Measure> Measures { get { return this.OfType<Measure>(); } }
         public IEnumerable<CalculatedColumn> Columns { get { return this.OfType<CalculatedColumn>(); } }
         public IEnumerable<CalculatedTable> Tables { get { return this.OfType<CalculatedTable>(); } }

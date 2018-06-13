@@ -13,7 +13,7 @@ namespace TabularEditor.TOMWrapper.Utils
     internal static class FormulaFixup
     {
         /// <summary>
-        /// Changes all references to object "obj", to reflect "newName"
+        /// Changes all references to object "obj", to reflect the new name of the object.
         /// </summary>
         /// <param name="obj"></param>
         public static void DoFixup(IDaxObject obj)
@@ -48,8 +48,6 @@ namespace TabularEditor.TOMWrapper.Utils
 
             for (var i = 0; i < tokens.Count; i++)
             {
-                // TODO: This parsing could be used to check for invalid object references, for example to use in syntax highlighting or validation of expressions
-
                 var tok = tokens[i];
                 switch (tok.Type)
                 {
@@ -102,7 +100,7 @@ namespace TabularEditor.TOMWrapper.Utils
                         // No table reference before the object reference
                         else
                         {
-                            var table = (expressionObj as ITabularTableObject)?.Table;
+                            var table = (expressionObj as ITabularTableObject)?.Table ?? (expressionObj as RLSFilterExpression)?.Table;
                             // Referencing a column without specifying a table (assume column in same table):
                             if (table != null && table.Columns.Contains(tok.Text.NoQ()))
                             {
@@ -132,10 +130,15 @@ namespace TabularEditor.TOMWrapper.Utils
             }
         }
 
-        public static void BuildDependencyTree(IDaxDependantObject expressionObj)
+        public static void ClearDependsOn(IDaxDependantObject expressionObj)
         {
             foreach (var d in expressionObj.DependsOn.Keys) d.ReferencedBy.Remove(expressionObj);
             expressionObj.DependsOn.Clear();
+        }
+
+        public static void BuildDependencyTree(IDaxDependantObject expressionObj)
+        {
+            ClearDependsOn(expressionObj);
 
             foreach (var prop in expressionObj.GetDAXProperties())
             {
@@ -154,6 +157,13 @@ namespace TabularEditor.TOMWrapper.Utils
             foreach (var eo in Model.Tables.SelectMany(t => t.GetChildren()).Concat(Model.Tables).OfType<IDaxDependantObject>())
             {
                 BuildDependencyTree(eo);
+            }
+            foreach (var role in Model.Roles)
+            {
+                foreach(var table in Model.Tables.Where(t => !string.IsNullOrWhiteSpace(role.RowLevelSecurity[t])))
+                {
+                    BuildDependencyTree(new RLSFilterExpression(role, table));
+                }
             }
 
             sw.Stop();

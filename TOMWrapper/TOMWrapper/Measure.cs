@@ -73,7 +73,7 @@ namespace TabularEditor.TOMWrapper
         /// Gets or sets the KPI of the Measure.
         /// </summary>
 		[DisplayName("KPI")]
-        [Category("Other"), IntelliSense("The KPI of this Measure.")]
+        [Category("Options"), IntelliSense("The KPI of this Measure.")]
         public KPI KPI
         {
             get
@@ -128,8 +128,12 @@ namespace TabularEditor.TOMWrapper
                 case Properties.NAME:
                     if(Handler.Settings.AutoFixup)
                     {
-                        FormulaFixup.DoFixup(this);
-                        Handler.UndoManager.EndBatch(); // This batch was started in OnPropertyChanging
+                        // Fixup is not performed during an undo operation. We rely on the undo stack to fixup the expressions
+                        // affected by the name change (the undo stack should contain the expression changes that were made
+                        // when the name was initially changed).
+                        if (!Handler.UndoManager.UndoInProgress) FormulaFixup.DoFixup(this);
+
+                        Handler.EndUpdate(); // This batch was started in OnPropertyChanging
                     }
                     break;
             }
@@ -142,16 +146,13 @@ namespace TabularEditor.TOMWrapper
             switch (propertyName)
             {
                 case Properties.NAME:
-                    // TODO: Important!!!
-                    // - Dependency Tree will be built once for every measure that's had its name changed. This can be slow if many measures are renamed at once.
-                    // - We don't need a full rebuild of the dependency tree. We can limit ourselves to those expressions that contain a token matching the new name of this measure.
-                    // - Also note that we should apply the fix-up before the tree is rebuilt.
-                    FormulaFixup.BuildDependencyTree();
+                    // Flag to the handler that a name change that requires a rebuild of the Dependency Tree
+                    // (if formula fixup is enabled) was started:
+                    Handler.NameChangeInProgress = true;
 
                     // When formula fixup is enabled, we need to begin a new batch of undo operations, as this
                     // name change could result in expression changes on multiple objects:
-                    if (Handler.Settings.AutoFixup)
-                        Handler.UndoManager.BeginBatch("Set Property 'Name'"); // This batch will be ended in the corresponding OnPropertyChanged
+                    if (Handler.Settings.AutoFixup) Handler.BeginUpdate("Set Property 'Name'"); // This batch will be ended in the corresponding OnPropertyChanged
                     break;
             }
             base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
@@ -196,8 +197,6 @@ namespace TabularEditor.TOMWrapper
                 bool cancel = false;
                 OnPropertyChanging(Properties.DETAILROWSEXPRESSION, value, ref undoable, ref cancel);
                 if (cancel) return;
-
-                // TODO 01: Handle dependencies in the Detail Rows Expression
 
                 if (MetadataObject.DetailRowsDefinition == null) MetadataObject.DetailRowsDefinition = new TOM.DetailRowsDefinition();
                 MetadataObject.DetailRowsDefinition.Expression = value;

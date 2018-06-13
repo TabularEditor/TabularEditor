@@ -10,6 +10,19 @@ namespace TabularEditor.TOMWrapper
 {
     public static class TabularObjectHelper
     {
+        public static string InferName(this ITabularObject obj)
+        {
+            if ((obj is ITabularNamedObject)) return (obj as ITabularNamedObject)?.Name;
+
+            var tryRlsFilterExpr = obj as RLSFilterExpression;
+            if(tryRlsFilterExpr != null)
+            {
+                return string.Format("RLS on {0} for \"{1}\"", tryRlsFilterExpr.Table.DaxObjectName, tryRlsFilterExpr.Role.Name);
+            }
+
+            return obj.GetTypeName();
+        }
+
         public static void CopyTranslationsFrom(this ITranslatableObject target, ITranslatableObject src)
         {
             target.TranslatedNames.CopyFrom(src.TranslatedNames);

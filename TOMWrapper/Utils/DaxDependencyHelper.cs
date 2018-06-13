@@ -22,6 +22,10 @@ namespace TabularEditor.TOMWrapper.Utils
                 yield return DAXProperty.TargetExpression;
                 yield return DAXProperty.TrendExpression;
             }
+            if (obj is RLSFilterExpression)
+            {
+                yield return DAXProperty.Expression;
+            }
         }
 
         public static DAXProperty GetDefaultDAXProperty(this IDaxDependantObject obj)
@@ -29,11 +33,17 @@ namespace TabularEditor.TOMWrapper.Utils
             if (obj is CalculatedTable) return DAXProperty.Expression;
             if (obj is Table) return DAXProperty.DefaultDetailRowsExpression;
             if (obj is KPI) return DAXProperty.StatusExpression;
+            if (obj is RLSFilterExpression) return DAXProperty.Expression;
             else return DAXProperty.Expression;
         }
 
         public static string GetDAX(this IDaxDependantObject obj, DAXProperty property)
         {
+            if (obj is RLSFilterExpression && property == DAXProperty.Expression)
+            {
+                var rls = (obj as RLSFilterExpression);
+                return rls.Role.RowLevelSecurity[rls.Table];
+            }
             if(obj is KPI)
             {
                 if (property == DAXProperty.StatusExpression) return (obj as KPI).StatusExpression;
@@ -63,6 +73,12 @@ namespace TabularEditor.TOMWrapper.Utils
 
         public static void SetDAX(this IDaxDependantObject obj, DAXProperty property, string expression)
         {
+            if (obj is RLSFilterExpression && property == DAXProperty.Expression)
+            {
+                var rls = (obj as RLSFilterExpression);
+                rls.Role.RowLevelSecurity[rls.Table] = expression;
+                return;
+            }
             if (obj is KPI)
             {
                 if (property == DAXProperty.StatusExpression) { (obj as KPI).StatusExpression = expression; return; }
