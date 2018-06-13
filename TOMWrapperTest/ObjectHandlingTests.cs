@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TOM = Microsoft.AnalysisServices.Tabular;
 using System.Linq;
 using TabularEditor.TOMWrapper.Utils;
 

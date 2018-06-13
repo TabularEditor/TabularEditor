@@ -388,8 +388,12 @@ namespace TabularEditor.TOMWrapper
             {
                 if (Handler.Settings.AutoFixup)
                 {
-                    FormulaFixup.DoFixup(this);
-                    Handler.UndoManager.EndBatch();
+                    // Fixup is not performed during an undo operation. We rely on the undo stack to fixup the expressions
+                    // affected by the name change (the undo stack should contain the expression changes that were made
+                    // when the name was initially changed).
+                    if (!Handler.UndoManager.UndoInProgress) FormulaFixup.DoFixup(this);
+
+                    Handler.EndUpdate();
                 }
                 Handler.Tree.FolderCache.Clear(); // Clear folder cache when a table is renamed.
 
@@ -410,15 +414,13 @@ namespace TabularEditor.TOMWrapper
         {
             if (propertyName == Properties.NAME)
             {
-                // TODO: Important!!!
-                // - Dependency Tree will be built once for every table that's had its name changed. This can be slow if many tables are renamed at once.
-                // - We don't need a full rebuild of the dependency tree. We can limit ourselves to those expressions that contain a token matching the new name of this table.
-                // - Also note that we should apply the fix-up before the tree is rebuilt.
-                FormulaFixup.BuildDependencyTree();
+                // Flag to the handler that a name change that requires a rebuild of the Dependency Tree
+                // (if formula fixup is enabled) was started:
+                Handler.NameChangeInProgress = true;
 
                 // When formula fixup is enabled, we need to begin a new batch of undo operations, as this
                 // name change could result in expression changes on multiple objects:
-                if (Handler.Settings.AutoFixup) Handler.UndoManager.BeginBatch("Set Property 'Name'");
+                if (Handler.Settings.AutoFixup) Handler.BeginUpdate("Set Property 'Name'");
             }
             base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
         }

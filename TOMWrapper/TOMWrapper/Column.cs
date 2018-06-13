@@ -155,17 +155,16 @@ namespace TabularEditor.TOMWrapper
         {
             if (propertyName == Properties.NAME)
             {
-                // TODO: Important!!!
-                // - Dependency Tree will be built once for every column that's had its name changed. This can be slow if many columns are renamed at once.
-                // - We don't need a full rebuild of the dependency tree. We can limit ourselves to those expressions that contain a token matching the new name of this column.
-                // - Also note that we should apply the fix-up before the tree is rebuilt.
-                FormulaFixup.BuildDependencyTree();
+                // Flag to the handler that a name change that requires a rebuild of the Dependency Tree
+                // (if formula fixup is enabled) was started:
+                Handler.NameChangeInProgress = true;
 
                 // When formula fixup is enabled, we need to begin a new batch of undo operations, as this
                 // name change could result in expression changes on multiple objects. We also need to
-                // start a new batch, in case this column is used as an origin for a calculated table column:
+                // start a new batch, in case this column is used as an origin for a calculated table column,
+                // as SourceColumn properties on CalculatedTableColumns could change.
                 _originForCalculatedTableColumnsCache = OriginForCalculatedTableColumns.ToList();
-                if (Handler.Settings.AutoFixup || _originForCalculatedTableColumnsCache.Count > 0) Handler.UndoManager.BeginBatch("Set Property 'Name'");
+                if (Handler.Settings.AutoFixup || _originForCalculatedTableColumnsCache.Count > 0) Handler.BeginUpdate("Set Property 'Name'");
             }
             base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
         }
@@ -181,8 +180,10 @@ namespace TabularEditor.TOMWrapper
             // Make sure that Calculated Table Columns that originate from this column are updated to reflect name changes:
             if (propertyName == Properties.NAME)
             {
-                // Do formula fixup if enabled:
-                if (Handler.Settings.AutoFixup) FormulaFixup.DoFixup(this);
+                // Fixup is not performed during an undo operation. We rely on the undo stack to fixup the expressions
+                // affected by the name change (the undo stack should contain the expression changes that were made
+                // when the name was initially changed).
+                if (Handler.Settings.AutoFixup && !Handler.UndoManager.UndoInProgress) FormulaFixup.DoFixup(this);
 
                 foreach (var ctc in _originForCalculatedTableColumnsCache)
                 {
@@ -196,7 +197,7 @@ namespace TabularEditor.TOMWrapper
                 }
 
                 // End the batch that was started in OnPropertyChanging:
-                if (Handler.Settings.AutoFixup || _originForCalculatedTableColumnsCache.Count > 0) Handler.UndoManager.EndBatch();
+                if (Handler.Settings.AutoFixup || _originForCalculatedTableColumnsCache.Count > 0) Handler.EndUpdate();
 
                 // Update relationship "names" if this column participates in any relationships:
                 var rels = UsedInRelationships.ToList();

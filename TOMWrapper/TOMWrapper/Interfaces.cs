@@ -101,7 +101,7 @@ namespace TabularEditor.TOMWrapper
     /// <summary>
     /// Objects that can depend on one or more DAXObjects through expression dependencies
     /// </summary>
-    public interface IDaxDependantObject: ITabularNamedObject
+    public interface IDaxDependantObject: ITabularObject
     {
         DependsOnList DependsOn { get; }
     }

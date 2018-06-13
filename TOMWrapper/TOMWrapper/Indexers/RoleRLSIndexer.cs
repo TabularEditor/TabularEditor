@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper.Undo;
+using TabularEditor.TOMWrapper.Utils;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -18,6 +19,9 @@ namespace TabularEditor.TOMWrapper
     public sealed class RoleRLSIndexer : GenericIndexer<Table, string>
     {
         public readonly ModelRole Role;
+
+        private Dictionary<Table, RLSFilterExpression> _filterExpressions = new Dictionary<Table, RLSFilterExpression>();
+        internal IReadOnlyDictionary<Table, RLSFilterExpression> FilterExpressions => _filterExpressions;
 
         internal RoleRLSIndexer(ModelRole role) : base(role)
         {
@@ -50,6 +54,13 @@ namespace TabularEditor.TOMWrapper
                 // Otherwise, remove the TablePermission:
                 tps.Remove(tp);
                 Handler.UndoManager.Add(new UndoPropertyChangedAction(Role, "RowLevelSecurity", tp.FilterExpression, null, table.Name));
+
+                RLSFilterExpression rls;
+                if (FilterExpressions.TryGetValue(table, out rls))
+                {
+                    FormulaFixup.ClearDependsOn(rls);
+                    _filterExpressions.Remove(table);
+                }
             }
             else // Filter expression assigned:
             {
@@ -64,6 +75,14 @@ namespace TabularEditor.TOMWrapper
                 var oldValue = tp.FilterExpression;
                 tp.FilterExpression = filterExpression;
                 Role.Handler.UndoManager.Add(new UndoPropertyChangedAction(Role, "RowLevelSecurity", oldValue, filterExpression, table.Name));
+
+                RLSFilterExpression rls;
+                if (!FilterExpressions.TryGetValue(table, out rls))
+                {
+                    rls = new RLSFilterExpression(Role, table);
+                    _filterExpressions.Add(table, rls);
+                }
+                FormulaFixup.BuildDependencyTree(rls);
             }
         }
     }

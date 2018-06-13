@@ -32,11 +32,14 @@ namespace TabularEditor.TOMWrapper
 
     public enum ObjectType
     {
+        // Special types needed by Tabular Editor (doesn't exist in the TOM):
+        RLSFilterExpression = -5,
         PartitionCollection = -4,
         KPIMeasure = -3,
         Group = -2,
         Folder = -1,
 
+        // Default types:
         Null = 0,
         Model = 1,
         DataSource = 2,
@@ -93,6 +96,7 @@ namespace TabularEditor.TOMWrapper
             OnPropertyChanged(propertyName, oldValue, value);
         }
 
+        [Browsable(false)]
         public bool IsRemoved => _metadataObject.IsRemoved;
         private TOM.MetadataObject _metadataObject;
         protected internal TOM.MetadataObject MetadataObject { get { return _metadataObject; } protected set { _metadataObject = value; } }
