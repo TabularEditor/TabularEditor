@@ -146,7 +146,7 @@ namespace TabularEditor.UI
         {
             // Set up custom node controls:
             UI.TreeView.NodeControls.Insert(0, new TreeViewAdvExtension.NodeArrow { ParentColumn = UI.TreeView.Columns[0] });
-            UI.TreeView.NodeControls.Insert(1, new TabularIcon { Images = UI.TreeImages.Images, ParentColumn = UI.TreeView.Columns[0] });
+            UI.TreeView.NodeControls.Insert(1, new TabularIcon { Images = FormMain.Singleton.tabularTreeImages.Images, ParentColumn = UI.TreeView.Columns[0] });
             TreeView_NameCol = new TabularNodeTextBox(this) { DataPropertyName = "LocalName", ParentColumn = UI.TreeView.Columns[0], Trimming = StringTrimming.EllipsisCharacter, EditEnabled = true };
             UI.TreeView.NodeControls.Insert(2, TreeView_NameCol);
 

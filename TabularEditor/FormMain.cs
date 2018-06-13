@@ -141,7 +141,6 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 StatusExLabel = lblScriptStatus,
                 OpenBimDialog = dlgOpenFile,
                 SaveBimDialog = dlgSaveFile,
-                TreeImages = tabularTreeImages,
                 CurrentMeasureLabel = lblCurrentMeasure,
                 ModelMenu = modelToolStripMenuItem,
                 PerspectiveSelector = cmbPerspective,
