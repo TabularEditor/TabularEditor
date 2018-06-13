@@ -74,12 +74,11 @@ namespace TabularEditor.TOMWrapper
             Handler.EndUpdate();
         }
 
-        public string NewMeasureName(string prefix)
+        public string NewMeasureName(string prefix, Table table)
         {
-            // TODO: Refactor this (similar code in Measure.cs)
-            // Loop through all tables, as measures must be uniquely named across the model:
-            return Handler.Model.Tables.Select(t => t.MetadataObject.Measures.GetNewName(prefix)).OrderByDescending(p => p.Length).First();
+            return table.Measures.GetNewName(prefix);
         }
+        
         public string NewColumnName(string prefix, Table table)
         {
             return table.Columns.GetNewName(prefix);
@@ -242,7 +241,7 @@ namespace TabularEditor.TOMWrapper
             var res = System.Windows.Forms.DialogResult.Yes;
 
             // Check if an object with the given name already exists:
-            if (objects.OfType<Measure>().Any(obj => obj.Table == null && NewMeasureName(obj.Name) != obj.Name) ||
+            if (objects.OfType<Measure>().Any(obj => obj.Table == null && newTable.Measures.GetNewName(obj.Name) != obj.Name) ||
                 objects.OfType<CalculatedColumn>().Any(obj => obj.Table == null && NewColumnName(obj.Name, newTable) != obj.Name)) {
                 res = System.Windows.Forms.MessageBox.Show("One or more objects with the given name already exists in the destination. Do you want to overwrite the destination objects?", "Overwrite existing objects?", System.Windows.Forms.MessageBoxButtons.YesNoCancel, System.Windows.Forms.MessageBoxIcon.Exclamation);
                 if (res == System.Windows.Forms.DialogResult.Cancel) return;
@@ -288,7 +287,7 @@ namespace TabularEditor.TOMWrapper
                             else setNewName = true;
                         }
                         newTable.Measures.Add(obj as Measure);
-                        if (setNewName) obj.Name = NewMeasureName(name);
+                        if (setNewName) obj.Name = newTable.Measures.GetNewName(name);
                     }
                     if (obj is CalculatedColumn)
                     {
