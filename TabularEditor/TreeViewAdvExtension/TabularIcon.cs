@@ -65,6 +65,9 @@ namespace TabularEditor.UI.Tree
                 case ObjectType.Group:
                     return isExpanded ? TabularIcons.ICON_FOLDEROPEN : TabularIcons.ICON_FOLDER;
 
+                case ObjectType.RLSFilterExpression:
+                    return TabularIcons.ICON_ROLE;
+
                 default:
                     IconMap.TryGetValue(obj.ObjectType, out iconIndex);
                     return iconIndex;

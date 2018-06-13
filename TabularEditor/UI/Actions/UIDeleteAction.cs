@@ -31,7 +31,7 @@ namespace TabularEditor.UI
                     if (d != null && d.ReferencedBy.Count > 0)
                     {
                         var dependent = d.ReferencedBy.First();
-                        refs = "\n\nThis object is directly referenced in the DAX expression on " + (dependent as IDaxObject)?.DaxObjectFullName ?? dependent.InferName();
+                        refs = "\n\nThis object is directly referenced in the DAX expression on " + (dependent as IDaxObject)?.DaxObjectFullName ?? dependent.GetName();
                         if (d.ReferencedBy.Count > 1) refs += string.Format(" and {0} other object{1}.", d.ReferencedBy.Count - 1, d.ReferencedBy.Count == 2 ? "" : "s");
                     } else
                     {

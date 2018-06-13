@@ -132,13 +132,5 @@ namespace TabularEditor.TOMWrapper
 
         [Browsable(false)]
         public override bool NeedsValidation { get; set; } = false;
-
-        public override string ObjectTypeName
-        {
-            get
-            {
-                return "Calculated Table";
-            }
-        }
     }
 }

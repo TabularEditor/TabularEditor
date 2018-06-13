@@ -162,7 +162,8 @@ namespace TabularEditor.TOMWrapper.Utils
             {
                 foreach(var table in Model.Tables.Where(t => !string.IsNullOrWhiteSpace(role.RowLevelSecurity[t])))
                 {
-                    BuildDependencyTree(new RLSFilterExpression(role, table));
+                    var rfe = RLSFilterExpression.Get(role, table);
+                    BuildDependencyTree(rfe);
                 }
             }
 

@@ -21,7 +21,7 @@ namespace TabularEditor.TOMWrapper
         public readonly ModelRole Role;
 
         private Dictionary<Table, RLSFilterExpression> _filterExpressions = new Dictionary<Table, RLSFilterExpression>();
-        internal IReadOnlyDictionary<Table, RLSFilterExpression> FilterExpressions => _filterExpressions;
+        internal Dictionary<Table, RLSFilterExpression> FilterExpressions => _filterExpressions;
 
         internal RoleRLSIndexer(ModelRole role) : base(role)
         {
@@ -74,15 +74,14 @@ namespace TabularEditor.TOMWrapper
                 // Assign the new expression to the TablePermission:
                 var oldValue = tp.FilterExpression;
                 tp.FilterExpression = filterExpression;
+
                 Role.Handler.UndoManager.Add(new UndoPropertyChangedAction(Role, "RowLevelSecurity", oldValue, filterExpression, table.Name));
 
-                RLSFilterExpression rls;
-                if (!FilterExpressions.TryGetValue(table, out rls))
+                if (!Handler.NameChangeInProgress)
                 {
-                    rls = new RLSFilterExpression(Role, table);
-                    _filterExpressions.Add(table, rls);
+                    var rls = RLSFilterExpression.Get(Role, table);
+                    FormulaFixup.BuildDependencyTree(rls);
                 }
-                FormulaFixup.BuildDependencyTree(rls);
             }
         }
     }

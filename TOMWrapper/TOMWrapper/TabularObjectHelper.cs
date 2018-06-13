@@ -10,15 +10,12 @@ namespace TabularEditor.TOMWrapper
 {
     public static class TabularObjectHelper
     {
-        public static string InferName(this ITabularObject obj)
+        public static string GetName(this ITabularObject obj)
         {
             if ((obj is ITabularNamedObject)) return (obj as ITabularNamedObject)?.Name;
 
             var tryRlsFilterExpr = obj as RLSFilterExpression;
-            if(tryRlsFilterExpr != null)
-            {
-                return string.Format("RLS on {0} for \"{1}\"", tryRlsFilterExpr.Table.DaxObjectName, tryRlsFilterExpr.Role.Name);
-            }
+            if(tryRlsFilterExpr != null) return tryRlsFilterExpr.Role.Name;
 
             return obj.GetTypeName();
         }
