@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
-using Aga.Controls.Properties;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
@@ -37,9 +36,9 @@ namespace Aga.Controls.Tree.NodeControls
 
 		public NodeCheckBox(string propertyName)
 		{
-			_check = Resources.check;
-			_uncheck = Resources.uncheck;
-			_unknown = Resources.unknown;
+			_check = TabularEditor.TreeViewAdvExtension.TVExtRessources.check;
+			_uncheck = TabularEditor.TreeViewAdvExtension.TVExtRessources.uncheck;
+			_unknown = TabularEditor.TreeViewAdvExtension.TVExtRessources.unknown;
 			DataPropertyName = propertyName;
 			LeftMargin = 0;
 		}

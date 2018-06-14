@@ -117,20 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="check" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\check.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="label2.Text" xml:space="preserve">
+    <value>Tabular Editor can obtain schema metadata from any OLE DB data source in your model. Choose a data source below and then specify a valid SQL query against that source. Tabular Editor will attempt to establish connection to the data source, in order to get the schema (only) of the query.</value>
   </data>
-  <data name="Collapse" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\CollapseChevronDown_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Expand" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ExpandChevronRight_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="uncheck" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\uncheck.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="unknown" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\unknown.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="label1.Text" xml:space="preserve">
+    <value>Tabular Editor can not automatically parse a Power Query (M) script to infer column metadata. Instead, use a Power Query Editor (for example from Excel or Power BI Desktop), to copy the output of the M-function Table.Schema(&lt;your table&gt;) into the clipboard, and press the button below.</value>
   </data>
 </root>

@@ -158,7 +158,8 @@ namespace TabularEditor.TOMWrapper
             if (UpdateLocks == 0) throw new InvalidOperationException("EndUpdate() called before BeginUpdate()");
             UpdateLocks--;
 
-            if (UpdateLocks == 0) UpdateComplete?.Invoke(this, new EventArgs());
+            if (UpdateLocks == 0)
+                UpdateComplete?.Invoke(this, new EventArgs());
         }        
 
         #region Handling Display Folders
