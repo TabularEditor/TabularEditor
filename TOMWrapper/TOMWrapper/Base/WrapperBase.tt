@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper.Undo;
+using TabularEditor.TOMWrapper.Utils;
 using System.Drawing.Design;
 using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
@@ -314,8 +315,11 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 				
 			// Copy perspectives:
 			obj.InPerspective.CopyFrom(InPerspective);
-<# } #>
 
+<# } if (Rules.CloneRequiresDependencyTreeRebuild(t)) { #>
+			// TODO: Make sure that dependency trees are properly rebuilt when IDaxDependantObjects are cloned
+			// FormulaFixup.BuildDependencyTree(this);
+<# } #>
             Handler.EndUpdate();
 
             return obj;
@@ -323,9 +327,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 
 		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
 		{
-<# if (!Rules.IsTranslatable(t, true)) { #>
-			if (includeTranslations) throw new ArgumentException("This object does not support translations", "includeTranslations");
-<# } if (Rules.GetParent(t) == "Model") { #>
+<#  if (Rules.GetParent(t) == "Model") { #>
 			if (newParent != null) throw new ArgumentException("This object can not be cloned to another parent. Argument newParent should be left as null.", "newParent");
 <# } #>
 			return Clone(newName<#= Rules.IsTranslatable(t) ? ", includeTranslations" : "" #>);
