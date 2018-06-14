@@ -69,6 +69,18 @@ class Rules {
 		}
 	}
 
+	public static bool CloneRequiresDependencyTreeRebuild(Type t) {
+		switch(t.Name) {
+			case "Measure":
+			case "CalculatedColumn":
+			//case "ModelRole": // TODO: We need to make sure that dependency trees are rebuilt for the clone
+			case "Table":
+				return true;
+			default:
+				return false;
+		}
+	}
+
 	public static bool IsTranslatable(Type t, bool includeAncestors = false) {
 		switch(t.Name) {
 			case "Model":
