@@ -67,13 +67,13 @@ namespace TabularEditor.TOMWrapper
         }
 
         [IntelliSense("Adds a new Data column to the table."), Tests.GenerateTest()]
-        public DataColumn AddDataColumn(string name = null, string sourceColumn = null, string displayFolder = null)
+        public DataColumn AddDataColumn(string name = null, string sourceColumn = null, string displayFolder = null, DataType dataType = DataType.String)
         {
             if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(DataColumn))) return null;
 
             Handler.BeginUpdate("add Data column");
             var column = DataColumn.CreateNew(this, name);
-            column.DataType = DataType.String;
+            column.DataType = dataType;
             if (!string.IsNullOrEmpty(sourceColumn)) column.SourceColumn = sourceColumn;
             if (!string.IsNullOrEmpty(displayFolder)) column.DisplayFolder = displayFolder;
             Handler.EndUpdate();
@@ -281,7 +281,7 @@ namespace TabularEditor.TOMWrapper
         }
         private bool ShouldSerializeObjectLevelSecurity() { return false; }
 
-        internal static readonly Dictionary<Type, DataType> DataTypeMapping =
+        public static readonly Dictionary<Type, DataType> DataTypeMapping =
             new Dictionary<Type, DataType>() {
                 { typeof(string), DataType.String },
                 { typeof(char), DataType.String },
