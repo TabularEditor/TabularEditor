@@ -9,7 +9,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class ModelRole
+    public partial class ModelRole: IErrorMessageObject
     {
         [Browsable(true), DisplayName("Row Level Security"), Category("Security")]
         public RoleRLSIndexer RowLevelSecurity { get; private set; }
@@ -39,6 +39,19 @@ namespace TabularEditor.TOMWrapper
                 {
                     MetadataObject.Members.Add(new TOM.WindowsModelRoleMember() { MemberName = member });
                 }
+            }
+        }
+
+        [Category("Basic")]
+        public string ErrorMessage
+        {
+            get
+            {
+                if(MetadataObject.TablePermissions.Any(tp => !string.IsNullOrEmpty(tp.ErrorMessage)))
+                {
+                    return string.Join("\n", MetadataObject.TablePermissions.Where(tp => !string.IsNullOrEmpty(tp.ErrorMessage)).Select(tp => "'" + tp.Table.Name + "' RLS: " + tp.ErrorMessage));
+                }
+                return null;
             }
         }
 
