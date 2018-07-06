@@ -208,7 +208,17 @@ namespace TabularEditor.TOMWrapper
         private IEnumerable<ITabularNamedObject> GetChildrenForTable(Table table)
         {
             if (table.SourceType != TOM.PartitionSourceType.Calculated)
-                yield return table.Partitions;
+            {
+                // Don't show the "Partitions" node below tables, when none of the partitions match the filter
+                if (!string.IsNullOrEmpty(Filter))
+                {
+                    // Match on table name:
+                    if (table.Name.IndexOf(Filter, StringComparison.InvariantCultureIgnoreCase) >= 0) yield return table.Partitions;
+                    else if (table.Partitions.Any(p => p.Name.IndexOf(Filter, StringComparison.InvariantCultureIgnoreCase) >= 0)) yield return table.Partitions;
+                }
+                else
+                    yield return table.Partitions;
+            }
 
             IEnumerable<ITabularNamedObject> items;
 
@@ -241,7 +251,7 @@ namespace TabularEditor.TOMWrapper
             {
                 result = (tabularObject as LogicalGroup).GetChildren().Where(o => VisibleInTree(o));
             }
-            if(tabularObject is Model)
+            else if(tabularObject is Model)
             {
                 // If all object types should be shown, simply let the Model.GetChildren() method
                 // return the objects needed:
@@ -252,22 +262,22 @@ namespace TabularEditor.TOMWrapper
                 // Otherwise, only show tables:
                 else result = Model.Tables.Where(t => VisibleInTree(t));
             }
-            if(tabularObject is Table)
+            else if(tabularObject is Table)
             {
                 // Handles sorting internally:
                 return GetChildrenForTable(tabularObject as Table);
             }
-            if (tabularObject is Folder)
+            else if (tabularObject is Folder)
             {
                 // Handles sorting internally:
                 return (tabularObject as Folder).GetChildrenByFolders().Where(c => VisibleInTree(c));
             }
-            if (tabularObject is Hierarchy)
+            else if (tabularObject is Hierarchy)
             {
                 // Never sort:
                 return (tabularObject as Hierarchy).Levels.OrderBy(l => l.Ordinal);
             }
-            if(tabularObject is ITabularObjectContainer)
+            else if(tabularObject is ITabularObjectContainer)
             {
                 // All other types:
                 result = (tabularObject as ITabularObjectContainer).GetChildren();

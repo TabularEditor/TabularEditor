@@ -1068,7 +1068,9 @@ namespace Aga.Controls.Tree
 
 		private void RestoreExpandedNodes(TreeNodeAdv node, Dictionary<object, object> list)
 		{
-			if (node.Tag != null && list.ContainsKey(node.Tag))
+            if (node.Level == 0) foreach (var child in node.Children) RestoreExpandedNodes(child, list);
+
+            if (node.Tag != null && list.ContainsKey(node.Tag))
 			{
 				node.IsExpanded = true;
 				foreach (var child in node.Children)
@@ -1078,11 +1080,17 @@ namespace Aga.Controls.Tree
 
 		private void SaveExpandedNodes(TreeNodeAdv node, Dictionary<object, object> list)
 		{
+            // Handle root node (which has a null tag):
+            if (node.Level == 0) foreach (var child in node.Children) SaveExpandedNodes(child, list);
+
 			if (node.IsExpanded && node.Tag != null)
 			{
-				list.Add(node.Tag, null);
-				foreach (var child in node.Children)
-					SaveExpandedNodes(child, list);
+                if (!list.ContainsKey(node.Tag))
+                {
+                    list.Add(node.Tag, null);
+                    foreach (var child in node.Children)
+                        SaveExpandedNodes(child, list);
+                }
 			}
 		}
 
