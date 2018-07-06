@@ -191,7 +191,7 @@ namespace TabularEditor.TOMWrapper
             {
                 var oldValue = DetailRowsExpression;
 
-                if (oldValue == value) return;
+                if (oldValue == value || oldValue == null && string.IsNullOrEmpty(value)) return;
 
                 bool undoable = true;
                 bool cancel = false;
