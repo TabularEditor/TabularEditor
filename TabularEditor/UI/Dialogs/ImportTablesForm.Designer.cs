@@ -45,6 +45,8 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.btnImport = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
             this.treeViewAdv1 = new Aga.Controls.Tree.TreeViewAdv();
             this.colImport = new Aga.Controls.Tree.TreeColumn();
             this.colSourceName = new Aga.Controls.Tree.TreeColumn();
@@ -54,8 +56,6 @@
             this.nodeTextBox1 = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeComboBox1 = new Aga.Controls.Tree.NodeControls.NodeComboBox();
             this.nodeTextBox2 = new Aga.Controls.Tree.NodeControls.NodeTextBox();
-            this.btnImport = new System.Windows.Forms.Button();
-            this.btnCancel = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabSingle.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -236,6 +236,27 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Imported columns";
             // 
+            // btnImport
+            // 
+            this.btnImport.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.btnImport.Enabled = false;
+            this.btnImport.Location = new System.Drawing.Point(721, 376);
+            this.btnImport.Name = "btnImport";
+            this.btnImport.Size = new System.Drawing.Size(75, 23);
+            this.btnImport.TabIndex = 4;
+            this.btnImport.Text = "Import";
+            this.btnImport.UseVisualStyleBackColor = true;
+            // 
+            // btnCancel
+            // 
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnCancel.Location = new System.Drawing.Point(640, 376);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(75, 23);
+            this.btnCancel.TabIndex = 5;
+            this.btnCancel.Text = "Cancel";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            // 
             // treeViewAdv1
             // 
             this.treeViewAdv1.BackColor = System.Drawing.SystemColors.Window;
@@ -245,6 +266,7 @@
             this.treeViewAdv1.Columns.Add(this.colImportedName);
             this.treeViewAdv1.DefaultToolTipProvider = null;
             this.treeViewAdv1.DragDropMarkColor = System.Drawing.Color.Black;
+            this.treeViewAdv1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.treeViewAdv1.FullRowSelect = true;
             this.treeViewAdv1.LineColor = System.Drawing.SystemColors.ControlDark;
             this.treeViewAdv1.Location = new System.Drawing.Point(6, 19);
@@ -304,6 +326,7 @@
             this.nodeTextBox1.LeftMargin = 3;
             this.nodeTextBox1.ParentColumn = this.colSourceName;
             this.nodeTextBox1.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            this.nodeTextBox1.UseCompatibleTextRendering = true;
             // 
             // nodeComboBox1
             // 
@@ -318,6 +341,7 @@
             this.nodeComboBox1.IncrementalSearchEnabled = true;
             this.nodeComboBox1.LeftMargin = 3;
             this.nodeComboBox1.ParentColumn = this.colDataType;
+            this.nodeComboBox1.UseCompatibleTextRendering = true;
             // 
             // nodeTextBox2
             // 
@@ -328,27 +352,7 @@
             this.nodeTextBox2.LeftMargin = 3;
             this.nodeTextBox2.ParentColumn = this.colImportedName;
             this.nodeTextBox2.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
-            // 
-            // btnImport
-            // 
-            this.btnImport.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnImport.Enabled = false;
-            this.btnImport.Location = new System.Drawing.Point(721, 376);
-            this.btnImport.Name = "btnImport";
-            this.btnImport.Size = new System.Drawing.Size(75, 23);
-            this.btnImport.TabIndex = 4;
-            this.btnImport.Text = "Import";
-            this.btnImport.UseVisualStyleBackColor = true;
-            // 
-            // btnCancel
-            // 
-            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(640, 376);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(75, 23);
-            this.btnCancel.TabIndex = 5;
-            this.btnCancel.Text = "Cancel";
-            this.btnCancel.UseVisualStyleBackColor = true;
+            this.nodeTextBox2.UseCompatibleTextRendering = true;
             // 
             // ImportTablesForm
             // 
