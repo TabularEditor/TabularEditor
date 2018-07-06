@@ -266,7 +266,7 @@ namespace TabularEditor.TOMWrapper
             if (tabularObject is Hierarchy)
             {
                 var hier = tabularObject as Hierarchy;
-                return hier.Levels;
+                return hier.Levels.OrderBy(l => l.Ordinal);
             }
             if(tabularObject is ITabularObjectContainer)
             {
