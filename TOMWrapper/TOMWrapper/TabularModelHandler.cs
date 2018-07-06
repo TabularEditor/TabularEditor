@@ -851,6 +851,7 @@ namespace TabularEditor.TOMWrapper
                 table?.CheckChildrenErrors();
                 WrapperLookup.Values.OfType<IExpressionObject>().ToList().ForEach(i => i.NeedsValidation = false);
             }
+            errorList.AddRange(Model.Roles.Where(r => r.ErrorMessage != null));
             if (errorList.Count > 0 || Errors?.Count > 0)
             {
                 Errors = errorList;
