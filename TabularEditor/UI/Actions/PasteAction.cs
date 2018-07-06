@@ -37,7 +37,17 @@ namespace TabularEditor.UI.Actions
                 var pasteItems = UIController.Current.ClipboardObjects;
                 var inserted = UIController.Current.Handler.Actions.InsertObjects(pasteItems, SelectedNodes[0].Tag as ITabularNamedObject);
 
-                if (inserted.Count > 0) UIController.Current.Goto(inserted[0] as ITabularNamedObject);
+                if (inserted.Count > 0)
+                {
+                    UIController.Current.Goto(inserted[0] as ITabularNamedObject);
+                    UIController.Current.Elements.TreeView.BeginUpdate();
+                    foreach (var item in inserted)
+                    {
+                        var node = UIController.Current.Elements.TreeView.FindNodeByTag(item);
+                        if (node != null) node.IsSelected = true;
+                    }
+                    UIController.Current.Elements.TreeView.EndUpdate();
+                }
             }
             base.OnExecute(e);
         }
