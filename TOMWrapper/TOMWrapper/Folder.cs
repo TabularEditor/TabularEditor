@@ -15,7 +15,7 @@ namespace TabularEditor.TOMWrapper
     /// </summary>
     [DebuggerDisplay("{ObjectType} {Path}")]
     public class Folder : IFolderObject, ITabularObjectContainer, IFolder, ITabularNamedObject, ITabularTableObject,
-        IErrorMessageObject
+        IErrorMessageObject, IHideableObject
     {
         [Browsable(false)]
         public IFolder Container
@@ -204,6 +204,17 @@ namespace TabularEditor.TOMWrapper
             {
                 return null;
             }
+        }
+
+        [ReadOnly(true),Browsable(false)]
+        public bool IsHidden
+        {
+            get
+            {
+                return GetChildrenByFolders().OfType<IHideableObject>().All(item => item.IsHidden);
+            }
+
+            set { }
         }
 
         public IEnumerable<IFolderObject> GetChildrenByFolders(bool recursive = false)
