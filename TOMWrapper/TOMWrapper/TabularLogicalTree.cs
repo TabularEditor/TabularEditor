@@ -205,7 +205,7 @@ namespace TabularEditor.TOMWrapper
 
         #region ITreeModel implementation
         
-        private IEnumerable GetChildrenForTable(Table table)
+        private IEnumerable<ITabularNamedObject> GetChildrenForTable(Table table)
         {
             if (table.SourceType != TOM.PartitionSourceType.Calculated)
                 yield return table.Partitions;
@@ -235,11 +235,11 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         protected IEnumerable GetChildren(ITabularObjectContainer tabularObject)
         {
+            IEnumerable<ITabularNamedObject> result = Enumerable.Empty<ITabularNamedObject>();
 
             if(tabularObject is LogicalGroup)
             {
-                var children = (tabularObject as LogicalGroup).GetChildren().Where(o => VisibleInTree(o));
-                return Options.HasFlag(LogicalTreeOptions.OrderByName) ? children.OrderBy(o => o.Name) : children;
+                result = (tabularObject as LogicalGroup).GetChildren().Where(o => VisibleInTree(o));
             }
             if(tabularObject is Model)
             {
@@ -247,32 +247,34 @@ namespace TabularEditor.TOMWrapper
                 // return the objects needed:
                 if (Options.HasFlag(LogicalTreeOptions.AllObjectTypes))
                 {
-                    return Model.GetChildren().Where(o => VisibleInTree(o));
+                    result = Model.GetChildren().Where(o => VisibleInTree(o));
                 }
                 // Otherwise, only show tables:
-                else return Model.Tables.Where(t => VisibleInTree(t));
+                else result = Model.Tables.Where(t => VisibleInTree(t));
             }
             if(tabularObject is Table)
             {
-                var table = tabularObject as Table;
-
-                return GetChildrenForTable(table);
+                // Handles sorting internally:
+                return GetChildrenForTable(tabularObject as Table);
             }
             if (tabularObject is Folder)
             {
-                var folder = tabularObject as Folder;
-                return folder.GetChildrenByFolders().Where(c => VisibleInTree(c));
+                // Handles sorting internally:
+                return (tabularObject as Folder).GetChildrenByFolders().Where(c => VisibleInTree(c));
             }
             if (tabularObject is Hierarchy)
             {
-                var hier = tabularObject as Hierarchy;
-                return hier.Levels.OrderBy(l => l.Ordinal);
+                // Never sort:
+                return (tabularObject as Hierarchy).Levels.OrderBy(l => l.Ordinal);
             }
             if(tabularObject is ITabularObjectContainer)
             {
-                return (tabularObject as ITabularObjectContainer).GetChildren();
+                // All other types:
+                result = (tabularObject as ITabularObjectContainer).GetChildren();
             }
-            return Enumerable.Empty<TabularNamedObject>();
+
+            return Options.HasFlag(LogicalTreeOptions.OrderByName) ? result.OrderBy(o => o.Name) : result;
+
         }
 
         public bool VisibleInTree(ITabularNamedObject tabularObject)
