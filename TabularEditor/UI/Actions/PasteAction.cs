@@ -36,7 +36,7 @@ namespace TabularEditor.UI.Actions
             {
                 var pasteItems = UIController.Current.ClipboardObjects;
                 var inserted = UIController.Current.Handler.Actions.InsertObjects(pasteItems, SelectedNodes[0].Tag as ITabularNamedObject);
-
+                foreach (var item in inserted.OfType<ITabularPerspectiveObject>()) item.Vis();
                 if (inserted.Count > 0)
                 {
                     UIController.Current.Goto(inserted[0] as ITabularNamedObject);

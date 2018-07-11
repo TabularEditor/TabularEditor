@@ -51,17 +51,17 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => s.Count == 1, (s, m) => s.Measure.AddKPI().Edit(), (s, m) => @"Create New\KPI", true, Context.Measure));
 
             // Add measure:
-            Add(new Action((s, m) => s.Count == 1 || s.Context == Context.TableObject, (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Measure", true, Context.Table | Context.TableObject));
+            Add(new Action((s, m) => s.Count == 1 || s.Context == Context.TableObject, (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Measure", true, Context.Table | Context.TableObject));
 
             // Add calc column:
-            Add(new Action((s, m) => s.Count == 1 || s.Context == Context.TableObject, (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Calculated Column", true, Context.Table | Context.TableObject));
+            Add(new Action((s, m) => s.Count == 1 || s.Context == Context.TableObject, (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Calculated Column", true, Context.Table | Context.TableObject));
 
             // Add data column:
-            Add(new Action((s, m) => !Handler.UsePowerBIGovernance && (s.Count == 1 || s.Context == Context.TableObject), (s, m) => s.Table.AddDataColumn(displayFolder: s.CurrentFolder).Edit(), (s, m) => @"Create New\Data Column", true, Context.Table | Context.TableObject));
+            Add(new Action((s, m) => !Handler.UsePowerBIGovernance && (s.Count == 1 || s.Context == Context.TableObject) && !(s.Table is CalculatedTable), (s, m) => s.Table.AddDataColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Data Column", true, Context.Table | Context.TableObject));
 
             // Add hierarchy:
             Add(new Action((s, m) => s.Count == 1 || s.Context == Context.TableObject, 
-                (s, m) => s.Table.AddHierarchy(displayFolder: s.CurrentFolder, levels: s.Direct.OfType<Column>().ToArray()).Expand().Edit(), 
+                (s, m) => s.Table.AddHierarchy(displayFolder: s.CurrentFolder, levels: s.Direct.OfType<Column>().ToArray()).Expand().Vis().Edit(), 
                 (s, m) => @"Create New\Hierarchy", true, Context.Table | Context.TableObject));
             Add(new Separator(@"Create New"));
 
@@ -89,8 +89,11 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => !Handler.UsePowerBIGovernance, (s, m) => m.AddExpression().Edit(), (s, m) => @"Create New\Shared Expression", false, Context.Model | Context.Expressions | Context.Expression));
             Add(new Action((s, m) => m.Tables.Count(t => t.Columns.Any()) >= 2, (s, m) => m.AddRelationship().Edit(), (s, m) => @"Create New\Relationship", false, Context.Relationship | Context.Relationships | Context.Model));
             Add(new Action((s, m) => true, (s, m) => m.AddRole().Edit(), (s, m) => @"Create New\Role", false, Context.Model | Context.Roles | Context.Role));
-            Add(new Action((s, m) => m.DataSources.Any() && !Handler.UsePowerBIGovernance, (s, m) => m.AddTable().Edit(), (s, m) => @"Create New\Table", false, Context.Tables | Context.Model));
-            Add(new Action((s, m) => true, (s, m) => m.AddCalculatedTable().Edit(), (s, m) => @"Create New\Calculated Table", false, Context.Tables | Context.Model));
+
+            Add(new Action((s, m) => m.DataSources.Any() && !Handler.UsePowerBIGovernance, (s, m) => m.AddTable().Vis().Edit(), (s, m) => @"Create New\Table", false, Context.Tables | Context.Model));
+
+            Add(new Action((s, m) => true, (s, m) => m.AddCalculatedTable().Vis().Edit(), (s, m) => @"Create New\Calculated Table", false, Context.Tables | Context.Model));
+
             Add(new Action((s, m) => !Handler.UsePowerBIGovernance, (s, m) => {
                 var res = csDialog.ShowDialog();
                 if (res == DialogResult.OK)
@@ -311,6 +314,16 @@ namespace TabularEditor.UI.Actions
         public static T Edit<T>(this T obj) where T: ITabularNamedObject
         {
             UIController.Current.Actions.LastActionExecuted.EditObjectName = obj;
+            return obj;
+        }
+
+        /// <summary>
+        /// Makes the object visible in the current perspective
+        /// </summary>
+        public static T Vis<T>(this T obj) where T: ITabularPerspectiveObject
+        {
+            var currentPerspective = UI.UIController.Current.TreeModel.Perspective;
+            if (currentPerspective != null) obj.InPerspective[currentPerspective] = true;
             return obj;
         }
     }

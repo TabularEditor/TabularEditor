@@ -98,18 +98,27 @@ namespace TabularEditor.TOMWrapper
 
         protected override bool GetValue(Perspective perspective)
         {
+            // Handle tables without children:
+            if(!Table.GetChildren().Any())
+            {
+                return perspective.MetadataObject.PerspectiveTables.Contains(Table.Name);
+            }
+
+            // Tables with children:
             return Table.GetChildren().OfType<ITabularPerspectiveObject>().Any(obj => obj.InPerspective[perspective]);
         }
 
         protected override void SetInPerspective(Perspective perspective, bool included)
         {
+            var pts = perspective.MetadataObject.PerspectiveTables;
+            if (included && !pts.Contains(Table.Name)) pts.Add(new Microsoft.AnalysisServices.Tabular.PerspectiveTable() { Table = Table.MetadataObject });
+
             // Including/excluding a table from a perspective, is equivalent to including/excluding all child
             // objects. The PerspectiveTable will be created automatically if needed.
             Table.Measures.InPerspective(perspective, included);
             Table.Hierarchies.InPerspective(perspective, included);
             Table.Columns.InPerspective(perspective, included);
 
-            var pts = perspective.MetadataObject.PerspectiveTables;
             if (!included && pts.Contains(Table.Name)) pts.Remove(Table.Name);
         }
 

@@ -29,7 +29,12 @@ namespace TabularEditor.UI
             if(node == null)
             {
                 TreeModel.BeginUpdate();
-                TreeModel.Options = LogicalTreeOptions.Default | LogicalTreeOptions.ShowHidden;
+                TreeModel.Options = TreeModel.Options
+                    | LogicalTreeOptions.ShowHidden
+                    | LogicalTreeOptions.AllObjectTypes
+                    | LogicalTreeOptions.Columns
+                    | LogicalTreeOptions.Measures
+                    | LogicalTreeOptions.Hierarchies;
                 InternalApplyFilter("");
                 UI.FormMain.UpdateTreeUIButtons();
                 TreeModel.EndUpdate();
