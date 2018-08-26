@@ -23,6 +23,7 @@ namespace TabularEditor.TextServices
             try
             {
                 var lexer = new DAXLexer(new AntlrInputStream(textbox.Text));
+                lexer.RemoveErrorListeners();
 
                 textbox.ClearStyle(StyleIndex.All);
                 var tok = lexer.NextToken();

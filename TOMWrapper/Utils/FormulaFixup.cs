@@ -41,7 +41,9 @@ namespace TabularEditor.TOMWrapper.Utils
 
         private static void ParseExpression(string dax, IDaxDependantObject expressionObj, DAXProperty prop, DependsOnList dependsOn = null)
         {
-            var tokens = new DAXLexer(new AntlrInputStream(dax)).GetAllTokens();
+            var lexer = new DAXLexer(new AntlrInputStream(dax));
+            lexer.RemoveErrorListeners();
+            var tokens = lexer.GetAllTokens();
 
             IToken lastTableRef = null;
             int startTableIndex = 0;
