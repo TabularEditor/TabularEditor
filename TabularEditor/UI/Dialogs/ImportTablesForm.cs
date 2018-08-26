@@ -51,7 +51,7 @@ namespace TabularEditor.UI.Dialogs
                     p.DataSource = currentDs;
                     p.Query = _singleton.textBox1.Text;
                 }
-                t.Edit();
+                t.Vis().Edit();
             }
         }
 
