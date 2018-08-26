@@ -13,6 +13,25 @@ namespace TabularEditor.Scripting
     public static class ScriptHelper
     {
         [ScriptMethod]
+        public static string FormatDax(string dax)
+        {
+            var textToFormat = "x :=" + dax;
+            try
+            {
+                var result = TabularEditor.Dax.DaxFormatterProxy.FormatDax(textToFormat).FormattedDax;
+                if (string.IsNullOrWhiteSpace(result))
+                {
+                    return dax;
+                }
+                return result.Substring(6);
+            }
+            catch
+            {
+                return dax;
+            }
+        }
+
+        [ScriptMethod]
         public static string ReadFile(string filePath)
         {
             using (var fileStream = new System.IO.FileStream(filePath,
