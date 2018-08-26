@@ -40,15 +40,15 @@ namespace TabularEditor.UI.Actions
             // "Create New Display Folder"
             Add(new Action((s, m) => s.Count >= 1 && !Handler.UsePowerBIGovernance, 
                 (s, m) => {
-                var disp = (s.FirstOrDefault() as IFolderObject)?.DisplayFolder;
-                disp = string.IsNullOrWhiteSpace(disp) ? "New folder" : (disp + @"\New folder"); ;
-                Folder.CreateFolder(s.Table, disp).Edit();
-                s.DisplayFolder = disp;
-                
-            }, (s, m) => @"Create New\Display Folder", true, Context.TableObject));
+                    var orgDF = (s.Direct.FirstOrDefault() as IFolderObject)?.DisplayFolder;
+                    var newDF = string.IsNullOrWhiteSpace(orgDF) ? "New folder" : (orgDF + @"\New folder"); ;
+                    Folder.CreateFolder(s.Table, newDF).Edit().Expand();
+                    s.ReplaceFolder(orgDF, newDF);
+                }, 
+                (s, m) => @"Create New\Display Folder", true, Context.TableObject));
 
             // Add KPI:
-            Add(new Action((s, m) => s.Count == 1, (s, m) => s.Measure.AddKPI().Edit(), (s, m) => @"Create New\KPI", true, Context.Measure));
+            Add(new Action((s, m) => s.Count == 1 && !s.Folders.Any(), (s, m) => s.Measure.AddKPI().Edit(), (s, m) => @"Create New\KPI", true, Context.Measure));
 
             // Add measure:
             Add(new Action((s, m) => s.Count == 1 || s.Context.Has1(Context.TableObject), (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Measure", true, Context.Table | Context.TableObject));

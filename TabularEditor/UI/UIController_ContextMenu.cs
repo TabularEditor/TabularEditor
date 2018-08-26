@@ -21,7 +21,14 @@ namespace TabularEditor.UI
             if (c.Has1(Context.SingularObjects | Context.Groups | Context.PartitionCollection) && c != Context.Model)
             {
                 UI.DynamicMenu.Visible = true;
-                UI.DynamicMenu.Text = c == Context.PartitionCollection ? "&Partitions" : "&" + c.ToString().SplitCamelCase();
+                if (Selection.DirectCount == 1 && Selection.Folders.Any())
+                {
+                    UI.DynamicMenu.Text = "Folder";
+                }
+                else
+                {
+                    UI.DynamicMenu.Text = c == Context.PartitionCollection ? "&Partitions" : "&" + c.ToString().SplitCamelCase();
+                }
                 return;
             }
 
