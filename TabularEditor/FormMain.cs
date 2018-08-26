@@ -166,6 +166,14 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             actToggleHierarchies.Checked = Preferences.Current.View_Hierarchies;
             actToggleAllObjectTypes.Checked = Preferences.Current.View_AllObjectTypes;
             actToggleOrderByName.Checked = !Preferences.Current.View_SortAlphabetically;
+
+            // Assign column widths from preferences:
+            foreach(var cp in Preferences.Current.View_ColumnPreferences)
+            {
+                var column = elements.TreeView.Columns.FirstOrDefault(c => c.Header == cp.Name);
+                if(column != null) column.Width = cp.Width;
+            } 
+
             actViewOptions_Execute(this, null);
         }
 
@@ -213,10 +221,23 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                     var res = MessageBox.Show("You have made changes to the currently loaded Model.bim file, which have not yet been saved. Are you sure you want to quit?", "Unsaved changes in the model", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
                     if (res == DialogResult.Cancel) e.Cancel = true;
                 }
+                if (e.Cancel) return;
             }
+
+            foreach (var column in tvModel.Columns)
+            {
+                // Persist column widths:
+                var cp = Preferences.Current.View_ColumnPreferences.FirstOrDefault(c => c.Name == column.Header);
+                if (cp == null) {
+                    cp = new ColumnPreferences { Name = column.Header, Visible = true };
+                    Preferences.Current.View_ColumnPreferences.Add(cp);
+                }
+                cp.Width = column.Width;
+            }
+            Preferences.Current.Save();
         }
 
-        private void actViewOptions_Execute(object sender, EventArgs e)
+    private void actViewOptions_Execute(object sender, EventArgs e)
         {
             UI.SetDisplayOptions(
                 actToggleHidden.Checked,

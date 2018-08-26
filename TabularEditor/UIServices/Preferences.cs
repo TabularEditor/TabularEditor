@@ -63,6 +63,8 @@ namespace TabularEditor.UIServices
                     "Tables/Partitions",
                     "Translations"
                 };
+
+        public List<ColumnPreferences> View_ColumnPreferences = new List<ColumnPreferences>();
         #endregion
 
         #region Serialization functionality
@@ -116,12 +118,27 @@ namespace TabularEditor.UIServices
 
         public void Save()
         {
-            var json = JsonConvert.SerializeObject(this, Formatting.Indented);
-            (new FileInfo(PREFERENCES_PATH)).Directory.Create();
-            File.WriteAllText(PREFERENCES_PATH, json, Encoding.Default);
-            IsLoaded = true;
+            try
+            {
+                var json = JsonConvert.SerializeObject(this, Formatting.Indented);
+                (new FileInfo(PREFERENCES_PATH)).Directory.Create();
+                File.WriteAllText(PREFERENCES_PATH, json, Encoding.Default);
+                IsLoaded = true;
+            }
+            catch (IOException ex)
+            {
+                // Should only raise exception when several instances of Tabular Editor are closed simultaneously
+                // In that case - first instance closed, wins. All others silently absorb the IOException.
+            }
         }
         #endregion
+    }
+
+    public class ColumnPreferences
+    {
+        public string Name;
+        public int Width;
+        public bool Visible;
     }
 
     public static class PreferencesConverter
