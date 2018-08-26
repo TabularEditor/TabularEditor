@@ -10,6 +10,7 @@ using TabularEditor.UI.Dialogs;
 using TabularEditor.UIServices;
 using System.Collections.Generic;
 using System.Threading;
+using Aga.Controls.Tree;
 
 namespace TabularEditor
 {
@@ -280,6 +281,8 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         {
             if (sender == actCollapseAll) tvModel.CollapseAll();
             if (sender == actExpandAll) tvModel.ExpandAll();
+            if (sender == actExpandFromHere) foreach (var n in tvModel.SelectedNodes) n.ExpandAll();
+            if (sender == actCollapseFromHere) foreach (var n in tvModel.SelectedNodes) n.CollapseAll();
         }
 
         private void FormMain_Load(object sender, EventArgs e)
