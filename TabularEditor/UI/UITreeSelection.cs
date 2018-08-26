@@ -329,8 +329,8 @@ namespace TabularEditor.UI
 
             _selectedNodes = selectedNodes;
 
-            if (Count == 0) Context = Context.None;
-            else if (Count == 1) Context = GetNodeContext(allNodes[0]);
+            if (allNodes.Count == 0) Context = Context.None;
+            else if (allNodes.Count == 1) Context = GetNodeContext(allNodes[0]);
             else Context = GetNodeContexts(allNodes);
 
             Folders = selectedNodes.Select(n => n.Tag).OfType<Folder>();
@@ -505,7 +505,7 @@ namespace TabularEditor.UI
             foreach (var n in nodes)
             {
                 yield return n;
-                if(n.Tag is Folder) foreach (var c in GetDeep(n.Children)) yield return c;
+                if (n.Tag is Folder) foreach (var c in GetDeep(n.Children)) yield return c;
             }
         }
     }

@@ -105,6 +105,16 @@ namespace TabularEditor.UI
             }
         }
 
+        public virtual void ReplaceFolder(string before, string after)
+        {
+            Handler.BeginUpdate("display folder");
+            foreach(var fo in this.OfType<IFolderObject>().ToList())
+            {
+                fo.DisplayFolder = fo.DisplayFolder.StartsWith(before) ? after.ConcatPath(fo.DisplayFolder.Substring(before.Length)) : fo.DisplayFolder;
+            }
+            Handler.EndUpdate();
+        }
+
         [IntelliSense("Sets the IsHidden property of all objects in the collection at once.")]
         public bool IsHidden
         {
