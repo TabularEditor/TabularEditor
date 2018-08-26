@@ -12,6 +12,7 @@ namespace TabularEditor.UI.Actions
     {
         RefreshType refreshType;
         bool scriptToClipboard;
+        public Keys Shortcut => Keys.None;
 
         public RefreshAction(bool scriptToClipboard)
         {

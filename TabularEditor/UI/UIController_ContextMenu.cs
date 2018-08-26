@@ -109,6 +109,9 @@ namespace TabularEditor.UI
         private void ContextMenu_Populate(ToolStripDropDown menu, Context contextFilter = Context.Everywhere, 
             bool allowCustomActions = true, Func<IBaseAction, bool> actionFilter = null)
         {
+            // TODO: Is it really a good idea to instantiate new menu items upon every opening of the menu?
+            // Also, this prevents us from using shortcuts, as they won't work until a menu is opened for the first time.
+
             var availableActions = new List<IBaseAction>();
             var createNewActions = 0;
 
@@ -144,7 +147,11 @@ namespace TabularEditor.UI
                         name = name.Replace("Create New\\", "New ");
 
                     var item = ContextMenu_AddFromAction(name, menu);
+                    
                     if (!string.IsNullOrEmpty(act.ToolTip)) item.ToolTipText = act.ToolTip;
+
+                    //if (act.Shortcut != Keys.None) (item as ToolStripMenuItem).ShortcutKeyDisplayString = Keys act.Shortcut.ToString();
+
                     item.Tag = act;
                     item.Enabled = enabled;
                     item.Click += ContextMenuItem_Click;
@@ -277,6 +284,8 @@ namespace TabularEditor.UI
 
             var act = item.Tag as IBaseAction;
             if (act == null) return;
+
+            if (!act.ValidContexts.HasX(Selection.Context | Context.Model | Context.Tool)) return;
 
             act.Execute((act as IModelMultiAction)?.ArgNames[item.Name]);
             //UI.PropertyGrid.Refresh();

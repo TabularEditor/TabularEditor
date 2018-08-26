@@ -25,6 +25,7 @@ namespace TabularEditor.UI.Actions
     public interface IModelAction: IBaseAction
     {
         string Name { get; }
+        Keys Shortcut { get; }
     }
 
     public interface IModelMultiAction: IBaseAction
@@ -67,6 +68,8 @@ namespace TabularEditor.UI.Actions
         NameDelegate _name;
 
         UIController ui;
+        private Keys _shortcut;
+        public Keys Shortcut => _shortcut;
 
         /// <summary>
         /// If this field is set, after an action has finished executing its custom code,
@@ -88,6 +91,12 @@ namespace TabularEditor.UI.Actions
             ValidContexts = validContexts;
 
             ui = UIController.Current;
+        }
+
+        public Action(EnabledDelegate enabled, ExecuteDelegate execute, NameDelegate name, bool hideWhenDisabled, Context validContexts, Keys shortcut)
+            : this(enabled, execute, name, hideWhenDisabled, validContexts)
+        {
+            _shortcut = shortcut;
         }
 
         public string ToolTip { get; set; }
