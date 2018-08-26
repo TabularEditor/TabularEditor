@@ -98,7 +98,7 @@ namespace Aga.Controls.Tree.NodeControls
 
 			_format = new StringFormat(StringFormatFlags.LineLimit | StringFormatFlags.NoClip | StringFormatFlags.FitBlackBox | StringFormatFlags.MeasureTrailingSpaces);
 			_baseFormatFlags = TextFormatFlags.PreserveGraphicsClipping |
-						   TextFormatFlags.PreserveGraphicsTranslateTransform;
+						   TextFormatFlags.PreserveGraphicsTranslateTransform | TextFormatFlags.NoPrefix;
 			SetFormatFlags();
 			LeftMargin = 3;
 		}
@@ -129,7 +129,7 @@ namespace Aga.Controls.Tree.NodeControls
 			Font font = GetDrawingFont(node, context, label);
 			Size s = Size.Empty;
 			if (UseCompatibleTextRendering)
-				s = TextRenderer.MeasureText(label, font);
+				s = TextRenderer.MeasureText(label, font, s, TextFormatFlags.NoPrefix);
 			else
 			{
 				SizeF sf = context.Graphics.MeasureString(label, font);
