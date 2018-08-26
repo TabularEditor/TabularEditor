@@ -37,7 +37,7 @@ namespace TabularEditor.UI.Actions
             // Import Table...:
             Add(new Action((s, m) => true, (s, m) => ImportTablesForm.ImportTable(m), (s, m) => "Import Table...", true, Context.Model | Context.Tables));
 
-            // "Create New"
+            // "Create New Display Folder"
             Add(new Action((s, m) => s.Count >= 1 && !Handler.UsePowerBIGovernance, 
                 (s, m) => {
                 var disp = (s.FirstOrDefault() as IFolderObject)?.DisplayFolder;
@@ -51,16 +51,16 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => s.Count == 1, (s, m) => s.Measure.AddKPI().Edit(), (s, m) => @"Create New\KPI", true, Context.Measure));
 
             // Add measure:
-            Add(new Action((s, m) => s.Count == 1 || s.Context == Context.TableObject, (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Measure", true, Context.Table | Context.TableObject));
+            Add(new Action((s, m) => s.Count == 1 || s.Context.Has1(Context.TableObject), (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Measure", true, Context.Table | Context.TableObject));
 
             // Add calc column:
-            Add(new Action((s, m) => s.Count == 1 || s.Context == Context.TableObject, (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Calculated Column", true, Context.Table | Context.TableObject));
+            Add(new Action((s, m) => s.Count == 1 || s.Context.Has1(Context.TableObject), (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Calculated Column", true, Context.Table | Context.TableObject));
 
             // Add data column:
-            Add(new Action((s, m) => !Handler.UsePowerBIGovernance && (s.Count == 1 || s.Context == Context.TableObject) && !(s.Table is CalculatedTable), (s, m) => s.Table.AddDataColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Data Column", true, Context.Table | Context.TableObject));
+            Add(new Action((s, m) => !Handler.UsePowerBIGovernance && (s.Count == 1 || s.Context.Has1(Context.TableObject)) && !(s.Table is CalculatedTable), (s, m) => s.Table.AddDataColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Data Column", true, Context.Table | Context.TableObject));
 
             // Add hierarchy:
-            Add(new Action((s, m) => s.Count == 1 || s.Context == Context.TableObject, 
+            Add(new Action((s, m) => s.Count == 1 || s.Context.Has1(Context.TableObject), 
                 (s, m) => s.Table.AddHierarchy(displayFolder: s.CurrentFolder, levels: s.Direct.OfType<Column>().ToArray()).Expand().Vis().Edit(), 
                 (s, m) => @"Create New\Hierarchy", true, Context.Table | Context.TableObject));
             Add(new Separator(@"Create New"));
