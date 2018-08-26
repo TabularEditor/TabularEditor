@@ -51,19 +51,19 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => s.Count == 1 && !s.Folders.Any(), (s, m) => s.Measure.AddKPI().Edit(), (s, m) => @"Create New\KPI", true, Context.Measure));
 
             // Add measure:
-            Add(new Action((s, m) => s.Count == 1 || s.Context.Has1(Context.TableObject), (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Measure", true, Context.Table | Context.TableObject));
+            Add(new Action((s, m) => s.Count == 1 || s.Context.Has1(Context.TableObject), (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Measure", true, Context.Table | Context.TableObject, Keys.Alt | Keys.D1));
 
             // Add calc column:
-            Add(new Action((s, m) => s.Count == 1 || s.Context.Has1(Context.TableObject), (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Calculated Column", true, Context.Table | Context.TableObject));
-
-            // Add data column:
-            Add(new Action((s, m) => !Handler.UsePowerBIGovernance && (s.Count == 1 || s.Context.Has1(Context.TableObject)) && !(s.Table is CalculatedTable), (s, m) => s.Table.AddDataColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Data Column", true, Context.Table | Context.TableObject));
+            Add(new Action((s, m) => s.Count == 1 || s.Context.Has1(Context.TableObject), (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Calculated Column", true, Context.Table | Context.TableObject, Keys.Alt | Keys.D2));
 
             // Add hierarchy:
             Add(new Action((s, m) => s.Count == 1 || s.Context.Has1(Context.TableObject), 
                 (s, m) => s.Table.AddHierarchy(displayFolder: s.CurrentFolder, levels: s.Direct.OfType<Column>().ToArray()).Expand().Vis().Edit(), 
-                (s, m) => @"Create New\Hierarchy", true, Context.Table | Context.TableObject));
+                (s, m) => @"Create New\Hierarchy", true, Context.Table | Context.TableObject, Keys.Alt | Keys.D3));
             Add(new Separator(@"Create New"));
+
+            // Add data column:
+            Add(new Action((s, m) => !Handler.UsePowerBIGovernance && (s.Count == 1 || s.Context.Has1(Context.TableObject)) && !(s.Table is CalculatedTable), (s, m) => s.Table.AddDataColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Data Column", true, Context.Table | Context.TableObject, Keys.Alt | Keys.D4));
 
             Add(new Action(
                 (s, m) => s.Count == 1 && !Handler.UsePowerBIGovernance, 
@@ -83,6 +83,10 @@ namespace TabularEditor.UI.Actions
                 (s, m) => MPartition.CreateNew(s.Table).Edit(),
                 (s, m) => @"New Partition (Power Query)", true, Context.PartitionCollection | Context.Partition));
 
+            Add(new Action((s, m) => m.DataSources.Any() && !Handler.UsePowerBIGovernance, (s, m) => m.AddTable().Vis().Edit(), (s, m) => @"Create New\Table", false, Context.Tables | Context.Model, Keys.Alt | Keys.D5));
+
+            Add(new Action((s, m) => true, (s, m) => m.AddCalculatedTable().Vis().Edit(), (s, m) => @"Create New\Calculated Table", false, Context.Tables | Context.Model, Keys.Alt | Keys.D6));
+
             Add(new Action((s, m) => !Handler.UsePowerBIGovernance, (s, m) => m.AddDataSource().Edit(), (s, m) => @"Create New\Data Source (Legacy)", false, Context.DataSources | Context.Model));
             Add(new Action((s, m) => Handler.CompatibilityLevel >= 1400 && !Handler.UsePowerBIGovernance, (s, m) => m.AddStructuredDataSource().Edit(), (s, m) => @"Create New\Data Source (Power Query)", false, Context.DataSources | Context.Model));
             Add(new Action((s, m) => !Handler.UsePowerBIGovernance, (s, m) => m.AddPerspective().Edit(), (s, m) => @"Create New\Perspective", false, Context.Model | Context.Perspectives | Context.Perspective));
@@ -90,9 +94,6 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => m.Tables.Count(t => t.Columns.Any()) >= 2, (s, m) => m.AddRelationship().Edit(), (s, m) => @"Create New\Relationship", false, Context.Relationship | Context.Relationships | Context.Model));
             Add(new Action((s, m) => true, (s, m) => m.AddRole().Edit(), (s, m) => @"Create New\Role", false, Context.Model | Context.Roles | Context.Role));
 
-            Add(new Action((s, m) => m.DataSources.Any() && !Handler.UsePowerBIGovernance, (s, m) => m.AddTable().Vis().Edit(), (s, m) => @"Create New\Table", false, Context.Tables | Context.Model));
-
-            Add(new Action((s, m) => true, (s, m) => m.AddCalculatedTable().Vis().Edit(), (s, m) => @"Create New\Calculated Table", false, Context.Tables | Context.Model));
 
             Add(new Action((s, m) => !Handler.UsePowerBIGovernance, (s, m) => {
                 var res = csDialog.ShowDialog();
@@ -130,8 +131,8 @@ namespace TabularEditor.UI.Actions
             }), (s, m) => "Reverse direction", false, Context.Relationship));
 
             // Visibility and perspectives
-            Add(new Action((s, m) => s.OfType<IHideableObject>().Any(o => o.IsHidden), (s, m) => s.IsHidden = false, (s, m) => "Make visible", true, Context.TableObject | Context.Table));
-            Add(new Action((s, m) => s.OfType<IHideableObject>().Any(o => !o.IsHidden), (s, m) => s.IsHidden = true, (s, m) => "Make invisible", true, Context.TableObject | Context.Table));
+            Add(new Action((s, m) => s.OfType<IHideableObject>().Any(o => o.IsHidden), (s, m) => s.IsHidden = false, (s, m) => "Make visible", true, Context.TableObject | Context.Table, Keys.Control | Keys.U));
+            Add(new Action((s, m) => s.OfType<IHideableObject>().Any(o => !o.IsHidden), (s, m) => s.IsHidden = true, (s, m) => "Make invisible", true, Context.TableObject | Context.Table, Keys.Control | Keys.I));
             Add(new Action((s, m) => s.OfType<ITabularPerspectiveObject>().Any() && !Handler.UsePowerBIGovernance, (s, m) => s.ShowInAllPerspectives(), (s, m) => @"Show in Perspectives\All Perspectives", true, Context.TableObject | Context.Table));
             Add(new Action((s, m) => s.OfType<ITabularPerspectiveObject>().Any() && !Handler.UsePowerBIGovernance, (s, m) => s.HideInAllPerspectives(), (s, m) => @"Hide in Perspectives\All Perspectives", true, Context.TableObject | Context.Table));
 
@@ -184,7 +185,7 @@ namespace TabularEditor.UI.Actions
                 if (res == DialogResult.Cancel) return;
                 // TODO: Add options for match case and whole word only
                 s.Rename(form.Pattern, form.ReplaceWith, form.RegEx, form.IncludeTranslations);
-            }, (s, m) => "Batch Rename...", true, Context.Table | Context.TableObject | Context.Level) { ToolTip = "Opens a dialog that lets you rename all the selected objects at once. Folders are not renamed, but objects inside folders are."});
+            }, (s, m) => "Batch Rename...", true, Context.Table | Context.TableObject | Context.Level, Keys.F2) { ToolTip = "Opens a dialog that lets you rename all the selected objects at once. Folders are not renamed, but objects inside folders are."});
 
             // Batch Rename Children
             Add(new Action((s, m) => true, (s, m) =>
@@ -198,7 +199,7 @@ namespace TabularEditor.UI.Actions
                 if (res == DialogResult.Cancel) return;
                 // TODO: Add options for match case and whole word only
                 sel.Rename(form.Pattern, form.ReplaceWith, form.RegEx, form.IncludeTranslations);
-            }, (s, m) => "Batch Rename Children...", true, Context.Table)
+            }, (s, m) => "Batch Rename Children...", true, Context.Table, Keys.Shift | Keys.F2)
             { ToolTip = "Opens a dialog that lets you rename all children of the selected objects at once. Folders are not renamed, but objects inside folders are." });
 
             // Delete Action
@@ -251,7 +252,7 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => s.DirectCount == 1 && s.Direct.First() is IDaxObject, (s, m) =>
             {
                 UIController.Current.ShowDependencies(s.Direct.First() as IDaxObject);
-            }, (s, m) => @"Show &dependencies...", true, Context.Table | Context.TableObject));
+            }, (s, m) => @"Show &dependencies...", true, Context.Table | Context.TableObject, Keys.F3));
 
             // Filter related...
             Add(new Action((s, m) => s.DirectCount == 1, (s, m) => UIController.Current.ApplyFilter(":RelatedTables.Any(Name = \"" + s.Table.Name + "\")"), 
