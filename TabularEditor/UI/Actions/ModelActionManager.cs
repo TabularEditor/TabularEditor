@@ -13,6 +13,21 @@ namespace TabularEditor.UI.Actions
 {
     public class ModelActionManager : List<IBaseAction>
     {
+        public bool HandleKeyPress(Keys cmdKeys)
+        {
+            Action act;
+            if(ShortcutActions.TryGetValue(cmdKeys, out act))
+            {
+                if (!act.Enabled(null)) return false;
+                act.Execute(null);
+                return true;
+            }
+            return false;
+        }
+
+        // TODO: Refactor how adding actions with a shortcut works, to avoid singleton references and so on...
+        public Dictionary<Keys, Action> ShortcutActions = new Dictionary<Keys, Action>();
+
         public void RemoveCustomActions()
         {
             for(var i = this.Count - 1; i >= 0; i--)

@@ -150,7 +150,7 @@ namespace TabularEditor.UI
                     
                     if (!string.IsNullOrEmpty(act.ToolTip)) item.ToolTipText = act.ToolTip;
 
-                    //if (act.Shortcut != Keys.None) (item as ToolStripMenuItem).ShortcutKeyDisplayString = Keys act.Shortcut.ToString();
+                    if (act.Shortcut != Keys.None) (item as ToolStripMenuItem).ShortcutKeyDisplayString = new KeysConverter().ConvertToString(act.Shortcut);
 
                     item.Tag = act;
                     item.Enabled = enabled;
@@ -284,8 +284,6 @@ namespace TabularEditor.UI
 
             var act = item.Tag as IBaseAction;
             if (act == null) return;
-
-            if (!act.ValidContexts.HasX(Selection.Context | Context.Model | Context.Tool)) return;
 
             act.Execute((act as IModelMultiAction)?.ArgNames[item.Name]);
             //UI.PropertyGrid.Refresh();
