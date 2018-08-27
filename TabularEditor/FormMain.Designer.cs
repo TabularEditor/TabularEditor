@@ -380,8 +380,10 @@
             // 
             this.actToggleFilter.CheckOnClick = true;
             this.actToggleFilter.Image = global::TabularEditor.Resources.Filter;
+            this.actToggleFilter.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.F)));
             this.actToggleFilter.Text = "Filter";
-            this.actToggleFilter.ToolTipText = "Filter objects by name";
+            this.actToggleFilter.ToolTipText = "Toggle filtering (Ctrl+Shift+F)";
             this.actToggleFilter.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.actToggleFilter_UpdateEx);
             this.actToggleFilter.Execute += new System.EventHandler(this.actViewOptions_Execute);
             // 
@@ -420,7 +422,8 @@
             this.actOpenFile.Image = global::TabularEditor.Resources.Open;
             this.actOpenFile.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.actOpenFile.Text = "From &File...";
-            this.actOpenFile.ToolTipText = "Open a Tabular Model from a Model.bim file or database.json folder structure";
+            this.actOpenFile.ToolTipText = "Open a Tabular Model from a Model.bim file or database.json folder structure (Ctr" +
+    "l+O)";
             this.actOpenFile.Execute += new System.EventHandler(this.actOpenFile_Execute);
             // 
             // actOpenDB
@@ -429,7 +432,7 @@
             this.actOpenDB.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.O)));
             this.actOpenDB.Text = "From &DB...";
-            this.actOpenDB.ToolTipText = "Open a Tabular Model from an existing database";
+            this.actOpenDB.ToolTipText = "Open a Tabular Model from an existing database (Ctrl+Shift+O)";
             this.actOpenDB.Execute += new System.EventHandler(this.btnConnect_Click);
             // 
             // actSave
@@ -605,7 +608,7 @@
             // 
             this.actNewModel.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.actNewModel.Text = "&New model";
-            this.actNewModel.ToolTipText = "Creates a new blank Model.bim file";
+            this.actNewModel.ToolTipText = "Creates a new blank Model.bim file (Ctrl+N)";
             this.actNewModel.Execute += new System.EventHandler(this.actNewModel_Execute);
             // 
             // actOpenScript
@@ -646,7 +649,8 @@
             this.toolStripButton8.Name = "toolStripButton8";
             this.toolStripButton8.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton8.Text = "From &File...";
-            this.toolStripButton8.ToolTipText = "Open a Tabular Model from a Model.bim file or database.json folder structure";
+            this.toolStripButton8.ToolTipText = "Open a Tabular Model from a Model.bim file or database.json folder structure (Ctr" +
+    "l+O)";
             // 
             // fileToolStripMenuItem1
             // 
@@ -656,7 +660,8 @@
             this.fileToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.fileToolStripMenuItem1.Size = new System.Drawing.Size(204, 22);
             this.fileToolStripMenuItem1.Text = "From &File...";
-            this.fileToolStripMenuItem1.ToolTipText = "Open a Tabular Model from a Model.bim file or database.json folder structure";
+            this.fileToolStripMenuItem1.ToolTipText = "Open a Tabular Model from a Model.bim file or database.json folder structure (Ctr" +
+    "l+O)";
             // 
             // fromDBToolStripMenuItem
             // 
@@ -668,12 +673,11 @@
             | System.Windows.Forms.Keys.O)));
             this.fromDBToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
             this.fromDBToolStripMenuItem.Text = "From &DB...";
-            this.fromDBToolStripMenuItem.ToolTipText = "Open a Tabular Model from an existing database";
+            this.fromDBToolStripMenuItem.ToolTipText = "Open a Tabular Model from an existing database (Ctrl+Shift+O)";
             // 
             // exitToolStripMenuItem
             // 
             actionsMain.SetAction(this.exitToolStripMenuItem, this.actExit);
-            this.exitToolStripMenuItem.AutoToolTip = true;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
@@ -689,7 +693,7 @@
             this.btnConnect.Name = "btnConnect";
             this.btnConnect.Size = new System.Drawing.Size(23, 22);
             this.btnConnect.Text = "From &DB...";
-            this.btnConnect.ToolTipText = "Open a Tabular Model from an existing database";
+            this.btnConnect.ToolTipText = "Open a Tabular Model from an existing database (Ctrl+Shift+O)";
             // 
             // tbShowDisplayFolders
             // 
@@ -785,6 +789,7 @@
             // btnSave
             // 
             actionsMain.SetAction(this.btnSave, this.actSave);
+            this.btnSave.AutoToolTip = false;
             this.btnSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnSave.Image = global::TabularEditor.Resources.Save;
             this.btnSave.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -795,6 +800,7 @@
             // saveToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveToolStripMenuItem, this.actSave);
+            this.saveToolStripMenuItem.AutoToolTip = true;
             this.saveToolStripMenuItem.Image = global::TabularEditor.Resources.Save;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+S";
@@ -805,6 +811,7 @@
             // saveAsToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveAsToolStripMenuItem, this.actSaveAs);
+            this.saveAsToolStripMenuItem.AutoToolTip = true;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.saveAsToolStripMenuItem.Text = "Save &As...";
@@ -812,7 +819,6 @@
             // undoToolStripMenuItem
             // 
             actionsMain.SetAction(this.undoToolStripMenuItem, this.actUndo);
-            this.undoToolStripMenuItem.AutoToolTip = true;
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Z";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
@@ -822,7 +828,6 @@
             // redoToolStripMenuItem
             // 
             actionsMain.SetAction(this.redoToolStripMenuItem, this.actRedo);
-            this.redoToolStripMenuItem.AutoToolTip = true;
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Y";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
@@ -928,7 +933,6 @@
             // expandAllToolStripMenuItem
             // 
             actionsMain.SetAction(this.expandAllToolStripMenuItem, this.actExpandAll);
-            this.expandAllToolStripMenuItem.AutoToolTip = true;
             this.expandAllToolStripMenuItem.Image = global::TabularEditor.Resources.ExpandAll;
             this.expandAllToolStripMenuItem.Name = "expandAllToolStripMenuItem";
             this.expandAllToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+Right";
@@ -940,7 +944,6 @@
             // collapseAllToolStripMenuItem
             // 
             actionsMain.SetAction(this.collapseAllToolStripMenuItem, this.actCollapseAll);
-            this.collapseAllToolStripMenuItem.AutoToolTip = true;
             this.collapseAllToolStripMenuItem.Image = global::TabularEditor.Resources.CollapseAll;
             this.collapseAllToolStripMenuItem.Name = "collapseAllToolStripMenuItem";
             this.collapseAllToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+Left";
@@ -1067,7 +1070,6 @@
             // btnSaveCustomAction
             // 
             actionsMain.SetAction(this.btnSaveCustomAction, this.actSaveCustomAction);
-            this.btnSaveCustomAction.AutoToolTip = false;
             this.btnSaveCustomAction.Image = global::TabularEditor.Resources.action_add_16xLG;
             this.btnSaveCustomAction.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSaveCustomAction.Name = "btnSaveCustomAction";
@@ -1206,7 +1208,6 @@
             // saveToFolderToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveToFolderToolStripMenuItem, this.actSaveToFolder);
-            this.saveToFolderToolStripMenuItem.AutoToolTip = true;
             this.saveToFolderToolStripMenuItem.Name = "saveToFolderToolStripMenuItem";
             this.saveToFolderToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.saveToFolderToolStripMenuItem.Text = "Save to &Folder...";
@@ -1219,7 +1220,7 @@
             this.newModelToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.newModelToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.newModelToolStripMenuItem.Text = "&New model";
-            this.newModelToolStripMenuItem.ToolTipText = "Creates a new blank Model.bim file";
+            this.newModelToolStripMenuItem.ToolTipText = "Creates a new blank Model.bim file (Ctrl+N)";
             // 
             // btnSaveScript
             // 
@@ -1258,7 +1259,7 @@
             this.tbApplyFilter.Name = "tbApplyFilter";
             this.tbApplyFilter.Size = new System.Drawing.Size(23, 22);
             this.tbApplyFilter.Text = "Filter";
-            this.tbApplyFilter.ToolTipText = "Filter objects by name";
+            this.tbApplyFilter.ToolTipText = "Toggle filtering (Ctrl+Shift+F)";
             // 
             // btnBack
             // 
@@ -1289,7 +1290,6 @@
             // expandFromHereToolStripMenuItem
             // 
             actionsMain.SetAction(this.expandFromHereToolStripMenuItem, this.actExpandFromHere);
-            this.expandFromHereToolStripMenuItem.AutoToolTip = true;
             this.expandFromHereToolStripMenuItem.Name = "expandFromHereToolStripMenuItem";
             this.expandFromHereToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Right";
             this.expandFromHereToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Right)));
@@ -1299,6 +1299,7 @@
             // collapseHereToolStripMenuItem
             // 
             actionsMain.SetAction(this.collapseHereToolStripMenuItem, this.actCollapseFromHere);
+            this.collapseHereToolStripMenuItem.AutoToolTip = true;
             this.collapseHereToolStripMenuItem.Name = "collapseHereToolStripMenuItem";
             this.collapseHereToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Left)));
             this.collapseHereToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
@@ -1796,6 +1797,7 @@
             this.txtAdvanced.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtAdvanced.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
             this.txtAdvanced.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtAdvanced.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtAdvanced.IsReplaceMode = false;
             this.txtAdvanced.Language = FastColoredTextBoxNS.Language.CSharp;
             this.txtAdvanced.LeftBracket = '(';

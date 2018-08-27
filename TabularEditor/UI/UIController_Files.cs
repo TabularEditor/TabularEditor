@@ -221,22 +221,22 @@ namespace TabularEditor.UI
                 {
                     case TOMWrapper.ModelSourceType.Database:
                         actSave.Text = "&Save";
-                        actSave.ToolTipText = "Saves the changes to the connected database";
+                        actSave.ToolTipText = "Saves the changes to the connected database (Ctrl+S)";
                         actSave.Image = Resources.SaveToDB;
                         break;
                     case TOMWrapper.ModelSourceType.File:
                         actSave.Text = "&Save";
-                        actSave.ToolTipText = "Saves the changes back to the currently loaded .bim file";
+                        actSave.ToolTipText = "Saves the changes back to the currently loaded .bim file (Ctrl+S)";
                         actSave.Image = Resources.SaveToFile;
                         break;
                     case TOMWrapper.ModelSourceType.Folder:
                         actSave.Text = "&Save";
-                        actSave.ToolTipText = "Saves the changes back to the currently loaded model folder structure";
+                        actSave.ToolTipText = "Saves the changes back to the currently loaded model folder structure (Ctrl+S)";
                         actSave.Image = Resources.SaveFolderTree;
                         break;
                     case TOMWrapper.ModelSourceType.Pbit:
                         actSave.Text = "&Save";
-                        actSave.ToolTipText = "Saves the changes back to the currently loaded Power BI Template";
+                        actSave.ToolTipText = "Saves the changes back to the currently loaded Power BI Template (Ctrl+S)";
                         actSave.Image = Resources.SaveToPBI;
                         break;
                 }
