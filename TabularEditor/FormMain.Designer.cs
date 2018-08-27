@@ -127,6 +127,8 @@
             this.btnForward = new System.Windows.Forms.ToolStripButton();
             this.expandFromHereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.collapseHereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.commentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.uncommentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -224,8 +226,6 @@
             this.treeColumn1 = new Aga.Controls.Tree.TreeColumn();
             this.ofdScript = new System.Windows.Forms.OpenFileDialog();
             this.sfdScript = new System.Windows.Forms.SaveFileDialog();
-            this.commentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.uncommentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             actionsMain = new Crad.Windows.Forms.Actions.ActionList();
             ((System.ComponentModel.ISupportInitialize)(actionsMain)).BeginInit();
             this.toolStrip2.SuspendLayout();
@@ -972,6 +972,7 @@
             this.btnFind.Name = "btnFind";
             this.btnFind.Size = new System.Drawing.Size(23, 22);
             this.btnFind.Text = "&Find";
+            this.btnFind.ToolTipText = "Find (Ctrl+F)";
             // 
             // btnReplace
             // 
@@ -982,6 +983,7 @@
             this.btnReplace.Name = "btnReplace";
             this.btnReplace.Size = new System.Drawing.Size(23, 22);
             this.btnReplace.Text = "R&eplace";
+            this.btnReplace.ToolTipText = "Replace (Ctrl+H)";
             // 
             // findToolStripMenuItem
             // 
@@ -1007,6 +1009,8 @@
             this.formatDAXToolStripMenuItem.Image = global::TabularEditor.Resources.DAXFormatter;
             this.formatDAXToolStripMenuItem.Name = "formatDAXToolStripMenuItem";
             this.formatDAXToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+D";
+            this.formatDAXToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.D)));
             this.formatDAXToolStripMenuItem.Size = new System.Drawing.Size(245, 22);
             this.formatDAXToolStripMenuItem.Text = "Format DAX";
             this.formatDAXToolStripMenuItem.ToolTipText = "Format using www.daxformatter.com";
@@ -1021,7 +1025,7 @@
             this.btnFormatDAX.Name = "btnFormatDAX";
             this.btnFormatDAX.Size = new System.Drawing.Size(23, 22);
             this.btnFormatDAX.Text = "Format DAX";
-            this.btnFormatDAX.ToolTipText = "Format using www.daxformatter.com";
+            this.btnFormatDAX.ToolTipText = "Format using www.daxformatter.com (Ctrl+Shift+D)";
             // 
             // btnRun
             // 
@@ -1033,6 +1037,7 @@
             this.btnRun.Name = "btnRun";
             this.btnRun.Size = new System.Drawing.Size(23, 22);
             this.btnRun.Text = "Replace";
+            this.btnRun.ToolTipText = "Run script (F5)";
             // 
             // deployToolStripMenuItem
             // 
@@ -1164,7 +1169,7 @@
             this.toolStripButton1.Name = "toolStripButton1";
             this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton1.Text = "Comment lines";
-            this.toolStripButton1.ToolTipText = "Comment the selected lines";
+            this.toolStripButton1.ToolTipText = "Comment the selected lines (Ctrl+Shift+C)";
             // 
             // toolStripButton2
             // 
@@ -1177,7 +1182,7 @@
             this.toolStripButton2.Name = "toolStripButton2";
             this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton2.Text = "Uncomment Lines";
-            this.toolStripButton2.ToolTipText = "Uncomment the selected lines";
+            this.toolStripButton2.ToolTipText = "Uncomment the selected lines (Ctrl+Shift+U)";
             // 
             // saveToFolderToolStripMenuItem
             // 
@@ -1278,6 +1283,30 @@
             this.collapseHereToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Left)));
             this.collapseHereToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
             this.collapseHereToolStripMenuItem.Text = "&Collapse Here";
+            // 
+            // commentToolStripMenuItem
+            // 
+            actionsMain.SetAction(this.commentToolStripMenuItem, this.actComment);
+            this.commentToolStripMenuItem.Image = global::TabularEditor.Resources.CommentCode_16x;
+            this.commentToolStripMenuItem.Name = "commentToolStripMenuItem";
+            this.commentToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+C";
+            this.commentToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.C)));
+            this.commentToolStripMenuItem.Size = new System.Drawing.Size(245, 22);
+            this.commentToolStripMenuItem.Text = "Comment lines";
+            this.commentToolStripMenuItem.ToolTipText = "Comment the selected lines";
+            // 
+            // uncommentToolStripMenuItem
+            // 
+            actionsMain.SetAction(this.uncommentToolStripMenuItem, this.actUncomment);
+            this.uncommentToolStripMenuItem.Image = global::TabularEditor.Resources.UncommentCode_16x;
+            this.uncommentToolStripMenuItem.Name = "uncommentToolStripMenuItem";
+            this.uncommentToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+U";
+            this.uncommentToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.U)));
+            this.uncommentToolStripMenuItem.Size = new System.Drawing.Size(245, 22);
+            this.uncommentToolStripMenuItem.Text = "Uncomment Lines";
+            this.uncommentToolStripMenuItem.ToolTipText = "Uncomment the selected lines";
             // 
             // preferencesToolStripMenuItem
             // 
@@ -2257,26 +2286,6 @@
             // sfdScript
             // 
             this.sfdScript.Filter = "C# files|*.cs|All files|*.*";
-            // 
-            // commentToolStripMenuItem
-            // 
-            actionsMain.SetAction(this.commentToolStripMenuItem, this.actComment);
-            this.commentToolStripMenuItem.Image = global::TabularEditor.Resources.CommentCode_16x;
-            this.commentToolStripMenuItem.Name = "commentToolStripMenuItem";
-            this.commentToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+C";
-            this.commentToolStripMenuItem.Size = new System.Drawing.Size(245, 22);
-            this.commentToolStripMenuItem.Text = "Comment lines";
-            this.commentToolStripMenuItem.ToolTipText = "Comment the selected lines";
-            // 
-            // uncommentToolStripMenuItem
-            // 
-            actionsMain.SetAction(this.uncommentToolStripMenuItem, this.actUncomment);
-            this.uncommentToolStripMenuItem.Image = global::TabularEditor.Resources.UncommentCode_16x;
-            this.uncommentToolStripMenuItem.Name = "uncommentToolStripMenuItem";
-            this.uncommentToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+U";
-            this.uncommentToolStripMenuItem.Size = new System.Drawing.Size(245, 22);
-            this.uncommentToolStripMenuItem.Text = "Uncomment Lines";
-            this.uncommentToolStripMenuItem.ToolTipText = "Uncomment the selected lines";
             // 
             // FormMain
             // 
