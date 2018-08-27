@@ -224,6 +224,8 @@
             this.treeColumn1 = new Aga.Controls.Tree.TreeColumn();
             this.ofdScript = new System.Windows.Forms.OpenFileDialog();
             this.sfdScript = new System.Windows.Forms.SaveFileDialog();
+            this.commentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.uncommentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             actionsMain = new Crad.Windows.Forms.Actions.ActionList();
             ((System.ComponentModel.ISupportInitialize)(actionsMain)).BeginInit();
             this.toolStrip2.SuspendLayout();
@@ -501,6 +503,8 @@
             // actExpressionFormatDAX
             // 
             this.actExpressionFormatDAX.Image = global::TabularEditor.Resources.DAXFormatter;
+            this.actExpressionFormatDAX.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.D)));
             this.actExpressionFormatDAX.Text = "Format DAX";
             this.actExpressionFormatDAX.ToolTipText = "Format using www.daxformatter.com";
             this.actExpressionFormatDAX.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.actExpression_UpdateEx);
@@ -511,7 +515,7 @@
             this.actFind.Image = global::TabularEditor.Resources.Find;
             this.actFind.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
             this.actFind.Text = "&Find";
-            this.actFind.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.actExpression_UpdateEx);
+            this.actFind.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.actFind_UpdateEx);
             this.actFind.Execute += new System.EventHandler(this.actFind_Execute);
             // 
             // actReplace
@@ -574,6 +578,8 @@
             // actComment
             // 
             this.actComment.Image = global::TabularEditor.Resources.CommentCode_16x;
+            this.actComment.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.C)));
             this.actComment.Text = "Comment lines";
             this.actComment.ToolTipText = "Comment the selected lines";
             this.actComment.Execute += new System.EventHandler(this.actComment_Execute);
@@ -582,6 +588,8 @@
             // actUncomment
             // 
             this.actUncomment.Image = global::TabularEditor.Resources.UncommentCode_16x;
+            this.actUncomment.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.U)));
             this.actUncomment.Text = "Uncomment Lines";
             this.actUncomment.ToolTipText = "Uncomment the selected lines";
             this.actUncomment.Execute += new System.EventHandler(this.actUncomment_Execute);
@@ -998,7 +1006,8 @@
             actionsMain.SetAction(this.formatDAXToolStripMenuItem, this.actExpressionFormatDAX);
             this.formatDAXToolStripMenuItem.Image = global::TabularEditor.Resources.DAXFormatter;
             this.formatDAXToolStripMenuItem.Name = "formatDAXToolStripMenuItem";
-            this.formatDAXToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.formatDAXToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+D";
+            this.formatDAXToolStripMenuItem.Size = new System.Drawing.Size(245, 22);
             this.formatDAXToolStripMenuItem.Text = "Format DAX";
             this.formatDAXToolStripMenuItem.ToolTipText = "Format using www.daxformatter.com";
             // 
@@ -1729,7 +1738,7 @@
             this.txtAdvanced.AutoIndentChars = false;
             this.txtAdvanced.AutoIndentCharsPatterns = "\r\n^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;]+);\r\n^\\s*(case|default)\\s*[^:]" +
     "*(?<range>:)\\s*(?<range>[^;]+);\r\n";
-            this.txtAdvanced.AutoScrollMinSize = new System.Drawing.Size(2, 14);
+            this.txtAdvanced.AutoScrollMinSize = new System.Drawing.Size(27, 14);
             this.txtAdvanced.BackBrush = null;
             this.txtAdvanced.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtAdvanced.BracketsHighlightStrategy = FastColoredTextBoxNS.BracketsHighlightStrategy.Strategy2;
@@ -2061,7 +2070,9 @@
             // dAXExpressionToolStripMenuItem
             // 
             this.dAXExpressionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.formatDAXToolStripMenuItem});
+            this.formatDAXToolStripMenuItem,
+            this.commentToolStripMenuItem,
+            this.uncommentToolStripMenuItem});
             this.dAXExpressionToolStripMenuItem.Name = "dAXExpressionToolStripMenuItem";
             this.dAXExpressionToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.dAXExpressionToolStripMenuItem.Text = "DAX Editor";
@@ -2246,6 +2257,26 @@
             // sfdScript
             // 
             this.sfdScript.Filter = "C# files|*.cs|All files|*.*";
+            // 
+            // commentToolStripMenuItem
+            // 
+            actionsMain.SetAction(this.commentToolStripMenuItem, this.actComment);
+            this.commentToolStripMenuItem.Image = global::TabularEditor.Resources.CommentCode_16x;
+            this.commentToolStripMenuItem.Name = "commentToolStripMenuItem";
+            this.commentToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+C";
+            this.commentToolStripMenuItem.Size = new System.Drawing.Size(245, 22);
+            this.commentToolStripMenuItem.Text = "Comment lines";
+            this.commentToolStripMenuItem.ToolTipText = "Comment the selected lines";
+            // 
+            // uncommentToolStripMenuItem
+            // 
+            actionsMain.SetAction(this.uncommentToolStripMenuItem, this.actUncomment);
+            this.uncommentToolStripMenuItem.Image = global::TabularEditor.Resources.UncommentCode_16x;
+            this.uncommentToolStripMenuItem.Name = "uncommentToolStripMenuItem";
+            this.uncommentToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+U";
+            this.uncommentToolStripMenuItem.Size = new System.Drawing.Size(245, 22);
+            this.uncommentToolStripMenuItem.Text = "Uncomment Lines";
+            this.uncommentToolStripMenuItem.ToolTipText = "Uncomment the selected lines";
             // 
             // FormMain
             // 
@@ -2492,6 +2523,8 @@
         private System.Windows.Forms.ToolStripMenuItem collapseHereToolStripMenuItem;
         private UI.UIModelAction actCollapseFromHere;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem10;
+        private System.Windows.Forms.ToolStripMenuItem commentToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem uncommentToolStripMenuItem;
     }
 }
 

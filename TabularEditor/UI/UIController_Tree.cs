@@ -238,16 +238,20 @@ namespace TabularEditor.UI
             {
                 var node = UI.TreeView.SelectedNode;
                 if (node == null || UI.TreeView.CurrentEditor != null) return;
+
                 if (node.Tag is IExpressionObject) ExpressionEditor_Edit(node.Tag as IExpressionObject);
                 else if (!node.IsLeaf) if (node.IsExpanded) node.Collapse(); else node.Expand();
+                e.Handled = true;
             }
             if(e.KeyCode == Keys.F && e.Modifiers.HasFlag(Keys.Control))
             {
                 UI.FormMain.FocusFilter();
+                e.Handled = true;
             }
             if (e.KeyCode == Keys.Delete && Actions.Delete.Enabled(null))
             {
                 Actions.Delete.Execute(null);
+                e.Handled = true;
             }
             if (e.Modifiers.HasFlag(Keys.Alt) && (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right))
             {
