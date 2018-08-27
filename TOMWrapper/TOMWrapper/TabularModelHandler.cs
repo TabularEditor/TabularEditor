@@ -125,7 +125,7 @@ namespace TabularEditor.TOMWrapper
     /// <summary>
     /// 
     /// </summary>
-    public sealed class TabularModelHandler: IDisposable
+    public sealed class TabularModelHandler : IDisposable
     {
         internal Guid InstanceID = Guid.NewGuid();
         public const string PROP_HASUNSAVEDCHANGES = "HasUnsavedChanges";
@@ -253,7 +253,7 @@ namespace TabularEditor.TOMWrapper
                 Source = path;
             }
             else
-                        
+
             if (!fi.Exists || fi.Name == "database.json")
             {
                 if (fi.Name == "database.json") path = fi.DirectoryName;
@@ -318,8 +318,8 @@ namespace TabularEditor.TOMWrapper
             Singleton = this;
             server = new TOM.Server();
             server.Connect(serverName);
-            
-            if(databaseId == null)
+
+            if (databaseId == null)
             {
                 if (server.Databases.Count >= 1) database = server.Databases[0];
                 else throw new InvalidOperationException("This instance does not contain any databases, or the user does not have access.");
@@ -359,6 +359,20 @@ namespace TabularEditor.TOMWrapper
         public Model GetModel()
         {
             return this.Model;
+        }
+
+        public SerializeOptions FolderSerializeOptions
+        {
+            get
+            {
+                var annotatedSerializeOptions = Model.GetAnnotation("TabularEditor_SerializeOptions");
+                if (annotatedSerializeOptions != null) return JsonConvert.DeserializeObject<SerializeOptions>(annotatedSerializeOptions);
+                return null;
+            }
+            set
+            {
+                Model.SetAnnotation("TabularEditor_SerializeOptions", JsonConvert.SerializeObject(value), false);
+            }
         }
 
         public void Save(string path, SaveFormat format, SerializeOptions options, bool useAnnotatedSerializeOptions = false)

@@ -297,7 +297,6 @@ namespace TabularEditor.UI
         public FastColoredTextBox ExpressionEditor;
         public FastColoredTextBox ScriptEditor;
         public OpenFileDialog OpenBimDialog;
-        public SaveFileDialog SaveBimDialog;
         public ToolStripLabel StatusLabel;
         public ToolStripLabel StatusExLabel;
         public ToolStripLabel ErrorLabel;
