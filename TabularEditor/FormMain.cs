@@ -736,5 +736,11 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
             return base.ProcessCmdKey(ref msg, keyData);
         }
+
+        private void actFind_UpdateEx(object sender, UpdateExEventArgs e)
+        {
+            e.Enabled = (txtExpression.ContainsFocus || txtAdvanced.ContainsFocus || propertyGrid1.ContainsFocus) 
+                && UI.ExpressionEditor_Current != null;
+        }
     }
 }
