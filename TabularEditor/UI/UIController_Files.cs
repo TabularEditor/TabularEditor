@@ -168,13 +168,14 @@ namespace TabularEditor.UI
                 fbd.Filters.Add(new CommonFileDialogFilter("All files", "*.*"));
 
                 var currentSerializeOptions = Handler.FolderSerializeOptions;
-                var specialSerializeOptions = currentSerializeOptions != null && !currentSerializeOptions.Equals(SerializeOptions.Default);
+                var specialSerializeOptions = _file_SaveMode == ModelSourceType.File && 
+                    currentSerializeOptions != null && !currentSerializeOptions.Equals(SerializeOptions.DefaultFile);
                 var useAnnotatedSerializationSettingsCheckBox = new CommonFileDialogCheckBox
                 {
                     Text = "Use serialization settings from annotations",
                     IsChecked = specialSerializeOptions
                 };
-                if (specialSerializeOptions) fbd.Controls.Add(useAnnotatedSerializationSettingsCheckBox);
+                if (currentSerializeOptions != null) fbd.Controls.Add(useAnnotatedSerializationSettingsCheckBox);
                 var res = fbd.ShowDialog();
 
 
@@ -248,13 +249,13 @@ namespace TabularEditor.UI
             using (var fbd = new CommonOpenFileDialog() { IsFolderPicker = true })
             {
                 var currentSerializeOptions = Handler.FolderSerializeOptions;
-                var specialSerializeOptions = currentSerializeOptions != null && !currentSerializeOptions.Equals(SerializeOptions.Default);
+                var specialSerializeOptions = _file_SaveMode == ModelSourceType.Folder && currentSerializeOptions != null && !currentSerializeOptions.Equals(SerializeOptions.Default);
                 var useAnnotatedSerializationSettingsCheckBox = new CommonFileDialogCheckBox
                 {
                     Text = "Use serialization settings from annotations",
                     IsChecked = specialSerializeOptions
                 };
-                if(specialSerializeOptions) fbd.Controls.Add(useAnnotatedSerializationSettingsCheckBox);
+                if(currentSerializeOptions != null) fbd.Controls.Add(useAnnotatedSerializationSettingsCheckBox);
                 var res = fbd.ShowDialog();
                 if(res == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(fbd.FileName))
                 {
