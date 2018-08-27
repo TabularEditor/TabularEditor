@@ -722,14 +722,6 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 (e.Node.Tag as TOMWrapper.IExpressionObject)?.Expression;
         }
 
-        private void toolStrip2_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-        }
-
-        private void toolStrip2_KeyDown(object sender, KeyEventArgs e)
-        {
-        }
-
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             // Global keyboard shortcuts (if this method returns TRUE, then the key press will not be propagated to form controls)
@@ -739,6 +731,9 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                     UI.Tree_NavigateBack(); return true;
                 case (Keys.Alt | Keys.Right):
                     UI.Tree_NavigateForward(); return true;
+                default:
+                    if (UIController.Current.Actions.HandleKeyPress(keyData)) return true;
+                    break;
             }
 
             return base.ProcessCmdKey(ref msg, keyData);

@@ -97,6 +97,8 @@ namespace TabularEditor.UI.Actions
             : this(enabled, execute, name, hideWhenDisabled, validContexts)
         {
             _shortcut = shortcut;
+
+            ui.Actions.ShortcutActions.Add(shortcut, this);
         }
 
         public string ToolTip { get; set; }
@@ -119,9 +121,12 @@ namespace TabularEditor.UI.Actions
             ui.Actions.LastActionExecuted = this;
             EditObjectName = null;
             ExpandObject = null;
+            var selection = alternateSelection == null ? ui.Selection : new UITreeSelection(alternateSelection);
+
+            // Check if the context is valid before executing the actino:
+            if (!ValidContexts.HasX(selection.Context | Context.Model | Context.Tool)) return;
 
             ui.Handler.BeginUpdate(Name);
-            var selection = alternateSelection == null ? ui.Selection : new UITreeSelection(alternateSelection);
             _execute(selection, ui.Handler.Model);
             ui.Handler.EndUpdate();
 
