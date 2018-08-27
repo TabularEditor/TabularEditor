@@ -29,7 +29,6 @@ namespace TabularEditor
             InitializeComponent();
 
             dlgOpenFile.Filter = "Tabular Model Files|*.bim;database.json;*.pbit|All files|*.*";
-            dlgSaveFile.Filter = "Tabular Model Files|*.bim|All files|*.*";
 
             // For some reason, Visual Studio sometimes removes this from the FormMain.Designer.cs, making the
             // colors of the lines look ugly:
@@ -141,7 +140,6 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 StatusLabel = lblStatus,
                 StatusExLabel = lblScriptStatus,
                 OpenBimDialog = dlgOpenFile,
-                SaveBimDialog = dlgSaveFile,
                 CurrentMeasureLabel = lblCurrentMeasure,
                 ModelMenu = modelToolStripMenuItem,
                 PerspectiveSelector = cmbPerspective,

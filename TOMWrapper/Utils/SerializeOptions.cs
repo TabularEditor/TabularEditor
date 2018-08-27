@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TabularEditor.TOMWrapper.Utils
 {
-    public class SerializeOptions
+    public class SerializeOptions: IEquatable<SerializeOptions>
     {
         public SerializeOptions Clone()
         {
@@ -56,6 +56,19 @@ namespace TabularEditor.TOMWrapper.Utils
         public bool LocalPerspectives = false;
 
         public HashSet<string> Levels = new HashSet<string>();
+
+
+        public bool Equals(SerializeOptions other)
+        {
+            return other.Levels.SetEquals(this.Levels)
+                && other.IgnoreInferredObjects == IgnoreInferredObjects
+                && other.IgnoreInferredProperties == IgnoreInferredProperties
+                && other.IgnoreTimestamps == IgnoreTimestamps
+                && other.SplitMultilineStrings == SplitMultilineStrings
+                && other.PrefixFilenames == PrefixFilenames
+                && other.LocalTranslations == LocalTranslations
+                && other.LocalPerspectives == LocalPerspectives;
+        }
     }
 
 }

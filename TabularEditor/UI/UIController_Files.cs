@@ -1,4 +1,5 @@
 ﻿using Microsoft.WindowsAPICodePack.Dialogs;
+using Microsoft.WindowsAPICodePack.Dialogs.Controls;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -155,51 +156,54 @@ namespace TabularEditor.UI
         {
             ExpressionEditor_AcceptEdit();
 
-            if(Handler.SourceType == ModelSourceType.Database)
+            var defaultFileName = Handler.SourceType == ModelSourceType.Database ? "Model.bim" : File_Current;
+            
+            using (var fbd = new CommonSaveFileDialog())
             {
-                UI.SaveBimDialog.FileName = "Model.bim";
-            }
-            else
-            {
-                UI.SaveBimDialog.FileName = File_Current;
-            }
+                // Configure dialog:
+                fbd.DefaultFileName = defaultFileName;
+                fbd.Filters.Clear();
+                if (Handler.SourceType == ModelSourceType.Pbit) fbd.Filters.Add(new CommonFileDialogFilter("Power BI Template", "*.pbit"));
+                fbd.Filters.Add(new CommonFileDialogFilter("Tabular Model Files", "*.bim"));
+                fbd.Filters.Add(new CommonFileDialogFilter("All files", "*.*"));
 
-            if (Handler.SourceType == ModelSourceType.Pbit)
-            {
-                UI.SaveBimDialog.Filter = "Power BI Template|*.pbit|Tabular Model Files|*.bim|All files|*.*";
-            } else
-            {
-                UI.SaveBimDialog.Filter = "Tabular Model Files|*.bim|All files|*.*";
-            }
-            var fileType = UI.SaveBimDialog.Filter.Split('|')[UI.SaveBimDialog.FilterIndex];
-            var fn = UI.SaveBimDialog.FileName;
-            if (fileType == "*.bim" && fn.EndsWith(".pbit")) UI.SaveBimDialog.FileName = fn.Substring(0, fn.Length - 4) + "bim";
-            if (fileType == "*.pbit" && fn.EndsWith(".bim")) UI.SaveBimDialog.FileName = fn.Substring(0, fn.Length - 3) + "pbit";
-
-            var res = UI.SaveBimDialog.ShowDialog();
-
-            if (res == DialogResult.OK)
-            {
-                using (new Hourglass())
+                var currentSerializeOptions = Handler.FolderSerializeOptions;
+                var specialSerializeOptions = currentSerializeOptions != null && !currentSerializeOptions.Equals(SerializeOptions.Default);
+                var useAnnotatedSerializationSettingsCheckBox = new CommonFileDialogCheckBox
                 {
-                    UI.StatusLabel.Text = "Saving...";
+                    Text = "Use serialization settings from annotations",
+                    IsChecked = specialSerializeOptions
+                };
+                if (specialSerializeOptions) fbd.Controls.Add(useAnnotatedSerializationSettingsCheckBox);
+                var res = fbd.ShowDialog();
 
-                    fileType = UI.SaveBimDialog.Filter.Split('|')[UI.SaveBimDialog.FilterIndex];
 
-                    Handler.Save(UI.SaveBimDialog.FileName, fileType == "*.pbit" ? SaveFormat.PowerBiTemplate : SaveFormat.ModelSchemaOnly, Preferences.Current.GetSerializeOptions(false));
-
-                    RecentFiles.Add(UI.SaveBimDialog.FileName);
-                    RecentFiles.Save();
-                    UI.FormMain.PopulateRecentFilesList();
-
-                    // If not connected to a database, change the current working file:
-                    if (Handler.SourceType != ModelSourceType.Database)
+                if (res == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(fbd.FileName))
+                {
+                    using (new Hourglass())
                     {
-                        File_Current = UI.SaveBimDialog.FileName;
-                        File_SaveMode = ModelSourceType.File;
-                    }
+                        UI.StatusLabel.Text = "Saving...";
 
-                    UpdateUIText();
+                        var fileType = fbd.Filters[fbd.SelectedFileTypeIndex - 1].Extensions.FirstOrDefault();
+
+                        Handler.Save(fbd.FileName, 
+                            fileType == "pbit" ? SaveFormat.PowerBiTemplate : SaveFormat.ModelSchemaOnly, 
+                            Preferences.Current.GetSerializeOptions(false), 
+                            useAnnotatedSerializationSettingsCheckBox.IsChecked);
+
+                        RecentFiles.Add(fbd.FileName);
+                        RecentFiles.Save();
+                        UI.FormMain.PopulateRecentFilesList();
+
+                        // If not connected to a database, change the current working file:
+                        if (Handler.SourceType != ModelSourceType.Database)
+                        {
+                            File_Current = fbd.FileName;
+                            File_SaveMode = ModelSourceType.File;
+                        }
+
+                        UpdateUIText();
+                    }
                 }
             }
         }
@@ -243,13 +247,21 @@ namespace TabularEditor.UI
         {
             using (var fbd = new CommonOpenFileDialog() { IsFolderPicker = true })
             {
+                var currentSerializeOptions = Handler.FolderSerializeOptions;
+                var specialSerializeOptions = currentSerializeOptions != null && !currentSerializeOptions.Equals(SerializeOptions.Default);
+                var useAnnotatedSerializationSettingsCheckBox = new CommonFileDialogCheckBox
+                {
+                    Text = "Use serialization settings from annotations",
+                    IsChecked = specialSerializeOptions
+                };
+                if(specialSerializeOptions) fbd.Controls.Add(useAnnotatedSerializationSettingsCheckBox);
                 var res = fbd.ShowDialog();
                 if(res == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(fbd.FileName))
                 {
                     using (new Hourglass())
                     {
                         UI.StatusLabel.Text = "Saving...";
-                        Handler.Save(fbd.FileName, SaveFormat.TabularEditorFolder, Preferences.Current.GetSerializeOptions(true));
+                        Handler.Save(fbd.FileName, SaveFormat.TabularEditorFolder, Preferences.Current.GetSerializeOptions(true), useAnnotatedSerializationSettingsCheckBox.IsChecked);
 
                         RecentFiles.Add(fbd.FileName);
                         RecentFiles.Save();
