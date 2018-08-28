@@ -129,6 +129,7 @@ namespace TabularEditor.TOMWrapper
                 case "ObjectTypeName":
                 case "State":
                 case "SourceType":
+                case "Annotations":
                     return true;
                 default:
                     return false;
@@ -174,6 +175,7 @@ namespace TabularEditor.TOMWrapper
                 case "Expression":
                 case "Mode":
                 case "DataView":
+                case "Annotations":
                     return true;
                 default:
                     return false;
