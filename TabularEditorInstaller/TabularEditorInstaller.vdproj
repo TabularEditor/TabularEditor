@@ -46,7 +46,7 @@
         "Entry"
         {
         "MsmKey" = "8:_48C6574D2BC7A4A2F014133254143AC0"
-        "OwnerKey" = "8:_F7725264A1781F88854958FB96C897A6"
+        "OwnerKey" = "8:_551E7BAF229097D063E16FDA0F4E294E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -64,7 +64,13 @@
         "Entry"
         {
         "MsmKey" = "8:_50DA47234DF4DFA7F73EE919417E54C7"
-        "OwnerKey" = "8:_F7725264A1781F88854958FB96C897A6"
+        "OwnerKey" = "8:_551E7BAF229097D063E16FDA0F4E294E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_551E7BAF229097D063E16FDA0F4E294E"
+        "OwnerKey" = "8:_93B74A1938734E17BA0AFB1BEC2AE449"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -76,7 +82,7 @@
         "Entry"
         {
         "MsmKey" = "8:_7EF6663A58EE66CAF5C0FB6E6CA51E76"
-        "OwnerKey" = "8:_F7725264A1781F88854958FB96C897A6"
+        "OwnerKey" = "8:_551E7BAF229097D063E16FDA0F4E294E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -136,7 +142,7 @@
         "Entry"
         {
         "MsmKey" = "8:_CCB39CF44120BC780A92FE4C1ABE4A85"
-        "OwnerKey" = "8:_F7725264A1781F88854958FB96C897A6"
+        "OwnerKey" = "8:_551E7BAF229097D063E16FDA0F4E294E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -172,7 +178,7 @@
         "Entry"
         {
         "MsmKey" = "8:_E1196A10BF8A7B83886FAB26159C7DC6"
-        "OwnerKey" = "8:_F7725264A1781F88854958FB96C897A6"
+        "OwnerKey" = "8:_551E7BAF229097D063E16FDA0F4E294E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -189,12 +195,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_F7725264A1781F88854958FB96C897A6"
-        "OwnerKey" = "8:_93B74A1938734E17BA0AFB1BEC2AE449"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_93B74A1938734E17BA0AFB1BEC2AE449"
         "MsmSig" = "8:_UNDEFINED"
@@ -202,7 +202,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_F7725264A1781F88854958FB96C897A6"
+        "OwnerKey" = "8:_551E7BAF229097D063E16FDA0F4E294E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -559,6 +559,37 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_551E7BAF229097D063E16FDA0F4E294E"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:TOMWrapper, Version=2.5.6813.34471, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_551E7BAF229097D063E16FDA0F4E294E"
+                    {
+                    "Name" = "8:TOMWrapper.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:TOMWrapper.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_86B6DEA1587144389D74191CBF86D6D0"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_7EF6663A58EE66CAF5C0FB6E6CA51E76"
             {
             "AssemblyRegister" = "3:1"
@@ -878,37 +909,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_F7725264A1781F88854958FB96C897A6"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:TOMWrapper, Version=2.5.6813.17802, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_F7725264A1781F88854958FB96C897A6"
-                    {
-                    "Name" = "8:TOMWrapper.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:TOMWrapper.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_86B6DEA1587144389D74191CBF86D6D0"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
         }
         "FileType"
         {
@@ -976,15 +976,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Tabular Editor"
-        "ProductCode" = "8:{014574A5-C599-44D0-88D1-91A89F771E73}"
-        "PackageCode" = "8:{583639BA-7587-4DAD-BFA1-7277E8800567}"
+        "ProductCode" = "8:{8BBB57FE-A5E0-4C62-85E3-181D443FBB19}"
+        "PackageCode" = "8:{A27431EA-BEC5-4EB6-A577-48BD66A808A5}"
         "UpgradeCode" = "8:{E20734F5-CD2A-4A76-AB20-014819FCDE35}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.1.4"
+        "ProductVersion" = "8:1.1.5"
         "Manufacturer" = "8:Daniel Otykier"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:https://github.com/otykier/TabularEditor/issues"
