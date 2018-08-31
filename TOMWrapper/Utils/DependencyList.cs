@@ -196,7 +196,7 @@ namespace TabularEditor.TOMWrapper.Utils
         /// <returns></returns>
         public HashSet<IDaxDependantObject> Deep()
         {
-            var uniqueOnly = new HashSet<IDaxDependantObject>(this);
+            var uniqueOnly = new HashSet<IDaxDependantObject>();
             Deep_Internal(uniqueOnly);
             return uniqueOnly;
         }
