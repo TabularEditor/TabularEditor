@@ -50,7 +50,20 @@ namespace TabularEditor.Scripting
             }
 
             var testTabularObject = value as TabularObject;
-            var testTabularCollection = value as IEnumerable<ITabularNamedObject>;
+
+            IEnumerable<ITabularNamedObject> testTabularCollection;
+            if(value is IEnumerable<IDaxDependantObject>)
+            {
+                // Most IDaxDependantObjects are ITabularNamedObjects, with the exception of RLSFilterExpression.
+                // So if we encounter an enumeration of IDaxDependantObjects lets convert it to an enumeration of
+                // ITabularNamedObjects. If there are any RLSFilterExpressions in the enumeration, output their
+                // corresponding roles instead.
+                var v = (value as IEnumerable<IDaxDependantObject>);
+                testTabularCollection = v.OfType<ITabularNamedObject>()
+                    .Concat(v.OfType<RLSFilterExpression>().Select(rls => rls.Role));
+            }
+            else
+                testTabularCollection = value as IEnumerable<ITabularNamedObject>;
             var testDictionary = value as IDictionary;
             var testList = value as IEnumerable<object>;
 
