@@ -120,7 +120,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                             {
                                 Plugins.Add(plugin);
                                 pluginAssemblies.Add(pluginAssembly);
-                                Console.WriteLine("Succesfully loaded plugin " + pluginType.Name + " from assembly " + pluginAssembly.FullName);
+                                Console.WriteLine("Succesfully loaded plugin " + pluginType.Name + " from assembly " + Path.GetFileName(dll));
                             }
                         }
                     }
@@ -232,6 +232,8 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 // Server + Database argument provided (either alone or with switches), i.e.:
                 //      TabularEditor.exe localhost AdventureWorks
                 //      TabularEditor.exe localhost AdventureWorks -...
+                // If nothing else was specified on the command-line, open the UI:
+                if (args.Length == 3) return false;
 
                 try
                 {
@@ -242,9 +244,6 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                     Error("Error loading model: " + e.Message);
                     return true;
                 }
-
-                // If nothing else was specified on the command-line, open the UI:
-                if (args.Length == 3) return false;
             }
             else
             {
