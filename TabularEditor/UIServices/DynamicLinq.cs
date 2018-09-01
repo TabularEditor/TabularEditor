@@ -17,6 +17,26 @@ namespace System.Linq.Dynamic
     {
         #region IQueryable Extensions
 
+        public static HashSet<string> SupportedAggregates = new HashSet<string> {
+            "Aggregate",
+            "All",
+            "Any",
+            "Average",
+            "Contains",
+            "Count",
+            "Distinct",
+            "GroupBy",
+            "Max",
+            "Min",
+            "OrderBy",
+            "Select",
+            "Skip",
+            "Sum",
+            "Take",
+            "Where",
+            
+        };
+
         public static IQueryable<T> Where<T>(this IQueryable<T> source, string predicate, params object[] values)
         {
             return (IQueryable<T>)Where((IQueryable)source, predicate, values);
@@ -1469,7 +1489,7 @@ namespace System.Linq.Dynamic
             NextToken();
             if (token.id == TokenId.OpenParen)
             {
-                if (instance != null && type != typeof(string))
+                if (DynamicQueryable.SupportedAggregates.Contains(id) && instance != null && type != typeof(string))
                 {
                     Type enumerableType = FindGenericType(typeof(IEnumerable<>), type);
                     if (enumerableType != null)
