@@ -53,7 +53,11 @@ namespace TabularEditor.Scripting
         [ScriptMethod]
         public static void Output(this object value, int lineNumber = -1)
         {
-            // TODO: Make this output to the console, when running in command-line mode
+            if (Program.CommandLineMode)
+            {
+                Program.cw.WriteLine("Script line #{0}: " + value, lineNumber);
+                return;
+            }
 
             if (ScriptOutputForm.DontShow) return;
 

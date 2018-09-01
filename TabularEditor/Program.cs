@@ -14,6 +14,8 @@ namespace TabularEditor
 {
     static class Program
     {
+        public static bool CommandLineMode { get; private set; } = false;
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -33,6 +35,7 @@ namespace TabularEditor
             var plugins = LoadPlugins();
             SetupLibraries(plugins);
 
+            CommandLineMode = true;
             if (args.Length > 1 && HandleCommandLine(args))
             {
                 if(enableVSTS)
@@ -42,6 +45,7 @@ namespace TabularEditor
                 Application.Exit();
                 return;
             }
+            CommandLineMode = false;
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -83,7 +87,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             System.Diagnostics.Process.Start(e.LinkText);
         }
 
-        static GUIConsoleWriter cw = new GUIConsoleWriter();
+        public static readonly GUIConsoleWriter cw = new GUIConsoleWriter();
 
         /// <summary>
         /// Make sure that the TOMWrapper.dll is available in the current user's temp folder.
