@@ -22,5 +22,12 @@ namespace TabularEditor.UI
             UI.PropertyGrid.SelectedObjects = UI.TreeView.SelectedNodes.Select(n => n.Tag).ToArray();
             UI.PropertyGrid.ExpandItemsByLabel(expanded);
         }
+
+        public void PropertyGrid_UpdateFromObject(object obj)
+        {
+            var expanded = UI.PropertyGrid.GetExpandedItemLabels();
+            UI.PropertyGrid.SelectedObject = obj;
+            UI.PropertyGrid.ExpandItemsByLabel(expanded);
+        }
     }
 }

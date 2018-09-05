@@ -73,6 +73,26 @@ namespace TabularEditor {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap BranchRelationshipChild_16x {
+            get {
+                object obj = ResourceManager.GetObject("BranchRelationshipChild_16x", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap BranchRelationshipParent_16x {
+            get {
+                object obj = ResourceManager.GetObject("BranchRelationshipParent_16x", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap BuildSolution_48x {
             get {
                 object obj = ResourceManager.GetObject("BuildSolution_48x", resourceCulture);
@@ -246,6 +266,16 @@ namespace TabularEditor {
         internal static System.Drawing.Bitmap Find {
             get {
                 object obj = ResourceManager.GetObject("Find", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap FlatList_16x {
+            get {
+                object obj = ResourceManager.GetObject("FlatList_16x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

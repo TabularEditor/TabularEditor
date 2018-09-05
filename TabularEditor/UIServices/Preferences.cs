@@ -9,9 +9,17 @@ using System.Threading.Tasks;
 using System.IO;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using TabularEditor.TOMWrapper.Utils;
+using json::Newtonsoft.Json.Converters;
 
 namespace TabularEditor.UIServices
 {
+    public enum SearchResultOption
+    {
+        Flat,
+        ByParent,
+        ByChild
+    }
+
     public class Preferences
     {
         #region Serializable properties
@@ -50,6 +58,9 @@ namespace TabularEditor.UIServices
         public bool View_Columns = true;
         public bool View_Hierarchies = true;
         public bool View_MetadataInformation = false;
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public SearchResultOption View_SearchResults = SearchResultOption.ByChild;
 
         public HashSet<string> SaveToFolder_Levels = new HashSet<string>() {
                     "Data Sources",

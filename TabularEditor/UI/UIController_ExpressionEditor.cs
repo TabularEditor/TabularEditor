@@ -268,16 +268,16 @@ namespace TabularEditor.UI
             LastDaxProperty = CurrentDaxProperty;
         }
 
-        private void ExpressionEditor_Preview()
+        private void ExpressionEditor_Preview(IExpressionObject obj)
         {
             // TODO: Consider inspecting the expression of partitions, to determine
             // if the expression editor should use SQL syntax highlighting. This would
             // typically be the case for partitions using OLE DB or SQLNCLI providers.
 
-            var obj = UI.TreeView.SelectedNode?.Tag as IExpressionObject;
-
-            // Tables have "Default Detail Rows Expressions", but only for CompatibilityLevel 1400 or newer.
-            if (obj is Table && !(obj is CalculatedTable) && Handler.CompatibilityLevel < 1400) obj = null;
+            if (ExpressionEditor_Current != null)
+            {
+                (IsNavigatingBack ? Forward : Back).Push(ExpressionEditor_Current);
+            }
 
             if (ExpressionEditor_IsEditing) ExpressionEditor_AcceptEdit();
 

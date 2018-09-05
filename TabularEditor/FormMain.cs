@@ -166,8 +166,12 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             actToggleAllObjectTypes.Checked = Preferences.Current.View_AllObjectTypes;
             actToggleOrderByName.Checked = !Preferences.Current.View_SortAlphabetically;
 
+            actSearchChild.Checked = Preferences.Current.View_SearchResults == SearchResultOption.ByChild;
+            actSearchParent.Checked = Preferences.Current.View_SearchResults == SearchResultOption.ByParent;
+            actSearchFlat.Checked = Preferences.Current.View_SearchResults == SearchResultOption.Flat;
+
             // Assign column widths from preferences:
-            foreach(var cp in Preferences.Current.View_ColumnPreferences)
+            foreach (var cp in Preferences.Current.View_ColumnPreferences)
             {
                 var column = elements.TreeView.Columns.FirstOrDefault(c => c.Header == cp.Name);
                 if(column != null) column.Width = cp.Width;
@@ -741,6 +745,15 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         {
             e.Enabled = (txtExpression.ContainsFocus || txtAdvanced.ContainsFocus || propertyGrid1.ContainsFocus) 
                 && UI.ExpressionEditor_Current != null;
+        }
+
+        private void actSearch_Execute(object sender, EventArgs e)
+        {
+            actSearchChild.Checked = actSearchChild == sender;
+            actSearchParent.Checked = actSearchParent == sender;
+            actSearchFlat.Checked = actSearchFlat == sender;
+            Preferences.Current.View_SearchResults = actSearchChild.Checked ? SearchResultOption.ByChild
+                : (actSearchParent.Checked ? SearchResultOption.ByParent : SearchResultOption.Flat); 
         }
     }
 }
