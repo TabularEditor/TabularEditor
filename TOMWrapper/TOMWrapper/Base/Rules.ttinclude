@@ -183,6 +183,7 @@ class Rules {
 		if(p.PropertyType.IsEnum) resolveObject = "(TOM." + p.PropertyType.Name + ")" + resolveObject;
 		
 		return string.Format(@"set {{
+				{7}
 				var oldValue = {0};
 				var newValue = value{6};
 				if (oldValue{1} == newValue{1}) return;
@@ -200,7 +201,8 @@ class Rules {
 			p.Name == "IsHidden" ? "\n\t\t\t\tHandler.UpdateObject(this);" : "",
 			resolveObject, 
 			"Properties." + p.Name.ToUpper(),
-			p.PropertyType == typeof(string) ? ".Replace(\"\\r\", \"\")" : "");
+			p.PropertyType == typeof(string) ? ".Replace(\"\\r\", \"\")" : "",
+			p.Name == "DisplayFolder" ? "if(value.Contains(@\"\\\\\")) throw new Exception(\"Display Folder names cannot be blank.\");" : "");
     }
 
 	public static string PropertyGetter(PropertyInfo p)
