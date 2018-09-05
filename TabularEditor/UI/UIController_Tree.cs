@@ -29,12 +29,19 @@ namespace TabularEditor.UI
             if(node == null)
             {
                 TreeModel.BeginUpdate();
-                TreeModel.Options = TreeModel.Options
-                    | LogicalTreeOptions.ShowHidden
-                    | LogicalTreeOptions.AllObjectTypes
-                    | LogicalTreeOptions.Columns
-                    | LogicalTreeOptions.Measures
-                    | LogicalTreeOptions.Hierarchies;
+                var options = TreeModel.Options;
+
+                // Adjust the LogicalTreeOptions based on the object itself. For example, if the object is hidden,
+                // make sure the tree displays hidden objects, etc.:
+                if ((obj is IHideableObject) && (obj as IHideableObject).IsHidden) options = options | LogicalTreeOptions.ShowHidden;
+                if ((obj is Column)) options = options | LogicalTreeOptions.Columns;
+                else if ((obj is Measure)) options = options | LogicalTreeOptions.Measures;
+                else if ((obj is Hierarchy)) options = options | LogicalTreeOptions.Hierarchies;
+                else if ((obj is Table) || (obj is Model)) { /* Do nothing */ }
+                else options = options | LogicalTreeOptions.AllObjectTypes;
+
+                TreeModel.Options = options;
+
                 InternalApplyFilter("");
                 UI.FormMain.UpdateTreeUIButtons();
                 TreeModel.EndUpdate();
@@ -50,102 +57,71 @@ namespace TabularEditor.UI
             }
         }
 
-        struct Navigation
-        {
-            public ITabularNamedObject Object;
-            public string CurrentFilter;
-            public Navigation(TreeNodeAdv node, string currentFilter)
-            {
-                Object = node?.Tag as ITabularNamedObject;
-                CurrentFilter = currentFilter;
-            }
-        }
-
-        private Stack<Navigation> Back;
-        private Stack<Navigation> Forward;
+        private Stack<IExpressionObject> Back;
+        private Stack<IExpressionObject> Forward;
 
         public bool CanNavigateForward => Forward != null && Forward.Count > 0;
-        public bool CanNavigateBack => Back != null && Back.Count > 1;
-        private bool IsNavigating = false;
+        public bool CanNavigateBack => Back != null && Back.Count > 0;
+        private bool IsNavigatingBack = false;
 
         public void Tree_NavigateForward()
         {
             if (!CanNavigateForward) return;
 
-            bool firstUnknown = true;
-            IsNavigating = true;
-
             while (Forward.Count > 0)
             {
                 var nav = Forward.Pop();
-                ApplyFilter(nav.CurrentFilter);
-                if (nav.Object == null || nav.Object.IsRemoved) continue;
+                if (nav == null || nav.IsRemoved) continue;
 
-                var node = UI.TreeView.FindNodeByTag(nav.Object);
-                if (node == null && firstUnknown)
-                {
-                    firstUnknown = false;
-                    if (!TreeModel.VisibleInTree(nav.Object))
-                    {
-                        TreeModel.BeginUpdate();
-                        TreeModel.Options = LogicalTreeOptions.Default | LogicalTreeOptions.ShowHidden;
-                        UI.FormMain.UpdateTreeUIButtons();
-                        TreeModel.EndUpdate();
-                    }
-                    node = UI.TreeView.FindNodeByTag(nav.Object);
-                }
-                if(node != null)
+                UI.FormMain.Activate();
+                var node = UI.TreeView.FindNodeByTag(nav);
+                if (node != null)
                 {
                     UI.TreeView.EnsureVisible(node);
                     UI.TreeView.SelectedNode = node;
-                    UI.FormMain.Activate();
                     UI.TreeView.Focus();
-                    Back.Push(nav);
-                    break;
                 }
+                else
+                {
+                    UI.TreeView.SelectedNode = null;
+                    ExpressionEditor_Preview(nav);
+                    PropertyGrid_UpdateFromObject(nav);
+                    UI.ExpressionEditor.SelectAll();
+                    UI.ExpressionEditor.Focus();
+                }
+                break;
             }
-            IsNavigating = false;
         }
 
         public void Tree_NavigateBack()
         {
             if (!CanNavigateBack) return;
 
-            bool firstUnknown = true;
-            IsNavigating = true;
-
-            while (Back.Count > 1)
+            IsNavigatingBack = true;
+            while (Back.Count > 0)
             {
-                // Transfer current to forward stack:
-                if (firstUnknown) Forward.Push(Back.Pop()); else Back.Pop();
+                var nav = Back.Pop();
+                if (nav == null || nav.IsRemoved) continue;
 
-                var nav = Back.Peek();
-                ApplyFilter(nav.CurrentFilter);
-                if (nav.Object == null || nav.Object.IsRemoved) continue;
-
-                var node = UI.TreeView.FindNodeByTag(nav.Object);
-                if (node == null && firstUnknown)
-                {
-                    firstUnknown = false;
-                    if (!TreeModel.VisibleInTree(nav.Object))
-                    {
-                        TreeModel.BeginUpdate();
-                        TreeModel.Options = LogicalTreeOptions.Default | LogicalTreeOptions.ShowHidden;
-                        UI.FormMain.UpdateTreeUIButtons();
-                        TreeModel.EndUpdate();
-                    }
-                    node = UI.TreeView.FindNodeByTag(nav.Object);
-                }
+                UI.FormMain.Activate();
+                var node = UI.TreeView.FindNodeByTag(nav);
                 if (node != null)
                 {
                     UI.TreeView.EnsureVisible(node);
                     UI.TreeView.SelectedNode = node;
-                    UI.FormMain.Activate();
                     UI.TreeView.Focus();
-                    break;
                 }
+                else
+                {
+                    UI.TreeView.SelectedNode = null;
+                    ExpressionEditor_Preview(nav);
+                    PropertyGrid_UpdateFromObject(nav);
+                    UI.ExpressionEditor.SelectAll();
+                    UI.ExpressionEditor.Focus();
+                }
+                break;
             }
-            IsNavigating = false;
+            IsNavigatingBack = false;
         }
 
         private void Tree_Init()
@@ -330,19 +306,19 @@ namespace TabularEditor.UI
         {
             SelectionInvalid = true;
             PropertyGrid_UpdateFromSelection();
-            ExpressionEditor_Preview();
+
+            var obj = UI.TreeView.SelectedNode?.Tag as IExpressionObject;
+
+            // Tables have "Default Detail Rows Expressions", but only for CompatibilityLevel 1400 or newer.
+            if (obj is Table && !(obj is CalculatedTable) && Handler.CompatibilityLevel < 1400) obj = null;
+
+            ExpressionEditor_Preview(obj);
             ScriptEditor_HideErrors();
 
             if (UI.TreeView.SelectedNode != null || ShowSelectionStatus)
             {
                 UI.StatusLabel.Text = Selection.Summary(true) + " selected.";
                 ShowSelectionStatus = true;
-
-                if(UI.TreeView.SelectedNode != null && !IsNavigating)
-                {
-                    Forward.Clear();
-                    Back.Push(new Navigation(UI.TreeView.SelectedNode, CurrentFilter));
-                }
             }
 
             DynamicMenu_Update();
@@ -466,7 +442,6 @@ namespace TabularEditor.UI
             }
 
             CurrentFilter = filter;
-            if (!IsNavigating) Back.Push(new Navigation { CurrentFilter = filter });
         }
 
         public void SetDisplayOptions(bool showHidden, bool showDisplayFolders, bool showColumns, 

@@ -72,6 +72,9 @@
             this.actSaveScript = new Crad.Windows.Forms.Actions.Action();
             this.actBack = new Crad.Windows.Forms.Actions.Action();
             this.actForward = new Crad.Windows.Forms.Actions.Action();
+            this.actSearchFlat = new Crad.Windows.Forms.Actions.Action();
+            this.actSearchParent = new Crad.Windows.Forms.Actions.Action();
+            this.actSearchChild = new Crad.Windows.Forms.Actions.Action();
             this.toolStripButton8 = new System.Windows.Forms.ToolStripButton();
             this.fileToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.fromDBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -123,12 +126,13 @@
             this.btnSaveScript = new System.Windows.Forms.ToolStripButton();
             this.btnOpenScript = new System.Windows.Forms.ToolStripButton();
             this.tbApplyFilter = new System.Windows.Forms.ToolStripButton();
-            this.btnBack = new System.Windows.Forms.ToolStripButton();
-            this.btnForward = new System.Windows.Forms.ToolStripButton();
             this.expandFromHereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.collapseHereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.commentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.uncommentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripButton7 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -226,6 +230,8 @@
             this.treeColumn1 = new Aga.Controls.Tree.TreeColumn();
             this.ofdScript = new System.Windows.Forms.OpenFileDialog();
             this.sfdScript = new System.Windows.Forms.SaveFileDialog();
+            this.btnBack = new System.Windows.Forms.ToolStripButton();
+            this.btnForward = new System.Windows.Forms.ToolStripButton();
             actionsMain = new Crad.Windows.Forms.Actions.ActionList();
             ((System.ComponentModel.ISupportInitialize)(actionsMain)).BeginInit();
             this.toolStrip2.SuspendLayout();
@@ -292,6 +298,9 @@
             actionsMain.Actions.Add(this.actSaveScript);
             actionsMain.Actions.Add(this.actBack);
             actionsMain.Actions.Add(this.actForward);
+            actionsMain.Actions.Add(this.actSearchFlat);
+            actionsMain.Actions.Add(this.actSearchParent);
+            actionsMain.Actions.Add(this.actSearchChild);
             actionsMain.ContainerControl = this;
             // 
             // actToggleDisplayFolders
@@ -638,6 +647,30 @@
             this.actForward.ToolTipText = "Navigate forward (Alt+Right arrow)";
             this.actForward.Execute += new System.EventHandler(this.actForward_Execute);
             this.actForward.Update += new System.EventHandler(this.actForward_Update);
+            // 
+            // actSearchFlat
+            // 
+            this.actSearchFlat.CheckOnClick = true;
+            this.actSearchFlat.Image = global::TabularEditor.Resources.FlatList_16x;
+            this.actSearchFlat.Text = "Flat list";
+            this.actSearchFlat.ToolTipText = "Display all search results in a flat list";
+            this.actSearchFlat.Execute += new System.EventHandler(this.actSearch_Execute);
+            // 
+            // actSearchParent
+            // 
+            this.actSearchParent.CheckOnClick = true;
+            this.actSearchParent.Image = global::TabularEditor.Resources.BranchRelationshipParent_16x;
+            this.actSearchParent.Text = "Parent items";
+            this.actSearchParent.ToolTipText = "Search for parent items and display results in a hierarchy";
+            this.actSearchParent.Execute += new System.EventHandler(this.actSearch_Execute);
+            // 
+            // actSearchChild
+            // 
+            this.actSearchChild.CheckOnClick = true;
+            this.actSearchChild.Image = global::TabularEditor.Resources.BranchRelationshipChild_16x;
+            this.actSearchChild.Text = "Child items";
+            this.actSearchChild.ToolTipText = "Search for child items and display results in a hierarchy";
+            this.actSearchChild.Execute += new System.EventHandler(this.actSearch_Execute);
             // 
             // toolStripButton8
             // 
@@ -1261,32 +1294,6 @@
             this.tbApplyFilter.Text = "Filter";
             this.tbApplyFilter.ToolTipText = "Toggle filtering (Ctrl+Shift+F)";
             // 
-            // btnBack
-            // 
-            actionsMain.SetAction(this.btnBack, this.actBack);
-            this.btnBack.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.btnBack.AutoToolTip = false;
-            this.btnBack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnBack.Image = global::TabularEditor.Resources.Prev;
-            this.btnBack.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnBack.Name = "btnBack";
-            this.btnBack.Size = new System.Drawing.Size(23, 22);
-            this.btnBack.Text = "Back";
-            this.btnBack.ToolTipText = "Navigate back (Alt+Left arrow)";
-            // 
-            // btnForward
-            // 
-            actionsMain.SetAction(this.btnForward, this.actForward);
-            this.btnForward.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.btnForward.AutoToolTip = false;
-            this.btnForward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnForward.Image = global::TabularEditor.Resources.Next;
-            this.btnForward.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnForward.Name = "btnForward";
-            this.btnForward.Size = new System.Drawing.Size(23, 22);
-            this.btnForward.Text = "Forward";
-            this.btnForward.ToolTipText = "Navigate forward (Alt+Right arrow)";
-            // 
             // expandFromHereToolStripMenuItem
             // 
             actionsMain.SetAction(this.expandFromHereToolStripMenuItem, this.actExpandFromHere);
@@ -1329,6 +1336,45 @@
             this.uncommentToolStripMenuItem.Text = "Uncomment Lines";
             this.uncommentToolStripMenuItem.ToolTipText = "Uncomment the selected lines (Ctrl+Shift+U)";
             // 
+            // toolStripButton7
+            // 
+            actionsMain.SetAction(this.toolStripButton7, this.actSearchFlat);
+            this.toolStripButton7.AutoToolTip = false;
+            this.toolStripButton7.CheckOnClick = true;
+            this.toolStripButton7.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton7.Image = global::TabularEditor.Resources.FlatList_16x;
+            this.toolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton7.Name = "toolStripButton7";
+            this.toolStripButton7.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton7.Text = "Flat list";
+            this.toolStripButton7.ToolTipText = "Display all search results in a flat list";
+            // 
+            // toolStripButton4
+            // 
+            actionsMain.SetAction(this.toolStripButton4, this.actSearchChild);
+            this.toolStripButton4.AutoToolTip = false;
+            this.toolStripButton4.CheckOnClick = true;
+            this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton4.Image = global::TabularEditor.Resources.BranchRelationshipChild_16x;
+            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton4.Name = "toolStripButton4";
+            this.toolStripButton4.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton4.Text = "Child items";
+            this.toolStripButton4.ToolTipText = "Search for child items and display results in a hierarchy";
+            // 
+            // toolStripButton5
+            // 
+            actionsMain.SetAction(this.toolStripButton5, this.actSearchParent);
+            this.toolStripButton5.AutoToolTip = false;
+            this.toolStripButton5.CheckOnClick = true;
+            this.toolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton5.Image = global::TabularEditor.Resources.BranchRelationshipParent_16x;
+            this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton5.Name = "toolStripButton5";
+            this.toolStripButton5.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton5.Text = "Parent items";
+            this.toolStripButton5.ToolTipText = "Search for parent items and display results in a hierarchy";
+            // 
             // preferencesToolStripMenuItem
             // 
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
@@ -1352,7 +1398,10 @@
             this.cmbTranslation,
             this.toolStripSeparator4,
             this.txtFilter,
-            this.tbApplyFilter});
+            this.tbApplyFilter,
+            this.toolStripButton7,
+            this.toolStripButton4,
+            this.toolStripButton5});
             this.toolStrip2.Location = new System.Drawing.Point(0, 24);
             this.toolStrip2.Name = "toolStrip2";
             this.toolStrip2.Size = new System.Drawing.Size(1067, 25);
@@ -1408,7 +1457,7 @@
             // 
             this.txtFilter.MaxLength = 0;
             this.txtFilter.Name = "txtFilter";
-            this.txtFilter.Size = new System.Drawing.Size(454, 25);
+            this.txtFilter.Size = new System.Drawing.Size(385, 25);
             this.txtFilter.ToolTipText = "Filter objects by name. Put a \':\' as the first character to filter using Dynamic " +
     "LINQ";
             this.txtFilter.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtFilter_KeyDown);
@@ -1588,8 +1637,6 @@
             this.tbShowHidden,
             this.toolStripSeparator6,
             this.toolStripButton6,
-            this.btnForward,
-            this.btnBack,
             this.tbSortAlphabetically,
             this.tbShowAllObjectTypes});
             this.toolTreeView.Location = new System.Drawing.Point(0, 0);
@@ -1721,7 +1768,9 @@
             this.toolStripButton2,
             this.toolStripSeparator21,
             this.toolStripLabel4,
-            this.cmbExpressionSelector});
+            this.cmbExpressionSelector,
+            this.btnForward,
+            this.btnBack});
             this.toolStrip3.Location = new System.Drawing.Point(3, 3);
             this.toolStrip3.Name = "toolStrip3";
             this.toolStrip3.Size = new System.Drawing.Size(644, 25);
@@ -2308,6 +2357,32 @@
             // 
             this.sfdScript.Filter = "C# files|*.cs|All files|*.*";
             // 
+            // btnBack
+            // 
+            actionsMain.SetAction(this.btnBack, this.actBack);
+            this.btnBack.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.btnBack.AutoToolTip = false;
+            this.btnBack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnBack.Image = global::TabularEditor.Resources.Prev;
+            this.btnBack.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnBack.Name = "btnBack";
+            this.btnBack.Size = new System.Drawing.Size(23, 22);
+            this.btnBack.Text = "Back";
+            this.btnBack.ToolTipText = "Navigate back (Alt+Left arrow)";
+            // 
+            // btnForward
+            // 
+            actionsMain.SetAction(this.btnForward, this.actForward);
+            this.btnForward.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.btnForward.AutoToolTip = false;
+            this.btnForward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnForward.Image = global::TabularEditor.Resources.Next;
+            this.btnForward.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnForward.Name = "btnForward";
+            this.btnForward.Size = new System.Drawing.Size(23, 22);
+            this.btnForward.Text = "Forward";
+            this.btnForward.ToolTipText = "Navigate forward (Alt+Right arrow)";
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -2542,8 +2617,6 @@
         private Crad.Windows.Forms.Actions.Action actForward;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator22;
         private System.Windows.Forms.ToolStripButton tbApplyFilter;
-        private System.Windows.Forms.ToolStripButton btnForward;
-        private System.Windows.Forms.ToolStripButton btnBack;
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodeTextBox7;
         public Aga.Controls.Tree.TreeColumn _colTable;
         public ToolStripSpringTextBox txtFilter;
@@ -2555,6 +2628,14 @@
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem10;
         private System.Windows.Forms.ToolStripMenuItem commentToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem uncommentToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton toolStripButton4;
+        private System.Windows.Forms.ToolStripButton toolStripButton5;
+        private System.Windows.Forms.ToolStripButton toolStripButton7;
+        private Crad.Windows.Forms.Actions.Action actSearchFlat;
+        private Crad.Windows.Forms.Actions.Action actSearchParent;
+        private Crad.Windows.Forms.Actions.Action actSearchChild;
+        private System.Windows.Forms.ToolStripButton btnForward;
+        private System.Windows.Forms.ToolStripButton btnBack;
     }
 }
 

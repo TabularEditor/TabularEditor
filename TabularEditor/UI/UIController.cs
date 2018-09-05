@@ -158,8 +158,8 @@ namespace TabularEditor.UI
             ExpressionEditor_CancelEdit();
             ExpressionEditor_Current = null;
 
-            Forward = new Stack<Navigation>();
-            Back = new Stack<Navigation>();
+            Forward = new Stack<IExpressionObject>();
+            Back = new Stack<IExpressionObject>();
             CurrentFilter = null;
 
             ShowSelectionStatus = false;
