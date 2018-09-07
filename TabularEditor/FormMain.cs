@@ -285,6 +285,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             if (sender == actExpandAll) tvModel.ExpandAll();
             if (sender == actExpandFromHere) foreach (var n in tvModel.SelectedNodes) n.ExpandAll();
             if (sender == actCollapseFromHere) foreach (var n in tvModel.SelectedNodes) n.CollapseAll();
+            if (tvModel.SelectedNode != null) tvModel.ScrollTo(tvModel.SelectedNode);
         }
 
         private void FormMain_Load(object sender, EventArgs e)
@@ -727,16 +728,34 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             // Global keyboard shortcuts (if this method returns TRUE, then the key press will not be propagated to form controls)
-            switch(keyData)
+            switch (keyData)
             {
-                case (Keys.Alt | Keys.Left):
-                    UI.Tree_NavigateBack(); return true;
-                case (Keys.Alt | Keys.Right):
-                    UI.Tree_NavigateForward(); return true;
+                case (Keys.Alt | Keys.Left): UI.Tree_NavigateBack(); return true;
+                case (Keys.Alt | Keys.Right): UI.Tree_NavigateForward(); return true;
                 default:
                     if (UIController.Current.Actions.HandleKeyPress(keyData)) return true;
                     break;
             }
+
+            // Shortcuts that apply only when the explorer tree has focus:
+            if (tvModel.Focused)
+            {
+                switch (keyData) {
+                    case (Keys.Control | Keys.Left):
+                        if (tvModel.ContainsFocus) { actCollapseFromHere.DoExecute(); return true; }
+                        break;
+                    case (Keys.Control | Keys.Right):
+                        if (tvModel.ContainsFocus) { actExpandFromHere.DoExecute(); return true; }
+                        break;
+                    case (Keys.Control | Keys.Shift | Keys.Left):
+                        if (tvModel.ContainsFocus) { actCollapseAll.DoExecute(); return true; }
+                        break;
+                    case (Keys.Control | Keys.Shift | Keys.Right):
+                        if (tvModel.ContainsFocus) { actExpandAll.DoExecute(); return true; }
+                        break;
+                }
+            }
+
 
             return base.ProcessCmdKey(ref msg, keyData);
         }

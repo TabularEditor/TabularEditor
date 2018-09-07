@@ -133,6 +133,8 @@
             this.toolStripButton7 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
+            this.btnBack = new System.Windows.Forms.ToolStripButton();
+            this.btnForward = new System.Windows.Forms.ToolStripButton();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -230,8 +232,6 @@
             this.treeColumn1 = new Aga.Controls.Tree.TreeColumn();
             this.ofdScript = new System.Windows.Forms.OpenFileDialog();
             this.sfdScript = new System.Windows.Forms.SaveFileDialog();
-            this.btnBack = new System.Windows.Forms.ToolStripButton();
-            this.btnForward = new System.Windows.Forms.ToolStripButton();
             actionsMain = new Crad.Windows.Forms.Actions.ActionList();
             ((System.ComponentModel.ISupportInitialize)(actionsMain)).BeginInit();
             this.toolStrip2.SuspendLayout();
@@ -470,28 +470,22 @@
             // actCollapseAll
             // 
             this.actCollapseAll.Image = global::TabularEditor.Resources.CollapseAll;
-            this.actCollapseAll.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.Left)));
             this.actCollapseAll.Text = "C&ollapse All";
             this.actCollapseAll.Execute += new System.EventHandler(this.actCollapseExpand_Execute);
             // 
             // actCollapseFromHere
             // 
-            this.actCollapseFromHere.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Left)));
-            this.actCollapseFromHere.Text = "&Collapse Here";
+            this.actCollapseFromHere.Text = "Collapse Here";
             this.actCollapseFromHere.Execute += new System.EventHandler(this.actCollapseExpand_Execute);
             // 
             // actExpandAll
             // 
             this.actExpandAll.Image = global::TabularEditor.Resources.ExpandAll;
-            this.actExpandAll.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.Right)));
             this.actExpandAll.Text = "&Expand All";
             this.actExpandAll.Execute += new System.EventHandler(this.actCollapseExpand_Execute);
             // 
             // actExpandFromHere
             // 
-            this.actExpandFromHere.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Right)));
             this.actExpandFromHere.Text = "&Expand Here";
             this.actExpandFromHere.Execute += new System.EventHandler(this.actCollapseExpand_Execute);
             // 
@@ -969,19 +963,16 @@
             this.expandAllToolStripMenuItem.Image = global::TabularEditor.Resources.ExpandAll;
             this.expandAllToolStripMenuItem.Name = "expandAllToolStripMenuItem";
             this.expandAllToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+Right";
-            this.expandAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.Right)));
             this.expandAllToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
             this.expandAllToolStripMenuItem.Text = "&Expand All";
             // 
             // collapseAllToolStripMenuItem
             // 
             actionsMain.SetAction(this.collapseAllToolStripMenuItem, this.actCollapseAll);
+            this.collapseAllToolStripMenuItem.AutoToolTip = true;
             this.collapseAllToolStripMenuItem.Image = global::TabularEditor.Resources.CollapseAll;
             this.collapseAllToolStripMenuItem.Name = "collapseAllToolStripMenuItem";
             this.collapseAllToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+Left";
-            this.collapseAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.Left)));
             this.collapseAllToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
             this.collapseAllToolStripMenuItem.Text = "C&ollapse All";
             // 
@@ -1297,9 +1288,9 @@
             // expandFromHereToolStripMenuItem
             // 
             actionsMain.SetAction(this.expandFromHereToolStripMenuItem, this.actExpandFromHere);
+            this.expandFromHereToolStripMenuItem.AutoToolTip = true;
             this.expandFromHereToolStripMenuItem.Name = "expandFromHereToolStripMenuItem";
             this.expandFromHereToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Right";
-            this.expandFromHereToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Right)));
             this.expandFromHereToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
             this.expandFromHereToolStripMenuItem.Text = "&Expand Here";
             // 
@@ -1308,9 +1299,9 @@
             actionsMain.SetAction(this.collapseHereToolStripMenuItem, this.actCollapseFromHere);
             this.collapseHereToolStripMenuItem.AutoToolTip = true;
             this.collapseHereToolStripMenuItem.Name = "collapseHereToolStripMenuItem";
-            this.collapseHereToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Left)));
+            this.collapseHereToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Left";
             this.collapseHereToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
-            this.collapseHereToolStripMenuItem.Text = "&Collapse Here";
+            this.collapseHereToolStripMenuItem.Text = "Collapse Here";
             // 
             // commentToolStripMenuItem
             // 
@@ -1374,6 +1365,32 @@
             this.toolStripButton5.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton5.Text = "Parent items";
             this.toolStripButton5.ToolTipText = "Search for parent items and display results in a hierarchy";
+            // 
+            // btnBack
+            // 
+            actionsMain.SetAction(this.btnBack, this.actBack);
+            this.btnBack.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.btnBack.AutoToolTip = false;
+            this.btnBack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnBack.Image = global::TabularEditor.Resources.Prev;
+            this.btnBack.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnBack.Name = "btnBack";
+            this.btnBack.Size = new System.Drawing.Size(23, 22);
+            this.btnBack.Text = "Back";
+            this.btnBack.ToolTipText = "Navigate back (Alt+Left arrow)";
+            // 
+            // btnForward
+            // 
+            actionsMain.SetAction(this.btnForward, this.actForward);
+            this.btnForward.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.btnForward.AutoToolTip = false;
+            this.btnForward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnForward.Image = global::TabularEditor.Resources.Next;
+            this.btnForward.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnForward.Name = "btnForward";
+            this.btnForward.Size = new System.Drawing.Size(23, 22);
+            this.btnForward.Text = "Forward";
+            this.btnForward.ToolTipText = "Navigate forward (Alt+Right arrow)";
             // 
             // preferencesToolStripMenuItem
             // 
@@ -2356,32 +2373,6 @@
             // sfdScript
             // 
             this.sfdScript.Filter = "C# files|*.cs|All files|*.*";
-            // 
-            // btnBack
-            // 
-            actionsMain.SetAction(this.btnBack, this.actBack);
-            this.btnBack.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.btnBack.AutoToolTip = false;
-            this.btnBack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnBack.Image = global::TabularEditor.Resources.Prev;
-            this.btnBack.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnBack.Name = "btnBack";
-            this.btnBack.Size = new System.Drawing.Size(23, 22);
-            this.btnBack.Text = "Back";
-            this.btnBack.ToolTipText = "Navigate back (Alt+Left arrow)";
-            // 
-            // btnForward
-            // 
-            actionsMain.SetAction(this.btnForward, this.actForward);
-            this.btnForward.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.btnForward.AutoToolTip = false;
-            this.btnForward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnForward.Image = global::TabularEditor.Resources.Next;
-            this.btnForward.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnForward.Name = "btnForward";
-            this.btnForward.Size = new System.Drawing.Size(23, 22);
-            this.btnForward.Text = "Forward";
-            this.btnForward.ToolTipText = "Navigate forward (Alt+Right arrow)";
             // 
             // FormMain
             // 
