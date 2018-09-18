@@ -54,7 +54,7 @@ namespace TabularEditor.TOMWrapper
 
         public override string ToJson()
         {
-            return JsonConvert.SerializeObject(Keys.Where(k => this[k]).ToArray());
+            return JsonConvert.SerializeObject(Keys.Where(k => this[k]).OrderBy(n => n).ToArray());
         }
 
         /// <summary>

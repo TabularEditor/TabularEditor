@@ -19,7 +19,7 @@ namespace TabularEditor.TOMWrapper
         {
             return JsonConvert.SerializeObject(
                     Keys.Where(k => !string.IsNullOrEmpty(this[k]))
-                    .ToDictionary(k => k, k => this[k])
+                    .ToDictionary(k => k, k => this[k]).OrderBy(kvp => kvp.Key)
                 );
         }
 

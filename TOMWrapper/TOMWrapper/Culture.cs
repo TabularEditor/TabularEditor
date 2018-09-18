@@ -184,7 +184,7 @@ namespace TabularEditor.TOMWrapper
     {
         public string ToJson()
         {
-            return JsonConvert.SerializeObject(this.Select(c => c.Name).ToArray());
+            return JsonConvert.SerializeObject(this.Select(c => c.Name).OrderBy(n => n).ToArray());
         }
 
         public void FromJson(string json)
