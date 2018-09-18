@@ -110,7 +110,7 @@ namespace TabularEditor
 
                 rootNode = FolderNodes.Add(table.Name, table.Name, 2, 2);
 
-                AddChildren(rootNode.Nodes, Folder.CreateFolder(table, "", true, null));
+                AddChildren(rootNode.Nodes, Folder.CreateFolder(table, ""));
 
                 treeFolders.SelectedNode = rootNode;
 

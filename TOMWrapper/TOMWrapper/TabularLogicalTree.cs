@@ -58,9 +58,11 @@ namespace TabularEditor.TOMWrapper
 
             set
             {
+                var oldOptions = _options;
                 if (_options == value) return;
                 _options = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Options"));
+                if(oldOptions.HasFlag(LogicalTreeOptions.DisplayFolders) ^ _options.HasFlag(LogicalTreeOptions.DisplayFolders)) RebuildFolderCache();
                 OnStructureChanged();
             }
         }
@@ -95,7 +97,7 @@ namespace TabularEditor.TOMWrapper
                 if (_culture == value) return;
                 _culture = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Culture"));
-                FolderCache.Clear();
+                RebuildFolderCache();
                 OnStructureChanged();
             }
         }
@@ -106,6 +108,38 @@ namespace TabularEditor.TOMWrapper
                 Culture = null;
             else
                 Culture = Model.Cultures[cultureName];
+        }
+
+        public void RebuildFolderCache()
+        {
+            foreach (var table in Model.Tables)
+            {
+                RebuildFolderCacheForTable(table);
+            }
+        }
+
+        private HashSet<Table> folderCachesToBeRebuilt = new HashSet<Table>();
+
+        public void RebuildFolderCacheForTable(Table table)
+        {
+            if (!Options.HasFlag(LogicalTreeOptions.DisplayFolders)) return;
+
+            if (UpdateLocks > 0)
+            {
+                folderCachesToBeRebuilt.Add(table);
+                return;
+            }
+            
+            table.FolderCache.Clear();
+            foreach (var m in table.Measures) BuildFolderForObject(m);
+            foreach (var c in table.Columns) BuildFolderForObject(c);
+            foreach (var h in table.Hierarchies) BuildFolderForObject(h);
+        }
+
+        private void BuildFolderForObject(IFolderObject obj)
+        {
+            var folder = Folder.CreateFolder(obj.Table, obj.GetDisplayFolder(Culture));
+            folder.Children.Add(obj);
         }
 
         public Perspective Perspective
@@ -120,6 +154,7 @@ namespace TabularEditor.TOMWrapper
                 if (_perspective == value) return;
                 _perspective = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Perspective"));
+                RebuildFolderCache();
                 OnStructureChanged();
             }
         }
@@ -159,7 +194,16 @@ namespace TabularEditor.TOMWrapper
             UpdateLocks--;
 
             if (UpdateLocks == 0)
+            {
+                // Rebuilt folder caches if necessary:
+                if(folderCachesToBeRebuilt.Count > 0 && Options.HasFlag(LogicalTreeOptions.DisplayFolders))
+                {
+                    foreach (var table in folderCachesToBeRebuilt) RebuildFolderCacheForTable(table);
+                    folderCachesToBeRebuilt.Clear();
+                }
+
                 UpdateComplete?.Invoke(this, new EventArgs());
+            }
         }        
 
         #region Handling Display Folders
@@ -185,7 +229,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public Func<string, string> GetFolderMutation(object source, object destination)
+        /*public Func<string, string> GetFolderMutation(object source, object destination)
         {
             string srcPath = FolderHelper.GetFullPath(source as ITabularNamedObject);
             string dstPath = FolderHelper.GetFullPath(destination as ITabularNamedObject);
@@ -198,7 +242,7 @@ namespace TabularEditor.TOMWrapper
             return new Func<string, string>((s) => {
                 return newPath.ConcatPath(s.Substring(oldPath.Length));
             });
-        }
+        }*/
 
         
         #endregion
@@ -363,23 +407,25 @@ namespace TabularEditor.TOMWrapper
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        protected internal readonly Dictionary<string, Folder> FolderCache = new Dictionary<string, Folder>();
         internal void ClearFolderErrors()
         {
-            foreach (var f in FolderCache.Values) f.ClearError();
+            if (Model == null) return;
+            foreach (var t in Model.Tables) {
+                foreach (var f in t.FolderCache.Values) f.ClearError();
+            }
         }
-        internal void UpdateFolder(Folder folder, string oldFullPath = null)
+        internal void UpdateFolder(Folder folder, string oldPath = null)
         {
-            if (!string.IsNullOrEmpty(oldFullPath)) FolderCache.Remove(oldFullPath);
+            var cache = folder.Table.FolderCache;
+            if (!string.IsNullOrEmpty(oldPath)) cache.Remove(oldPath);
 
-            if(FolderCache.ContainsKey(folder.FullPath))
+            if(cache.ContainsKey(folder.Path))
             {
-                FolderCache[folder.FullPath] = folder;
+                cache[folder.Path] = folder;
             }
             else
             {
-                FolderCache.Add(folder.FullPath, folder);
+                cache.Add(folder.Path, folder);
             }
         }
 
@@ -396,6 +442,12 @@ namespace TabularEditor.TOMWrapper
 
         public void OnNodesInserted(ITabularObject parent, IEnumerable<ITabularObject> children)
         {
+            var table = parent as Table;
+            if(table != null && Options.HasFlag(LogicalTreeOptions.DisplayFolders))
+            {
+                foreach (var child in children.OfType<IFolderObject>())
+                    Folder.CreateFolder(table, child.DisplayFolder).Children.Add(child);
+            }
             OnNodesInserted(parent, children.ToArray());
         }
 

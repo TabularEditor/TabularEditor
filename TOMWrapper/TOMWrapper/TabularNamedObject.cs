@@ -75,12 +75,13 @@ namespace TabularEditor.TOMWrapper
                 if (!CanDelete()) return;
             }
 
+            var oldParent = this.GetContainer(false);
             bool cancelDelete = false;
             Handler.DoObjectDeleting(this, ref cancelDelete);
             if (cancelDelete) return;
 
             InternalDelete();
-            Handler.DoObjectDeleted(this);
+            Handler.DoObjectDeleted(this, oldParent);
         }
 
         internal void InternalDelete()

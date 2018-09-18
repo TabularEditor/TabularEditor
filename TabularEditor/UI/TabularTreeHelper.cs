@@ -26,11 +26,14 @@ namespace TabularEditor.UI.Tree
                 .ToList().ForEach(n => n.Expand());
 
             // Expand folders by paths (necessary when the folder structure has changed):
-            treeView.AllNodes.Where(n => n.Tag is Folder &&
-                nodeObjects.Any(o => o is Folder
-                && (o as Folder).FullPath == (n.Tag as Folder).FullPath)).ToList().ForEach(n => n.Expand());
-
-            treeView.EndUpdate();
+            foreach(var node in treeView.AllNodes)
+            {
+                var folder = node.Tag as Folder;
+                if(folder != null)
+                {
+                    if (nodeObjects.OfType<Folder>().Any(f => f.Table == folder.Table && f.Path == folder.Path)) node.Expand();
+                }
+            }
         }
     }
 }

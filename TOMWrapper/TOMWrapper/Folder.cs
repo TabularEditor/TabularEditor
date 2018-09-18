@@ -7,6 +7,7 @@ using TabularEditor.TOMWrapper.Undo;
 
 namespace TabularEditor.TOMWrapper
 {
+
     /// <summary>
     /// Represents a Folder in the TreeView. Does not correspond to any object in the TOM.
     /// Implements IDisplayFolderObject since a Folder can itself be located within another
@@ -14,19 +15,55 @@ namespace TabularEditor.TOMWrapper
     /// Implements IParentObject since a Folder can contain child objects.
     /// </summary>
     [DebuggerDisplay("{ObjectType} {Path}")]
-    public class Folder : IFolderObject, ITabularObjectContainer, IFolder, ITabularNamedObject, ITabularTableObject,
-        IErrorMessageObject, IHideableObject
+    public class Folder : IFolderObject, IFolder, ITabularTableObject, IErrorMessageObject, IHideableObject
     {
+        internal List<IFolderObject> Children { get; private set; } = new List<IFolderObject>();
+
         [Browsable(false)]
         public IFolder Container
         {
             get
             {
-                return Tree.FolderCache[Table.Name.ConcatPath(DisplayFolder)];
+                return Table.FolderCache[DisplayFolder];
             }
         }
         public bool IsRemoved => false;
-        
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                hash = hash * 23 + Table.GetHashCode();
+                hash = hash * 23 + _path.GetHashCode();
+                return hash;
+            }
+        }
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return GetType() == obj.GetType() && Equals((Folder)obj);
+        }
+
+        public bool Equals(Folder other)
+        {
+            return Table == other.Table && Path == other.Path;
+        }
+
+        public static bool operator== (Folder obj1, Folder obj2)
+        {
+            if (ReferenceEquals(obj1, obj2)) return true;
+            if (ReferenceEquals(obj1, null)) return false;
+            if (ReferenceEquals(obj2, null)) return false;
+
+            return obj1.Equals(obj2);
+        }
+        public static bool operator!= (Folder obj1, Folder obj2)
+        {
+            return !(obj1 == obj2);
+        }
+
         [Browsable(false)]
         public int MetadataIndex
         {
@@ -42,22 +79,21 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public string ErrorMessage { get; private set; }
 
-        static public Folder CreateFolder(Table table, string path = "", bool useFixedCulture = false, Culture fixedCulture = null)
+        static public Folder CreateFolder(Table table, string path = "")
         {
             // Always attempt to re-use folders:
-            var fullPath = table.Name.ConcatPath(path);
             Folder result;
-            if(!table.Handler.Tree.FolderCache.TryGetValue(fullPath, out result))
+            if(!table.FolderCache.TryGetValue(path, out result))
             {
                 result = new Folder(table, path);
-            }
-            if (useFixedCulture)
-            {
-                result.useFixedCulture = useFixedCulture;
-                result.fixedCulture = fixedCulture;
-            }
-            result.CheckChildrenErrors();
 
+                // Add to parent folder:
+                if (!string.IsNullOrEmpty(path))
+                {
+                    var parent = CreateFolder(table, result.DisplayFolder);
+                    parent.Children.Add(result);
+                }
+            }
             return result;
         }
 
@@ -97,14 +133,11 @@ namespace TabularEditor.TOMWrapper
         }
 
         [Browsable(false)]
-        public TabularModelHandler Handler { get { return Table.Handler; } }
+        public TabularModelHandler Handler => Table.Handler;
         [Browsable(false)]
-        private TabularTree Tree { get { return Handler.Tree; } }
+        private TabularTree Tree => Table.Handler.Tree;
         [Browsable(false)]
-        public Culture Culture { get { return useFixedCulture ? fixedCulture : Tree.Culture; } }
-
-        private bool useFixedCulture = false;
-        private Culture fixedCulture;
+        public Culture Culture => Table.Handler.Tree.Culture;
         
             [Browsable(false)]
         public Model Model { get { return Table.Model; } }
@@ -132,15 +165,6 @@ namespace TabularEditor.TOMWrapper
             var pathBits = Path.Split('\\');
             pathBits[pathBits.Length - 1] = newName;
             Path = string.Join("\\", pathBits);
-        }
-
-        [Browsable(false)]
-        public string FullPath
-        {
-            get
-            {
-                return Table.Name.ConcatPath(Path);
-            }
         }
 
         [Browsable(false)]
@@ -174,18 +198,19 @@ namespace TabularEditor.TOMWrapper
 
                 Handler.BeginUpdate("folder rename");
 
-                // Handle child objects (only those currently visible in the tree):
-                foreach(var c in GetChildrenByFolders(true).Where(c => Tree.VisibleInTree(c)))
+                // Rename child objects:
+                foreach(var c in GetChildrenByFolders())
                 {
                     c.SetDisplayFolder(value.ConcatPath(c.GetDisplayFolder(Culture).Substring(_path.Length)), Culture);
                 }
 
-                var oldFullPath = FullPath;
+                var oldPath = _path;
                 _path = value.TrimFolder();
 
-                Tree.UpdateFolder(this, oldFullPath);
+                Tree.UpdateFolder(this, oldPath);
 
                 Handler.EndUpdate();
+
             }
         }
 
@@ -217,42 +242,21 @@ namespace TabularEditor.TOMWrapper
             set { }
         }
 
-        public IEnumerable<IFolderObject> GetChildrenByFolders(bool recursive = false)
+        public IEnumerable<IFolderObject> GetChildrenByFolders()
         {
-            var allChildren = Table.GetChildren().OfType<IFolderObject>();
-            var folders = Enumerable.Empty<Folder>();
-            IEnumerable<IFolderObject> children;
-
-            if (recursive)
-            {
-                children = allChildren.Where(c => c.HasAncestor(this, Culture));
-            }
-            else
-            {
-                children = allChildren.Where(c => c.HasParent(this, Culture));
-                folders = GetChildPaths().Select(f => CreateFolder(Table, f));
-            }
-
-            var items = folders.Concat(children).OrderBy(i => i.GetDisplayOrder());
+            var items = Children.OrderBy(i => i.GetDisplayOrder());
             if (Tree.Options.HasFlag(LogicalTreeOptions.OrderByName)) items = items.ThenBy(i => i.Name);
             return items;
         }
 
-        private IEnumerable<string> GetChildPaths()
-        {
-            var level = Path.Level();
-
-            var result = Table.GetChildren().OfType<IFolderObject>().Where(c => c.HasAncestor(this, Culture))
-                .Select(c => c.GetDisplayFolder(Culture))
-                .Where(f => f.Level() > level)
-                .Select(f => f.Split('\\').Take(level + 1).ConcatPath()).Distinct();
-
-            return result;
-        }
-
         public IEnumerable<ITabularNamedObject> GetChildren()
         {
-            return GetChildrenByFolders(true).OfType<ITabularNamedObject>();
+            foreach(var child in Children)
+            {
+                yield return child;
+                var childAsFolder = child as Folder;
+                if (childAsFolder != null) foreach (var cc in childAsFolder.GetChildren()) yield return cc;
+            }
         }
 
         public bool CanDelete()

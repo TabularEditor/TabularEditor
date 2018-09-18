@@ -14,9 +14,12 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    partial class Table: ITabularObjectContainer, IFolder, ITabularPerspectiveObject, IDaxObject,
+    partial class Table: IFolder, ITabularPerspectiveObject, IDaxObject,
         IErrorMessageObject, IDaxDependantObject, IExpressionObject
     {
+        internal Dictionary<string, Folder> FolderCache = new Dictionary<string, Folder>();
+
+
         private DependsOnList _dependsOn = null;
 
         string IExpressionObject.Expression { get { return ""; } set { } }
@@ -138,7 +141,7 @@ namespace TabularEditor.TOMWrapper
         internal override void DeleteLinkedObjects(bool isChildOfDeleted)
         {
             // Clear folder cache:
-            Handler.Tree.FolderCache.Clear();
+            FolderCache.Clear();
 
             // Remove row-level-security for this table:
             RowLevelSecurity.Clear();
@@ -230,9 +233,9 @@ namespace TabularEditor.TOMWrapper
             yield break;
         }
 
-        public IEnumerable<IFolderObject> GetChildrenByFolders(bool recursive)
+        public IEnumerable<IFolderObject> GetChildrenByFolders()
         {
-            throw new InvalidOperationException();
+            return FolderCache[""].GetChildrenByFolders();
         }
 
         [Browsable(false)]
@@ -395,7 +398,6 @@ namespace TabularEditor.TOMWrapper
 
                     Handler.EndUpdate();
                 }
-                Handler.Tree.FolderCache.Clear(); // Clear folder cache when a table is renamed.
 
                 // Update relationship "names" if this table participates in any relationships:
                 var rels = UsedInRelationships.ToList();

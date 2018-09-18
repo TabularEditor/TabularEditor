@@ -246,15 +246,16 @@ namespace TabularEditor
 
                 if (item is IFolderObject && Options.HasFlag(LogicalTreeOptions.DisplayFolders))
                 {
-                    var dfo = item as IFolderObject;
-
-                    var pathBits = dfo.Table.Name.ConcatPath(dfo.GetDisplayFolder(Culture)).Split('\\');
-                    var folderPath = dfo.Table.Name;
-                    for (var i = 1; i < pathBits.Length; i++)
+                    var folderStack = new Stack<Folder>();
+                    var folder = (item as IFolderObject).GetFolder(Culture);
+                    while(folder != null && folder.Path != "")
                     {
-                        folderPath = folderPath.ConcatPath(pathBits[i]);
-                        if (!FolderCache.ContainsKey(folderPath)) Folder.CreateFolder(dfo.Table, FolderHelper.PathFromFullPath(folderPath));
-                        stack.Add(FolderCache[folderPath]);
+                        folderStack.Push(folder);
+                        folder = folder.GetFolder(Culture);
+                    }
+                    while(folderStack.Count > 0)
+                    {
+                        stack.Add(folderStack.Pop());
                     }
                 }
 

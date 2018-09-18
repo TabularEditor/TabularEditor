@@ -799,8 +799,10 @@ namespace TabularEditor.TOMWrapper
             ObjectDeleting?.Invoke(this, e);
             cancel = e.Cancel;
         }
-        internal void DoObjectDeleted(TabularObject obj)
+        internal void DoObjectDeleted(TabularObject obj, ITabularNamedObject parentBeforeDeletion)
         {
+            if (obj is IFolderObject) Tree.RebuildFolderCacheForTable(parentBeforeDeletion as Table);
+
             var e = new ObjectDeletedEventArgs(obj);
             ObjectDeleted?.Invoke(this, e);
         }
@@ -957,6 +959,7 @@ namespace TabularEditor.TOMWrapper
  
         internal void UpdateFolders(Table table)
         {
+            Tree.RebuildFolderCacheForTable(table);
             Tree.OnStructureChanged(table);
         }
         internal void UpdateLevels(Hierarchy hierarchy)

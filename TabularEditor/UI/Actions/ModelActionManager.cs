@@ -62,23 +62,26 @@ namespace TabularEditor.UI.Actions
                 }, 
                 (s, m) => @"Create New\Display Folder", true, Context.TableObject));
 
+            Add(new Separator(@"Create New"));
+
+            // Add measure:
+            Add(new Action((s, m) => s.Count == 1 || s.Context.HasX(Context.TableObject), (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Measure", true, Context.Table | Context.TableObject, Keys.Alt | Keys.D1));
+
+            // Add calc column:
+            Add(new Action((s, m) => s.Count == 1 || s.Context.HasX(Context.TableObject), (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Calculated Column", true, Context.Table | Context.TableObject, Keys.Alt | Keys.D2));
+
+            // Add hierarchy:
+            Add(new Action((s, m) => s.Count == 1 || s.Context.HasX(Context.TableObject), 
+                (s, m) => s.Table.AddHierarchy(displayFolder: s.CurrentFolder, levels: s.Direct.OfType<Column>().ToArray()).Expand().Vis().Edit(), 
+                (s, m) => @"Create New\Hierarchy", true, Context.Table | Context.TableObject, Keys.Alt | Keys.D3));
+
+            // Add data column:
+            Add(new Action((s, m) => !Handler.UsePowerBIGovernance && (s.Count == 1 || s.Context.HasX(Context.TableObject)) && !(s.Table is CalculatedTable), (s, m) => s.Table.AddDataColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Data Column", true, Context.Table | Context.TableObject, Keys.Alt | Keys.D4));
+
             // Add KPI:
             Add(new Action((s, m) => s.Count == 1 && !s.Folders.Any(), (s, m) => s.Measure.AddKPI().Edit(), (s, m) => @"Create New\KPI", true, Context.Measure));
 
-            // Add measure:
-            Add(new Action((s, m) => s.Count == 1 || s.Context.Has1(Context.TableObject), (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Measure", true, Context.Table | Context.TableObject, Keys.Alt | Keys.D1));
-
-            // Add calc column:
-            Add(new Action((s, m) => s.Count == 1 || s.Context.Has1(Context.TableObject), (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Calculated Column", true, Context.Table | Context.TableObject, Keys.Alt | Keys.D2));
-
-            // Add hierarchy:
-            Add(new Action((s, m) => s.Count == 1 || s.Context.Has1(Context.TableObject), 
-                (s, m) => s.Table.AddHierarchy(displayFolder: s.CurrentFolder, levels: s.Direct.OfType<Column>().ToArray()).Expand().Vis().Edit(), 
-                (s, m) => @"Create New\Hierarchy", true, Context.Table | Context.TableObject, Keys.Alt | Keys.D3));
             Add(new Separator(@"Create New"));
-
-            // Add data column:
-            Add(new Action((s, m) => !Handler.UsePowerBIGovernance && (s.Count == 1 || s.Context.Has1(Context.TableObject)) && !(s.Table is CalculatedTable), (s, m) => s.Table.AddDataColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Data Column", true, Context.Table | Context.TableObject, Keys.Alt | Keys.D4));
 
             Add(new Action(
                 (s, m) => s.Count == 1 && !Handler.UsePowerBIGovernance, 
@@ -192,7 +195,7 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => s.Count == 1, (s, m) => s.ForEach(i => (i as IClonableObject).Clone(null, true).Edit()), (s, m) => "Duplicate " + s.Summary(), true, Context.Role | Context.Perspective));
 
             // Batch Rename
-            Add(new Action((s, m) => s.Count > 1, (s, m) =>
+            Add(new Action((s, m) => s.DirectCount > 1, (s, m) =>
             {
                 var form = Dialogs.ReplaceForm.Singleton;
                 form.Text = "Batch Rename - (" + s.Summary() + " selected)";
@@ -203,18 +206,18 @@ namespace TabularEditor.UI.Actions
             }, (s, m) => "Batch Rename...", true, Context.Table | Context.TableObject | Context.Level, Keys.F2) { ToolTip = "Opens a dialog that lets you rename all the selected objects at once. Folders are not renamed, but objects inside folders are."});
 
             // Batch Rename Children
-            Add(new Action((s, m) => true, (s, m) =>
+            Add(new Action((s, m) => s.Context == Context.Table || s.Direct.Any(i => i is Folder), (s, m) =>
             {
                 var form = Dialogs.ReplaceForm.Singleton;
                 var sel = new UISelectionList<ITabularNamedObject>(
-                    s.Tables.SelectMany(t => t.GetChildren())
-                    .Concat(s.Hierarchies.SelectMany(t => t.Levels)));
+                    s.Direct.OfType<ITabularObjectContainer>().SelectMany(t => t.GetChildren())
+                    .Concat(s.Hierarchies.SelectMany(t => t.Levels)).OfType<ITabularNamedObject>());
                 form.Text = "Batch Rename - (" + sel.Summary() + ")";
                 var res = form.ShowDialog();
                 if (res == DialogResult.Cancel) return;
                 // TODO: Add options for match case and whole word only
                 sel.Rename(form.Pattern, form.ReplaceWith, form.RegEx, form.IncludeTranslations);
-            }, (s, m) => "Batch Rename Children...", true, Context.Table, Keys.Shift | Keys.F2)
+            }, (s, m) => "Batch Rename Children...", true, Context.Table | Context.TableObject, Keys.Shift | Keys.F2)
             { ToolTip = "Opens a dialog that lets you rename all children of the selected objects at once. Folders are not renamed, but objects inside folders are." });
 
             // Delete Action

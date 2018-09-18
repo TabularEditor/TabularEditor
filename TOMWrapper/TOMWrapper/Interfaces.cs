@@ -150,9 +150,9 @@ namespace TabularEditor.TOMWrapper
     ///  - Folders
     ///  - Table
     /// </summary>
-    public interface IFolder : ITabularNamedObject
+    public interface IFolder : ITabularNamedObject, ITabularObjectContainer
     {
-        IEnumerable<IFolderObject> GetChildrenByFolders(bool recursive = false);
+        IEnumerable<IFolderObject> GetChildrenByFolders();
         Table ParentTable { get; }
     }
 }
