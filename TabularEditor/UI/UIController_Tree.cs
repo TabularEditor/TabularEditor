@@ -243,7 +243,7 @@ namespace TabularEditor.UI
         /// <param name="item"></param>
         public TreeNodeAdv EnsureNodeVisible(ITabularNamedObject item)
         {
-            var node = UI.TreeView.FindNodeByTag(item);
+            var node = UI.TreeView.FindNode(TreeModel.GetPath(item));
             if (node != null) return node;
 
             LogicalTreeOptions optionsToApply = 0;
@@ -284,7 +284,9 @@ namespace TabularEditor.UI
 
         public void ExpandItem(ITabularNamedObject item)
         {
-            var node = UI.TreeView.FindNodeByTag(item);
+            var treePath = TreeModel.GetPath(item);
+            var node = UI.TreeView.FindNode(treePath);
+            //var node = UI.TreeView.FindNodeByTag(item);
             if (node != null) node.Expand();
         }
 

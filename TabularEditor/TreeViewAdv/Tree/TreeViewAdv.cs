@@ -945,7 +945,7 @@ namespace Aga.Controls.Tree
 			for (int i = 0; i < root.Nodes.Count; i++)
 			{
 				TreeNodeAdv node = root.Nodes[i];
-				if (node.Tag == path.FullPath[level])
+				if (node.Tag.Equals(path.FullPath[level]))
 				{
 					if (level == path.FullPath.Length - 1)
 						return node;
@@ -965,7 +965,7 @@ namespace Aga.Controls.Tree
 		{
 			foreach (TreeNodeAdv node in root.Nodes)
 			{
-				if (node.Tag == tag)
+				if (node.Tag.Equals(tag))
 					return node;
 				TreeNodeAdv res = FindNodeByTag(node, tag);
 				if (res != null)
