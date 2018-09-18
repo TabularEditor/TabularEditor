@@ -56,6 +56,12 @@ namespace TabularEditor.TreeViewAdvExtension
             }
         }
 
+        public override void MouseUp(TreeNodeAdvMouseEventArgs args)
+        {
+            if (args.Button == MouseButtons.Left)
+                args.Handled = true; // Supress node selection when clicking the arrow
+        }
+
         public override void MouseDoubleClick(TreeNodeAdvMouseEventArgs args)
         {
             args.Handled = true; // Supress expand/collapse when double click on plus/minus
