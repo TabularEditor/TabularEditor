@@ -73,10 +73,13 @@ namespace TabularEditor.TOMWrapper
 
         public void CopyFrom(IDictionary<string, T1> source)
         {
-            foreach(var kvp in source)
+            foreach(var key in Keys)
             {
-                if(Keys.Any(k => k == kvp.Key))
-                    this[kvp.Key] = kvp.Value;
+                T1 value;
+                if (source.TryGetValue(key, out value))
+                    this[key] = value;
+                else
+                    this[key] = EmptyValue;
             }
         }
 
