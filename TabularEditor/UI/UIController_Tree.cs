@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper;
+using TabularEditor.TOMWrapper.Serialization;
 using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.UI.Actions;
 using TabularEditor.UI.Tree;
@@ -129,7 +130,7 @@ namespace TabularEditor.UI
             // Set up custom node controls:
             UI.TreeView.NodeControls.Insert(0, new TreeViewAdvExtension.NodeArrow { ParentColumn = UI.TreeView.Columns[0] });
             UI.TreeView.NodeControls.Insert(1, new TabularIcon { Images = FormMain.Singleton.tabularTreeImages.Images, ParentColumn = UI.TreeView.Columns[0] });
-            TreeView_NameCol = new TabularNodeTextBox(this) { DataPropertyName = "LocalName", ParentColumn = UI.TreeView.Columns[0], Trimming = StringTrimming.EllipsisCharacter, EditEnabled = true, UseCompatibleTextRendering = true };
+            TreeView_NameCol = new TabularNodeTextBox(this) { DataPropertyName = "LocalName", IncrementalSearchEnabled = true, ParentColumn = UI.TreeView.Columns[0], Trimming = StringTrimming.EllipsisCharacter, EditEnabled = true, UseCompatibleTextRendering = true };
             UI.TreeView.NodeControls.Insert(2, TreeView_NameCol);
 
             TreeView_NameCol.ChangesApplied += TvName_ChangesApplied;

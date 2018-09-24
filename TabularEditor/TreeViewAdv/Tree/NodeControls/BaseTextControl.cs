@@ -92,7 +92,6 @@ namespace Aga.Controls.Tree.NodeControls
 
 		protected BaseTextControl()
 		{
-			IncrementalSearchEnabled = true;
 			_focusPen = new Pen(Color.Black);
 			_focusPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
 

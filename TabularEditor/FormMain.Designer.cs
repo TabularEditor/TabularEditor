@@ -705,6 +705,7 @@
             // exitToolStripMenuItem
             // 
             actionsMain.SetAction(this.exitToolStripMenuItem, this.actExit);
+            this.exitToolStripMenuItem.AutoToolTip = true;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
@@ -816,7 +817,6 @@
             // btnSave
             // 
             actionsMain.SetAction(this.btnSave, this.actSave);
-            this.btnSave.AutoToolTip = false;
             this.btnSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnSave.Image = global::TabularEditor.Resources.Save;
             this.btnSave.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -827,7 +827,6 @@
             // saveToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveToolStripMenuItem, this.actSave);
-            this.saveToolStripMenuItem.AutoToolTip = true;
             this.saveToolStripMenuItem.Image = global::TabularEditor.Resources.Save;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+S";
@@ -838,7 +837,6 @@
             // saveAsToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveAsToolStripMenuItem, this.actSaveAs);
-            this.saveAsToolStripMenuItem.AutoToolTip = true;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.saveAsToolStripMenuItem.Text = "Save &As...";
@@ -846,6 +844,7 @@
             // undoToolStripMenuItem
             // 
             actionsMain.SetAction(this.undoToolStripMenuItem, this.actUndo);
+            this.undoToolStripMenuItem.AutoToolTip = true;
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Z";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
@@ -855,6 +854,7 @@
             // redoToolStripMenuItem
             // 
             actionsMain.SetAction(this.redoToolStripMenuItem, this.actRedo);
+            this.redoToolStripMenuItem.AutoToolTip = true;
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Y";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
@@ -960,6 +960,7 @@
             // expandAllToolStripMenuItem
             // 
             actionsMain.SetAction(this.expandAllToolStripMenuItem, this.actExpandAll);
+            this.expandAllToolStripMenuItem.AutoToolTip = true;
             this.expandAllToolStripMenuItem.Image = global::TabularEditor.Resources.ExpandAll;
             this.expandAllToolStripMenuItem.Name = "expandAllToolStripMenuItem";
             this.expandAllToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+Right";
@@ -969,7 +970,6 @@
             // collapseAllToolStripMenuItem
             // 
             actionsMain.SetAction(this.collapseAllToolStripMenuItem, this.actCollapseAll);
-            this.collapseAllToolStripMenuItem.AutoToolTip = true;
             this.collapseAllToolStripMenuItem.Image = global::TabularEditor.Resources.CollapseAll;
             this.collapseAllToolStripMenuItem.Name = "collapseAllToolStripMenuItem";
             this.collapseAllToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+Left";
@@ -1094,6 +1094,7 @@
             // btnSaveCustomAction
             // 
             actionsMain.SetAction(this.btnSaveCustomAction, this.actSaveCustomAction);
+            this.btnSaveCustomAction.AutoToolTip = false;
             this.btnSaveCustomAction.Image = global::TabularEditor.Resources.action_add_16xLG;
             this.btnSaveCustomAction.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSaveCustomAction.Name = "btnSaveCustomAction";
@@ -1232,6 +1233,7 @@
             // saveToFolderToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveToFolderToolStripMenuItem, this.actSaveToFolder);
+            this.saveToFolderToolStripMenuItem.AutoToolTip = true;
             this.saveToFolderToolStripMenuItem.Name = "saveToFolderToolStripMenuItem";
             this.saveToFolderToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.saveToFolderToolStripMenuItem.Text = "Save to &Folder...";
@@ -1288,7 +1290,6 @@
             // expandFromHereToolStripMenuItem
             // 
             actionsMain.SetAction(this.expandFromHereToolStripMenuItem, this.actExpandFromHere);
-            this.expandFromHereToolStripMenuItem.AutoToolTip = true;
             this.expandFromHereToolStripMenuItem.Name = "expandFromHereToolStripMenuItem";
             this.expandFromHereToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Right";
             this.expandFromHereToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
@@ -1297,7 +1298,6 @@
             // collapseHereToolStripMenuItem
             // 
             actionsMain.SetAction(this.collapseHereToolStripMenuItem, this.actCollapseFromHere);
-            this.collapseHereToolStripMenuItem.AutoToolTip = true;
             this.collapseHereToolStripMenuItem.Name = "collapseHereToolStripMenuItem";
             this.collapseHereToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Left";
             this.collapseHereToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
@@ -1589,7 +1589,6 @@
             // nodeTextBox1
             // 
             this.nodeTextBox1.DataPropertyName = "DataType";
-            this.nodeTextBox1.IncrementalSearchEnabled = true;
             this.nodeTextBox1.LeftMargin = 3;
             this.nodeTextBox1.ParentColumn = this._colDataType;
             this.nodeTextBox1.UseCompatibleTextRendering = true;
@@ -1597,7 +1596,6 @@
             // nodeTextBox2
             // 
             this.nodeTextBox2.DataPropertyName = "Description";
-            this.nodeTextBox2.IncrementalSearchEnabled = true;
             this.nodeTextBox2.LeftMargin = 3;
             this.nodeTextBox2.ParentColumn = this._colDescription;
             this.nodeTextBox2.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
@@ -1606,7 +1604,6 @@
             // nodeTextBox3
             // 
             this.nodeTextBox3.DataPropertyName = "FormatString";
-            this.nodeTextBox3.IncrementalSearchEnabled = true;
             this.nodeTextBox3.LeftMargin = 3;
             this.nodeTextBox3.ParentColumn = this._colFormatString;
             this.nodeTextBox3.UseCompatibleTextRendering = true;
@@ -1614,7 +1611,6 @@
             // nodeTextBox4
             // 
             this.nodeTextBox4.DataPropertyName = "ObjectTypeName";
-            this.nodeTextBox4.IncrementalSearchEnabled = true;
             this.nodeTextBox4.LeftMargin = 3;
             this.nodeTextBox4.ParentColumn = this._colType;
             this.nodeTextBox4.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
@@ -1622,7 +1618,6 @@
             // 
             // nodeTextBox5
             // 
-            this.nodeTextBox5.IncrementalSearchEnabled = true;
             this.nodeTextBox5.LeftMargin = 3;
             this.nodeTextBox5.ParentColumn = this._colSource;
             this.nodeTextBox5.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
@@ -1632,7 +1627,6 @@
             // 
             // nodeTextBox7
             // 
-            this.nodeTextBox7.IncrementalSearchEnabled = true;
             this.nodeTextBox7.LeftMargin = 3;
             this.nodeTextBox7.ParentColumn = this._colTable;
             this.nodeTextBox7.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
@@ -1863,7 +1857,6 @@
             this.txtAdvanced.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtAdvanced.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
             this.txtAdvanced.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtAdvanced.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.txtAdvanced.IsReplaceMode = false;
             this.txtAdvanced.Language = FastColoredTextBoxNS.Language.CSharp;
             this.txtAdvanced.LeftBracket = '(';
@@ -2332,7 +2325,6 @@
             // _type
             // 
             this._type.DataPropertyName = "TypeName";
-            this._type.IncrementalSearchEnabled = true;
             this._type.LeftMargin = 3;
             this._type.ParentColumn = this._colType;
             this._type.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
@@ -2340,7 +2332,6 @@
             // _formatString
             // 
             this._formatString.DataPropertyName = "FormatString";
-            this._formatString.IncrementalSearchEnabled = true;
             this._formatString.LeftMargin = 3;
             this._formatString.ParentColumn = this._colFormatString;
             this._formatString.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -2348,14 +2339,12 @@
             // _dataType
             // 
             this._dataType.DataPropertyName = "DataType";
-            this._dataType.IncrementalSearchEnabled = true;
             this._dataType.LeftMargin = 3;
             this._dataType.ParentColumn = this._colDataType;
             // 
             // _description
             // 
             this._description.DataPropertyName = "Description";
-            this._description.IncrementalSearchEnabled = true;
             this._description.LeftMargin = 3;
             this._description.ParentColumn = this._colDescription;
             // 
