@@ -128,7 +128,7 @@ namespace TabularEditor.Dax
                         var outStrm = resp.GetResponseStream();
                         using (var reader = new System.IO.StreamReader(outStrm))
                         {
-                            output = reader.ReadToEnd();
+                            output = reader.ReadToEnd().Trim();
                         }
                     }
                 }

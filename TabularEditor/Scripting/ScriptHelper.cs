@@ -23,7 +23,7 @@ namespace TabularEditor.Scripting
                 {
                     return dax;
                 }
-                return result.Substring(6);
+                return result.Substring(6).Trim();
             }
             catch
             {
