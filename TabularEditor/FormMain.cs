@@ -423,7 +423,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                     return;
                 }
                 lblStatus.Text = "DAX formatted succesfully";
-                txtExpression.Text = result.Substring(6);
+                txtExpression.Text = result.Substring(6).Trim();
             }
             catch
             {
