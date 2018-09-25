@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.PropertyGridExtension;
 using TabularEditor.TOMWrapper;
+using TabularEditor.TOMWrapper.Serialization;
 using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.UI.Actions;
 using TabularEditor.UI.Dialogs;

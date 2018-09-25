@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
 using TabularEditor.TOMWrapper.Utils;
+using TabularEditor.TOMWrapper.Serialization;
 
 namespace TabularEditor.UI.Dialogs
 {

@@ -10,6 +10,7 @@ using System.IO;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using TabularEditor.TOMWrapper.Utils;
 using json::Newtonsoft.Json.Converters;
+using TabularEditor.TOMWrapper.Serialization;
 
 namespace TabularEditor.UIServices
 {
@@ -35,6 +36,7 @@ namespace TabularEditor.UIServices
         public bool SaveToFolder_SplitMultilineStrings = true;
         public bool SaveToFolder_PrefixFiles = false;
 
+        public bool SaveToFolder_LocalRelationships = false;
         public bool SaveToFolder_LocalPerspectives = false;
         public bool SaveToFolder_LocalTranslations = false;
 
@@ -175,6 +177,7 @@ namespace TabularEditor.UIServices
                     PrefixFilenames = value.SaveToFolder_PrefixFiles,
                     LocalPerspectives = value.SaveToFolder_LocalPerspectives,
                     LocalTranslations = value.SaveToFolder_LocalTranslations,
+                    LocalRelationships = value.SaveToFolder_LocalRelationships,
                     Levels = new HashSet<string>(value.SaveToFolder_Levels)
                 };
             } else

@@ -9,6 +9,7 @@ using TabularEditor.TOMWrapper;
 using BPA = TabularEditor.BestPracticeAnalyzer;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using TabularEditor.TOMWrapper.Utils;
+using TabularEditor.TOMWrapper.Serialization;
 
 namespace TabularEditor
 {

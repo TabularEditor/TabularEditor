@@ -6,6 +6,52 @@ using System.Threading.Tasks;
 
 namespace TabularEditor.TOMWrapper
 {
+    public enum SaveFormat
+    {
+        /// <summary>
+        /// Saves only the Model Schema as a Model.bim file
+        /// </summary>
+        ModelSchemaOnly,
+
+        /// <summary>
+        /// Saves the Model Schema to an existing .pbit (Power BI Template) file
+        /// </summary>
+        PowerBiTemplate,
+
+        /// <summary>
+        /// Saves the Model Schema together with a Visual Studio Tabular Project file and user settings file
+        /// </summary>
+        VisualStudioProject,
+
+        /// <summary>
+        /// Saves the Model Schema as a Tabular Editor folder structure
+        /// </summary>
+        TabularEditorFolder
+    }
+
+    public enum ModelSourceType
+    {
+        /// <summary>
+        /// SSAS Tabular database Compatibility Level 1200 or 1400
+        /// </summary>
+        Database,
+
+        /// <summary>
+        /// Model.bim Compatibility Level 1200 or 1400 JSON file
+        /// </summary>
+        File,
+
+        /// <summary>
+        /// Model.bim exploded into a folder structure by Tabular Editor
+        /// </summary>
+        Folder,
+
+        /// <summary>
+        /// Power BI Template file (.pbit)
+        /// </summary>
+        Pbit
+    }
+
     public class TabularModelHandlerSettings
     {
         /// <summary>

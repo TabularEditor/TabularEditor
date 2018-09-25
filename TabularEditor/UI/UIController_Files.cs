@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
+using TabularEditor.TOMWrapper.Serialization;
 using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.UIServices;
 
@@ -167,15 +168,12 @@ namespace TabularEditor.UI
                 fbd.Filters.Add(new CommonFileDialogFilter("Tabular Model Files", "*.bim"));
                 fbd.Filters.Add(new CommonFileDialogFilter("All files", "*.*"));
 
-                var currentSerializeOptions = Handler.FolderSerializeOptions;
-                var specialSerializeOptions = _file_SaveMode == ModelSourceType.File && 
-                    currentSerializeOptions != null && !currentSerializeOptions.Equals(SerializeOptions.DefaultFile);
                 var useAnnotatedSerializationSettingsCheckBox = new CommonFileDialogCheckBox
                 {
                     Text = "Use serialization settings from annotations",
-                    IsChecked = specialSerializeOptions
+                    IsChecked = Handler.SerializeOptions != SerializeOptions.Default
                 };
-                if (currentSerializeOptions != null) fbd.Controls.Add(useAnnotatedSerializationSettingsCheckBox);
+                if (useAnnotatedSerializationSettingsCheckBox.IsChecked) fbd.Controls.Add(useAnnotatedSerializationSettingsCheckBox);
                 var res = fbd.ShowDialog();
 
 
@@ -248,14 +246,13 @@ namespace TabularEditor.UI
         {
             using (var fbd = new CommonOpenFileDialog() { IsFolderPicker = true })
             {
-                var currentSerializeOptions = Handler.FolderSerializeOptions;
-                var specialSerializeOptions = _file_SaveMode == ModelSourceType.Folder && currentSerializeOptions != null && !currentSerializeOptions.Equals(SerializeOptions.Default);
                 var useAnnotatedSerializationSettingsCheckBox = new CommonFileDialogCheckBox
                 {
                     Text = "Use serialization settings from annotations",
-                    IsChecked = specialSerializeOptions
+                    IsChecked = Handler.SerializeOptions != SerializeOptions.Default
                 };
-                if(currentSerializeOptions != null) fbd.Controls.Add(useAnnotatedSerializationSettingsCheckBox);
+                if (useAnnotatedSerializationSettingsCheckBox.IsChecked) fbd.Controls.Add(useAnnotatedSerializationSettingsCheckBox);
+
                 var res = fbd.ShowDialog();
                 if(res == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(fbd.FileName))
                 {
@@ -313,7 +310,7 @@ namespace TabularEditor.UI
                             }
                             if (mr == DialogResult.OK)
                             {
-                                Handler.Save(File_Current, SaveFormat.TabularEditorFolder, Preferences.Current.GetSerializeOptions(true), true);
+                                Handler.Save(File_Current, SaveFormat.TabularEditorFolder, null, true, true);
                                 File_LastWrite = DateTime.Now;
                             }
                         }
@@ -327,9 +324,9 @@ namespace TabularEditor.UI
                             if (mr == DialogResult.OK)
                             {
                                 if (File_SaveMode == ModelSourceType.Pbit)
-                                    Handler.Save(File_Current, SaveFormat.PowerBiTemplate, SerializeOptions.PowerBi);
+                                    Handler.Save(File_Current, SaveFormat.PowerBiTemplate, SerializeOptions.PowerBi, false, true);
                                 else
-                                    Handler.Save(File_Current, SaveFormat.ModelSchemaOnly, Preferences.Current.GetSerializeOptions(false), true);
+                                    Handler.Save(File_Current, SaveFormat.ModelSchemaOnly, null, true, true);
                                 File_LastWrite = DateTime.Now;
                             }
                         }

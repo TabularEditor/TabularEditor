@@ -10,8 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using System.Collections;
+using TabularEditor.TOMWrapper;
 
-namespace TabularEditor.TOMWrapper.Utils
+namespace TabularEditor.TOMWrapper.Serialization
 {
     public static class Serializer
     {

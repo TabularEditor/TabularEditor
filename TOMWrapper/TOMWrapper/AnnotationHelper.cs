@@ -27,48 +27,6 @@ namespace TabularEditor.TOMWrapper
         }
 
         /// <summary>
-        /// Stores all translations on the current instance of an ITranslatableObject as annotations on the object.
-        /// Translations can later be retrieved using the LoadTranslations() extension method.
-        /// </summary>
-        /// <param name="obj"></param>
-        public static void SaveTranslations(this ITranslatableObject obj, bool includeChildren = false)
-        {
-            if (!obj.TranslatedNames.IsEmpty)
-                obj.SetAnnotation("TabularEditor_TranslatedNames", obj.TranslatedNames.ToJson(), false);
-            if (!obj.TranslatedDescriptions.IsEmpty)
-                obj.SetAnnotation("TabularEditor_TranslatedDescriptions", obj.TranslatedDescriptions.ToJson(), false);
-            if (obj is IFolderObject && !(obj as IFolderObject).TranslatedDisplayFolders.IsEmpty)
-                obj.SetAnnotation("TabularEditor_TranslatedDisplayFolders", (obj as IFolderObject).TranslatedDisplayFolders.ToJson(), false);
-
-            if (includeChildren && obj is ITabularObjectContainer)
-            {
-                foreach (var child in (obj as ITabularObjectContainer).GetChildren().OfType<ITranslatableObject>()) child.SaveTranslations(true);
-            }
-        }
-
-        /// <summary>
-        /// Reads any translations stored in the annotations of the current instance of an ITranslatableObject,
-        /// and applies them to the model culture.
-        /// </summary>
-        /// <param name="obj"></param>
-        public static void LoadTranslations(this ITranslatableObject obj, bool includeChildren = false)
-        {
-            var tn = obj.GetAnnotation("TabularEditor_TranslatedNames");
-            if (tn != null) obj.TranslatedNames.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, string>>(tn));
-
-            var td = obj.GetAnnotation("TabularEditor_TranslatedDescriptions");
-            if (td != null) obj.TranslatedDescriptions.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, string>>(td));
-
-            var tdf = obj.GetAnnotation("TabularEditor_TranslatedDisplayFolders");
-            if (tdf != null && obj is IFolderObject) (obj as IFolderObject).TranslatedDisplayFolders.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, string>>(tdf));
-
-            if (includeChildren && obj is ITabularObjectContainer)
-            {
-                foreach (var child in (obj as ITabularObjectContainer).GetChildren().OfType<ITranslatableObject>()) child.LoadTranslations(true);
-            }
-        }
-
-        /// <summary>
         /// Stores all perspective membership information on the current instance of an ITabularPerspectiveObject
         /// as annotations on the object. Perspective membership can later be retrieved using the LoadPerspectives() extension method.
         /// </summary>
