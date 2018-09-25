@@ -25,7 +25,7 @@ namespace TabularEditor.TOMWrapper.Undo
         /// <summary>
         /// Whether or not the undo manager is collecting operations.
         /// </summary>
-        public bool Enabled { get; internal set; } = true;
+        public bool Enabled { get; internal set; } = false;
 
         /// <summary>
         /// Rolls back all changes done to the model.
@@ -94,6 +94,10 @@ namespace TabularEditor.TOMWrapper.Undo
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Creates the UndoManager. Remember to set 'Enabled' to true after creation.
+        /// </summary>
+        /// <param name="handler"></param>
         public UndoManager(TabularModelHandler handler)
         {
             _handler = handler;

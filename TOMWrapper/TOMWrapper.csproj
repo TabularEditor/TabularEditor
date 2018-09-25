@@ -84,9 +84,16 @@
     <Compile Include="PropertyGridUI\Converters\CultureConverter.cs" />
     <Compile Include="PropertyGridUI\Converters\HierarchyColumnConverter.cs" />
     <Compile Include="PropertyGridUI\DataTypeEnumConverter.cs" />
+    <Compile Include="TOMWrapper\Serialization\PerspectiveAnnotationSerializer.cs" />
+    <Compile Include="TOMWrapper\Serialization\SplitModelSerializer.cs" />
+    <Compile Include="TOMWrapper\Serialization\TranslationAnnotationSerializer.cs" />
+    <Compile Include="TOMWrapper\Serialization\RelationshipAnnotationSerializer.cs" />
     <Compile Include="TOMWrapper\CalculatedTableColumn.cs" />
     <Compile Include="TOMWrapper\RLSFilterExpression.cs" />
     <Compile Include="TOMWrapper\StructuredDataSource.cs" />
+    <Compile Include="TOMWrapper\TabularModelHandler.Database.cs" />
+    <Compile Include="TOMWrapper\TabularModelHandler.Events.cs" />
+    <Compile Include="TOMWrapper\TabularModelHandler.FileHandling.cs" />
     <Compile Include="Utils\DaxDependencyHelper.cs" />
     <Compile Include="TOMWrapper\Indexers\GenericIndexer.cs" />
     <Compile Include="TOMWrapper\Relationship.cs" />
@@ -134,7 +141,7 @@
     <Compile Include="TOMWrapper\CalculatedColumn.cs" />
     <Compile Include="TOMWrapper\CalculatedTable.cs" />
     <Compile Include="TOMWrapper\PowerBI\PowerBIGovernance.cs" />
-    <Compile Include="TOMWrapper\PowerBI\PowerBIHelper.cs" />
+    <Compile Include="TOMWrapper\PowerBI\PowerBiTemplate.cs" />
     <Compile Include="TOMWrapper\Indexers\TableOLSIndexer.cs" />
     <Compile Include="TOMWrapper\Database.cs" />
     <Compile Include="TOMWrapper\DataSource.cs" />
@@ -187,8 +194,8 @@
     <Compile Include="TOMWrapper\Indexers\TranslationIndexer.cs" />
     <Compile Include="Utils\FormulaFixup.cs" />
     <Compile Include="Utils\Scripter.cs" />
-    <Compile Include="Utils\SerializeOptions.cs" />
-    <Compile Include="Utils\Serializer.cs" />
+    <Compile Include="TOMWrapper\Serialization\SerializeOptions.cs" />
+    <Compile Include="TOMWrapper\Serialization\Serializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="LocateDeadCode.ruleset" />

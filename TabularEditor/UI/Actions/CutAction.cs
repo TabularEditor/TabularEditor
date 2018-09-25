@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
+using TabularEditor.TOMWrapper.Serialization;
 using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.UIServices;
 

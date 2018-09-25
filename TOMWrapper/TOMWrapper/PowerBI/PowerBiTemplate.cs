@@ -8,7 +8,11 @@ using System.Threading.Tasks;
 
 namespace TabularEditor.TOMWrapper.PowerBI
 {
-    public class PowerBiTemplate
+    /// <summary>
+    /// Represents a Power BI Template (.pbit) file. Constructor loads the file into memory. Provides properties for
+    /// getting and setting the data model json, as well as saving the content back to a .pbit file.
+    /// </summary>
+    internal class PowerBiTemplate
     {
         MemoryStream fileData = new MemoryStream();
         public PowerBiTemplate(string path)
@@ -26,7 +30,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
                         {
                             using (var sr = new StreamReader(modelEntry.Open(), Encoding.Unicode, true, 1024, true))
                             {
-                                ModelJson = sr.ReadToEnd();
+                                _modelJson = sr.ReadToEnd();
                             }
                         }
                         else
@@ -40,9 +44,20 @@ namespace TabularEditor.TOMWrapper.PowerBI
             }
         }
 
-        public string ModelJson { get; private set; }
+        private string _modelJson;
+        public string ModelJson {
+            get
+            {
+                return _modelJson;
+            }
+            set
+            {
+                SetModelJson(value);
+                _modelJson = value;
+            }
+        }
 
-        public void SetModelJson(string modelJson)
+        private void SetModelJson(string modelJson)
         {
             try
             {

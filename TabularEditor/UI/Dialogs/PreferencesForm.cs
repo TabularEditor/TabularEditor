@@ -91,8 +91,10 @@ namespace TabularEditor.UI.Dialogs
 
             chkLocalPerspectives.Checked = Preferences.Current.SaveToFolder_LocalPerspectives;
             chkLocalTranslations.Checked = Preferences.Current.SaveToFolder_LocalTranslations;
+            chkLocalRelationships.Checked = Preferences.Current.SaveToFolder_LocalRelationships;
             SetNodeVisible("Perspectives", !chkLocalPerspectives.Checked);
             SetNodeVisible("Translations", !chkLocalTranslations.Checked);
+            SetNodeVisible("Relationships", !chkLocalRelationships.Checked);
 
             chkIgnoreTimestampsFile.Checked = Preferences.Current.SaveToFile_IgnoreTimestamps;
             chkIgnoreInfObjectsFile.Checked = Preferences.Current.SaveToFile_IgnoreInferredObjects;
@@ -116,6 +118,7 @@ namespace TabularEditor.UI.Dialogs
                 Preferences.Current.SaveToFolder_PrefixFiles = chkPrefixFiles.Checked;
                 Preferences.Current.SaveToFolder_LocalPerspectives = chkLocalPerspectives.Checked;
                 Preferences.Current.SaveToFolder_LocalTranslations = chkLocalTranslations.Checked;
+                Preferences.Current.SaveToFolder_LocalRelationships = chkLocalRelationships.Checked;
                 Preferences.Current.SaveToFile_IgnoreTimestamps = chkIgnoreTimestampsFile.Checked;
                 Preferences.Current.SaveToFile_IgnoreInferredObjects = chkIgnoreInfObjectsFile.Checked;
                 Preferences.Current.SaveToFile_IgnoreInferredProperties = chkIgnoreInfPropsFile.Checked;
@@ -206,6 +209,11 @@ namespace TabularEditor.UI.Dialogs
         private void chkLocalTranslations_CheckedChanged(object sender, EventArgs e)
         {
             SetNodeVisible("Translations", !chkLocalTranslations.Checked);
+        }
+
+        private void chkLocalRelationships_CheckedChanged(object sender, EventArgs e)
+        {
+            SetNodeVisible("Relationships", !chkLocalRelationships.Checked);
         }
     }
 }

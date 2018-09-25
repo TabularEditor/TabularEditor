@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TabularEditor.TOMWrapper.Utils
+namespace TabularEditor.TOMWrapper.Serialization
 {
     public class SerializeOptions: IEquatable<SerializeOptions>
     {
@@ -62,12 +62,16 @@ namespace TabularEditor.TOMWrapper.Utils
         public bool PrefixFilenames = false;
         public bool LocalTranslations = false;
         public bool LocalPerspectives = false;
+        public bool LocalRelationships = false;
 
         public HashSet<string> Levels = new HashSet<string>();
 
 
         public bool Equals(SerializeOptions other)
         {
+            if (ReferenceEquals(this, other)) return true;
+            if (ReferenceEquals(null, other)) return false;
+
             return other.Levels.SetEquals(this.Levels)
                 && other.IgnoreInferredObjects == IgnoreInferredObjects
                 && other.IgnoreInferredProperties == IgnoreInferredProperties
@@ -75,7 +79,26 @@ namespace TabularEditor.TOMWrapper.Utils
                 && other.SplitMultilineStrings == SplitMultilineStrings
                 && other.PrefixFilenames == PrefixFilenames
                 && other.LocalTranslations == LocalTranslations
-                && other.LocalPerspectives == LocalPerspectives;
+                && other.LocalPerspectives == LocalPerspectives
+                && other.LocalRelationships == LocalRelationships;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as SerializeOptions);
+        }
+
+        public static bool operator== (SerializeOptions obj1, SerializeOptions obj2)
+        {
+            if (ReferenceEquals(obj1, null))
+                return ReferenceEquals(obj2, null);
+
+            return obj1.Equals(obj2);
+        }
+
+        public static bool operator!= (SerializeOptions obj1, SerializeOptions obj2)
+        {
+            return !(obj1 == obj2);
         }
     }
 
