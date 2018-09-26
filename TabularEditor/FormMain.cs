@@ -539,7 +539,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            PreferencesForm.ShowDialog();
+            PreferencesForm.Show(UI.Handler);
             if(UI.Handler != null) UI.Handler.Settings = Preferences.Current.GetSettings();
         }
 

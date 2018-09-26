@@ -84,6 +84,11 @@
     <Compile Include="PropertyGridUI\Converters\CultureConverter.cs" />
     <Compile Include="PropertyGridUI\Converters\HierarchyColumnConverter.cs" />
     <Compile Include="PropertyGridUI\DataTypeEnumConverter.cs" />
+    <Compile Include="TOMWrapper\Base\WrapperBase.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>WrapperBase.tt</DependentUpon>
+    </Compile>
     <Compile Include="TOMWrapper\Serialization\PerspectiveAnnotationSerializer.cs" />
     <Compile Include="TOMWrapper\Serialization\SplitModelSerializer.cs" />
     <Compile Include="TOMWrapper\Serialization\TranslationAnnotationSerializer.cs" />
@@ -133,11 +138,6 @@
     <Compile Include="StringHelper.cs" />
     <Compile Include="TextServices\DAXLexer.cs" />
     <Compile Include="TOMWrapper\AnnotationCollection.cs" />
-    <Compile Include="TOMWrapper\Base\WrapperBase.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>WrapperBase.tt</DependentUpon>
-    </Compile>
     <Compile Include="TOMWrapper\CalculatedColumn.cs" />
     <Compile Include="TOMWrapper\CalculatedTable.cs" />
     <Compile Include="TOMWrapper\PowerBI\PowerBIGovernance.cs" />

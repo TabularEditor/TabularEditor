@@ -11,6 +11,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 using TabularEditor.TOMWrapper.Utils;
 using json::Newtonsoft.Json.Converters;
 using TabularEditor.TOMWrapper.Serialization;
+using System.Windows.Forms;
 
 namespace TabularEditor.UIServices
 {
@@ -30,20 +31,39 @@ namespace TabularEditor.UIServices
         public bool AllowUnsupportedPBIFeatures = false;
         public string BackupLocation = string.Empty;
 
-        public bool SaveToFolder_IgnoreInferredObjects = true;
-        public bool SaveToFolder_IgnoreInferredProperties = true;
-        public bool SaveToFolder_IgnoreTimestamps = true;
-        public bool SaveToFolder_SplitMultilineStrings = true;
-        public bool SaveToFolder_PrefixFiles = false;
+        // TODO: Handle backwards compatibility
+        public bool IgnoreInferredObjects = true;
+        public bool IgnoreInferredProperties = true;
+        public bool IgnoreTimestamps = true;
+        public bool SplitMultilineStrings = true;
 
+        #region Deprecated
+        // Deprecated
+        public bool? SaveToFolder_IgnoreInferredObjects = null;
+        public bool? SaveToFolder_IgnoreInferredProperties = null;
+        public bool? SaveToFolder_IgnoreTimestamps = null;
+        public bool? SaveToFolder_SplitMultilineStrings = null;
+        public bool ShouldSerializeSaveToFolder_IgnoreInferredObjects() { return false; }
+        public bool ShouldSerializeSaveToFolder_IgnoreInferredProperties() { return false; }
+        public bool ShouldSerializeSaveToFolder_IgnoreTimestamps() { return false; }
+        public bool ShouldSerializeSaveToFolder_SplitMultilineStrings() { return false; }
+
+        // Deprecated
+        public bool? SaveToFile_IgnoreInferredObjects = null;
+        public bool? SaveToFile_IgnoreInferredProperties = null;
+        public bool? SaveToFile_IgnoreTimestamps = null;
+        public bool? SaveToFile_SplitMultilineStrings = null;
+        public bool ShouldSerializeSaveToFile_IgnoreInferredObjects() { return false; }
+        public bool ShouldSerializeSaveToFile_IgnoreInferredProperties() { return false; }
+        public bool ShouldSerializeSaveToFile_IgnoreTimestamps() { return false; }
+        public bool ShouldSerializeSaveToFile_SplitMultilineStrings() { return false; }
+        #endregion
+
+        public bool SaveToFolder_PrefixFiles = false;
         public bool SaveToFolder_LocalRelationships = false;
         public bool SaveToFolder_LocalPerspectives = false;
         public bool SaveToFolder_LocalTranslations = false;
 
-        public bool SaveToFile_IgnoreInferredObjects = true;
-        public bool SaveToFile_IgnoreInferredProperties = true;
-        public bool SaveToFile_IgnoreTimestamps = true;
-        public bool SaveToFile_SplitMultilineStrings = true;
 
         public bool Copy_IncludeTranslations = true;
         public bool Copy_IncludePerspectives = true;
@@ -102,27 +122,52 @@ namespace TabularEditor.UIServices
         {
             get
             {
-                if (_current != null) return _current;
-                _current = Preferences.Default;
-                try
-                {
-                    if (File.Exists(PREFERENCES_PATH))
-                    {
-                        var json = File.ReadAllText(PREFERENCES_PATH, Encoding.Default);
-                        _current = JsonConvert.DeserializeObject<Preferences>(json, new JsonSerializerSettings() { ObjectCreationHandling = ObjectCreationHandling.Replace });
-                        _current.IsLoaded = true;
-                    }
-                    // Below for backwards compatibility with older versions of Tabular Editor, storing the preferences file in %ProgramData%:
-                    else if (File.Exists(PREFERENCES_PATH_OLD))
-                    {
-                        var json = File.ReadAllText(PREFERENCES_PATH_OLD, Encoding.Default);
-                        _current = JsonConvert.DeserializeObject<Preferences>(json);
-                        _current.IsLoaded = true;
-                    }
-                }
-                catch (Exception ex) { }
+                if (_current == null) Load();
                 return _current;
             }
+        }
+
+        public static Preferences Load(string json)
+        {
+            var result = JsonConvert.DeserializeObject<Preferences>(json, new JsonSerializerSettings() { ObjectCreationHandling = ObjectCreationHandling.Replace });
+
+            // For backwards compatibility:
+            if (result.SaveToFile_IgnoreInferredObjects.HasValue)       result.IgnoreInferredObjects    = result.SaveToFile_IgnoreInferredObjects.Value;
+            if (result.SaveToFolder_IgnoreInferredObjects.HasValue)     result.IgnoreInferredObjects    = result.SaveToFolder_IgnoreInferredObjects.Value;
+            if (result.SaveToFile_IgnoreInferredProperties.HasValue)    result.IgnoreInferredProperties = result.SaveToFile_IgnoreInferredProperties.Value;
+            if (result.SaveToFolder_IgnoreInferredProperties.HasValue)  result.IgnoreInferredProperties = result.SaveToFolder_IgnoreInferredProperties.Value;
+            if (result.SaveToFile_IgnoreTimestamps.HasValue)            result.IgnoreTimestamps         = result.SaveToFile_IgnoreTimestamps.Value;
+            if (result.SaveToFolder_IgnoreTimestamps.HasValue)          result.IgnoreTimestamps         = result.SaveToFolder_IgnoreTimestamps.Value;
+            if (result.SaveToFile_SplitMultilineStrings.HasValue)       result.SplitMultilineStrings    = result.SaveToFile_SplitMultilineStrings.Value;
+            if (result.SaveToFolder_SplitMultilineStrings.HasValue)     result.SplitMultilineStrings    = result.SaveToFolder_SplitMultilineStrings.Value;
+
+            if ((result.SaveToFile_IgnoreInferredObjects.HasValue    && result.SaveToFolder_IgnoreInferredObjects.HasValue    && result.SaveToFile_IgnoreInferredObjects.Value    != result.SaveToFolder_IgnoreInferredObjects.Value) ||
+                (result.SaveToFile_IgnoreInferredProperties.HasValue && result.SaveToFolder_IgnoreInferredProperties.HasValue && result.SaveToFile_IgnoreInferredProperties.Value != result.SaveToFolder_IgnoreInferredProperties.Value) ||
+                (result.SaveToFile_IgnoreTimestamps.HasValue         && result.SaveToFolder_IgnoreTimestamps.HasValue         && result.SaveToFile_IgnoreTimestamps.Value         != result.SaveToFolder_IgnoreTimestamps.Value) ||
+                (result.SaveToFile_SplitMultilineStrings.HasValue    && result.SaveToFolder_SplitMultilineStrings.HasValue    && result.SaveToFile_SplitMultilineStrings.Value    != result.SaveToFolder_SplitMultilineStrings.Value))
+                MessageBox.Show("Tabular Editor no longer has two sets of serialization settings for file/folder serialization respectively. Please review your settings under File > Preferences > Serialization.");
+
+            return result;
+        }
+
+        public static void Load()
+        {
+            _current = Default;
+            try
+            {
+                string path;
+                if (File.Exists(PREFERENCES_PATH)) path = PREFERENCES_PATH;
+                else if (File.Exists(PREFERENCES_PATH_OLD)) path = PREFERENCES_PATH_OLD;
+                else return;
+
+                var json = File.ReadAllText(PREFERENCES_PATH, Encoding.Default);
+                _current = Load(json);
+                _current.IsLoaded = true;
+            }
+            catch
+            {
+            }
+            
         }
 
         private Preferences()
@@ -166,30 +211,24 @@ namespace TabularEditor.UIServices
 
         static public SerializeOptions GetSerializeOptions(this Preferences value, bool SaveToFolder)
         {
+            var serializeOptions = new SerializeOptions()
+            {
+                IgnoreInferredObjects = value.IgnoreInferredObjects,
+                IgnoreInferredProperties = value.IgnoreInferredProperties,
+                IgnoreTimestamps = value.IgnoreTimestamps,
+                SplitMultilineStrings = value.SplitMultilineStrings,
+            };
+
             if (SaveToFolder)
             {
-                return new SerializeOptions
-                {
-                    IgnoreInferredObjects = value.SaveToFolder_IgnoreInferredObjects,
-                    IgnoreInferredProperties = value.SaveToFolder_IgnoreInferredProperties,
-                    IgnoreTimestamps = value.SaveToFolder_IgnoreTimestamps,
-                    SplitMultilineStrings = value.SaveToFolder_SplitMultilineStrings,
-                    PrefixFilenames = value.SaveToFolder_PrefixFiles,
-                    LocalPerspectives = value.SaveToFolder_LocalPerspectives,
-                    LocalTranslations = value.SaveToFolder_LocalTranslations,
-                    LocalRelationships = value.SaveToFolder_LocalRelationships,
-                    Levels = new HashSet<string>(value.SaveToFolder_Levels)
-                };
-            } else
-            {
-                return new SerializeOptions
-                {
-                    IgnoreInferredObjects = value.SaveToFile_IgnoreInferredObjects,
-                    IgnoreInferredProperties = value.SaveToFile_IgnoreInferredProperties,
-                    IgnoreTimestamps = value.SaveToFile_IgnoreTimestamps,
-                    SplitMultilineStrings = value.SaveToFile_SplitMultilineStrings
-                };
+                serializeOptions.PrefixFilenames = value.SaveToFolder_PrefixFiles;
+                serializeOptions.LocalPerspectives = value.SaveToFolder_LocalPerspectives;
+                serializeOptions.LocalTranslations = value.SaveToFolder_LocalTranslations;
+                serializeOptions.LocalRelationships = value.SaveToFolder_LocalRelationships;
+                serializeOptions.Levels = new HashSet<string>(value.SaveToFolder_Levels);
             }
+
+            return serializeOptions;
         }
     }
 }
