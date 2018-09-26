@@ -67,6 +67,7 @@ namespace TabularEditor.Scripting
             var testDictionary = value as IDictionary;
             var testList = value as IEnumerable<object>;
 
+            DormantForm.btnCopy.Visible = false;
             if (value == null) ShowString("(Null)");
             else if (testTabularObject != null) ShowTabularObject(testTabularObject);
             else if (testTabularCollection != null) ShowTabularObjectCollection(testTabularCollection);
@@ -166,6 +167,8 @@ namespace TabularEditor.Scripting
             DormantForm.DataTextBox.Text = value;
 
             DormantForm.DataPropertyGrid.SelectedObject = null;
+
+            DormantForm.btnCopy.Visible = true;
         }
 
         private void DataListView_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
@@ -223,6 +226,11 @@ namespace TabularEditor.Scripting
         private void btnClose_Click(object sender, EventArgs e)
         {
             DormantForm.Close();
+        }
+
+        private void btnCopy_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(DataTextBox.Text);
         }
     }
 }

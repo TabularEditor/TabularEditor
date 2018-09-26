@@ -39,6 +39,7 @@
             this.DataListView = new System.Windows.Forms.ListView();
             this.NameCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.TypeCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.btnCopy = new System.Windows.Forms.Button();
             this.DataProperties.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -141,12 +142,23 @@
             this.TypeCol.Text = "Type";
             this.TypeCol.Width = 80;
             // 
+            // btnCopy
+            // 
+            this.btnCopy.Location = new System.Drawing.Point(312, 323);
+            this.btnCopy.Name = "btnCopy";
+            this.btnCopy.Size = new System.Drawing.Size(130, 23);
+            this.btnCopy.TabIndex = 6;
+            this.btnCopy.Text = "Copy to clipboard";
+            this.btnCopy.UseVisualStyleBackColor = true;
+            this.btnCopy.Click += new System.EventHandler(this.btnCopy_Click);
+            // 
             // ScriptOutputForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnClose;
             this.ClientSize = new System.Drawing.Size(536, 358);
+            this.Controls.Add(this.btnCopy);
             this.Controls.Add(this.DataProperties);
             this.Controls.Add(this.DataTextBox);
             this.Controls.Add(this.btnClose);
@@ -173,5 +185,6 @@
         private System.Windows.Forms.ListView DataListView;
         private System.Windows.Forms.ColumnHeader NameCol;
         private System.Windows.Forms.ColumnHeader TypeCol;
+        private System.Windows.Forms.Button btnCopy;
     }
 }
