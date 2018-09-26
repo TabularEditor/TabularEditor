@@ -597,17 +597,21 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void CanComment(object sender, EventArgs e)
         {
-            (sender as Crad.Windows.Forms.Actions.Action).Enabled = txtExpression.Focused && txtExpression.Text != "";
+            (sender as Crad.Windows.Forms.Actions.Action).Enabled = 
+                (txtExpression.Focused && txtExpression.Text != "") ||
+                (txtAdvanced.Focused && txtAdvanced.Text != "");
         }
 
         private void actComment_Execute(object sender, EventArgs e)
         {
-            txtExpression.InsertLinePrefix("//");
+            if (txtExpression.Focused) txtExpression.InsertLinePrefix("//");
+            if (txtAdvanced.Focused) txtAdvanced.InsertLinePrefix("//");
         }
 
         private void actUncomment_Execute(object sender, EventArgs e)
         {
-            txtExpression.RemoveLinePrefix("//");
+            if (txtExpression.Focused) txtExpression.RemoveLinePrefix("//");
+            if (txtAdvanced.Focused) txtAdvanced.RemoveLinePrefix("//");
         }
 
         private void actSaveToFolder_Execute(object sender, EventArgs e)
@@ -762,8 +766,9 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void actFind_UpdateEx(object sender, UpdateExEventArgs e)
         {
-            e.Enabled = (txtExpression.ContainsFocus || txtAdvanced.ContainsFocus || propertyGrid1.ContainsFocus) 
-                && UI.ExpressionEditor_Current != null;
+            e.Enabled = (txtExpression.ContainsFocus && UI.ExpressionEditor_Current != null) 
+                || txtAdvanced.ContainsFocus 
+                || propertyGrid1.ContainsFocus;
         }
 
         private void actSearch_Execute(object sender, EventArgs e)

@@ -135,6 +135,10 @@
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
             this.btnBack = new System.Windows.Forms.ToolStripButton();
             this.btnForward = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton11 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton12 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton13 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton14 = new System.Windows.Forms.ToolStripButton();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -186,7 +190,8 @@
             this.samplesMenu = new System.Windows.Forms.ToolStripDropDownButton();
             this.customActionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator17 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripSeparator15 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator20 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripComboBox1 = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
@@ -534,7 +539,7 @@
             this.actReplace.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.H)));
             this.actReplace.Text = "R&eplace";
             this.actReplace.ToolTipText = "Find and replace (Ctrl+H)";
-            this.actReplace.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.actExpression_UpdateEx);
+            this.actReplace.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.actFind_UpdateEx);
             this.actReplace.Execute += new System.EventHandler(this.actReplace_Execute);
             // 
             // actExecuteScript
@@ -1095,10 +1100,11 @@
             // 
             actionsMain.SetAction(this.btnSaveCustomAction, this.actSaveCustomAction);
             this.btnSaveCustomAction.AutoToolTip = false;
+            this.btnSaveCustomAction.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnSaveCustomAction.Image = global::TabularEditor.Resources.action_add_16xLG;
             this.btnSaveCustomAction.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSaveCustomAction.Name = "btnSaveCustomAction";
-            this.btnSaveCustomAction.Size = new System.Drawing.Size(157, 22);
+            this.btnSaveCustomAction.Size = new System.Drawing.Size(23, 22);
             this.btnSaveCustomAction.Text = "Save as Custom Action...";
             // 
             // cutToolStripMenuItem
@@ -1391,6 +1397,55 @@
             this.btnForward.Size = new System.Drawing.Size(23, 22);
             this.btnForward.Text = "Forward";
             this.btnForward.ToolTipText = "Navigate forward (Alt+Right arrow)";
+            // 
+            // toolStripButton11
+            // 
+            actionsMain.SetAction(this.toolStripButton11, this.actFind);
+            this.toolStripButton11.AutoToolTip = false;
+            this.toolStripButton11.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton11.Image = global::TabularEditor.Resources.Find;
+            this.toolStripButton11.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton11.Name = "toolStripButton11";
+            this.toolStripButton11.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton11.Text = "&Find";
+            this.toolStripButton11.ToolTipText = "Find (Ctrl+F)";
+            // 
+            // toolStripButton12
+            // 
+            actionsMain.SetAction(this.toolStripButton12, this.actReplace);
+            this.toolStripButton12.AutoToolTip = false;
+            this.toolStripButton12.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton12.Image = global::TabularEditor.Resources.Replace;
+            this.toolStripButton12.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton12.Name = "toolStripButton12";
+            this.toolStripButton12.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton12.Text = "R&eplace";
+            this.toolStripButton12.ToolTipText = "Find and replace (Ctrl+H)";
+            // 
+            // toolStripButton13
+            // 
+            actionsMain.SetAction(this.toolStripButton13, this.actComment);
+            this.toolStripButton13.AutoToolTip = false;
+            this.toolStripButton13.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton13.Image = global::TabularEditor.Resources.CommentCode_16x;
+            this.toolStripButton13.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton13.Name = "toolStripButton13";
+            this.toolStripButton13.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton13.Text = "Comment lines";
+            this.toolStripButton13.ToolTipText = "Comment the selected lines (Ctrl+Shift+C)";
+            // 
+            // toolStripButton14
+            // 
+            actionsMain.SetAction(this.toolStripButton14, this.actUncomment);
+            this.toolStripButton14.AutoToolTip = false;
+            this.toolStripButton14.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton14.Image = global::TabularEditor.Resources.UncommentCode_16x;
+            this.toolStripButton14.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.toolStripButton14.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton14.Name = "toolStripButton14";
+            this.toolStripButton14.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton14.Text = "Uncomment Lines";
+            this.toolStripButton14.ToolTipText = "Uncomment the selected lines (Ctrl+Shift+U)";
             // 
             // preferencesToolStripMenuItem
             // 
@@ -1884,8 +1939,13 @@
             this.btnUndoErrors,
             this.toolStripSeparator11,
             this.samplesMenu,
-            this.toolStripSeparator15,
             this.btnSaveCustomAction,
+            this.toolStripSeparator10,
+            this.toolStripButton11,
+            this.toolStripButton12,
+            this.toolStripSeparator1,
+            this.toolStripButton13,
+            this.toolStripButton14,
             this.toolStripSeparator20,
             this.toolStripComboBox1,
             this.toolStripButton3});
@@ -1905,10 +1965,11 @@
             this.btnUndoErrors.Checked = true;
             this.btnUndoErrors.CheckOnClick = true;
             this.btnUndoErrors.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.btnUndoErrors.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnUndoErrors.Image = global::TabularEditor.Resources.Undo_grey_16x;
             this.btnUndoErrors.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnUndoErrors.Name = "btnUndoErrors";
-            this.btnUndoErrors.Size = new System.Drawing.Size(117, 22);
+            this.btnUndoErrors.Size = new System.Drawing.Size(23, 22);
             this.btnUndoErrors.Text = "Rollback on error";
             this.btnUndoErrors.ToolTipText = "When this is enabled, changes done by the script will be rolled back in case of e" +
     "rrors.";
@@ -1940,10 +2001,15 @@
             this.toolStripSeparator17.Name = "toolStripSeparator17";
             this.toolStripSeparator17.Size = new System.Drawing.Size(156, 6);
             // 
-            // toolStripSeparator15
+            // toolStripSeparator10
             // 
-            this.toolStripSeparator15.Name = "toolStripSeparator15";
-            this.toolStripSeparator15.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator10.Name = "toolStripSeparator10";
+            this.toolStripSeparator10.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
             // 
             // toolStripSeparator20
             // 
@@ -2531,7 +2597,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator14;
         private System.Windows.Forms.ToolStripMenuItem dAXExpressionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem formatDAXToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator15;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator16;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem9;
         private UI.UIModelAction actExecuteScript;
@@ -2616,6 +2681,12 @@
         private Crad.Windows.Forms.Actions.Action actSearchChild;
         private System.Windows.Forms.ToolStripButton btnForward;
         private System.Windows.Forms.ToolStripButton btnBack;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
+        private System.Windows.Forms.ToolStripButton toolStripButton14;
+        private System.Windows.Forms.ToolStripButton toolStripButton13;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripButton toolStripButton12;
+        private System.Windows.Forms.ToolStripButton toolStripButton11;
     }
 }
 
