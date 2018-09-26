@@ -15,14 +15,6 @@ namespace TabularEditor.TOMWrapper.Serialization
             return other;
         }
 
-        public static SerializeOptions DefaultFile
-        {
-            get
-            {
-                return new SerializeOptions();
-            }
-        }
-
         public static SerializeOptions Default
         {
             get

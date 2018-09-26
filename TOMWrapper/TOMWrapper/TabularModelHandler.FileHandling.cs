@@ -96,14 +96,14 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        public bool HasSerializeOptions =>
+            Model.GetAnnotation("TabularEditor_SerializeOptions") != null;
 
-        private SerializeOptions _serializeOptions;
+        private SerializeOptions _serializeOptions = SerializeOptions.Default;
         public SerializeOptions SerializeOptions
         {
             get
             {
-                _serializeOptions = SerializeOptions.Default;
-
                 var annotatedSerializeOptions = Model.GetAnnotation("TabularEditor_SerializeOptions");
                 if (annotatedSerializeOptions != null)
                 {
@@ -119,7 +119,7 @@ namespace TabularEditor.TOMWrapper
             set
             {
                 _serializeOptions = value;
-                Model.SetAnnotation("TabularEditor_SerializeOptions", JsonConvert.SerializeObject(_serializeOptions), false);
+                Model.SetAnnotation("TabularEditor_SerializeOptions", JsonConvert.SerializeObject(_serializeOptions), true);
             }
         }
 
