@@ -169,6 +169,7 @@ namespace TabularEditor.TOMWrapper.Undo
 
         private int batchDepth = 0;
         private int batchSizeCounter = 0;
+        public int BatchSize => batchSizeCounter;
         UndoBatchAction batch = null;
 
         /// <summary>
