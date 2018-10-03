@@ -201,6 +201,8 @@ namespace TabularEditor.UI
         {
             UI.TreeView.Invalidate();
             UI.PropertyGrid.Refresh();
+
+            if (DependencyForm.Visible) DependencyForm.RefreshTree();
         }
 
         private void UIController_ObjectChanged(object sender, ObjectChangedEventArgs e)

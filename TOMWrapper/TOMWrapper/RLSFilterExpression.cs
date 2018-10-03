@@ -18,7 +18,7 @@ namespace TabularEditor.TOMWrapper
             RLSFilterExpression result;
             if(!role.RowLevelSecurity.FilterExpressions.TryGetValue(table, out result)) {
                 result = new RLSFilterExpression(role, table);
-                role.RowLevelSecurity.FilterExpressions.Add(table, result);
+                role.RowLevelSecurity._filterExpressions.Add(table, result);
             }
             return result;
         }

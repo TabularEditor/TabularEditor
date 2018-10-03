@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TabularEditor.TOMWrapper.Utils;
+using TabularEditor.TOMWrapper.Serialization;
 
 namespace TabularEditor.TOMWrapper.Tests
 {

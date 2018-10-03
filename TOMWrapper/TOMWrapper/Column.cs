@@ -155,10 +155,6 @@ namespace TabularEditor.TOMWrapper
         {
             if (propertyName == Properties.NAME)
             {
-                // Flag to the handler that a name change that requires a rebuild of the Dependency Tree
-                // (if formula fixup is enabled) was started:
-                Handler.NameChangeInProgress = true;
-
                 // When formula fixup is enabled, we need to begin a new batch of undo operations, as this
                 // name change could result in expression changes on multiple objects. We also need to
                 // start a new batch, in case this column is used as an origin for a calculated table column,

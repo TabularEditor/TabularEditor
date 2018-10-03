@@ -233,7 +233,6 @@ namespace TabularEditor.TOMWrapper
         }
 
         private bool _disableUpdates = false;
-        internal bool NameChangeInProgress = false;
 
         /// <summary>
         /// Begins a batch update
@@ -242,6 +241,8 @@ namespace TabularEditor.TOMWrapper
         public void BeginUpdate(string undoName)
         {
             if (_disableUpdates) return;
+
+            EoB_PostponeOperations = true;
 
             Tree.BeginUpdate();
             if(!string.IsNullOrEmpty(undoName)) UndoManager.BeginBatch(undoName);
@@ -259,31 +260,22 @@ namespace TabularEditor.TOMWrapper
 
             var actionCount = 0;
             if(undoable || rollback) actionCount = UndoManager.EndBatch(rollback);
-            Tree.EndUpdate();
 
-            if (!InsideTransaction) DoUpdateComplete();
-
-            if(NameChangeInProgress && Tree.UpdateLocks == 0)
+            if (Tree.UpdateLocks == 1) EoB_PostponeOperations = false;
+            if (Tree.UpdateLocks == 1 && EoB_RequireRebuildDependencyTree)
             {
-                NameChangeInProgress = false;
-                if (Settings.AutoFixup) FormulaFixup.BuildDependencyTree();
+                FormulaFixup.BuildDependencyTree();
+                EoB_RequireRebuildDependencyTree = false;
             }
+
+            // This takes care of reducing the UpdateLocks counter, and notifying the UI when we reach zero:
+            Tree.EndUpdate();
 
             return actionCount;
         }
 
-        internal bool EoB_BuildDependencyTree = false;
-        internal bool InsideTransaction { get { return Tree.UpdateLocks > 0; } }
-
-        /// <summary>
-        /// Triggers when a batch of operations has completed.
-        /// If any end-of-batch flags were set during the batch, these will be triggered now
-        /// and the flags will be reset.
-        /// </summary>
-        private void DoUpdateComplete()
-        {
-            if (EoB_BuildDependencyTree) { FormulaFixup.BuildDependencyTree(); EoB_BuildDependencyTree = false; }
-        }
+        internal bool EoB_RequireRebuildDependencyTree = false;
+        internal bool EoB_PostponeOperations = false;
 
         /// <summary>
         /// Ends all batch updates in progress.

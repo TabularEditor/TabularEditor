@@ -395,7 +395,7 @@ namespace TabularEditor.TOMWrapper
                     // affected by the name change (the undo stack should contain the expression changes that were made
                     // when the name was initially changed).
                     if (!Handler.UndoManager.UndoInProgress) FormulaFixup.DoFixup(this);
-
+                    FormulaFixup.BuildDependencyTree(this);
                     Handler.EndUpdate();
                 }
 
@@ -416,10 +416,6 @@ namespace TabularEditor.TOMWrapper
         {
             if (propertyName == Properties.NAME)
             {
-                // Flag to the handler that a name change that requires a rebuild of the Dependency Tree
-                // (if formula fixup is enabled) was started:
-                Handler.NameChangeInProgress = true;
-
                 // When formula fixup is enabled, we need to begin a new batch of undo operations, as this
                 // name change could result in expression changes on multiple objects:
                 if (Handler.Settings.AutoFixup) Handler.BeginUpdate("Set Property 'Name'");

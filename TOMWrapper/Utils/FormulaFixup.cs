@@ -140,6 +140,8 @@ namespace TabularEditor.TOMWrapper.Utils
 
         public static void BuildDependencyTree(IDaxDependantObject expressionObj)
         {
+            if (Handler.EoB_PostponeOperations) { Handler.EoB_RequireRebuildDependencyTree = true; return; }
+
             ClearDependsOn(expressionObj);
 
             foreach (var prop in expressionObj.GetDAXProperties())
@@ -151,7 +153,7 @@ namespace TabularEditor.TOMWrapper.Utils
 
         public static void BuildDependencyTree()
         {
-            if (Handler.InsideTransaction) { Handler.EoB_BuildDependencyTree = true; return; }
+            if (Handler.EoB_PostponeOperations) { Handler.EoB_RequireRebuildDependencyTree = true; return; }
 
             var sw = new Stopwatch();
             sw.Start();

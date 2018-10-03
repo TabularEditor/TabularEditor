@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 using TabularEditor.TOMWrapper.Utils;
+using TabularEditor.TOMWrapper.Serialization;
 
 namespace TabularEditor.TOMWrapper
 {
