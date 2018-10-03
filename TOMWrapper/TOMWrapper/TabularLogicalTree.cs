@@ -202,7 +202,7 @@ namespace TabularEditor.TOMWrapper
                     folderCachesToBeRebuilt.Clear();
                 }
 
-                UpdateComplete?.Invoke(this, new EventArgs());
+                if(Handler.UndoManager.BatchSize > 0) UpdateComplete?.Invoke(this, new EventArgs());
             }
         }        
 
