@@ -112,7 +112,7 @@ namespace TabularEditor.TOMWrapper
             var container = this as ITabularObjectContainer;
             if (container != null) foreach (var child in container.GetChildren().OfType<TabularObject>()) child.ReapplyReferences();
 
-            if (this is IDaxDependantObject || this is IDaxObject) FormulaFixup.BuildDependencyTree();
+            if (this is IDaxDependantObject || this is IDaxObject || this is ModelRole) FormulaFixup.BuildDependencyTree();
         }
 
         internal override void DeleteLinkedObjects(bool isChildOfDeleted)

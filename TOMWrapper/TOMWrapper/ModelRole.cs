@@ -17,6 +17,17 @@ namespace TabularEditor.TOMWrapper
         [Browsable(true), DisplayName("Object Level Security"), Category("Security")]
         public RoleOLSIndexer MetadataPermission { get; private set; }
 
+        internal override void RemoveReferences()
+        {
+            base.RemoveReferences();
+
+            foreach(var fEx in RowLevelSecurity.FilterExpressions.Values)
+            {
+                fEx.DependsOn.Keys.ToList().ForEach(d => d.ReferencedBy.Remove(fEx));
+                fEx.DependsOn.Clear();
+            }
+            RowLevelSecurity._filterExpressions.Clear();
+        }
 
         [Category("Security"), DisplayName("Members")]
         [Description("Specify domain/usernames of the members in this role. One member per line.")]

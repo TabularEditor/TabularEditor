@@ -20,8 +20,8 @@ namespace TabularEditor.TOMWrapper
     {
         public readonly ModelRole Role;
 
-        private Dictionary<Table, RLSFilterExpression> _filterExpressions = new Dictionary<Table, RLSFilterExpression>();
-        internal Dictionary<Table, RLSFilterExpression> FilterExpressions => _filterExpressions;
+        internal Dictionary<Table, RLSFilterExpression> _filterExpressions = new Dictionary<Table, RLSFilterExpression>();
+        public IReadOnlyDictionary<Table, RLSFilterExpression> FilterExpressions => _filterExpressions;
 
         internal RoleRLSIndexer(ModelRole role) : base(role)
         {
@@ -77,11 +77,8 @@ namespace TabularEditor.TOMWrapper
 
                 Role.Handler.UndoManager.Add(new UndoPropertyChangedAction(Role, "RowLevelSecurity", oldValue, filterExpression, table.Name));
 
-                if (!Handler.NameChangeInProgress)
-                {
-                    var rls = RLSFilterExpression.Get(Role, table);
-                    FormulaFixup.BuildDependencyTree(rls);
-                }
+                var rls = RLSFilterExpression.Get(Role, table);
+                FormulaFixup.BuildDependencyTree(rls);
             }
         }
     }
