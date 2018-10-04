@@ -54,8 +54,15 @@ namespace TabularEditor.UI.Actions
 
         protected override void OnUpdate(EventArgs e)
         {
-            Enabled = (ActiveTextBox != null && Clipboard.ContainsData(DataFormats.Text) && UIController.Current.ClipboardObjects == null) ||
-                (UIController.Current.ClipboardObjects?.Count > 0 && TreeHasFocus);
+            try
+            {
+                Enabled = (ActiveTextBox != null && Clipboard.ContainsData(DataFormats.Text) && UIController.Current.ClipboardObjects == null) ||
+                    (UIController.Current.ClipboardObjects?.Count > 0 && TreeHasFocus);
+            }
+            catch {
+                Enabled = false;
+            }
+
             base.OnUpdate(e);
         }
     }
