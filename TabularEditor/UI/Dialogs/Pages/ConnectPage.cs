@@ -60,7 +60,7 @@ namespace TabularEditor.UI.Dialogs.Pages
             try
             {
                 result.Connect(GetConnectionString());
-                Console.WriteLine(result.ServerMode);
+
                 // SharePoint mode seems to be an alias for Power BI mode starting from an update of Power BI some time in 2017:
                 if(result.ServerMode != Microsoft.AnalysisServices.ServerMode.Tabular && result.ServerMode != Microsoft.AnalysisServices.ServerMode.SharePoint)
                 {

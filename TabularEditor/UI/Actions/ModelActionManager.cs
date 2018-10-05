@@ -273,8 +273,9 @@ namespace TabularEditor.UI.Actions
             }, (s, m) => @"Show &dependencies...", true, Context.Table | Context.TableObject, Keys.F3));
 
             // Filter related...
-            Add(new Action((s, m) => s.DirectCount == 1, (s, m) => UIController.Current.ApplyFilter(":RelatedTables.Any(Name = \"" + s.Table.Name + "\")"), 
-                (s, m) => @"Filter &related", true, Context.Table));
+            // TODO
+            /*Add(new Action((s, m) => s.DirectCount == 1, (s, m) => UIController.Current.ApplyFilter(":RelatedTables.Any(Name = \"" + s.Table.Name + "\")"), 
+                (s, m) => @"Filter &related", true, Context.Table));*/
 
 
             // Script actions:

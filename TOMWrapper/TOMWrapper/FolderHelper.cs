@@ -50,6 +50,16 @@ namespace TabularEditor.TOMWrapper
             return obj.Model;
         }
 
+        public static IEnumerable<Folder> GetFolderStack(this IFolderObject folderObject, Culture culture)
+        {
+            var folder = folderObject.GetFolder(culture);
+            while(folder != null && folder.Name != "")
+            {
+                yield return folder;
+                folder = folder.GetFolder(culture);
+            }
+        }
+
         public static Folder GetFolder(this IFolderObject folderObject, Culture culture)
         {
             var df = folderObject.GetDisplayFolder(culture);

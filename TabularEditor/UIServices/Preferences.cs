@@ -17,9 +17,9 @@ namespace TabularEditor.UIServices
 {
     public enum SearchResultOption
     {
-        Flat,
-        ByParent,
-        ByChild
+        ByParent = 1,
+        ByChild = 2,
+        Flat = 3
     }
 
     public class Preferences

@@ -43,7 +43,7 @@ namespace TabularEditor.UI
 
                 TreeModel.Options = options;
 
-                InternalApplyFilter("");
+                //InternalApplyFilter("");
                 UI.FormMain.UpdateTreeUIButtons();
                 TreeModel.EndUpdate();
                 node = UI.TreeView.FindNodeByTag(obj);
@@ -127,6 +127,8 @@ namespace TabularEditor.UI
 
         private void Tree_Init()
         {
+            FilterMode = (FilterMode)Preferences.Current.View_SearchResults;
+
             // Set up custom node controls:
             UI.TreeView.NodeControls.Insert(0, new TreeViewAdvExtension.NodeArrow { ParentColumn = UI.TreeView.Columns[0] });
             UI.TreeView.NodeControls.Insert(1, new TabularIcon { Images = FormMain.Singleton.tabularTreeImages.Images, ParentColumn = UI.TreeView.Columns[0] });
@@ -297,11 +299,12 @@ namespace TabularEditor.UI
 
             for (int i = 1; i < UI.TreeView.Columns.Count; i++)
             {
-                UI.TreeView.Columns[i].IsVisible = (showInfoColumns && UI.TreeView.Columns[i] != UI.FormMain._colTable) || LinqMode;
+                UI.TreeView.Columns[i].IsVisible = showInfoColumns && 
+                    (UI.TreeView.Columns[i] != UI.FormMain._colTable || FilterMode == FilterMode.Flat);
             }
 
-            UI.TreeView.UseColumns = showInfoColumns || LinqMode;
-            UI.TreeView.FullRowSelect = showInfoColumns || LinqMode;
+            UI.TreeView.UseColumns = showInfoColumns;
+            UI.TreeView.FullRowSelect = showInfoColumns;
         }
 
         #region TreeView events
@@ -417,20 +420,49 @@ namespace TabularEditor.UI
 
         private LogicalTreeOptions CurrentOptions = LogicalTreeOptions.Default;
 
-        public void ApplyFilter(string filter)
+        /*public void ApplyFilter(string filter)
         {
             UI.FormMain.txtFilter.Text = filter;
             UI.FormMain.actToggleFilter.Checked = !string.IsNullOrEmpty(filter);
             InternalApplyFilter(filter);
         }
 
-        private string CurrentFilter;
+
+        private string CurrentFilter;*/
+
+        public void SetFilterMode(FilterMode mode)
+        {
+            if (TreeModel == null) return;
+            FilterMode = mode;
+            if (FilterEnabled)
+            {
+                TreeModel.FilterMode = mode;
+                TreeModel.OnStructureChanged();
+
+                UI.FormMain._colTable.IsVisible = TreeModel.FilterMode == FilterMode.Flat && UI.TreeView.UseColumns;
+            } else
+            {
+                UI.FormMain._colTable.IsVisible = false;
+            }
+        }
+
+        public FilterMode FilterMode = FilterMode.Parent;
+        public bool FilterEnabled;
+
         private void InternalApplyFilter(string filter)
         {
+            FilterEnabled = !string.IsNullOrEmpty(filter);
+            if (UI.FormMain._colTable.IsVisible) UI.FormMain._colTable.IsVisible = false;
+            TreeModel.Filter = filter;
+            TreeModel.FilterMode = FilterMode;
+            TreeModel.OnStructureChanged();
+            
+            /*
             // Regular name filtering:
             if (string.IsNullOrEmpty(filter) || !filter.StartsWith(":"))
             {
                 TreeModel.Filter = filter;
+                TreeModel.FilterMode = FilterMode.Parent;
             }
 
             // LINQ filter (filter string starts with ":"):
@@ -444,7 +476,7 @@ namespace TabularEditor.UI
                 DisableLinqMode();
             }
 
-            CurrentFilter = filter;
+            CurrentFilter = filter;*/
         }
 
         public void SetDisplayOptions(bool showHidden, bool showDisplayFolders, bool showColumns, 
@@ -473,7 +505,7 @@ namespace TabularEditor.UI
             InternalApplyFilter(filter);
         }
 
-        private void EnableLinqMode(string filter)
+        /*private void EnableLinqMode(string filter)
         {
             if (!LinqMode)
             {
@@ -503,6 +535,6 @@ namespace TabularEditor.UI
                 UI.TreeView.Root.Children[0].Expand(); // TODO: Expand same as before
         }
 
-        private bool LinqMode = false;
+        private bool LinqMode = false;*/
     }
 }

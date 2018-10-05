@@ -14,12 +14,19 @@ using TabularEditor.TreeViewAdvExtension;
 
 namespace TabularEditor
 {
+    public enum FilterMode
+    {
+        Parent = 1,
+        Child = 2,
+        Flat = 3
+    }
+
     public class TabularUITree : TabularTree, ITreeModel
     {
 
         public TreeViewAdv TreeView { get; set; }
 
-        private string linqFilter;
+        /*private string linqFilter;
         public string LinqFilter
         {
             get
@@ -48,10 +55,11 @@ namespace TabularEditor
 
                 OnStructureChanged();
             }
-        }
+        }*/
+
         public long FilterExecutionTime { get; private set; }
-        public int FilterResultCount => FilterItems.Count;
-        bool LinqMode => !string.IsNullOrEmpty(linqFilter);
+        public int FilterResultCount => 0;  //FilterItems.Count;
+        //bool LinqMode => !string.IsNullOrEmpty(linqFilter);
 
         public override void OnNodesChanged()
         {
@@ -60,7 +68,7 @@ namespace TabularEditor
         }
 
         public TabularUITree(TabularModelHandler handler) : base(handler) { }
-        public List<ITabularNamedObject> FilterItems = new List<ITabularNamedObject>();
+        //public List<ITabularNamedObject> FilterItems = new List<ITabularNamedObject>();
 
         public virtual IEnumerable GetChildren(TreePath treePath)
         {
@@ -70,9 +78,9 @@ namespace TabularEditor
 
             if (treePath.IsEmpty())
             {
-                if (LinqMode)
+                if (!string.IsNullOrEmpty(Filter) && FilterMode == FilterMode.Flat)
                 {
-                    return FilterItems;
+                    return GetAllItems().Where(child => SatisfiesFilterCriteria(child));
                 }
                 else
                 {
@@ -85,13 +93,130 @@ namespace TabularEditor
             }
             else
             {
-                return GetChildren(treePath.LastNode as ITabularObjectContainer);
+                var container = treePath.LastNode as ITabularObjectContainer;
+                return (string.IsNullOrEmpty(Filter) || FilterMode == FilterMode.Flat) ? GetChildren(container) : GetChildrenFilteredLocal(container);
             }
 
             return items;
         }
 
-        private IEnumerable<ITabularNamedObject> Linq(IEnumerable collection, Type type)
+        private IEnumerable GetChildrenFilteredLocal(ITabularObjectContainer container)
+        {
+            return GetChildren(container).Where(child => VisibleInTreeLocal(child));
+        }
+
+        private IEnumerable<ITabularNamedObject> GetAllItems()
+        {
+            yield return Model;
+            foreach (var ds in Model.DataSources) yield return ds;
+            foreach (var rel in Model.Relationships) yield return rel;
+            foreach (var expr in Model.Expressions) yield return expr;
+            foreach (var role in Model.Roles) yield return role;
+            foreach (var table in Model.Tables) yield return table;
+            foreach (var measure in Model.AllMeasures) yield return measure;
+            foreach (var col in Model.AllColumns) yield return col;
+            foreach (var hier in Model.AllHierarchies) yield return hier;
+            foreach (var part in Model.AllPartitions) yield return part;
+            foreach (var lev in Model.AllLevels) yield return lev;
+            foreach (var trans in Model.Cultures) yield return trans;
+            foreach (var persp in Model.Perspectives) yield return persp;
+        }
+
+        private bool SatisfiesFilterCriteria(ITabularNamedObject obj)
+        {
+            if (_useWildcardSearch) return obj.Name.ToUpperInvariant().EqualsWildcard(_filterUpper);
+            else if (_useLinqSearch) return SatisfiesLinq(obj);
+            else return obj.Name.ToUpperInvariant().Contains(_filterUpper);
+        }
+
+        private bool VisibleInTreeLocal(ITabularNamedObject obj)
+        {
+            switch(FilterMode)
+            {
+                case FilterMode.Flat:
+                    return SatisfiesFilterCriteria(obj);
+
+                case FilterMode.Parent:
+                    // All table objects are shown if the table itself satisfies the criteria:
+                    var tableObject = obj as ITabularTableObject;
+                    if (tableObject != null && SatisfiesFilterCriteria(tableObject.Table)) return true;
+
+                    // Measures, hierarchies and columns are only shown if any ancestor folder satisfies the criteria:
+                    if (obj.ObjectType == ObjectType.Measure || obj.ObjectType == ObjectType.Hierarchy || obj.ObjectType == ObjectType.Column)
+                        return (obj as IFolderObject).GetFolderStack(Culture).Any(f => SatisfiesFilterCriteria(f));
+
+                    // Folders are shown when one of the following is true:
+                    //  - The folder satisfies the criteria itself,
+                    //  - Any ancestor folder satisfies the criteria
+                    //  - The folder contains subfolders that satisfy the criteria
+                    if (obj.ObjectType == ObjectType.Folder)
+                        return SatisfiesFilterCriteria(obj)
+                            || (obj as IFolderObject).GetFolderStack(Culture).Any(f => SatisfiesFilterCriteria(f))
+                            || GetChildren(obj as ITabularObjectContainer).OfType<Folder>().Any(f => VisibleInTreeLocal(f));
+
+                    // Parent objects are shown if they satisfy the filter criteria:
+                    if (obj.ObjectType == ObjectType.Table)
+                        return SatisfiesFilterCriteria(obj) || GetChildren(obj as ITabularObjectContainer).OfType<Folder>().Any(f => VisibleInTreeLocal(f));
+
+                    // Group objects are shown if they have any visible children:
+                    if (obj.ObjectType == ObjectType.Group) return GetChildren(obj as ITabularObjectContainer).Any(child => VisibleInTreeLocal(child));
+
+                    // All other objects must satisfy the filter criteria:
+                    return SatisfiesFilterCriteria(obj);
+
+                case FilterMode.Child:
+                    // Parent objects are shown if they contain visible children:
+                    if (obj.ObjectType == ObjectType.Folder || obj.ObjectType == ObjectType.Table || obj.ObjectType == ObjectType.Group)
+                        return GetChildren(obj as ITabularObjectContainer).Any(child => VisibleInTreeLocal(child));
+                    
+                    // Relationships are shown if a column at either end satisfies the criteria:
+                    if (obj.ObjectType == ObjectType.Relationship)
+                    {
+                        var rel = obj as SingleColumnRelationship;
+                        return (rel.FromColumn != null && SatisfiesFilterCriteria(rel.FromColumn)) || (rel.ToColumn != null && SatisfiesFilterCriteria(rel.ToColumn));
+                    }
+
+                    if (obj.ObjectType == ObjectType.PartitionCollection)
+                        return GetChildren(obj as ITabularObjectContainer).Any(child => VisibleInTreeLocal(child));
+
+                    // All other objects are shown if they satisfy the filter criteria:
+                    return SatisfiesFilterCriteria(obj);
+                default:
+                    return true;
+            }
+        }
+
+        private string _filterUpper;
+        private string _filter;
+        private string _linqFilter;
+        private bool _useWildcardSearch;
+        private bool _useLinqSearch;
+        public string Filter
+        {
+            get { return _filter; }
+            set {
+                if (value == _filter) return;
+                _filter = value;
+                if(value != null)
+                {
+                    _filterUpper = _filter.ToUpperInvariant();
+                    _useLinqSearch = _filter.StartsWith(":");
+                    _linqFilter = _useLinqSearch ? _filter.Substring(1) : null;
+                    _useWildcardSearch = !_useLinqSearch && (_filter.Contains('*') || _filter.Contains('?'));
+                    if (_useLinqSearch) PrepareDynamicLinqLambdas();
+                }
+                else
+                {
+                    _filterUpper = null;
+                    _linqFilter = null;
+                    _useLinqSearch = false;
+                    _useWildcardSearch = false;
+                }
+            }
+        }
+        public FilterMode FilterMode { get; set; } = FilterMode.Parent;
+
+        /*private IEnumerable<ITabularNamedObject> Linq(IEnumerable collection, Type type)
         {
             try
             {
@@ -104,6 +229,98 @@ namespace TabularEditor
             }
             catch { }
             return Enumerable.Empty<ITabularNamedObject>();
+        }*/
+
+        private Func<Model, bool> LF_Model;
+        private Func<Table, bool> LF_Table;
+        private Func<Measure, bool> LF_Measure;
+        private Func<Hierarchy, bool> LF_Hierarchy;
+        private Func<Level, bool> LF_Level;
+        private Func<SingleColumnRelationship, bool> LF_Relationship;
+        private Func<Perspective, bool> LF_Perspective;
+        private Func<Culture, bool> LF_Culture;
+        private Func<Partition, bool> LF_Partition;
+        private Func<ProviderDataSource, bool> LF_ProviderDataSource;
+        private Func<StructuredDataSource, bool> LF_StructuredDataSource;
+        private Func<DataColumn, bool> LF_DataColumn;
+        private Func<CalculatedColumn, bool> LF_CalculatedColumn;
+        private Func<CalculatedTableColumn, bool> LF_CalculatedTableColumn;
+        private Func<CalculatedTable, bool> LF_CalculatedTable;
+        private Func<KPI, bool> LF_KPI;
+        private Func<Variation, bool> LF_Variation;
+        private Func<NamedExpression, bool> LF_NamedExpression;
+        private Func<ModelRole, bool> LF_ModelRole;
+        private Func<Folder, bool> LF_Folder;
+
+        private void PrepareDynamicLinqLambda<T>(ref Func<T, bool> lf)
+        {
+                lf = null;
+                try
+                {
+                    lf = System.Linq.Dynamic.DynamicExpression.ParseLambda<T, bool>(_linqFilter).Compile();
+                }
+                catch { }
+        }
+        
+
+        private void PrepareDynamicLinqLambdas()
+        {
+            PrepareDynamicLinqLambda(ref LF_Model);
+            PrepareDynamicLinqLambda(ref LF_Table);
+            PrepareDynamicLinqLambda(ref LF_Measure);
+            PrepareDynamicLinqLambda(ref LF_Hierarchy);
+            PrepareDynamicLinqLambda(ref LF_Level);
+            PrepareDynamicLinqLambda(ref LF_Relationship);
+            PrepareDynamicLinqLambda(ref LF_Perspective);
+            PrepareDynamicLinqLambda(ref LF_Culture);
+            PrepareDynamicLinqLambda(ref LF_Partition);
+            PrepareDynamicLinqLambda(ref LF_ProviderDataSource);
+            PrepareDynamicLinqLambda(ref LF_DataColumn);
+            PrepareDynamicLinqLambda(ref LF_CalculatedColumn);
+            PrepareDynamicLinqLambda(ref LF_CalculatedTable);
+            PrepareDynamicLinqLambda(ref LF_CalculatedTableColumn);
+            PrepareDynamicLinqLambda(ref LF_KPI);
+            PrepareDynamicLinqLambda(ref LF_StructuredDataSource);
+            PrepareDynamicLinqLambda(ref LF_Variation);
+            PrepareDynamicLinqLambda(ref LF_NamedExpression);
+            PrepareDynamicLinqLambda(ref LF_ModelRole);
+            PrepareDynamicLinqLambda(ref LF_Folder);
+        }
+
+        private bool SatisfiesLinq(ITabularNamedObject obj)
+        {
+            switch (obj.ObjectType)
+            {
+                case ObjectType.Model: return LF_Model == null ? false : LF_Model(obj as Model);
+                case ObjectType.Table:
+                    if (obj is CalculatedTable) return LF_CalculatedTable == null ? false : LF_CalculatedTable(obj as CalculatedTable);
+                    if (obj is Table) return LF_Table == null ? false : LF_Table(obj as Table);
+                    return false;
+                case ObjectType.Measure: return LF_Measure == null ? false : LF_Measure(obj as Measure);
+                case ObjectType.Hierarchy: return LF_Hierarchy == null ? false : LF_Hierarchy(obj as Hierarchy);
+                case ObjectType.Level: return LF_Level == null ? false : LF_Level(obj as Level);
+                case ObjectType.Relationship: return LF_Relationship == null ? false : LF_Relationship(obj as SingleColumnRelationship);
+                case ObjectType.Perspective: return LF_Perspective == null ? false : LF_Perspective(obj as Perspective);
+                case ObjectType.Culture: return LF_Culture == null ? false : LF_Culture(obj as Culture);
+                case ObjectType.Partition: return LF_Partition == null ? false : LF_Partition(obj as Partition);
+                case ObjectType.DataSource:
+                    if (obj is ProviderDataSource) return LF_ProviderDataSource == null ? false : LF_ProviderDataSource(obj as ProviderDataSource);
+                    if (obj is StructuredDataSource) return LF_StructuredDataSource == null ? false : LF_StructuredDataSource(obj as StructuredDataSource);
+                    return false;
+                case ObjectType.Column:
+                    if (obj is DataColumn) return LF_DataColumn == null ? false : LF_DataColumn(obj as DataColumn);
+                    if (obj is CalculatedColumn) return LF_CalculatedColumn == null ? false : LF_CalculatedColumn(obj as CalculatedColumn);
+                    if (obj is CalculatedTableColumn) return LF_CalculatedTableColumn == null ? false : LF_CalculatedTableColumn(obj as CalculatedTableColumn);
+                    return false;
+                case ObjectType.KPI: return LF_KPI == null ? false : LF_KPI(obj as KPI);
+                case ObjectType.Variation: return LF_Variation == null ? false : LF_Variation(obj as Variation);
+                case ObjectType.Expression: return LF_NamedExpression == null ? false : LF_NamedExpression(obj as NamedExpression);
+                case ObjectType.Role: return LF_ModelRole == null ? false : LF_ModelRole(obj as ModelRole);
+                case ObjectType.Folder: return LF_Folder == null ? false : LF_Folder(obj as Folder);
+                default:
+                    return false;
+            }
+
         }
 
         TreeDragInformation DragInfo;
@@ -126,7 +343,7 @@ namespace TabularEditor
         /// <returns></returns>
         public virtual bool CanDrop(TreeNodeAdv[] sourceNodes, TreeNodeAdv targetNode, NodePosition position)
         {
-            if (sourceNodes == null || sourceNodes.Length == 0) return false;
+            if (FilterMode == FilterMode.Flat || sourceNodes == null || sourceNodes.Length == 0) return false;
             DragInfo = TreeDragInformation.FromNodes(sourceNodes, targetNode, position);
 
             // Must not drop nodes on themselves or any of their children:
@@ -293,7 +510,12 @@ namespace TabularEditor
             }
             else
             {
-                NodesRemoved?.Invoke(this, new TreeModelEventArgs(GetPath(parent), children));
+                if (!string.IsNullOrEmpty(Filter) && FilterMode == FilterMode.Flat)
+                {
+                    StructureChanged?.Invoke(this, new TreePathEventArgs());
+                }
+                else
+                    NodesRemoved?.Invoke(this, new TreeModelEventArgs(GetPath(parent), children));
             }
         }
 
@@ -306,7 +528,12 @@ namespace TabularEditor
             }
             else
             {
-                NodesInserted?.Invoke(this, new TreeModelEventArgs(GetPath(parent), children));
+                if (!string.IsNullOrEmpty(Filter) && FilterMode == FilterMode.Flat)
+                {
+                    StructureChanged?.Invoke(this, new TreePathEventArgs());
+                }
+                else
+                    NodesInserted?.Invoke(this, new TreeModelEventArgs(GetPath(parent), children));
             }
         }
 
@@ -333,7 +560,14 @@ namespace TabularEditor
                 return;
             }
             else
-                StructureChanged?.Invoke(this, new TreePathEventArgs(path));
+            {
+                if(!string.IsNullOrEmpty(Filter) && FilterMode == FilterMode.Flat)
+                {
+                    StructureChanged?.Invoke(this, new TreePathEventArgs());
+                }
+                else
+                    StructureChanged?.Invoke(this, new TreePathEventArgs(path));
+            }
 
         }
 

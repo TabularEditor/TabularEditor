@@ -220,8 +220,6 @@ namespace TabularEditor.UI
         {
             if (!ExpressionEditor_IsDax) return;
 
-            Console.WriteLine("Do syntax highlight");
-
             // For short DAX expressions, do synchronous syntax highlighting. Otherwise, do asynchrounous:
             if (UI.ExpressionEditor.Text.Length < 2000) currentTokens = ExpressionParser.SyntaxHighlight(UI.ExpressionEditor);
             else syntaxHighlightTimer.Enabled = true;

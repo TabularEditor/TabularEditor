@@ -220,6 +220,7 @@
     <Compile Include="TextServices\CSharpLexer.cs" />
     <Compile Include="TextServices\ExpressionParser.cs" />
     <Compile Include="UIServices\ModelTelemetry.cs" />
+    <Compile Include="UIServices\WildcardMatch.cs" />
     <Compile Include="UI\Actions\CreateRelationshipAction.cs" />
     <Compile Include="UI\Actions\RefreshAction.cs" />
     <Compile Include="UI\Actions\SelectAllAction.cs">

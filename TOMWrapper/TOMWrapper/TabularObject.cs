@@ -25,7 +25,7 @@ namespace TabularEditor.TOMWrapper
     /// <summary>
     /// TabularObjects that can contain other objects should use this interface, to allow easy enumerator of child objects.
     /// </summary>
-    public interface ITabularObjectContainer
+    public interface ITabularObjectContainer: ITabularNamedObject
     {
         IEnumerable<ITabularNamedObject> GetChildren();
     }
