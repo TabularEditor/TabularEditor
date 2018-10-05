@@ -37,6 +37,7 @@ namespace TabularEditor.UI
             {
                 var df = new DeployingForm();
                 var error = false;
+                string message = "";
                 df.DeployAction = () =>
                 {
                     try
@@ -46,11 +47,17 @@ namespace TabularEditor.UI
                     catch (Exception ex)
                     {
                         error = true;
+                        message = ex.Message;
                         df.ThreadClose();
-                        MessageBox.Show(ex.Message, "Error occured during deployment", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 };
                 df.ShowDialog();
+
+                if(error)
+                {
+                    MessageBox.Show(message, "Error occured during deployment", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
                 UI.StatusLabel.Text = error ? "Deploy failed!" : "Deploy succeeded!";
             }
         }
