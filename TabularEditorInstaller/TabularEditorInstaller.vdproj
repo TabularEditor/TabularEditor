@@ -528,7 +528,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:TOMWrapper, Version=2.5.6852.25148, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:TOMWrapper, Version=2.5.6852.37228, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_551E7BAF229097D063E16FDA0F4E294E"
@@ -941,15 +941,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Tabular Editor"
-        "ProductCode" = "8:{8BBB57FE-A5E0-4C62-85E3-181D443FBB19}"
-        "PackageCode" = "8:{A27431EA-BEC5-4EB6-A577-48BD66A808A5}"
+        "ProductCode" = "8:{A75A1E54-FDE2-4009-9907-6E8F083BA5F7}"
+        "PackageCode" = "8:{DEB35BBD-3393-4D63-B6E0-7B6C29D99ABF}"
         "UpgradeCode" = "8:{E20734F5-CD2A-4A76-AB20-014819FCDE35}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.1.5"
+        "ProductVersion" = "8:1.1.6"
         "Manufacturer" = "8:Daniel Otykier"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:https://github.com/otykier/TabularEditor/issues"
@@ -1841,7 +1841,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_93B74A1938734E17BA0AFB1BEC2AE449"
             {
-            "SourcePath" = "8:..\\TabularEditor\\obj\\Debug\\TabularEditor.exe"
+            "SourcePath" = "8:..\\TabularEditor\\obj\\Release\\TabularEditor.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_86B6DEA1587144389D74191CBF86D6D0"
