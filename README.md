@@ -3,10 +3,10 @@ Tabular Editor is a tool that lets you easily manipulate and manage measures, ca
 
 ![](https://raw.githubusercontent.com/otykier/TabularEditor/master/Documentation/Main%20UI%202_1.png)
 
-* [Download Tabular Editor v. 2.7.3 for SQL Server 2016, 2017 or Azure Analysis Services](https://github.com/otykier/TabularEditor/releases/latest)
+* [Download Tabular Editor v. 2.7.4 for SQL Server 2016, 2017 or Azure Analysis Services](https://github.com/otykier/TabularEditor/releases/latest)
 
 ### Prerequisites
-Tabular Editor uses the [Tabular Object Model](https://msdn.microsoft.com/en-us/library/mt706505.aspx) to load and save metadata to and from Model.bim files or existing databases. For this reason, make sure you have the latest AMO libraries available before installing Tabular Editor. They can be downloaded from the [Azure Analysis Services Client Libraries](https://docs.microsoft.com/en-us/azure/analysis-services/analysis-services-data-providers) page (Click "AMO" version 15.1.0 or newer). The .msi installer for Tabular Editor includes these libraries.
+Tabular Editor uses the [Tabular Object Model](https://msdn.microsoft.com/en-us/library/mt706505.aspx) to load and save metadata to and from Model.bim files or existing databases. For this reason, make sure you have the latest AMO libraries available before installing Tabular Editor. They can be downloaded from the [Azure Analysis Services Client Libraries](https://docs.microsoft.com/en-us/azure/analysis-services/analysis-services-data-providers) page (Click "AMO" version 15.5.0 or newer). The .msi installer for Tabular Editor includes these libraries.
 
 ## Introduction
 View the article on www.kapacity.dk/tabular-editor for a general presentation of the tool and the motivations behind it.
@@ -36,6 +36,7 @@ View the article on www.kapacity.dk/tabular-editor for a general presentation of
 * **2018-04-18** [Version 2.7.1](https://github.com/otykier/TabularEditor/releases/tag/2.7.1) released
 * **2018-06-15** [Version 2.7.2](https://github.com/otykier/TabularEditor/releases/tag/2.7.2) released
 * **2018-08-27** [Version 2.7.3](https://github.com/otykier/TabularEditor/releases/tag/2.7.3) released
+* **2018-10-05** [Version 2.7.4](https://github.com/otykier/TabularEditor/releases/tag/2.7.4) released
 
 ## Roadmap
 
