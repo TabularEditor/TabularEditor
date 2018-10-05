@@ -68,7 +68,7 @@ namespace TabularEditor.TOMWrapper
         }
         private LogicalTreeOptions _options;
 
-        public string Filter
+        /*public string Filter
         {
             get
             {
@@ -83,7 +83,7 @@ namespace TabularEditor.TOMWrapper
                 OnStructureChanged();
             }
         }
-        private string _filter;
+        private string _filter;*/
 
         public Culture Culture
         {
@@ -253,14 +253,14 @@ namespace TabularEditor.TOMWrapper
         {
             if (table.SourceType != TOM.PartitionSourceType.Calculated)
             {
-                // Don't show the "Partitions" node below tables, when none of the partitions match the filter
+                /*// Don't show the "Partitions" node below tables, when none of the partitions match the filter
                 if (!string.IsNullOrEmpty(Filter))
                 {
                     // Match on table name:
                     if (table.Name.IndexOf(Filter, StringComparison.InvariantCultureIgnoreCase) >= 0) yield return table.Partitions;
                     else if (table.Partitions.Any(p => p.Name.IndexOf(Filter, StringComparison.InvariantCultureIgnoreCase) >= 0)) yield return table.Partitions;
                 }
-                else
+                else*/
                     yield return table.Partitions;
             }
 
@@ -287,7 +287,7 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// This method encapsulates the logic of how the tree representation of the tabular model should be structured
         /// </summary>
-        protected IEnumerable GetChildren(ITabularObjectContainer tabularObject)
+        protected IEnumerable<ITabularNamedObject> GetChildren(ITabularObjectContainer tabularObject)
         {
             IEnumerable<ITabularNamedObject> result = Enumerable.Empty<ITabularNamedObject>();
 
@@ -347,7 +347,7 @@ namespace TabularEditor.TOMWrapper
             // Don't show objects not in the current perspective:
             if (Perspective != null && tabularObject is ITabularPerspectiveObject && !(tabularObject as ITabularPerspectiveObject).InPerspective[Perspective]) return false;
 
-            // Hide items not matching the filter text:
+            /*// Hide items not matching the filter text:
             if (!string.IsNullOrEmpty(Filter))
             {
                 switch (tabularObject.ObjectType)
@@ -370,7 +370,7 @@ namespace TabularEditor.TOMWrapper
                         if (tabularObject.Name.IndexOf(Filter, StringComparison.InvariantCultureIgnoreCase) == -1) return false;
                         break;
                 }
-            }
+            }*/
 
             // Type dependent display:
             switch(tabularObject.ObjectType)
@@ -383,7 +383,7 @@ namespace TabularEditor.TOMWrapper
                     return (Options.HasFlag(LogicalTreeOptions.Hierarchies));
             }
 
-            // Always hide empty tables when filtering, unless the table name matches the filter criteria
+            /*// Always hide empty tables when filtering, unless the table name matches the filter criteria
             if (tabularObject is Table)
             {
                 var table = tabularObject as Table;
@@ -400,7 +400,7 @@ namespace TabularEditor.TOMWrapper
             if (tabularObject is LogicalGroup)
             {
                 return string.IsNullOrEmpty(Filter) || (tabularObject as LogicalGroup).GetChildren().Any(o => VisibleInTree(o));
-            }
+            }*/
 
             // All other objects should be visible by default:
             return true;

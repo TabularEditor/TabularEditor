@@ -151,7 +151,7 @@ namespace TabularEditor.UI
             LastDeploymentDb = null;
 
             UI.FormMain.actToggleFilter.Checked = false;
-            DisableLinqMode();
+            //DisableLinqMode();
 
             Handler.UndoManager.UndoStateChanged += UndoManager_UndoActionAdded;
             Handler.ObjectChanging += UIController_ObjectChanging;
@@ -165,10 +165,10 @@ namespace TabularEditor.UI
 
             Forward = new Stack<IExpressionObject>();
             Back = new Stack<IExpressionObject>();
-            CurrentFilter = null;
+            //CurrentFilter = null;
 
             ShowSelectionStatus = false;
-            TreeModel = new TabularUITree(Handler) { Options = CurrentOptions, TreeView = UI.TreeView };
+            TreeModel = new TabularUITree(Handler) { Options = CurrentOptions, TreeView = UI.TreeView, FilterMode = FilterMode };
             TreeModel.UpdateComplete += Tree_UpdateComplete;
 
             UI.TreeView.Model = TreeModel;

@@ -722,9 +722,9 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             
         }
 
-        private void DisableIfLinqMode(object sender, UpdateExEventArgs e)
+        private void DisableIfFlatResult(object sender, UpdateExEventArgs e)
         {
-            e.Enabled = !LinqMode;
+            e.Enabled = !UI.FilterEnabled || UI.FilterMode != FilterMode.Flat;
         }
 
         private void nodeTextBox5_ValueNeeded(object sender, Aga.Controls.Tree.NodeControls.NodeControlValueEventArgs e)
@@ -785,12 +785,18 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             actSearchParent.Checked = actSearchParent == sender;
             actSearchFlat.Checked = actSearchFlat == sender;
             Preferences.Current.View_SearchResults = actSearchChild.Checked ? SearchResultOption.ByChild
-                : (actSearchParent.Checked ? SearchResultOption.ByParent : SearchResultOption.Flat); 
+                : (actSearchParent.Checked ? SearchResultOption.ByParent : SearchResultOption.Flat);
+            UI.SetFilterMode((FilterMode)Preferences.Current.View_SearchResults);
         }
 
         private void actGotoDef_Execute(object sender, EventArgs e)
         {
             UI.ExpressionEditor_GoToDefinition();
+        }
+
+        private void actSearchResultView_UpdateEx(object sender, UpdateExEventArgs e)
+        {
+            e.Enabled = actToggleFilter.Checked;
         }
     }
 }

@@ -73,9 +73,9 @@
             this.actSaveScript = new Crad.Windows.Forms.Actions.Action();
             this.actBack = new Crad.Windows.Forms.Actions.Action();
             this.actForward = new Crad.Windows.Forms.Actions.Action();
-            this.actSearchFlat = new Crad.Windows.Forms.Actions.Action();
-            this.actSearchParent = new Crad.Windows.Forms.Actions.Action();
-            this.actSearchChild = new Crad.Windows.Forms.Actions.Action();
+            this.actSearchFlat = new TabularEditor.UI.UIModelAction();
+            this.actSearchParent = new TabularEditor.UI.UIModelAction();
+            this.actSearchChild = new TabularEditor.UI.UIModelAction();
             this.toolStripButton8 = new System.Windows.Forms.ToolStripButton();
             this.fileToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.fromDBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -333,7 +333,6 @@
             this.actToggleHidden.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D5)));
             this.actToggleHidden.Text = "&Hidden Objects";
             this.actToggleHidden.ToolTipText = "Show/hide hidden objects (Ctrl+5)";
-            this.actToggleHidden.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.DisableIfLinqMode);
             this.actToggleHidden.Execute += new System.EventHandler(this.actViewOptions_Execute);
             // 
             // actToggleOrderByName
@@ -346,7 +345,6 @@
             this.actToggleOrderByName.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F2)));
             this.actToggleOrderByName.Text = "Sort &alphabetically";
             this.actToggleOrderByName.ToolTipText = "Toggle alphabetical/metadata ordering of items (Ctrl+F2)";
-            this.actToggleOrderByName.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.DisableIfLinqMode);
             this.actToggleOrderByName.Execute += new System.EventHandler(this.actViewOptions_Execute);
             // 
             // actToggleMeasures
@@ -392,7 +390,6 @@
             this.actToggleInfoColumns.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F1)));
             this.actToggleInfoColumns.Text = "Meta&data Information";
             this.actToggleInfoColumns.ToolTipText = "Show/hide metadata information columns (Ctrl+F1)";
-            this.actToggleInfoColumns.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.DisableIfLinqMode);
             this.actToggleInfoColumns.Execute += new System.EventHandler(this.actToggleInfoColumns_Execute);
             // 
             // actToggleFilter
@@ -417,7 +414,7 @@
             this.actToggleAllObjectTypes.Text = "&Show All Object Types";
             this.actToggleAllObjectTypes.ToolTipText = "Show/hide all object types (perspectives, roles, data sources, etc.) in addition " +
     "to tables (Ctrl+F3)";
-            this.actToggleAllObjectTypes.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.DisableIfLinqMode);
+            this.actToggleAllObjectTypes.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.DisableIfFlatResult);
             this.actToggleAllObjectTypes.Execute += new System.EventHandler(this.actViewOptions_Execute);
             // 
             // actExpressionAcceptEdit
@@ -668,14 +665,18 @@
             this.actSearchFlat.Image = global::TabularEditor.Resources.FlatList_16x;
             this.actSearchFlat.Text = "Flat list";
             this.actSearchFlat.ToolTipText = "Display all search results in a flat list";
+            this.actSearchFlat.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.actSearchResultView_UpdateEx);
             this.actSearchFlat.Execute += new System.EventHandler(this.actSearch_Execute);
             // 
             // actSearchParent
             // 
+            this.actSearchParent.Checked = true;
             this.actSearchParent.CheckOnClick = true;
+            this.actSearchParent.CheckState = System.Windows.Forms.CheckState.Checked;
             this.actSearchParent.Image = global::TabularEditor.Resources.BranchRelationshipParent_16x;
             this.actSearchParent.Text = "Parent items";
             this.actSearchParent.ToolTipText = "Search for parent items and display results in a hierarchy";
+            this.actSearchParent.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.actSearchResultView_UpdateEx);
             this.actSearchParent.Execute += new System.EventHandler(this.actSearch_Execute);
             // 
             // actSearchChild
@@ -684,6 +685,7 @@
             this.actSearchChild.Image = global::TabularEditor.Resources.BranchRelationshipChild_16x;
             this.actSearchChild.Text = "Child items";
             this.actSearchChild.ToolTipText = "Search for child items and display results in a hierarchy";
+            this.actSearchChild.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.actSearchResultView_UpdateEx);
             this.actSearchChild.Execute += new System.EventHandler(this.actSearch_Execute);
             // 
             // toolStripButton8
@@ -1358,6 +1360,7 @@
             this.toolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton7.Name = "toolStripButton7";
             this.toolStripButton7.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton7.Tag = "3";
             this.toolStripButton7.Text = "Flat list";
             this.toolStripButton7.ToolTipText = "Display all search results in a flat list";
             // 
@@ -1371,6 +1374,7 @@
             this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton4.Name = "toolStripButton4";
             this.toolStripButton4.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton4.Tag = "2";
             this.toolStripButton4.Text = "Child items";
             this.toolStripButton4.ToolTipText = "Search for child items and display results in a hierarchy";
             // 
@@ -1378,12 +1382,15 @@
             // 
             actionsMain.SetAction(this.toolStripButton5, this.actSearchParent);
             this.toolStripButton5.AutoToolTip = false;
+            this.toolStripButton5.Checked = true;
             this.toolStripButton5.CheckOnClick = true;
+            this.toolStripButton5.CheckState = System.Windows.Forms.CheckState.Checked;
             this.toolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.toolStripButton5.Image = global::TabularEditor.Resources.BranchRelationshipParent_16x;
             this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton5.Name = "toolStripButton5";
             this.toolStripButton5.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton5.Tag = "1";
             this.toolStripButton5.Text = "Parent items";
             this.toolStripButton5.ToolTipText = "Search for parent items and display results in a hierarchy";
             // 
@@ -1510,9 +1517,9 @@
             this.toolStripSeparator4,
             this.txtFilter,
             this.tbApplyFilter,
-            this.toolStripButton7,
+            this.toolStripButton5,
             this.toolStripButton4,
-            this.toolStripButton5});
+            this.toolStripButton7});
             this.toolStrip2.Location = new System.Drawing.Point(0, 24);
             this.toolStrip2.Name = "toolStrip2";
             this.toolStrip2.Size = new System.Drawing.Size(1067, 25);
@@ -2723,9 +2730,9 @@
         private System.Windows.Forms.ToolStripButton toolStripButton4;
         private System.Windows.Forms.ToolStripButton toolStripButton5;
         private System.Windows.Forms.ToolStripButton toolStripButton7;
-        private Crad.Windows.Forms.Actions.Action actSearchFlat;
-        private Crad.Windows.Forms.Actions.Action actSearchParent;
-        private Crad.Windows.Forms.Actions.Action actSearchChild;
+        private UI.UIModelAction actSearchFlat;
+        private UI.UIModelAction actSearchParent;
+        private UI.UIModelAction actSearchChild;
         private System.Windows.Forms.ToolStripButton btnForward;
         private System.Windows.Forms.ToolStripButton btnBack;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
