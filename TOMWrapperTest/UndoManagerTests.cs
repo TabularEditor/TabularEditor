@@ -15,7 +15,6 @@ namespace TabularEditor.TOMWrapper.Tests
         public void BatchActionTest()
         {
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
-            handler.Tree = new MockTree(handler.Model);
 
             Assert.AreEqual(0, handler.UndoManager.BatchDepth);
             Assert.AreEqual(0, handler.UndoManager.UndoSize);

@@ -295,8 +295,6 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             // Load model:
             cw.WriteLine("Loading model...");
 
-            h.Tree = new TOMWrapper.NullTree();
-
             if (!string.IsNullOrEmpty(script))
             {
                 cw.WriteLine("Executing script...");

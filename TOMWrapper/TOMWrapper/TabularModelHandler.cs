@@ -331,7 +331,7 @@ namespace TabularEditor.TOMWrapper
             {
                 if(_tree == null)
                 {
-                    _tree = new NullTree();
+                    _tree = new NullTree(this);
                 }
                 return _tree;
             }

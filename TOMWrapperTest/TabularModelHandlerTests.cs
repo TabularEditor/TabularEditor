@@ -8,29 +8,6 @@ using System.Threading.Tasks;
 
 namespace TabularEditor.TOMWrapper.Tests
 {
-    public class MockTree : TabularTree
-    {
-        public MockTree(Model model) : base(model)
-        {
-        }
-
-        public override void OnNodesChanged(ITabularObject nodeItem)
-        {
-        }
-
-        public override void OnNodesInserted(ITabularObject parent, params ITabularObject[] children)
-        {
-        }
-
-        public override void OnNodesRemoved(ITabularObject parent, params ITabularObject[] children)
-        {
-        }
-
-        public override void OnStructureChanged(ITabularNamedObject obj = null)
-        {
-        }
-    }
-
     [TestClass()]
     public class TabularModelHandlerTests
     {
@@ -38,7 +15,6 @@ namespace TabularEditor.TOMWrapper.Tests
         public void ConnectTest()
         {
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
-            handler.Tree = new MockTree(handler.Model);
 
             Assert.AreEqual("AdventureWorks", handler.Model.Database.Name);
         }
@@ -47,7 +23,6 @@ namespace TabularEditor.TOMWrapper.Tests
         public void DuplicateTest()
         {
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
-            handler.Tree = new MockTree(handler.Model);
 
             var c = handler.Model.Tables["Date"].AddCalculatedColumn();
             c.Clone("Cloned Column");
@@ -67,7 +42,6 @@ namespace TabularEditor.TOMWrapper.Tests
         public void AddMeasureTest()
         {
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
-            handler.Tree = new MockTree(handler.Model);
             handler.Model.Tables["Internet Sales"].AddMeasure("TestMeasure", "SUM('Internet Sales'[Sales Amount])", "Test folder");
             handler.SaveDB();
 
@@ -83,7 +57,6 @@ namespace TabularEditor.TOMWrapper.Tests
         public void DeleteTableTest()
         {
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
-            handler.Tree = new MockTree(handler.Model);
             handler.Model.Tables["Currency"].Delete();
             handler.SaveDB();
 
@@ -97,7 +70,6 @@ namespace TabularEditor.TOMWrapper.Tests
         public void DeleteLevelTest()
         {
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
-            handler.Tree = new MockTree(handler.Model);
             handler.Model.Tables["Date"].Hierarchies["Calendar"].Levels["Quarter"].Delete();
             handler.SaveDB();
 
@@ -121,7 +93,6 @@ namespace TabularEditor.TOMWrapper.Tests
         public void DeleteMeasureTest()
         {
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
-            handler.Tree = new MockTree(handler.Model);
             handler.Model.Tables["Internet Sales"].Measures["Internet Total Sales"].Delete();
             handler.SaveDB();
 
@@ -137,7 +108,6 @@ namespace TabularEditor.TOMWrapper.Tests
         public void RenameHierarchyTest()
         {
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
-            handler.Tree = new MockTree(handler.Model);
             handler.Model.Tables["Date"].Hierarchies["Calendar"].Name = "Calendar Renamed";
             handler.SaveDB();
 
@@ -152,7 +122,6 @@ namespace TabularEditor.TOMWrapper.Tests
         public void DeleteHierarchyTest()
         {
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
-            handler.Tree = new MockTree(handler.Model);
             handler.Model.Tables["Date"].Hierarchies["Calendar"].Delete();
             handler.SaveDB();
 
@@ -167,7 +136,6 @@ namespace TabularEditor.TOMWrapper.Tests
         public void DeleteHierarchyAndLevelTest()
         {
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
-            handler.Tree = new MockTree(handler.Model);
             var hierarchy = handler.Model.Tables["Date"].Hierarchies["Calendar"];
             hierarchy.Delete();
             handler.SaveDB();
@@ -201,7 +169,6 @@ namespace TabularEditor.TOMWrapper.Tests
         public void CreateHierarchyTest()
         {
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
-            handler.Tree = new MockTree(handler.Model);
             var table = handler.Model.Tables["Employee"];
             table.AddHierarchy("Test Hierarchy", null, "Base Rate", "Birth Date", "Department Name");
             handler.SaveDB();
@@ -216,7 +183,6 @@ namespace TabularEditor.TOMWrapper.Tests
         public void DeleteTestPerspectives()
         {
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
-            handler.Tree = new MockTree(handler.Model);
             foreach (var p in handler.Model.Perspectives.ToList())
             {
                 if (p.Name.Contains("Test")) p.Delete();
@@ -231,7 +197,6 @@ namespace TabularEditor.TOMWrapper.Tests
             DeleteTestPerspectives();
 
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
-            handler.Tree = new MockTree(handler.Model);
 
             var m = handler.Model;
 
@@ -272,7 +237,6 @@ namespace TabularEditor.TOMWrapper.Tests
             DeleteTestPerspectives();
 
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
-            handler.Tree = new MockTree(handler.Model);
 
             var m = handler.Model;
 
@@ -337,7 +301,6 @@ namespace TabularEditor.TOMWrapper.Tests
         public void CultureTest()
         {
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
-            handler.Tree = new MockTree(handler.Model);
             var model = handler.Model;
 
             var measure = model.Tables["Reseller Sales"].Measures["Reseller Total Sales"];
