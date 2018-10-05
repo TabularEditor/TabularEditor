@@ -34,10 +34,10 @@ namespace TabularEditor.Dax
         public string DatabaseName { get; set; }
         public string DatabaseCompatibilityLevel { get; set; }
 
-        public DaxFormatterRequest()
+        public DaxFormatterRequest(bool useSemicolonsAsSeparators)
         {
-            this.ListSeparator = ',';
-            this.DecimalSeparator = '.';
+            this.ListSeparator = useSemicolonsAsSeparators ? ';' : ',';
+            this.DecimalSeparator = useSemicolonsAsSeparators ? ',' : '.';
 
             // Save caller app and version
             var assemblyName = System.Reflection.Assembly.GetEntryAssembly().GetName();
@@ -74,9 +74,9 @@ namespace TabularEditor.Dax
         public const string DaxTextFormatUri = "http://daxtest02.azurewebsites.net/api/daxformatter/DaxFormat";
         public const int DaxFormatterRequestTimeout = 10;
 
-        public static DaxFormatterResult FormatDax(string query)
+        public static DaxFormatterResult FormatDax(string query, bool useSemicolonsAsSeparators)
         {
-            string output = CallDaxFormatter(DaxTextFormatUri, query);
+            string output = CallDaxFormatter(DaxTextFormatUri, query, useSemicolonsAsSeparators);
             var res2 = new DaxFormatterResult();
             if (output.StartsWith("{"))
             {
@@ -88,12 +88,12 @@ namespace TabularEditor.Dax
             return res2;
         }
 
-        private static string CallDaxFormatter(string uri, string query)
+        private static string CallDaxFormatter(string uri, string query, bool useSemicolonsAsSeparators)
         {
             try
             {
 
-                DaxFormatterRequest req = new DaxFormatterRequest();
+                DaxFormatterRequest req = new DaxFormatterRequest(useSemicolonsAsSeparators);
                 req.Dax = query;
 
                 var data = JsonConvert.SerializeObject(req, Formatting.Indented);

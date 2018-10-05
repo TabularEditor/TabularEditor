@@ -28,6 +28,7 @@ namespace TabularEditor.UIServices
         public bool CheckForUpdates = false;
         public bool CollectTelemetry = true;
         public bool FormulaFixup = true;
+        public bool UseSemicolonsAsSeparators = false;
         public bool AllowUnsupportedPBIFeatures = false;
         public string BackupLocation = string.Empty;
 

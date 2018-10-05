@@ -51,8 +51,6 @@ namespace TabularEditor.TOMWrapper.Utils
             }
             return null;
         }
-        // TODO: Add method (to dependency builder) to build a temporary DependsOnList from a string
-        // 2018-05-18: Why? What would that be needed for?
 
         internal readonly IDaxDependantObject Parent;
         internal DependsOnList(IDaxDependantObject parent)

@@ -110,6 +110,7 @@ namespace TabularEditor.UI.Dialogs
             Preferences.Current.CheckForUpdates = chkAutoUpdate.Checked;
             Preferences.Current.FormulaFixup = chkFixup.Checked;
             Preferences.Current.AllowUnsupportedPBIFeatures = chkAllowUnsupportedPBIFeatures.Checked;
+            Preferences.Current.UseSemicolonsAsSeparators = cmbSeparators.SelectedIndex == 1;
 
             Preferences.Current.IgnoreTimestamps = chkIgnoreTimestamps.Checked;
             Preferences.Current.IgnoreInferredObjects = chkIgnoreInfObjects.Checked;
@@ -159,6 +160,7 @@ namespace TabularEditor.UI.Dialogs
             txtBackupPath.Text = Preferences.Current.BackupLocation;
             chkAutoUpdate.Checked = Preferences.Current.CheckForUpdates;
             chkFixup.Checked = Preferences.Current.FormulaFixup;
+            cmbSeparators.SelectedIndex = Preferences.Current.UseSemicolonsAsSeparators ? 1 : 0;
             chkAllowUnsupportedPBIFeatures.Checked = Preferences.Current.AllowUnsupportedPBIFeatures;
 
             chkCopyIncludeTranslations.Checked = Preferences.Current.Copy_IncludeTranslations;

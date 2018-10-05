@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using TabularEditor.TextServices;
 using TabularEditor.TOMWrapper;
 using TabularEditor.TOMWrapper.Utils;
+using TabularEditor.UIServices;
 
 namespace TabularEditor.UI
 {
@@ -172,8 +173,12 @@ namespace TabularEditor.UI
 
         Timer syntaxHighlightTimer = new Timer() { Interval = 500, Enabled = false };
 
+        bool ExpressionEditor_SuspendTextChanged = false;
+
         private void ExpressionEditor_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
         {
+            if (ExpressionEditor_SuspendTextChanged) return;
+
             ExpressionEditor_BeginEdit();
 
             if(syntaxHighlightTimer.Enabled) syntaxHighlightTimer.Enabled = false;
@@ -181,39 +186,92 @@ namespace TabularEditor.UI
             ExpressionEditor_SyntaxHighlight();
         }
 
+        private bool ExpressionEditor_IsDax
+        {
+            get
+            {
+                if (ExpressionEditor_Current == null) return false;
+                switch (ExpressionEditor_Current.ObjectType)
+                {
+                    case ObjectType.Measure:
+                    case ObjectType.Table:
+                    case ObjectType.Column:
+                    case ObjectType.KPI:
+                    case ObjectType.RLSFilterExpression:
+                        // These are the only object types that contain DAX expression properties:
+                        return true;
+                    default:
+                        // Other object types (partitions) do typically not contain DAX expressions:
+                        return false;
+                }
+            }
+        }
+
         private void ExpressionEditor_SyntaxHighlight()
         {
+            if (!ExpressionEditor_IsDax) return;
+
+            Console.WriteLine("Do syntax highlight");
+
             // For short DAX expressions, do synchronous syntax highlighting. Otherwise, do asynchrounous:
             if (UI.ExpressionEditor.Text.Length < 2000) ExpressionParser.SyntaxHighlight(UI.ExpressionEditor);
             else syntaxHighlightTimer.Enabled = true;
         }
 
+        public void ExpressionEditor_SwitchToSemicolons()
+        {
+            if (ExpressionEditor_IsDax)
+            {
+                ExpressionEditor_SuspendTextChanged = true;
+                UI.ExpressionEditor.Text = ExpressionParser.CommasToSemicolons(UI.ExpressionEditor.Text);
+                ExpressionEditor_SuspendTextChanged = false;
+                ExpressionParser.SyntaxHighlight(UI.ExpressionEditor);
+            }
+        }
+
+        public void ExpressionEditor_SwitchToCommas()
+        {
+            if (ExpressionEditor_IsDax)
+            {
+                ExpressionEditor_SuspendTextChanged = true;
+                UI.ExpressionEditor.Text = ExpressionParser.SemicolonsToCommas(UI.ExpressionEditor.Text);
+                ExpressionEditor_SuspendTextChanged = false;
+                ExpressionParser.SyntaxHighlight(UI.ExpressionEditor);
+            }
+        }
+
         private string GetText()
         {
+            string value;
+
             if(ExpressionEditor_Current is IDaxDependantObject)
             {
-                return (ExpressionEditor_Current as IDaxDependantObject).GetDAX(CurrentDaxProperty) ?? "";
+                value = (ExpressionEditor_Current as IDaxDependantObject).GetDAX(CurrentDaxProperty) ?? "";
             }
             else if (ExpressionEditor_Current != null)
             {
-                return ExpressionEditor_Current.Expression ?? "";
+                value = ExpressionEditor_Current.Expression ?? "";
             }
-            return "";
+            else return "";
+
+            // Do semicolon replacement if needed:
+            if (ExpressionEditor_IsDax && Preferences.Current.UseSemicolonsAsSeparators)
+                value = ExpressionParser.CommasToSemicolons(value);
+
+            return value;
         }
+
         private void SetText(string value)
         {
-            if (ExpressionEditor_Current is IDaxDependantObject)
-            {
-                (ExpressionEditor_Current as IDaxDependantObject).SetDAX(CurrentDaxProperty, value);
-            }
-            else if (ExpressionEditor_Current != null)
-            {
-                ExpressionEditor_Current.Expression = value;
-            }
+            SetText(value, CurrentDaxProperty);
         }
 
         private void SetText(string value, DAXProperty prop)
         {
+            // Do semicolon replacement if needed:
+            if (ExpressionEditor_IsDax && Preferences.Current.UseSemicolonsAsSeparators)
+                value = ExpressionParser.SemicolonsToCommas(value);
+
             if (ExpressionEditor_Current is IDaxDependantObject)
             {
                 (ExpressionEditor_Current as IDaxDependantObject).SetDAX(prop, value);
@@ -239,7 +297,7 @@ namespace TabularEditor.UI
 
         private void ExpressionEditor_SetText()
         {
-            UI.ExpressionEditor.TextChanged -= ExpressionEditor_TextChanged;
+            ExpressionEditor_SuspendTextChanged = true;
 
             var i = UI.ExpressionEditor.SelectionStart;
             UI.ExpressionEditor.Text = GetText();
@@ -263,7 +321,7 @@ namespace TabularEditor.UI
                 UI.CurrentMeasureLabel.Visible = false;
             }
 
-            UI.ExpressionEditor.TextChanged += ExpressionEditor_TextChanged;
+            ExpressionEditor_SuspendTextChanged = false;
 
             LastDaxProperty = CurrentDaxProperty;
         }
