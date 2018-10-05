@@ -33,7 +33,7 @@ namespace TabularEditor.TOMWrapper
         {
             var oldValue = this[perspective];
 
-            if (!(this is PerspectiveTableIndexer))
+            if (!(this is PerspectiveTableIndexer) && oldValue != include)
                 Handler.UndoManager.Add(
                     new UndoPropertyChangedAction(ParentObject, "InPerspective", oldValue, include, perspective.Name));
 
