@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
 using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.TOMWrapper.Serialization;
+using TabularEditor.UI.Dialogs.Pages;
 
 namespace TabularEditor.UI.Dialogs
 {
@@ -50,10 +51,12 @@ namespace TabularEditor.UI.Dialogs
                 lblHint.Text = Hints[_currentPage];
 
                 btnPrev.Enabled = _currentPage > 0;
-                btnNext.Enabled = _currentPage < Pages.Count - 1;
+                btnNext.Enabled = (Pages[_currentPage] as IValidationPage)?.IsValid ?? _currentPage < Pages.Count - 1;
                 btnDeploy.Enabled = _currentPage == Pages.Count - 1;
             }
         }
+
+        public string PreselectDb;
 
         public DeployForm()
         {
@@ -76,7 +79,7 @@ namespace TabularEditor.UI.Dialogs
         }
 
         public TOM.Server DeployTargetServer { get { return page2.Server; } set { page2.Server = value; } }
-        public string DeployTargetDatabaseID { get { return page2.DatabaseID; } set { page2.DatabaseID = value; } }
+        public string DeployTargetDatabaseID => page2.DatabaseID;
 
         private void DeployForm_KeyDown(object sender, KeyEventArgs e)
         {
@@ -89,6 +92,8 @@ namespace TabularEditor.UI.Dialogs
             {
                 using (new Hourglass())
                 {
+                    page2.ClearSelection = true;
+                    page2.PreselectDb = PreselectDb;
                     page2.Server = page1.GetServer();
                 }
                 if (page2.Server == null) return;
@@ -143,11 +148,6 @@ namespace TabularEditor.UI.Dialogs
             if (btnNext.Enabled) btnNext.PerformClick();
         }
 
-        private void deployPage1_Validation(object sender, ValidationEventArgs e)
-        {
-
-        }
-
         private void chkDeployRoles_CheckedChanged(object sender, EventArgs e)
         {
             chkDeployRoleMembers.Enabled = chkDeployRoles.Checked;
@@ -169,6 +169,7 @@ namespace TabularEditor.UI.Dialogs
         private void btnDeploy_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
+            PreselectDb = page2.DatabaseID;
             Close();
         }
 

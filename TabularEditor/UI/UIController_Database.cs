@@ -20,8 +20,11 @@ namespace TabularEditor.UI
             ExpressionEditor_AcceptEdit();
 
             var f = new DeployForm();
+            f.PreselectDb = LastDeploymentDb;
             var res = f.ShowDialog();
             if (res == DialogResult.Cancel) return;
+
+            LastDeploymentDb = f.PreselectDb;
 
             // Backup database metadata
             if (Preferences.Current.BackupOnSave)

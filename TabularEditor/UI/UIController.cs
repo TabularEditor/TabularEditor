@@ -142,9 +142,13 @@ namespace TabularEditor.UI
 
         public ModelActionManager Actions { get; private set; }
 
+        public string LastDeploymentDb;
+
         public void LoadTabularModelToUI()
         {
             if (Handler == null) return;
+
+            LastDeploymentDb = null;
 
             UI.FormMain.actToggleFilter.Checked = false;
             DisableLinqMode();

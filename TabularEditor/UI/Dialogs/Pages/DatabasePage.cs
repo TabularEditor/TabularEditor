@@ -9,10 +9,11 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.AnalysisServices.Tabular;
 using System.Globalization;
+using TabularEditor.UIServices;
 
 namespace TabularEditor.UI.Dialogs.Pages
 {
-    public partial class DatabasePage : UserControl
+    public partial class DatabasePage : UserControl, IValidationPage
     {
         public event ValidationEventHandler Validation;
         public event EventHandler Accept;
@@ -22,19 +23,51 @@ namespace TabularEditor.UI.Dialogs.Pages
             InitializeComponent();
         }
 
+        public bool ClearSelection { get; set; } = false;
+        public string PreselectDb { get; set; } = "";
+
         private Server _server;
         public Server Server
         {
             set
             {
                 _server = value;
-                dataGridView1.DataSource = _server?.Databases.Cast<Database>().OrderBy(db => db.Name).ToList();
+                if (_server == null)
+                {
+                    dataGridView1.DataSource = null;
+                    dataGridView1.ClearSelection();
+                }
+                else
+                {
+                    dataGridView1.DataBindingComplete += dataGridView1_DataBindingComplete;
+                    dataGridView1.DataSource = _server?.Databases.Cast<Database>().OrderBy(db => db.Name).ToList();
+                }
             }
             get
             {
                 return _server;
             }
         }
+
+        private void dataGridView1_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            dataGridView1.DataBindingComplete -= dataGridView1_DataBindingComplete;
+            if (ClearSelection)
+            {
+                suspendEvent = true;
+                dataGridView1.ClearSelection();
+                txtDatabaseID.Text = "";
+                suspendEvent = false;
+                OnValidation();
+            }
+            var databaseList = dataGridView1.DataSource as List<Database>;
+            if (databaseList != null && !string.IsNullOrEmpty(PreselectDb))
+            {
+                var index = databaseList.FirstIndexOf(db => db.Name == PreselectDb);
+                if (index >= 0) dataGridView1.CurrentCell = dataGridView1.Rows[index].Cells[0];
+            }
+        }
+
         public bool AllowNew
         {
             set {
@@ -74,9 +107,10 @@ namespace TabularEditor.UI.Dialogs.Pages
             }
         }
 
-        public string DatabaseID;
+        public string DatabaseID { get; private set; }
 
         bool valid = false;
+        public bool IsValid => valid;
 
         private void OnValidation()
         {
