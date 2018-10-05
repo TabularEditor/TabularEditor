@@ -59,7 +59,7 @@ namespace TabularEditor
             //NodesChanged?.Invoke(this, new TreeModelEventArgs(null, new object[] { }));
         }
 
-        public TabularUITree(Model model) : base(model) { }
+        public TabularUITree(TabularModelHandler handler) : base(handler) { }
         public List<ITabularNamedObject> FilterItems = new List<ITabularNamedObject>();
 
         public virtual IEnumerable GetChildren(TreePath treePath)

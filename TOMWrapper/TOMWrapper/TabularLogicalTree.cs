@@ -171,14 +171,14 @@ namespace TabularEditor.TOMWrapper
 
         public event EventHandler UpdateComplete;
 
-        protected Model Model { get; private set; }
-        protected TabularModelHandler Handler { get { return Model.Handler; } }
+        protected Model Model => Handler.Model;
+        protected TabularModelHandler Handler { get; private set; }
 
-        public TabularTree(Model model)
+        public TabularTree(TabularModelHandler handler)
         {
-            if (model == null) return;
-            Model = model;
-            model.Handler.Tree = this;
+            if (handler == null) return;
+            Handler = handler;
+            Handler.Tree = this;
         }
 
         internal protected int UpdateLocks { get; private set; }
@@ -202,7 +202,7 @@ namespace TabularEditor.TOMWrapper
                     folderCachesToBeRebuilt.Clear();
                 }
 
-                if(Handler.UndoManager.BatchSize > 0) UpdateComplete?.Invoke(this, new EventArgs());
+                if(Handler != null && Handler.UndoManager.BatchSize > 0) UpdateComplete?.Invoke(this, new EventArgs());
             }
         }        
 

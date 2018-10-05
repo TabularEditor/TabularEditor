@@ -168,7 +168,7 @@ namespace TabularEditor.UI
             CurrentFilter = null;
 
             ShowSelectionStatus = false;
-            TreeModel = new TabularUITree(Handler.Model) { Options = CurrentOptions, TreeView = UI.TreeView };
+            TreeModel = new TabularUITree(Handler) { Options = CurrentOptions, TreeView = UI.TreeView };
             TreeModel.UpdateComplete += Tree_UpdateComplete;
 
             UI.TreeView.Model = TreeModel;

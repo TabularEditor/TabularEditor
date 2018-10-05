@@ -105,7 +105,6 @@ namespace TabularEditor.TOMWrapper.Tests
         public void FixupVariousColumnTest()
         {
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
-            handler.Tree = new MockTree(handler.Model);
             handler.Settings.AutoFixup = true;
 
             var sw = new Stopwatch();
