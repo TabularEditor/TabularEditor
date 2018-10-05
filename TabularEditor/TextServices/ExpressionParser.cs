@@ -6,11 +6,73 @@ using System.Threading.Tasks;
 using Antlr4.Runtime;
 using FastColoredTextBoxNS;
 using System.Drawing;
+using TabularEditor.UIServices;
+using TabularEditor.UI;
+using System.Windows.Forms;
 
 namespace TabularEditor.TextServices
 {
     public class ExpressionParser
     {
+        public static string SemicolonsToCommas(string input)
+        {
+            var sb = new StringBuilder(input);
+            var lexer = new DAXLexer(new DAXCharStream(input ,true));
+            foreach(var token in lexer.GetAllTokens())
+            {
+                if (token.Type == DAXLexer.COMMA) sb[token.StartIndex] = ',';
+                else if (token.Type == DAXLexer.REAL_LITERAL)
+                {
+                    for (var i = token.StartIndex; i <= token.StopIndex; i++)
+                    {
+                        if (sb[i] == ',')
+                        {
+                            sb[i] = '.';
+                            break;
+                        }
+                    }
+                }
+                else if (token.Type == DAXLexer.DATA)
+                {
+                    for (var i = token.StartIndex; i <= token.StopIndex; i++)
+                    {
+                        if (sb[i] == ',') sb[i] = '.';
+                        else if (sb[i] == ';') sb[i] = ',';
+                    }
+                }
+            }
+            return sb.ToString();
+        }
+
+        public static string CommasToSemicolons(string input)
+        {
+            var sb = new StringBuilder(input);
+            var lexer = new DAXLexer(new DAXCharStream(input, false));
+            foreach (var token in lexer.GetAllTokens().ToList())
+            {
+                if (token.Type == DAXLexer.COMMA) sb[token.StartIndex] = ';';
+                else if (token.Type == DAXLexer.REAL_LITERAL)
+                {
+                    for (var i = token.StartIndex; i <= token.StopIndex; i++)
+                    {
+                        if (sb[i] == '.')
+                        {
+                            sb[i] = ',';
+                            break;
+                        }
+                    }
+                }
+                else if (token.Type == DAXLexer.DATA)
+                {
+                    for (var i = token.StartIndex; i <= token.StopIndex; i++)
+                    {
+                        if (sb[i] == '.') sb[i] = ',';
+                        else if (sb[i] == ',') sb[i] = ';';
+                    }
+                }
+            }
+            return sb.ToString();
+        }
 
         public static Style PlainStyle = new TextStyle(Brushes.Black, null, FontStyle.Regular);
         public static Style KeywordStyle = new TextStyle(Brushes.Blue, null, FontStyle.Regular);
@@ -20,12 +82,14 @@ namespace TabularEditor.TextServices
 
         public static void SyntaxHighlight(FastColoredTextBox textbox)
         {
+            // TODO: This is slow on a large DAX expression and may cause flickering...
+            //textbox.SuspendDrawing(); // Doesn't work as we might be on a different thread
             try
             {
-                var lexer = new DAXLexer(new AntlrInputStream(textbox.Text));
+                var lexer = new DAXLexer(new DAXCharStream(textbox.Text, Preferences.Current.UseSemicolonsAsSeparators));
                 lexer.RemoveErrorListeners();
-
                 textbox.ClearStyle(StyleIndex.All);
+                
                 var tok = lexer.NextToken();
                 while (tok != null && tok.Type != DAXLexer.Eof)
                 {
@@ -52,6 +116,11 @@ namespace TabularEditor.TextServices
             {
                 // Ignore all errors encountered while doing async syntax highlighting
             }
+            finally
+            {
+                //textbox.ResumeDrawing(); // Doesn't work, as we might be on a different thread
+            }
+            
         }
 
         public static Brush FromHex(string hex)

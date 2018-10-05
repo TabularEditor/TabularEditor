@@ -79,6 +79,15 @@
             this.chkCopyIncludePerspectives = new System.Windows.Forms.CheckBox();
             this.chkCopyIncludeTranslations = new System.Windows.Forms.CheckBox();
             this.chkAutoBackup = new System.Windows.Forms.CheckBox();
+            this.chkPrefixFiles = new System.Windows.Forms.CheckBox();
+            this.chkPrefixFilesCM = new System.Windows.Forms.CheckBox();
+            this.chkLocalRelationshipsCM = new System.Windows.Forms.CheckBox();
+            this.chkLocalTranslationsCM = new System.Windows.Forms.CheckBox();
+            this.chkLocalPerspectivesCM = new System.Windows.Forms.CheckBox();
+            this.chkSplitMultilineCM = new System.Windows.Forms.CheckBox();
+            this.chkIgnoreInfPropsCM = new System.Windows.Forms.CheckBox();
+            this.chkIgnoreInfObjectsCM = new System.Windows.Forms.CheckBox();
+            this.chkIgnoreTimestampsCM = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage3 = new System.Windows.Forms.TabPage();
@@ -99,19 +108,12 @@
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tabCurrentModel = new System.Windows.Forms.TabPage();
-            this.chkPrefixFiles = new System.Windows.Forms.CheckBox();
             this.grpSaveToFolder = new System.Windows.Forms.GroupBox();
-            this.chkPrefixFilesCM = new System.Windows.Forms.CheckBox();
-            this.chkLocalRelationshipsCM = new System.Windows.Forms.CheckBox();
-            this.chkLocalTranslationsCM = new System.Windows.Forms.CheckBox();
-            this.chkLocalPerspectivesCM = new System.Windows.Forms.CheckBox();
             this.treeView2 = new System.Windows.Forms.TreeView();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.chkSplitMultilineCM = new System.Windows.Forms.CheckBox();
-            this.chkIgnoreInfPropsCM = new System.Windows.Forms.CheckBox();
-            this.chkIgnoreInfObjectsCM = new System.Windows.Forms.CheckBox();
-            this.chkIgnoreTimestampsCM = new System.Windows.Forms.CheckBox();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.cmbSeparators = new System.Windows.Forms.ComboBox();
             this.groupBox3.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage3.SuspendLayout();
@@ -126,6 +128,7 @@
             this.tabCurrentModel.SuspendLayout();
             this.grpSaveToFolder.SuspendLayout();
             this.groupBox8.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnOK
@@ -322,6 +325,120 @@
             this.chkAutoBackup.UseVisualStyleBackColor = true;
             this.chkAutoBackup.CheckedChanged += new System.EventHandler(this.chkAutoBackup_CheckedChanged);
             // 
+            // chkPrefixFiles
+            // 
+            this.chkPrefixFiles.AutoSize = true;
+            this.chkPrefixFiles.Location = new System.Drawing.Point(6, 19);
+            this.chkPrefixFiles.Name = "chkPrefixFiles";
+            this.chkPrefixFiles.Size = new System.Drawing.Size(99, 17);
+            this.chkPrefixFiles.TabIndex = 10;
+            this.chkPrefixFiles.Text = "Prefix filenames";
+            this.toolTip1.SetToolTip(this.chkPrefixFiles, "If checked, files and folders representing individual objects, will be prefixed b" +
+        "y a number indicating the object\'s order in the Model.bim metadata.");
+            this.chkPrefixFiles.UseVisualStyleBackColor = true;
+            // 
+            // chkPrefixFilesCM
+            // 
+            this.chkPrefixFilesCM.AutoSize = true;
+            this.chkPrefixFilesCM.Location = new System.Drawing.Point(6, 19);
+            this.chkPrefixFilesCM.Name = "chkPrefixFilesCM";
+            this.chkPrefixFilesCM.Size = new System.Drawing.Size(99, 17);
+            this.chkPrefixFilesCM.TabIndex = 10;
+            this.chkPrefixFilesCM.Text = "Prefix filenames";
+            this.toolTip1.SetToolTip(this.chkPrefixFilesCM, "If checked, files and folders representing individual objects, will be prefixed b" +
+        "y a number indicating the object\'s order in the Model.bim metadata.");
+            this.chkPrefixFilesCM.UseVisualStyleBackColor = true;
+            // 
+            // chkLocalRelationshipsCM
+            // 
+            this.chkLocalRelationshipsCM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.chkLocalRelationshipsCM.AutoSize = true;
+            this.chkLocalRelationshipsCM.Location = new System.Drawing.Point(6, 261);
+            this.chkLocalRelationshipsCM.Name = "chkLocalRelationshipsCM";
+            this.chkLocalRelationshipsCM.Size = new System.Drawing.Size(231, 17);
+            this.chkLocalRelationshipsCM.TabIndex = 9;
+            this.chkLocalRelationshipsCM.Text = "Serialize relationships by their starting tables";
+            this.toolTip1.SetToolTip(this.chkLocalRelationshipsCM, "If checked, all relationships will be stored as a separate file on the \"From\" sid" +
+        "e of the relationship (typically fact tables).");
+            this.chkLocalRelationshipsCM.UseVisualStyleBackColor = true;
+            this.chkLocalRelationshipsCM.CheckedChanged += new System.EventHandler(this.chkLocalRelationshipsCM_CheckedChanged);
+            // 
+            // chkLocalTranslationsCM
+            // 
+            this.chkLocalTranslationsCM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.chkLocalTranslationsCM.AutoSize = true;
+            this.chkLocalTranslationsCM.Location = new System.Drawing.Point(6, 238);
+            this.chkLocalTranslationsCM.Name = "chkLocalTranslationsCM";
+            this.chkLocalTranslationsCM.Size = new System.Drawing.Size(171, 17);
+            this.chkLocalTranslationsCM.TabIndex = 8;
+            this.chkLocalTranslationsCM.Text = "Serialize translations per-object";
+            this.toolTip1.SetToolTip(this.chkLocalTranslationsCM, "If checked, all translatable objects (measures, columns, etc.) will have their tr" +
+        "anslations stored as an annotation within the object itself.");
+            this.chkLocalTranslationsCM.UseVisualStyleBackColor = true;
+            this.chkLocalTranslationsCM.CheckedChanged += new System.EventHandler(this.chkLocalTranslationsCM_CheckedChanged);
+            // 
+            // chkLocalPerspectivesCM
+            // 
+            this.chkLocalPerspectivesCM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.chkLocalPerspectivesCM.AutoSize = true;
+            this.chkLocalPerspectivesCM.Location = new System.Drawing.Point(6, 215);
+            this.chkLocalPerspectivesCM.Name = "chkLocalPerspectivesCM";
+            this.chkLocalPerspectivesCM.Size = new System.Drawing.Size(227, 17);
+            this.chkLocalPerspectivesCM.TabIndex = 7;
+            this.chkLocalPerspectivesCM.Text = "Serialize perspective information per-object";
+            this.toolTip1.SetToolTip(this.chkLocalPerspectivesCM, "If checked, all objects that can be toggled in a perspective, will have their per" +
+        "spective membership information stored as an annotation within the object itself" +
+        ".");
+            this.chkLocalPerspectivesCM.UseVisualStyleBackColor = true;
+            this.chkLocalPerspectivesCM.CheckedChanged += new System.EventHandler(this.chkLocalPerspectivesCM_CheckedChanged);
+            // 
+            // chkSplitMultilineCM
+            // 
+            this.chkSplitMultilineCM.AutoSize = true;
+            this.chkSplitMultilineCM.Location = new System.Drawing.Point(143, 42);
+            this.chkSplitMultilineCM.Name = "chkSplitMultilineCM";
+            this.chkSplitMultilineCM.Size = new System.Drawing.Size(114, 17);
+            this.chkSplitMultilineCM.TabIndex = 3;
+            this.chkSplitMultilineCM.Text = "Split multiline string";
+            this.toolTip1.SetToolTip(this.chkSplitMultilineCM, "If checked, expressions and other multiline string properties are serialized as a" +
+        " JSON array.");
+            this.chkSplitMultilineCM.UseVisualStyleBackColor = true;
+            // 
+            // chkIgnoreInfPropsCM
+            // 
+            this.chkIgnoreInfPropsCM.AutoSize = true;
+            this.chkIgnoreInfPropsCM.Location = new System.Drawing.Point(143, 19);
+            this.chkIgnoreInfPropsCM.Name = "chkIgnoreInfPropsCM";
+            this.chkIgnoreInfPropsCM.Size = new System.Drawing.Size(143, 17);
+            this.chkIgnoreInfPropsCM.TabIndex = 2;
+            this.chkIgnoreInfPropsCM.Text = "Ignore inferred properties";
+            this.toolTip1.SetToolTip(this.chkIgnoreInfPropsCM, "If checked, objects whose value is controlled by the server (Column.State, etc.) " +
+        "are not serialized into the .json files");
+            this.chkIgnoreInfPropsCM.UseVisualStyleBackColor = true;
+            // 
+            // chkIgnoreInfObjectsCM
+            // 
+            this.chkIgnoreInfObjectsCM.AutoSize = true;
+            this.chkIgnoreInfObjectsCM.Location = new System.Drawing.Point(6, 19);
+            this.chkIgnoreInfObjectsCM.Name = "chkIgnoreInfObjectsCM";
+            this.chkIgnoreInfObjectsCM.Size = new System.Drawing.Size(131, 17);
+            this.chkIgnoreInfObjectsCM.TabIndex = 1;
+            this.chkIgnoreInfObjectsCM.Text = "Ignore inferred objects";
+            this.toolTip1.SetToolTip(this.chkIgnoreInfObjectsCM, "If checked, objects whose lifetime is controlled by the server (RowNumber, attrib" +
+        "ute hierarchies, etc.) are not serialized into the .json files");
+            this.chkIgnoreInfObjectsCM.UseVisualStyleBackColor = true;
+            // 
+            // chkIgnoreTimestampsCM
+            // 
+            this.chkIgnoreTimestampsCM.AutoSize = true;
+            this.chkIgnoreTimestampsCM.Location = new System.Drawing.Point(6, 42);
+            this.chkIgnoreTimestampsCM.Name = "chkIgnoreTimestampsCM";
+            this.chkIgnoreTimestampsCM.Size = new System.Drawing.Size(111, 17);
+            this.chkIgnoreTimestampsCM.TabIndex = 0;
+            this.chkIgnoreTimestampsCM.Text = "Ignore timestamps";
+            this.toolTip1.SetToolTip(this.chkIgnoreTimestampsCM, "If checked, editing timestamps are not serialized into the .json files");
+            this.chkIgnoreTimestampsCM.UseVisualStyleBackColor = true;
+            // 
             // groupBox3
             // 
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -329,7 +446,7 @@
             this.groupBox3.Controls.Add(this.chkFixup);
             this.groupBox3.Location = new System.Drawing.Point(6, 6);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(357, 50);
+            this.groupBox3.Size = new System.Drawing.Size(357, 49);
             this.groupBox3.TabIndex = 4;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Editing";
@@ -486,6 +603,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.groupBox5);
             this.tabPage2.Controls.Add(this.groupBox3);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
@@ -616,18 +734,6 @@
             this.tabCurrentModel.Text = "Current Model";
             this.tabCurrentModel.UseVisualStyleBackColor = true;
             // 
-            // chkPrefixFiles
-            // 
-            this.chkPrefixFiles.AutoSize = true;
-            this.chkPrefixFiles.Location = new System.Drawing.Point(6, 19);
-            this.chkPrefixFiles.Name = "chkPrefixFiles";
-            this.chkPrefixFiles.Size = new System.Drawing.Size(99, 17);
-            this.chkPrefixFiles.TabIndex = 10;
-            this.chkPrefixFiles.Text = "Prefix filenames";
-            this.toolTip1.SetToolTip(this.chkPrefixFiles, "If checked, files and folders representing individual objects, will be prefixed b" +
-        "y a number indicating the object\'s order in the Model.bim metadata.");
-            this.chkPrefixFiles.UseVisualStyleBackColor = true;
-            // 
             // grpSaveToFolder
             // 
             this.grpSaveToFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -645,61 +751,6 @@
             this.grpSaveToFolder.TabIndex = 6;
             this.grpSaveToFolder.TabStop = false;
             this.grpSaveToFolder.Text = "Current Model \"Save to Folder\" Settings";
-            // 
-            // chkPrefixFilesCM
-            // 
-            this.chkPrefixFilesCM.AutoSize = true;
-            this.chkPrefixFilesCM.Location = new System.Drawing.Point(6, 19);
-            this.chkPrefixFilesCM.Name = "chkPrefixFilesCM";
-            this.chkPrefixFilesCM.Size = new System.Drawing.Size(99, 17);
-            this.chkPrefixFilesCM.TabIndex = 10;
-            this.chkPrefixFilesCM.Text = "Prefix filenames";
-            this.toolTip1.SetToolTip(this.chkPrefixFilesCM, "If checked, files and folders representing individual objects, will be prefixed b" +
-        "y a number indicating the object\'s order in the Model.bim metadata.");
-            this.chkPrefixFilesCM.UseVisualStyleBackColor = true;
-            // 
-            // chkLocalRelationshipsCM
-            // 
-            this.chkLocalRelationshipsCM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.chkLocalRelationshipsCM.AutoSize = true;
-            this.chkLocalRelationshipsCM.Location = new System.Drawing.Point(6, 261);
-            this.chkLocalRelationshipsCM.Name = "chkLocalRelationshipsCM";
-            this.chkLocalRelationshipsCM.Size = new System.Drawing.Size(231, 17);
-            this.chkLocalRelationshipsCM.TabIndex = 9;
-            this.chkLocalRelationshipsCM.Text = "Serialize relationships by their starting tables";
-            this.toolTip1.SetToolTip(this.chkLocalRelationshipsCM, "If checked, all relationships will be stored as a separate file on the \"From\" sid" +
-        "e of the relationship (typically fact tables).");
-            this.chkLocalRelationshipsCM.UseVisualStyleBackColor = true;
-            this.chkLocalRelationshipsCM.CheckedChanged += new System.EventHandler(this.chkLocalRelationshipsCM_CheckedChanged);
-            // 
-            // chkLocalTranslationsCM
-            // 
-            this.chkLocalTranslationsCM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.chkLocalTranslationsCM.AutoSize = true;
-            this.chkLocalTranslationsCM.Location = new System.Drawing.Point(6, 238);
-            this.chkLocalTranslationsCM.Name = "chkLocalTranslationsCM";
-            this.chkLocalTranslationsCM.Size = new System.Drawing.Size(171, 17);
-            this.chkLocalTranslationsCM.TabIndex = 8;
-            this.chkLocalTranslationsCM.Text = "Serialize translations per-object";
-            this.toolTip1.SetToolTip(this.chkLocalTranslationsCM, "If checked, all translatable objects (measures, columns, etc.) will have their tr" +
-        "anslations stored as an annotation within the object itself.");
-            this.chkLocalTranslationsCM.UseVisualStyleBackColor = true;
-            this.chkLocalTranslationsCM.CheckedChanged += new System.EventHandler(this.chkLocalTranslationsCM_CheckedChanged);
-            // 
-            // chkLocalPerspectivesCM
-            // 
-            this.chkLocalPerspectivesCM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.chkLocalPerspectivesCM.AutoSize = true;
-            this.chkLocalPerspectivesCM.Location = new System.Drawing.Point(6, 215);
-            this.chkLocalPerspectivesCM.Name = "chkLocalPerspectivesCM";
-            this.chkLocalPerspectivesCM.Size = new System.Drawing.Size(227, 17);
-            this.chkLocalPerspectivesCM.TabIndex = 7;
-            this.chkLocalPerspectivesCM.Text = "Serialize perspective information per-object";
-            this.toolTip1.SetToolTip(this.chkLocalPerspectivesCM, "If checked, all objects that can be toggled in a perspective, will have their per" +
-        "spective membership information stored as an annotation within the object itself" +
-        ".");
-            this.chkLocalPerspectivesCM.UseVisualStyleBackColor = true;
-            this.chkLocalPerspectivesCM.CheckedChanged += new System.EventHandler(this.chkLocalPerspectivesCM_CheckedChanged);
             // 
             // treeView2
             // 
@@ -780,52 +831,30 @@
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Current Model Serialization Settings";
             // 
-            // chkSplitMultilineCM
+            // groupBox5
             // 
-            this.chkSplitMultilineCM.AutoSize = true;
-            this.chkSplitMultilineCM.Location = new System.Drawing.Point(143, 42);
-            this.chkSplitMultilineCM.Name = "chkSplitMultilineCM";
-            this.chkSplitMultilineCM.Size = new System.Drawing.Size(114, 17);
-            this.chkSplitMultilineCM.TabIndex = 3;
-            this.chkSplitMultilineCM.Text = "Split multiline string";
-            this.toolTip1.SetToolTip(this.chkSplitMultilineCM, "If checked, expressions and other multiline string properties are serialized as a" +
-        " JSON array.");
-            this.chkSplitMultilineCM.UseVisualStyleBackColor = true;
+            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox5.Controls.Add(this.cmbSeparators);
+            this.groupBox5.Location = new System.Drawing.Point(6, 62);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(357, 53);
+            this.groupBox5.TabIndex = 5;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Separators";
             // 
-            // chkIgnoreInfPropsCM
+            // cmbSeparators
             // 
-            this.chkIgnoreInfPropsCM.AutoSize = true;
-            this.chkIgnoreInfPropsCM.Location = new System.Drawing.Point(143, 19);
-            this.chkIgnoreInfPropsCM.Name = "chkIgnoreInfPropsCM";
-            this.chkIgnoreInfPropsCM.Size = new System.Drawing.Size(143, 17);
-            this.chkIgnoreInfPropsCM.TabIndex = 2;
-            this.chkIgnoreInfPropsCM.Text = "Ignore inferred properties";
-            this.toolTip1.SetToolTip(this.chkIgnoreInfPropsCM, "If checked, objects whose value is controlled by the server (Column.State, etc.) " +
-        "are not serialized into the .json files");
-            this.chkIgnoreInfPropsCM.UseVisualStyleBackColor = true;
-            // 
-            // chkIgnoreInfObjectsCM
-            // 
-            this.chkIgnoreInfObjectsCM.AutoSize = true;
-            this.chkIgnoreInfObjectsCM.Location = new System.Drawing.Point(6, 19);
-            this.chkIgnoreInfObjectsCM.Name = "chkIgnoreInfObjectsCM";
-            this.chkIgnoreInfObjectsCM.Size = new System.Drawing.Size(131, 17);
-            this.chkIgnoreInfObjectsCM.TabIndex = 1;
-            this.chkIgnoreInfObjectsCM.Text = "Ignore inferred objects";
-            this.toolTip1.SetToolTip(this.chkIgnoreInfObjectsCM, "If checked, objects whose lifetime is controlled by the server (RowNumber, attrib" +
-        "ute hierarchies, etc.) are not serialized into the .json files");
-            this.chkIgnoreInfObjectsCM.UseVisualStyleBackColor = true;
-            // 
-            // chkIgnoreTimestampsCM
-            // 
-            this.chkIgnoreTimestampsCM.AutoSize = true;
-            this.chkIgnoreTimestampsCM.Location = new System.Drawing.Point(6, 42);
-            this.chkIgnoreTimestampsCM.Name = "chkIgnoreTimestampsCM";
-            this.chkIgnoreTimestampsCM.Size = new System.Drawing.Size(111, 17);
-            this.chkIgnoreTimestampsCM.TabIndex = 0;
-            this.chkIgnoreTimestampsCM.Text = "Ignore timestamps";
-            this.toolTip1.SetToolTip(this.chkIgnoreTimestampsCM, "If checked, editing timestamps are not serialized into the .json files");
-            this.chkIgnoreTimestampsCM.UseVisualStyleBackColor = true;
+            this.cmbSeparators.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbSeparators.FormattingEnabled = true;
+            this.cmbSeparators.Items.AddRange(new object[] {
+            "US/UK (A, B, C / 1.234)",
+            "Others (A; B; C / 1,234)"});
+            this.cmbSeparators.Location = new System.Drawing.Point(7, 20);
+            this.cmbSeparators.Name = "cmbSeparators";
+            this.cmbSeparators.Size = new System.Drawing.Size(179, 21);
+            this.cmbSeparators.TabIndex = 0;
+            this.toolTip1.SetToolTip(this.cmbSeparators, resources.GetString("cmbSeparators.ToolTip"));
             // 
             // PreferencesForm
             // 
@@ -870,6 +899,7 @@
             this.grpSaveToFolder.PerformLayout();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -925,5 +955,7 @@
         private System.Windows.Forms.CheckBox chkIgnoreInfPropsCM;
         private System.Windows.Forms.CheckBox chkIgnoreInfObjectsCM;
         private System.Windows.Forms.CheckBox chkIgnoreTimestampsCM;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.ComboBox cmbSeparators;
     }
 }

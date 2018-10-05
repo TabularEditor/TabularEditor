@@ -416,7 +416,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             var textToFormat = "x :=" + txtExpression.Text;
             try
             {
-                var result = TabularEditor.Dax.DaxFormatterProxy.FormatDax(textToFormat).FormattedDax;
+                var result = TabularEditor.Dax.DaxFormatterProxy.FormatDax(textToFormat, Preferences.Current.UseSemicolonsAsSeparators).FormattedDax;
                 if (string.IsNullOrWhiteSpace(result))
                 {
                     lblStatus.Text = "Could not format DAX.";
@@ -539,8 +539,16 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            var usingSemicolons = Preferences.Current.UseSemicolonsAsSeparators;
             PreferencesForm.Show(UI.Handler);
-            if(UI.Handler != null) UI.Handler.Settings = Preferences.Current.GetSettings();
+
+            if(usingSemicolons != Preferences.Current.UseSemicolonsAsSeparators)
+            {
+                if (Preferences.Current.UseSemicolonsAsSeparators) UI.ExpressionEditor_SwitchToSemicolons();
+                else UI.ExpressionEditor_SwitchToCommas();
+            }
+
+            if (UI.Handler != null) UI.Handler.Settings = Preferences.Current.GetSettings();
         }
 
         private void FormMain_Shown(object sender, EventArgs e)

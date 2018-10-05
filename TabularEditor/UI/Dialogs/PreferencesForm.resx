@@ -128,4 +128,7 @@ This allows you to rollback unintended metadata changes, even after Tabular Edit
 was closed. The metadata is backed up as a compressed (zipped) Model.bim file,
 using the current date and time as the filename.</value>
   </data>
+  <data name="cmbSeparators.ToolTip" xml:space="preserve">
+    <value>Choose how the DAX Expression Editor should display list and decimal separators. NOTE: This will not affect the content of DAX expressions in the model metadata, which are always stored in the US/UK format.</value>
+  </data>
 </root>
