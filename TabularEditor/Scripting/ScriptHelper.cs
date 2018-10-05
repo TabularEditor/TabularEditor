@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TabularEditor.TextServices;
 using TabularEditor.TOMWrapper;
 using TabularEditor.UI;
 using TabularEditor.UI.Actions;
@@ -13,12 +14,18 @@ namespace TabularEditor.Scripting
     public static class ScriptHelper
     {
         [ScriptMethod]
+        public static string ConvertDax(string dax, bool useSemicolons = true)
+        {
+            return useSemicolons ? ExpressionParser.CommasToSemicolons(dax) : ExpressionParser.SemicolonsToCommas(dax);
+        }
+
+        [ScriptMethod]
         public static string FormatDax(string dax)
         {
             var textToFormat = "x :=" + dax;
             try
             {
-                var result = TabularEditor.Dax.DaxFormatterProxy.FormatDax(textToFormat).FormattedDax;
+                var result = TabularEditor.Dax.DaxFormatterProxy.FormatDax(textToFormat, false).FormattedDax;
                 if (string.IsNullOrWhiteSpace(result))
                 {
                     return dax;
