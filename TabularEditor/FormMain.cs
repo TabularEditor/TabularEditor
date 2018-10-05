@@ -382,7 +382,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void actExpression_UpdateEx(object sender, UpdateExEventArgs e)
         {
-            e.Enabled = UI.ExpressionEditor_Current != null;
+            e.Enabled = UI.ExpressionEditor_IsDax;
         }
 
         private void actFind_Execute(object sender, EventArgs e)
@@ -786,6 +786,11 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             actSearchFlat.Checked = actSearchFlat == sender;
             Preferences.Current.View_SearchResults = actSearchChild.Checked ? SearchResultOption.ByChild
                 : (actSearchParent.Checked ? SearchResultOption.ByParent : SearchResultOption.Flat); 
+        }
+
+        private void actGotoDef_Execute(object sender, EventArgs e)
+        {
+            UI.ExpressionEditor_GoToDefinition();
         }
     }
 }
