@@ -5,11 +5,11 @@
 <#@ import namespace="System.ComponentModel" #>
 <#+
 
-class Rules {
-	public const string XmlDocFile = @"C:\Program Files (x86)\Microsoft SQL Server\140\SDK\Assemblies\Microsoft.AnalysisServices.Tabular.xml";
+partial class Rules {
+	public static string XmlDocFile;
 
 	public static string GetTypeXmlDoc(Type t) {
-		var xml = XElement.Load(XmlDocFile);
+		var xml = XElement.Load(Rules.XmlDocFile);
 		var node = xml?.Element("members")?.Elements("member")?.FirstOrDefault(e => ((string)e.Attribute("name")) == "T:Microsoft.AnalysisServices.Tabular." + t.Name);
 		if(node != null) {
 			var nodeReader = node.CreateReader();

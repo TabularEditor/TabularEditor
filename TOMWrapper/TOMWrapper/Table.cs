@@ -176,17 +176,19 @@ namespace TabularEditor.TOMWrapper
         {
             switch(propertyName)
             {
-                case "Source":
-                case "Partitions":
+                case Properties.SOURCE:
+                case Properties.PARTITIONS:
                     return SourceType == TOM.PartitionSourceType.Query || SourceType == TOM.PartitionSourceType.M;
-                case "DefaultDetailRowsExpression":
-                case "ShowAsVariationsOnly":
-                case "IsPrivate":
+                case Properties.DEFAULTDETAILROWSEXPRESSION:
+                case Properties.SHOWASVARIATIONSONLY:
+                case Properties.ISPRIVATE:
                     return Handler.CompatibilityLevel >= 1400;
-                case "ObjectLevelSecurity":
+                case Properties.OBJECTLEVELSECURITY:
                     return Handler.CompatibilityLevel >= 1400 && Model.Roles.Any();
-                case "RowLevelSecurity":
+                case Properties.ROWLEVELSECURITY:
                     return Model.Roles.Any();
+                case Properties.ALTERNATESOURCEPRECEDENCE:
+                    return Handler.CompatibilityLevel >= 1460;
                 default: return true;
             }
         }
@@ -546,6 +548,8 @@ namespace TabularEditor.TOMWrapper
     internal static partial class Properties
     {
         public const string DEFAULTDETAILROWSEXPRESSION = "DefaultDetailRowsExpression";
+        public const string OBJECTLEVELSECURITY = "ObjectLevelSecurity";
+        public const string ROWLEVELSECURITY = "RowLevelSecurity";
     }
 
     internal static class TableExtension
