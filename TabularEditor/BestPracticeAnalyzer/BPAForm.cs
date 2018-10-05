@@ -10,6 +10,7 @@ using TabularEditor.BestPracticeAnalyzer;
 using TabularEditor.TOMWrapper;
 using System.Linq.Dynamic;
 using Aga.Controls.Tree;
+using System.Collections;
 
 namespace TabularEditor.UI.Dialogs
 {
@@ -395,6 +396,69 @@ namespace TabularEditor.UI.Dialogs
                 Clipboard.SetText(script);
                 MessageBox.Show("Fix script copied to clipboard!\n\nPaste into Advanced Script Editor for review.", "Fix script generation", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+            }
+        }
+
+        private int listView1SortColumn = -1;
+        private int listView2SortColumn = -1;
+
+        private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            var listView = sender as ListView;
+            var sortColumn = listView == listView1 ? listView1SortColumn : listView2SortColumn;
+
+            // Determine whether the column is the same as the last column clicked.
+    if (e.Column != sortColumn)
+            {
+                // Set the sort column to the new column.
+                if (listView == listView1) listView1SortColumn = e.Column;
+                else listView2SortColumn = e.Column;
+                // Set the sort order to ascending by default.
+                listView.Sorting = SortOrder.Ascending;
+            }
+            else
+            {
+                // Determine what the last sort order was and change it.
+                if (listView.Sorting == SortOrder.Ascending)
+                    listView.Sorting = SortOrder.Descending;
+                else
+                    listView.Sorting = SortOrder.Ascending;
+            }
+
+            // Call the sort method to manually sort.
+            listView.Sort();
+            // Set the ListViewItemSorter property to a new ListViewItemComparer
+            // object.
+            listView.ListViewItemSorter = new ListViewItemComparer(e.Column,
+                                                              listView.Sorting);
+        }
+
+        //C#
+        // Implements the manual sorting of items by columns.
+        class ListViewItemComparer : IComparer
+        {
+            private int col;
+            private SortOrder order;
+            public ListViewItemComparer()
+            {
+                col = 0;
+                order = SortOrder.Ascending;
+            }
+            public ListViewItemComparer(int column, SortOrder order)
+            {
+                col = column;
+                this.order = order;
+            }
+            public int Compare(object x, object y)
+            {
+                int returnVal = -1;
+                returnVal = String.Compare(((ListViewItem)x).SubItems[col].Text,
+                                        ((ListViewItem)y).SubItems[col].Text);
+                // Determine whether the sort order is descending.
+                if (order == SortOrder.Descending)
+                    // Invert the value returned by String.Compare.
+                    returnVal *= -1;
+                return returnVal;
             }
         }
     }
