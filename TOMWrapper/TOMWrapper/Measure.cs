@@ -164,6 +164,9 @@ namespace TabularEditor.TOMWrapper
                 case Properties.FORMATSTRING: return DataType != DataType.String;
                 case Properties.DETAILROWSDEFINITION:
                     return Handler.CompatibilityLevel >= 1400;
+
+                case Properties.DATACATEGORY:
+                    return Handler.CompatibilityLevel >= 1455;
                 default: return true;
             }
         }
