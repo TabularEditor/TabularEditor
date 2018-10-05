@@ -371,6 +371,7 @@
             // page2
             // 
             this.page2.AllowNew = true;
+            this.page2.ClearSelection = true;
             this.page2.Location = new System.Drawing.Point(15, 63);
             this.page2.Name = "page2";
             this.page2.Server = null;

@@ -213,6 +213,7 @@
     <Compile Include="UIServices\ClipboardListener.cs" />
     <Compile Include="UIServices\Crypto.cs" />
     <Compile Include="UIServices\DynamicLinq.cs" />
+    <Compile Include="UIServices\LinqExtensions.cs" />
     <Compile Include="UIServices\ManagedIpHelper.cs" />
     <Compile Include="UIServices\PowerBIHelper.cs" />
     <Compile Include="UIServices\Preferences.cs" />

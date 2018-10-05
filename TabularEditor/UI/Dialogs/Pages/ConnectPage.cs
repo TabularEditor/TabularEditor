@@ -19,7 +19,13 @@ using json.Newtonsoft.Json;
 
 namespace TabularEditor.UI.Dialogs.Pages
 {
-    public partial class ConnectPage : UserControl
+    public interface IValidationPage
+    {
+        bool IsValid { get; }
+        event ValidationEventHandler Validation;
+    }
+
+    public partial class ConnectPage : UserControl, IValidationPage
     {
         public class RecentServersObject
         {
@@ -89,11 +95,11 @@ namespace TabularEditor.UI.Dialogs.Pages
 
         private void OnValidation()
         {
-            var valid = (!string.IsNullOrWhiteSpace(txtServer.Text) || comboBox1.SelectedIndex >= 0)
-                && (rdbIntegrated.Checked || !string.IsNullOrEmpty(txtUsername.Text));
-
-            Validation?.Invoke(this, new ValidationEventArgs(valid));
+            Validation?.Invoke(this, new ValidationEventArgs(IsValid));
         }
+
+        public bool IsValid => (!string.IsNullOrWhiteSpace(txtServer.Text) || comboBox1.SelectedIndex >= 0)
+                && (rdbIntegrated.Checked || !string.IsNullOrEmpty(txtUsername.Text));
 
         public bool AllowLocalInstanceConnect
         {
