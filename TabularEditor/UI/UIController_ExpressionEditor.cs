@@ -120,6 +120,8 @@ namespace TabularEditor.UI
             }
         }
 
+        public const string DAX_GUIDE_URL = "https://dax.guide/{0}/?utm_source=tabular-editor";
+
         public void ExpressionEditor_GoToDefinition()
         {
             // Navigate to symbol under cursor
@@ -132,7 +134,7 @@ namespace TabularEditor.UI
                 var token = ExpressionParser.GetTokenAtPos(currentTokens, UI.ExpressionEditor.SelectionStart);
                 if (token != null)
                 {
-                    if (token.Channel == DAXLexer.KEYWORD_CHANNEL) Process.Start("https://dax.guide/" + token.Text.ToLowerInvariant());
+                    if (token.Channel == DAXLexer.KEYWORD_CHANNEL) Process.Start(string.Format(DAX_GUIDE_URL, token.Text.ToLowerInvariant()));
                 }
                 else
                     UI.StatusLabel.Text = "Cannot navigate to symbol under cursor.";
