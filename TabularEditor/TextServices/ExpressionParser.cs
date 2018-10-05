@@ -80,19 +80,126 @@ namespace TabularEditor.TextServices
         public static Style LiteralStyle = new TextStyle(FromHex("#EE7F18"), null, FontStyle.Regular);
         public static Style ParensStyle = new TextStyle(Brushes.Gray, null, FontStyle.Regular);
 
-        public static void SyntaxHighlight(FastColoredTextBox textbox)
+        class SearchToken : IToken
         {
+            public SearchToken(int charIndex)
+            {
+                StartIndex = charIndex;
+            }
+            public int Channel
+            {
+                get
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            public int Column
+            {
+                get
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            public ICharStream InputStream
+            {
+                get
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            public int Line
+            {
+                get
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            public int StartIndex { get; private set; }
+
+            public int StopIndex => StartIndex;
+
+            public string Text
+            {
+                get
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            public int TokenIndex
+            {
+                get
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            public ITokenSource TokenSource
+            {
+                get
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            public int Type
+            {
+                get
+                {
+                    throw new NotImplementedException();
+                }
+            }
+        }
+        class TokenComparer : IComparer<IToken>
+        {
+            public int Compare(IToken x, IToken y)
+            {
+                if (x.StartIndex >= y.StartIndex && x.StartIndex <= y.StopIndex) return 0;
+                if (y.StartIndex >= x.StartIndex && y.StartIndex <= x.StopIndex) return 0;
+                if (x.StartIndex < y.StartIndex) return -1;
+                else return 1;
+            }
+
+            public static readonly TokenComparer Default = new TokenComparer();
+        }
+
+        public static IToken GetTokenAtPos(List<IToken> tokens, int charIndex)
+        {
+            var searchToken = new SearchToken(charIndex);
+            var index = tokens.BinarySearch(searchToken, TokenComparer.Default);
+            if (index < 0) return null;
+            return tokens[index];
+        }
+
+        public static List<IToken> SyntaxHighlight(FastColoredTextBox textbox)
+        {
+            List<IToken> tokens;
+
             // TODO: This is slow on a large DAX expression and may cause flickering...
             //textbox.SuspendDrawing(); // Doesn't work as we might be on a different thread
             try
             {
                 var lexer = new DAXLexer(new DAXCharStream(textbox.Text, Preferences.Current.UseSemicolonsAsSeparators));
                 lexer.RemoveErrorListeners();
+                tokens = lexer.GetAllTokens().ToList();
+            }
+            catch
+            {
                 textbox.ClearStyle(StyleIndex.All);
-                
-                var tok = lexer.NextToken();
-                while (tok != null && tok.Type != DAXLexer.Eof)
+                return new List<IToken>();
+            }
+
+            textbox.BeginInvoke((MethodInvoker)(() =>
+            {
+                textbox.SuspendDrawing();
+                textbox.ClearStyle(StyleIndex.All);
+                foreach (var tok in tokens)
                 {
+                    if (tok.Type == DAXLexer.Eof) break;
                     var range = textbox.GetRange(tok.StartIndex, tok.StopIndex + 1);
                     if (tok.Channel == DAXLexer.KEYWORD_CHANNEL) range.SetStyle(KeywordStyle);
                     else if (tok.Channel == DAXLexer.COMMENTS_CHANNEL) range.SetStyle(CommentStyle);
@@ -108,19 +215,11 @@ namespace TabularEditor.TextServices
                             default:
                                 range.SetStyle(PlainStyle); break;
                         }
-
-                    tok = lexer.NextToken();
                 }
-            }
-            catch
-            {
-                // Ignore all errors encountered while doing async syntax highlighting
-            }
-            finally
-            {
-                //textbox.ResumeDrawing(); // Doesn't work, as we might be on a different thread
-            }
-            
+                textbox.ResumeDrawing();
+            }));
+
+            return tokens;
         }
 
         public static Brush FromHex(string hex)

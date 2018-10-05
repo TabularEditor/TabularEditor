@@ -56,6 +56,7 @@
             this.actUndo = new TabularEditor.UI.Actions.UIUndoRedoAction();
             this.actRedo = new TabularEditor.UI.Actions.UIUndoRedoAction();
             this.actExpressionFormatDAX = new TabularEditor.UI.UIModelAction();
+            this.actGotoDef = new TabularEditor.UI.UIModelAction();
             this.actFind = new TabularEditor.UI.UIModelAction();
             this.actReplace = new TabularEditor.UI.UIModelAction();
             this.actExecuteScript = new TabularEditor.UI.UIModelAction();
@@ -139,6 +140,8 @@
             this.toolStripButton12 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton13 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton14 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton15 = new System.Windows.Forms.ToolStripButton();
+            this.goToDefinitionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -218,6 +221,7 @@
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
             this.dAXExpressionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripSeparator();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
@@ -287,6 +291,7 @@
             actionsMain.Actions.Add(this.actUndo);
             actionsMain.Actions.Add(this.actRedo);
             actionsMain.Actions.Add(this.actExpressionFormatDAX);
+            actionsMain.Actions.Add(this.actGotoDef);
             actionsMain.Actions.Add(this.actFind);
             actionsMain.Actions.Add(this.actReplace);
             actionsMain.Actions.Add(this.actExecuteScript);
@@ -523,6 +528,16 @@
             this.actExpressionFormatDAX.ToolTipText = "Format using www.daxformatter.com (Ctrl+Shift+D)";
             this.actExpressionFormatDAX.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.actExpression_UpdateEx);
             this.actExpressionFormatDAX.Execute += new System.EventHandler(this.actExpressionFormatDAX_Execute);
+            // 
+            // actGotoDef
+            // 
+            this.actGotoDef.Image = global::TabularEditor.Resources.GoToDefinition_16x;
+            this.actGotoDef.ShortcutKeys = System.Windows.Forms.Keys.F12;
+            this.actGotoDef.Text = "Go to Definition";
+            this.actGotoDef.ToolTipText = "Navigate to the symbol under the cursor. If this is a DAX keyword, opens a browse" +
+    "r with the corresponding https://dax.guide article (F12)";
+            this.actGotoDef.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.actExpression_UpdateEx);
+            this.actGotoDef.Execute += new System.EventHandler(this.actGotoDef_Execute);
             // 
             // actFind
             // 
@@ -1447,6 +1462,30 @@
             this.toolStripButton14.Text = "Uncomment Lines";
             this.toolStripButton14.ToolTipText = "Uncomment the selected lines (Ctrl+Shift+U)";
             // 
+            // toolStripButton15
+            // 
+            actionsMain.SetAction(this.toolStripButton15, this.actGotoDef);
+            this.toolStripButton15.AutoToolTip = false;
+            this.toolStripButton15.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton15.Image = global::TabularEditor.Resources.GoToDefinition_16x;
+            this.toolStripButton15.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton15.Name = "toolStripButton15";
+            this.toolStripButton15.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton15.Text = "Go to Definition";
+            this.toolStripButton15.ToolTipText = "Navigate to the symbol under the cursor. If this is a DAX keyword, opens a browse" +
+    "r with the corresponding https://dax.guide article (F12)";
+            // 
+            // goToDefinitionToolStripMenuItem
+            // 
+            actionsMain.SetAction(this.goToDefinitionToolStripMenuItem, this.actGotoDef);
+            this.goToDefinitionToolStripMenuItem.Image = global::TabularEditor.Resources.GoToDefinition_16x;
+            this.goToDefinitionToolStripMenuItem.Name = "goToDefinitionToolStripMenuItem";
+            this.goToDefinitionToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F12;
+            this.goToDefinitionToolStripMenuItem.Size = new System.Drawing.Size(245, 22);
+            this.goToDefinitionToolStripMenuItem.Text = "Go to Definition";
+            this.goToDefinitionToolStripMenuItem.ToolTipText = "Navigate to the symbol under the cursor. If this is a DAX keyword, opens a browse" +
+    "r with the corresponding https://dax.guide article (F12)";
+            // 
             // preferencesToolStripMenuItem
             // 
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
@@ -1826,6 +1865,7 @@
             this.toolStripButton10,
             this.toolStripSeparator7,
             this.btnFormatDAX,
+            this.toolStripButton15,
             this.toolStripSeparator8,
             this.btnFind,
             this.btnReplace,
@@ -2246,11 +2286,18 @@
             // 
             this.dAXExpressionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.formatDAXToolStripMenuItem,
+            this.goToDefinitionToolStripMenuItem,
+            this.toolStripMenuItem11,
             this.commentToolStripMenuItem,
             this.uncommentToolStripMenuItem});
             this.dAXExpressionToolStripMenuItem.Name = "dAXExpressionToolStripMenuItem";
             this.dAXExpressionToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.dAXExpressionToolStripMenuItem.Text = "DAX Editor";
+            // 
+            // toolStripMenuItem11
+            // 
+            this.toolStripMenuItem11.Name = "toolStripMenuItem11";
+            this.toolStripMenuItem11.Size = new System.Drawing.Size(242, 6);
             // 
             // viewToolStripMenuItem
             // 
@@ -2687,6 +2734,10 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton toolStripButton12;
         private System.Windows.Forms.ToolStripButton toolStripButton11;
+        private UI.UIModelAction actGotoDef;
+        private System.Windows.Forms.ToolStripButton toolStripButton15;
+        private System.Windows.Forms.ToolStripMenuItem goToDefinitionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem11;
     }
 }
 

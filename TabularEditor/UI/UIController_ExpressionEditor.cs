@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -58,7 +59,6 @@ namespace TabularEditor.UI
         private void ExpressionEditor_Init()
         {
             UI.ExpressionEditor.TextChanged += ExpressionEditor_TextChanged;
-            UI.ExpressionEditor.KeyUp += ExpressionEditor_KeyUp;
             UI.ExpressionEditor.KeyPress += ExpressionEditor_KeyPress;
             UI.ExpressionEditor.DragEnter += ExpressionEditor_DragEnter;
             UI.ExpressionEditor.DragLeave += ExpressionEditor_DragLeave;
@@ -69,22 +69,6 @@ namespace TabularEditor.UI
             syntaxHighlightTimer.Tick += ExpressionEditor_SyntaxHighlightTick;
         }
 
-        private void ExpressionEditor_KeyUp(object sender, KeyEventArgs e)
-        {
-            if(e.KeyCode == Keys.F12)
-            {
-                // Navigate to symbol under cursor
-                var obj = ExpressionEditor_Current as IDaxDependantObject;
-                var dependsOnList = DependsOnList.GetDependencies(obj, UI.ExpressionEditor.Text, CurrentDaxProperty);
-
-                var dest = dependsOnList.GetObjectAt(CurrentDaxProperty, UI.ExpressionEditor.SelectionStart);
-                if (dest == null)
-                    UI.StatusLabel.Text = "Cannot navigate to symbol under cursor.";
-                else
-                    Goto(dest);
-            }
-        }
-
         Task syntaxHighlightTask;
 
         private void ExpressionEditor_SyntaxHighlightTick(object sender, EventArgs e)
@@ -93,10 +77,12 @@ namespace TabularEditor.UI
             {
                 syntaxHighlightTimer.Enabled = false;
                 syntaxHighlightTimer.Interval = 500;
-                syntaxHighlightTask = new Task(() => ExpressionParser.SyntaxHighlight(UI.ExpressionEditor));
+                syntaxHighlightTask = new Task(() => currentTokens = ExpressionParser.SyntaxHighlight(UI.ExpressionEditor));
                 syntaxHighlightTask.Start();
             }
         }
+
+        private List<Antlr4.Runtime.IToken> currentTokens;
 
         private void ExpressionEditor_ExpressionSelectorChanged(object sender, EventArgs e)
         {
@@ -132,6 +118,27 @@ namespace TabularEditor.UI
                     e.Handled = true;
                 }
             }
+        }
+
+        public void ExpressionEditor_GoToDefinition()
+        {
+            // Navigate to symbol under cursor
+            var obj = ExpressionEditor_Current as IDaxDependantObject;
+            var dependsOnList = DependsOnList.GetDependencies(obj, UI.ExpressionEditor.Text, CurrentDaxProperty);
+
+            var dest = dependsOnList.GetObjectAt(CurrentDaxProperty, UI.ExpressionEditor.SelectionStart);
+            if (dest == null)
+            {
+                var token = ExpressionParser.GetTokenAtPos(currentTokens, UI.ExpressionEditor.SelectionStart);
+                if (token != null)
+                {
+                    if (token.Channel == DAXLexer.KEYWORD_CHANNEL) Process.Start("https://dax.guide/" + token.Text.ToLowerInvariant());
+                }
+                else
+                    UI.StatusLabel.Text = "Cannot navigate to symbol under cursor.";
+            }
+            else
+                Goto(dest);
         }
 
         private string Tree_DragBackup;
@@ -186,7 +193,7 @@ namespace TabularEditor.UI
             ExpressionEditor_SyntaxHighlight();
         }
 
-        private bool ExpressionEditor_IsDax
+        public bool ExpressionEditor_IsDax
         {
             get
             {
@@ -214,7 +221,7 @@ namespace TabularEditor.UI
             Console.WriteLine("Do syntax highlight");
 
             // For short DAX expressions, do synchronous syntax highlighting. Otherwise, do asynchrounous:
-            if (UI.ExpressionEditor.Text.Length < 2000) ExpressionParser.SyntaxHighlight(UI.ExpressionEditor);
+            if (UI.ExpressionEditor.Text.Length < 2000) currentTokens = ExpressionParser.SyntaxHighlight(UI.ExpressionEditor);
             else syntaxHighlightTimer.Enabled = true;
         }
 
