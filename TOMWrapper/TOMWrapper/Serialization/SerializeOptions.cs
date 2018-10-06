@@ -19,6 +19,14 @@ namespace TabularEditor.TOMWrapper.Serialization
         {
             get
             {
+                return new SerializeOptions();
+            }
+        }
+
+        public static SerializeOptions DefaultFolder
+        {
+            get
+            {
                 var so = new SerializeOptions();
                 so.Levels = new HashSet<string> {
                     "Data Sources",

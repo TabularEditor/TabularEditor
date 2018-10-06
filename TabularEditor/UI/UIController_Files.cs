@@ -171,9 +171,9 @@ namespace TabularEditor.UI
                 var useAnnotatedSerializationSettingsCheckBox = new CommonFileDialogCheckBox
                 {
                     Text = "Use serialization settings from annotations",
-                    IsChecked = Handler.SerializeOptions != SerializeOptions.Default
+                    IsChecked = true
                 };
-                if (useAnnotatedSerializationSettingsCheckBox.IsChecked) fbd.Controls.Add(useAnnotatedSerializationSettingsCheckBox);
+                if (Handler.HasSerializeOptions) fbd.Controls.Add(useAnnotatedSerializationSettingsCheckBox);
                 var res = fbd.ShowDialog();
 
 
@@ -188,7 +188,7 @@ namespace TabularEditor.UI
                         Handler.Save(fbd.FileName, 
                             fileType == "pbit" ? SaveFormat.PowerBiTemplate : SaveFormat.ModelSchemaOnly, 
                             Preferences.Current.GetSerializeOptions(false), 
-                            useAnnotatedSerializationSettingsCheckBox.IsChecked);
+                            Handler.HasSerializeOptions && useAnnotatedSerializationSettingsCheckBox.IsChecked);
 
                         RecentFiles.Add(fbd.FileName);
                         RecentFiles.Save();
@@ -249,9 +249,9 @@ namespace TabularEditor.UI
                 var useAnnotatedSerializationSettingsCheckBox = new CommonFileDialogCheckBox
                 {
                     Text = "Use serialization settings from annotations",
-                    IsChecked = Handler.SerializeOptions != SerializeOptions.Default
+                    IsChecked = true
                 };
-                if (useAnnotatedSerializationSettingsCheckBox.IsChecked) fbd.Controls.Add(useAnnotatedSerializationSettingsCheckBox);
+                if (Handler.HasSerializeOptions) fbd.Controls.Add(useAnnotatedSerializationSettingsCheckBox);
 
                 var res = fbd.ShowDialog();
                 if(res == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(fbd.FileName))
@@ -259,7 +259,8 @@ namespace TabularEditor.UI
                     using (new Hourglass())
                     {
                         UI.StatusLabel.Text = "Saving...";
-                        Handler.Save(fbd.FileName, SaveFormat.TabularEditorFolder, Preferences.Current.GetSerializeOptions(true), useAnnotatedSerializationSettingsCheckBox.IsChecked);
+                        Handler.Save(fbd.FileName, SaveFormat.TabularEditorFolder, 
+                            Preferences.Current.GetSerializeOptions(true), Handler.HasSerializeOptions && useAnnotatedSerializationSettingsCheckBox.IsChecked);
 
                         RecentFiles.Add(fbd.FileName);
                         RecentFiles.Save();
