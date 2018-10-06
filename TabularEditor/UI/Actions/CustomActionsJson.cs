@@ -18,7 +18,9 @@ namespace TabularEditor.UI.Actions
             try
             {
                 var json = File.ReadAllText(jsonPath, Encoding.UTF8);
-                return JsonConvert.DeserializeObject<CustomActionsJson>(json);
+                var result = JsonConvert.DeserializeObject<CustomActionsJson>(json);
+                result.Actions = result.Actions.OrderBy(act => act.Name).ToArray();
+                return result;
             }
             catch (Exception e)
             {

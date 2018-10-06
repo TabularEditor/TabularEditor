@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Microsoft.AnalysisServices.Tabular;
 using System.Globalization;
 using TabularEditor.UIServices;
+using System.Threading;
 
 namespace TabularEditor.UI.Dialogs.Pages
 {
@@ -52,14 +53,7 @@ namespace TabularEditor.UI.Dialogs.Pages
         private void dataGridView1_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
             dataGridView1.DataBindingComplete -= dataGridView1_DataBindingComplete;
-            if (ClearSelection)
-            {
-                suspendEvent = true;
-                dataGridView1.ClearSelection();
-                txtDatabaseID.Text = "";
-                suspendEvent = false;
-                OnValidation();
-            }
+            if (ClearSelection) DoClearSelection();
             var databaseList = dataGridView1.DataSource as List<Database>;
             if (databaseList != null && !string.IsNullOrEmpty(PreselectDb))
             {
@@ -80,6 +74,15 @@ namespace TabularEditor.UI.Dialogs.Pages
         }
 
         bool suspendEvent = false;
+
+        public void DoClearSelection()
+        {
+            suspendEvent = true;
+            dataGridView1.ClearSelection();
+            txtDatabaseID.Text = "";
+            suspendEvent = false;
+            OnValidation();
+        }
 
         private void dataGridView1_SelectionChanged_1(object sender, EventArgs e)
         {

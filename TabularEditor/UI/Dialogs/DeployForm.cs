@@ -99,6 +99,10 @@ namespace TabularEditor.UI.Dialogs
                 if (page2.Server == null) return;
             }
             CurrentPage++;
+            if(_currentPage == 1)
+            {
+                if (PreselectDb == null) page2.DoClearSelection();
+            }
 
             if (_currentPage == 2)
             {
