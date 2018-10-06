@@ -242,16 +242,19 @@ namespace TabularEditor.UI.Dialogs
             }
         }
 
-        Dictionary<string, bool> removedNodes = new Dictionary<string, bool>();
+        Dictionary<string, bool> removedNodes1 = new Dictionary<string, bool>();
+        Dictionary<string, bool> removedNodes2 = new Dictionary<string, bool>();
 
         private void SetNodeVisible(string nodeKey, bool visible, TreeView treeView)
         {
+            var removedNodes = treeView == treeView1 ? removedNodes1 : removedNodes2;
+
             if (treeView.Nodes.ContainsKey(nodeKey))
             {
                 if (!visible)
                 {
                     removedNodes.Add(nodeKey, treeView.Nodes[nodeKey].Checked);
-                    treeView1.Nodes[nodeKey].Remove();
+                    treeView.Nodes[nodeKey].Remove();
                 }
             }
             else

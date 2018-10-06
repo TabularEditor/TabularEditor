@@ -119,35 +119,77 @@ namespace TabularEditor.TOMWrapper
             set
             {
                 _serializeOptions = value;
-                Model.SetAnnotation("TabularEditor_SerializeOptions", JsonConvert.SerializeObject(_serializeOptions), true);
+                SetSerializeOptions(_serializeOptions, true);
             }
+        }
+
+        private void SetSerializeOptions(SerializeOptions options, bool undoable)
+        {
+            if (options == null)
+                Model.RemoveAnnotation("TabularEditor_SerializeOptions", undoable);
+            else
+                Model.SetAnnotation("TabularEditor_SerializeOptions", JsonConvert.SerializeObject(options), undoable);
         }
 
         public void Save(string path, SaveFormat format, SerializeOptions options, bool useAnnotatedSerializeOptions = false, bool resetCheckpoint = false)
         {
-            if (useAnnotatedSerializeOptions) options = SerializeOptions;
-            else if (options == null) throw new ArgumentNullException("options");
+            _disableUpdates = true;
+            bool hasOptions = HasSerializeOptions;
+            SerializeOptions optionsBackup = SerializeOptions.Default;
 
-            switch (format)
+            if (useAnnotatedSerializeOptions)
             {
-                case SaveFormat.ModelSchemaOnly:
-                    SaveFile(path, options);
-                    break;
-                case SaveFormat.PowerBiTemplate:
-                    SavePbit(path);
-                    break;
-                case SaveFormat.TabularEditorFolder:
-                    Model.SaveToFolder(path, options);
-                    break;
-
-                case SaveFormat.VisualStudioProject:
-                    // TODO
-                    throw new NotImplementedException();
-                    // break;
+                // This is invoked when clicking "Save" - always take whatever annotations are currently on the model,
+                // and use those when serializing.
+                options = SerializeOptions;
+            }
+            else
+            {
+                // This is invoked when clicking "Save As" or "Save To Folder", or when the model is being saved. Here,
+                // we don't want to change the annotation on the loaded model - but we still want to apply a (possible different)
+                // annotation to the file that's being saved:
+                optionsBackup = SerializeOptions;
+                SetSerializeOptions(options, false);
             }
 
-            if (resetCheckpoint) UndoManager.SetCheckpoint();
-            Status = format == SaveFormat.TabularEditorFolder ? "Model saved." : "File saved.";
+            try
+            {
+                switch (format)
+                {
+                    case SaveFormat.ModelSchemaOnly:
+                        if (options != SerializeOptions.Default) SerializeOptions = options;
+                        SaveFile(path, options);
+                        break;
+                    case SaveFormat.PowerBiTemplate:
+                        SavePbit(path);
+                        break;
+                    case SaveFormat.TabularEditorFolder:
+                        Model.SaveToFolder(path, options);
+                        break;
+
+                    case SaveFormat.VisualStudioProject:
+                        // TODO
+                        throw new NotImplementedException();
+                        // break;
+                }
+
+                if (resetCheckpoint) UndoManager.SetCheckpoint();
+                Status = format == SaveFormat.TabularEditorFolder ? "Model saved." : "File saved.";
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+
+                if (!useAnnotatedSerializeOptions)
+                {
+                    // Restore serialization options within the currently loaded model:
+                    SetSerializeOptions(hasOptions ? optionsBackup : null, false);
+                }
+                _disableUpdates = false;
+            }
         }
 
         private void SavePbit(string fileName)

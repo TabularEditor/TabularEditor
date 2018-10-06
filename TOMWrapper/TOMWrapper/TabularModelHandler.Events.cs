@@ -86,12 +86,16 @@ namespace TabularEditor.TOMWrapper
 
         internal void DoObjectChanging(TabularObject obj, string propertyName, object newValue, ref bool cancel)
         {
+            if (_disableUpdates) return;
+
             var e = new ObjectChangingEventArgs(obj, propertyName, newValue);
             ObjectChanging?.Invoke(this, e);
             cancel = e.Cancel;
         }
         internal void DoObjectChanged(TabularObject obj, string propertyName, object oldValue, object newValue)
         {
+            if (_disableUpdates) return;
+
             var e = new ObjectChangedEventArgs(obj, propertyName, oldValue, newValue);
             ObjectChanged?.Invoke(this, e);
         }
