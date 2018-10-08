@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -275,6 +275,24 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 script = File.ReadAllText(scriptFile);
             }
 
+
+            string saveToFolderOutputPath = null;
+
+            var doSaveToFolder = upperArgList.IndexOf("-FOLDER");
+            if (doSaveToFolder == -1) doSaveToFolder = upperArgList.IndexOf("-F");
+            if (doSaveToFolder > -1)
+            {
+                if(upperArgList.Count <= doSaveToFolder)
+                {
+                    Error("Invalid argument syntax.\n");
+                    OutputUsage();
+                    return true;
+                }
+                saveToFolderOutputPath = argList[doSave + 1];
+                var directoryName = new FileInfo(saveToFolderOutputPath).Directory.FullName;
+                Directory.CreateDirectory(saveToFolderOutputPath);
+            }
+
             string buildOutputPath = null;
 
             var doSave = upperArgList.IndexOf("-BUILD");
@@ -290,6 +308,12 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 buildOutputPath = argList[doSave + 1];
                 var directoryName = new FileInfo(buildOutputPath).Directory.FullName;
                 Directory.CreateDirectory(directoryName);
+            }
+
+            if (doSaveToFolder > -1 && doSave > -1 ) {
+                    Error("-FOLDER and -BUILD arguments are mutually exclusive.\n");
+                    OutputUsage();
+                    return true;
             }
 
             // Load model:
@@ -326,6 +350,12 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             {
                 cw.WriteLine("Building Model.bim file...");
                 h.Save(buildOutputPath, SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+            }
+            else if(!string.IsNullOrEmpty(saveToFolderOutputPath))
+            {
+                cw.WriteLine("Saving Model.bim file to Folder Output Path ...");
+                //Note the last parameter, we use whatever SerializeOptions are already in the file
+                h.Save(saveToFolderOutputPath, SaveFormat.TabularEditorFolder, null, false);
             }
 
             var replaceMap = new Dictionary<string, string>();
@@ -513,6 +543,8 @@ database            Database ID of the model to load
   script              Full path of a file containing a C# script to execute.
 -B / -BUILD         Saves the model (after optional script execution) as a Model.bim file.
   output              Full path of the Model.bim file to save to.
+-F / -FOLDER         Saves the model (after optional script execution) as a series of JSON objects in a folder.
+  output              Full path of the folder to save to.
 -V / -VSTS          Output Visual Studio Team Services logging commands.
 -A / -ANALYZE       Runs Best Practice Analyzer and outputs the result to the console.
   rulefile            Optional path of file containing BPA rules to be analyzed. If not
@@ -528,7 +560,7 @@ database            Database ID of the model to load
                         switch, you can (optionally) specify any number of placeholder-value
                         pairs. Doing so, will replace any occurrence of the specified
                         placeholders (plch1, plch2, ...) in the connection strings of every
-                        data source in the model, with the specified values (value1, value2, ...).                    
+                        data source in the model, with the specified values (value1, value2, ...).
     -P / -PARTITIONS    Deploy (overwrite) existing table partitions in the model.
   -R / -ROLES         Deploy roles.
     -M / -MEMBERS       Deploy role members.
