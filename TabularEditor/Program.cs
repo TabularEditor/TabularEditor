@@ -533,7 +533,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
         {
             cw.WriteLine(@"Usage:
 
-TABULAREDITOR ( file | server database ) [-S script] [-B output] [-A [rulefile]] [-V]
+TABULAREDITOR ( file | server database ) [-S script] [(-B | -F) output] [-A [rulefile]] [-V]
     [-D server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]] [-P]] [-R [-M]] [-W]]
 
 file                Full path of the Model.bim file or database.json model folder to load.
