@@ -43,10 +43,7 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.btnImportFromClipboard = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.btnImport = new System.Windows.Forms.Button();
-            this.btnCancel = new System.Windows.Forms.Button();
             this.treeViewAdv1 = new Aga.Controls.Tree.TreeViewAdv();
             this.colImport = new Aga.Controls.Tree.TreeColumn();
             this.colSourceName = new Aga.Controls.Tree.TreeColumn();
@@ -56,6 +53,9 @@
             this.nodeTextBox1 = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeComboBox1 = new Aga.Controls.Tree.NodeControls.NodeComboBox();
             this.nodeTextBox2 = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.btnImport = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.tabControl1.SuspendLayout();
             this.tabSingle.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -186,7 +186,7 @@
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.btnImportFromClipboard);
-            this.groupBox2.Location = new System.Drawing.Point(7, 107);
+            this.groupBox2.Location = new System.Drawing.Point(7, 99);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(317, 54);
             this.groupBox2.TabIndex = 1;
@@ -205,23 +205,13 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Controls.Add(this.linkLabel1);
             this.groupBox1.Location = new System.Drawing.Point(7, 4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(317, 97);
+            this.groupBox1.Size = new System.Drawing.Size(317, 89);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Information";
-            // 
-            // label1
-            // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.label1.Location = new System.Drawing.Point(7, 20);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(304, 75);
-            this.label1.TabIndex = 0;
-            this.label1.Text = resources.GetString("label1.Text");
             // 
             // groupBox3
             // 
@@ -235,27 +225,6 @@
             this.groupBox3.TabIndex = 3;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Imported columns";
-            // 
-            // btnImport
-            // 
-            this.btnImport.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnImport.Enabled = false;
-            this.btnImport.Location = new System.Drawing.Point(721, 376);
-            this.btnImport.Name = "btnImport";
-            this.btnImport.Size = new System.Drawing.Size(75, 23);
-            this.btnImport.TabIndex = 4;
-            this.btnImport.Text = "Import";
-            this.btnImport.UseVisualStyleBackColor = true;
-            // 
-            // btnCancel
-            // 
-            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(640, 376);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(75, 23);
-            this.btnCancel.TabIndex = 5;
-            this.btnCancel.Text = "Cancel";
-            this.btnCancel.UseVisualStyleBackColor = true;
             // 
             // treeViewAdv1
             // 
@@ -354,6 +323,41 @@
             this.nodeTextBox2.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             this.nodeTextBox2.UseCompatibleTextRendering = true;
             // 
+            // btnImport
+            // 
+            this.btnImport.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.btnImport.Enabled = false;
+            this.btnImport.Location = new System.Drawing.Point(721, 376);
+            this.btnImport.Name = "btnImport";
+            this.btnImport.Size = new System.Drawing.Size(75, 23);
+            this.btnImport.TabIndex = 4;
+            this.btnImport.Text = "Import";
+            this.btnImport.UseVisualStyleBackColor = true;
+            // 
+            // btnCancel
+            // 
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnCancel.Location = new System.Drawing.Point(640, 376);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(75, 23);
+            this.btnCancel.TabIndex = 5;
+            this.btnCancel.Text = "Cancel";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            // 
+            // linkLabel1
+            // 
+            this.linkLabel1.LinkArea = new System.Windows.Forms.LinkArea(112, 19);
+            this.linkLabel1.Location = new System.Drawing.Point(6, 16);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Size = new System.Drawing.Size(301, 70);
+            this.linkLabel1.TabIndex = 3;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "Tabular Editor can not automatically parse a Power Query (M) script to infer colu" +
+    "mn metadata.\r\n\r\nPlease see the Tabular Editor wiki for more information on how t" +
+    "o use this feature.";
+            this.linkLabel1.UseCompatibleTextRendering = true;
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
+            // 
             // ImportTablesForm
             // 
             this.AcceptButton = this.btnImport;
@@ -394,7 +398,6 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button btnImportFromClipboard;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label label1;
         private Aga.Controls.Tree.TreeColumn colImport;
         private Aga.Controls.Tree.TreeColumn colSourceName;
         private Aga.Controls.Tree.TreeColumn colDataType;
@@ -415,5 +418,6 @@
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btnImportFromQuery;
+        private System.Windows.Forms.LinkLabel linkLabel1;
     }
 }
