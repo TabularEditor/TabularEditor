@@ -98,6 +98,16 @@ namespace TabularEditor.UI.Dialogs
 
             UpdateUI();
         }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/otykier/TabularEditor/wiki/Importing-Tables#power-query-data-sources");
+        }
     }
 
     public class ImportColumnsTreeModel : ITreeModel
@@ -156,7 +166,7 @@ namespace TabularEditor.UI.Dialogs
                 var header = dataRows[0].Split('\t');
                 var nameIndex = Array.FindIndex(header, s => s.Equals("Name", StringComparison.InvariantCultureIgnoreCase));
                 var typeIndex = Array.FindIndex(header, s => s.Equals("TypeName", StringComparison.InvariantCultureIgnoreCase));
-                if(typeIndex == -1) Array.FindIndex(header, s => s.IndexOf("Type", StringComparison.InvariantCultureIgnoreCase) >= 0);
+                if(typeIndex == -1) typeIndex = Array.FindIndex(header, s => s.IndexOf("Type", StringComparison.InvariantCultureIgnoreCase) >= 0);
                 for (int i = 1; i < dataRows.Length; i++)
                 {
                     var dataCols = dataRows[i].Split('\t');
@@ -240,14 +250,18 @@ namespace TabularEditor.UI.Dialogs
                 case "currency":
                 case "decimal":
                 case "numeric":
+                case "money":
+                case "smallmoney":
                     DataType = "Currency"; break;
 
                 case "int64.type":
                 case "int":
                 case "integer":
                 case "whole":
+                case "byte":
                 case "bigint":
                 case "smallint":
+                case "tinyint":
                 case "int64":
                 case "int32":
                 case "long":
@@ -265,6 +279,7 @@ namespace TabularEditor.UI.Dialogs
                 case "logical.type":
                 case "boolean":
                 case "bool":
+                case "bit":
                     DataType = "Boolean"; break;
 
                 default:
