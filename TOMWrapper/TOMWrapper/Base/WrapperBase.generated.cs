@@ -52,6 +52,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string EXPRESSION = "Expression";
 	    public const string EXPRESSIONS = "Expressions";
 	    public const string EXTENDEDPROPERTIES = "ExtendedProperties";
+	    public const string FORCEUNIQUENAMES = "ForceUniqueNames";
 	    public const string FORMATSTRING = "FormatString";
 	    public const string FROMCARDINALITY = "FromCardinality";
 	    public const string FROMCOLUMN = "FromColumn";
@@ -104,10 +105,6 @@ namespace TabularEditor.TOMWrapper
 	    public const string PERSPECTIVES = "Perspectives";
 	    public const string PERSPECTIVETABLES = "PerspectiveTables";
 	    public const string PROVIDER = "Provider";
-	    public const string RANGEEND = "RangeEnd";
-	    public const string RANGEGRANULARITY = "RangeGranularity";
-	    public const string RANGESTART = "RangeStart";
-	    public const string REFRESHBOOKMARK = "RefreshBookmark";
 	    public const string REFRESHEDTIME = "RefreshedTime";
 	    public const string REFRESHPOLICY = "RefreshPolicy";
 	    public const string RELATIONSHIP = "Relationship";
@@ -501,7 +498,7 @@ namespace TabularEditor.TOMWrapper
 ///             Missing comment
 ///             </summary>
 		[DisplayName("Description")]
-		[Category("Basic"),Description(@"Missing comment"),IntelliSense("The Description of this Variation.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"The Description of this Variation"),IntelliSense(@"The Description of this Variation")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;
@@ -525,7 +522,7 @@ namespace TabularEditor.TOMWrapper
 ///             If true, the Variation is the Default one for the Column.
 ///             </summary>
 		[DisplayName("Default")]
-		[Category("Variation Options"),Description(@"If true, the Variation is the Default one for the Column."),IntelliSense("The Default of this Variation.")]
+		[Category("Variation Options"),Description(@"If true, the Variation is the Default one for the Column."),IntelliSense(@"If true, the Variation is the Default one for the Column.")]
 		public bool IsDefault {
 			get {
 			    return MetadataObject.IsDefault;
@@ -549,7 +546,7 @@ namespace TabularEditor.TOMWrapper
 ///             Missing comment
 ///             </summary>
 		[DisplayName("Parent Column")]
-		[Category("Basic"),Description(@"Missing comment"),IntelliSense("The Parent Column of this Variation.")][TypeConverter(typeof(TableColumnConverter)),ReadOnly(true)]
+		[Category("Basic"),Description(@"The Column of this Variation"),IntelliSense(@"The Column of this Variation")][TypeConverter(typeof(TableColumnConverter)),ReadOnly(true)]
 		public Column Column {
 			get {
 				if (MetadataObject.Column == null) return null;
@@ -562,7 +559,7 @@ namespace TabularEditor.TOMWrapper
 ///             Missing comment
 ///             </summary>
 		[DisplayName("Relationship")]
-		[Category("Variation Options"),Description(@"Missing comment"),IntelliSense("The Relationship of this Variation.")][TypeConverter(typeof(AllRelationshipConverter))]
+		[Category("Variation Options"),Description(@"The Relationship of this Variation"),IntelliSense(@"The Relationship of this Variation")][TypeConverter(typeof(AllRelationshipConverter))]
 		public Relationship Relationship {
 			get {
 				if (MetadataObject.Relationship == null) return null;
@@ -587,7 +584,7 @@ namespace TabularEditor.TOMWrapper
 ///             Missing comment
 ///             </summary>
 		[DisplayName("Default Hierarchy")]
-		[Category("Variation Options"),Description(@"Missing comment"),IntelliSense("The Default Hierarchy of this Variation.")][TypeConverter(typeof(AllHierarchyConverter))]
+		[Category("Variation Options"),Description(@"The DefaultHierarchy of this Variation"),IntelliSense(@"The DefaultHierarchy of this Variation")][TypeConverter(typeof(AllHierarchyConverter))]
 		public Hierarchy DefaultHierarchy {
 			get {
 				if (MetadataObject.DefaultHierarchy == null) return null;
@@ -612,7 +609,7 @@ namespace TabularEditor.TOMWrapper
 ///             Missing comment
 ///             </summary>
 		[DisplayName("Default Column")]
-		[Category("Variation Options"),Description(@"Missing comment"),IntelliSense("The Default Column of this Variation.")][TypeConverter(typeof(AllColumnConverter))]
+		[Category("Variation Options"),Description(@"The DefaultColumn of this Variation"),IntelliSense(@"The DefaultColumn of this Variation")][TypeConverter(typeof(AllColumnConverter))]
 		public Column DefaultColumn {
 			get {
 				if (MetadataObject.DefaultColumn == null) return null;
@@ -884,7 +881,7 @@ namespace TabularEditor.TOMWrapper
 ///             For internal use only.
 ///             </summary>
 		[DisplayName("Context Expression")]
-		[Category("Other"),Description(@"For internal use only."),IntelliSense("The Context Expression of this StructuredDataSource.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Other"),Description(@"For internal use only."),IntelliSense(@"For internal use only.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string ContextExpression {
 			get {
 			    return MetadataObject.ContextExpression;
@@ -1046,7 +1043,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value indicating whether the data type is inferred.
 ///             </summary>
 		[DisplayName("Data Type Inferred")]
-		[Category("Other"),Description(@"A boolean value indicating whether the data type is inferred."),IntelliSense("The Data Type Inferred of this CalculatedColumn.")]
+		[Category("Other"),Description(@"A boolean value indicating whether the data type is inferred."),IntelliSense(@"A boolean value indicating whether the data type is inferred.")]
 		public bool IsDataTypeInferred {
 			get {
 			    return MetadataObject.IsDataTypeInferred;
@@ -1070,7 +1067,7 @@ namespace TabularEditor.TOMWrapper
 ///             The DAX expression that is evaluated for the calculated column.
 ///             </summary>
 		[DisplayName("Expression")]
-		[Category("Options"),Description(@"The DAX expression that is evaluated for the calculated column."),IntelliSense("The Expression of this CalculatedColumn.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Options"),Description(@"The DAX expression that is evaluated for the calculated column."),IntelliSense(@"The DAX expression that is evaluated for the calculated column.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Expression {
 			get {
 			    return MetadataObject.Expression;
@@ -1230,7 +1227,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value indicating whether name of the column is inferred by the server.
 ///             </summary>
 		[DisplayName("Name Inferred")]
-		[Category("Other"),Description(@"A boolean value indicating whether name of the column is inferred by the server."),IntelliSense("The Name Inferred of this CalculatedTableColumn.")]
+		[Category("Other"),Description(@"A boolean value indicating whether name of the column is inferred by the server."),IntelliSense(@"A boolean value indicating whether name of the column is inferred by the server.")]
 		public bool IsNameInferred {
 			get {
 			    return MetadataObject.IsNameInferred;
@@ -1254,7 +1251,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value indicating whether the data type is inferred.
 ///             </summary>
 		[DisplayName("Data Type Inferred")]
-		[Category("Other"),Description(@"A boolean value indicating whether the data type is inferred."),IntelliSense("The Data Type Inferred of this CalculatedTableColumn.")]
+		[Category("Other"),Description(@"A boolean value indicating whether the data type is inferred."),IntelliSense(@"A boolean value indicating whether the data type is inferred.")]
 		public bool IsDataTypeInferred {
 			get {
 			    return MetadataObject.IsDataTypeInferred;
@@ -1278,7 +1275,7 @@ namespace TabularEditor.TOMWrapper
 ///             Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is an expression (as the Expression of a CalculatedPartitionSource).
 ///             </summary>
 		[DisplayName("Source Column")]
-		[Category("Options"),Description(@"Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is an expression (as the Expression of a CalculatedPartitionSource)."),IntelliSense("The Source Column of this CalculatedTableColumn.")]
+		[Category("Options"),Description(@"Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is an expression (as the Expression of a CalculatedPartitionSource)."),IntelliSense(@"Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is an expression (as the Expression of a CalculatedPartitionSource).")]
 		public string SourceColumn {
 			get {
 			    return MetadataObject.SourceColumn;
@@ -1302,7 +1299,7 @@ namespace TabularEditor.TOMWrapper
 ///             Returns a ColumnOrigin object. Applicable only to non-calculated columns of a calculated table. ColumnOrigin points to another column which is the source of this column' metadata and data.
 ///             </summary>
 		[DisplayName("Column Origin")]
-		[Category("Other"),Description(@"Returns a ColumnOrigin object. Applicable only to non-calculated columns of a calculated table. ColumnOrigin points to another column which is the source of this column' metadata and data."),IntelliSense("The Column Origin of this CalculatedTableColumn.")][Browsable(false)]
+		[Category("Other"),Description(@"Returns a ColumnOrigin object. Applicable only to non-calculated columns of a calculated table. ColumnOrigin points to another column which is the source of this column' metadata and data."),IntelliSense(@"Returns a ColumnOrigin object. Applicable only to non-calculated columns of a calculated table. ColumnOrigin points to another column which is the source of this column' metadata and data.")][Browsable(false)]
 		public Column ColumnOrigin {
 			get {
 				if (MetadataObject.ColumnOrigin == null) return null;
@@ -1396,7 +1393,7 @@ namespace TabularEditor.TOMWrapper
 ///             For a DataColumn, specifies the data type. See <see href="https://msdn.microsoft.com/library/gg492146.aspx" /> for a list of supported data types.  
 ///             </summary>
 		[DisplayName("Data Type")]
-		[Category("Metadata"),Description(@"For a DataColumn, specifies the data type. See <see href=""https://msdn.microsoft.com/library/gg492146.aspx for a list of supported data types."),IntelliSense("The Data Type of this Column.")][TypeConverter(typeof(DataTypeEnumConverter))]
+		[Category("Metadata"),Description(@"For a DataColumn, specifies the data type. See <see href=""https://msdn.microsoft.com/library/gg492146.aspx for a list of supported data types."),IntelliSense(@"For a DataColumn, specifies the data type. See <see href=""https://msdn.microsoft.com/library/gg492146.aspx for a list of supported data types.")][TypeConverter(typeof(DataTypeEnumConverter))]
 		public DataType DataType {
 			get {
 			    return (DataType)MetadataObject.DataType;
@@ -1487,7 +1484,7 @@ namespace TabularEditor.TOMWrapper
 ///             Specifies the type of data contained in the column so that you can add custom behaviors based on column type. There are 248 possible values. The first ten are Invalid (-1), All (1), Regular (2), Image (3), ImageBMP (4), ImageGIF (5), ImageJPG (6), ImagePNG (7), ImageTIFF (8), ImageURL (9), Id (10). For the rest, please refer to the MS-SSAS-T SQL Server Analysis Services Tabular Protocol documentation on MSDN.
 ///             </summary>
 		[DisplayName("Data Category")]
-		[Category("Metadata"),Description(@"Specifies the type of data contained in the column so that you can add custom behaviors based on column type. There are 248 possible values. The first ten are Invalid (-1), All (1), Regular (2), Image (3), ImageBMP (4), ImageGIF (5), ImageJPG (6), ImagePNG (7), ImageTIFF (8), ImageURL (9), Id (10). For the rest, please refer to the MS-SSAS-T SQL Server Analysis Services Tabular Protocol documentation on MSDN."),IntelliSense("The Data Category of this Column.")]
+		[Category("Metadata"),Description(@"Specifies the type of data contained in the column so that you can add custom behaviors based on column type. There are 248 possible values. The first ten are Invalid (-1), All (1), Regular (2), Image (3), ImageBMP (4), ImageGIF (5), ImageJPG (6), ImagePNG (7), ImageTIFF (8), ImageURL (9), Id (10). For the rest, please refer to the MS-SSAS-T SQL Server Analysis Services Tabular Protocol documentation on MSDN."),IntelliSense(@"Specifies the type of data contained in the column so that you can add custom behaviors based on column type. There are 248 possible values. The first ten are Invalid (-1), All (1), Regular (2), Image (3), ImageBMP (4), ImageGIF (5), ImageJPG (6), ImagePNG (7), ImageTIFF (8), ImageURL (9), Id (10). For the rest, please refer to the MS-SSAS-T SQL Server Analysis Services Tabular Protocol documentation on MSDN.")]
 		public string DataCategory {
 			get {
 			    return MetadataObject.DataCategory;
@@ -1511,7 +1508,7 @@ namespace TabularEditor.TOMWrapper
 ///             The description of the column, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
 ///             </summary>
 		[DisplayName("Description")]
-		[Category("Basic"),Description(@"The description of the column, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense("The Description of this Column.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"The description of the column, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the column, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;
@@ -1535,7 +1532,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value that indicates whether a column is treated as hidden by client visualization tools. True if the column is treated as hidden; otherwise false.
 ///             </summary>
 		[DisplayName("Hidden")]
-		[Category("Basic"),Description(@"A boolean value that indicates whether a column is treated as hidden by client visualization tools. True if the column is treated as hidden; otherwise false."),IntelliSense("The Hidden of this Column.")]
+		[Category("Basic"),Description(@"A boolean value that indicates whether a column is treated as hidden by client visualization tools. True if the column is treated as hidden; otherwise false."),IntelliSense(@"A boolean value that indicates whether a column is treated as hidden by client visualization tools. True if the column is treated as hidden; otherwise false.")]
 		public bool IsHidden {
 			get {
 			    return MetadataObject.IsHidden;
@@ -1560,7 +1557,7 @@ namespace TabularEditor.TOMWrapper
 ///             Enumerates the state of the column. Possible values include the following. Ready (1) The column is queryable and has up-to-date data. NoData (3) The column is queryable but has no data. This state is applicable only to columns of the type Data. CalculationNeeded (4) The column is not queryable and needs to be refreshed (that is, recalculated) to become functional. This state applies only to columns of the type Calculated or CalculatedTableColumn. SemanticError (5) The column is in an error state because of an invalid expression. The column is not queryable. This state applies only to columns of the type Calculated or CalculatedTableColumn. EvaluationError (6) The column is in an error state because of an error during expression evaluation. The column is not queryable.  This state applies only to columns of the type Calculated or CalculatedTableColumn. DependencyError (7) The column is in an error state because some of its calculation dependencies are in an error state.  The column is not queryable. This state applies only to columns of the type Calculated or CalculatedTableColumn. Incomplete (8) Some parts of the column have no data, and the column needs to be refreshed to bring the data in. The column is queryable. This state applies only to columns of the type Data. SyntaxError (9) The column is in an error state because of a syntax error in its expression. The column is not queryable. This state applies only to columns of the type Calculated.
 ///             </summary>
 		[DisplayName("State")]
-		[Category("Metadata"),Description(@"Enumerates the state of the column. Possible values include the following. Ready (1) The column is queryable and has up-to-date data. NoData (3) The column is queryable but has no data. This state is applicable only to columns of the type Data. CalculationNeeded (4) The column is not queryable and needs to be refreshed (that is, recalculated) to become functional. This state applies only to columns of the type Calculated or CalculatedTableColumn. SemanticError (5) The column is in an error state because of an invalid expression. The column is not queryable. This state applies only to columns of the type Calculated or CalculatedTableColumn. EvaluationError (6) The column is in an error state because of an error during expression evaluation. The column is not queryable.  This state applies only to columns of the type Calculated or CalculatedTableColumn. DependencyError (7) The column is in an error state because some of its calculation dependencies are in an error state.  The column is not queryable. This state applies only to columns of the type Calculated or CalculatedTableColumn. Incomplete (8) Some parts of the column have no data, and the column needs to be refreshed to bring the data in. The column is queryable. This state applies only to columns of the type Data. SyntaxError (9) The column is in an error state because of a syntax error in its expression. The column is not queryable. This state applies only to columns of the type Calculated."),IntelliSense("The State of this Column.")]
+		[Category("Metadata"),Description(@"Enumerates the state of the column. Possible values include the following. Ready (1) The column is queryable and has up-to-date data. NoData (3) The column is queryable but has no data. This state is applicable only to columns of the type Data. CalculationNeeded (4) The column is not queryable and needs to be refreshed (that is, recalculated) to become functional. This state applies only to columns of the type Calculated or CalculatedTableColumn. SemanticError (5) The column is in an error state because of an invalid expression. The column is not queryable. This state applies only to columns of the type Calculated or CalculatedTableColumn. EvaluationError (6) The column is in an error state because of an error during expression evaluation. The column is not queryable.  This state applies only to columns of the type Calculated or CalculatedTableColumn. DependencyError (7) The column is in an error state because some of its calculation dependencies are in an error state.  The column is not queryable. This state applies only to columns of the type Calculated or CalculatedTableColumn. Incomplete (8) Some parts of the column have no data, and the column needs to be refreshed to bring the data in. The column is queryable. This state applies only to columns of the type Data. SyntaxError (9) The column is in an error state because of a syntax error in its expression. The column is not queryable. This state applies only to columns of the type Calculated."),IntelliSense(@"Enumerates the state of the column. Possible values include the following. Ready (1) The column is queryable and has up-to-date data. NoData (3) The column is queryable but has no data. This state is applicable only to columns of the type Data. CalculationNeeded (4) The column is not queryable and needs to be refreshed (that is, recalculated) to become functional. This state applies only to columns of the type Calculated or CalculatedTableColumn. SemanticError (5) The column is in an error state because of an invalid expression. The column is not queryable. This state applies only to columns of the type Calculated or CalculatedTableColumn. EvaluationError (6) The column is in an error state because of an error during expression evaluation. The column is not queryable.  This state applies only to columns of the type Calculated or CalculatedTableColumn. DependencyError (7) The column is in an error state because some of its calculation dependencies are in an error state.  The column is not queryable. This state applies only to columns of the type Calculated or CalculatedTableColumn. Incomplete (8) Some parts of the column have no data, and the column needs to be refreshed to bring the data in. The column is queryable. This state applies only to columns of the type Data. SyntaxError (9) The column is in an error state because of a syntax error in its expression. The column is not queryable. This state applies only to columns of the type Calculated.")]
 		public ObjectState State {
 			get {
 			    return (ObjectState)MetadataObject.State;
@@ -1572,7 +1569,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value that indicates whether the column contains only unique values. True if the values are unique; otherwise false.
 ///             </summary>
 		[DisplayName("Unique")]
-		[Category("Other"),Description(@"A boolean value that indicates whether the column contains only unique values. True if the values are unique; otherwise false."),IntelliSense("The Unique of this Column.")]
+		[Category("Other"),Description(@"A boolean value that indicates whether the column contains only unique values. True if the values are unique; otherwise false."),IntelliSense(@"A boolean value that indicates whether the column contains only unique values. True if the values are unique; otherwise false.")]
 		public bool IsUnique {
 			get {
 			    return MetadataObject.IsUnique;
@@ -1596,7 +1593,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value that indicates whether the column is a key of the table. True if the column is a key of the table; otherwise false.
 ///             </summary>
 		[DisplayName("Key")]
-		[Category("Other"),Description(@"A boolean value that indicates whether the column is a key of the table. True if the column is a key of the table; otherwise false."),IntelliSense("The Key of this Column.")]
+		[Category("Other"),Description(@"A boolean value that indicates whether the column is a key of the table. True if the column is a key of the table; otherwise false."),IntelliSense(@"A boolean value that indicates whether the column is a key of the table. True if the column is a key of the table; otherwise false.")]
 		public bool IsKey {
 			get {
 			    return MetadataObject.IsKey;
@@ -1620,7 +1617,7 @@ namespace TabularEditor.TOMWrapper
 ///             If <b>false</b>, the column cannot contain nulls. Even if <b>true</b>, it may still not allow nulls if it's a key column.
 ///             </summary>
 		[DisplayName("Nullable")]
-		[Category("Other"),Description(@"If <b>false</b>, the column cannot contain nulls. Even if <b>true</b>, it may still not allow nulls if it's a key column."),IntelliSense("The Nullable of this Column.")]
+		[Category("Other"),Description(@"If <b>false</b>, the column cannot contain nulls. Even if <b>true</b>, it may still not allow nulls if it's a key column."),IntelliSense(@"If <b>false</b>, the column cannot contain nulls. Even if <b>true</b>, it may still not allow nulls if it's a key column.")]
 		public bool IsNullable {
 			get {
 			    return MetadataObject.IsNullable;
@@ -1644,7 +1641,7 @@ namespace TabularEditor.TOMWrapper
 ///             Specifies the text alignment of the column in report visualizations. The possible values are Default (1), Left (2), Right (3), Center (4).
 ///             </summary>
 		[DisplayName("Alignment")]
-		[Category("Other"),Description(@"Specifies the text alignment of the column in report visualizations. The possible values are Default (1), Left (2), Right (3), Center (4)."),IntelliSense("The Alignment of this Column.")]
+		[Category("Other"),Description(@"Specifies the text alignment of the column in report visualizations. The possible values are Default (1), Left (2), Right (3), Center (4)."),IntelliSense(@"Specifies the text alignment of the column in report visualizations. The possible values are Default (1), Left (2), Right (3), Center (4).")]
 		public Alignment Alignment {
 			get {
 			    return (Alignment)MetadataObject.Alignment;
@@ -1668,7 +1665,7 @@ namespace TabularEditor.TOMWrapper
 ///             Determines whether you can place this column in the DefaultDetails collection of the Table. This collection is an ordered set of Column types. A positive value indicates participation in the collection. The collection is sorted in ascending order of this element. The DefaultDetails collection is returned as part of the CSDL metadata returned by the DISCOVER_CSDL_METADATA operation.
 ///             </summary>
 		[DisplayName("Table Detail Position")]
-		[Category("Other"),Description(@"Determines whether you can place this column in the DefaultDetails collection of the Table. This collection is an ordered set of Column types. A positive value indicates participation in the collection. The collection is sorted in ascending order of this element. The DefaultDetails collection is returned as part of the CSDL metadata returned by the DISCOVER_CSDL_METADATA operation."),IntelliSense("The Table Detail Position of this Column.")]
+		[Category("Other"),Description(@"Determines whether you can place this column in the DefaultDetails collection of the Table. This collection is an ordered set of Column types. A positive value indicates participation in the collection. The collection is sorted in ascending order of this element. The DefaultDetails collection is returned as part of the CSDL metadata returned by the DISCOVER_CSDL_METADATA operation."),IntelliSense(@"Determines whether you can place this column in the DefaultDetails collection of the Table. This collection is an ordered set of Column types. A positive value indicates participation in the collection. The collection is sorted in ascending order of this element. The DefaultDetails collection is returned as part of the CSDL metadata returned by the DISCOVER_CSDL_METADATA operation.")]
 		public int TableDetailPosition {
 			get {
 			    return MetadataObject.TableDetailPosition;
@@ -1692,7 +1689,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value that indicates whether this column is included in the DisplayKey element in CSDL.
 ///             </summary>
 		[DisplayName("Default Label")]
-		[Category("Other"),Description(@"A boolean value that indicates whether this column is included in the DisplayKey element in CSDL."),IntelliSense("The Default Label of this Column.")]
+		[Category("Other"),Description(@"A boolean value that indicates whether this column is included in the DisplayKey element in CSDL."),IntelliSense(@"A boolean value that indicates whether this column is included in the DisplayKey element in CSDL.")]
 		public bool IsDefaultLabel {
 			get {
 			    return MetadataObject.IsDefaultLabel;
@@ -1716,7 +1713,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value that indicates whether this column is returned as the DefaultImage property in CSDL.
 ///             </summary>
 		[DisplayName("Default Image")]
-		[Category("Other"),Description(@"A boolean value that indicates whether this column is returned as the DefaultImage property in CSDL."),IntelliSense("The Default Image of this Column.")]
+		[Category("Other"),Description(@"A boolean value that indicates whether this column is returned as the DefaultImage property in CSDL."),IntelliSense(@"A boolean value that indicates whether this column is returned as the DefaultImage property in CSDL.")]
 		public bool IsDefaultImage {
 			get {
 			    return MetadataObject.IsDefaultImage;
@@ -1740,7 +1737,7 @@ namespace TabularEditor.TOMWrapper
 ///             A value indicating the default function, if any, used to aggregate this field. The possible values are Default (1), None (2), Sum (3), Min (4), Max (5), Count (6), Average (7), DistinctCount (8). If unspecified, Default is assumed for numeric fields, None for all other fields.
 ///             </summary>
 		[DisplayName("Summarize By")]
-		[Category("Other"),Description(@"A value indicating the default function, if any, used to aggregate this field. The possible values are Default (1), None (2), Sum (3), Min (4), Max (5), Count (6), Average (7), DistinctCount (8). If unspecified, Default is assumed for numeric fields, None for all other fields."),IntelliSense("The Summarize By of this Column.")]
+		[Category("Other"),Description(@"A value indicating the default function, if any, used to aggregate this field. The possible values are Default (1), None (2), Sum (3), Min (4), Max (5), Count (6), Average (7), DistinctCount (8). If unspecified, Default is assumed for numeric fields, None for all other fields."),IntelliSense(@"A value indicating the default function, if any, used to aggregate this field. The possible values are Default (1), None (2), Sum (3), Min (4), Max (5), Count (6), Average (7), DistinctCount (8). If unspecified, Default is assumed for numeric fields, None for all other fields.")]
 		public AggregateFunction SummarizeBy {
 			get {
 			    return (AggregateFunction)MetadataObject.SummarizeBy;
@@ -1764,7 +1761,7 @@ namespace TabularEditor.TOMWrapper
 ///             Specifies the data binding. Values include Data (1) where the contents of this column come from a DataSource, Calculated (2) where the contents are computed from an expression after the Data columns have been populated, RowNumber (3) where the column is an internal column representing the row number, or CalculatedTableColumn (4) where tables that are based on a calculated expression will automatically infer and generate the columns in the table.
 ///             </summary>
 		[DisplayName("Type")]
-		[Category("Other"),Description(@"Specifies the data binding. Values include Data (1) where the contents of this column come from a DataSource, Calculated (2) where the contents are computed from an expression after the Data columns have been populated, RowNumber (3) where the column is an internal column representing the row number, or CalculatedTableColumn (4) where tables that are based on a calculated expression will automatically infer and generate the columns in the table."),IntelliSense("The Type of this Column.")][Browsable(false)]
+		[Category("Other"),Description(@"Specifies the data binding. Values include Data (1) where the contents of this column come from a DataSource, Calculated (2) where the contents are computed from an expression after the Data columns have been populated, RowNumber (3) where the column is an internal column representing the row number, or CalculatedTableColumn (4) where tables that are based on a calculated expression will automatically infer and generate the columns in the table."),IntelliSense(@"Specifies the data binding. Values include Data (1) where the contents of this column come from a DataSource, Calculated (2) where the contents are computed from an expression after the Data columns have been populated, RowNumber (3) where the column is an internal column representing the row number, or CalculatedTableColumn (4) where tables that are based on a calculated expression will automatically infer and generate the columns in the table.")][Browsable(false)]
 		public ColumnType Type {
 			get {
 			    return (ColumnType)MetadataObject.Type;
@@ -1776,7 +1773,7 @@ namespace TabularEditor.TOMWrapper
 ///             A string that specifies the format of the column contents. 
 ///             </summary>
 		[DisplayName("Format String")]
-		[Category("Options"),Description(@"A string that specifies the format of the column contents."),IntelliSense("The Format String of this Column.")][TypeConverter(typeof(FormatStringConverter))]
+		[Category("Options"),Description(@"A string that specifies the format of the column contents."),IntelliSense(@"A string that specifies the format of the column contents.")][TypeConverter(typeof(FormatStringConverter))]
 		public string FormatString {
 			get {
 			    return MetadataObject.FormatString;
@@ -1800,7 +1797,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value that indicates whether the column can be excluded from usage in MDX query tools. False if the column can be excluded from usage in MDX query tools; otherwise true.
 ///             </summary>
 		[DisplayName("Available In MDX")]
-		[Category("Other"),Description(@"A boolean value that indicates whether the column can be excluded from usage in MDX query tools. False if the column can be excluded from usage in MDX query tools; otherwise true."),IntelliSense("The Available In MDX of this Column.")]
+		[Category("Other"),Description(@"A boolean value that indicates whether the column can be excluded from usage in MDX query tools. False if the column can be excluded from usage in MDX query tools; otherwise true."),IntelliSense(@"A boolean value that indicates whether the column can be excluded from usage in MDX query tools. False if the column can be excluded from usage in MDX query tools; otherwise true.")]
 		public bool IsAvailableInMDX {
 			get {
 			    return MetadataObject.IsAvailableInMDX;
@@ -1824,7 +1821,7 @@ namespace TabularEditor.TOMWrapper
 ///             Specifies the grouping behavior used for building a hierarchy. True groups by entity key. False groups by value.
 ///             </summary>
 		[DisplayName("Keep Unique Rows")]
-		[Category("Other"),Description(@"Specifies the grouping behavior used for building a hierarchy. True groups by entity key. False groups by value."),IntelliSense("The Keep Unique Rows of this Column.")]
+		[Category("Other"),Description(@"Specifies the grouping behavior used for building a hierarchy. True groups by entity key. False groups by value."),IntelliSense(@"Specifies the grouping behavior used for building a hierarchy. True groups by entity key. False groups by value.")]
 		public bool KeepUniqueRows {
 			get {
 			    return MetadataObject.KeepUniqueRows;
@@ -1848,7 +1845,7 @@ namespace TabularEditor.TOMWrapper
 ///             Indicates the visual position of the column, defined as a relative ordering rather than a strict ordering (example: 10, 20, 40, 50). It allows client applications to maintain a consistent column position.
 ///             </summary>
 		[DisplayName("Display Ordinal")]
-		[Category("Other"),Description(@"Indicates the visual position of the column, defined as a relative ordering rather than a strict ordering (example: 10, 20, 40, 50). It allows client applications to maintain a consistent column position."),IntelliSense("The Display Ordinal of this Column.")]
+		[Category("Other"),Description(@"Indicates the visual position of the column, defined as a relative ordering rather than a strict ordering (example: 10, 20, 40, 50). It allows client applications to maintain a consistent column position."),IntelliSense(@"Indicates the visual position of the column, defined as a relative ordering rather than a strict ordering (example: 10, 20, 40, 50). It allows client applications to maintain a consistent column position.")]
 		public int DisplayOrdinal {
 			get {
 			    return MetadataObject.DisplayOrdinal;
@@ -1872,7 +1869,7 @@ namespace TabularEditor.TOMWrapper
 ///             A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError. It is applicable only to columns of the type Calculated or CalculatedTableColumn. It will be empty for other column objects.
 ///             </summary>
 		[DisplayName("Error Message")]
-		[Category("Metadata"),Description(@"A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError. It is applicable only to columns of the type Calculated or CalculatedTableColumn. It will be empty for other column objects."),IntelliSense("The Error Message of this Column.")]
+		[Category("Metadata"),Description(@"A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError. It is applicable only to columns of the type Calculated or CalculatedTableColumn. It will be empty for other column objects."),IntelliSense(@"A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError. It is applicable only to columns of the type Calculated or CalculatedTableColumn. It will be empty for other column objects.")]
 		public string ErrorMessage {
 			get {
 			    return MetadataObject.ErrorMessage;
@@ -1884,7 +1881,7 @@ namespace TabularEditor.TOMWrapper
 ///             The original data type of the column as defined in the language of the data source. This data type is used to generate queries directly against the data source, for example in DirectQuery mode.
 ///             </summary>
 		[DisplayName("Source Provider Type")]
-		[Category("Other"),Description(@"The original data type of the column as defined in the language of the data source. This data type is used to generate queries directly against the data source, for example in DirectQuery mode."),IntelliSense("The Source Provider Type of this Column.")]
+		[Category("Other"),Description(@"The original data type of the column as defined in the language of the data source. This data type is used to generate queries directly against the data source, for example in DirectQuery mode."),IntelliSense(@"The original data type of the column as defined in the language of the data source. This data type is used to generate queries directly against the data source, for example in DirectQuery mode.")]
 		public string SourceProviderType {
 			get {
 			    return MetadataObject.SourceProviderType;
@@ -1908,7 +1905,7 @@ namespace TabularEditor.TOMWrapper
 ///             Defines the display folder for the column, for use by clients.
 ///             </summary>
 		[DisplayName("Display Folder")]
-		[Category("Basic"),Description(@"Defines the display folder for the column, for use by clients."),IntelliSense("The Display Folder of this Column.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"Defines the display folder for the column, for use by clients."),IntelliSense(@"Defines the display folder for the column, for use by clients.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string DisplayFolder {
 			get {
 			    return MetadataObject.DisplayFolder;
@@ -1938,7 +1935,7 @@ namespace TabularEditor.TOMWrapper
 ///             This property allows an encoding hint to be specified for the column. A numeric column may use either value-based encoding or hash-based encoding. Usually the server will automatically attempt detect which encoding to use, but re-encoding may occur later. This property allows hinting to the server that it should start with a different encoding type.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("Encoding Hint")]
-		[Category("Other"),Description(@"This property allows an encoding hint to be specified for the column. A numeric column may use either value-based encoding or hash-based encoding. Usually the server will automatically attempt detect which encoding to use, but re-encoding may occur later. This property allows hinting to the server that it should start with a different encoding type."),IntelliSense("The Encoding Hint of this Column.")]
+		[Category("Other"),Description(@"This property allows an encoding hint to be specified for the column. A numeric column may use either value-based encoding or hash-based encoding. Usually the server will automatically attempt detect which encoding to use, but re-encoding may occur later. This property allows hinting to the server that it should start with a different encoding type."),IntelliSense(@"This property allows an encoding hint to be specified for the column. A numeric column may use either value-based encoding or hash-based encoding. Usually the server will automatically attempt detect which encoding to use, but re-encoding may occur later. This property allows hinting to the server that it should start with a different encoding type.")]
 		public EncodingHintType EncodingHint {
 			get {
 			    return (EncodingHintType)MetadataObject.EncodingHint;
@@ -1975,7 +1972,7 @@ namespace TabularEditor.TOMWrapper
 ///             Indicates that the column defining this property will be sorted by the values of the column referenced by this property.
 ///             </summary>
 		[DisplayName("Sort By Column")]
-		[Category("Options"),Description(@"Indicates that the column defining this property will be sorted by the values of the column referenced by this property."),IntelliSense("The Sort By Column of this Column.")][TypeConverter(typeof(TableColumnConverter))]
+		[Category("Options"),Description(@"Indicates that the column defining this property will be sorted by the values of the column referenced by this property."),IntelliSense(@"Indicates that the column defining this property will be sorted by the values of the column referenced by this property.")][TypeConverter(typeof(TableColumnConverter))]
 		public Column SortByColumn {
 			get {
 				if (MetadataObject.SortByColumn == null) return null;
@@ -2678,7 +2675,7 @@ namespace TabularEditor.TOMWrapper
 ///             Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is a query (as the Query of a CalculatedPartitionSource).
 ///             </summary>
 		[DisplayName("Source Column")]
-		[Category("Options"),Description(@"Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is a query (as the Query of a CalculatedPartitionSource)."),IntelliSense("The Source Column of this DataColumn.")]
+		[Category("Options"),Description(@"Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is a query (as the Query of a CalculatedPartitionSource)."),IntelliSense(@"Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is a query (as the Query of a CalculatedPartitionSource).")]
 		public string SourceColumn {
 			get {
 			    return MetadataObject.SourceColumn;
@@ -2905,7 +2902,7 @@ namespace TabularEditor.TOMWrapper
 ///             The description of the data source, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
 ///             </summary>
 		[DisplayName("Description")]
-		[Category("Basic"),Description(@"The description of the data source, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense("The Description of this DataSource.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"The description of the data source, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the data source, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;
@@ -2929,7 +2926,7 @@ namespace TabularEditor.TOMWrapper
 ///             The type of DataSource. At present, the only possible value is Provider, which refers to a data source that accepts a connection string.
 ///             </summary>
 		[DisplayName("Type")]
-		[Category("Other"),Description(@"The type of DataSource. At present, the only possible value is Provider, which refers to a data source that accepts a connection string."),IntelliSense("The Type of this DataSource.")]
+		[Category("Other"),Description(@"The type of DataSource. At present, the only possible value is Provider, which refers to a data source that accepts a connection string."),IntelliSense(@"The type of DataSource. At present, the only possible value is Provider, which refers to a data source that accepts a connection string.")]
 		public DataSourceType Type {
 			get {
 			    return (DataSourceType)MetadataObject.Type;
@@ -2941,7 +2938,7 @@ namespace TabularEditor.TOMWrapper
 ///             The maximum number of connections to be opened concurrently to the data source.
 ///             </summary>
 		[DisplayName("Max Connections")]
-		[Category("Other"),Description(@"The maximum number of connections to be opened concurrently to the data source."),IntelliSense("The Max Connections of this DataSource.")]
+		[Category("Other"),Description(@"The maximum number of connections to be opened concurrently to the data source."),IntelliSense(@"The maximum number of connections to be opened concurrently to the data source.")]
 		public int MaxConnections {
 			get {
 			    return MetadataObject.MaxConnections;
@@ -3114,7 +3111,7 @@ namespace TabularEditor.TOMWrapper
 ///             A string that defines the identity provider used for authentication.
 ///             </summary>
 		[DisplayName("Identity Provider")]
-		[Category("Other"),Description(@"A string that defines the identity provider used for authentication."),IntelliSense("The Identity Provider of this ExternalModelRoleMember.")]
+		[Category("Other"),Description(@"A string that defines the identity provider used for authentication."),IntelliSense(@"A string that defines the identity provider used for authentication.")]
 		public string IdentityProvider {
 			get {
 			    return MetadataObject.IdentityProvider;
@@ -3138,7 +3135,7 @@ namespace TabularEditor.TOMWrapper
 ///             Indicates whether the particular member of a security role is an individual user or a group of users, or automatically detected. Possible values are as follows. Auto (1): Member is automatically detected. User (2): Member is an individual user. Group (3): Member is a security group.
 ///             </summary>
 		[DisplayName("Member Type")]
-		[Category("Other"),Description(@"Indicates whether the particular member of a security role is an individual user or a group of users, or automatically detected. Possible values are as follows. Auto (1): Member is automatically detected. User (2): Member is an individual user. Group (3): Member is a security group."),IntelliSense("The Member Type of this ExternalModelRoleMember.")]
+		[Category("Other"),Description(@"Indicates whether the particular member of a security role is an individual user or a group of users, or automatically detected. Possible values are as follows. Auto (1): Member is automatically detected. User (2): Member is an individual user. Group (3): Member is a security group."),IntelliSense(@"Indicates whether the particular member of a security role is an individual user or a group of users, or automatically detected. Possible values are as follows. Auto (1): Member is automatically detected. User (2): Member is an individual user. Group (3): Member is a security group.")]
 		public RoleMemberType MemberType {
 			get {
 			    return (RoleMemberType)MetadataObject.MemberType;
@@ -3363,7 +3360,7 @@ namespace TabularEditor.TOMWrapper
 ///             The description of the hierarchy, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
 ///             </summary>
 		[DisplayName("Description")]
-		[Category("Basic"),Description(@"The description of the hierarchy, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense("The Description of this Hierarchy.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"The description of the hierarchy, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the hierarchy, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;
@@ -3387,7 +3384,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value that indicates whether the hierarchy is treated as hidden by client visualization tools. True if the hierarchy is treated as hidden; otherwise false.
 ///             </summary>
 		[DisplayName("Hidden")]
-		[Category("Basic"),Description(@"A boolean value that indicates whether the hierarchy is treated as hidden by client visualization tools. True if the hierarchy is treated as hidden; otherwise false."),IntelliSense("The Hidden of this Hierarchy.")]
+		[Category("Basic"),Description(@"A boolean value that indicates whether the hierarchy is treated as hidden by client visualization tools. True if the hierarchy is treated as hidden; otherwise false."),IntelliSense(@"A boolean value that indicates whether the hierarchy is treated as hidden by client visualization tools. True if the hierarchy is treated as hidden; otherwise false.")]
 		public bool IsHidden {
 			get {
 			    return MetadataObject.IsHidden;
@@ -3412,7 +3409,7 @@ namespace TabularEditor.TOMWrapper
 ///             Provides information on the state of the hierarchy. Possible values and their interpretation are as follows. Ready (1) The hierarchy is queryable and has up-to-date data. NoData (3) Not applicable to Hierarchy. CalculationNeeded (4) The hierarchy does not contain any data because it was not refreshed. There is no error associated with the hierarchy. SemanticError (5) Not applicable to Hierarchy. EvaluationError (6) Not applicable to Hierarchy. DependencyError (7) A dependency associated with the hierarchy is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Hierarchy.
 ///             </summary>
 		[DisplayName("State")]
-		[Category("Metadata"),Description(@"Provides information on the state of the hierarchy. Possible values and their interpretation are as follows. Ready (1) The hierarchy is queryable and has up-to-date data. NoData (3) Not applicable to Hierarchy. CalculationNeeded (4) The hierarchy does not contain any data because it was not refreshed. There is no error associated with the hierarchy. SemanticError (5) Not applicable to Hierarchy. EvaluationError (6) Not applicable to Hierarchy. DependencyError (7) A dependency associated with the hierarchy is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Hierarchy."),IntelliSense("The State of this Hierarchy.")]
+		[Category("Metadata"),Description(@"Provides information on the state of the hierarchy. Possible values and their interpretation are as follows. Ready (1) The hierarchy is queryable and has up-to-date data. NoData (3) Not applicable to Hierarchy. CalculationNeeded (4) The hierarchy does not contain any data because it was not refreshed. There is no error associated with the hierarchy. SemanticError (5) Not applicable to Hierarchy. EvaluationError (6) Not applicable to Hierarchy. DependencyError (7) A dependency associated with the hierarchy is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Hierarchy."),IntelliSense(@"Provides information on the state of the hierarchy. Possible values and their interpretation are as follows. Ready (1) The hierarchy is queryable and has up-to-date data. NoData (3) Not applicable to Hierarchy. CalculationNeeded (4) The hierarchy does not contain any data because it was not refreshed. There is no error associated with the hierarchy. SemanticError (5) Not applicable to Hierarchy. EvaluationError (6) Not applicable to Hierarchy. DependencyError (7) A dependency associated with the hierarchy is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Hierarchy.")]
 		public ObjectState State {
 			get {
 			    return (ObjectState)MetadataObject.State;
@@ -3424,7 +3421,7 @@ namespace TabularEditor.TOMWrapper
 ///             Defines the display folder for the hierarchy, for use by clients.
 ///             </summary>
 		[DisplayName("Display Folder")]
-		[Category("Basic"),Description(@"Defines the display folder for the hierarchy, for use by clients."),IntelliSense("The Display Folder of this Hierarchy.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"Defines the display folder for the hierarchy, for use by clients."),IntelliSense(@"Defines the display folder for the hierarchy, for use by clients.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string DisplayFolder {
 			get {
 			    return MetadataObject.DisplayFolder;
@@ -3454,7 +3451,7 @@ namespace TabularEditor.TOMWrapper
 ///             Ragged/unbalanced hierarchies can be enabled by hiding members using this property.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("Hide Members")]
-		[Category("Other"),Description(@"Ragged/unbalanced hierarchies can be enabled by hiding members using this property."),IntelliSense("The Hide Members of this Hierarchy.")]
+		[Category("Other"),Description(@"Ragged/unbalanced hierarchies can be enabled by hiding members using this property."),IntelliSense(@"Ragged/unbalanced hierarchies can be enabled by hiding members using this property.")]
 		public HierarchyHideMembersType HideMembers {
 			get {
 			    return (HierarchyHideMembersType)MetadataObject.HideMembers;
@@ -3860,7 +3857,7 @@ namespace TabularEditor.TOMWrapper
 ///             The description of the KPI, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
 ///             </summary>
 		[DisplayName("Description")]
-		[Category("Basic"),Description(@"The description of the KPI, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense("The Description of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"The description of the KPI, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the KPI, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;
@@ -3884,7 +3881,7 @@ namespace TabularEditor.TOMWrapper
 ///             The description of the target value of the KPI.
 ///             </summary>
 		[DisplayName("Target Description")]
-		[Category("Other"),Description(@"The description of the target value of the KPI."),IntelliSense("The Target Description of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Other"),Description(@"The description of the target value of the KPI."),IntelliSense(@"The description of the target value of the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string TargetDescription {
 			get {
 			    return MetadataObject.TargetDescription;
@@ -3908,7 +3905,7 @@ namespace TabularEditor.TOMWrapper
 ///             An expression that evaluates to a number and indicates the goal for the KPI.
 ///             </summary>
 		[DisplayName("Target Expression")]
-		[Category("Other"),Description(@"An expression that evaluates to a number and indicates the goal for the KPI."),IntelliSense("The Target Expression of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Other"),Description(@"An expression that evaluates to a number and indicates the goal for the KPI."),IntelliSense(@"An expression that evaluates to a number and indicates the goal for the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string TargetExpression {
 			get {
 			    return MetadataObject.TargetExpression;
@@ -3932,7 +3929,7 @@ namespace TabularEditor.TOMWrapper
 ///             The format string to be used when presenting the target value for the KPI.
 ///             </summary>
 		[DisplayName("Target Format String")]
-		[Category("Other"),Description(@"The format string to be used when presenting the target value for the KPI."),IntelliSense("The Target Format String of this KPI.")][TypeConverter(typeof(FormatStringConverter))]
+		[Category("Other"),Description(@"The format string to be used when presenting the target value for the KPI."),IntelliSense(@"The format string to be used when presenting the target value for the KPI.")][TypeConverter(typeof(FormatStringConverter))]
 		public string TargetFormatString {
 			get {
 			    return MetadataObject.TargetFormatString;
@@ -3956,7 +3953,7 @@ namespace TabularEditor.TOMWrapper
 ///             The recommended graphic to represent the status of this KPI.
 ///             </summary>
 		[DisplayName("Status Graphic")]
-		[Category("Other"),Description(@"The recommended graphic to represent the status of this KPI."),IntelliSense("The Status Graphic of this KPI.")][TypeConverter(typeof(KPIStatusGraphicConverter))]
+		[Category("Other"),Description(@"The recommended graphic to represent the status of this KPI."),IntelliSense(@"The recommended graphic to represent the status of this KPI.")][TypeConverter(typeof(KPIStatusGraphicConverter))]
 		public string StatusGraphic {
 			get {
 			    return MetadataObject.StatusGraphic;
@@ -3980,7 +3977,7 @@ namespace TabularEditor.TOMWrapper
 ///             A description of the Status value for the KPI.
 ///             </summary>
 		[DisplayName("Status Description")]
-		[Category("Other"),Description(@"A description of the Status value for the KPI."),IntelliSense("The Status Description of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Other"),Description(@"A description of the Status value for the KPI."),IntelliSense(@"A description of the Status value for the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string StatusDescription {
 			get {
 			    return MetadataObject.StatusDescription;
@@ -4004,7 +4001,7 @@ namespace TabularEditor.TOMWrapper
 ///             An expression that is used to calculate the status of the KPI.
 ///             </summary>
 		[DisplayName("Status Expression")]
-		[Category("Other"),Description(@"An expression that is used to calculate the status of the KPI."),IntelliSense("The Status Expression of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Other"),Description(@"An expression that is used to calculate the status of the KPI."),IntelliSense(@"An expression that is used to calculate the status of the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string StatusExpression {
 			get {
 			    return MetadataObject.StatusExpression;
@@ -4028,7 +4025,7 @@ namespace TabularEditor.TOMWrapper
 ///             A string that identifies the graphic to show for the trend of the KPI.
 ///             </summary>
 		[DisplayName("Trend Graphic")]
-		[Category("Other"),Description(@"A string that identifies the graphic to show for the trend of the KPI."),IntelliSense("The Trend Graphic of this KPI.")][TypeConverter(typeof(KPITrendGraphicConverter))]
+		[Category("Other"),Description(@"A string that identifies the graphic to show for the trend of the KPI."),IntelliSense(@"A string that identifies the graphic to show for the trend of the KPI.")][TypeConverter(typeof(KPITrendGraphicConverter))]
 		public string TrendGraphic {
 			get {
 			    return MetadataObject.TrendGraphic;
@@ -4052,7 +4049,7 @@ namespace TabularEditor.TOMWrapper
 ///             A description of the trend value of the KPI.
 ///             </summary>
 		[DisplayName("Trend Description")]
-		[Category("Other"),Description(@"A description of the trend value of the KPI."),IntelliSense("The Trend Description of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Other"),Description(@"A description of the trend value of the KPI."),IntelliSense(@"A description of the trend value of the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string TrendDescription {
 			get {
 			    return MetadataObject.TrendDescription;
@@ -4076,7 +4073,7 @@ namespace TabularEditor.TOMWrapper
 ///             An expression representing the trend of the KPI.
 ///             </summary>
 		[DisplayName("Trend Expression")]
-		[Category("Other"),Description(@"An expression representing the trend of the KPI."),IntelliSense("The Trend Expression of this KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Other"),Description(@"An expression representing the trend of the KPI."),IntelliSense(@"An expression representing the trend of the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string TrendExpression {
 			get {
 			    return MetadataObject.TrendExpression;
@@ -4100,7 +4097,7 @@ namespace TabularEditor.TOMWrapper
 ///             A reference to a Measure object that owns this KPI.
 ///             </summary>
 		[DisplayName("Measure")]
-		[Category("Other"),Description(@"A reference to a Measure object that owns this KPI."),IntelliSense("The Measure of this KPI.")]
+		[Category("Other"),Description(@"A reference to a Measure object that owns this KPI."),IntelliSense(@"A reference to a Measure object that owns this KPI.")]
 		public Measure Measure {
 			get {
 				if (MetadataObject.Measure == null) return null;
@@ -4243,7 +4240,7 @@ namespace TabularEditor.TOMWrapper
 ///             The position of the level within the hierarchy. The levels in the hierarchy must be properly ordered, starting with 1 and increasing monotonically.
 ///             </summary>
 		[DisplayName("Ordinal")]
-		[Category("Other"),Description(@"The position of the level within the hierarchy. The levels in the hierarchy must be properly ordered, starting with 1 and increasing monotonically."),IntelliSense("The Ordinal of this Level.")][NoMultiselect()]
+		[Category("Other"),Description(@"The position of the level within the hierarchy. The levels in the hierarchy must be properly ordered, starting with 1 and increasing monotonically."),IntelliSense(@"The position of the level within the hierarchy. The levels in the hierarchy must be properly ordered, starting with 1 and increasing monotonically.")][NoMultiselect()]
 		public int Ordinal {
 			get {
 			    return MetadataObject.Ordinal;
@@ -4267,7 +4264,7 @@ namespace TabularEditor.TOMWrapper
 ///             The description of the level, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
 ///             </summary>
 		[DisplayName("Description")]
-		[Category("Basic"),Description(@"The description of the level, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense("The Description of this Level.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"The description of the level, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the level, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;
@@ -4291,7 +4288,7 @@ namespace TabularEditor.TOMWrapper
 ///             A reference to a Hierarchy object that owns this level.
 ///             </summary>
 		[DisplayName("Hierarchy")]
-		[Category("Other"),Description(@"A reference to a Hierarchy object that owns this level."),IntelliSense("The Hierarchy of this Level.")][Browsable(false)]
+		[Category("Other"),Description(@"A reference to a Hierarchy object that owns this level."),IntelliSense(@"A reference to a Hierarchy object that owns this level.")][Browsable(false)]
 		public Hierarchy Hierarchy {
 			get {
 				if (MetadataObject.Hierarchy == null) return null;
@@ -4304,7 +4301,7 @@ namespace TabularEditor.TOMWrapper
 ///             A reference to a Column object associated with this Level.
 ///             </summary>
 		[DisplayName("Column")]
-		[Category("Other"),Description(@"A reference to a Column object associated with this Level."),IntelliSense("The Column of this Level.")][TypeConverter(typeof(HierarchyColumnConverter)),NoMultiselect()]
+		[Category("Other"),Description(@"A reference to a Column object associated with this Level."),IntelliSense(@"A reference to a Column object associated with this Level.")][TypeConverter(typeof(HierarchyColumnConverter)),NoMultiselect()]
 		public Column Column {
 			get {
 				if (MetadataObject.Column == null) return null;
@@ -4628,7 +4625,7 @@ namespace TabularEditor.TOMWrapper
 ///             The description of the measure, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
 ///             </summary>
 		[DisplayName("Description")]
-		[Category("Basic"),Description(@"The description of the measure, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense("The Description of this Measure.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"The description of the measure, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the measure, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;
@@ -4652,7 +4649,7 @@ namespace TabularEditor.TOMWrapper
 ///             Describes the type of data contained in the column. Possible values are as follows. String (2). Int64 (6). Double (8). DateTime (9). Decimal (10). Boolean (11). Binary (17). Unknown (19) A measure in an error state. Variant (20) A measure with varying data type.
 ///             </summary>
 		[DisplayName("Data Type")]
-		[Category("Metadata"),Description(@"Describes the type of data contained in the column. Possible values are as follows. String (2). Int64 (6). Double (8). DateTime (9). Decimal (10). Boolean (11). Binary (17). Unknown (19) A measure in an error state. Variant (20) A measure with varying data type."),IntelliSense("The Data Type of this Measure.")][TypeConverter(typeof(DataTypeEnumConverter))]
+		[Category("Metadata"),Description(@"Describes the type of data contained in the column. Possible values are as follows. String (2). Int64 (6). Double (8). DateTime (9). Decimal (10). Boolean (11). Binary (17). Unknown (19) A measure in an error state. Variant (20) A measure with varying data type."),IntelliSense(@"Describes the type of data contained in the column. Possible values are as follows. String (2). Int64 (6). Double (8). DateTime (9). Decimal (10). Boolean (11). Binary (17). Unknown (19) A measure in an error state. Variant (20) A measure with varying data type.")][TypeConverter(typeof(DataTypeEnumConverter))]
 		public DataType DataType {
 			get {
 			    return (DataType)MetadataObject.DataType;
@@ -4664,7 +4661,7 @@ namespace TabularEditor.TOMWrapper
 ///             The DAX expression that is evaluated for the calculated measure.
 ///             </summary>
 		[DisplayName("Expression")]
-		[Category("Options"),Description(@"The DAX expression that is evaluated for the calculated measure."),IntelliSense("The Expression of this Measure.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Options"),Description(@"The DAX expression that is evaluated for the calculated measure."),IntelliSense(@"The DAX expression that is evaluated for the calculated measure.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Expression {
 			get {
 			    return MetadataObject.Expression;
@@ -4688,7 +4685,7 @@ namespace TabularEditor.TOMWrapper
 ///             A string that specifies the format of the measure contents. For 
 ///             </summary>
 		[DisplayName("Format String")]
-		[Category("Options"),Description(@"A string that specifies the format of the measure contents. For"),IntelliSense("The Format String of this Measure.")][TypeConverter(typeof(FormatStringConverter))]
+		[Category("Options"),Description(@"A string that specifies the format of the measure contents. For"),IntelliSense(@"A string that specifies the format of the measure contents. For")][TypeConverter(typeof(FormatStringConverter))]
 		public string FormatString {
 			get {
 			    return MetadataObject.FormatString;
@@ -4712,7 +4709,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value that indicates whether the measure is treated as hidden by client visualization tools. True if the measure is treated as hidden by client visualization tools; otherwise false.
 ///             </summary>
 		[DisplayName("Hidden")]
-		[Category("Basic"),Description(@"A boolean value that indicates whether the measure is treated as hidden by client visualization tools. True if the measure is treated as hidden by client visualization tools; otherwise false."),IntelliSense("The Hidden of this Measure.")]
+		[Category("Basic"),Description(@"A boolean value that indicates whether the measure is treated as hidden by client visualization tools. True if the measure is treated as hidden by client visualization tools; otherwise false."),IntelliSense(@"A boolean value that indicates whether the measure is treated as hidden by client visualization tools. True if the measure is treated as hidden by client visualization tools; otherwise false.")]
 		public bool IsHidden {
 			get {
 			    return MetadataObject.IsHidden;
@@ -4737,7 +4734,7 @@ namespace TabularEditor.TOMWrapper
 ///             Provides information on the state of the measure. Possible values and their interpretation are as follows. Ready (1) The measure is queryable and has up-to-date data. NoData (3) Not applicable to Measure. CalculationNeeded (4) Not applicable to Measure. SemanticError (5) The measure expression has a semantic error. EvaluationError (6) Not applicable to Measure. DependencyError (7) A dependency associated with this measure is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Measure. SyntaxError (9) The measure has a syntax error in its expression.
 ///             </summary>
 		[DisplayName("State")]
-		[Category("Metadata"),Description(@"Provides information on the state of the measure. Possible values and their interpretation are as follows. Ready (1) The measure is queryable and has up-to-date data. NoData (3) Not applicable to Measure. CalculationNeeded (4) Not applicable to Measure. SemanticError (5) The measure expression has a semantic error. EvaluationError (6) Not applicable to Measure. DependencyError (7) A dependency associated with this measure is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Measure. SyntaxError (9) The measure has a syntax error in its expression."),IntelliSense("The State of this Measure.")]
+		[Category("Metadata"),Description(@"Provides information on the state of the measure. Possible values and their interpretation are as follows. Ready (1) The measure is queryable and has up-to-date data. NoData (3) Not applicable to Measure. CalculationNeeded (4) Not applicable to Measure. SemanticError (5) The measure expression has a semantic error. EvaluationError (6) Not applicable to Measure. DependencyError (7) A dependency associated with this measure is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Measure. SyntaxError (9) The measure has a syntax error in its expression."),IntelliSense(@"Provides information on the state of the measure. Possible values and their interpretation are as follows. Ready (1) The measure is queryable and has up-to-date data. NoData (3) Not applicable to Measure. CalculationNeeded (4) Not applicable to Measure. SemanticError (5) The measure expression has a semantic error. EvaluationError (6) Not applicable to Measure. DependencyError (7) A dependency associated with this measure is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Measure. SyntaxError (9) The measure has a syntax error in its expression.")]
 		public ObjectState State {
 			get {
 			    return (ObjectState)MetadataObject.State;
@@ -4749,7 +4746,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value that indicates whether the measure is an implicit measure that is automatically created by client tools to aggregate a field. Client applications can hide measures that have this flag set.
 ///             </summary>
 		[DisplayName("Simple Measure")]
-		[Category("Other"),Description(@"A boolean value that indicates whether the measure is an implicit measure that is automatically created by client tools to aggregate a field. Client applications can hide measures that have this flag set."),IntelliSense("The Simple Measure of this Measure.")][Browsable(false)]
+		[Category("Other"),Description(@"A boolean value that indicates whether the measure is an implicit measure that is automatically created by client tools to aggregate a field. Client applications can hide measures that have this flag set."),IntelliSense(@"A boolean value that indicates whether the measure is an implicit measure that is automatically created by client tools to aggregate a field. Client applications can hide measures that have this flag set.")][Browsable(false)]
 		public bool IsSimpleMeasure {
 			get {
 			    return MetadataObject.IsSimpleMeasure;
@@ -4773,7 +4770,7 @@ namespace TabularEditor.TOMWrapper
 ///             The string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError or EvaluationError.
 ///             </summary>
 		[DisplayName("Error Message")]
-		[Category("Metadata"),Description(@"The string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError or EvaluationError."),IntelliSense("The Error Message of this Measure.")]
+		[Category("Metadata"),Description(@"The string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError or EvaluationError."),IntelliSense(@"The string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError or EvaluationError.")]
 		public string ErrorMessage {
 			get {
 			    return MetadataObject.ErrorMessage;
@@ -4785,7 +4782,7 @@ namespace TabularEditor.TOMWrapper
 ///             Defines the display folder for the Measure, for use by clients.
 ///             </summary>
 		[DisplayName("Display Folder")]
-		[Category("Basic"),Description(@"Defines the display folder for the Measure, for use by clients."),IntelliSense("The Display Folder of this Measure.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"Defines the display folder for the Measure, for use by clients."),IntelliSense(@"Defines the display folder for the Measure, for use by clients.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string DisplayFolder {
 			get {
 			    return MetadataObject.DisplayFolder;
@@ -4815,7 +4812,7 @@ namespace TabularEditor.TOMWrapper
 ///             Specifies the type of data contained in the measure so that you can add custom behaviors based on measure type.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1455 or above.</remarks>
 		[DisplayName("Data Category")]
-		[Category("Metadata"),Description(@"Specifies the type of data contained in the measure so that you can add custom behaviors based on measure type."),IntelliSense("The Data Category of this Measure.")]
+		[Category("Metadata"),Description(@"Specifies the type of data contained in the measure so that you can add custom behaviors based on measure type."),IntelliSense(@"Specifies the type of data contained in the measure so that you can add custom behaviors based on measure type.")]
 		public string DataCategory {
 			get {
 			    return MetadataObject.DataCategory;
@@ -5169,7 +5166,8 @@ namespace TabularEditor.TOMWrapper
 ///             <para>If the model is not connected, this value is always <b>False</b>.</para></summary>
 		[DisplayName("Has Local Changes")]
 		[Category("Other"),Description(@"Returns the status of local changes made to the model, which haven't been saved to the server.  
-            <para>If the model is not connected, this value is always <b>False</b>.</para>"),IntelliSense("The Has Local Changes of this Model.")]
+            <para>If the model is not connected, this value is always <b>False</b>.</para>"),IntelliSense(@"Returns the status of local changes made to the model, which haven't been saved to the server.  
+            <para>If the model is not connected, this value is always <b>False</b>.</para>")]
 		public bool HasLocalChanges {
 			get {
 			    return MetadataObject.HasLocalChanges;
@@ -5248,7 +5246,7 @@ namespace TabularEditor.TOMWrapper
 ///             The description of the model, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
 ///             </summary>
 		[DisplayName("Description")]
-		[Category("Basic"),Description(@"The description of the model, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense("The Description of this Model.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"The description of the model, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the model, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;
@@ -5272,7 +5270,7 @@ namespace TabularEditor.TOMWrapper
 ///             The location on disk to place the model.
 ///             </summary>
 		[DisplayName("Storage Location")]
-		[Category("Other"),Description(@"The location on disk to place the model."),IntelliSense("The Storage Location of this Model.")]
+		[Category("Other"),Description(@"The location on disk to place the model."),IntelliSense(@"The location on disk to place the model.")]
 		public string StorageLocation {
 			get {
 			    return MetadataObject.StorageLocation;
@@ -5296,7 +5294,7 @@ namespace TabularEditor.TOMWrapper
 ///             The default method for making data available in the partition.
 ///             </summary>
 		[DisplayName("Default Mode")]
-		[Category("Other"),Description(@"The default method for making data available in the partition."),IntelliSense("The Default Mode of this Model.")]
+		[Category("Other"),Description(@"The default method for making data available in the partition."),IntelliSense(@"The default method for making data available in the partition.")]
 		public ModeType DefaultMode {
 			get {
 			    return (ModeType)MetadataObject.DefaultMode;
@@ -5320,7 +5318,7 @@ namespace TabularEditor.TOMWrapper
 ///             Used by partitions in the model to determine the type of query that retrieves data. A Full dataview retrieves an unfiltered rowset, used for in-memory models and deployed DirectQuery models. A Sample data view is a subset of data used during DirectQuery model design.
 ///             </summary>
 		[DisplayName("Default Data View")]
-		[Category("Other"),Description(@"Used by partitions in the model to determine the type of query that retrieves data. A Full dataview retrieves an unfiltered rowset, used for in-memory models and deployed DirectQuery models. A Sample data view is a subset of data used during DirectQuery model design."),IntelliSense("The Default Data View of this Model.")]
+		[Category("Other"),Description(@"Used by partitions in the model to determine the type of query that retrieves data. A Full dataview retrieves an unfiltered rowset, used for in-memory models and deployed DirectQuery models. A Sample data view is a subset of data used during DirectQuery model design."),IntelliSense(@"Used by partitions in the model to determine the type of query that retrieves data. A Full dataview retrieves an unfiltered rowset, used for in-memory models and deployed DirectQuery models. A Sample data view is a subset of data used during DirectQuery model design.")]
 		public DataViewType DefaultDataView {
 			get {
 			    return (DataViewType)MetadataObject.DefaultDataView;
@@ -5344,7 +5342,7 @@ namespace TabularEditor.TOMWrapper
 ///             The name of the Culture used for formatting. Once it's used by a child object, this value can't be changed.
 ///             </summary>
 		[DisplayName("Culture")]
-		[Category("Other"),Description(@"The name of the Culture used for formatting. Once it's used by a child object, this value can't be changed."),IntelliSense("The Culture of this Model.")][TypeConverter(typeof(CultureConverter))]
+		[Category("Other"),Description(@"The name of the Culture used for formatting. Once it's used by a child object, this value can't be changed."),IntelliSense(@"The name of the Culture used for formatting. Once it's used by a child object, this value can't be changed.")][TypeConverter(typeof(CultureConverter))]
 		public string Culture {
 			get {
 			    return MetadataObject.Culture;
@@ -5368,7 +5366,7 @@ namespace TabularEditor.TOMWrapper
 ///             The collation sequence. Analysis Services uses Windows collations.
 ///             </summary>
 		[DisplayName("Collation")]
-		[Category("Other"),Description(@"The collation sequence. Analysis Services uses Windows collations."),IntelliSense("The Collation of this Model.")]
+		[Category("Other"),Description(@"The collation sequence. Analysis Services uses Windows collations."),IntelliSense(@"The collation sequence. Analysis Services uses Windows collations.")]
 		public string Collation {
 			get {
 			    return MetadataObject.Collation;
@@ -5389,10 +5387,34 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeCollation() { return false; }
 /// <summary>
+///             Determines whether measures can have the same names as any column in the model.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1465 or above.</remarks>
+		[DisplayName("Force Unique Names")]
+		[Category("Other"),Description(@"Determines whether measures can have the same names as any column in the model."),IntelliSense(@"Determines whether measures can have the same names as any column in the model.")]
+		public bool ForceUniqueNames {
+			get {
+			    return MetadataObject.ForceUniqueNames;
+			}
+			set {
+				
+				var oldValue = ForceUniqueNames;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.FORCEUNIQUENAMES, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				MetadataObject.ForceUniqueNames = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FORCEUNIQUENAMES, oldValue, newValue));
+				OnPropertyChanged(Properties.FORCEUNIQUENAMES, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeForceUniqueNames() { return false; }
+/// <summary>
 ///             A reference to a default measure.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("Default Measure")]
-		[Category("Other"),Description(@"A reference to a default measure."),IntelliSense("The Default Measure of this Model.")]
+		[Category("Other"),Description(@"A reference to a default measure."),IntelliSense(@"A reference to a default measure.")]
 		public Measure DefaultMeasure {
 			get {
 				if (MetadataObject.DefaultMeasure == null) return null;
@@ -5654,7 +5676,7 @@ namespace TabularEditor.TOMWrapper
 ///             The description of the role, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
 ///             </summary>
 		[DisplayName("Description")]
-		[Category("Basic"),Description(@"The description of the role, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense("The Description of this ModelRole.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"The description of the role, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the role, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;
@@ -5678,7 +5700,7 @@ namespace TabularEditor.TOMWrapper
 ///             The level of access for this role. Possible values are as follows. None (1): The role has no access to the model. Read (2): The role can read metadata and data of the model. ReadRefresh (3): The role has read and refresh permission. Refresh (4): The role can refresh the data and calculations in the model. Administrator (5): The role can administer the model.
 ///             </summary>
 		[DisplayName("Model Permission")]
-		[Category("Security"),Description(@"The level of access for this role. Possible values are as follows. None (1): The role has no access to the model. Read (2): The role can read metadata and data of the model. ReadRefresh (3): The role has read and refresh permission. Refresh (4): The role can refresh the data and calculations in the model. Administrator (5): The role can administer the model."),IntelliSense("The Model Permission of this ModelRole.")]
+		[Category("Security"),Description(@"The level of access for this role. Possible values are as follows. None (1): The role has no access to the model. Read (2): The role can read metadata and data of the model. ReadRefresh (3): The role has read and refresh permission. Refresh (4): The role can refresh the data and calculations in the model. Administrator (5): The role can administer the model."),IntelliSense(@"The level of access for this role. Possible values are as follows. None (1): The role has no access to the model. Read (2): The role can read metadata and data of the model. ReadRefresh (3): The role has read and refresh permission. Refresh (4): The role can refresh the data and calculations in the model. Administrator (5): The role can administer the model.")]
 		public ModelPermission ModelPermission {
 			get {
 			    return (ModelPermission)MetadataObject.ModelPermission;
@@ -6013,7 +6035,7 @@ namespace TabularEditor.TOMWrapper
 ///             The security name that identifies the user or group of the member.
 ///             </summary>
 		[DisplayName("Member Name")]
-		[Category("Other"),Description(@"The security name that identifies the user or group of the member."),IntelliSense("The Member Name of this ModelRoleMember.")]
+		[Category("Other"),Description(@"The security name that identifies the user or group of the member."),IntelliSense(@"The security name that identifies the user or group of the member.")]
 		public string MemberName {
 			get {
 			    return MetadataObject.MemberName;
@@ -6037,7 +6059,7 @@ namespace TabularEditor.TOMWrapper
 ///             A reference to a Member object associated with this RoleMembership.
 ///             </summary>
 		[DisplayName("Member ID")]
-		[Category("Other"),Description(@"A reference to a Member object associated with this RoleMembership."),IntelliSense("The Member ID of this ModelRoleMember.")]
+		[Category("Other"),Description(@"A reference to a Member object associated with this RoleMembership."),IntelliSense(@"A reference to a Member object associated with this RoleMembership.")]
 		public string MemberID {
 			get {
 			    return MetadataObject.MemberID;
@@ -6061,7 +6083,7 @@ namespace TabularEditor.TOMWrapper
 ///             A reference to a Role object that owns this RoleMembeship.
 ///             </summary>
 		[DisplayName("Role")]
-		[Category("Other"),Description(@"A reference to a Role object that owns this RoleMembeship."),IntelliSense("The Role of this ModelRoleMember.")]
+		[Category("Other"),Description(@"A reference to a Role object that owns this RoleMembeship."),IntelliSense(@"A reference to a Role object that owns this RoleMembeship.")]
 		public ModelRole Role {
 			get {
 				if (MetadataObject.Role == null) return null;
@@ -6227,7 +6249,7 @@ namespace TabularEditor.TOMWrapper
 ///             The type of source used by the Partition. This is either a query against a DataSource, or for calculated tables, an expression.
 ///             </summary>
 		[DisplayName("Source Type")]
-		[Category("Other"),Description(@"The type of source used by the Partition. This is either a query against a DataSource, or for calculated tables, an expression."),IntelliSense("The Source Type of this Partition.")]
+		[Category("Other"),Description(@"The type of source used by the Partition. This is either a query against a DataSource, or for calculated tables, an expression."),IntelliSense(@"The type of source used by the Partition. This is either a query against a DataSource, or for calculated tables, an expression.")]
 		public PartitionSourceType SourceType {
 			get {
 			    return (PartitionSourceType)MetadataObject.SourceType;
@@ -6306,7 +6328,7 @@ namespace TabularEditor.TOMWrapper
 ///             The description of the partition, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
 ///             </summary>
 		[DisplayName("Description")]
-		[Category("Basic"),Description(@"The description of the partition, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense("The Description of this Partition.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"The description of the partition, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the partition, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;
@@ -6330,7 +6352,7 @@ namespace TabularEditor.TOMWrapper
 ///             Provides information on the state of the partition. Possible values are as follows. Ready (1): The partition is queryable and has up-to-date data. NoData (3): The partition is queryable but has no data. This state applies only to partitions with a type other than Calculated. CalculationNeeded (4): The partition is not queryable and needs to be refreshed (that is, recalculated) to become functional. This state applies only to partitions of the type Calculated. SemanticError (5): The partition is in an error state because of an invalid expression and is not queryable. This state applies only to partitions of the type Calculated. EvaluationError (6): The partition is in an error state because of an error during expression evaluation. The partition is not queryable. This state applies only to partitions of the type Calculated. DependencyError (7): The partition is in an error state because some of its calculation dependencies are in an error state. The partition is not queryable. This state applies only to partitions of the type Calculated. Incomplete (8): Some parts of the partition have no data, and the partition needs to be refreshed to bring the data in. The partition is queryable. This state applies only to partitions of a type other than Calculated. SyntaxError (9): The partition is in an error state because of a syntax error in its expression. The partition is not queryable. This state applies only to partitions of the type Calculated.
 ///             </summary>
 		[DisplayName("State")]
-		[Category("Metadata"),Description(@"Provides information on the state of the partition. Possible values are as follows. Ready (1): The partition is queryable and has up-to-date data. NoData (3): The partition is queryable but has no data. This state applies only to partitions with a type other than Calculated. CalculationNeeded (4): The partition is not queryable and needs to be refreshed (that is, recalculated) to become functional. This state applies only to partitions of the type Calculated. SemanticError (5): The partition is in an error state because of an invalid expression and is not queryable. This state applies only to partitions of the type Calculated. EvaluationError (6): The partition is in an error state because of an error during expression evaluation. The partition is not queryable. This state applies only to partitions of the type Calculated. DependencyError (7): The partition is in an error state because some of its calculation dependencies are in an error state. The partition is not queryable. This state applies only to partitions of the type Calculated. Incomplete (8): Some parts of the partition have no data, and the partition needs to be refreshed to bring the data in. The partition is queryable. This state applies only to partitions of a type other than Calculated. SyntaxError (9): The partition is in an error state because of a syntax error in its expression. The partition is not queryable. This state applies only to partitions of the type Calculated."),IntelliSense("The State of this Partition.")]
+		[Category("Metadata"),Description(@"Provides information on the state of the partition. Possible values are as follows. Ready (1): The partition is queryable and has up-to-date data. NoData (3): The partition is queryable but has no data. This state applies only to partitions with a type other than Calculated. CalculationNeeded (4): The partition is not queryable and needs to be refreshed (that is, recalculated) to become functional. This state applies only to partitions of the type Calculated. SemanticError (5): The partition is in an error state because of an invalid expression and is not queryable. This state applies only to partitions of the type Calculated. EvaluationError (6): The partition is in an error state because of an error during expression evaluation. The partition is not queryable. This state applies only to partitions of the type Calculated. DependencyError (7): The partition is in an error state because some of its calculation dependencies are in an error state. The partition is not queryable. This state applies only to partitions of the type Calculated. Incomplete (8): Some parts of the partition have no data, and the partition needs to be refreshed to bring the data in. The partition is queryable. This state applies only to partitions of a type other than Calculated. SyntaxError (9): The partition is in an error state because of a syntax error in its expression. The partition is not queryable. This state applies only to partitions of the type Calculated."),IntelliSense(@"Provides information on the state of the partition. Possible values are as follows. Ready (1): The partition is queryable and has up-to-date data. NoData (3): The partition is queryable but has no data. This state applies only to partitions with a type other than Calculated. CalculationNeeded (4): The partition is not queryable and needs to be refreshed (that is, recalculated) to become functional. This state applies only to partitions of the type Calculated. SemanticError (5): The partition is in an error state because of an invalid expression and is not queryable. This state applies only to partitions of the type Calculated. EvaluationError (6): The partition is in an error state because of an error during expression evaluation. The partition is not queryable. This state applies only to partitions of the type Calculated. DependencyError (7): The partition is in an error state because some of its calculation dependencies are in an error state. The partition is not queryable. This state applies only to partitions of the type Calculated. Incomplete (8): Some parts of the partition have no data, and the partition needs to be refreshed to bring the data in. The partition is queryable. This state applies only to partitions of a type other than Calculated. SyntaxError (9): The partition is in an error state because of a syntax error in its expression. The partition is not queryable. This state applies only to partitions of the type Calculated.")]
 		public ObjectState State {
 			get {
 			    return (ObjectState)MetadataObject.State;
@@ -6342,7 +6364,7 @@ namespace TabularEditor.TOMWrapper
 ///             Defines the method for making data available in the partition. Possible values are as follows. Import (0) Data will be imported from a data source. DirectQuery (1) Data will be queried dynamically from a data source. Default (2): Only partitions can use this value. When set, the partition will inherit the DefaultMode of the Model. Push (3): Data will be pushed into the partition. The Mode of a Partition can be set to Default (2), in which case it will inherit its Mode from the DefaultMode of the Model
 ///             </summary>
 		[DisplayName("Mode")]
-		[Category("Other"),Description(@"Defines the method for making data available in the partition. Possible values are as follows. Import (0) Data will be imported from a data source. DirectQuery (1) Data will be queried dynamically from a data source. Default (2): Only partitions can use this value. When set, the partition will inherit the DefaultMode of the Model. Push (3): Data will be pushed into the partition. The Mode of a Partition can be set to Default (2), in which case it will inherit its Mode from the DefaultMode of the Model"),IntelliSense("The Mode of this Partition.")]
+		[Category("Other"),Description(@"Defines the method for making data available in the partition. Possible values are as follows. Import (0) Data will be imported from a data source. DirectQuery (1) Data will be queried dynamically from a data source. Default (2): Only partitions can use this value. When set, the partition will inherit the DefaultMode of the Model. Push (3): Data will be pushed into the partition. The Mode of a Partition can be set to Default (2), in which case it will inherit its Mode from the DefaultMode of the Model"),IntelliSense(@"Defines the method for making data available in the partition. Possible values are as follows. Import (0) Data will be imported from a data source. DirectQuery (1) Data will be queried dynamically from a data source. Default (2): Only partitions can use this value. When set, the partition will inherit the DefaultMode of the Model. Push (3): Data will be pushed into the partition. The Mode of a Partition can be set to Default (2), in which case it will inherit its Mode from the DefaultMode of the Model")]
 		public ModeType Mode {
 			get {
 			    return (ModeType)MetadataObject.Mode;
@@ -6366,7 +6388,7 @@ namespace TabularEditor.TOMWrapper
 ///             Determines which partitions should be selected to run queries against the model. The possible values are as follows. Full (0) - Partitions with DataView set to Default or Full are selected. Sample (1): Partitions with DataView set to Default or Sample are selected. SampleAndFull (2): All partitions are selected. Default (3) - Inherits from the default DataView of the Model object.
 ///             </summary>
 		[DisplayName("Data View")]
-		[Category("Other"),Description(@"Determines which partitions should be selected to run queries against the model. The possible values are as follows. Full (0) - Partitions with DataView set to Default or Full are selected. Sample (1): Partitions with DataView set to Default or Sample are selected. SampleAndFull (2): All partitions are selected. Default (3) - Inherits from the default DataView of the Model object."),IntelliSense("The Data View of this Partition.")]
+		[Category("Other"),Description(@"Determines which partitions should be selected to run queries against the model. The possible values are as follows. Full (0) - Partitions with DataView set to Default or Full are selected. Sample (1): Partitions with DataView set to Default or Sample are selected. SampleAndFull (2): All partitions are selected. Default (3) - Inherits from the default DataView of the Model object."),IntelliSense(@"Determines which partitions should be selected to run queries against the model. The possible values are as follows. Full (0) - Partitions with DataView set to Default or Full are selected. Sample (1): Partitions with DataView set to Default or Sample are selected. SampleAndFull (2): All partitions are selected. Default (3) - Inherits from the default DataView of the Model object.")]
 		public DataViewType DataView {
 			get {
 			    return (DataViewType)MetadataObject.DataView;
@@ -6390,7 +6412,7 @@ namespace TabularEditor.TOMWrapper
 ///             The string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError.This element applies only to partitions of the type Calculated.
 ///             </summary>
 		[DisplayName("Error Message")]
-		[Category("Metadata"),Description(@"The string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError.This element applies only to partitions of the type Calculated."),IntelliSense("The Error Message of this Partition.")]
+		[Category("Metadata"),Description(@"The string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError.This element applies only to partitions of the type Calculated."),IntelliSense(@"The string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError.This element applies only to partitions of the type Calculated.")]
 		public string ErrorMessage {
 			get {
 			    return MetadataObject.ErrorMessage;
@@ -6709,7 +6731,7 @@ namespace TabularEditor.TOMWrapper
 ///             The description of the perspective, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
 ///             </summary>
 		[DisplayName("Description")]
-		[Category("Basic"),Description(@"The description of the perspective, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense("The Description of this Perspective.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"The description of the perspective, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the perspective, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;
@@ -6965,7 +6987,7 @@ namespace TabularEditor.TOMWrapper
 ///             A string used to open the connection to the data source.
 ///             </summary>
 		[DisplayName("Connection String")]
-		[Category("Connection Details"),Description(@"A string used to open the connection to the data source."),IntelliSense("The Connection String of this ProviderDataSource.")]
+		[Category("Connection Details"),Description(@"A string used to open the connection to the data source."),IntelliSense(@"A string used to open the connection to the data source.")]
 		public string ConnectionString {
 			get {
 			    return MetadataObject.ConnectionString;
@@ -6989,7 +7011,7 @@ namespace TabularEditor.TOMWrapper
 ///             Determines how credentials are obtained for an impersonated connection to a data source during data import or refresh.
 ///             </summary>
 		[DisplayName("Impersonation Mode")]
-		[Category("Connection Details"),Description(@"Determines how credentials are obtained for an impersonated connection to a data source during data import or refresh."),IntelliSense("The Impersonation Mode of this ProviderDataSource.")]
+		[Category("Connection Details"),Description(@"Determines how credentials are obtained for an impersonated connection to a data source during data import or refresh."),IntelliSense(@"Determines how credentials are obtained for an impersonated connection to a data source during data import or refresh.")]
 		public ImpersonationMode ImpersonationMode {
 			get {
 			    return (ImpersonationMode)MetadataObject.ImpersonationMode;
@@ -7013,7 +7035,7 @@ namespace TabularEditor.TOMWrapper
 ///             The user account used for impersonation.
 ///             </summary>
 		[DisplayName("Account")]
-		[Category("Connection Details"),Description(@"The user account used for impersonation."),IntelliSense("The Account of this ProviderDataSource.")]
+		[Category("Connection Details"),Description(@"The user account used for impersonation."),IntelliSense(@"The user account used for impersonation.")]
 		public string Account {
 			get {
 			    return MetadataObject.Account;
@@ -7037,7 +7059,7 @@ namespace TabularEditor.TOMWrapper
 ///             The account password.
 ///             </summary>
 		[DisplayName("Password")]
-		[Category("Connection Details"),Description(@"The account password."),IntelliSense("The Password of this ProviderDataSource.")][PasswordPropertyText(true)]
+		[Category("Connection Details"),Description(@"The account password."),IntelliSense(@"The account password.")][PasswordPropertyText(true)]
 		public string Password {
 			get {
 			    return MetadataObject.Password;
@@ -7061,7 +7083,7 @@ namespace TabularEditor.TOMWrapper
 ///             Specifies the locking behavior of the SQL statements when executing commands against the data source. Valid values include ReadCommitted (default) which only reads from committed transactions, or Snapshot which can read any statement in a transaction that is transactionally consistent.
 ///             </summary>
 		[DisplayName("Isolation")]
-		[Category("Connection Details"),Description(@"Specifies the locking behavior of the SQL statements when executing commands against the data source. Valid values include ReadCommitted (default) which only reads from committed transactions, or Snapshot which can read any statement in a transaction that is transactionally consistent."),IntelliSense("The Isolation of this ProviderDataSource.")]
+		[Category("Connection Details"),Description(@"Specifies the locking behavior of the SQL statements when executing commands against the data source. Valid values include ReadCommitted (default) which only reads from committed transactions, or Snapshot which can read any statement in a transaction that is transactionally consistent."),IntelliSense(@"Specifies the locking behavior of the SQL statements when executing commands against the data source. Valid values include ReadCommitted (default) which only reads from committed transactions, or Snapshot which can read any statement in a transaction that is transactionally consistent.")]
 		public DatasourceIsolation Isolation {
 			get {
 			    return (DatasourceIsolation)MetadataObject.Isolation;
@@ -7085,7 +7107,7 @@ namespace TabularEditor.TOMWrapper
 ///             The timeout in seconds for commands executed against the data source.
 ///             </summary>
 		[DisplayName("Timeout")]
-		[Category("Connection Details"),Description(@"The timeout in seconds for commands executed against the data source."),IntelliSense("The Timeout of this ProviderDataSource.")]
+		[Category("Connection Details"),Description(@"The timeout in seconds for commands executed against the data source."),IntelliSense(@"The timeout in seconds for commands executed against the data source.")]
 		public int Timeout {
 			get {
 			    return MetadataObject.Timeout;
@@ -7109,7 +7131,7 @@ namespace TabularEditor.TOMWrapper
 ///             An optional string that identifies the name of the managed data provider for the data source.
 ///             </summary>
 		[DisplayName("Provider")]
-		[Category("Connection Details"),Description(@"An optional string that identifies the name of the managed data provider for the data source."),IntelliSense("The Provider of this ProviderDataSource.")]
+		[Category("Connection Details"),Description(@"An optional string that identifies the name of the managed data provider for the data source."),IntelliSense(@"An optional string that identifies the name of the managed data provider for the data source.")]
 		public string Provider {
 			get {
 			    return MetadataObject.Provider;
@@ -7270,7 +7292,7 @@ namespace TabularEditor.TOMWrapper
 ///             Gets the destination table in a directional table relationship.
 ///             </summary>
 		[DisplayName("To Table")]
-		[Category("Other"),Description(@"Gets the destination table in a directional table relationship."),IntelliSense("The To Table of this Relationship.")]
+		[Category("Other"),Description(@"Gets the destination table in a directional table relationship."),IntelliSense(@"Gets the destination table in a directional table relationship.")]
 		public Table ToTable {
 			get {
 				if (MetadataObject.ToTable == null) return null;
@@ -7283,7 +7305,7 @@ namespace TabularEditor.TOMWrapper
 ///             Gets the starting table in a directional table relationship.
 ///             </summary>
 		[DisplayName("From Table")]
-		[Category("Other"),Description(@"Gets the starting table in a directional table relationship."),IntelliSense("The From Table of this Relationship.")]
+		[Category("Other"),Description(@"Gets the starting table in a directional table relationship."),IntelliSense(@"Gets the starting table in a directional table relationship.")]
 		public Table FromTable {
 			get {
 				if (MetadataObject.FromTable == null) return null;
@@ -7363,7 +7385,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value that indicates whether the relationship is marked as Active or Inactive. An Active relationship is automatically used for filtering across tables. An Inactive relationship can be used explicitly by DAX calculations with the USERELATIONSHIP function.
 ///             </summary>
 		[DisplayName("Active")]
-		[Category("Relationship"),Description(@"A boolean value that indicates whether the relationship is marked as Active or Inactive. An Active relationship is automatically used for filtering across tables. An Inactive relationship can be used explicitly by DAX calculations with the USERELATIONSHIP function."),IntelliSense("The Active of this Relationship.")]
+		[Category("Relationship"),Description(@"A boolean value that indicates whether the relationship is marked as Active or Inactive. An Active relationship is automatically used for filtering across tables. An Inactive relationship can be used explicitly by DAX calculations with the USERELATIONSHIP function."),IntelliSense(@"A boolean value that indicates whether the relationship is marked as Active or Inactive. An Active relationship is automatically used for filtering across tables. An Inactive relationship can be used explicitly by DAX calculations with the USERELATIONSHIP function.")]
 		public bool IsActive {
 			get {
 			    return MetadataObject.IsActive;
@@ -7387,7 +7409,7 @@ namespace TabularEditor.TOMWrapper
 ///             The type of Relationship. At present, the only possible value is SingleColumn (1) or a normal column-column relationship.
 ///             </summary>
 		[DisplayName("Type")]
-		[Category("Other"),Description(@"The type of Relationship. At present, the only possible value is SingleColumn (1) or a normal column-column relationship."),IntelliSense("The Type of this Relationship.")]
+		[Category("Other"),Description(@"The type of Relationship. At present, the only possible value is SingleColumn (1) or a normal column-column relationship."),IntelliSense(@"The type of Relationship. At present, the only possible value is SingleColumn (1) or a normal column-column relationship.")]
 		public RelationshipType Type {
 			get {
 			    return (RelationshipType)MetadataObject.Type;
@@ -7399,7 +7421,7 @@ namespace TabularEditor.TOMWrapper
 ///             Indicates how relationships influence filtering of data. The enumeration defines the possible behaviors. Possible values are as follows. OneDirection (1) The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2) Filters on either end of the relationship will automatically filter the other table. Automatic (3) The engine will analyze the relationships and choose one of the behaviors by using heuristics.
 ///             </summary>
 		[DisplayName("Cross Filtering Behavior")]
-		[Category("Relationship"),Description(@"Indicates how relationships influence filtering of data. The enumeration defines the possible behaviors. Possible values are as follows. OneDirection (1) The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2) Filters on either end of the relationship will automatically filter the other table. Automatic (3) The engine will analyze the relationships and choose one of the behaviors by using heuristics."),IntelliSense("The Cross Filtering Behavior of this Relationship.")]
+		[Category("Relationship"),Description(@"Indicates how relationships influence filtering of data. The enumeration defines the possible behaviors. Possible values are as follows. OneDirection (1) The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2) Filters on either end of the relationship will automatically filter the other table. Automatic (3) The engine will analyze the relationships and choose one of the behaviors by using heuristics."),IntelliSense(@"Indicates how relationships influence filtering of data. The enumeration defines the possible behaviors. Possible values are as follows. OneDirection (1) The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2) Filters on either end of the relationship will automatically filter the other table. Automatic (3) The engine will analyze the relationships and choose one of the behaviors by using heuristics.")]
 		public CrossFilteringBehavior CrossFilteringBehavior {
 			get {
 			    return (CrossFilteringBehavior)MetadataObject.CrossFilteringBehavior;
@@ -7423,7 +7445,7 @@ namespace TabularEditor.TOMWrapper
 ///             When joining two date time columns, indicates whether to join on date and time parts, or on date part only. DateAndTime (1) When joining two date time columns, join on date and time parts. DatePartOnly (2) When joining two date time columns, join on date part only.
 ///             </summary>
 		[DisplayName("Join On Date Behavior")]
-		[Category("Other"),Description(@"When joining two date time columns, indicates whether to join on date and time parts, or on date part only. DateAndTime (1) When joining two date time columns, join on date and time parts. DatePartOnly (2) When joining two date time columns, join on date part only."),IntelliSense("The Join On Date Behavior of this Relationship.")]
+		[Category("Other"),Description(@"When joining two date time columns, indicates whether to join on date and time parts, or on date part only. DateAndTime (1) When joining two date time columns, join on date and time parts. DatePartOnly (2) When joining two date time columns, join on date part only."),IntelliSense(@"When joining two date time columns, indicates whether to join on date and time parts, or on date part only. DateAndTime (1) When joining two date time columns, join on date and time parts. DatePartOnly (2) When joining two date time columns, join on date part only.")]
 		public DateTimeRelationshipBehavior JoinOnDateBehavior {
 			get {
 			    return (DateTimeRelationshipBehavior)MetadataObject.JoinOnDateBehavior;
@@ -7447,7 +7469,7 @@ namespace TabularEditor.TOMWrapper
 ///             Unused; reserved for future use.
 ///             </summary>
 		[DisplayName("Rely On Referential Integrity")]
-		[Category("Other"),Description(@"Unused; reserved for future use."),IntelliSense("The Rely On Referential Integrity of this Relationship.")]
+		[Category("Other"),Description(@"Unused; reserved for future use."),IntelliSense(@"Unused; reserved for future use.")]
 		public bool RelyOnReferentialIntegrity {
 			get {
 			    return MetadataObject.RelyOnReferentialIntegrity;
@@ -7471,7 +7493,7 @@ namespace TabularEditor.TOMWrapper
 ///             Provides information on the state of the relationship. Possible values and their interpretation are as follows. Ready (1) The relationship is queryable and has up-to-date data. NoData (3) Not applicable to relationships. CalculationNeeded (4) The relationship does not contain any data because it was not refreshed. There is no error associated with the relationship. SemanticError (5) Not applicable to Relationship. EvaluationError (6) Not applicable to Relationship. DependencyError (7) A dependency associated with this relationship is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to relationships. SyntaxError (9) Not applicable to relationships.
 ///             </summary>
 		[DisplayName("State")]
-		[Category("Metadata"),Description(@"Provides information on the state of the relationship. Possible values and their interpretation are as follows. Ready (1) The relationship is queryable and has up-to-date data. NoData (3) Not applicable to relationships. CalculationNeeded (4) The relationship does not contain any data because it was not refreshed. There is no error associated with the relationship. SemanticError (5) Not applicable to Relationship. EvaluationError (6) Not applicable to Relationship. DependencyError (7) A dependency associated with this relationship is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to relationships. SyntaxError (9) Not applicable to relationships."),IntelliSense("The State of this Relationship.")]
+		[Category("Metadata"),Description(@"Provides information on the state of the relationship. Possible values and their interpretation are as follows. Ready (1) The relationship is queryable and has up-to-date data. NoData (3) Not applicable to relationships. CalculationNeeded (4) The relationship does not contain any data because it was not refreshed. There is no error associated with the relationship. SemanticError (5) Not applicable to Relationship. EvaluationError (6) Not applicable to Relationship. DependencyError (7) A dependency associated with this relationship is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to relationships. SyntaxError (9) Not applicable to relationships."),IntelliSense(@"Provides information on the state of the relationship. Possible values and their interpretation are as follows. Ready (1) The relationship is queryable and has up-to-date data. NoData (3) Not applicable to relationships. CalculationNeeded (4) The relationship does not contain any data because it was not refreshed. There is no error associated with the relationship. SemanticError (5) Not applicable to Relationship. EvaluationError (6) Not applicable to Relationship. DependencyError (7) A dependency associated with this relationship is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to relationships. SyntaxError (9) Not applicable to relationships.")]
 		public ObjectState State {
 			get {
 			    return (ObjectState)MetadataObject.State;
@@ -7483,7 +7505,7 @@ namespace TabularEditor.TOMWrapper
 ///             Indicates how relationships influence filtering of data when evaluating row-level security expressions. Possible values are as follows. OneDirection (1): The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2): Filters on either end of the relationship will automatically filter the other table.
 ///             </summary>
 		[DisplayName("Security Filtering Behavior")]
-		[Category("Relationship"),Description(@"Indicates how relationships influence filtering of data when evaluating row-level security expressions. Possible values are as follows. OneDirection (1): The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2): Filters on either end of the relationship will automatically filter the other table."),IntelliSense("The Security Filtering Behavior of this Relationship.")]
+		[Category("Relationship"),Description(@"Indicates how relationships influence filtering of data when evaluating row-level security expressions. Possible values are as follows. OneDirection (1): The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2): Filters on either end of the relationship will automatically filter the other table."),IntelliSense(@"Indicates how relationships influence filtering of data when evaluating row-level security expressions. Possible values are as follows. OneDirection (1): The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2): Filters on either end of the relationship will automatically filter the other table.")]
 		public SecurityFilteringBehavior SecurityFilteringBehavior {
 			get {
 			    return (SecurityFilteringBehavior)MetadataObject.SecurityFilteringBehavior;
@@ -7692,7 +7714,7 @@ namespace TabularEditor.TOMWrapper
 ///             Gets or sets the starting column in a single column relationship.
 ///             </summary>
 		[DisplayName("From Column")]
-		[Category("Relationship"),Description(@"Gets or sets the starting column in a single column relationship."),IntelliSense("The From Column of this SingleColumnRelationship.")][TypeConverter(typeof(AllColumnConverter))]
+		[Category("Relationship"),Description(@"Gets or sets the starting column in a single column relationship."),IntelliSense(@"Gets or sets the starting column in a single column relationship.")][TypeConverter(typeof(AllColumnConverter))]
 		public Column FromColumn {
 			get {
 				if (MetadataObject.FromColumn == null) return null;
@@ -7717,7 +7739,7 @@ namespace TabularEditor.TOMWrapper
 ///             Gets or sets the destination column in a single column relationship.
 ///             </summary>
 		[DisplayName("To Column")]
-		[Category("Relationship"),Description(@"Gets or sets the destination column in a single column relationship."),IntelliSense("The To Column of this SingleColumnRelationship.")][TypeConverter(typeof(AllColumnConverter))]
+		[Category("Relationship"),Description(@"Gets or sets the destination column in a single column relationship."),IntelliSense(@"Gets or sets the destination column in a single column relationship.")][TypeConverter(typeof(AllColumnConverter))]
 		public Column ToColumn {
 			get {
 				if (MetadataObject.ToColumn == null) return null;
@@ -7742,7 +7764,7 @@ namespace TabularEditor.TOMWrapper
 ///             Indicates whether the "From" end of the relationship has a cardinality of One (1) or Many (2).
 ///             </summary>
 		[DisplayName("From Cardinality")]
-		[Category("Other"),Description(@"Indicates whether the ""From"" end of the relationship has a cardinality of One (1) or Many (2)."),IntelliSense("The From Cardinality of this SingleColumnRelationship.")]
+		[Category("Other"),Description(@"Indicates whether the ""From"" end of the relationship has a cardinality of One (1) or Many (2)."),IntelliSense(@"Indicates whether the ""From"" end of the relationship has a cardinality of One (1) or Many (2).")]
 		public RelationshipEndCardinality FromCardinality {
 			get {
 			    return (RelationshipEndCardinality)MetadataObject.FromCardinality;
@@ -7766,7 +7788,7 @@ namespace TabularEditor.TOMWrapper
 ///             Indicates whether the "To" end of the relationship has a cardinality of One (1) or Many (2).
 ///             </summary>
 		[DisplayName("To Cardinality")]
-		[Category("Other"),Description(@"Indicates whether the ""To"" end of the relationship has a cardinality of One (1) or Many (2)."),IntelliSense("The To Cardinality of this SingleColumnRelationship.")]
+		[Category("Other"),Description(@"Indicates whether the ""To"" end of the relationship has a cardinality of One (1) or Many (2)."),IntelliSense(@"Indicates whether the ""To"" end of the relationship has a cardinality of One (1) or Many (2).")]
 		public RelationshipEndCardinality ToCardinality {
 			get {
 			    return (RelationshipEndCardinality)MetadataObject.ToCardinality;
@@ -7999,7 +8021,7 @@ namespace TabularEditor.TOMWrapper
 ///             Specifies the type of Table so that you can customize application behavior based on the type of data in the table. Allowed values are identical to those of dimension type properties for Multidimensional models. Regular is the default. Other values include Time (2), Geography (3), Organization (4), BillOfMaterials (5), Accounts (6), Customers (7), Products (8), Scenario (9), Quantitativ1e (10), Utility (11), Currency (12), Rates (13), Channel (14) - channel dimension, Promotion (15).
 ///             </summary>
 		[DisplayName("Data Category")]
-		[Category("Metadata"),Description(@"Specifies the type of Table so that you can customize application behavior based on the type of data in the table. Allowed values are identical to those of dimension type properties for Multidimensional models. Regular is the default. Other values include Time (2), Geography (3), Organization (4), BillOfMaterials (5), Accounts (6), Customers (7), Products (8), Scenario (9), Quantitativ1e (10), Utility (11), Currency (12), Rates (13), Channel (14) - channel dimension, Promotion (15)."),IntelliSense("The Data Category of this Table.")]
+		[Category("Metadata"),Description(@"Specifies the type of Table so that you can customize application behavior based on the type of data in the table. Allowed values are identical to those of dimension type properties for Multidimensional models. Regular is the default. Other values include Time (2), Geography (3), Organization (4), BillOfMaterials (5), Accounts (6), Customers (7), Products (8), Scenario (9), Quantitativ1e (10), Utility (11), Currency (12), Rates (13), Channel (14) - channel dimension, Promotion (15)."),IntelliSense(@"Specifies the type of Table so that you can customize application behavior based on the type of data in the table. Allowed values are identical to those of dimension type properties for Multidimensional models. Regular is the default. Other values include Time (2), Geography (3), Organization (4), BillOfMaterials (5), Accounts (6), Customers (7), Products (8), Scenario (9), Quantitativ1e (10), Utility (11), Currency (12), Rates (13), Channel (14) - channel dimension, Promotion (15).")]
 		public string DataCategory {
 			get {
 			    return MetadataObject.DataCategory;
@@ -8023,7 +8045,7 @@ namespace TabularEditor.TOMWrapper
 ///             The description of the table, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
 ///             </summary>
 		[DisplayName("Description")]
-		[Category("Basic"),Description(@"The description of the table, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense("The Description of this Table.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"The description of the table, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the table, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;
@@ -8047,7 +8069,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value that indicates whether the table is treated as hidden by client visualization tools. True if the Table is treated as hidden; otherwise false.
 ///             </summary>
 		[DisplayName("Hidden")]
-		[Category("Basic"),Description(@"A boolean value that indicates whether the table is treated as hidden by client visualization tools. True if the Table is treated as hidden; otherwise false."),IntelliSense("The Hidden of this Table.")]
+		[Category("Basic"),Description(@"A boolean value that indicates whether the table is treated as hidden by client visualization tools. True if the Table is treated as hidden; otherwise false."),IntelliSense(@"A boolean value that indicates whether the table is treated as hidden by client visualization tools. True if the Table is treated as hidden; otherwise false.")]
 		public bool IsHidden {
 			get {
 			    return MetadataObject.IsHidden;
@@ -8072,7 +8094,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value that indicates a difference between a local and server version. If True, the Table is only shown when referenced as Variation.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("Show As Variations Only")]
-		[Category("Options"),Description(@"A boolean value that indicates a difference between a local and server version. If True, the Table is only shown when referenced as Variation."),IntelliSense("The Show As Variations Only of this Table.")]
+		[Category("Options"),Description(@"A boolean value that indicates a difference between a local and server version. If True, the Table is only shown when referenced as Variation."),IntelliSense(@"A boolean value that indicates a difference between a local and server version. If True, the Table is only shown when referenced as Variation.")]
 		public bool ShowAsVariationsOnly {
 			get {
 			    return MetadataObject.ShowAsVariationsOnly;
@@ -8096,7 +8118,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value that specifies whether to hide a table from the client. True hides the tables.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("Private")]
-		[Category("Options"),Description(@"A boolean value that specifies whether to hide a table from the client. True hides the tables."),IntelliSense("The Private of this Table.")]
+		[Category("Options"),Description(@"A boolean value that specifies whether to hide a table from the client. True hides the tables."),IntelliSense(@"A boolean value that specifies whether to hide a table from the client. True hides the tables.")]
 		public bool IsPrivate {
 			get {
 			    return MetadataObject.IsPrivate;
@@ -8120,7 +8142,7 @@ namespace TabularEditor.TOMWrapper
 ///             The ranking or precedence used to select the alternate source table in case more than one match is found.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1460 or above.</remarks>
 		[DisplayName("Alternate Source Precedence")]
-		[Category("Other"),Description(@"The ranking or precedence used to select the alternate source table in case more than one match is found."),IntelliSense("The Alternate Source Precedence of this Table.")]
+		[Category("Other"),Description(@"The ranking or precedence used to select the alternate source table in case more than one match is found."),IntelliSense(@"The ranking or precedence used to select the alternate source table in case more than one match is found.")]
 		public int AlternateSourcePrecedence {
 			get {
 			    return MetadataObject.AlternateSourcePrecedence;
@@ -8715,7 +8737,7 @@ namespace TabularEditor.TOMWrapper
 ///             The description of the expression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
 ///             </summary>
 		[DisplayName("Description")]
-		[Category("Basic"),Description(@"The description of the expression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense("The Description of this NamedExpression.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"The description of the expression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the expression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;
@@ -8739,7 +8761,7 @@ namespace TabularEditor.TOMWrapper
 ///             The dialect of the expression.
 ///             </summary>
 		[DisplayName("Kind")]
-		[Category("Options"),Description(@"The dialect of the expression."),IntelliSense("The Kind of this NamedExpression.")]
+		[Category("Options"),Description(@"The dialect of the expression."),IntelliSense(@"The dialect of the expression.")]
 		public ExpressionKind Kind {
 			get {
 			    return (ExpressionKind)MetadataObject.Kind;
@@ -8763,7 +8785,7 @@ namespace TabularEditor.TOMWrapper
 ///             The expression text.
 ///             </summary>
 		[DisplayName("Expression")]
-		[Category("Options"),Description(@"The expression text."),IntelliSense("The Expression of this NamedExpression.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Options"),Description(@"The expression text."),IntelliSense(@"The expression text.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Expression {
 			get {
 			    return MetadataObject.Expression;
