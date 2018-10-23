@@ -49,6 +49,23 @@ partial class Rules {
 				.Replace("<see cref=\"T:Microsoft.AnalysisServices.Tabular.", "")
 				.Replace("<see cref=\"P:Microsoft.AnalysisServices.Tabular.", "")
 				.Replace("\" />", "").Replace("\"","\"\"").Trim();
+			if(doc == "Missing comment") return "The " + propertyName + " of this " + t.Name;
+			return doc;
+        }
+
+		return "The " + propertyName + " of this " + t.Name;
+    }
+
+    public static string GetPropertyRemarks(Type t, string propertyName) {
+		var xml = XElement.Load(XmlDocFile);
+		var node = xml?.Element("members")?.Elements("member")?.FirstOrDefault(e => ((string)e.Attribute("name")) == "P:Microsoft.AnalysisServices.Tabular." + t.Name + "." + propertyName)?.Element("remarks");
+		if(node != null) {
+			var nodeReader = node.CreateReader();
+			nodeReader.MoveToContent();
+			var doc = nodeReader.ReadInnerXml()
+				.Replace("<see cref=\"T:Microsoft.AnalysisServices.Tabular.", "")
+				.Replace("<see cref=\"P:Microsoft.AnalysisServices.Tabular.", "")
+				.Replace("\" />", "").Replace("\"","\"\"").Trim();
 			return doc;
         }
 

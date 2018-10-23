@@ -177,8 +177,10 @@ namespace TabularEditor.TOMWrapper
                 case Properties.FASTCOMBINE:
                 case Properties.RETURNERRORVALUESASNULL:
                 case Properties.LEGACYREDIRECTS:
-
+                case Properties.DEFAULTMEASURE:
                     return Handler.CompatibilityLevel >= 1400;
+                case Properties.FORCEUNIQUENAMES:
+                    return Handler.CompatibilityLevel >= 1465;
                 default:
                     return base.IsBrowsable(propertyName);
             }
