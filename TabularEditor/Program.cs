@@ -288,7 +288,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                     OutputUsage();
                     return true;
                 }
-                saveToFolderOutputPath = argList[doSave + 1];
+                saveToFolderOutputPath = argList[doSaveToFolder + 1];
                 var directoryName = new FileInfo(saveToFolderOutputPath).Directory.FullName;
                 Directory.CreateDirectory(saveToFolderOutputPath);
             }
