@@ -347,18 +347,13 @@ fragment IdentifierOrKeyword
 	;
 
 fragment IdentifierStartCharacter
-	: LetterCharacter
+	: UnicodeClassLU
+	| UnicodeClassLL
 	| '_'
 	;
 
-fragment LetterCharacter
-	: UnicodeClassLU
-	| UnicodeClassLL
-	;
-
 fragment IdentifierPartCharacter
-	: UnicodeClassLU
-	| UnicodeClassLL
+	: IdentifierStartCharacter
 	| UnicodeClassND
 	;
 
