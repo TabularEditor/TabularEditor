@@ -208,9 +208,15 @@ namespace TabularEditor.TOMWrapper
 
             foreach (var obj in inserted)
             {
+                var tableObj = obj as Table;
+
                 (obj as ITranslatableObject)?.LoadTranslations(true);
                 (obj as ITabularPerspectiveObject)?.LoadPerspectives(true);
-                (obj as Table)?.LoadRLS();
+                if (tableObj != null)
+                {
+                    tableObj.LoadRLS();
+                    Handler.Tree.RebuildFolderCacheForTable(tableObj);
+                }
 
                 if (!string.IsNullOrEmpty(folder) && obj is IFolderObject)
                 {
@@ -219,7 +225,7 @@ namespace TabularEditor.TOMWrapper
 
                 if (Handler.CompatibilityLevel >= 1400)
                 {
-                    (obj as Table)?.LoadOLS(true);
+                    if (tableObj != null) tableObj.LoadOLS(true);
                     (obj as Column)?.LoadOLS();
                 }
 
