@@ -348,6 +348,7 @@
     <Compile Include="UI\Dialogs\ValidationEventArgs.cs" />
     <Compile Include="UI\Extensions\WatermarkTextBox.cs" />
     <Compile Include="UI\Hourglass.cs" />
+    <Compile Include="UI\SaveAsDialog.cs" />
     <Compile Include="UI\ToolStripSearchBox.cs">
       <SubType>Component</SubType>
     </Compile>

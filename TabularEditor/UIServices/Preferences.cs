@@ -210,7 +210,7 @@ namespace TabularEditor.UIServices
             };
         }
 
-        static public SerializeOptions GetSerializeOptions(this Preferences value, bool SaveToFolder)
+        static public SerializeOptions GetSerializeOptions(this Preferences value)
         {
             var serializeOptions = new SerializeOptions()
             {
@@ -220,14 +220,11 @@ namespace TabularEditor.UIServices
                 SplitMultilineStrings = value.SplitMultilineStrings,
             };
 
-            if (SaveToFolder)
-            {
-                serializeOptions.PrefixFilenames = value.SaveToFolder_PrefixFiles;
-                serializeOptions.LocalPerspectives = value.SaveToFolder_LocalPerspectives;
-                serializeOptions.LocalTranslations = value.SaveToFolder_LocalTranslations;
-                serializeOptions.LocalRelationships = value.SaveToFolder_LocalRelationships;
-                serializeOptions.Levels = new HashSet<string>(value.SaveToFolder_Levels);
-            }
+            serializeOptions.PrefixFilenames = value.SaveToFolder_PrefixFiles;
+            serializeOptions.LocalPerspectives = value.SaveToFolder_LocalPerspectives;
+            serializeOptions.LocalTranslations = value.SaveToFolder_LocalTranslations;
+            serializeOptions.LocalRelationships = value.SaveToFolder_LocalRelationships;
+            serializeOptions.Levels = new HashSet<string>(value.SaveToFolder_Levels);
 
             return serializeOptions;
         }
