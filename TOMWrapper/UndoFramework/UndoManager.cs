@@ -39,6 +39,13 @@ namespace TabularEditor.TOMWrapper.Undo
             }
         }
 
+        /// <summary>
+        /// Call this method to indicate that a change was applied, even when it might not be undoable (such as annotation changes).
+        /// </summary>
+        public void FlagChange()
+        {
+            checkPointCount--;
+        }
         int checkPointCount = 0;
         /// <summary>
         /// Sets the checkpoint. You can use the <see cref="AtCheckpoint"/> property to determine

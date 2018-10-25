@@ -20,7 +20,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         public AnalyzerIgnoreRules(IAnnotationObject obj)
         {
             RuleIDs = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
-            var json = obj.GetAnnotation("BestPracticeAnalyzer_IgnoreRules") ?? obj.GetAnnotation("BestPractizeAnalyzer_IgnoreRules"); // Stupid typo in earlier version
+            var json = obj.GetAnnotation(Analyzer.BPAAnnotationIgnore) ?? obj.GetAnnotation("BestPractizeAnalyzer_IgnoreRules"); // Stupid typo in earlier version
             if(!string.IsNullOrEmpty(json))
             {
                 JsonConvert.PopulateObject(json, this);
@@ -29,7 +29,8 @@ namespace TabularEditor.BestPracticeAnalyzer
         public void Save(IAnnotationObject obj)
         {
             obj.RemoveAnnotation("BestPractizeAnalyzer_IgnoreRules"); // Stupid typo in earlier version
-            obj.SetAnnotation("BestPracticeAnalyzer_IgnoreRules", JsonConvert.SerializeObject(this), false);
+            obj.SetAnnotation(Analyzer.BPAAnnotationIgnore, JsonConvert.SerializeObject(this), false);
+            UI.UIController.Current.Handler.UndoManager.FlagChange();
         }
     }
 
@@ -71,6 +72,9 @@ namespace TabularEditor.BestPracticeAnalyzer
 
     public class Analyzer: INotifyCollectionChanged
     {
+        internal const string BPAAnnotation = "BestPracticeAnalyzer";
+        internal const string BPAAnnotationIgnore = "BestPracticeAnalyzer_IgnoreRules";
+
         private Model _model;
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
@@ -113,7 +117,7 @@ namespace TabularEditor.BestPracticeAnalyzer
                 _model = value;
                 if (_model != null)
                 {
-                    var localRulesJson = _model.GetAnnotation("BestPracticeAnalyzer") ?? _model.GetAnnotation("BestPractizeAnalyzer"); // Stupid typo in earlier version
+                    var localRulesJson = _model.GetAnnotation(BPAAnnotation) ?? _model.GetAnnotation("BestPractizeAnalyzer"); // Stupid typo in earlier version
                     if (!string.IsNullOrEmpty(localRulesJson))
                     {
                         LocalRules = BestPracticeCollection.LoadFromJson(localRulesJson);
@@ -169,7 +173,10 @@ namespace TabularEditor.BestPracticeAnalyzer
         {
             if (_model == null) return;
             _model.RemoveAnnotation("BestPractizeAnalyzer"); // Stupid typo in earlier version
-            _model.SetAnnotation("BestPracticeAnalyzer", LocalRules.SerializeToJson(), false);
+            var previousAnnotation = _model.GetAnnotation(BPAAnnotation);
+            var newAnnotation = LocalRules.SerializeToJson();
+            _model.SetAnnotation(BPAAnnotation, newAnnotation, false);
+            if (previousAnnotation != newAnnotation) UI.UIController.Current.Handler.UndoManager.FlagChange();
         }
 
         public Analyzer()
