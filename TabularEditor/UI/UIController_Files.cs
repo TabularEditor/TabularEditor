@@ -153,65 +153,12 @@ namespace TabularEditor.UI
             File_Open(fileName);
         }
 
-        public void File_SaveAs()
-        {
-            ExpressionEditor_AcceptEdit();
-
-            var defaultFileName = Handler.SourceType == ModelSourceType.Database ? "Model.bim" : File_Current;
-            
-            using (var fbd = new CommonSaveFileDialog())
-            {
-                // Configure dialog:
-                fbd.DefaultFileName = defaultFileName;
-                fbd.Filters.Clear();
-                if (Handler.SourceType == ModelSourceType.Pbit) fbd.Filters.Add(new CommonFileDialogFilter("Power BI Template", "*.pbit"));
-                fbd.Filters.Add(new CommonFileDialogFilter("Tabular Model Files", "*.bim"));
-                fbd.Filters.Add(new CommonFileDialogFilter("All files", "*.*"));
-
-                var useAnnotatedSerializationSettingsCheckBox = new CommonFileDialogCheckBox
-                {
-                    Text = "Use serialization settings from annotations",
-                    IsChecked = true
-                };
-                if (Handler.HasSerializeOptions) fbd.Controls.Add(useAnnotatedSerializationSettingsCheckBox);
-                var res = fbd.ShowDialog();
-
-
-                if (res == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(fbd.FileName))
-                {
-                    using (new Hourglass())
-                    {
-                        UI.StatusLabel.Text = "Saving...";
-
-                        var fileType = fbd.Filters[fbd.SelectedFileTypeIndex - 1].Extensions.FirstOrDefault();
-
-                        Handler.Save(fbd.FileName, 
-                            fileType == "pbit" ? SaveFormat.PowerBiTemplate : SaveFormat.ModelSchemaOnly, 
-                            Preferences.Current.GetSerializeOptions(false), 
-                            Handler.HasSerializeOptions && useAnnotatedSerializationSettingsCheckBox.IsChecked);
-
-                        RecentFiles.Add(fbd.FileName);
-                        RecentFiles.Save();
-                        UI.FormMain.PopulateRecentFilesList();
-
-                        // If not connected to a database, change the current working file:
-                        if (Handler.SourceType != ModelSourceType.Database)
-                        {
-                            File_Current = fbd.FileName;
-                            File_SaveMode = ModelSourceType.File;
-                        }
-
-                        UpdateUIText();
-                    }
-                }
-            }
-        }
-
         private ModelSourceType _file_SaveMode;
         public ModelSourceType File_SaveMode
         {
             get { return _file_SaveMode; }
-            private set {
+            private set
+            {
                 _file_SaveMode = value;
 
                 var actSave = UI.FormMain.actSave;
@@ -242,35 +189,143 @@ namespace TabularEditor.UI
         }
         public DateTime File_LastWrite { get; private set; }
 
-        public void File_SaveAs_ToFolder()
+        public void File_SaveAs()
         {
-            using (var fbd = new CommonOpenFileDialog() { IsFolderPicker = true })
-            {
-                var useAnnotatedSerializationSettingsCheckBox = new CommonFileDialogCheckBox
-                {
-                    Text = "Use serialization settings from annotations",
-                    IsChecked = true
-                };
-                if (Handler.HasSerializeOptions) fbd.Controls.Add(useAnnotatedSerializationSettingsCheckBox);
+            ExpressionEditor_AcceptEdit();
 
-                var res = fbd.ShowDialog();
-                if(res == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(fbd.FileName))
+            // Only show the "Use serialize options from annotations" checkbox when the current model has these annotations,
+            // and not when switching between file/folder:
+            var showSfa = Handler.HasSerializeOptions;
+
+            // If the model is currently loaded from a database or a folder structure, use the default "Model.bim" as a file
+            // name. Otherwise, use the name of the current file:
+            var defaultFileName = (Handler.SourceType == ModelSourceType.Database || Handler.SourceType == ModelSourceType.Folder) ? "Model.bim" : File_Current;
+
+            // We only allow saving as a Power BI Template, if the current model was loaded from a template:
+            var allowPbit = Handler.SourceType == ModelSourceType.Pbit;
+
+            // This flag indicates whether we're currently connected to a database:
+            var connectedToDatabase = Handler.SourceType == ModelSourceType.Database;
+
+            // This flag indicates whether the "Current File" pointer should be set to the new file location, which
+            // is the typical behaviour of Windows applications when choosing "Save As...". However, when connected
+            // to a database, we do not want to do this, as users will probably want to keep working on the existing
+            // connection.
+            var changeFilePointer = !connectedToDatabase;
+
+            // This flag indicates whether we should reset the undo-checkpoint after saving the model.
+            // The purpose of resetting the checkpoint is to visually indicate to the user, that no
+            // changes have been made to the model since the last save. We do this, only when changing
+            // the "Current File" pointer:
+            var resetCheckPoint = changeFilePointer;
+
+            // This flag indicates whether the SerializationOptions annotations on the currently loaded
+            // model will be restored to its original value, after the model is saved (possibly using
+            // different serialization options, depending on the other arguments of the Save() method).
+            // We should always restore when connected to a database, as we don't want our serialization
+            // options to be saved to the database - only to the file/folder that we're currently saving to.
+            var restoreSerializationOptions = connectedToDatabase;
+
+            // The serialization options to use when saving (unless users check the "Use serialization settings from annotations" checkbox):
+            var serializationOptions = Preferences.Current.GetSerializeOptions();
+
+            using (var dialog = SaveAsDialog.CreateFileDialog(showSfa, defaultFileName, allowPbit))
+            {
+                var res = dialog.ShowDialog();
+
+                if (res == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(dialog.FileName))
                 {
                     using (new Hourglass())
                     {
                         UI.StatusLabel.Text = "Saving...";
-                        Handler.Save(fbd.FileName, SaveFormat.TabularEditorFolder, 
-                            Preferences.Current.GetSerializeOptions(true), Handler.HasSerializeOptions && useAnnotatedSerializationSettingsCheckBox.IsChecked);
 
-                        RecentFiles.Add(fbd.FileName);
+                        // Save as a Power BI Template, if that's the type of file chosen in the dialog:
+                        var saveFormat = dialog.FileType == "pbit" ? SaveFormat.PowerBiTemplate : SaveFormat.ModelSchemaOnly;
+
+                        Handler.Save(dialog.FileName,
+                            saveFormat,
+                            serializationOptions,
+                            dialog.UseSerializationFromAnnotations,
+                            resetCheckPoint,
+                            restoreSerializationOptions);
+
+                        RecentFiles.Add(dialog.FileName);
+                        RecentFiles.Save();
+                        UI.FormMain.PopulateRecentFilesList();
+
+                        // If not connected to a database, change the current working file:
+                        if (changeFilePointer)
+                        {
+                            File_Current = dialog.FileName;
+                            File_SaveMode = ModelSourceType.File;
+                        }
+
+                        UpdateUIText();
+                    }
+                }
+            }
+        }
+
+        public void File_SaveAs_ToFolder()
+        {
+            ExpressionEditor_AcceptEdit();
+
+            // Save as a Folder structure:
+            var saveFormat = SaveFormat.TabularEditorFolder;
+
+            // This flag indicates whether we're currently connected to a database:
+            var connectedToDatabase = Handler.SourceType == ModelSourceType.Database;
+
+            // This flag indicates whether the "Current File" pointer should be set to the new file location, which
+            // is the typical behaviour of Windows applications when choosing "Save As...". However, when connected
+            // to a database, we do not want to do this, as users will probably want to keep working on the existing
+            // connection.
+            var changeFilePointer = !connectedToDatabase;
+
+            // This flag indicates whether we should reset the undo-checkpoint after saving the model.
+            // The purpose of resetting the checkpoint is to visually indicate to the user, that no
+            // changes have been made to the model since the last save. We do this, only when changing
+            // the "Current File" pointer:
+            var resetCheckPoint = changeFilePointer;
+
+            // This flag indicates whether the SerializationOptions annotations on the currently loaded
+            // model will be restored to its original value, after the model is saved (possibly using
+            // different serialization options, depending on the other arguments of the Save() method).
+            // We should always restore when connected to a database, as we don't want our serialization
+            // options to be saved to the database - only to the file/folder that we're currently saving to.
+            var restoreSerializationOptions = connectedToDatabase;
+
+            // The serialization options to use when saving (unless users check the "Use serialization settings from annotations" checkbox):
+            var serializationOptions = Preferences.Current.GetSerializeOptions();
+
+            // Only show the "Use serialize options from annotations" checkbox when the current model has these annotations:
+            var showSfa = Handler.HasSerializeOptions;
+
+            using (var dialog = SaveAsDialog.CreateFolderDialog(showSfa))
+            {
+                var res = dialog.ShowDialog();
+                if(res == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(dialog.FileName))
+                {
+                    using (new Hourglass())
+                    {
+                        UI.StatusLabel.Text = "Saving...";
+
+                        Handler.Save(dialog.FileName,
+                            saveFormat,
+                            serializationOptions,
+                            dialog.UseSerializationFromAnnotations,
+                            resetCheckPoint,
+                            restoreSerializationOptions);
+
+                        RecentFiles.Add(dialog.FileName);
                         RecentFiles.Save();
                         UI.FormMain.PopulateRecentFilesList();
 
                         // If working with a file, change the current file pointer:
-                        if (Handler.SourceType != ModelSourceType.Database)
+                        if (changeFilePointer)
                         {
                             File_SaveMode = ModelSourceType.Folder;
-                            File_Current = fbd.FileName;
+                            File_Current = dialog.FileName;
                         }
 
                         UpdateUIText();
@@ -286,6 +341,7 @@ namespace TabularEditor.UI
             if (File_Current == null && File_SaveMode == ModelSourceType.File)
             {
                 File_SaveAs();
+                File_LastWrite = DateTime.Now;
                 return;
             }
 

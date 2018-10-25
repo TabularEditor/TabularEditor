@@ -131,7 +131,7 @@ namespace TabularEditor.TOMWrapper
                 Model.SetAnnotation("TabularEditor_SerializeOptions", JsonConvert.SerializeObject(options), undoable);
         }
 
-        public void Save(string path, SaveFormat format, SerializeOptions options, bool useAnnotatedSerializeOptions = false, bool resetCheckpoint = false)
+        public void Save(string path, SaveFormat format, SerializeOptions options, bool useAnnotatedSerializeOptions = false, bool resetCheckpoint = false, bool restoreSerializationOptions = true)
         {
             _disableUpdates = true;
             bool hasOptions = HasSerializeOptions;
@@ -183,7 +183,7 @@ namespace TabularEditor.TOMWrapper
             finally
             {
 
-                if (!useAnnotatedSerializeOptions)
+                if (!useAnnotatedSerializeOptions && restoreSerializationOptions)
                 {
                     // Restore serialization options within the currently loaded model:
                     SetSerializeOptions(hasOptions ? optionsBackup : null, false);
