@@ -13,13 +13,13 @@ namespace TabularEditor.TOMWrapper.Serialization
     {
         internal static IEnumerable<ITranslatableObject> GetAllTranslatableObjects(this Model model)
         {
-                return Enumerable.Repeat(model as ITranslatableObject, 1)
-                    .Concat(model.Tables)
-                    .Concat(model.AllMeasures)
-                    .Concat(model.AllColumns)
-                    .Concat(model.AllHierarchies)
-                    .Concat(model.AllLevels)
-                    .Concat(model.Perspectives);
+            return Enumerable.Repeat(model as ITranslatableObject, 1)
+                .Concat(model.Tables)
+                .Concat(model.AllMeasures)
+                .Concat(model.AllColumns)
+                .Concat(model.AllHierarchies)
+                .Concat(model.AllLevels)
+                .Concat(model.Perspectives);
         }
 
         public static void StoreTranslationsAsAnnotations(this Model model)
@@ -69,17 +69,42 @@ namespace TabularEditor.TOMWrapper.Serialization
         public static void LoadTranslations(this ITranslatableObject obj, bool includeChildren = false)
         {
             var tn = obj.GetAnnotation("TabularEditor_TranslatedNames");
-            if (tn != null) obj.TranslatedNames.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, string>>(tn));
+            if (tn != null) obj.TranslatedNames.CopyFrom(DeserializeTranslations(tn));
 
             var td = obj.GetAnnotation("TabularEditor_TranslatedDescriptions");
-            if (td != null) obj.TranslatedDescriptions.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, string>>(td));
+            if (td != null) obj.TranslatedDescriptions.CopyFrom(DeserializeTranslations(td));
 
             var tdf = obj.GetAnnotation("TabularEditor_TranslatedDisplayFolders");
-            if (tdf != null && obj is IFolderObject) (obj as IFolderObject).TranslatedDisplayFolders.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, string>>(tdf));
+            if (tdf != null && obj is IFolderObject) (obj as IFolderObject).TranslatedDisplayFolders.CopyFrom(DeserializeTranslations(tdf));
 
             if (includeChildren && obj is ITabularObjectContainer)
             {
                 foreach (var child in (obj as ITabularObjectContainer).GetChildren().OfType<ITranslatableObject>()) child.LoadTranslations(true);
+            }
+        }
+
+        private static Dictionary<string, string> DeserializeTranslations(string json)
+        {
+            // Build 2.7.6853.27686 unfortunately had a bug that would cause annotated translations to be serialized as an
+            // array of KeyValuePairs, instead of as a pure dictionary. What that means, is that the generated JSON would
+            // look like:
+            //
+            // [{"Key":"en-US","Value":"Address"},{"Key":"da-DK","Value":"Adresse"}]
+            //
+            // instead of:
+            //
+            // {"en-US":"Address","da-DK":"Adresse"}
+            //
+            // So when deserializing, we must be able to handle both:
+            try
+            {
+                // First, let's try the pure dictionary deserialization:
+                return JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            }
+            catch
+            {
+                // If that fails, let's try deserializing as a list of KeyValuePairs:
+                return JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(json).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             }
         }
     }
