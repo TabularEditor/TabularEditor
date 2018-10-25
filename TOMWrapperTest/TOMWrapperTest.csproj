@@ -57,6 +57,9 @@
     <Compile Include="ObjectCreationTests.cs" />
     <Compile Include="ObjectHandlingTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RegressionTests\v2_7_4\CopyTableNoColumnsTests.cs" />
+    <Compile Include="RegressionTests\v2_7_4\TranslationsTests.cs" />
+    <Compile Include="RegressionTests\v2_7_4\DependenciesTests.cs" />
     <Compile Include="RegressionTests\v2_7_4\UndoRedoTests.cs" />
     <Compile Include="TabularModelHandlerTests.cs" />
     <Compile Include="TestGenerator.cs">
