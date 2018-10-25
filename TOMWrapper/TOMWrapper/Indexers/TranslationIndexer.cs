@@ -9,6 +9,8 @@ using System.ComponentModel;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper.Undo;
+using System.Text;
+using System.IO;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -17,10 +19,20 @@ namespace TabularEditor.TOMWrapper
     {
         public string ToJson()
         {
-            return JsonConvert.SerializeObject(
-                    Keys.Where(k => !string.IsNullOrEmpty(this[k]))
-                    .ToDictionary(k => k, k => this[k]).OrderBy(kvp => kvp.Key)
-                );
+            // Here, we do a custom serialization, as there seems to be no way to specify the ordering when serializing a Dictionary using JsonConvert:
+            var sb = new StringBuilder();
+            var sw = new StringWriter(sb);
+            using(JsonWriter writer = new JsonTextWriter(sw))
+            {
+                writer.WriteStartObject();
+                foreach(var lang in Keys.Where(k => !string.IsNullOrEmpty(this[k])).OrderBy(k => k))
+                {
+                    writer.WritePropertyName(lang);
+                    writer.WriteValue(this[lang]);
+                }
+                writer.WriteEndObject();
+            }
+            return sb.ToString();
         }
 
         bool IExpandableIndexer.EnableMultiLine => false;
