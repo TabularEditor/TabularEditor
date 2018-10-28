@@ -399,6 +399,11 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
 
                 foreach(var res in bpaResults)
                 {
+                    if (res.InvalidCompatibilityLevel)
+                    {
+                        Console.WriteLine("Skipping rule '{0}' as it does not apply to Compatibility Level {1}.", res.RuleName, h.CompatibilityLevel);
+                    }
+                    else
                     if (res.RuleHasError)
                     {
                         Warning("Error on rule '{0}': {1}", res.RuleName, res.RuleError);

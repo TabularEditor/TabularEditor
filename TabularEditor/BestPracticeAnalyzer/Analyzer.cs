@@ -204,7 +204,11 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         public IEnumerable<AnalyzerResult> Analyze(BestPracticeRule rule)
         {
-            if (rule.CompatibilityLevel > Model.Database.CompatibilityLevel) yield return new AnalyzerResult { Rule = rule, InvalidCompatibilityLevel = true };
+            if (rule.CompatibilityLevel > Model.Database.CompatibilityLevel)
+            {
+                yield return new AnalyzerResult { Rule = rule, InvalidCompatibilityLevel = true };
+                yield break;
+            }
 
             // Loop through the types of objects in scope for this rule:
             foreach (var currentScope in rule.Scope.Enumerate())
