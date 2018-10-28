@@ -43,7 +43,7 @@ namespace TabularEditor
                 {
                     cw.WriteLine("##vso[task.complete result={0};]Done.", errorCount > 0 ? "Failed" :( issueCount > 0 ? "SucceededWithIssues" : "Succeeded" ));
                 }
-                Application.Exit();
+                Environment.Exit(errorCount > 0 ? 1 : 0);
                 return;
             }
             CommandLineMode = false;
@@ -355,7 +355,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             {
                 cw.WriteLine("Saving Model.bim file to Folder Output Path ...");
                 //Note the last parameter, we use whatever SerializeOptions are already in the file
-                h.Save(saveToFolderOutputPath, SaveFormat.TabularEditorFolder, null, false);
+                h.Save(saveToFolderOutputPath, SaveFormat.TabularEditorFolder, null, true);
             }
 
             var replaceMap = new Dictionary<string, string>();
