@@ -364,7 +364,8 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             if (analyze == -1) analyze = upperArgList.IndexOf("-A");
             if (analyze > -1)
             {
-                var rulefile = argList.Skip(analyze + 1).FirstOrDefault(n => !n.StartsWith("-"));
+                var rulefile = analyze + 1 < argList.Count ? argList[analyze + 1] : "";
+                if (rulefile.StartsWith("-") || string.IsNullOrEmpty(rulefile)) rulefile = null;
 
                 var analyzer = new BPA.Analyzer() { Model = h.Model };
 
