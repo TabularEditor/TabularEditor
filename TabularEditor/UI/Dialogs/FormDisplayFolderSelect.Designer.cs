@@ -1,4 +1,4 @@
-﻿namespace TabularEditor
+﻿namespace TabularEditor.UI.Dialogs
 {
     partial class FormDisplayFolderSelect
     {

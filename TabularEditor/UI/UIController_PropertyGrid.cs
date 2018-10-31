@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.ComponentModel.Com2Interop;
 using TabularEditor.PropertyGridUI;
+using TabularEditor.UI.Dialogs;
 
 namespace TabularEditor.UI
 {
@@ -14,6 +15,7 @@ namespace TabularEditor.UI
         public void PropertyGrid_Init()
         {
             CustomEditors.RegisterEditor("Display Folder", new FormDisplayFolderSelect());
+            CustomEditors.RegisterEditor("Connection String", new ConnectSqlForm());
         }
 
         public void PropertyGrid_UpdateFromSelection()

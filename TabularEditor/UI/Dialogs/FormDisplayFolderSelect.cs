@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper;
 
-namespace TabularEditor
+namespace TabularEditor.UI.Dialogs
 {
     public partial class FormDisplayFolderSelect : Form, ICustomEditor
     {
