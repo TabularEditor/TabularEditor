@@ -30,10 +30,10 @@ namespace TabularEditor.TOMWrapper
             var file = new FileInfo(path);
 
             // If the file extension is .pbit, assume Power BI template:
-            if (file.Exists && file.Extension == ".pbit") LoadPowerBiTemplateFile(path);
+            if (file.Exists && file.Extension.EqualsI(".pbit")) LoadPowerBiTemplateFile(path);
 
             // If the file name is "database.json" or path is a directory, assume Split Model:
-            else if ((file.Exists && file.Name == "database.json") || Directory.Exists(path)) LoadSplitModelFiles(path);
+            else if ((file.Exists && file.Name.EqualsI("database.json")) || Directory.Exists(path)) LoadSplitModelFiles(path);
 
             // In any other case, assume this is just a regular Model.bim file:
             else LoadModelFile(path);
