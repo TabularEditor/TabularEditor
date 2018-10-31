@@ -20,20 +20,28 @@ namespace TabularEditor.TOMWrapper
         {
             public string Name;
             public string Description;
+            public Dictionary<string, string> Annotations;
         }
 
         public string ToJson()
         {
-            return JsonConvert.SerializeObject(this.Select(p => new SerializedPerspective { Name = p.Name, Description = p.Description }).OrderBy(p => p.Name).ToArray());
+            return JsonConvert.SerializeObject(this.Select(p => 
+            new SerializedPerspective {
+                Name = p.Name,
+                Description = p.Description,
+                Annotations = p.Annotations.Keys.ToDictionary(k => k, k => p.GetAnnotation(k))
+            }).OrderBy(p => p.Name).ToArray());
         }
 
         public void FromJson(string json)
         {
-            var perspectives = JsonConvert.DeserializeObject<SerializedPerspective[]>(json);
+            var serializedPerspectives = JsonConvert.DeserializeObject<SerializedPerspective[]>(json);
 
-            foreach(var p in perspectives)
+            foreach(var p in serializedPerspectives)
             {
-                Handler.Model.AddPerspective(p.Name).Description = p.Description;
+                var perspective = Handler.Model.AddPerspective(p.Name);
+                perspective.Description = p.Description;
+                if(p.Annotations != null) foreach (var k in p.Annotations.Keys) perspective.SetAnnotation(k, p.Annotations[k]);
             }
         }
     }
