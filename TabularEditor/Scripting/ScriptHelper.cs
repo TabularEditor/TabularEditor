@@ -62,7 +62,7 @@ namespace TabularEditor.Scripting
         {
             if (Program.CommandLineMode)
             {
-                Log(string.Format(lineNumber != -1 ? "Script output line #{0}: {1}" : "Script output: {1}", lineNumber, value));
+                Info(string.Format(lineNumber != -1 ? "Script output line #{0}: {1}" : "Script output: {1}", lineNumber, value));
                 return;
             }
 
@@ -77,7 +77,7 @@ namespace TabularEditor.Scripting
         }
 
         [ScriptMethod]
-        public static void Log(string message)
+        public static void Info(string message)
         {
             if (Program.CommandLineMode) Program.cw.WriteLine(message);
         }
