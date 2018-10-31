@@ -75,5 +75,16 @@ namespace TabularEditor
 
             return sb.ToString();
         }
+
+        /// <summary>
+        /// Invariant Culture Ignore Case comparison between two strings.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public static bool EqualsI(this string str, string other)
+        {
+            return str.Equals(other, StringComparison.InvariantCultureIgnoreCase);
+        }
     }
 }
