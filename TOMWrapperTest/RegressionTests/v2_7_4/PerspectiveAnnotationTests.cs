@@ -31,5 +31,25 @@ namespace TOMWrapperTest.RegressionTests.v2_7_4
             p1 = model.Perspectives["TestPerspective"];
             Assert.AreEqual("TestAnnotationValue", p1.GetAnnotation("TestAnnotation"));
         }
+
+        [TestMethod]
+        public void CheckPerspectiveAnnotationAfterSave()
+        {
+            var handler = new TabularModelHandler();
+            var model = handler.Model;
+            var p1 = model.AddPerspective("TestPerspective");
+            p1.SetAnnotation("TestAnnotation", "TestAnnotationValue");
+
+            Directory.CreateDirectory("test_2_7_4_perspective_annotation_2");
+            handler.Save("test_2_7_4_perspective_annotation_2", SaveFormat.TabularEditorFolder, SerializeOptions.Default);
+
+            Assert.AreEqual("TestAnnotationValue", p1.GetAnnotation("TestAnnotation"));
+
+            // Load from folder:
+            handler = new TabularModelHandler("test_2_7_4_perspective_annotation_2");
+            model = handler.Model;
+            p1 = model.Perspectives["TestPerspective"];
+            Assert.AreEqual("TestAnnotationValue", p1.GetAnnotation("TestAnnotation"));
+        }
     }
 }

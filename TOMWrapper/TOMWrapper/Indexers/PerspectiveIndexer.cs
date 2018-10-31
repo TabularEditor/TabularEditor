@@ -49,8 +49,12 @@ namespace TabularEditor.TOMWrapper
 
         public void CopyFrom(string[] perspectives)
         {
+            IsCopying = true;
             CopyFrom(perspectives.ToDictionary(s => s, s => true));
+            IsCopying = false;
         }
+
+        protected bool IsCopying { get; private set; } = false;
 
         public override string ToJson()
         {
@@ -115,9 +119,12 @@ namespace TabularEditor.TOMWrapper
 
             // Including/excluding a table from a perspective, is equivalent to including/excluding all child
             // objects. The PerspectiveTable will be created automatically if needed.
-            Table.Measures.InPerspective(perspective, included);
-            Table.Hierarchies.InPerspective(perspective, included);
-            Table.Columns.InPerspective(perspective, included);
+            if (!IsCopying)
+            {
+                Table.Measures.InPerspective(perspective, included);
+                Table.Hierarchies.InPerspective(perspective, included);
+                Table.Columns.InPerspective(perspective, included);
+            }
 
             if (!included && pts.Contains(Table.Name)) pts.Remove(Table.Name);
         }
