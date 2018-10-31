@@ -440,11 +440,11 @@ namespace TabularEditor
                 // to get the complete path. The group can be determined from the type of object:
                 switch (item.ObjectType)
                 {
-                    case ObjectType.Culture: stack.Add(Model.Groups.Translations); break;
-                    case ObjectType.Role: stack.Add(Model.Groups.Roles); break;
-                    case ObjectType.Perspective: stack.Add(Model.Groups.Perspectives); break;
-                    case ObjectType.DataSource: stack.Add(Model.Groups.DataSources); break;
-                    case ObjectType.Relationship: stack.Add(Model.Groups.Relationships); break;
+                    case ObjectType.Culture: stack.Add(Model.Groups.Translations); stack.Add(item); break;
+                    case ObjectType.Role: stack.Add(Model.Groups.Roles); stack.Add(item); break;
+                    case ObjectType.Perspective: stack.Add(Model.Groups.Perspectives); stack.Add(item); break;
+                    case ObjectType.DataSource: stack.Add(Model.Groups.DataSources); stack.Add(item); break;
+                    case ObjectType.Relationship: stack.Add(Model.Groups.Relationships); stack.Add(item); break;
                     default:
                         // All other object types should appear in the "Tables" group:
                         stack.Add(Model.Groups.Tables); break;

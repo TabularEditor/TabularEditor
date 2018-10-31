@@ -136,11 +136,11 @@ namespace TabularEditor.UI.Dialogs
                     {
                         var name = (string)row["ColumnName"];
                         var type = (Type)row["DataType"];
-
+                        var providerType = (OleDbType)(int)row["ProviderType"];
 
                         if (!result.Columns.Any(c => c.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
                         {
-                            var col = new ImportColumn(result, name, Table.DataTypeMapping.ContainsKey(type) ? Table.DataTypeMapping[type] : DataType.Automatic);
+                            var col = new ImportColumn(result, name, Table.DataTypeMapping.ContainsKey(type) ? Table.DataTypeMapping[type] : DataType.Automatic, providerType);
                             result.Columns.Add(col);
                         }
                     }
@@ -200,11 +200,12 @@ namespace TabularEditor.UI.Dialogs
     {
         ImportColumnsTreeModel TreeModel;
 
-        public ImportColumn(ImportColumnsTreeModel treeModel, string name, DataType dataType)
+        public ImportColumn(ImportColumnsTreeModel treeModel, string name, DataType dataType, OleDbType providerType)
         {
             TreeModel = treeModel;
             SourceColumn = name;
             Name = name;
+            ProviderType = providerType;
             Import = true;
             switch(dataType)
             {
@@ -287,6 +288,7 @@ namespace TabularEditor.UI.Dialogs
             }
         }
 
+        public OleDbType ProviderType { get; set; }
         public string SourceColumn { get; set; }
         public bool Import { get; set; }
         public string DataType { get;set; }
