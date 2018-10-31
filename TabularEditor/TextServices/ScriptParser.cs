@@ -335,6 +335,13 @@ namespace TabularEditor.TextServices
 
     }
 
+    public class MethodCall
+    {
+        public IToken StartToken;
+        public IToken StopToken;
+        public int ParamCount;
+    }
+
     public static class ScriptParserHelper
     {
         /// <summary>
@@ -345,9 +352,9 @@ namespace TabularEditor.TextServices
         /// <param name="methodName">An optional method name to search for</param>
         /// <param name="parameters">The number of parameters the method should have. Use -1 for any number of parameters.</param>
         /// <returns></returns>
-        public static IList<IToken> FindMethodCall(this IList<IToken> tokens, string methodName = null, int parameters = -1)
+        public static List<MethodCall> FindMethodCall(this IList<IToken> tokens, string methodName = null, int parameters = -1)
         {
-            var result = new List<IToken>();
+            var result = new List<MethodCall>();
 
             for(int i = 0; i < tokens.Count; i++)
             {
@@ -368,7 +375,7 @@ namespace TabularEditor.TextServices
                         {
                             if(parenDepth == 0)
                             {
-                                if(parameters == -1 || paramCount == parameters) result.Add(tokens[i]);
+                                if(parameters == -1 || paramCount == parameters) result.Add(new MethodCall { StartToken = tokens[i], StopToken = tokens[ix], ParamCount = paramCount });
                                 break;
                             }
                             parenDepth--;

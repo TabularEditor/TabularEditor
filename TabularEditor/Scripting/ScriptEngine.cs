@@ -42,7 +42,7 @@ namespace TabularEditor
         static readonly string WrapperDllPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\TOMWrapper14.dll";
         public static readonly string CustomActionsJsonPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\CustomActions.json";
 
-        private static string AddOutputLineNumbers(string script)
+        internal static string AddOutputLineNumbers(string script)
         {
             var parser = new TextServices.ScriptParser();
             parser.Lex(script);
@@ -50,19 +50,23 @@ namespace TabularEditor
 
             // Replace method calls: Output() --> Output(<linenumber>)
             var methodCalls = tokens.FindMethodCall("Output", 0); // Find all parameter-less calls to "Output"
+            methodCalls.AddRange(tokens.FindMethodCall("Output", 1)); // Find all single-parameter calls to "Output";
+
             var sb = new StringBuilder();
             var pos = 0;
             foreach (var call in methodCalls)
             {
-                sb.Append(script.Substring(pos, call.StopIndex + 1 - pos));
-                sb.Append("(" + (call.Line) + ")");
-                pos = tokens[call.TokenIndex + 2].StartIndex + 1;
+                sb.Append(script.Substring(pos, call.StopToken.StartIndex - pos));
+                if (call.ParamCount > 0) sb.Append(",");
+                sb.Append(call.StartToken.Line);
+
+                pos = call.StopToken.StartIndex;
             }
             sb.Append(script.Substring(pos));
             return sb.ToString();
         }
 
-        private static string ReplaceGlobalMethodCalls(string script)
+        internal static string ReplaceGlobalMethodCalls(string script)
         {
             var parser = new TextServices.ScriptParser();
             parser.Lex(script);
@@ -72,18 +76,18 @@ namespace TabularEditor
             var methodCalls = tokens.FindMethodCall();
             var sb = new StringBuilder();
             var pos = 0;
-            foreach (var call in methodCalls.Where(t => ScriptMethods.ContainsKey(t.Text)))
+            foreach (var call in methodCalls.Where(t => ScriptMethods.ContainsKey(t.StartToken.Text)))
             {
-                if(call.TokenIndex == 0 || tokens[call.TokenIndex - 1].Type != CSharpLexer.DOT)
+                if(call.StartToken.TokenIndex == 0 || tokens[call.StartToken.TokenIndex - 1].Type != CSharpLexer.DOT)
                 {
-                    var method = ScriptMethods[call.Text];
+                    var method = ScriptMethods[call.StartToken.Text];
 
                     // Global method called directly:
-                    sb.Append(script.Substring(pos, call.StartIndex - pos));
+                    sb.Append(script.Substring(pos, call.StartToken.StartIndex - pos));
                     sb.Append(method.DeclaringType.FullName);
                     sb.Append(".");
 
-                    pos = call.StartIndex;
+                    pos = call.StartToken.StartIndex;
                 }
             }
             sb.Append(script.Substring(pos));

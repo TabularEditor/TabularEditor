@@ -62,7 +62,7 @@ namespace TabularEditor.Scripting
         {
             if (Program.CommandLineMode)
             {
-                Program.cw.WriteLine("Script line #{0}: " + value, lineNumber);
+                Log(string.Format(lineNumber != -1 ? "Script output line #{0}: {1}" : "Script output: {1}", lineNumber, value));
                 return;
             }
 
@@ -75,6 +75,23 @@ namespace TabularEditor.Scripting
             ScriptOutputForm.ShowObject(value, caption);
             if (isHourglass) Hourglass.Enabled = true;
         }
+
+        [ScriptMethod]
+        public static void Log(string message)
+        {
+            if (Program.CommandLineMode) Program.cw.WriteLine(message);
+        }
+        [ScriptMethod]
+        public static void Warning(string message)
+        {
+            if (Program.CommandLineMode) Program.Warning("Script warning: " + message);
+        }
+        [ScriptMethod]
+        public static void Error(string message)
+        {
+            if (Program.CommandLineMode) Program.Error("Script error: " + message);
+        }
+
         public static void OutputErrors(IEnumerable<TabularNamedObject> items)
         {
             if (ScriptOutputForm.DontShow) return;

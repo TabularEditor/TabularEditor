@@ -41,7 +41,7 @@ namespace TabularEditor
             {
                 if(enableVSTS)
                 {
-                    cw.WriteLine("##vso[task.complete result={0};]Done.", errorCount > 0 ? "Failed" :( issueCount > 0 ? "SucceededWithIssues" : "Succeeded" ));
+                    cw.WriteLine("##vso[task.complete result={0};]Done.", errorCount > 0 ? "Failed" : ( (warningCount > 0) ? "SucceededWithIssues" : "Succeeded" ));
                 }
                 Environment.Exit(errorCount > 0 ? 1 : 0);
                 return;
@@ -139,8 +139,9 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
 
         static bool enableVSTS;
         static int errorCount = 0;
-        static int issueCount = 0;
-        static void Error(string errorMessage, params object[] args)
+        static int warningCount = 0;
+
+        public static void Error(string errorMessage, params object[] args)
         {
             if (enableVSTS)
             {
@@ -151,18 +152,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
 
             errorCount++;
         }
-        static void Issue(string errorMessage, params object[] args)
-        {
-            if (enableVSTS)
-            {
-                cw.WriteLine("##vso[task.logissue type=error;]" + errorMessage, args);
-            }
-            else
-                cw.WriteLine(errorMessage, args);
-
-            issueCount++;
-        }
-        static void Warning(string errorMessage, params object[] args)
+        public static void Warning(string errorMessage, params object[] args)
         {
             if (enableVSTS)
             {
@@ -171,7 +161,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             else
                 cw.WriteLine(errorMessage, args);
 
-            issueCount++;
+            warningCount++;
         }
 
         static void ErrorX(string errorMessage, string sourcePath, int line, int column, string code, params object[] args)
@@ -198,6 +188,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
 
             enableVSTS = upperArgList.IndexOf("-VSTS") > -1 || upperArgList.IndexOf("-V") > -1;
             var warnOnUnprocessed = upperArgList.IndexOf("-WARN") > -1 || upperArgList.IndexOf("-W") > -1;
+            var errorOnDaxErr = upperArgList.IndexOf("-ERR") > -1 || upperArgList.IndexOf("-E") > -1;
 
             TabularModelHandler h;
             if (args.Length == 2 || args[2].StartsWith("-"))
@@ -297,6 +288,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
 
             var doSave = upperArgList.IndexOf("-BUILD");
             if (doSave == -1) doSave = upperArgList.IndexOf("-B");
+            if (doSave == -1) doSave = upperArgList.IndexOf("-BIM");
             if (doSave > -1)
             {
                 if(upperArgList.Count <= doSave)
@@ -328,7 +320,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 var dyn = ScriptEngine.CompileScript(script, out result);
                 if (result.Errors.Count > 0)
                 {
-                    cw.WriteLine("Script compilation errors:");
+                    Error("Script compilation errors:");
                     foreach (System.CodeDom.Compiler.CompilerError err in result.Errors)
                     {
                         ErrorX(err.ErrorText, scriptFile, err.Line, err.Column, err.ErrorNumber);
@@ -520,7 +512,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                         TabularConnection.GetConnectionString(serverName, userName, password);
                     var deploymentResult = TabularDeployer.Deploy(h, cs, databaseID, options);
                     cw.WriteLine("Deployment succeeded.");
-                    foreach (var err in deploymentResult.Issues) Issue(err);
+                    foreach (var err in deploymentResult.Issues) if(errorOnDaxErr) Error(err); else Warning(err);
                     foreach (var err in deploymentResult.Warnings) Warning(err);
                     foreach (var err in deploymentResult.Unprocessed)
                         if (warnOnUnprocessed) Warning(err); else cw.WriteLine(err);
