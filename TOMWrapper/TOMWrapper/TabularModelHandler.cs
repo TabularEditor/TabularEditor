@@ -205,6 +205,10 @@ namespace TabularEditor.TOMWrapper
                 result.AddRange(t.Columns.Where(c => !string.IsNullOrEmpty(c.ErrorMessage)).Select(c => new Tuple<TOM.NamedMetadataObject, string>(c, c.ErrorMessage)));
                 result.AddRange(t.Partitions.Where(p => !string.IsNullOrEmpty(p.ErrorMessage)).Select(p => new Tuple<TOM.NamedMetadataObject, string>(p, p.ErrorMessage)));
             }
+            foreach(var r in database.Model.Roles)
+            {
+                result.AddRange(r.TablePermissions.Where(tp => !string.IsNullOrEmpty(tp.ErrorMessage)).Select(tp => new Tuple<TOM.NamedMetadataObject, string>(tp, tp.ErrorMessage)));
+            }
             return result;
         }
 
