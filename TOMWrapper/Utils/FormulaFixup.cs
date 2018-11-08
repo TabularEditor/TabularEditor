@@ -16,11 +16,12 @@ namespace TabularEditor.TOMWrapper.Utils
         /// Changes all references to object "obj", to reflect the new name of the object.
         /// </summary>
         /// <param name="obj"></param>
-        public static void DoFixup(IDaxObject obj)
+        public static void DoFixup(IDaxObject obj, bool rebuildImmediately = false)
         {
             foreach (var d in obj.ReferencedBy.ToList())
             {
                 d.DependsOn.UpdateRef(obj);
+                if (rebuildImmediately) BuildDependencyTree(d, true);
             }
         }
 
@@ -138,9 +139,15 @@ namespace TabularEditor.TOMWrapper.Utils
             expressionObj.DependsOn.Clear();
         }
 
-        public static void BuildDependencyTree(IDaxDependantObject expressionObj)
+        /// <summary>
+        /// Rebuilds the dependency tree for the provided object. If within a BeginUpdate / EndUpdate batch,
+        /// this operation is postponed until the batch ends unless force is set to true.
+        /// </summary>
+        /// <param name="expressionObj"></param>
+        /// <param name="force"></param>
+        public static void BuildDependencyTree(IDaxDependantObject expressionObj, bool force = false)
         {
-            if (Handler.EoB_PostponeOperations) { Handler.EoB_RequireRebuildDependencyTree = true; return; }
+            if (Handler.EoB_PostponeOperations && !force) { Handler.EoB_RequireRebuildDependencyTree = true; return; }
 
             ClearDependsOn(expressionObj);
 
