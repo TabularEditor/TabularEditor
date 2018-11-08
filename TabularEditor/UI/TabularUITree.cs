@@ -74,35 +74,49 @@ namespace TabularEditor
         {
             if (UpdateLocks > 0) throw new InvalidOperationException("Tree enumeration attempted while update in progress");
 
-            List<TabularNamedObject> items = new List<TabularNamedObject>();
+            List<ITabularNamedObject> items = new List<ITabularNamedObject>();
 
-            if (treePath.IsEmpty())
+            try
             {
-                if (!string.IsNullOrEmpty(Filter) && FilterMode == FilterMode.Flat)
+                if (treePath.IsEmpty())
                 {
-                    return GetAllItems().Where(child => SatisfiesFilterCriteria(child));
+                    if (!string.IsNullOrEmpty(Filter) && FilterMode == FilterMode.Flat)
+                    {
+                        foreach(var child in GetAllItems())
+                        {
+                            if (SatisfiesFilterCriteria(child)) items.Add(child);
+                        }
+                    }
+                    else
+                    {
+                        // If no root was specified, use the entire model
+                        if (Options.HasFlag(LogicalTreeOptions.ShowRoot))
+                            items.Add(Model);
+                        else
+                            return GetChildren(Model);
+                    }
                 }
                 else
                 {
-                    // If no root was specified, use the entire model
-                    if (Options.HasFlag(LogicalTreeOptions.ShowRoot))
-                        items.Add(Model);
-                    else
-                        return GetChildren(Model);
+                    var container = treePath.LastNode as ITabularObjectContainer;
+                    return (string.IsNullOrEmpty(Filter) || FilterMode == FilterMode.Flat) ? GetChildren(container) : GetChildrenFilteredLocal(container);
                 }
-            }
-            else
-            {
-                var container = treePath.LastNode as ITabularObjectContainer;
-                return (string.IsNullOrEmpty(Filter) || FilterMode == FilterMode.Flat) ? GetChildren(container) : GetChildrenFilteredLocal(container);
-            }
 
+            }
+            catch { }
             return items;
         }
 
         private IEnumerable GetChildrenFilteredLocal(ITabularObjectContainer container)
         {
-            return GetChildren(container).Where(child => VisibleInTreeLocal(child));
+            var items = new List<ITabularNamedObject>();
+            try
+            {
+                foreach (var child in GetChildren(container))
+                    if (VisibleInTreeLocal(child)) items.Add(child);
+            }
+            catch { }
+            return items;
         }
 
         private IEnumerable<ITabularNamedObject> GetAllItems()
@@ -320,7 +334,6 @@ namespace TabularEditor
                 default:
                     return false;
             }
-
         }
 
         TreeDragInformation DragInfo;
