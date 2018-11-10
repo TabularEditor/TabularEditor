@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TabularEditor.TOMWrapper;
 
@@ -91,6 +92,28 @@ namespace TOMWrapperTest.RegressionTests.v2_7_4
             Assert.AreEqual("COUNTROWS('T1X')+COUNTROWS('T2X')", m3.Expression);
             handler.UndoManager.Undo();
             Assert.AreEqual("COUNTROWS(T1)+COUNTROWS(T2)", m3.Expression);
+        }
+
+        [TestMethod]
+        public void SuddenReferenceTest()
+        {
+            var handler = new TabularModelHandler();
+            var model = handler.Model;
+            var t1 = model.AddTable("T1");
+            var c1 = t1.AddDataColumn("C1");
+            var m1 = t1.AddMeasure("M1", "SUM('T1'[C1X])");
+
+            Assert.AreEqual(0, m1.DependsOn.Columns.Count());
+            Assert.AreEqual(0, c1.ReferencedBy.Measures.Count());
+            c1.Name = "C1X";
+            Assert.AreEqual(1, m1.DependsOn.Columns.Count());
+            Assert.AreSame(c1, m1.DependsOn.Columns.First());
+            Assert.AreEqual(1, c1.ReferencedBy.Measures.Count());
+            Assert.AreEqual(m1, c1.ReferencedBy.Measures.First());
+
+            handler.UndoManager.Undo();
+            Assert.AreEqual(0, m1.DependsOn.Columns.Count());
+            Assert.AreEqual(0, c1.ReferencedBy.Measures.Count());
         }
     }
 }
