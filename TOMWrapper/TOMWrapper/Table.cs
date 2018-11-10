@@ -397,6 +397,7 @@ namespace TabularEditor.TOMWrapper
                     // affected by the name change (the undo stack should contain the expression changes that were made
                     // when the name was initially changed).
                     if (!Handler.UndoManager.UndoInProgress) FormulaFixup.DoFixup(this, true);
+                    FormulaFixup.BuildDependencyTree();
                     Handler.EndUpdate();
                 }
 
