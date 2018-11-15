@@ -214,6 +214,7 @@ namespace TabularEditor.UI.Dialogs
                 case TOMWrapper.DataType.Double: DataType = "Real"; break;
                 case TOMWrapper.DataType.Int64: DataType = "Integer"; break;
                 case TOMWrapper.DataType.String: DataType = "Text"; break;
+                case TOMWrapper.DataType.Binary: DataType = "Binary"; break;
                 default: DataType = "Text"; break;
             }
         }
@@ -226,6 +227,13 @@ namespace TabularEditor.UI.Dialogs
             Import = true;
             switch(typeName.ToLower())
             {
+                case "binary.type":
+                case "binary":
+                case "varbinary":
+                case "variant":
+                case "sqlvariant":
+                    DataType = "Binary"; break;
+
                 case "any.type":
                 case "text.type":
                 case "text":
@@ -237,6 +245,8 @@ namespace TabularEditor.UI.Dialogs
                     DataType = "Text"; break;
 
                 case "number.type":
+                case "double.type":
+                case "single.type":
                 case "percentage.type":
                 case "duration.type":
                 case "number":
@@ -247,6 +257,7 @@ namespace TabularEditor.UI.Dialogs
                     DataType = "Real"; break;
 
                 case "currency.type":
+                case "decimal.type":
                 case "currency":
                 case "decimal":
                 case "numeric":
@@ -255,6 +266,9 @@ namespace TabularEditor.UI.Dialogs
                     DataType = "Currency"; break;
 
                 case "int64.type":
+                case "int32.type":
+                case "int16.type":
+                case "byte.type":
                 case "int":
                 case "integer":
                 case "whole":
@@ -312,6 +326,7 @@ namespace TabularEditor.UI.Dialogs
                 case "Text": return TOMWrapper.DataType.String;
                 case "Date/Time": return TOMWrapper.DataType.DateTime;
                 case "Currency": return TOMWrapper.DataType.Decimal;
+                case "Binary": return TOMWrapper.DataType.Binary;
                 default: return TOMWrapper.DataType.String;
             }
         }
