@@ -113,9 +113,44 @@ namespace TabularEditor.Scripting
             }
         }
 
-        private static TabularObject ResolveObjectPath(string path)
+        [ScriptMethod]
+        public static string GetObjectPath(this TabularObject obj)
+        {
+            return TabularObjectHelper.GetObjectPath(obj);
+        }
+
+        [ScriptMethod]
+        public static TabularObject ResolveObjectPath(string path)
         {
             var parts = path.Split('.');
+
+            var partsFixed = new List<string>();
+
+            // Objects that have "." in their name, will be enclosed by square brackets. So let's traverse the array
+            // and concatenate any parts between a set of square brackets:
+            string partFraction = null;
+            foreach (var p in parts)
+            {
+                if(partFraction == null)
+                {
+                    if (p.StartsWith("["))
+                        partFraction = p.Substring(1);
+                    else
+                        partsFixed.Add(p);
+                } else
+                {
+                    if (p.EndsWith("]"))
+                    {
+                        partFraction += "." + p.Substring(0, p.Length - 1);
+                        partsFixed.Add(partFraction);
+                        partFraction = null;
+                    }
+                    else
+                        partFraction += "." + p;
+                }
+            }
+            parts = partsFixed.ToArray();
+
             var model = UI.UIController.Current.Handler?.Model;
             if (model == null) return null;
             TabularObject obj = model;
