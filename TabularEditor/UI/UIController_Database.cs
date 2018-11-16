@@ -105,7 +105,6 @@ namespace TabularEditor.UI
                 try
                 {
                     Handler = new TabularModelHandler(connectionString, databaseId);
-                    Handler.Settings.AutoFixup = Preferences.Current.FormulaFixup;
                     LoadTabularModelToUI();
                     File_Current = null;
                     File_SaveMode = ModelSourceType.Database;
