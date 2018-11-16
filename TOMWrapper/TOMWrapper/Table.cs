@@ -41,7 +41,13 @@ namespace TabularEditor.TOMWrapper
         protected override bool AllowDelete(out string message)
         {
             message = string.Empty;
-            if (ReferencedBy.Count > 0) message += Messages.ReferencedByDAX;
+            if (ReferencedBy.Count > 0 && ReferencedBy.Deep().Any(
+                obj => 
+                    (obj is ITabularTableObject && (obj as ITabularTableObject).Table != this) || 
+                    (obj is Table && obj != this) || 
+                    (obj is RLSFilterExpression)
+            ))
+                message += Messages.ReferencedByDAX;
             if (message == string.Empty) message = null;
             return true;
         }
