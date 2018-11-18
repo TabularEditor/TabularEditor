@@ -70,6 +70,7 @@ namespace TabularEditor.TOMWrapper
         public static string GetObjectPath(this TOM.MetadataObject obj)
         {
             var name = (obj is TOM.Model) ? "Model" : (obj as TOM.NamedMetadataObject)?.Name ?? obj.ObjectType.ToString();
+            if (name.Contains(".")) name = "[" + name + "]";
 
             if (obj.Parent != null)
                 return obj.Parent.GetObjectPath() + "." + name;

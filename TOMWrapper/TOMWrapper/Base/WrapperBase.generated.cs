@@ -432,8 +432,13 @@ namespace TabularEditor.TOMWrapper
 		public string GetAnnotation(int index) {
 			return MetadataObject.Annotations[index].Value;
 		}
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
 		}
 		public void SetAnnotation(int index, string value, bool undoable = true) {
 			var name = MetadataObject.Annotations[index].Name;
@@ -442,7 +447,11 @@ namespace TabularEditor.TOMWrapper
 		public string GetNewAnnotationName() {
 			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
-		public void SetAnnotation(string name, string value, bool undoable = true) {
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		public void SetAnnotation(string name, string value, bool undoable) {
 			if(name == null) name = GetNewAnnotationName();
 
 			if(value == null) {
@@ -471,7 +480,11 @@ namespace TabularEditor.TOMWrapper
 			}
 
 		}
-		public void RemoveAnnotation(string name, bool undoable = true) {
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		public void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Get current value:
 				bool undoable2 = true;
@@ -487,9 +500,11 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
 			}
 		}
+		[IntelliSense("Gets the number of annotations on the current object.")]
 		public int GetAnnotationsCount() {
 			return MetadataObject.Annotations.Count;
 		}
+		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
@@ -1418,8 +1433,13 @@ namespace TabularEditor.TOMWrapper
 		public string GetAnnotation(int index) {
 			return MetadataObject.Annotations[index].Value;
 		}
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
 		}
 		public void SetAnnotation(int index, string value, bool undoable = true) {
 			var name = MetadataObject.Annotations[index].Name;
@@ -1428,7 +1448,11 @@ namespace TabularEditor.TOMWrapper
 		public string GetNewAnnotationName() {
 			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
-		public void SetAnnotation(string name, string value, bool undoable = true) {
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		public void SetAnnotation(string name, string value, bool undoable) {
 			if(name == null) name = GetNewAnnotationName();
 
 			if(value == null) {
@@ -1457,7 +1481,11 @@ namespace TabularEditor.TOMWrapper
 			}
 
 		}
-		public void RemoveAnnotation(string name, bool undoable = true) {
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		public void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Get current value:
 				bool undoable2 = true;
@@ -1473,9 +1501,11 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
 			}
 		}
+		[IntelliSense("Gets the number of annotations on the current object.")]
 		public int GetAnnotationsCount() {
 			return MetadataObject.Annotations.Count;
 		}
+		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
@@ -2412,8 +2442,13 @@ namespace TabularEditor.TOMWrapper
 		public string GetAnnotation(int index) {
 			return MetadataObject.Annotations[index].Value;
 		}
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
 		}
 		public void SetAnnotation(int index, string value, bool undoable = true) {
 			var name = MetadataObject.Annotations[index].Name;
@@ -2422,7 +2457,11 @@ namespace TabularEditor.TOMWrapper
 		public string GetNewAnnotationName() {
 			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
-		public void SetAnnotation(string name, string value, bool undoable = true) {
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		public void SetAnnotation(string name, string value, bool undoable) {
 			if(name == null) name = GetNewAnnotationName();
 
 			if(value == null) {
@@ -2451,7 +2490,11 @@ namespace TabularEditor.TOMWrapper
 			}
 
 		}
-		public void RemoveAnnotation(string name, bool undoable = true) {
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		public void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Get current value:
 				bool undoable2 = true;
@@ -2467,9 +2510,11 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
 			}
 		}
+		[IntelliSense("Gets the number of annotations on the current object.")]
 		public int GetAnnotationsCount() {
 			return MetadataObject.Annotations.Count;
 		}
+		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
@@ -2836,8 +2881,13 @@ namespace TabularEditor.TOMWrapper
 		public string GetAnnotation(int index) {
 			return MetadataObject.Annotations[index].Value;
 		}
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
 		}
 		public void SetAnnotation(int index, string value, bool undoable = true) {
 			var name = MetadataObject.Annotations[index].Name;
@@ -2846,7 +2896,11 @@ namespace TabularEditor.TOMWrapper
 		public string GetNewAnnotationName() {
 			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
-		public void SetAnnotation(string name, string value, bool undoable = true) {
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		public void SetAnnotation(string name, string value, bool undoable) {
 			if(name == null) name = GetNewAnnotationName();
 
 			if(value == null) {
@@ -2875,7 +2929,11 @@ namespace TabularEditor.TOMWrapper
 			}
 
 		}
-		public void RemoveAnnotation(string name, bool undoable = true) {
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		public void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Get current value:
 				bool undoable2 = true;
@@ -2891,9 +2949,11 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
 			}
 		}
+		[IntelliSense("Gets the number of annotations on the current object.")]
 		public int GetAnnotationsCount() {
 			return MetadataObject.Annotations.Count;
 		}
+		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
@@ -3294,8 +3354,13 @@ namespace TabularEditor.TOMWrapper
 		public string GetAnnotation(int index) {
 			return MetadataObject.Annotations[index].Value;
 		}
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
 		}
 		public void SetAnnotation(int index, string value, bool undoable = true) {
 			var name = MetadataObject.Annotations[index].Name;
@@ -3304,7 +3369,11 @@ namespace TabularEditor.TOMWrapper
 		public string GetNewAnnotationName() {
 			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
-		public void SetAnnotation(string name, string value, bool undoable = true) {
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		public void SetAnnotation(string name, string value, bool undoable) {
 			if(name == null) name = GetNewAnnotationName();
 
 			if(value == null) {
@@ -3333,7 +3402,11 @@ namespace TabularEditor.TOMWrapper
 			}
 
 		}
-		public void RemoveAnnotation(string name, bool undoable = true) {
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		public void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Get current value:
 				bool undoable2 = true;
@@ -3349,9 +3422,11 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
 			}
 		}
+		[IntelliSense("Gets the number of annotations on the current object.")]
 		public int GetAnnotationsCount() {
 			return MetadataObject.Annotations.Count;
 		}
+		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
@@ -3791,8 +3866,13 @@ namespace TabularEditor.TOMWrapper
 		public string GetAnnotation(int index) {
 			return MetadataObject.Annotations[index].Value;
 		}
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
 		}
 		public void SetAnnotation(int index, string value, bool undoable = true) {
 			var name = MetadataObject.Annotations[index].Name;
@@ -3801,7 +3881,11 @@ namespace TabularEditor.TOMWrapper
 		public string GetNewAnnotationName() {
 			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
-		public void SetAnnotation(string name, string value, bool undoable = true) {
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		public void SetAnnotation(string name, string value, bool undoable) {
 			if(name == null) name = GetNewAnnotationName();
 
 			if(value == null) {
@@ -3830,7 +3914,11 @@ namespace TabularEditor.TOMWrapper
 			}
 
 		}
-		public void RemoveAnnotation(string name, bool undoable = true) {
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		public void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Get current value:
 				bool undoable2 = true;
@@ -3846,9 +3934,11 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
 			}
 		}
+		[IntelliSense("Gets the number of annotations on the current object.")]
 		public int GetAnnotationsCount() {
 			return MetadataObject.Annotations.Count;
 		}
+		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
@@ -4174,8 +4264,13 @@ namespace TabularEditor.TOMWrapper
 		public string GetAnnotation(int index) {
 			return MetadataObject.Annotations[index].Value;
 		}
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
 		}
 		public void SetAnnotation(int index, string value, bool undoable = true) {
 			var name = MetadataObject.Annotations[index].Name;
@@ -4184,7 +4279,11 @@ namespace TabularEditor.TOMWrapper
 		public string GetNewAnnotationName() {
 			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
-		public void SetAnnotation(string name, string value, bool undoable = true) {
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		public void SetAnnotation(string name, string value, bool undoable) {
 			if(name == null) name = GetNewAnnotationName();
 
 			if(value == null) {
@@ -4213,7 +4312,11 @@ namespace TabularEditor.TOMWrapper
 			}
 
 		}
-		public void RemoveAnnotation(string name, bool undoable = true) {
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		public void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Get current value:
 				bool undoable2 = true;
@@ -4229,9 +4332,11 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
 			}
 		}
+		[IntelliSense("Gets the number of annotations on the current object.")]
 		public int GetAnnotationsCount() {
 			return MetadataObject.Annotations.Count;
 		}
+		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
@@ -4559,8 +4664,13 @@ namespace TabularEditor.TOMWrapper
 		public string GetAnnotation(int index) {
 			return MetadataObject.Annotations[index].Value;
 		}
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
 		}
 		public void SetAnnotation(int index, string value, bool undoable = true) {
 			var name = MetadataObject.Annotations[index].Name;
@@ -4569,7 +4679,11 @@ namespace TabularEditor.TOMWrapper
 		public string GetNewAnnotationName() {
 			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
-		public void SetAnnotation(string name, string value, bool undoable = true) {
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		public void SetAnnotation(string name, string value, bool undoable) {
 			if(name == null) name = GetNewAnnotationName();
 
 			if(value == null) {
@@ -4598,7 +4712,11 @@ namespace TabularEditor.TOMWrapper
 			}
 
 		}
-		public void RemoveAnnotation(string name, bool undoable = true) {
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		public void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Get current value:
 				bool undoable2 = true;
@@ -4614,9 +4732,11 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
 			}
 		}
+		[IntelliSense("Gets the number of annotations on the current object.")]
 		public int GetAnnotationsCount() {
 			return MetadataObject.Annotations.Count;
 		}
+		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
@@ -5180,8 +5300,13 @@ namespace TabularEditor.TOMWrapper
 		public string GetAnnotation(int index) {
 			return MetadataObject.Annotations[index].Value;
 		}
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
 		}
 		public void SetAnnotation(int index, string value, bool undoable = true) {
 			var name = MetadataObject.Annotations[index].Name;
@@ -5190,7 +5315,11 @@ namespace TabularEditor.TOMWrapper
 		public string GetNewAnnotationName() {
 			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
-		public void SetAnnotation(string name, string value, bool undoable = true) {
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		public void SetAnnotation(string name, string value, bool undoable) {
 			if(name == null) name = GetNewAnnotationName();
 
 			if(value == null) {
@@ -5219,7 +5348,11 @@ namespace TabularEditor.TOMWrapper
 			}
 
 		}
-		public void RemoveAnnotation(string name, bool undoable = true) {
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		public void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Get current value:
 				bool undoable2 = true;
@@ -5235,9 +5368,11 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
 			}
 		}
+		[IntelliSense("Gets the number of annotations on the current object.")]
 		public int GetAnnotationsCount() {
 			return MetadataObject.Annotations.Count;
 		}
+		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
@@ -5610,8 +5745,13 @@ namespace TabularEditor.TOMWrapper
 		public string GetAnnotation(int index) {
 			return MetadataObject.Annotations[index].Value;
 		}
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
 		}
 		public void SetAnnotation(int index, string value, bool undoable = true) {
 			var name = MetadataObject.Annotations[index].Name;
@@ -5620,7 +5760,11 @@ namespace TabularEditor.TOMWrapper
 		public string GetNewAnnotationName() {
 			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
-		public void SetAnnotation(string name, string value, bool undoable = true) {
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		public void SetAnnotation(string name, string value, bool undoable) {
 			if(name == null) name = GetNewAnnotationName();
 
 			if(value == null) {
@@ -5649,7 +5793,11 @@ namespace TabularEditor.TOMWrapper
 			}
 
 		}
-		public void RemoveAnnotation(string name, bool undoable = true) {
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		public void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Get current value:
 				bool undoable2 = true;
@@ -5665,9 +5813,11 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
 			}
 		}
+		[IntelliSense("Gets the number of annotations on the current object.")]
 		public int GetAnnotationsCount() {
 			return MetadataObject.Annotations.Count;
 		}
+		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
@@ -5969,8 +6119,13 @@ namespace TabularEditor.TOMWrapper
 		public string GetAnnotation(int index) {
 			return MetadataObject.Annotations[index].Value;
 		}
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
 		}
 		public void SetAnnotation(int index, string value, bool undoable = true) {
 			var name = MetadataObject.Annotations[index].Name;
@@ -5979,7 +6134,11 @@ namespace TabularEditor.TOMWrapper
 		public string GetNewAnnotationName() {
 			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
-		public void SetAnnotation(string name, string value, bool undoable = true) {
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		public void SetAnnotation(string name, string value, bool undoable) {
 			if(name == null) name = GetNewAnnotationName();
 
 			if(value == null) {
@@ -6008,7 +6167,11 @@ namespace TabularEditor.TOMWrapper
 			}
 
 		}
-		public void RemoveAnnotation(string name, bool undoable = true) {
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		public void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Get current value:
 				bool undoable2 = true;
@@ -6024,9 +6187,11 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
 			}
 		}
+		[IntelliSense("Gets the number of annotations on the current object.")]
 		public int GetAnnotationsCount() {
 			return MetadataObject.Annotations.Count;
 		}
+		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
@@ -6262,8 +6427,13 @@ namespace TabularEditor.TOMWrapper
 		public string GetAnnotation(int index) {
 			return MetadataObject.Annotations[index].Value;
 		}
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
 		}
 		public void SetAnnotation(int index, string value, bool undoable = true) {
 			var name = MetadataObject.Annotations[index].Name;
@@ -6272,7 +6442,11 @@ namespace TabularEditor.TOMWrapper
 		public string GetNewAnnotationName() {
 			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
-		public void SetAnnotation(string name, string value, bool undoable = true) {
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		public void SetAnnotation(string name, string value, bool undoable) {
 			if(name == null) name = GetNewAnnotationName();
 
 			if(value == null) {
@@ -6301,7 +6475,11 @@ namespace TabularEditor.TOMWrapper
 			}
 
 		}
-		public void RemoveAnnotation(string name, bool undoable = true) {
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		public void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Get current value:
 				bool undoable2 = true;
@@ -6317,9 +6495,11 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
 			}
 		}
+		[IntelliSense("Gets the number of annotations on the current object.")]
 		public int GetAnnotationsCount() {
 			return MetadataObject.Annotations.Count;
 		}
+		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
@@ -6665,8 +6845,13 @@ namespace TabularEditor.TOMWrapper
 		public string GetAnnotation(int index) {
 			return MetadataObject.Annotations[index].Value;
 		}
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
 		}
 		public void SetAnnotation(int index, string value, bool undoable = true) {
 			var name = MetadataObject.Annotations[index].Name;
@@ -6675,7 +6860,11 @@ namespace TabularEditor.TOMWrapper
 		public string GetNewAnnotationName() {
 			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
-		public void SetAnnotation(string name, string value, bool undoable = true) {
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		public void SetAnnotation(string name, string value, bool undoable) {
 			if(name == null) name = GetNewAnnotationName();
 
 			if(value == null) {
@@ -6704,7 +6893,11 @@ namespace TabularEditor.TOMWrapper
 			}
 
 		}
-		public void RemoveAnnotation(string name, bool undoable = true) {
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		public void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Get current value:
 				bool undoable2 = true;
@@ -6720,9 +6913,11 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
 			}
 		}
+		[IntelliSense("Gets the number of annotations on the current object.")]
 		public int GetAnnotationsCount() {
 			return MetadataObject.Annotations.Count;
 		}
+		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
@@ -7319,8 +7514,13 @@ namespace TabularEditor.TOMWrapper
 		public string GetAnnotation(int index) {
 			return MetadataObject.Annotations[index].Value;
 		}
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
 		}
 		public void SetAnnotation(int index, string value, bool undoable = true) {
 			var name = MetadataObject.Annotations[index].Name;
@@ -7329,7 +7529,11 @@ namespace TabularEditor.TOMWrapper
 		public string GetNewAnnotationName() {
 			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
-		public void SetAnnotation(string name, string value, bool undoable = true) {
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		public void SetAnnotation(string name, string value, bool undoable) {
 			if(name == null) name = GetNewAnnotationName();
 
 			if(value == null) {
@@ -7358,7 +7562,11 @@ namespace TabularEditor.TOMWrapper
 			}
 
 		}
-		public void RemoveAnnotation(string name, bool undoable = true) {
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		public void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Get current value:
 				bool undoable2 = true;
@@ -7374,9 +7582,11 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
 			}
 		}
+		[IntelliSense("Gets the number of annotations on the current object.")]
 		public int GetAnnotationsCount() {
 			return MetadataObject.Annotations.Count;
 		}
+		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
@@ -7955,8 +8165,13 @@ namespace TabularEditor.TOMWrapper
 		public string GetAnnotation(int index) {
 			return MetadataObject.Annotations[index].Value;
 		}
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
 		}
 		public void SetAnnotation(int index, string value, bool undoable = true) {
 			var name = MetadataObject.Annotations[index].Name;
@@ -7965,7 +8180,11 @@ namespace TabularEditor.TOMWrapper
 		public string GetNewAnnotationName() {
 			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
-		public void SetAnnotation(string name, string value, bool undoable = true) {
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		public void SetAnnotation(string name, string value, bool undoable) {
 			if(name == null) name = GetNewAnnotationName();
 
 			if(value == null) {
@@ -7994,7 +8213,11 @@ namespace TabularEditor.TOMWrapper
 			}
 
 		}
-		public void RemoveAnnotation(string name, bool undoable = true) {
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		public void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Get current value:
 				bool undoable2 = true;
@@ -8010,9 +8233,11 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
 			}
 		}
+		[IntelliSense("Gets the number of annotations on the current object.")]
 		public int GetAnnotationsCount() {
 			return MetadataObject.Annotations.Count;
 		}
+		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
@@ -8671,8 +8896,13 @@ namespace TabularEditor.TOMWrapper
 		public string GetAnnotation(int index) {
 			return MetadataObject.Annotations[index].Value;
 		}
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
 		public string GetAnnotation(string name) {
-		    return MetadataObject.Annotations.ContainsName(name) ? MetadataObject.Annotations[name].Value : null;
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
 		}
 		public void SetAnnotation(int index, string value, bool undoable = true) {
 			var name = MetadataObject.Annotations[index].Name;
@@ -8681,7 +8911,11 @@ namespace TabularEditor.TOMWrapper
 		public string GetNewAnnotationName() {
 			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
-		public void SetAnnotation(string name, string value, bool undoable = true) {
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		public void SetAnnotation(string name, string value, bool undoable) {
 			if(name == null) name = GetNewAnnotationName();
 
 			if(value == null) {
@@ -8710,7 +8944,11 @@ namespace TabularEditor.TOMWrapper
 			}
 
 		}
-		public void RemoveAnnotation(string name, bool undoable = true) {
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		public void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Get current value:
 				bool undoable2 = true;
@@ -8726,9 +8964,11 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
 			}
 		}
+		[IntelliSense("Gets the number of annotations on the current object.")]
 		public int GetAnnotationsCount() {
 			return MetadataObject.Annotations.Count;
 		}
+		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}

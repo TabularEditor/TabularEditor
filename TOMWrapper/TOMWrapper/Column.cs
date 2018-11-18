@@ -179,8 +179,8 @@ namespace TabularEditor.TOMWrapper
                 // Fixup is not performed during an undo operation. We rely on the undo stack to fixup the expressions
                 // affected by the name change (the undo stack should contain the expression changes that were made
                 // when the name was initially changed).
-                if (Handler.Settings.AutoFixup && !Handler.UndoManager.UndoInProgress) FormulaFixup.DoFixup(this);
-
+                if (Handler.Settings.AutoFixup && !Handler.UndoManager.UndoInProgress) FormulaFixup.DoFixup(this, true);
+                FormulaFixup.BuildDependencyTree();
                 foreach (var ctc in _originForCalculatedTableColumnsCache)
                 {
                     if (ctc.IsNameInferred)

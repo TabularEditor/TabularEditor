@@ -41,7 +41,13 @@ namespace TabularEditor.TOMWrapper
         protected override bool AllowDelete(out string message)
         {
             message = string.Empty;
-            if (ReferencedBy.Count > 0) message += Messages.ReferencedByDAX;
+            if (ReferencedBy.Count > 0 && ReferencedBy.Deep().Any(
+                obj => 
+                    (obj is ITabularTableObject && (obj as ITabularTableObject).Table != this) || 
+                    (obj is Table && obj != this) || 
+                    (obj is RLSFilterExpression)
+            ))
+                message += Messages.ReferencedByDAX;
             if (message == string.Empty) message = null;
             return true;
         }
@@ -249,12 +255,15 @@ namespace TabularEditor.TOMWrapper
 
             if (Partitions.Count == 0 && !(this is CalculatedTable))
             {
-                // Make sure the table contains at least one partition (Calculated Tables handles this on their own):
+                // Make sure the table contains at least one partition (Calculated Tables handles this on their own), but don't add it to the undo stack:
+                Handler.UndoManager.Enabled = false;
 
                 if (Model.DataSources.Any(ds => ds.Type == DataSourceType.Structured))
                     MPartition.CreateNew(this, Name);
                 else
                     Partition.CreateNew(this, Name);
+
+                Handler.UndoManager.Enabled = true;
             }
 
             RowLevelSecurity = new TableRLSIndexer(this);
@@ -396,8 +405,8 @@ namespace TabularEditor.TOMWrapper
                     // Fixup is not performed during an undo operation. We rely on the undo stack to fixup the expressions
                     // affected by the name change (the undo stack should contain the expression changes that were made
                     // when the name was initially changed).
-                    if (!Handler.UndoManager.UndoInProgress) FormulaFixup.DoFixup(this);
-                    FormulaFixup.BuildDependencyTree(this);
+                    if (!Handler.UndoManager.UndoInProgress) FormulaFixup.DoFixup(this, true);
+                    FormulaFixup.BuildDependencyTree();
                     Handler.EndUpdate();
                 }
 

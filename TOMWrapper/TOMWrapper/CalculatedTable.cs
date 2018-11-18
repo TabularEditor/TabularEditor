@@ -19,8 +19,10 @@ namespace TabularEditor.TOMWrapper
             base.Init();
 
             if (Partitions.Count == 0) {
-                // Make sure the calculated table contains at least one partition:
+                // Make sure the calculated table contains at least one partition (but don't add that to the undo stack):
+                Handler.UndoManager.Enabled = false;
                 Partition.CreateCalculatedTablePartition(this);
+                Handler.UndoManager.Enabled = true;
             }
 
             Partitions[0].PropertyChanged += Partition_PropertyChanged;

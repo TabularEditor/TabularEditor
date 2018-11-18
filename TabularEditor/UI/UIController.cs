@@ -147,6 +147,7 @@ namespace TabularEditor.UI
         public void LoadTabularModelToUI()
         {
             if (Handler == null) return;
+            Handler.Settings = Preferences.Current.GetSettings();
 
             LastDeploymentDb = null;
 

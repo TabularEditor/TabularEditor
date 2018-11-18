@@ -10,7 +10,7 @@ namespace TabularEditor.UI.Actions
 {
     class RefreshAction : ICustomMenuAction, IModelAction
     {
-        RefreshType refreshType;
+        RefreshType refreshType = RefreshType.Automatic;
         bool scriptToClipboard;
         public Keys Shortcut => Keys.None;
 
@@ -110,7 +110,9 @@ namespace TabularEditor.UI.Actions
                 cmb.DropDownStyle = ComboBoxStyle.DropDownList;
                 cmb.Items.AddRange(modes);
                 cmb.SelectedIndex = 4;
-                cmb.SelectedIndexChanged += (s, e) => { Enum.TryParse(cmb.Text, out refreshType); };
+                cmb.SelectedIndexChanged += (s, e) => {
+                    Enum.TryParse(cmb.Text, out refreshType);
+                };
 
                 parent.Items.Insert(0, new ToolStripLabel("Refresh mode:"));
                 parent.Items.Insert(1, cmb);
