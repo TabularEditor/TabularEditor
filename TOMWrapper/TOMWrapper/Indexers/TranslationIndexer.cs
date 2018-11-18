@@ -220,7 +220,7 @@ namespace TabularEditor.TOMWrapper
             {
                 if (!(_tabularObject is ITranslatableObject)) return;
 
-                var oldValue = this[culture];
+                var oldValue = GetTrans(culture)?.Value;
                 if (value == oldValue) return;
 
                 _tabularObject.Handler.UndoManager.Add(
