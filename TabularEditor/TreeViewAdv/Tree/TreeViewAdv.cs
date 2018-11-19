@@ -252,12 +252,58 @@ namespace Aga.Controls.Tree
 			_controls = new NodeControlsCollection(this);
 
 			Font = _font;
-			//ExpandingIcon.IconChanged += ExpandingIconChanged;
+			ExpandingIcon.IconChanged += ExpandingIconChanged;
 		}
-        
-		#region Public Methods
 
-		public TreePath GetPath(TreeNodeAdv node)
+        void ExpandingIconChanged(object sender, EventArgs e)
+        {
+            if (IsHandleCreated && !IsDisposed)
+                BeginInvoke(new MethodInvoker(DrawIcons));
+        }
+
+        private void DrawIcons()
+        {
+            using (Graphics gr = Graphics.FromHwnd(this.Handle))
+            {
+                //Apply the same Graphics Transform logic as used in OnPaint.
+                int y = 0;
+                if (UseColumns)
+                {
+                    y += ColumnHeaderHeight;
+                    if (Columns.Count == 0)
+                        return;
+                }
+                int firstRowY = _rowLayout.GetRowBounds(FirstVisibleRow).Y;
+                y -= firstRowY;
+                gr.ResetTransform();
+                gr.TranslateTransform(-OffsetX, y);
+
+                DrawContext context = new DrawContext();
+                context.Graphics = gr;
+                lock (_expandingNodes)
+                {
+                    for (int i = 0; i < _expandingNodes.Count; i++)
+                    {
+                        foreach (NodeControlInfo item in GetNodeControls(_expandingNodes[i]))
+                        {
+                            if (item.Control is ExpandingIcon)
+                            {
+                                Rectangle bounds = item.Bounds;
+                                if (item.Node.Parent == null && UseColumns)
+                                    bounds.Location = Point.Empty; // display root expanding icon at 0,0
+
+                                context.Bounds = bounds;
+                                item.Control.Draw(item.Node, context);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        #region Public Methods
+
+        public TreePath GetPath(TreeNodeAdv node)
 		{
 			if (node == _root)
 				return TreePath.Empty;
@@ -780,15 +826,15 @@ namespace Aga.Controls.Tree
 		{
 			node.IsExpandingNow = false;
 			_expandingNodes.Remove(node);
-			/*if (_expandingNodes.Count <= 0)
-				ExpandingIcon.Stop();*/
+			if (_expandingNodes.Count <= 0)
+				ExpandingIcon.Stop();
 		}
 
 		private void AddExpandingNode(TreeNodeAdv node)
 		{
 			node.IsExpandingNow = true;
 			_expandingNodes.Add(node);
-			//ExpandingIcon.Start();
+			ExpandingIcon.Start();
 		}
 
 		internal void SetIsExpandedRecursive(TreeNodeAdv root, bool value)

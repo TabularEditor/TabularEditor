@@ -88,8 +88,8 @@ namespace Aga.Controls.Tree.NodeControls
 				typeof(NodeComboBox),
                 typeof(NodeCheckBox),
                 /*typeof(NodeStateIcon),*/
-                typeof(NodeIcon)
-                /*typeof(ExpandingIcon),*/
+                typeof(NodeIcon),
+                typeof(ExpandingIcon)
                 /*typeof(NodeNumericUpDown)*/
                   };
 		}
