@@ -1,3 +1,4 @@
+using Aga.Controls.Tree.NodeControls;
 using System.Windows.Forms;
 
 namespace Aga.Controls.Tree
@@ -10,7 +11,8 @@ namespace Aga.Controls.Tree
 		{
 			if (disposing && (components != null))
 			{
-				components.Dispose();
+                ExpandingIcon.IconChanged -= ExpandingIconChanged;
+                components.Dispose();
 				if (_dragBitmap != null) _dragBitmap.Dispose();
 				if (_dragTimer != null) _dragTimer.Dispose();
 				if (_linePen != null) _linePen.Dispose();

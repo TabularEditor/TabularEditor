@@ -55,7 +55,18 @@ namespace Aga.Controls
 
 	public class GifDecoder 
 	{
-		public const int StatusOK = 0;//File read status: No errors.
+        /// <summary>
+		/// Help function to convert byte[] from resource into GifDecoder Type 
+		/// </summary>
+		/// <param name="data"></param>
+		/// <returns></returns>
+		public static GifDecoder GetGifDecoder(byte[] data)
+        {
+            using (MemoryStream ms = new MemoryStream(data))
+                return new GifDecoder(ms, true);
+        }
+
+        public const int StatusOK = 0;//File read status: No errors.
 		public const int StatusFormatError = 1; //File read status: Error decoding file (may be partially decoded)
 		public const int StatusOpenError = 2; //Unable to open source.
 

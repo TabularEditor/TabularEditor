@@ -149,6 +149,7 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
@@ -196,6 +197,10 @@
     <Compile Include="Scripting\ScriptOutputForm.Designer.cs">
       <DependentUpon>ScriptOutputForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="TreeViewAdv\GifDecoder.cs" />
+    <Compile Include="TreeViewAdv\Tree\NodeControls\ExpandingIcon.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="TreeViewAdv\Tree\NodeControls\NodeCheckBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -210,6 +215,7 @@
     <Compile Include="UIServices\PowerBIHelper.cs" />
     <Compile Include="UIServices\Preferences.cs" />
     <Compile Include="UIServices\RecentFiles.cs" />
+    <Compile Include="UIServices\TableImport.cs" />
     <Compile Include="UIServices\UpdateService.cs" />
     <Compile Include="UIServices\DaxFormatter.cs" />
     <Compile Include="GUIConsoleWriter.cs" />
@@ -295,6 +301,12 @@
     <Compile Include="UI\Dialogs\ImportTablesForm.Designer.cs">
       <DependentUpon>ImportTablesForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Dialogs\ImportTablesWizard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\ImportTablesWizard.Designer.cs">
+      <DependentUpon>ImportTablesWizard.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Dialogs\ImportTranslationsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -318,6 +330,12 @@
     </Compile>
     <Compile Include="UI\Dialogs\Pages\DatabasePage.Designer.cs">
       <DependentUpon>DatabasePage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Dialogs\Pages\ImportTablesPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\Pages\ImportTablesPage.Designer.cs">
+      <DependentUpon>ImportTablesPage.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Dialogs\PreferencesForm.cs">
       <SubType>Form</SubType>
@@ -580,6 +598,9 @@
     <EmbeddedResource Include="UI\Dialogs\ImportTablesForm.resx">
       <DependentUpon>ImportTablesForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\ImportTablesWizard.resx">
+      <DependentUpon>ImportTablesWizard.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\ImportTranslationsForm.resx">
       <DependentUpon>ImportTranslationsForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -591,6 +612,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\Pages\DatabasePage.resx">
       <DependentUpon>DatabasePage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\Pages\ImportTablesPage.resx">
+      <DependentUpon>ImportTablesPage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\PreferencesForm.resx">
       <DependentUpon>PreferencesForm.cs</DependentUpon>

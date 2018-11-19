@@ -50,7 +50,7 @@ namespace TabularEditor.UI.Actions
             var csDialog = new CultureSelectDialog();
 
             // Import Table...:
-            Add(new Action((s, m) => true, (s, m) => ImportTablesForm.ImportTable(m), (s, m) => "Import Table...", true, Context.Model | Context.Tables));
+            Add(new Action((s, m) => true, (s, m) => ImportTablesWizard.ShowWizard(m), (s, m) => "Import Table...", true, Context.Model | Context.Tables));
 
             // "Create New Display Folder"
             Add(new Action((s, m) => s.Count >= 1 && !Handler.UsePowerBIGovernance, 

@@ -11,16 +11,16 @@ namespace Aga.Controls.Tree.NodeControls
 	/// Displays an animated icon for those nodes, who are in expanding state. 
 	/// Parent TreeView must have AsyncExpanding property set to true.
 	/// </summary>
-	/*public class ExpandingIcon: NodeControl
+	public class ExpandingIcon: NodeControl
 	{
-		private static GifDecoder _gif = ResourceHelper.LoadingIcon;
+        private static GifDecoder _gif = GifDecoder.GetGifDecoder(TabularEditor.Resources.loading_icon);
 		private static int _index = 0;
 		private static volatile Thread _animatingThread;
         private static object _lock = new object();
 
 		public override Size MeasureSize(TreeNodeAdv node, DrawContext context)
 		{
-			return ResourceHelper.LoadingIcon.FrameSize;
+			return _gif.FrameSize;
 		}
 
 		protected override void OnIsVisibleValueNeeded(NodeControlValueEventArgs args)
@@ -79,5 +79,5 @@ namespace Aga.Controls.Tree.NodeControls
 		}
 
 		public static event EventHandler IconChanged;
-	}*/
+	}
 }
