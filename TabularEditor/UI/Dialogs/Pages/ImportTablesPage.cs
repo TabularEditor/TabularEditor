@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using TabularEditor.UIServices;
 using Aga.Controls.Tree;
 using System.Collections;
+using System.Threading;
 
 namespace TabularEditor.UI.Dialogs.Pages
 {
@@ -24,9 +25,9 @@ namespace TabularEditor.UI.Dialogs.Pages
 
         public void Init(TypedDataSource source)
         {
-            var model = new SchemaModel(source);
+            var schemaModel = new SchemaModel(source);
             Source = source;
-            treeViewAdv1.Model = model;
+            treeViewAdv1.Model = schemaModel;
         }
 
         class SchemaModel : ITreeModel
@@ -120,9 +121,39 @@ namespace TabularEditor.UI.Dialogs.Pages
             }
             else
             {
-                Task.Run(() => this.Invoke(new MethodInvoker(() => { dataGridView1.DataSource = Source.GetSampleData(schemaNode); })));
+                if (fillSampleDataTask != null && !fillSampleDataTask.IsCompleted)
+                {
+                    cts.Cancel();
+                    //fillSampleDataTask.Wait();
+                    loadingPreviewSpinner.Visible = false;
+                }
+                dataGridView1.DataSource = null;
+                loadingPreviewSpinner.Visible = true;
+
+                cts = new CancellationTokenSource();
+                var ct = cts.Token;
+
+                // Fill the datagridview with sample data asynchronously:
+                fillSampleDataTask = Task.Factory.StartNew(() =>
+                {
+                    if (ct.IsCancellationRequested) return;
+                    var sampleData = Source.GetSampleData(schemaNode);
+                    if (ct.IsCancellationRequested) return;
+                    this.Invoke(new MethodInvoker(() => {
+                        if (ct.IsCancellationRequested) return;
+                        dataGridView1.DataSource = sampleData;
+                        dataGridView1.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
+                        foreach(DataGridViewColumn col in dataGridView1.Columns)
+                        {
+                            if (sampleData.Columns[col.Index].DataType != typeof(string)) col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+                        }
+                        loadingPreviewSpinner.Visible = false;
+                    }));
+                }, ct);
                 
             }
         }
+        CancellationTokenSource cts;
+        Task fillSampleDataTask;
     }
 }
