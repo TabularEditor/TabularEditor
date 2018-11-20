@@ -33,7 +33,10 @@ namespace TabularEditor.UIServices
         public string Database;
         public SchemaNodeType Type;
         public bool Selected;
-        public string DisplayName => Type == SchemaNodeType.Database ? Name : $"[{Schema}].[{Name}]";
+        public string DisplayName => Type == SchemaNodeType.Database ? Name : TwoPartName;
+        public string ThreePartName => $"[{Database}].[{Schema}].[{Name}]";
+        public string TwoPartName => $"[{Schema}].[{Name}]";
+
     }
 
     public class TypedDataSource
@@ -196,8 +199,10 @@ namespace TabularEditor.UIServices
         {
             try
             {
-                var csb = new System.Data.SqlClient.SqlConnectionStringBuilder(ProviderString) { InitialCatalog = tableOrView.Database };
-                var adapter = new System.Data.SqlClient.SqlDataAdapter("SELECT TOP 1000 * FROM " + tableOrView.DisplayName, csb.ConnectionString);
+                var csb = new System.Data.SqlClient.SqlConnectionStringBuilder(ProviderString);
+                var useThreePartName = csb.InitialCatalog != tableOrView.Database;
+                var adapter = new System.Data.SqlClient.SqlDataAdapter($"SELECT TOP 200 * FROM {(useThreePartName ? tableOrView.ThreePartName : tableOrView.DisplayName)} WITH (NOLOCK)", csb.ConnectionString);
+                adapter.SelectCommand.CommandTimeout = 30;
                 var result = new DataTable();
                 adapter.Fill(result);
                 return result;

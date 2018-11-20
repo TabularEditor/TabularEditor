@@ -430,6 +430,9 @@ namespace TabularEditor.UI
         [IntelliSense("All currently selected data sources.")]
         public UISelectionList<DataSource> DataSources { get; private set; }
 
+        [IntelliSense("The currently selected data source.")]
+        public DataSource DataSource { get { return One<DataSource>(); } }
+
         [IntelliSense("All currently selected roles.")]
         public UISelectionList<ModelRole> Roles { get; private set; }
 
