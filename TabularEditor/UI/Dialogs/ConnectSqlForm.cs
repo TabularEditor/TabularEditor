@@ -46,15 +46,19 @@ namespace TabularEditor.UI.Dialogs
             var ds = TypedDataSource.GetFromTabularDs(tabularDs);
             var dcd = new DataConnectionDialog();
             DataSource.AddStandardDataSources(dcd);
-            if (ds.ProviderType != ProviderType.Unknown)
+            if (!string.IsNullOrEmpty(value as string))
             {
-                dcd.SelectedDataSource = ds.DataSource;
-                dcd.SelectedDataProvider = ds.DataProvider;
-                dcd.ConnectionString = ds.ProviderString;
-            } else
-            {
-                var mbResult = MessageBox.Show("The provider and/or connection string used by this data source, is not supported by Tabular Editor.", "Unknown provider", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
-                if (mbResult == DialogResult.Cancel) return value;
+                if (ds.ProviderType != ProviderType.Unknown)
+                {
+                    dcd.SelectedDataSource = ds.DataSource;
+                    dcd.SelectedDataProvider = ds.DataProvider;
+                    dcd.ConnectionString = ds.ProviderString;
+                }
+                else
+                {
+                    var mbResult = MessageBox.Show("The provider and/or connection string used by this data source, is not supported by Tabular Editor.", "Unknown provider", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                    if (mbResult == DialogResult.Cancel) return value;
+                }
             }
             var res = DataConnectionDialog.Show(dcd);
 

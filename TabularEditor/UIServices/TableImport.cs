@@ -21,6 +21,7 @@ namespace TabularEditor.UIServices
 
     public enum SchemaNodeType
     {
+        Root,
         Database,
         Table,
         View
@@ -33,100 +34,341 @@ namespace TabularEditor.UIServices
         public string Database;
         public SchemaNodeType Type;
         public bool Selected;
-        public string DisplayName => Type == SchemaNodeType.Database ? Name : TwoPartName;
+        public string DisplayName => Type == SchemaNodeType.Database || Type == SchemaNodeType.Root ? Name : TwoPartName;
         public string ThreePartName => $"[{Database}].[{Schema}].[{Name}]";
         public string TwoPartName => $"[{Schema}].[{Name}]";
+        public List<string> IncludedColumns { get; } = new List<string>();
+        public void LoadColumnsFromSample(DataTable sampleData)
+        {
+            if(SelectAll == true)
+            {
+                foreach (DataColumn col in sampleData.Columns) IncludedColumns.Add(col.ColumnName);
+            }
+        }
+        public bool SelectAll { get; set; } = true;
 
+        public string GetSql(bool indented = true, bool useThreePartName = false)
+        {
+            if (SelectAll)
+            {
+                return (indented ? "SELECT\r\n\t*\r\nFROM\r\n\t" : "SELECT * FROM ") + (useThreePartName ? ThreePartName : TwoPartName);
+            }
+            else
+            {
+                var sqlText = "SELECT";
+                var first = true;
+                foreach (var col in IncludedColumns)
+                {
+                    sqlText += (indented ? "\r\n\t" : "") + (first ? " " : ",");
+                    sqlText += col;
+                    first = false;
+
+                }
+                sqlText += indented ? "\r\n" : " ";
+                sqlText += "FROM";
+                sqlText += indented ? "\r\n\t" : " ";
+                sqlText += useThreePartName ? ThreePartName : TwoPartName;
+                return sqlText;
+            }
+        }
     }
 
-    public class TypedDataSource
+    public class OtherDataSource: TypedDataSource
     {
-        public ProviderType ProviderType { get; private set; }
-        public DataSource DataSource
+        public override ProviderType ProviderType => ProviderType.Unknown;
+        public override DataSource DataSource => null;
+        public override DataProvider DataProvider => null;
+        public override DbProviderFactory DbFactory
         {
             get
             {
-                switch (ProviderType)
+                try
                 {
-                    case ProviderType.Sql: return DataSource.SqlDataSource;
-                    case ProviderType.OleDb: return DataSource.SqlDataSource;
-                    case ProviderType.ODBC: return DataSource.OdbcDataSource;
-                    case ProviderType.Oracle: return DataSource.OracleDataSource;
-                    default: return null;
+                    return DbProviderFactories.GetFactory(ProviderName);
+                }
+                catch
+                {
+                    return null;
                 }
             }
         }
-        public DataProvider DataProvider
+        public override IEnumerable<SchemaNode> GetDatabases()
+        {
+            return new List<SchemaNode>() { new SchemaNode { Name = "Data Source", Type = SchemaNodeType.Database } };
+        }
+
+        public override IEnumerable<SchemaNode> GetTablesAndViews(string databaseName)
+        {
+            return Enumerable.Empty<SchemaNode>();
+        }
+        public override string QuoteColumn(string unQuotedColumnName)
+        {
+            return $"[{unQuotedColumnName}]";
+        }
+        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, out bool isError)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
+    public class SqlDataSource: TypedDataSource
+    {
+        public override ProviderType ProviderType => ProviderType.Sql;
+        public override DataSource DataSource => DataSource.SqlDataSource;
+        public override DataProvider DataProvider => DataProvider.SqlDataProvider;
+        public override DbProviderFactory DbFactory => DbProviderFactories.GetFactory("System.Data.SqlClient");
+
+        public override IEnumerable<SchemaNode> GetDatabases()
+        {
+            return GetSchema("Databases").AsEnumerable().Select(r => r.Field<string>("database_name"))
+                        .Where(n => n != "master" && n != "msdb" && n != "model" && n != "tempdb")
+                        .Select(n => new SchemaNode { Name = n, Type = SchemaNodeType.Database });
+        }
+
+        public override IEnumerable<SchemaNode> GetTablesAndViews(string databaseName)
+        {
+            var csb = new System.Data.SqlClient.SqlConnectionStringBuilder(ProviderString) { InitialCatalog = databaseName };
+            return GetSchema("Tables", csb.ConnectionString).AsEnumerable().Select(r =>
+                new SchemaNode
+                {
+                    Database = databaseName,
+                    Name = r.Field<string>("TABLE_NAME"),
+                    Schema = r.Field<string>("TABLE_SCHEMA"),
+                    Type = r.Field<string>("TABLE_TYPE") == "VIEW" ? SchemaNodeType.View : SchemaNodeType.Table
+                });
+        }
+        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, out bool isError)
+        {
+            try
+            {
+                var csb = new System.Data.SqlClient.SqlConnectionStringBuilder(ProviderString);
+                var useThreePartName = csb.InitialCatalog != tableOrView.Database;
+                var adapter = new System.Data.SqlClient.SqlDataAdapter($"SELECT TOP 200 * FROM {(useThreePartName ? tableOrView.ThreePartName : tableOrView.DisplayName)} WITH (NOLOCK)", csb.ConnectionString);
+                adapter.SelectCommand.CommandTimeout = 30;
+                var result = new DataTable();
+                adapter.Fill(result);
+                isError = false;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                ErrorTable.Rows[0][0] = ex.Message;
+                isError = true;
+                return ErrorTable;
+            }
+
+        }
+
+        public override string QuoteColumn(string unQuotedColumnName)
+        {
+            return $"[{unQuotedColumnName}]";
+        }
+    }
+
+    public class OleDbDataSource : TypedDataSource
+    {
+        public override ProviderType ProviderType => ProviderType.OleDb;
+        public override DataSource DataSource => DataSource.SqlDataSource;
+        public override DataProvider DataProvider => DataProvider.OleDBDataProvider;
+        public override DbProviderFactory DbFactory => DbProviderFactories.GetFactory("System.Data.OleDb");
+
+        public override IEnumerable<SchemaNode> GetDatabases()
+        {
+            return GetSchema("Catalogs").AsEnumerable().Select(r => r.Field<string>("CATALOG_NAME"))
+            .Where(n => n != "master" && n != "msdb" && n != "model" && n != "tempdb")
+            .Select(n => new SchemaNode { Name = n, Type = SchemaNodeType.Database });
+
+        }
+
+        public override IEnumerable<SchemaNode> GetTablesAndViews(string databaseName)
+        {
+            var csb = new System.Data.OleDb.OleDbConnectionStringBuilder(ProviderString);
+            if (csb.ContainsKey("Initial Catalog")) csb.Remove("Initial Catalog");
+            var restrictionList = new string[4];
+            restrictionList[0] = databaseName;
+            return GetSchema("Tables", csb.ConnectionString, restrictionList).AsEnumerable().Select(r =>
+                new SchemaNode
+                {
+                    Database = databaseName,
+                    Name = r.Field<string>("TABLE_NAME"),
+                    Schema = r.Field<string>("TABLE_SCHEMA"),
+                    Type = r.Field<string>("TABLE_TYPE") == "VIEW" ? SchemaNodeType.View : SchemaNodeType.Table
+                }).Where(n => !n.Schema.EqualsI("sys") && !n.Schema.EqualsI("INFORMATION_SCHEMA")); ;
+        }
+
+        public override string QuoteColumn(string unQuotedColumnName)
+        {
+            return $"[{unQuotedColumnName}]";
+        }
+
+        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, out bool isError)
+        {
+            try
+            {
+                var csb = new System.Data.Common.DbConnectionStringBuilder() { ConnectionString = ProviderString };
+                var useThreePartName = csb.ContainsKey("Initial Catalog") && !csb["Initial Catalog"].ToString().EqualsI(tableOrView.Database);
+                var adapter = new System.Data.OleDb.OleDbDataAdapter($"SELECT TOP 200 * FROM {(useThreePartName ? tableOrView.ThreePartName : tableOrView.DisplayName)} WITH (NOLOCK)", csb.ConnectionString);
+                adapter.SelectCommand.CommandTimeout = 30;
+                var result = new DataTable();
+                adapter.Fill(result);
+                isError = false;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                ErrorTable.Rows[0][0] = ex.Message;
+                isError = true;
+                return ErrorTable;
+            }
+
+        }
+    }
+
+    public class OracleDataSource : TypedDataSource
+    {
+        public override ProviderType ProviderType => ProviderType.Oracle;
+        public override DataSource DataSource => DataSource.OracleDataSource;
+        public override DataProvider DataProvider => DataProvider.OracleDataProvider;
+        public override DbProviderFactory DbFactory => DbProviderFactories.GetFactory("System.Data.OracleClient");
+
+        public override IEnumerable<SchemaNode> GetDatabases()
+        {
+            var csb = DbFactory.CreateConnectionStringBuilder();
+            csb.ConnectionString = ProviderString;
+            
+            return new List<SchemaNode>() { new SchemaNode { Name = csb.ContainsKey("Data Source") ? csb["Data Source"].ToString() : "Data Source", Type = SchemaNodeType.Database } };
+        }
+
+        public override IEnumerable<SchemaNode> GetTablesAndViews(string databaseName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string QuoteColumn(string unQuotedColumnName)
+        {
+            return $"{unQuotedColumnName}";
+        }
+        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, out bool isError)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class OdbcDataSource : TypedDataSource
+    {
+        public override ProviderType ProviderType => ProviderType.ODBC;
+        public override DataSource DataSource => DataSource.OdbcDataSource;
+        public override DataProvider DataProvider => DataProvider.OdbcDataProvider;
+        public override DbProviderFactory DbFactory => DbProviderFactories.GetFactory("System.Data.Odbc");
+
+        public override IEnumerable<SchemaNode> GetDatabases()
+        {
+            var csb = DbFactory.CreateConnectionStringBuilder();
+            csb.ConnectionString = ProviderString;
+            return new List<SchemaNode>() { new SchemaNode { Name = csb.ContainsKey("Database") ? csb["Database"].ToString() : "Data Source", Type = SchemaNodeType.Database } };
+        }
+
+        public override IEnumerable<SchemaNode> GetTablesAndViews(string databaseName)
+        {
+            return GetSchema("Tables").AsEnumerable().Concat(GetSchema("Views").AsEnumerable()).Select(r => new SchemaNode
+            {
+                Database = databaseName,
+                Name = r.Field<string>("TABLE_NAME"),
+                Schema = r.Field<string>("TABLE_SCHEM"),
+                Type = r.Field<string>("TABLE_TYPE") == "VIEW" ? SchemaNodeType.View : SchemaNodeType.Table
+            }).Where(n => !n.Schema.EqualsI("sys") && !n.Schema.EqualsI("INFORMATION_SCHEMA"));
+        }
+
+        public override string QuoteColumn(string unQuotedColumnName)
+        {
+            return $"[{unQuotedColumnName}]";
+        }
+        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, out bool isError)
+        {
+            try
+            {
+                var adapter = new System.Data.Odbc.OdbcDataAdapter($"SELECT TOP 200 * FROM {tableOrView.DisplayName} WITH (NOLOCK)", ProviderString);
+                adapter.SelectCommand.CommandTimeout = 30;
+                var result = new DataTable();
+                adapter.Fill(result);
+                isError = false;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                ErrorTable.Rows[0][0] = ex.Message;
+                isError = true;
+                return ErrorTable;
+            }
+        }
+    }
+
+    public abstract class TypedDataSource
+    {
+        public abstract ProviderType ProviderType { get; }
+        public abstract DataSource DataSource { get; }
+        public abstract DataProvider DataProvider { get; }
+        public abstract DbProviderFactory DbFactory { get; }
+        public abstract string QuoteColumn(string unQuotedColumnName);
+
+        private string _providerString;
+        public string ProviderString
         {
             get
             {
-                switch (ProviderType)
-                {
-                    case ProviderType.Sql: return DataProvider.SqlDataProvider;
-                    case ProviderType.OleDb: return DataProvider.OleDBDataProvider;
-                    case ProviderType.ODBC: return DataProvider.OdbcDataProvider;
-                    case ProviderType.Oracle: return DataProvider.OracleDataProvider;
-                    default: return null;
-                }
+                return _providerString;
             }
-        }
-        public DbProviderFactory DbFactory
-        {
-            get
+            protected set
             {
-                switch (ProviderType)
+                var factory = DbFactory;
+                if (factory is null) { _providerString = value; return; }
+
+                // SSAS adds "Provider" to the connection string, which is not valid, so let's remove it if it is present:
+                var csb = new DbConnectionStringBuilder() { ConnectionString = value };
+                var validKeys = factory.CreateConnectionStringBuilder().Keys.OfType<string>();
+                if (csb.ContainsKey("Provider") && !validKeys.Contains("Provider", StringComparer.InvariantCultureIgnoreCase))
                 {
-                    case ProviderType.Sql: return System.Data.SqlClient.SqlClientFactory.Instance;
-                    case ProviderType.OleDb: return System.Data.OleDb.OleDbFactory.Instance;
-                    case ProviderType.ODBC: return System.Data.Odbc.OdbcFactory.Instance;
-                    default:
-                        try
-                        {
-                            return System.Data.Common.DbProviderFactories.GetFactory(ProviderName);
-                        }
-                        catch
-                        {
-                            return null;
-                        }
+                    csb.Remove("Provider");
+                    _providerString = csb.ConnectionString;
                 }
+                else
+                {
+                    _providerString = value;
+                }
+
             }
         }
-        public string ProviderString { get; private set; }
         public string ProviderName { get; private set; }
+        public string TabularDsName { get; private set; }
 
         static public TypedDataSource GetFromTabularDs(TOMWrapper.ProviderDataSource tabularDataSource)
         {
+            TypedDataSource ds;
             var csb = new DbConnectionStringBuilder() { ConnectionString = tabularDataSource.ConnectionString };
+            var providerName = !string.IsNullOrWhiteSpace(tabularDataSource.Provider) ? tabularDataSource.Provider : csb.ContainsKey("Provider") ? csb["Provider"].ToString() : "";
+            var pName = providerName.ToUpper();
 
-            var ds = new TypedDataSource();
-            ds.ProviderName = !string.IsNullOrWhiteSpace(tabularDataSource.Provider) ? tabularDataSource.Provider : csb.ContainsKey("Provider") ? csb["Provider"].ToString() : "";
-            var pName = ds.ProviderName.ToUpper();
+            if (pName.Contains("OLEDB")) ds = new OleDbDataSource();
+            else if (pName.Contains("SQLNCLI") || pName.Contains("SQLCLIENT")) ds = new SqlDataSource();
+            else if (pName.Contains("ODBC")) ds = new OdbcDataSource();
+            else if (pName.Contains("ORACLE")) ds = new OracleDataSource();
+            else ds = new OtherDataSource();
 
-            if (pName.Contains("OLEDB")) ds.ProviderType = ProviderType.OleDb;
-            else if (pName.Contains("SQLNCLI") || pName.Contains("SQLCLIENT")) ds.ProviderType = ProviderType.Sql;
-            else if (pName.Contains("ODBC")) ds.ProviderType = ProviderType.ODBC;
-            else if (pName.Contains("ORACLE")) ds.ProviderType = ProviderType.Oracle;
-            else ds.ProviderType = ProviderType.Unknown;
-
-            if(ds.DbFactory != null)
-            {
-                var validKeys = ds.DbFactory.CreateConnectionStringBuilder().Keys.OfType<string>();
-                if (csb.ContainsKey("Provider") && !validKeys.Contains("Provider", StringComparer.InvariantCultureIgnoreCase)) csb.Remove("Provider");
-            }
-            ds.ProviderString = csb.ConnectionString;
+            ds.TabularDsName = tabularDataSource.Name;
+            ds.ProviderString = tabularDataSource.ConnectionString;
 
             return ds;
         }
 
         static public TypedDataSource GetFromConnectionUi(DataConnectionDialog connectionDialog)
         {
-            var ds = new TypedDataSource();
+            TypedDataSource ds;
 
-            if (connectionDialog.SelectedDataProvider == DataProvider.SqlDataProvider) ds.ProviderType = ProviderType.Sql;
-            else if (connectionDialog.SelectedDataProvider == DataProvider.OleDBDataProvider) ds.ProviderType = ProviderType.OleDb;
-            else if (connectionDialog.SelectedDataProvider == DataProvider.OdbcDataProvider) ds.ProviderType = ProviderType.ODBC;
-            else if (connectionDialog.SelectedDataProvider == DataProvider.OracleDataProvider) ds.ProviderType = ProviderType.Oracle;
-            else ds.ProviderType = ProviderType.Unknown;
+            if (connectionDialog.SelectedDataProvider == DataProvider.SqlDataProvider) ds = new SqlDataSource();
+            else if (connectionDialog.SelectedDataProvider == DataProvider.OleDBDataProvider) ds = new OleDbDataSource();
+            else if (connectionDialog.SelectedDataProvider == DataProvider.OdbcDataProvider) ds = new OdbcDataSource();
+            else if (connectionDialog.SelectedDataProvider == DataProvider.OracleDataProvider) ds = new OracleDataSource();
+            else ds = new OtherDataSource();
             ds.ProviderString = connectionDialog.ConnectionString;
 
             return ds;
@@ -154,68 +396,32 @@ namespace TabularEditor.UIServices
             }
         }
 
-        public IEnumerable<SchemaNode> GetDatabases()
+        public DataTable GetSchema(string schemaName, string providerString, string[] restrictionList)
         {
-            switch(ProviderType)
+            using (var conn = DbFactory.CreateConnection())
             {
-                case ProviderType.Sql:
-                    return GetSchema("Databases").AsEnumerable().Select(r => r.Field<string>("database_name"))
-                        .Where(n => n != "master" && n != "msdb" && n != "model" && n != "tempdb")
-                        .Select(n => new SchemaNode { Name = n, Type = SchemaNodeType.Database });
-                default:
-                    throw new NotImplementedException();
+                conn.ConnectionString = providerString;
+                conn.Open();
+                var cmd = conn.CreateCommand();
+                return conn.GetSchema(schemaName, restrictionList);
             }
         }
 
-        public IEnumerable<SchemaNode> GetTablesAndViews(string databaseName)
-        {
-            switch (ProviderType)
-            {
-                case ProviderType.Sql:
-                    var csb = new System.Data.SqlClient.SqlConnectionStringBuilder(ProviderString) { InitialCatalog = databaseName };
-                    return GetSchema("Tables", csb.ConnectionString).AsEnumerable().Select(r =>
-                        new SchemaNode {
-                            Database = databaseName,
-                            Name = r.Field<string>("TABLE_NAME"),
-                            Schema = r.Field<string>("TABLE_SCHEMA"),
-                            Type = r.Field<string>("TABLE_TYPE") == "VIEW" ? SchemaNodeType.View : SchemaNodeType.Table });
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-        public DataTable GetSampleData(SchemaNode tableOrView)
-        {
+        public abstract IEnumerable<SchemaNode> GetDatabases();
 
-            switch (ProviderType)
-            {
-                case ProviderType.Sql:
-                    return GetSampleDataSql(tableOrView);
-                default:
-                    throw new NotImplementedException();
-            }
+        public abstract IEnumerable<SchemaNode> GetTablesAndViews(string databaseName);
+
+        public DataTable GetSampleData(SchemaNode tableOrView, out bool isError)
+        {
+            var result = InternalGetSampleData(tableOrView, out isError);
+            tableOrView.LoadColumnsFromSample(result);
+            return result;
         }
 
-        private DataTable GetSampleDataSql(SchemaNode tableOrView)
-        {
-            try
-            {
-                var csb = new System.Data.SqlClient.SqlConnectionStringBuilder(ProviderString);
-                var useThreePartName = csb.InitialCatalog != tableOrView.Database;
-                var adapter = new System.Data.SqlClient.SqlDataAdapter($"SELECT TOP 200 * FROM {(useThreePartName ? tableOrView.ThreePartName : tableOrView.DisplayName)} WITH (NOLOCK)", csb.ConnectionString);
-                adapter.SelectCommand.CommandTimeout = 30;
-                var result = new DataTable();
-                adapter.Fill(result);
-                return result;
-            }
-            catch (Exception ex)
-            {
-                ErrorTable.Rows[0][0] = ex.Message;
-                return ErrorTable;
-            }
-        }
+        protected abstract DataTable InternalGetSampleData(SchemaNode tableOrView, out bool isError);
 
         private DataTable _errorTable;
-        private DataTable ErrorTable
+        protected DataTable ErrorTable
         {
             get
             {
