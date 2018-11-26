@@ -33,5 +33,10 @@ namespace TabularEditor.UI.Dialogs
 
             return res;
         }
+
+        private void ImportTablesWizard_Shown(object sender, EventArgs e)
+        {
+            importTablesPage1.ExpandFirstNode();
+        }
     }
 }
