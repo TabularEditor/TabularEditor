@@ -393,7 +393,8 @@ partial class Rules {
 		"RelationshipEndCardinality",
 		"HierarchyHideMembersType",
 		"EncodingHintType",
-		"RefreshType"
+		"RefreshType",
+		"ExtendedPropertyType"
 	};
 	public static readonly Type[] EnumTypes = _enumTypes.Select(t => ASType(t)).Where(t => t != null).ToArray();
 
@@ -454,7 +455,7 @@ partial class Rules {
        { "SingleColumnRelationship", "Relationship" },
        { "Table", "TabularNamedObject" },
        { "WindowsModelRoleMember", "ModelRoleMember" },
-	   { "NamedExpression", "TabularNamedObject" }
+	   { "NamedExpression", "TabularNamedObject" },
    };
    public static Dictionary<Type, string> ObjectTypes = Convert(_objectTypes).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
    

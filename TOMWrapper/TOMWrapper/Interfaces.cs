@@ -79,6 +79,7 @@ namespace TabularEditor.TOMWrapper
     /// </summary>
     public interface IAnnotationObject: ITabularObject
     {
+        bool HasAnnotation(string name);
         string GetAnnotation(int index);
         string GetAnnotation(string name);
         string GetNewAnnotationName();
@@ -87,6 +88,23 @@ namespace TabularEditor.TOMWrapper
         void RemoveAnnotation(string name, bool undoable = true);
         int GetAnnotationsCount();
         IEnumerable<string> GetAnnotations();
+        AnnotationCollection Annotations { get; }
+    }
+
+    public interface IExtendedPropertyObject: ITabularObject
+    {
+        bool HasExtendedProperty(string name);
+        string GetExtendedProperty(string name);
+        string GetExtendedProperty(int index);
+        string GetNewExtendedPropertyName();
+        void SetExtendedProperty(int index, string value, ExtendedPropertyType type = ExtendedPropertyType.String);
+        void SetExtendedProperty(string name, string value, ExtendedPropertyType type = ExtendedPropertyType.String);
+        void RemoveExtendedProperty(string name);
+        ExtendedPropertyType GetExtendedPropertyType(string name);
+        ExtendedPropertyType GetExtendedPropertyType(int index);
+        IEnumerable<string> GetExtendedProperties();
+        int GetExtendedPropertyCount();
+        ExtendedPropertyCollection ExtendedProperties { get; }
     }
 
     /// <summary>
