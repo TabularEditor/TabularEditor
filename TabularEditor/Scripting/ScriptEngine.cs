@@ -250,6 +250,8 @@ namespace TabularEditor
             var includeUsings = new HashSet<string>(new[] {
                 "System",
                 "System.Linq",
+                "System.Collections.Generic",
+                "Newtonsoft.Json",
                 "TabularEditor.TOMWrapper",
                 "TabularEditor.TOMWrapper.Utils",
                 "TabularEditor.UI",
@@ -265,7 +267,7 @@ namespace TabularEditor
             using (var compiler = new CSharpCodeProvider()) {
                 // Allowed assemblies:
                 var tom = Assembly.GetAssembly(typeof(Microsoft.AnalysisServices.Tabular.Database)).Location;
-                var includeAssemblies = new HashSet<string>(new[] { "system.dll", "system.windows.forms.dll", "system.core.dll", Assembly.GetExecutingAssembly().Location, WrapperDllPath, tom });
+                var includeAssemblies = new HashSet<string>(new[] { "system.dll", "system.windows.forms.dll", "system.core.dll", Assembly.GetExecutingAssembly().Location, WrapperDllPath, tom, "newtonsoft.json.dll", "microsoft.csharp.dll" });
                 foreach(var asm in Plugins) if(!includeAssemblies.Contains(asm.Location)) includeAssemblies.Add(asm.Location);
                 var cp = new CompilerParameters(includeAssemblies.ToArray()) { GenerateInMemory = true, IncludeDebugInformation = true };
 
