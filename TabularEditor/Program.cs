@@ -384,24 +384,24 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 cw.WriteLine("=================================");
                 IEnumerable<BPA.AnalyzerResult> bpaResults;
                 if (suppliedRules == null) bpaResults = analyzer.AnalyzeAll();
-                else bpaResults = analyzer.Analyze(suppliedRules.Concat(analyzer.LocalRules));
+                else bpaResults = analyzer.Analyze(suppliedRules.Concat(analyzer.LocalRules));                
 
-                if (!bpaResults.Any()) cw.WriteLine("No objects in violation of Best Practices.");
-
-
-                foreach(var res in bpaResults)
+                bool none = true;
+                foreach(var res in bpaResults.Where(r => !r.Ignored))
                 {
                     if (res.InvalidCompatibilityLevel)
                     {
-                        Console.WriteLine("Skipping rule '{0}' as it does not apply to Compatibility Level {1}.", res.RuleName, h.CompatibilityLevel);
+                        cw.WriteLine("Skipping rule '{0}' as it does not apply to Compatibility Level {1}.", res.RuleName, h.CompatibilityLevel);
                     }
                     else
                     if (res.RuleHasError)
                     {
+                        none = false;
                         Warning("Error on rule '{0}': {1}", res.RuleName, res.RuleError);
                     }
                     else
                     {
+                        none = false;
                         var text = string.Format("{0} {1} violates rule \"{2}\"",
                             res.Object.GetTypeName(),
                             (res.Object as IDaxObject)?.DaxObjectFullName ?? res.ObjectName,
@@ -413,6 +413,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                     }
 
                 }
+                if(none) cw.WriteLine("No objects in violation of Best Practices.");
                 cw.WriteLine("=================================");
             }
 
