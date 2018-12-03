@@ -237,6 +237,7 @@ namespace TabularEditor.TOMWrapper
         }
 
         private bool _disableUpdates = false;
+        
 
         /// <summary>
         /// Begins a batch update
@@ -280,6 +281,7 @@ namespace TabularEditor.TOMWrapper
 
         internal bool EoB_RequireRebuildDependencyTree = false;
         internal bool EoB_PostponeOperations = false;
+        public bool UpdateInProgress => EoB_PostponeOperations;
 
         /// <summary>
         /// Ends all batch updates in progress.

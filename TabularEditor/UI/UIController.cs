@@ -212,7 +212,7 @@ namespace TabularEditor.UI
 
         private void UIController_ObjectChanged(object sender, ObjectChangedEventArgs e)
         {
-            if (e.PropertyName == "Annotations" && e.TabularObject == UI.PropertyGrid.SelectedObject)
+            if (!Handler.UpdateInProgress && e.PropertyName == "Annotations" && e.TabularObject == UI.PropertyGrid.SelectedObject)
                 UI.PropertyGrid.Refresh();
         }
 
