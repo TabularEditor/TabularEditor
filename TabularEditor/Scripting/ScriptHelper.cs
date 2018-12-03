@@ -77,19 +77,28 @@ namespace TabularEditor.Scripting
         }
 
         [ScriptMethod]
-        public static void Info(string message)
+        public static void Info(string message, int lineNumber = -1)
         {
+            var header = string.Format("Script info{0}", lineNumber >= 0 ? " (line " + lineNumber + ")": "", message);
+
             if (Program.CommandLineMode) Program.cw.WriteLine(message);
+            else MessageBox.Show(message, header, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         [ScriptMethod]
-        public static void Warning(string message)
+        public static void Warning(string message, int lineNumber = -1)
         {
-            if (Program.CommandLineMode) Program.Warning("Script warning: " + message);
+            var header = string.Format("Script warning{0}", lineNumber >= 0 ? " (line " + lineNumber + ")" : "", message);
+
+            if (Program.CommandLineMode) Program.Warning(header + ": " + message);
+            else MessageBox.Show(message, header, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
         [ScriptMethod]
-        public static void Error(string message)
+        public static void Error(string message, int lineNumber = -1)
         {
-            if (Program.CommandLineMode) Program.Error("Script error: " + message);
+            var header = string.Format("Script error{0}", lineNumber >= 0 ? " (line " + lineNumber + ")" : "", message);
+
+            if (Program.CommandLineMode) Program.Error(header + ": " + message);
+            else MessageBox.Show(message, header, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         public static void OutputErrors(IEnumerable<TabularNamedObject> items)

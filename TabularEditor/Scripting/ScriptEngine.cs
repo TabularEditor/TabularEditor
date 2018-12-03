@@ -51,14 +51,26 @@ namespace TabularEditor
             // Replace method calls: Output() --> Output(<linenumber>)
             var methodCalls = tokens.FindMethodCall("Output", 0); // Find all parameter-less calls to "Output"
             methodCalls.AddRange(tokens.FindMethodCall("Output", 1)); // Find all single-parameter calls to "Output";
+            methodCalls.AddRange(tokens.FindMethodCall("Info", 1)); // Find all single-parameter calls to "Info";
+            methodCalls.AddRange(tokens.FindMethodCall("Warning", 1)); // Find all single-parameter calls to "Warning";
+            methodCalls.AddRange(tokens.FindMethodCall("Error", 1)); // Find all single-parameter calls to "Error";
+
+            // Build map of Custom Actions:
+            var lines = script.Split('\n').ToList();
+            var customActionsMap = new List<int>();
+            for(int i = 0; i < lines.Count; i++)
+            {
+                if (lines[i].StartsWith(CUSTOMACTIONS_CODEINDICATOR)) customActionsMap.Add(i + 1);
+            }
 
             var sb = new StringBuilder();
             var pos = 0;
             foreach (var call in methodCalls)
             {
+                int actionOffset = customActionsMap.LastOrDefault(c => c < call.StopToken.Line);
                 sb.Append(script.Substring(pos, call.StopToken.StartIndex - pos));
                 if (call.ParamCount > 0) sb.Append(",");
-                sb.Append(call.StartToken.Line);
+                sb.Append(call.StartToken.Line - actionOffset);
 
                 pos = call.StopToken.StartIndex;
             }
@@ -133,6 +145,9 @@ namespace TabularEditor
             else
                 return delegateCode;
         }
+
+        private const string CUSTOMACTIONS_CODEINDICATOR = "/* <#CUSTOMACTION#> */";
+
         private static string GetCustomActionsCode(CustomActionsJson actions)
         {
             var t1 = new string(' ', 4);
@@ -170,6 +185,7 @@ namespace TabularEditor
 
                 // ExecuteDelegate:
                 sb.AppendLine(t4 + "(Selected, Model) => {");
+                sb.AppendLine(CUSTOMACTIONS_CODEINDICATOR);
                 sb.AppendLine(act.Execute);
                 sb.AppendLine(t4 + "},");
 
