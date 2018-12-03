@@ -70,11 +70,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PropertyGridUI\CollectionEditors\ExtendedPropertyCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\Converters\CultureConverter.cs" />
     <Compile Include="PropertyGridUI\Converters\HierarchyColumnConverter.cs" />
     <Compile Include="PropertyGridUI\DataTypeEnumConverter.cs" />
     <Compile Include="TextServices\DAXCharStream.cs" />
     <Compile Include="TextServices\DAXLexer.cs" />
+    <Compile Include="TOMWrapper\ExtendedPropertyCollection.cs" />
     <Compile Include="TOMWrapper\Base\WrapperBase.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -90,6 +92,7 @@
     <Compile Include="TOMWrapper\TabularModelHandler.Database.cs" />
     <Compile Include="TOMWrapper\TabularModelHandler.Events.cs" />
     <Compile Include="TOMWrapper\TabularModelHandler.FileHandling.cs" />
+    <Compile Include="UndoFramework\UndoExtendedPropertyAction.cs" />
     <Compile Include="Utils\DaxDependencyHelper.cs" />
     <Compile Include="TOMWrapper\Indexers\GenericIndexer.cs" />
     <Compile Include="TOMWrapper\Relationship.cs" />

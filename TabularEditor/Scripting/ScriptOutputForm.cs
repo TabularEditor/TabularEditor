@@ -1,4 +1,5 @@
-﻿using System;
+﻿extern alias json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using json.Newtonsoft.Json.Linq;
 using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.Scripting
@@ -69,6 +71,7 @@ namespace TabularEditor.Scripting
 
             DormantForm.btnCopy.Visible = false;
             if (value == null) ShowString("(Null)");
+            else if (value is JValue) ShowString(value.ToString());
             else if (testTabularObject != null) ShowTabularObject(testTabularObject);
             else if (testTabularCollection != null) ShowTabularObjectCollection(testTabularCollection);
             else if (testDictionary != null) ShowObjectDictionary(testDictionary);
