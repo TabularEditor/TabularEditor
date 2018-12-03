@@ -405,6 +405,13 @@ namespace TabularEditor.TOMWrapper
         Add = 7,
         Defragment = 8,
 	}
+	/// <summary>
+///             An enumeration of possible values for the type of value stored in extended property.
+///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+	public enum ExtendedPropertyType {    
+        String = 0,
+        Json = 1,
+	}
   
 	/// <summary>
 ///             Variation object.
@@ -413,6 +420,7 @@ namespace TabularEditor.TOMWrapper
 	public sealed partial class Variation: TabularNamedObject
 			, IDescriptionObject
 			, IAnnotationObject
+			, IExtendedPropertyObject
 			, IClonableObject
 	{
 	    internal new TOM.Variation MetadataObject 
@@ -507,6 +515,103 @@ namespace TabularEditor.TOMWrapper
 		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on this object."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
+
+		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
+		public bool HasExtendedProperty(string name) {
+		    return MetadataObject.ExtendedProperties.ContainsName(name);
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(int index) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(string name) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
+		}
+		public string GetExtendedProperty(int index) {
+			var ep = MetadataObject.ExtendedProperties[index];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
+		public string GetExtendedProperty(string name) {
+		    if(!HasExtendedProperty(name)) return null;
+			var ep = MetadataObject.ExtendedProperties[name];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			var name = MetadataObject.ExtendedProperties[index].Name;
+			SetExtendedProperty(name, value, type);
+		}
+		public string GetNewExtendedPropertyName() {
+			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+		}
+		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			if(name == null) name = GetNewExtendedPropertyName();
+
+			if(value == null) {
+				// Remove ExtendedProperty if set to null:
+				RemoveExtendedProperty(name);
+				return;
+			}
+
+			if(GetExtendedProperty(name) == value) return;
+			bool undoable = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Change existing ExtendedProperty:
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				var ep = MetadataObject.ExtendedProperties[name];
+				if (ep is TOM.JsonExtendedProperty)
+					(ep as TOM.JsonExtendedProperty).Value = value;
+				else 
+					(ep as TOM.StringExtendedProperty).Value = value;
+					
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new ExtendedProperty:
+				if (type == ExtendedPropertyType.Json)
+					MetadataObject.ExtendedProperties.Add(new TOM.JsonExtendedProperty{ Name = name, Value = value });
+				else
+					MetadataObject.ExtendedProperties.Add(new TOM.StringExtendedProperty{ Name = name, Value = value });
+
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
+			}
+
+		}
+		[IntelliSense("Remove an ExtendedProperty by the given name.")]
+		public void RemoveExtendedProperty(string name) {
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Get current value:
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+				if (cancel) return;
+
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				MetadataObject.ExtendedProperties.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
+			}
+		}
+		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
+		public int GetExtendedPropertyCount() {
+			return MetadataObject.ExtendedProperties.Count;
+		}
+		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
+		public IEnumerable<string> GetExtendedProperties() {
+			return MetadataObject.ExtendedProperties.Select(a => a.Name);
 		}
 
 		/// <summary>
@@ -733,6 +838,9 @@ namespace TabularEditor.TOMWrapper
 			
 			// Create indexer for annotations:
 			Annotations = new AnnotationCollection(this);
+			
+			// Create indexer for extended properties:
+			ExtendedProperties = new ExtendedPropertyCollection(this);
 		}
 
 
@@ -745,6 +853,9 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
+ 
+				case Properties.EXTENDEDPROPERTIES:
+					return Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -1389,6 +1500,7 @@ namespace TabularEditor.TOMWrapper
 			, IDescriptionObject
 			, IFormattableObject
 			, IAnnotationObject
+			, IExtendedPropertyObject
 			, ITabularPerspectiveObject
 			, ITranslatableObject
 	{
@@ -1508,6 +1620,103 @@ namespace TabularEditor.TOMWrapper
 		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on this object."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
+
+		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
+		public bool HasExtendedProperty(string name) {
+		    return MetadataObject.ExtendedProperties.ContainsName(name);
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(int index) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(string name) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
+		}
+		public string GetExtendedProperty(int index) {
+			var ep = MetadataObject.ExtendedProperties[index];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
+		public string GetExtendedProperty(string name) {
+		    if(!HasExtendedProperty(name)) return null;
+			var ep = MetadataObject.ExtendedProperties[name];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			var name = MetadataObject.ExtendedProperties[index].Name;
+			SetExtendedProperty(name, value, type);
+		}
+		public string GetNewExtendedPropertyName() {
+			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+		}
+		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			if(name == null) name = GetNewExtendedPropertyName();
+
+			if(value == null) {
+				// Remove ExtendedProperty if set to null:
+				RemoveExtendedProperty(name);
+				return;
+			}
+
+			if(GetExtendedProperty(name) == value) return;
+			bool undoable = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Change existing ExtendedProperty:
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				var ep = MetadataObject.ExtendedProperties[name];
+				if (ep is TOM.JsonExtendedProperty)
+					(ep as TOM.JsonExtendedProperty).Value = value;
+				else 
+					(ep as TOM.StringExtendedProperty).Value = value;
+					
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new ExtendedProperty:
+				if (type == ExtendedPropertyType.Json)
+					MetadataObject.ExtendedProperties.Add(new TOM.JsonExtendedProperty{ Name = name, Value = value });
+				else
+					MetadataObject.ExtendedProperties.Add(new TOM.StringExtendedProperty{ Name = name, Value = value });
+
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
+			}
+
+		}
+		[IntelliSense("Remove an ExtendedProperty by the given name.")]
+		public void RemoveExtendedProperty(string name) {
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Get current value:
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+				if (cancel) return;
+
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				MetadataObject.ExtendedProperties.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
+			}
+		}
+		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
+		public int GetExtendedPropertyCount() {
+			return MetadataObject.ExtendedProperties.Count;
+		}
+		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
+		public IEnumerable<string> GetExtendedProperties() {
+			return MetadataObject.ExtendedProperties.Select(a => a.Name);
 		}
 
 		/// <summary>
@@ -2079,6 +2288,9 @@ namespace TabularEditor.TOMWrapper
 			// Create indexer for annotations:
 			Annotations = new AnnotationCollection(this);
 			
+			// Create indexer for extended properties:
+			ExtendedProperties = new ExtendedPropertyCollection(this);
+			
 			// Instantiate child collections:
 			Variations = new VariationCollection(this.GetObjectPath() + ".Variations", MetadataObject.Variations, this);
 
@@ -2102,6 +2314,9 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
+ 
+				case Properties.EXTENDEDPROPERTIES:
+					return Handler.CompatibilityLevel >= 1400;
 				
 				// Hides translation properties in the grid, unless the model actually contains translations:
 				case Properties.TRANSLATEDNAMES:
@@ -2423,6 +2638,7 @@ namespace TabularEditor.TOMWrapper
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Culture: TabularNamedObject
 			, IAnnotationObject
+			, IExtendedPropertyObject
 			, IClonableObject
 	{
 	    internal new TOM.Culture MetadataObject 
@@ -2517,6 +2733,103 @@ namespace TabularEditor.TOMWrapper
 		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on this object."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
+
+		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
+		public bool HasExtendedProperty(string name) {
+		    return MetadataObject.ExtendedProperties.ContainsName(name);
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(int index) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(string name) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
+		}
+		public string GetExtendedProperty(int index) {
+			var ep = MetadataObject.ExtendedProperties[index];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
+		public string GetExtendedProperty(string name) {
+		    if(!HasExtendedProperty(name)) return null;
+			var ep = MetadataObject.ExtendedProperties[name];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			var name = MetadataObject.ExtendedProperties[index].Name;
+			SetExtendedProperty(name, value, type);
+		}
+		public string GetNewExtendedPropertyName() {
+			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+		}
+		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			if(name == null) name = GetNewExtendedPropertyName();
+
+			if(value == null) {
+				// Remove ExtendedProperty if set to null:
+				RemoveExtendedProperty(name);
+				return;
+			}
+
+			if(GetExtendedProperty(name) == value) return;
+			bool undoable = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Change existing ExtendedProperty:
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				var ep = MetadataObject.ExtendedProperties[name];
+				if (ep is TOM.JsonExtendedProperty)
+					(ep as TOM.JsonExtendedProperty).Value = value;
+				else 
+					(ep as TOM.StringExtendedProperty).Value = value;
+					
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new ExtendedProperty:
+				if (type == ExtendedPropertyType.Json)
+					MetadataObject.ExtendedProperties.Add(new TOM.JsonExtendedProperty{ Name = name, Value = value });
+				else
+					MetadataObject.ExtendedProperties.Add(new TOM.StringExtendedProperty{ Name = name, Value = value });
+
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
+			}
+
+		}
+		[IntelliSense("Remove an ExtendedProperty by the given name.")]
+		public void RemoveExtendedProperty(string name) {
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Get current value:
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+				if (cancel) return;
+
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				MetadataObject.ExtendedProperties.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
+			}
+		}
+		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
+		public int GetExtendedPropertyCount() {
+			return MetadataObject.ExtendedProperties.Count;
+		}
+		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
+		public IEnumerable<string> GetExtendedProperties() {
+			return MetadataObject.ExtendedProperties.Select(a => a.Name);
 		}
 
 		
@@ -2617,6 +2930,9 @@ namespace TabularEditor.TOMWrapper
 			
 			// Create indexer for annotations:
 			Annotations = new AnnotationCollection(this);
+			
+			// Create indexer for extended properties:
+			ExtendedProperties = new ExtendedPropertyCollection(this);
 		}
 
 
@@ -2629,6 +2945,9 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
+ 
+				case Properties.EXTENDEDPROPERTIES:
+					return Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -2863,6 +3182,7 @@ namespace TabularEditor.TOMWrapper
 	public abstract partial class DataSource: TabularNamedObject
 			, IDescriptionObject
 			, IAnnotationObject
+			, IExtendedPropertyObject
 	{
 	    internal new TOM.DataSource MetadataObject 
 		{ 
@@ -2958,6 +3278,103 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
 
+		        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on this object."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
+
+		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
+		public bool HasExtendedProperty(string name) {
+		    return MetadataObject.ExtendedProperties.ContainsName(name);
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(int index) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(string name) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
+		}
+		public string GetExtendedProperty(int index) {
+			var ep = MetadataObject.ExtendedProperties[index];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
+		public string GetExtendedProperty(string name) {
+		    if(!HasExtendedProperty(name)) return null;
+			var ep = MetadataObject.ExtendedProperties[name];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			var name = MetadataObject.ExtendedProperties[index].Name;
+			SetExtendedProperty(name, value, type);
+		}
+		public string GetNewExtendedPropertyName() {
+			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+		}
+		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			if(name == null) name = GetNewExtendedPropertyName();
+
+			if(value == null) {
+				// Remove ExtendedProperty if set to null:
+				RemoveExtendedProperty(name);
+				return;
+			}
+
+			if(GetExtendedProperty(name) == value) return;
+			bool undoable = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Change existing ExtendedProperty:
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				var ep = MetadataObject.ExtendedProperties[name];
+				if (ep is TOM.JsonExtendedProperty)
+					(ep as TOM.JsonExtendedProperty).Value = value;
+				else 
+					(ep as TOM.StringExtendedProperty).Value = value;
+					
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new ExtendedProperty:
+				if (type == ExtendedPropertyType.Json)
+					MetadataObject.ExtendedProperties.Add(new TOM.JsonExtendedProperty{ Name = name, Value = value });
+				else
+					MetadataObject.ExtendedProperties.Add(new TOM.StringExtendedProperty{ Name = name, Value = value });
+
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
+			}
+
+		}
+		[IntelliSense("Remove an ExtendedProperty by the given name.")]
+		public void RemoveExtendedProperty(string name) {
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Get current value:
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+				if (cancel) return;
+
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				MetadataObject.ExtendedProperties.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
+			}
+		}
+		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
+		public int GetExtendedPropertyCount() {
+			return MetadataObject.ExtendedProperties.Count;
+		}
+		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
+		public IEnumerable<string> GetExtendedProperties() {
+			return MetadataObject.ExtendedProperties.Select(a => a.Name);
+		}
+
 		/// <summary>
 ///             The description of the data source, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
 ///             </summary>
@@ -3043,6 +3460,9 @@ namespace TabularEditor.TOMWrapper
 			
 			// Create indexer for annotations:
 			Annotations = new AnnotationCollection(this);
+			
+			// Create indexer for extended properties:
+			ExtendedProperties = new ExtendedPropertyCollection(this);
 		}
 
 
@@ -3055,6 +3475,9 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
+ 
+				case Properties.EXTENDEDPROPERTIES:
+					return Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -3333,6 +3756,7 @@ namespace TabularEditor.TOMWrapper
 			, ITabularTableObject
 			, IDescriptionObject
 			, IAnnotationObject
+			, IExtendedPropertyObject
 			, ITabularPerspectiveObject
 			, ITranslatableObject
 			, IClonableObject
@@ -3429,6 +3853,103 @@ namespace TabularEditor.TOMWrapper
 		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on this object."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
+
+		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
+		public bool HasExtendedProperty(string name) {
+		    return MetadataObject.ExtendedProperties.ContainsName(name);
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(int index) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(string name) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
+		}
+		public string GetExtendedProperty(int index) {
+			var ep = MetadataObject.ExtendedProperties[index];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
+		public string GetExtendedProperty(string name) {
+		    if(!HasExtendedProperty(name)) return null;
+			var ep = MetadataObject.ExtendedProperties[name];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			var name = MetadataObject.ExtendedProperties[index].Name;
+			SetExtendedProperty(name, value, type);
+		}
+		public string GetNewExtendedPropertyName() {
+			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+		}
+		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			if(name == null) name = GetNewExtendedPropertyName();
+
+			if(value == null) {
+				// Remove ExtendedProperty if set to null:
+				RemoveExtendedProperty(name);
+				return;
+			}
+
+			if(GetExtendedProperty(name) == value) return;
+			bool undoable = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Change existing ExtendedProperty:
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				var ep = MetadataObject.ExtendedProperties[name];
+				if (ep is TOM.JsonExtendedProperty)
+					(ep as TOM.JsonExtendedProperty).Value = value;
+				else 
+					(ep as TOM.StringExtendedProperty).Value = value;
+					
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new ExtendedProperty:
+				if (type == ExtendedPropertyType.Json)
+					MetadataObject.ExtendedProperties.Add(new TOM.JsonExtendedProperty{ Name = name, Value = value });
+				else
+					MetadataObject.ExtendedProperties.Add(new TOM.StringExtendedProperty{ Name = name, Value = value });
+
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
+			}
+
+		}
+		[IntelliSense("Remove an ExtendedProperty by the given name.")]
+		public void RemoveExtendedProperty(string name) {
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Get current value:
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+				if (cancel) return;
+
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				MetadataObject.ExtendedProperties.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
+			}
+		}
+		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
+		public int GetExtendedPropertyCount() {
+			return MetadataObject.ExtendedProperties.Count;
+		}
+		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
+		public IEnumerable<string> GetExtendedProperties() {
+			return MetadataObject.ExtendedProperties.Select(a => a.Name);
 		}
 
 		/// <summary>
@@ -3692,6 +4213,9 @@ namespace TabularEditor.TOMWrapper
 			// Create indexer for annotations:
 			Annotations = new AnnotationCollection(this);
 			
+			// Create indexer for extended properties:
+			ExtendedProperties = new ExtendedPropertyCollection(this);
+			
 			// Instantiate child collections:
 			Levels = new LevelCollection(this.GetObjectPath() + ".Levels", MetadataObject.Levels, this);
 
@@ -3715,6 +4239,9 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
+ 
+				case Properties.EXTENDEDPROPERTIES:
+					return Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -3848,6 +4375,7 @@ namespace TabularEditor.TOMWrapper
 	public sealed partial class KPI: TabularObject
 			, IDescriptionObject
 			, IAnnotationObject
+			, IExtendedPropertyObject
 	{
 	    internal new TOM.KPI MetadataObject 
 		{ 
@@ -3941,6 +4469,103 @@ namespace TabularEditor.TOMWrapper
 		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on this object."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
+
+		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
+		public bool HasExtendedProperty(string name) {
+		    return MetadataObject.ExtendedProperties.ContainsName(name);
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(int index) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(string name) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
+		}
+		public string GetExtendedProperty(int index) {
+			var ep = MetadataObject.ExtendedProperties[index];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
+		public string GetExtendedProperty(string name) {
+		    if(!HasExtendedProperty(name)) return null;
+			var ep = MetadataObject.ExtendedProperties[name];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			var name = MetadataObject.ExtendedProperties[index].Name;
+			SetExtendedProperty(name, value, type);
+		}
+		public string GetNewExtendedPropertyName() {
+			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+		}
+		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			if(name == null) name = GetNewExtendedPropertyName();
+
+			if(value == null) {
+				// Remove ExtendedProperty if set to null:
+				RemoveExtendedProperty(name);
+				return;
+			}
+
+			if(GetExtendedProperty(name) == value) return;
+			bool undoable = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Change existing ExtendedProperty:
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				var ep = MetadataObject.ExtendedProperties[name];
+				if (ep is TOM.JsonExtendedProperty)
+					(ep as TOM.JsonExtendedProperty).Value = value;
+				else 
+					(ep as TOM.StringExtendedProperty).Value = value;
+					
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new ExtendedProperty:
+				if (type == ExtendedPropertyType.Json)
+					MetadataObject.ExtendedProperties.Add(new TOM.JsonExtendedProperty{ Name = name, Value = value });
+				else
+					MetadataObject.ExtendedProperties.Add(new TOM.StringExtendedProperty{ Name = name, Value = value });
+
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
+			}
+
+		}
+		[IntelliSense("Remove an ExtendedProperty by the given name.")]
+		public void RemoveExtendedProperty(string name) {
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Get current value:
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+				if (cancel) return;
+
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				MetadataObject.ExtendedProperties.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
+			}
+		}
+		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
+		public int GetExtendedPropertyCount() {
+			return MetadataObject.ExtendedProperties.Count;
+		}
+		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
+		public IEnumerable<string> GetExtendedProperties() {
+			return MetadataObject.ExtendedProperties.Select(a => a.Name);
 		}
 
 		/// <summary>
@@ -4216,6 +4841,9 @@ namespace TabularEditor.TOMWrapper
 			
 			// Create indexer for annotations:
 			Annotations = new AnnotationCollection(this);
+			
+			// Create indexer for extended properties:
+			ExtendedProperties = new ExtendedPropertyCollection(this);
 		}
 
 
@@ -4228,6 +4856,9 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
+ 
+				case Properties.EXTENDEDPROPERTIES:
+					return Handler.CompatibilityLevel >= 1400;
 				
 				default:
 					return base.Browsable(propertyName);
@@ -4244,6 +4875,7 @@ namespace TabularEditor.TOMWrapper
 	public sealed partial class Level: TabularNamedObject
 			, IDescriptionObject
 			, IAnnotationObject
+			, IExtendedPropertyObject
 			, ITranslatableObject
 			, IClonableObject
 	{
@@ -4339,6 +4971,103 @@ namespace TabularEditor.TOMWrapper
 		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on this object."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
+
+		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
+		public bool HasExtendedProperty(string name) {
+		    return MetadataObject.ExtendedProperties.ContainsName(name);
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(int index) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(string name) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
+		}
+		public string GetExtendedProperty(int index) {
+			var ep = MetadataObject.ExtendedProperties[index];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
+		public string GetExtendedProperty(string name) {
+		    if(!HasExtendedProperty(name)) return null;
+			var ep = MetadataObject.ExtendedProperties[name];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			var name = MetadataObject.ExtendedProperties[index].Name;
+			SetExtendedProperty(name, value, type);
+		}
+		public string GetNewExtendedPropertyName() {
+			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+		}
+		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			if(name == null) name = GetNewExtendedPropertyName();
+
+			if(value == null) {
+				// Remove ExtendedProperty if set to null:
+				RemoveExtendedProperty(name);
+				return;
+			}
+
+			if(GetExtendedProperty(name) == value) return;
+			bool undoable = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Change existing ExtendedProperty:
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				var ep = MetadataObject.ExtendedProperties[name];
+				if (ep is TOM.JsonExtendedProperty)
+					(ep as TOM.JsonExtendedProperty).Value = value;
+				else 
+					(ep as TOM.StringExtendedProperty).Value = value;
+					
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new ExtendedProperty:
+				if (type == ExtendedPropertyType.Json)
+					MetadataObject.ExtendedProperties.Add(new TOM.JsonExtendedProperty{ Name = name, Value = value });
+				else
+					MetadataObject.ExtendedProperties.Add(new TOM.StringExtendedProperty{ Name = name, Value = value });
+
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
+			}
+
+		}
+		[IntelliSense("Remove an ExtendedProperty by the given name.")]
+		public void RemoveExtendedProperty(string name) {
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Get current value:
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+				if (cancel) return;
+
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				MetadataObject.ExtendedProperties.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
+			}
+		}
+		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
+		public int GetExtendedPropertyCount() {
+			return MetadataObject.ExtendedProperties.Count;
+		}
+		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
+		public IEnumerable<string> GetExtendedProperties() {
+			return MetadataObject.ExtendedProperties.Select(a => a.Name);
 		}
 
 		/// <summary>
@@ -4533,6 +5262,9 @@ namespace TabularEditor.TOMWrapper
 			
 			// Create indexer for annotations:
 			Annotations = new AnnotationCollection(this);
+			
+			// Create indexer for extended properties:
+			ExtendedProperties = new ExtendedPropertyCollection(this);
 		}
 
 
@@ -4545,6 +5277,9 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
+ 
+				case Properties.EXTENDEDPROPERTIES:
+					return Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -4643,6 +5378,7 @@ namespace TabularEditor.TOMWrapper
 			, IExpressionObject
 			, IFormattableObject
 			, IAnnotationObject
+			, IExtendedPropertyObject
 			, ITabularPerspectiveObject
 			, ITranslatableObject
 			, IClonableObject
@@ -4739,6 +5475,103 @@ namespace TabularEditor.TOMWrapper
 		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on this object."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
+
+		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
+		public bool HasExtendedProperty(string name) {
+		    return MetadataObject.ExtendedProperties.ContainsName(name);
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(int index) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(string name) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
+		}
+		public string GetExtendedProperty(int index) {
+			var ep = MetadataObject.ExtendedProperties[index];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
+		public string GetExtendedProperty(string name) {
+		    if(!HasExtendedProperty(name)) return null;
+			var ep = MetadataObject.ExtendedProperties[name];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			var name = MetadataObject.ExtendedProperties[index].Name;
+			SetExtendedProperty(name, value, type);
+		}
+		public string GetNewExtendedPropertyName() {
+			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+		}
+		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			if(name == null) name = GetNewExtendedPropertyName();
+
+			if(value == null) {
+				// Remove ExtendedProperty if set to null:
+				RemoveExtendedProperty(name);
+				return;
+			}
+
+			if(GetExtendedProperty(name) == value) return;
+			bool undoable = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Change existing ExtendedProperty:
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				var ep = MetadataObject.ExtendedProperties[name];
+				if (ep is TOM.JsonExtendedProperty)
+					(ep as TOM.JsonExtendedProperty).Value = value;
+				else 
+					(ep as TOM.StringExtendedProperty).Value = value;
+					
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new ExtendedProperty:
+				if (type == ExtendedPropertyType.Json)
+					MetadataObject.ExtendedProperties.Add(new TOM.JsonExtendedProperty{ Name = name, Value = value });
+				else
+					MetadataObject.ExtendedProperties.Add(new TOM.StringExtendedProperty{ Name = name, Value = value });
+
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
+			}
+
+		}
+		[IntelliSense("Remove an ExtendedProperty by the given name.")]
+		public void RemoveExtendedProperty(string name) {
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Get current value:
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+				if (cancel) return;
+
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				MetadataObject.ExtendedProperties.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
+			}
+		}
+		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
+		public int GetExtendedPropertyCount() {
+			return MetadataObject.ExtendedProperties.Count;
+		}
+		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
+		public IEnumerable<string> GetExtendedProperties() {
+			return MetadataObject.ExtendedProperties.Select(a => a.Name);
 		}
 
 		/// <summary>
@@ -5087,6 +5920,9 @@ namespace TabularEditor.TOMWrapper
 			
 			// Create indexer for annotations:
 			Annotations = new AnnotationCollection(this);
+			
+			// Create indexer for extended properties:
+			ExtendedProperties = new ExtendedPropertyCollection(this);
 		}
 
 
@@ -5099,6 +5935,9 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
+ 
+				case Properties.EXTENDEDPROPERTIES:
+					return Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -5267,6 +6106,7 @@ namespace TabularEditor.TOMWrapper
 	public sealed partial class Model: TabularNamedObject
 			, IDescriptionObject
 			, IAnnotationObject
+			, IExtendedPropertyObject
 			, ITranslatableObject
 	{
 	    internal new TOM.Model MetadataObject 
@@ -5375,6 +6215,103 @@ namespace TabularEditor.TOMWrapper
 		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on this object."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
+
+		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
+		public bool HasExtendedProperty(string name) {
+		    return MetadataObject.ExtendedProperties.ContainsName(name);
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(int index) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(string name) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
+		}
+		public string GetExtendedProperty(int index) {
+			var ep = MetadataObject.ExtendedProperties[index];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
+		public string GetExtendedProperty(string name) {
+		    if(!HasExtendedProperty(name)) return null;
+			var ep = MetadataObject.ExtendedProperties[name];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			var name = MetadataObject.ExtendedProperties[index].Name;
+			SetExtendedProperty(name, value, type);
+		}
+		public string GetNewExtendedPropertyName() {
+			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+		}
+		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			if(name == null) name = GetNewExtendedPropertyName();
+
+			if(value == null) {
+				// Remove ExtendedProperty if set to null:
+				RemoveExtendedProperty(name);
+				return;
+			}
+
+			if(GetExtendedProperty(name) == value) return;
+			bool undoable = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Change existing ExtendedProperty:
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				var ep = MetadataObject.ExtendedProperties[name];
+				if (ep is TOM.JsonExtendedProperty)
+					(ep as TOM.JsonExtendedProperty).Value = value;
+				else 
+					(ep as TOM.StringExtendedProperty).Value = value;
+					
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new ExtendedProperty:
+				if (type == ExtendedPropertyType.Json)
+					MetadataObject.ExtendedProperties.Add(new TOM.JsonExtendedProperty{ Name = name, Value = value });
+				else
+					MetadataObject.ExtendedProperties.Add(new TOM.StringExtendedProperty{ Name = name, Value = value });
+
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
+			}
+
+		}
+		[IntelliSense("Remove an ExtendedProperty by the given name.")]
+		public void RemoveExtendedProperty(string name) {
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Get current value:
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+				if (cancel) return;
+
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				MetadataObject.ExtendedProperties.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
+			}
+		}
+		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
+		public int GetExtendedPropertyCount() {
+			return MetadataObject.ExtendedProperties.Count;
+		}
+		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
+		public IEnumerable<string> GetExtendedProperties() {
+			return MetadataObject.ExtendedProperties.Select(a => a.Name);
 		}
 
 		/// <summary>
@@ -5658,6 +6595,9 @@ namespace TabularEditor.TOMWrapper
 			// Create indexer for annotations:
 			Annotations = new AnnotationCollection(this);
 			
+			// Create indexer for extended properties:
+			ExtendedProperties = new ExtendedPropertyCollection(this);
+			
 			// Instantiate child collections:
 			Perspectives = new PerspectiveCollection(this.GetObjectPath() + ".Perspectives", MetadataObject.Perspectives, this);
 			Cultures = new CultureCollection(this.GetObjectPath() + ".Cultures", MetadataObject.Cultures, this);
@@ -5705,6 +6645,9 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
+ 
+				case Properties.EXTENDEDPROPERTIES:
+					return Handler.CompatibilityLevel >= 1400;
 				
 				// Hides translation properties in the grid, unless the model actually contains translations:
 				case Properties.TRANSLATEDNAMES:
@@ -5726,6 +6669,7 @@ namespace TabularEditor.TOMWrapper
 	public sealed partial class ModelRole: TabularNamedObject
 			, IDescriptionObject
 			, IAnnotationObject
+			, IExtendedPropertyObject
 			, IClonableObject
 	{
 	    internal new TOM.ModelRole MetadataObject 
@@ -5820,6 +6764,103 @@ namespace TabularEditor.TOMWrapper
 		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on this object."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
+
+		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
+		public bool HasExtendedProperty(string name) {
+		    return MetadataObject.ExtendedProperties.ContainsName(name);
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(int index) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(string name) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
+		}
+		public string GetExtendedProperty(int index) {
+			var ep = MetadataObject.ExtendedProperties[index];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
+		public string GetExtendedProperty(string name) {
+		    if(!HasExtendedProperty(name)) return null;
+			var ep = MetadataObject.ExtendedProperties[name];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			var name = MetadataObject.ExtendedProperties[index].Name;
+			SetExtendedProperty(name, value, type);
+		}
+		public string GetNewExtendedPropertyName() {
+			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+		}
+		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			if(name == null) name = GetNewExtendedPropertyName();
+
+			if(value == null) {
+				// Remove ExtendedProperty if set to null:
+				RemoveExtendedProperty(name);
+				return;
+			}
+
+			if(GetExtendedProperty(name) == value) return;
+			bool undoable = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Change existing ExtendedProperty:
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				var ep = MetadataObject.ExtendedProperties[name];
+				if (ep is TOM.JsonExtendedProperty)
+					(ep as TOM.JsonExtendedProperty).Value = value;
+				else 
+					(ep as TOM.StringExtendedProperty).Value = value;
+					
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new ExtendedProperty:
+				if (type == ExtendedPropertyType.Json)
+					MetadataObject.ExtendedProperties.Add(new TOM.JsonExtendedProperty{ Name = name, Value = value });
+				else
+					MetadataObject.ExtendedProperties.Add(new TOM.StringExtendedProperty{ Name = name, Value = value });
+
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
+			}
+
+		}
+		[IntelliSense("Remove an ExtendedProperty by the given name.")]
+		public void RemoveExtendedProperty(string name) {
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Get current value:
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+				if (cancel) return;
+
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				MetadataObject.ExtendedProperties.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
+			}
+		}
+		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
+		public int GetExtendedPropertyCount() {
+			return MetadataObject.ExtendedProperties.Count;
+		}
+		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
+		public IEnumerable<string> GetExtendedProperties() {
+			return MetadataObject.ExtendedProperties.Select(a => a.Name);
 		}
 
 		/// <summary>
@@ -5980,6 +7021,9 @@ namespace TabularEditor.TOMWrapper
 			// Create indexer for annotations:
 			Annotations = new AnnotationCollection(this);
 			
+			// Create indexer for extended properties:
+			ExtendedProperties = new ExtendedPropertyCollection(this);
+			
 			// Instantiate child collections:
 			Members = new ModelRoleMemberCollection(this.GetObjectPath() + ".Members", MetadataObject.Members, this);
 
@@ -6003,6 +7047,9 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
+ 
+				case Properties.EXTENDEDPROPERTIES:
+					return Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -6101,6 +7148,7 @@ namespace TabularEditor.TOMWrapper
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public abstract partial class ModelRoleMember: TabularNamedObject
 			, IAnnotationObject
+			, IExtendedPropertyObject
 	{
 	    internal new TOM.ModelRoleMember MetadataObject 
 		{ 
@@ -6196,6 +7244,103 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
 
+		        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on this object."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
+
+		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
+		public bool HasExtendedProperty(string name) {
+		    return MetadataObject.ExtendedProperties.ContainsName(name);
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(int index) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(string name) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
+		}
+		public string GetExtendedProperty(int index) {
+			var ep = MetadataObject.ExtendedProperties[index];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
+		public string GetExtendedProperty(string name) {
+		    if(!HasExtendedProperty(name)) return null;
+			var ep = MetadataObject.ExtendedProperties[name];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			var name = MetadataObject.ExtendedProperties[index].Name;
+			SetExtendedProperty(name, value, type);
+		}
+		public string GetNewExtendedPropertyName() {
+			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+		}
+		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			if(name == null) name = GetNewExtendedPropertyName();
+
+			if(value == null) {
+				// Remove ExtendedProperty if set to null:
+				RemoveExtendedProperty(name);
+				return;
+			}
+
+			if(GetExtendedProperty(name) == value) return;
+			bool undoable = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Change existing ExtendedProperty:
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				var ep = MetadataObject.ExtendedProperties[name];
+				if (ep is TOM.JsonExtendedProperty)
+					(ep as TOM.JsonExtendedProperty).Value = value;
+				else 
+					(ep as TOM.StringExtendedProperty).Value = value;
+					
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new ExtendedProperty:
+				if (type == ExtendedPropertyType.Json)
+					MetadataObject.ExtendedProperties.Add(new TOM.JsonExtendedProperty{ Name = name, Value = value });
+				else
+					MetadataObject.ExtendedProperties.Add(new TOM.StringExtendedProperty{ Name = name, Value = value });
+
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
+			}
+
+		}
+		[IntelliSense("Remove an ExtendedProperty by the given name.")]
+		public void RemoveExtendedProperty(string name) {
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Get current value:
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+				if (cancel) return;
+
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				MetadataObject.ExtendedProperties.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
+			}
+		}
+		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
+		public int GetExtendedPropertyCount() {
+			return MetadataObject.ExtendedProperties.Count;
+		}
+		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
+		public IEnumerable<string> GetExtendedProperties() {
+			return MetadataObject.ExtendedProperties.Select(a => a.Name);
+		}
+
 		/// <summary>
 ///             The security name that identifies the user or group of the member.
 ///             </summary>
@@ -6282,6 +7427,9 @@ namespace TabularEditor.TOMWrapper
 			
 			// Create indexer for annotations:
 			Annotations = new AnnotationCollection(this);
+			
+			// Create indexer for extended properties:
+			ExtendedProperties = new ExtendedPropertyCollection(this);
 		}
 
 
@@ -6294,6 +7442,9 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
+ 
+				case Properties.EXTENDEDPROPERTIES:
+					return Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -6396,6 +7547,7 @@ namespace TabularEditor.TOMWrapper
 			, ITabularTableObject
 			, IDescriptionObject
 			, IAnnotationObject
+			, IExtendedPropertyObject
 			, IClonableObject
 	{
 	    internal new TOM.Partition MetadataObject 
@@ -6502,6 +7654,103 @@ namespace TabularEditor.TOMWrapper
 		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on this object."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
+
+		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
+		public bool HasExtendedProperty(string name) {
+		    return MetadataObject.ExtendedProperties.ContainsName(name);
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(int index) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(string name) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
+		}
+		public string GetExtendedProperty(int index) {
+			var ep = MetadataObject.ExtendedProperties[index];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
+		public string GetExtendedProperty(string name) {
+		    if(!HasExtendedProperty(name)) return null;
+			var ep = MetadataObject.ExtendedProperties[name];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			var name = MetadataObject.ExtendedProperties[index].Name;
+			SetExtendedProperty(name, value, type);
+		}
+		public string GetNewExtendedPropertyName() {
+			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+		}
+		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			if(name == null) name = GetNewExtendedPropertyName();
+
+			if(value == null) {
+				// Remove ExtendedProperty if set to null:
+				RemoveExtendedProperty(name);
+				return;
+			}
+
+			if(GetExtendedProperty(name) == value) return;
+			bool undoable = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Change existing ExtendedProperty:
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				var ep = MetadataObject.ExtendedProperties[name];
+				if (ep is TOM.JsonExtendedProperty)
+					(ep as TOM.JsonExtendedProperty).Value = value;
+				else 
+					(ep as TOM.StringExtendedProperty).Value = value;
+					
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new ExtendedProperty:
+				if (type == ExtendedPropertyType.Json)
+					MetadataObject.ExtendedProperties.Add(new TOM.JsonExtendedProperty{ Name = name, Value = value });
+				else
+					MetadataObject.ExtendedProperties.Add(new TOM.StringExtendedProperty{ Name = name, Value = value });
+
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
+			}
+
+		}
+		[IntelliSense("Remove an ExtendedProperty by the given name.")]
+		public void RemoveExtendedProperty(string name) {
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Get current value:
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+				if (cancel) return;
+
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				MetadataObject.ExtendedProperties.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
+			}
+		}
+		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
+		public int GetExtendedPropertyCount() {
+			return MetadataObject.ExtendedProperties.Count;
+		}
+		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
+		public IEnumerable<string> GetExtendedProperties() {
+			return MetadataObject.ExtendedProperties.Select(a => a.Name);
 		}
 
 		/// <summary>
@@ -6701,6 +7950,9 @@ namespace TabularEditor.TOMWrapper
 			
 			// Create indexer for annotations:
 			Annotations = new AnnotationCollection(this);
+			
+			// Create indexer for extended properties:
+			ExtendedProperties = new ExtendedPropertyCollection(this);
 		}
 
 
@@ -6713,6 +7965,9 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
+ 
+				case Properties.EXTENDEDPROPERTIES:
+					return Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -6825,6 +8080,7 @@ namespace TabularEditor.TOMWrapper
 	public sealed partial class Perspective: TabularNamedObject
 			, IDescriptionObject
 			, IAnnotationObject
+			, IExtendedPropertyObject
 			, ITranslatableObject
 			, IClonableObject
 	{
@@ -6920,6 +8176,103 @@ namespace TabularEditor.TOMWrapper
 		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on this object."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
+
+		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
+		public bool HasExtendedProperty(string name) {
+		    return MetadataObject.ExtendedProperties.ContainsName(name);
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(int index) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(string name) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
+		}
+		public string GetExtendedProperty(int index) {
+			var ep = MetadataObject.ExtendedProperties[index];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
+		public string GetExtendedProperty(string name) {
+		    if(!HasExtendedProperty(name)) return null;
+			var ep = MetadataObject.ExtendedProperties[name];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			var name = MetadataObject.ExtendedProperties[index].Name;
+			SetExtendedProperty(name, value, type);
+		}
+		public string GetNewExtendedPropertyName() {
+			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+		}
+		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			if(name == null) name = GetNewExtendedPropertyName();
+
+			if(value == null) {
+				// Remove ExtendedProperty if set to null:
+				RemoveExtendedProperty(name);
+				return;
+			}
+
+			if(GetExtendedProperty(name) == value) return;
+			bool undoable = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Change existing ExtendedProperty:
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				var ep = MetadataObject.ExtendedProperties[name];
+				if (ep is TOM.JsonExtendedProperty)
+					(ep as TOM.JsonExtendedProperty).Value = value;
+				else 
+					(ep as TOM.StringExtendedProperty).Value = value;
+					
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new ExtendedProperty:
+				if (type == ExtendedPropertyType.Json)
+					MetadataObject.ExtendedProperties.Add(new TOM.JsonExtendedProperty{ Name = name, Value = value });
+				else
+					MetadataObject.ExtendedProperties.Add(new TOM.StringExtendedProperty{ Name = name, Value = value });
+
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
+			}
+
+		}
+		[IntelliSense("Remove an ExtendedProperty by the given name.")]
+		public void RemoveExtendedProperty(string name) {
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Get current value:
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+				if (cancel) return;
+
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				MetadataObject.ExtendedProperties.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
+			}
+		}
+		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
+		public int GetExtendedPropertyCount() {
+			return MetadataObject.ExtendedProperties.Count;
+		}
+		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
+		public IEnumerable<string> GetExtendedProperties() {
+			return MetadataObject.ExtendedProperties.Select(a => a.Name);
 		}
 
 		/// <summary>
@@ -7062,6 +8415,9 @@ namespace TabularEditor.TOMWrapper
 			
 			// Create indexer for annotations:
 			Annotations = new AnnotationCollection(this);
+			
+			// Create indexer for extended properties:
+			ExtendedProperties = new ExtendedPropertyCollection(this);
 		}
 
 
@@ -7074,6 +8430,9 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
+ 
+				case Properties.EXTENDEDPROPERTIES:
+					return Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -7470,6 +8829,7 @@ namespace TabularEditor.TOMWrapper
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public abstract partial class Relationship: TabularNamedObject
 			, IAnnotationObject
+			, IExtendedPropertyObject
 	{
 	    internal new TOM.Relationship MetadataObject 
 		{ 
@@ -7589,6 +8949,103 @@ namespace TabularEditor.TOMWrapper
 		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on this object."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
+
+		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
+		public bool HasExtendedProperty(string name) {
+		    return MetadataObject.ExtendedProperties.ContainsName(name);
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(int index) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(string name) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
+		}
+		public string GetExtendedProperty(int index) {
+			var ep = MetadataObject.ExtendedProperties[index];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
+		public string GetExtendedProperty(string name) {
+		    if(!HasExtendedProperty(name)) return null;
+			var ep = MetadataObject.ExtendedProperties[name];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			var name = MetadataObject.ExtendedProperties[index].Name;
+			SetExtendedProperty(name, value, type);
+		}
+		public string GetNewExtendedPropertyName() {
+			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+		}
+		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			if(name == null) name = GetNewExtendedPropertyName();
+
+			if(value == null) {
+				// Remove ExtendedProperty if set to null:
+				RemoveExtendedProperty(name);
+				return;
+			}
+
+			if(GetExtendedProperty(name) == value) return;
+			bool undoable = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Change existing ExtendedProperty:
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				var ep = MetadataObject.ExtendedProperties[name];
+				if (ep is TOM.JsonExtendedProperty)
+					(ep as TOM.JsonExtendedProperty).Value = value;
+				else 
+					(ep as TOM.StringExtendedProperty).Value = value;
+					
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new ExtendedProperty:
+				if (type == ExtendedPropertyType.Json)
+					MetadataObject.ExtendedProperties.Add(new TOM.JsonExtendedProperty{ Name = name, Value = value });
+				else
+					MetadataObject.ExtendedProperties.Add(new TOM.StringExtendedProperty{ Name = name, Value = value });
+
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
+			}
+
+		}
+		[IntelliSense("Remove an ExtendedProperty by the given name.")]
+		public void RemoveExtendedProperty(string name) {
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Get current value:
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+				if (cancel) return;
+
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				MetadataObject.ExtendedProperties.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
+			}
+		}
+		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
+		public int GetExtendedPropertyCount() {
+			return MetadataObject.ExtendedProperties.Count;
+		}
+		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
+		public IEnumerable<string> GetExtendedProperties() {
+			return MetadataObject.ExtendedProperties.Select(a => a.Name);
 		}
 
 		/// <summary>
@@ -7760,6 +9217,9 @@ namespace TabularEditor.TOMWrapper
 			
 			// Create indexer for annotations:
 			Annotations = new AnnotationCollection(this);
+			
+			// Create indexer for extended properties:
+			ExtendedProperties = new ExtendedPropertyCollection(this);
 		}
 
 
@@ -7772,6 +9232,9 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
+ 
+				case Properties.EXTENDEDPROPERTIES:
+					return Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -8144,6 +9607,7 @@ namespace TabularEditor.TOMWrapper
 			, IHideableObject
 			, IDescriptionObject
 			, IAnnotationObject
+			, IExtendedPropertyObject
 			, ITabularPerspectiveObject
 			, ITranslatableObject
 			, IClonableObject
@@ -8240,6 +9704,103 @@ namespace TabularEditor.TOMWrapper
 		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on this object."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
+
+		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
+		public bool HasExtendedProperty(string name) {
+		    return MetadataObject.ExtendedProperties.ContainsName(name);
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(int index) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(string name) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
+		}
+		public string GetExtendedProperty(int index) {
+			var ep = MetadataObject.ExtendedProperties[index];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
+		public string GetExtendedProperty(string name) {
+		    if(!HasExtendedProperty(name)) return null;
+			var ep = MetadataObject.ExtendedProperties[name];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			var name = MetadataObject.ExtendedProperties[index].Name;
+			SetExtendedProperty(name, value, type);
+		}
+		public string GetNewExtendedPropertyName() {
+			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+		}
+		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			if(name == null) name = GetNewExtendedPropertyName();
+
+			if(value == null) {
+				// Remove ExtendedProperty if set to null:
+				RemoveExtendedProperty(name);
+				return;
+			}
+
+			if(GetExtendedProperty(name) == value) return;
+			bool undoable = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Change existing ExtendedProperty:
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				var ep = MetadataObject.ExtendedProperties[name];
+				if (ep is TOM.JsonExtendedProperty)
+					(ep as TOM.JsonExtendedProperty).Value = value;
+				else 
+					(ep as TOM.StringExtendedProperty).Value = value;
+					
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new ExtendedProperty:
+				if (type == ExtendedPropertyType.Json)
+					MetadataObject.ExtendedProperties.Add(new TOM.JsonExtendedProperty{ Name = name, Value = value });
+				else
+					MetadataObject.ExtendedProperties.Add(new TOM.StringExtendedProperty{ Name = name, Value = value });
+
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
+			}
+
+		}
+		[IntelliSense("Remove an ExtendedProperty by the given name.")]
+		public void RemoveExtendedProperty(string name) {
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Get current value:
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+				if (cancel) return;
+
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				MetadataObject.ExtendedProperties.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
+			}
+		}
+		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
+		public int GetExtendedPropertyCount() {
+			return MetadataObject.ExtendedProperties.Count;
+		}
+		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
+		public IEnumerable<string> GetExtendedProperties() {
+			return MetadataObject.ExtendedProperties.Select(a => a.Name);
 		}
 
 		/// <summary>
@@ -8558,6 +10119,9 @@ namespace TabularEditor.TOMWrapper
 			// Create indexer for annotations:
 			Annotations = new AnnotationCollection(this);
 			
+			// Create indexer for extended properties:
+			ExtendedProperties = new ExtendedPropertyCollection(this);
+			
 			// Instantiate child collections:
 			Partitions = new PartitionCollection(this.GetObjectPath() + ".Partitions", MetadataObject.Partitions, this);
 			Columns = new ColumnCollection(this.GetObjectPath() + ".Columns", MetadataObject.Columns, this);
@@ -8593,6 +10157,9 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
+ 
+				case Properties.EXTENDEDPROPERTIES:
+					return Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -8877,6 +10444,7 @@ namespace TabularEditor.TOMWrapper
 	public sealed partial class NamedExpression: TabularNamedObject
 			, IDescriptionObject
 			, IAnnotationObject
+			, IExtendedPropertyObject
 			, IClonableObject
 	{
 	    internal new TOM.NamedExpression MetadataObject 
@@ -8971,6 +10539,103 @@ namespace TabularEditor.TOMWrapper
 		[IntelliSense("Gets a collection of all annotation names on the current object.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on this object."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
+
+		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
+		public bool HasExtendedProperty(string name) {
+		    return MetadataObject.ExtendedProperties.ContainsName(name);
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(int index) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
+		}
+		public ExtendedPropertyType GetExtendedPropertyType(string name) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
+		}
+		public string GetExtendedProperty(int index) {
+			var ep = MetadataObject.ExtendedProperties[index];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
+		public string GetExtendedProperty(string name) {
+		    if(!HasExtendedProperty(name)) return null;
+			var ep = MetadataObject.ExtendedProperties[name];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			var name = MetadataObject.ExtendedProperties[index].Name;
+			SetExtendedProperty(name, value, type);
+		}
+		public string GetNewExtendedPropertyName() {
+			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+		}
+		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			if(name == null) name = GetNewExtendedPropertyName();
+
+			if(value == null) {
+				// Remove ExtendedProperty if set to null:
+				RemoveExtendedProperty(name);
+				return;
+			}
+
+			if(GetExtendedProperty(name) == value) return;
+			bool undoable = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Change existing ExtendedProperty:
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				var ep = MetadataObject.ExtendedProperties[name];
+				if (ep is TOM.JsonExtendedProperty)
+					(ep as TOM.JsonExtendedProperty).Value = value;
+				else 
+					(ep as TOM.StringExtendedProperty).Value = value;
+					
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new ExtendedProperty:
+				if (type == ExtendedPropertyType.Json)
+					MetadataObject.ExtendedProperties.Add(new TOM.JsonExtendedProperty{ Name = name, Value = value });
+				else
+					MetadataObject.ExtendedProperties.Add(new TOM.StringExtendedProperty{ Name = name, Value = value });
+
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
+			}
+
+		}
+		[IntelliSense("Remove an ExtendedProperty by the given name.")]
+		public void RemoveExtendedProperty(string name) {
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Get current value:
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+				if (cancel) return;
+
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				MetadataObject.ExtendedProperties.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
+			}
+		}
+		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
+		public int GetExtendedPropertyCount() {
+			return MetadataObject.ExtendedProperties.Count;
+		}
+		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
+		public IEnumerable<string> GetExtendedProperties() {
+			return MetadataObject.ExtendedProperties.Select(a => a.Name);
 		}
 
 		/// <summary>
@@ -9143,6 +10808,9 @@ namespace TabularEditor.TOMWrapper
 			
 			// Create indexer for annotations:
 			Annotations = new AnnotationCollection(this);
+			
+			// Create indexer for extended properties:
+			ExtendedProperties = new ExtendedPropertyCollection(this);
 		}
 
 
@@ -9155,6 +10823,9 @@ namespace TabularEditor.TOMWrapper
 
 		public override bool Browsable(string propertyName) {
 			switch (propertyName) {
+ 
+				case Properties.EXTENDEDPROPERTIES:
+					return Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
