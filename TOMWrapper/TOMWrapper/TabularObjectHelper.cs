@@ -67,15 +67,50 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public static string GetObjectPath(this TOM.MetadataObject obj)
+        private static string GetObjectPathTableObject(TOM.NamedMetadataObject obj)
         {
-            var name = (obj is TOM.Model) ? "Model" : (obj as TOM.NamedMetadataObject)?.Name ?? obj.ObjectType.ToString();
+            var name = obj.Name;
             if (name.Contains(".")) name = "[" + name + "]";
 
             if (obj.Parent != null)
                 return obj.Parent.GetObjectPath() + "." + name;
             else
                 return name;
+        }
+
+        public static string GetObjectPath(this TOM.MetadataObject obj)
+        {
+            switch (obj.ObjectType) {
+                case TOM.ObjectType.Model:
+                    return "Model";
+                case TOM.ObjectType.Measure:
+                case TOM.ObjectType.Table:
+                case TOM.ObjectType.Column:
+                case TOM.ObjectType.Hierarchy:
+                case TOM.ObjectType.Level:
+                    return GetObjectPathTableObject(obj as TOM.NamedMetadataObject);
+                case TOM.ObjectType.KPI:
+                    return GetObjectPathTableObject((obj as TOM.KPI).Measure) + ".KPI";
+                case TOM.ObjectType.Variation:
+                    return GetObjectPathTableObject((obj as TOM.Variation).Column) + ".Variations." + QuotePath((obj as TOM.Variation).Name);
+                case TOM.ObjectType.Relationship:
+                case TOM.ObjectType.DataSource:
+                case TOM.ObjectType.Role:
+                case TOM.ObjectType.Expression:
+                case TOM.ObjectType.Perspective:
+                case TOM.ObjectType.Culture:
+                    return obj.ObjectType.ToString() + "." + QuotePath((obj as TOM.NamedMetadataObject).Name);
+                case TOM.ObjectType.Partition:
+                    return "TablePartition." + QuotePath((obj as TOM.Partition).Table.Name) + "." + QuotePath((obj as TOM.Partition).Name);
+                default:
+                    throw new NotSupportedException($"Cannot create reference for object of type {obj.ObjectType}.");
+            }
+
+        }
+
+        private static string QuotePath(string name)
+        {
+            return name.Contains(".") ? $"[{name}]" : name;
         }
 
         public static string GetObjectPath(this TabularObject obj)
