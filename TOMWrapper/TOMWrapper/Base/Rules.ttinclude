@@ -40,6 +40,8 @@ partial class Rules {
     }
 
     public static string GetPropertyDescription(Type t, string propertyName) {
+		if(propertyName == "RelyOnReferentialIntegrity") { return "If set to 'True', queries generated in DirectQuery mode will use INNER JOIN rather than OUTER JOIN."; }
+
 		var xml = XElement.Load(XmlDocFile);
 		var node = xml?.Element("members")?.Elements("member")?.FirstOrDefault(e => ((string)e.Attribute("name")) == "P:Microsoft.AnalysisServices.Tabular." + t.Name + "." + propertyName)?.Element("summary");
 		if(node != null) {
@@ -305,12 +307,17 @@ partial class Rules {
 			case "DataType":
 			case "State":
 				return "Metadata";
+			case "FromCardinality":
 			case "FromColumn":
+		    case "ToCardinality":
 			case "ToColumn":
-			case "SecurityFilteringBehavior":
-			case "CrossFilteringBehavior":
 			case "IsActive":
 				return "Relationship";
+			case "SecurityFilteringBehavior":
+			case "CrossFilteringBehavior":
+			case "JoinOnDateBehavior":
+			case "RelyOnReferentialIntegrity":
+				return "Relationship Behavior";
 			default:
 				if(typeName == "ProviderDataSource") return "Connection Details";
 				if(typeName == "ModelRole") return "Security";
