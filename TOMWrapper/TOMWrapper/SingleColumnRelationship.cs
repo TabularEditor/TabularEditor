@@ -46,8 +46,10 @@ namespace TabularEditor.TOMWrapper
         {
             switch (propertyName)
             {
-                case "FromTable": return false;
-                case "ToTable": return false;
+                case "FromTable":
+                case "ToTable":
+                case "Type":
+                    return false;
             }
             return true;
         }
@@ -57,8 +59,6 @@ namespace TabularEditor.TOMWrapper
             switch (propertyName)
             {
                 case "Name": return false;
-                case "FromCardinality": return false;
-                case "ToCardinality": return false;
             }
             return true;
         }
@@ -77,6 +77,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        [Category("Metadata")]
         public string ErrorMessage
         {
             get
@@ -91,6 +92,8 @@ namespace TabularEditor.TOMWrapper
         }
 
         private string InternalName = null;
+
+        [Category("Basic")]
         public string ID { get { return MetadataObject.Name; } }
 
         protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)

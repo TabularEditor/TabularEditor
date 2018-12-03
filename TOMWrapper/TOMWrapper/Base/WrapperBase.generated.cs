@@ -7631,7 +7631,7 @@ namespace TabularEditor.TOMWrapper
 ///             Indicates how relationships influence filtering of data. The enumeration defines the possible behaviors. Possible values are as follows. OneDirection (1) The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2) Filters on either end of the relationship will automatically filter the other table. Automatic (3) The engine will analyze the relationships and choose one of the behaviors by using heuristics.
 ///             </summary>
 		[DisplayName("Cross Filtering Behavior")]
-		[Category("Relationship"),Description(@"Indicates how relationships influence filtering of data. The enumeration defines the possible behaviors. Possible values are as follows. OneDirection (1) The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2) Filters on either end of the relationship will automatically filter the other table. Automatic (3) The engine will analyze the relationships and choose one of the behaviors by using heuristics."),IntelliSense(@"Indicates how relationships influence filtering of data. The enumeration defines the possible behaviors. Possible values are as follows. OneDirection (1) The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2) Filters on either end of the relationship will automatically filter the other table. Automatic (3) The engine will analyze the relationships and choose one of the behaviors by using heuristics.")]
+		[Category("Relationship Behavior"),Description(@"Indicates how relationships influence filtering of data. The enumeration defines the possible behaviors. Possible values are as follows. OneDirection (1) The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2) Filters on either end of the relationship will automatically filter the other table. Automatic (3) The engine will analyze the relationships and choose one of the behaviors by using heuristics."),IntelliSense(@"Indicates how relationships influence filtering of data. The enumeration defines the possible behaviors. Possible values are as follows. OneDirection (1) The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2) Filters on either end of the relationship will automatically filter the other table. Automatic (3) The engine will analyze the relationships and choose one of the behaviors by using heuristics.")]
 		public CrossFilteringBehavior CrossFilteringBehavior {
 			get {
 			    return (CrossFilteringBehavior)MetadataObject.CrossFilteringBehavior;
@@ -7655,7 +7655,7 @@ namespace TabularEditor.TOMWrapper
 ///             When joining two date time columns, indicates whether to join on date and time parts, or on date part only. DateAndTime (1) When joining two date time columns, join on date and time parts. DatePartOnly (2) When joining two date time columns, join on date part only.
 ///             </summary>
 		[DisplayName("Join On Date Behavior")]
-		[Category("Other"),Description(@"When joining two date time columns, indicates whether to join on date and time parts, or on date part only. DateAndTime (1) When joining two date time columns, join on date and time parts. DatePartOnly (2) When joining two date time columns, join on date part only."),IntelliSense(@"When joining two date time columns, indicates whether to join on date and time parts, or on date part only. DateAndTime (1) When joining two date time columns, join on date and time parts. DatePartOnly (2) When joining two date time columns, join on date part only.")]
+		[Category("Relationship Behavior"),Description(@"When joining two date time columns, indicates whether to join on date and time parts, or on date part only. DateAndTime (1) When joining two date time columns, join on date and time parts. DatePartOnly (2) When joining two date time columns, join on date part only."),IntelliSense(@"When joining two date time columns, indicates whether to join on date and time parts, or on date part only. DateAndTime (1) When joining two date time columns, join on date and time parts. DatePartOnly (2) When joining two date time columns, join on date part only.")]
 		public DateTimeRelationshipBehavior JoinOnDateBehavior {
 			get {
 			    return (DateTimeRelationshipBehavior)MetadataObject.JoinOnDateBehavior;
@@ -7679,7 +7679,7 @@ namespace TabularEditor.TOMWrapper
 ///             Unused; reserved for future use.
 ///             </summary>
 		[DisplayName("Rely On Referential Integrity")]
-		[Category("Other"),Description(@"Unused; reserved for future use."),IntelliSense(@"Unused; reserved for future use.")]
+		[Category("Relationship Behavior"),Description(@"If set to 'True', queries generated in DirectQuery mode will use INNER JOIN rather than OUTER JOIN."),IntelliSense(@"If set to 'True', queries generated in DirectQuery mode will use INNER JOIN rather than OUTER JOIN.")]
 		public bool RelyOnReferentialIntegrity {
 			get {
 			    return MetadataObject.RelyOnReferentialIntegrity;
@@ -7715,7 +7715,7 @@ namespace TabularEditor.TOMWrapper
 ///             Indicates how relationships influence filtering of data when evaluating row-level security expressions. Possible values are as follows. OneDirection (1): The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2): Filters on either end of the relationship will automatically filter the other table.
 ///             </summary>
 		[DisplayName("Security Filtering Behavior")]
-		[Category("Relationship"),Description(@"Indicates how relationships influence filtering of data when evaluating row-level security expressions. Possible values are as follows. OneDirection (1): The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2): Filters on either end of the relationship will automatically filter the other table."),IntelliSense(@"Indicates how relationships influence filtering of data when evaluating row-level security expressions. Possible values are as follows. OneDirection (1): The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2): Filters on either end of the relationship will automatically filter the other table.")]
+		[Category("Relationship Behavior"),Description(@"Indicates how relationships influence filtering of data when evaluating row-level security expressions. Possible values are as follows. OneDirection (1): The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2): Filters on either end of the relationship will automatically filter the other table."),IntelliSense(@"Indicates how relationships influence filtering of data when evaluating row-level security expressions. Possible values are as follows. OneDirection (1): The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2): Filters on either end of the relationship will automatically filter the other table.")]
 		public SecurityFilteringBehavior SecurityFilteringBehavior {
 			get {
 			    return (SecurityFilteringBehavior)MetadataObject.SecurityFilteringBehavior;
@@ -7974,7 +7974,7 @@ namespace TabularEditor.TOMWrapper
 ///             Indicates whether the "From" end of the relationship has a cardinality of One (1) or Many (2).
 ///             </summary>
 		[DisplayName("From Cardinality")]
-		[Category("Other"),Description(@"Indicates whether the ""From"" end of the relationship has a cardinality of One (1) or Many (2)."),IntelliSense(@"Indicates whether the ""From"" end of the relationship has a cardinality of One (1) or Many (2).")]
+		[Category("Relationship"),Description(@"Indicates whether the ""From"" end of the relationship has a cardinality of One (1) or Many (2)."),IntelliSense(@"Indicates whether the ""From"" end of the relationship has a cardinality of One (1) or Many (2).")]
 		public RelationshipEndCardinality FromCardinality {
 			get {
 			    return (RelationshipEndCardinality)MetadataObject.FromCardinality;
@@ -7998,7 +7998,7 @@ namespace TabularEditor.TOMWrapper
 ///             Indicates whether the "To" end of the relationship has a cardinality of One (1) or Many (2).
 ///             </summary>
 		[DisplayName("To Cardinality")]
-		[Category("Other"),Description(@"Indicates whether the ""To"" end of the relationship has a cardinality of One (1) or Many (2)."),IntelliSense(@"Indicates whether the ""To"" end of the relationship has a cardinality of One (1) or Many (2).")]
+		[Category("Relationship"),Description(@"Indicates whether the ""To"" end of the relationship has a cardinality of One (1) or Many (2)."),IntelliSense(@"Indicates whether the ""To"" end of the relationship has a cardinality of One (1) or Many (2).")]
 		public RelationshipEndCardinality ToCardinality {
 			get {
 			    return (RelationshipEndCardinality)MetadataObject.ToCardinality;
