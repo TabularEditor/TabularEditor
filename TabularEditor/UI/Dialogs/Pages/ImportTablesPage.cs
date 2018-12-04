@@ -20,8 +20,9 @@ namespace TabularEditor.UI.Dialogs.Pages
         {
             InitializeComponent();
         }
-
-        TypedDataSource Source;
+        public bool SingleSelection = false;
+        public TypedDataSource Source;
+        public SchemaNode InitialSelection;
         SchemaModel SchemaModel;
 
         public void Init(TypedDataSource source)
@@ -203,13 +204,33 @@ namespace TabularEditor.UI.Dialogs.Pages
 
         private void chkDisablePreview_CheckedChanged(object sender, EventArgs e)
         {
+            splitContainer1.Panel2Collapsed = chkDisablePreview.Checked;
             previewPane.Visible = !chkDisablePreview.Checked;
             if (previewPane.Visible) treeViewAdv1_SelectionChanged(sender, e);
         }
 
+        
         private void nodeCheckBox1_CheckStateChanged(object sender, TreePathEventArgs e)
         {
+            var selectedNode = (e.Path.LastNode as SchemaNode);
+            if (SingleSelection)
+            {
+                foreach (var schemaNode in treeViewAdv1.AllNodes.Select(n => n.Tag).OfType<SchemaNode>().Where(sn => sn.Selected).ToList())
+                {
+                    if (selectedNode != schemaNode)
+                        schemaNode.Selected = false;
+                }
+            }
             OnSchemaObjectCheck?.Invoke(sender, e.Path.LastNode as SchemaNode, (e.Path.LastNode as SchemaNode).Selected);
+            OnValidated(new EventArgs());
+        }
+
+        public IEnumerable<SchemaNode> SelectedSchemas
+        {
+            get
+            {
+                return treeViewAdv1.AllNodes.Select(n => n.Tag).OfType<SchemaNode>().Where(sn => sn.Selected);
+            }
         }
 
         public delegate void SchemaObjectCheckHandler(object sender, SchemaNode node, bool isChecked);

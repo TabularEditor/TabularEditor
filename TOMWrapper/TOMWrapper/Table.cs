@@ -170,11 +170,11 @@ namespace TabularEditor.TOMWrapper
             }
         }
         [Category("Data Source"), DisplayName("Source Type")]
-        public TOM.PartitionSourceType SourceType
+        public PartitionSourceType SourceType
         {
             get
             {
-                return MetadataObject.GetSourceType();
+                return (PartitionSourceType)MetadataObject.GetSourceType();
             }
         }
 
@@ -184,7 +184,7 @@ namespace TabularEditor.TOMWrapper
             {
                 case Properties.SOURCE:
                 case Properties.PARTITIONS:
-                    return SourceType == TOM.PartitionSourceType.Query || SourceType == TOM.PartitionSourceType.M;
+                    return SourceType == PartitionSourceType.Query || SourceType == PartitionSourceType.M;
                 case Properties.DEFAULTDETAILROWSEXPRESSION:
                 case Properties.SHOWASVARIATIONSONLY:
                 case Properties.ISPRIVATE:

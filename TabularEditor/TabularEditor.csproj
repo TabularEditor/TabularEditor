@@ -217,6 +217,7 @@
     <Compile Include="UIServices\Preferences.cs" />
     <Compile Include="UIServices\RecentFiles.cs" />
     <Compile Include="UIServices\TableImport.cs" />
+    <Compile Include="UIServices\TableMetadata.cs" />
     <Compile Include="UIServices\UpdateService.cs" />
     <Compile Include="UIServices\DaxFormatter.cs" />
     <Compile Include="GUIConsoleWriter.cs" />
@@ -320,6 +321,12 @@
     <Compile Include="UI\Dialogs\MarkAsDateTableForm.Designer.cs">
       <DependentUpon>MarkAsDateTableForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Dialogs\Pages\ChooseDataSourcePage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\Pages\ChooseDataSourcePage.Designer.cs">
+      <DependentUpon>ChooseDataSourcePage.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Dialogs\Pages\ConnectPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -372,6 +379,12 @@
     <Compile Include="UI\Extensions\WatermarkTextBox.cs" />
     <Compile Include="UI\Hourglass.cs" />
     <Compile Include="UI\SaveAsDialog.cs" />
+    <Compile Include="UI\Dialogs\SchemaDiffDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\SchemaDiffDialog.Designer.cs">
+      <DependentUpon>SchemaDiffDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\ToolStripSearchBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -608,6 +621,9 @@
     <EmbeddedResource Include="UI\Dialogs\MarkAsDateTableForm.resx">
       <DependentUpon>MarkAsDateTableForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\Pages\ChooseDataSourcePage.resx">
+      <DependentUpon>ChooseDataSourcePage.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\Pages\ConnectPage.resx">
       <DependentUpon>ConnectPage.cs</DependentUpon>
     </EmbeddedResource>
@@ -625,6 +641,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\SaveCustomActionForm.resx">
       <DependentUpon>SaveCustomActionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\SchemaDiffDialog.resx">
+      <DependentUpon>SchemaDiffDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\SelectDatabaseForm.resx">
       <DependentUpon>SelectDatabaseForm.cs</DependentUpon>

@@ -1,4 +1,7 @@
-﻿using Microsoft.Data.ConnectionUI;
+﻿extern alias json;
+
+using json::Newtonsoft.Json;
+using Microsoft.Data.ConnectionUI;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -32,10 +35,16 @@ namespace TabularEditor.UIServices
         public string Name;
         public string Schema;
         public string Database;
+
+        [JsonIgnore]
         public SchemaNodeType Type;
+        [JsonIgnore]
         public bool Selected;
+        [JsonIgnore]
         public string DisplayName => Type == SchemaNodeType.Database || Type == SchemaNodeType.Root ? Name : TwoPartName;
+        [JsonIgnore]
         public string ThreePartName => $"[{Database}].[{Schema}].[{Name}]";
+        [JsonIgnore]
         public string TwoPartName => $"[{Schema}].[{Name}]";
         public List<string> IncludedColumns { get; } = new List<string>();
         public void LoadColumnsFromSample(DataTable sampleData)
@@ -109,6 +118,14 @@ namespace TabularEditor.UIServices
         {
             throw new NotSupportedException();
         }
+        public override DataTable GetSchemaTable(SchemaNode tableOrView)
+        {
+            throw new NotImplementedException();
+        }
+        public override DataTable GetSchemaTable(string sql)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class SqlDataSource: TypedDataSource
@@ -142,8 +159,7 @@ namespace TabularEditor.UIServices
             try
             {
                 var csb = new System.Data.SqlClient.SqlConnectionStringBuilder(ProviderString);
-                var useThreePartName = csb.InitialCatalog != tableOrView.Database;
-                var adapter = new System.Data.SqlClient.SqlDataAdapter($"SELECT TOP 200 * FROM {(useThreePartName ? tableOrView.ThreePartName : tableOrView.DisplayName)} WITH (NOLOCK)", csb.ConnectionString);
+                var adapter = new System.Data.SqlClient.SqlDataAdapter($"SELECT TOP 200 * FROM {(UseThreePartName ? tableOrView.ThreePartName : tableOrView.DisplayName)} WITH (NOLOCK)", csb.ConnectionString);
                 adapter.SelectCommand.CommandTimeout = 30;
                 var result = new DataTable();
                 adapter.Fill(result);
@@ -157,6 +173,37 @@ namespace TabularEditor.UIServices
                 return ErrorTable;
             }
 
+        }
+
+        public override DataTable GetSchemaTable(SchemaNode tableOrView)
+        {
+            return GetSchemaTable(tableOrView.GetSql(false, UseThreePartName));
+        }
+
+        public override bool UseThreePartName {
+            get
+            {
+                var csb = new System.Data.SqlClient.SqlConnectionStringBuilder(ProviderString);
+                return string.IsNullOrWhiteSpace(csb.InitialCatalog);
+            }
+        }
+
+        public override DataTable GetSchemaTable(string sql)
+        {
+            try
+            {
+                using (var conn = new System.Data.SqlClient.SqlConnection(ProviderString))
+                {
+                    conn.Open();
+                    var cmd = new System.Data.SqlClient.SqlCommand(sql, conn);
+                    var rdr = cmd.ExecuteReader(CommandBehavior.SchemaOnly);
+                    return rdr.GetSchemaTable();
+                }
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public override string QuoteColumn(string unQuotedColumnName)
@@ -205,9 +252,7 @@ namespace TabularEditor.UIServices
         {
             try
             {
-                var csb = new System.Data.Common.DbConnectionStringBuilder() { ConnectionString = ProviderString };
-                var useThreePartName = csb.ContainsKey("Initial Catalog") && !csb["Initial Catalog"].ToString().EqualsI(tableOrView.Database);
-                var adapter = new System.Data.OleDb.OleDbDataAdapter($"SELECT TOP 200 * FROM {(useThreePartName ? tableOrView.ThreePartName : tableOrView.DisplayName)} WITH (NOLOCK)", csb.ConnectionString);
+                var adapter = new System.Data.OleDb.OleDbDataAdapter($"SELECT TOP 200 * FROM {(UseThreePartName ? tableOrView.ThreePartName : tableOrView.DisplayName)} WITH (NOLOCK)", ProviderString);
                 adapter.SelectCommand.CommandTimeout = 30;
                 var result = new DataTable();
                 adapter.Fill(result);
@@ -221,6 +266,25 @@ namespace TabularEditor.UIServices
                 return ErrorTable;
             }
 
+        }
+
+        public override bool UseThreePartName
+        {
+            get
+            {
+                var csb = new System.Data.Common.DbConnectionStringBuilder() { ConnectionString = ProviderString };
+                return !csb.ContainsKey("Initial Catalog") && !csb.ContainsKey("Database");
+            }
+        }
+
+
+        public override DataTable GetSchemaTable(SchemaNode tableOrView)
+        {
+            throw new NotImplementedException();
+        }
+        public override DataTable GetSchemaTable(string sql)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -252,6 +316,15 @@ namespace TabularEditor.UIServices
         {
             throw new NotImplementedException();
         }
+
+        public override DataTable GetSchemaTable(SchemaNode tableOrView)
+        {
+            throw new NotImplementedException();
+        }
+        public override DataTable GetSchemaTable(string sql)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class OdbcDataSource : TypedDataSource
@@ -277,6 +350,15 @@ namespace TabularEditor.UIServices
                 Schema = r.Field<string>("TABLE_SCHEM"),
                 Type = r.Field<string>("TABLE_TYPE") == "VIEW" ? SchemaNodeType.View : SchemaNodeType.Table
             }).Where(n => !n.Schema.EqualsI("sys") && !n.Schema.EqualsI("INFORMATION_SCHEMA"));
+        }
+
+        public override DataTable GetSchemaTable(SchemaNode tableOrView)
+        {
+            throw new NotImplementedException();
+        }
+        public override DataTable GetSchemaTable(string sql)
+        {
+            throw new NotImplementedException();
         }
 
         public override string QuoteColumn(string unQuotedColumnName)
@@ -310,6 +392,8 @@ namespace TabularEditor.UIServices
         public abstract DataProvider DataProvider { get; }
         public abstract DbProviderFactory DbFactory { get; }
         public abstract string QuoteColumn(string unQuotedColumnName);
+
+        public virtual bool UseThreePartName => false;
 
         private string _providerString;
         public string ProviderString
@@ -419,6 +503,9 @@ namespace TabularEditor.UIServices
         }
 
         protected abstract DataTable InternalGetSampleData(SchemaNode tableOrView, out bool isError);
+
+        public abstract DataTable GetSchemaTable(SchemaNode tableOrView);
+        public abstract DataTable GetSchemaTable(string sql);
 
         private DataTable _errorTable;
         protected DataTable ErrorTable

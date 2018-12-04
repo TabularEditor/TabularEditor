@@ -251,7 +251,7 @@ namespace TabularEditor.TOMWrapper
         
         private IEnumerable<ITabularNamedObject> GetChildrenForTable(Table table)
         {
-            if (table.SourceType != TOM.PartitionSourceType.Calculated)
+            if (table.SourceType != PartitionSourceType.Calculated)
             {
                 /*// Don't show the "Partitions" node below tables, when none of the partitions match the filter
                 if (!string.IsNullOrEmpty(Filter))
