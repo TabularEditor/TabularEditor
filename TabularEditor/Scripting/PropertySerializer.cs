@@ -74,7 +74,7 @@ namespace TabularEditor.Scripting
         public static void ImportProperties(string tsvData)
         {
             var rows = tsvData.Split('\n');
-            var properties = string.Join(",", rows[0].Split('\t').Skip(1).ToArray());
+            var properties = string.Join(",", rows[0].Replace("\r","").Split('\t').Skip(1).ToArray());
             foreach (var row in rows.Skip(1))
             {
                 if (!string.IsNullOrWhiteSpace(row))
@@ -85,7 +85,7 @@ namespace TabularEditor.Scripting
         private static void AssignTsvToObject(string propertyValues, string properties)
         {
             var props = properties.Split(',');
-            var values = propertyValues.Split('\t').Select(v => v.Replace("\\n", "\n").Replace("\\t", "\t")).ToArray();
+            var values = propertyValues.Replace("\r","").Split('\t').Select(v => v.Replace("\\n", "\n").Replace("\\t", "\t")).ToArray();
             var obj = ResolveObjectPath(values[0]);
             if (obj == null) return;
 
