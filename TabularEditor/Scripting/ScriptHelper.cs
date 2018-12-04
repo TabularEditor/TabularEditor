@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,11 +9,38 @@ using TabularEditor.TextServices;
 using TabularEditor.TOMWrapper;
 using TabularEditor.UI;
 using TabularEditor.UI.Actions;
+using TabularEditor.UI.Dialogs;
+using TabularEditor.UIServices;
 
 namespace TabularEditor.Scripting
 {
     public static class ScriptHelper
     {
+        [ScriptMethod]
+        public static void CheckModelMetadata(ProviderDataSource source)
+        {
+            var changes = TableMetadata.GetChanges(source);
+
+            if(Program.CommandLineMode)
+            {
+                foreach(var change in changes)
+                {
+                    var msg = change.ToString();
+                    if (change.ChangeType == MetadataChangeType.SourceColumnNotFound || change.ChangeType == MetadataChangeType.SourceQueryError) Error(msg);
+                    else Warning(msg);
+                }
+            }
+            else
+            {
+                if(changes.Count == 0)
+                {
+                    MessageBox.Show("No changes detected.", "Refresh Table Metadata", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else 
+                    SchemaDiffDialog.Show(changes);
+            }
+        }
+
         [ScriptMethod]
         public static string ConvertDax(string dax, bool useSemicolons = true)
         {

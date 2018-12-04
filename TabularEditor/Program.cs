@@ -10,6 +10,7 @@ using BPA = TabularEditor.BestPracticeAnalyzer;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.TOMWrapper.Serialization;
+using TabularEditor.Scripting;
 
 namespace TabularEditor
 {
@@ -266,6 +267,15 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 script = File.ReadAllText(scriptFile);
             }
 
+            var doCheckDs = upperArgList.IndexOf("-SCHEMACHECK");
+            if (doCheckDs == -1) doCheckDs = upperArgList.IndexOf("-SC");
+            if(doCheckDs > -1)
+            {
+                foreach(var ds in h.Model.DataSources.OfType<ProviderDataSource>())
+                {
+                    ScriptHelper.CheckModelMetadata(ds);
+                }
+            }
 
             string saveToFolderOutputPath = null;
 
@@ -532,7 +542,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
         {
             cw.WriteLine(@"Usage:
 
-TABULAREDITOR ( file | server database ) [-S script] [(-B | -F) output] [-A [rulefile]] [-V]
+TABULAREDITOR ( file | server database ) [-S script] [-SC] [(-B | -F) output] [-A [rulefile]] [-V]
     [-D server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]] [-P]] [-R [-M]] [-W]]
 
 file                Full path of the Model.bim file or database.json model folder to load.
@@ -540,6 +550,10 @@ server              Server\instance name or connection string from which to load
 database            Database ID of the model to load
 -S / -SCRIPT        Execute the specified script on the model after loading.
   script              Full path of a file containing a C# script to execute.
+-SC / -SCHEMACHECK  Attempts to connect to all Provider Data Sources in order to detect
+                      table schema changes. Outputs...
+                        ...warnings for mismatched data types and unmapped source columns
+                        ...errors for unmapped model columns.
 -B / -BUILD         Saves the model (after optional script execution) as a Model.bim file.
   output              Full path of the Model.bim file to save to.
 -F / -FOLDER         Saves the model (after optional script execution) as a series of JSON objects in a folder.

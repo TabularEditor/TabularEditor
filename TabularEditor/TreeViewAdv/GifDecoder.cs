@@ -325,10 +325,10 @@ namespace Aga.Controls
 		 */
 		public GifFrame GetFrame(int n) 
 		{
-			if ((n >= 0) && (n < frameCount))
-				return (GifFrame)frames[n];
-			else
-				throw new ArgumentOutOfRangeException();
+            if ((n >= 0) && (n < frameCount))
+                return (GifFrame)frames[n];
+            else
+                return (GifFrame)frames[frames.Count - 1];
 		}
 
 		/**

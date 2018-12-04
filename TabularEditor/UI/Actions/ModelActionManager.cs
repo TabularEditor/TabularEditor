@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TabularEditor.Scripting;
 using TabularEditor.TOMWrapper;
 using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.UI.Dialogs;
@@ -53,6 +54,10 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => true, (s, m) => ImportTablesWizard.ShowWizard(m), (s, m) => "Import Tables...", true, Context.Model | Context.Tables));
             // Import Table Wizard...:
             Add(new Action((s, m) => s.DirectCount == 1 && s.DataSource is ProviderDataSource, (s, m) => ImportTablesWizard.ShowWizard(m, s.DataSource as ProviderDataSource), (s, m) => "Import Tables...", true, Context.DataSource));
+            Add(new Action((s, m) => s.DirectCount == 1 && s.DataSource is ProviderDataSource, (s, m) => ScriptHelper.CheckModelMetadata(s.DataSource as ProviderDataSource), (s, m) => "Refresh Table Metadata...", true, Context.DataSource));
+            // Select Columns (aka. Import Table Wizard):
+            Add(new Action((s, m) => s.DirectCount == 1 && s.Table.Partitions[0].DataSource is ProviderDataSource, (s, m) => ImportTablesWizard.ShowWizard(s.Table), (s, m) => "Select Columns...", true, Context.Table));
+            Add(new Separator());
 
             // "Create New Display Folder"
             Add(new Action((s, m) => s.Count >= 1 && !Handler.UsePowerBIGovernance, 
