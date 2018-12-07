@@ -52,7 +52,7 @@
             this.txtSql = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.chkDisablePreview = new System.Windows.Forms.CheckBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lblHeader = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -308,7 +308,7 @@
             // panel1
             // 
             this.panel1.Controls.Add(this.chkDisablePreview);
-            this.panel1.Controls.Add(this.label1);
+            this.panel1.Controls.Add(this.lblHeader);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
@@ -329,14 +329,14 @@
             this.chkDisablePreview.UseVisualStyleBackColor = true;
             this.chkDisablePreview.CheckedChanged += new System.EventHandler(this.chkDisablePreview_CheckedChanged);
             // 
-            // label1
+            // lblHeader
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(285, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Choose the tables you want to import from this data source:";
+            this.lblHeader.AutoSize = true;
+            this.lblHeader.Location = new System.Drawing.Point(3, 9);
+            this.lblHeader.Name = "lblHeader";
+            this.lblHeader.Size = new System.Drawing.Size(285, 13);
+            this.lblHeader.TabIndex = 0;
+            this.lblHeader.Text = "Choose the tables you want to import from this data source:";
             // 
             // ImportTablesPage
             // 
@@ -383,7 +383,6 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.PictureBox loadingPreviewSpinner;
@@ -395,5 +394,6 @@
         private System.Windows.Forms.CheckBox chkDisablePreview;
         private System.Windows.Forms.CheckBox chkSelectAll;
         private System.Windows.Forms.ToolTip toolTip1;
+        public System.Windows.Forms.Label lblHeader;
     }
 }

@@ -4,7 +4,7 @@
     {
         public UndoBatchAction(string batchName, int depth, bool begin)
         {
-            ActionName = batchName;
+            ActionName = batchName.EndsWith("...") ? batchName.Substring(0, batchName.Length - 3) : batchName;
             Begin = begin;
             Depth = depth;
         }

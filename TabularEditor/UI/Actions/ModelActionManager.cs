@@ -52,11 +52,17 @@ namespace TabularEditor.UI.Actions
 
             // Import Table Wizard...:
             Add(new Action((s, m) => true, (s, m) => ImportTablesWizard.ShowWizard(m), (s, m) => "Import Tables...", true, Context.Model | Context.Tables));
+            Add(new Action((s, m) => m.DataSources.Any(ds => ds.Type == DataSourceType.Provider), (s, m) => ScriptHelper.SchemaCheck(m), (s, m) => "Refresh Table Metadata...", true, Context.Model));
             // Import Table Wizard...:
             Add(new Action((s, m) => s.DirectCount == 1 && s.DataSource is ProviderDataSource, (s, m) => ImportTablesWizard.ShowWizard(m, s.DataSource as ProviderDataSource), (s, m) => "Import Tables...", true, Context.DataSource));
-            Add(new Action((s, m) => s.DirectCount == 1 && s.DataSource is ProviderDataSource, (s, m) => ScriptHelper.CheckModelMetadata(s.DataSource as ProviderDataSource), (s, m) => "Refresh Table Metadata...", true, Context.DataSource));
             // Select Columns (aka. Import Table Wizard):
             Add(new Action((s, m) => s.DirectCount == 1 && s.Table.Partitions[0].DataSource is ProviderDataSource, (s, m) => ImportTablesWizard.ShowWizard(s.Table), (s, m) => "Select Columns...", true, Context.Table));
+
+            // Schema check:
+            Add(new Action((s, m) => s.DirectCount == 1 && m.DataSources.Any(ds => ds.Type == DataSourceType.Provider) && s.DataSource is ProviderDataSource, (s, m) => ScriptHelper.SchemaCheck(s.DataSource as ProviderDataSource), (s, m) => "Refresh Table Metadata...", true, Context.DataSource));
+            Add(new Action((s, m) => s.DirectCount == 1 && m.DataSources.Any(ds => ds.Type == DataSourceType.Provider) && s.Table.Partitions.Count > 0 && s.Table.Partitions[0].DataSource is ProviderDataSource, (s, m) => ScriptHelper.SchemaCheck(s.Table), (s, m) => "Refresh Table Metadata...", true, Context.Table));
+            Add(new Action((s, m) => s.DirectCount == 1 && m.DataSources.Any(ds => ds.Type == DataSourceType.Provider) && s.Partition.DataSource is ProviderDataSource, (s, m) => ScriptHelper.SchemaCheck(s.Partition), (s, m) => "Refresh Table Metadata...", true, Context.Partition));
+
             Add(new Separator());
 
             // "Create New Display Folder"

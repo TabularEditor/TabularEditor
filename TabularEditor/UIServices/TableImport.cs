@@ -36,6 +36,24 @@ namespace TabularEditor.UIServices
         public string Schema;
         public string Database;
 
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
+
+        public static SchemaNode FromJson(string json)
+        {
+            if (string.IsNullOrEmpty(json)) return null;
+            try
+            {
+                return JsonConvert.DeserializeObject<SchemaNode>(json);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         [JsonIgnore]
         public SchemaNodeType Type;
         [JsonIgnore]
@@ -60,7 +78,7 @@ namespace TabularEditor.UIServices
         {
             if (SelectAll)
             {
-                return (indented ? "SELECT\r\n\t*\r\nFROM\r\n\t" : "SELECT * FROM ") + (useThreePartName ? ThreePartName : TwoPartName);
+                return (indented ? "SELECT\n\t*\nFROM\n\t" : "SELECT * FROM ") + (useThreePartName ? ThreePartName : TwoPartName);
             }
             else
             {
@@ -68,14 +86,14 @@ namespace TabularEditor.UIServices
                 var first = true;
                 foreach (var col in IncludedColumns)
                 {
-                    sqlText += (indented ? "\r\n\t" : "") + (first ? " " : ",");
+                    sqlText += (indented ? "\n\t" : "") + (first ? " " : ",");
                     sqlText += col;
                     first = false;
 
                 }
-                sqlText += indented ? "\r\n" : " ";
+                sqlText += indented ? "\n" : " ";
                 sqlText += "FROM";
-                sqlText += indented ? "\r\n\t" : " ";
+                sqlText += indented ? "\n\t" : " ";
                 sqlText += useThreePartName ? ThreePartName : TwoPartName;
                 return sqlText;
             }
@@ -139,6 +157,7 @@ namespace TabularEditor.UIServices
         {
             return GetSchema("Databases").AsEnumerable().Select(r => r.Field<string>("database_name"))
                         .Where(n => n != "master" && n != "msdb" && n != "model" && n != "tempdb")
+                        .Where(n => UseThreePartName || n.EqualsI(DatabaseName))
                         .Select(n => new SchemaNode { Name = n, Type = SchemaNodeType.Database });
         }
 
@@ -180,11 +199,13 @@ namespace TabularEditor.UIServices
             return GetSchemaTable(tableOrView.GetSql(false, UseThreePartName));
         }
 
-        public override bool UseThreePartName {
+        public override bool UseThreePartName => string.IsNullOrWhiteSpace(DatabaseName);
+        public string DatabaseName
+        {
             get
             {
                 var csb = new System.Data.SqlClient.SqlConnectionStringBuilder(ProviderString);
-                return string.IsNullOrWhiteSpace(csb.InitialCatalog);
+                return csb.InitialCatalog;
             }
         }
 

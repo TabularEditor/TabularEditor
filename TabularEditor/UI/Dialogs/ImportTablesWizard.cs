@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
+using TabularEditor.UI.Actions;
 using TabularEditor.UIServices;
 
 namespace TabularEditor.UI.Dialogs
@@ -59,27 +60,22 @@ namespace TabularEditor.UI.Dialogs
             }
 
             var dialog = new ImportTablesWizard();
+            dialog._currentPage = 2;
             dialog.btnBack.Visible = false;
             dialog.btnNext.Visible = false;
+            dialog.btnCancel.Left = 654;
+            dialog.page2.lblHeader.Text = "Choose the table/view you want to use as a source for " + table.DaxObjectFullName + ":";
             dialog.btnImport.Text = "OK";
             dialog.page2.SingleSelection = true;
+            dialog.page2.InitialSelection = SchemaNode.FromJson(table.Partitions[0].GetAnnotation("TabularEditor_TableSchema"));
+
             dialog.page2.Init(TypedDataSource.GetFromTabularDs(table.Partitions[0].DataSource as ProviderDataSource));
+            dialog.page2.Visible = true;
 
-
-            try
-            {
-                var snAnnotation = table.GetAnnotation("TabularEditor_TableSchema");
-                var sn = JsonConvert.DeserializeObject<SchemaNode>(snAnnotation);
-                dialog.page2.InitialSelection = sn; // TODO: Make sure the ImportTablesPage displays the provided table pre-selected
-            }
-            catch
-            {
-            }
-            
             // TODO:
 
             var res = dialog.ShowDialog();
-            if (res == DialogResult.OK) DoUpdate(table, dialog.page2.Source, dialog.page2.SelectedSchemas);
+            if (res == DialogResult.OK) DoUpdate(table, dialog.page2.Source, dialog.page2.SelectedSchemas.First());
             return res;
         }
 
@@ -108,20 +104,40 @@ namespace TabularEditor.UI.Dialogs
             return res;
         }
 
-        private static void DoUpdate(Table table, TypedDataSource source, IEnumerable<SchemaNode> schemaNodes)
+        private static void DoUpdate(Table table, TypedDataSource source, SchemaNode tableSchema)
         {
-            throw new NotImplementedException();
+            table.Partitions[0].Name = tableSchema.Name;
+            table.Partitions[0].Query = tableSchema.GetSql(true, source.UseThreePartName);
+            table.Partitions[0].SetAnnotation("TabularEditor_TableSchema", tableSchema.ToJson());
+
+            var schemaTable = source.GetSchemaTable(tableSchema);
+            var updatedColumns = new HashSet<TOMWrapper.DataColumn>();
+            foreach (DataRow row in schemaTable.Rows)
+            {
+                var sourceColumn = row["ColumnName"].ToString();
+                var dataTypeName = row["DataTypeName"].ToString();
+                var column = table.DataColumns.FirstOrDefault(c => c.SourceColumn.EqualsI(sourceColumn));
+                if (column == null) column = table.AddDataColumn(sourceColumn, sourceColumn);
+                column.DataType = TableMetadata.DataTypeMap(dataTypeName);
+                column.SourceProviderType = dataTypeName;
+
+                updatedColumns.Add(column);
+            }
+            foreach (var col in table.DataColumns.Except(updatedColumns).ToList())
+            {
+                col.Delete();
+            }
         }
 
         private static void DoImport(Model model, TypedDataSource source, IEnumerable<SchemaNode> schemaNodes)
         {
-            foreach(var tableSchema in schemaNodes)
+            foreach (var tableSchema in schemaNodes)
             {
                 var newTable = model.AddTable(tableSchema.Name);
                 if (newTable.Partitions[0] is MPartition)
                 {
-                    newTable.Partitions[0].Delete();
                     Partition.CreateNew(newTable);
+                    newTable.Partitions[0].Delete();
                 }
                 newTable.Partitions[0].Name = tableSchema.Name;
                 newTable.Partitions[0].Query = tableSchema.GetSql(true, source.UseThreePartName);
@@ -130,15 +146,15 @@ namespace TabularEditor.UI.Dialogs
                 var schemaTable = source.GetSchemaTable(tableSchema);
                 foreach (DataRow row in schemaTable.Rows)
                 {
+                    var sourceColumn = row["ColumnName"].ToString();
                     var col = newTable.AddDataColumn(
-                        row["ColumnName"].ToString(),
-                        row["ColumnName"].ToString(),
+                        sourceColumn, sourceColumn,
                         null,
                         TableMetadata.DataTypeMap(row["DataTypeName"].ToString())
                         );
                     col.SourceProviderType = row["DataTypeName"].ToString();
                 }
-                newTable.SetAnnotation("TabularEditor_TableSchema", JsonConvert.SerializeObject(tableSchema));
+                newTable.Partitions[0].SetAnnotation("TabularEditor_TableSchema", tableSchema.ToJson());
             }
         }
 

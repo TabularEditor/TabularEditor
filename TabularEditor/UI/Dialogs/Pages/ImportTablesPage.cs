@@ -28,7 +28,7 @@ namespace TabularEditor.UI.Dialogs.Pages
         public void Init(TypedDataSource source)
         {
             Source = source;
-            SchemaModel = new SchemaModel(Source);
+            SchemaModel = new SchemaModel(Source, InitialSelection);
         }
 
         private void nodeCheckBox1_IsVisibleValueNeeded(object sender, Aga.Controls.Tree.NodeControls.NodeControlValueEventArgs e)
@@ -97,7 +97,7 @@ namespace TabularEditor.UI.Dialogs.Pages
                 lblError.Visible = false;
                 loadingPreviewSpinner.Visible = true;
 
-                txtSql.Text = currentNode.GetSql();
+                SetSqlText(currentNode.GetSql());
 
                 cts = new CancellationTokenSource();
                 var ct = cts.Token;
@@ -144,6 +144,11 @@ namespace TabularEditor.UI.Dialogs.Pages
             }
         }
 
+        private void SetSqlText(string sql)
+        {
+            txtSql.Text = sql.Replace("\n", "\r\n");
+        }
+
         private void CheckBoxHeader_OnCheckBoxClicked(int columnIndex, bool state)
         {
             currentNode.IncludedColumns.Clear();
@@ -152,7 +157,7 @@ namespace TabularEditor.UI.Dialogs.Pages
             {
                 if ((col.HeaderCell as DatagridViewCheckBoxHeaderCell).Checked) currentNode.IncludedColumns.Add(col.HeaderText);
             }
-            txtSql.Text = currentNode.GetSql(true, false);
+            SetSqlText(currentNode.GetSql(true, false));
             suspendSelectAll = true;
             chkSelectAll.Checked = false;
             suspendSelectAll = false;
@@ -179,6 +184,18 @@ namespace TabularEditor.UI.Dialogs.Pages
                 var root = e.Node.Children[0];
                 root.Expand();
                 if (root.Children.Count == 1) root.Children[0].Expand();
+                return;
+            }
+
+            var initiallySelectedNode = e.Node.Children.FirstOrDefault(c => (c.Tag as SchemaNode).Selected);
+            if(initiallySelectedNode != null)
+            {
+                this.Invoke(new MethodInvoker(() =>
+                {
+                    treeViewAdv1.EnsureVisible(initiallySelectedNode);
+                    treeViewAdv1.SelectedNode = initiallySelectedNode;
+                    OnValidated(new EventArgs());
+                }));
             }
         }
 
@@ -197,7 +214,7 @@ namespace TabularEditor.UI.Dialogs.Pages
             }
             dataGridView1.Invalidate();
             currentNode.SelectAll = chkSelectAll.Checked;
-            txtSql.Text = currentNode.GetSql(true, false);
+            SetSqlText(currentNode.GetSql(true, false));
         }
 
         bool PreviewLoaded = false;
@@ -215,13 +232,17 @@ namespace TabularEditor.UI.Dialogs.Pages
             var selectedNode = (e.Path.LastNode as SchemaNode);
             if (SingleSelection)
             {
+                if (selectedNode.Selected == false)
+                {
+                    selectedNode.Selected = true;
+                    return;
+                }
                 foreach (var schemaNode in treeViewAdv1.AllNodes.Select(n => n.Tag).OfType<SchemaNode>().Where(sn => sn.Selected).ToList())
                 {
                     if (selectedNode != schemaNode)
                         schemaNode.Selected = false;
                 }
             }
-            OnSchemaObjectCheck?.Invoke(sender, e.Path.LastNode as SchemaNode, (e.Path.LastNode as SchemaNode).Selected);
             OnValidated(new EventArgs());
         }
 
@@ -232,9 +253,6 @@ namespace TabularEditor.UI.Dialogs.Pages
                 return treeViewAdv1.AllNodes.Select(n => n.Tag).OfType<SchemaNode>().Where(sn => sn.Selected);
             }
         }
-
-        public delegate void SchemaObjectCheckHandler(object sender, SchemaNode node, bool isChecked);
-        public event SchemaObjectCheckHandler OnSchemaObjectCheck;
 
         private void dataGridView1_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
@@ -337,9 +355,11 @@ namespace TabularEditor.UI.Dialogs.Pages
     class SchemaModel : ITreeModel
     {
         TypedDataSource TypedDataSource;
+        SchemaNode InitialSelection;
 
-        public SchemaModel(TypedDataSource dataSource)
+        public SchemaModel(TypedDataSource dataSource, SchemaNode initialSelection)
         {
+            InitialSelection = initialSelection;
             TypedDataSource = dataSource;
         }
 
@@ -372,7 +392,19 @@ namespace TabularEditor.UI.Dialogs.Pages
             {
                 try
                 {
-                    return TypedDataSource.GetTablesAndViews(node.Name).OrderBy(n => n.Type).ThenBy(n => n.DisplayName);
+                    var schemaNodes = TypedDataSource.GetTablesAndViews(node.Name).OrderBy(n => n.Type).ThenBy(n => n.DisplayName).ToList();
+                    if (InitialSelection != null)
+                    {
+                        var schemaNodeMatchingInitial = schemaNodes.FirstOrDefault(n => n.Database == InitialSelection.Database && n.Name == InitialSelection.Name && n.Schema == InitialSelection.Schema);
+                        if (schemaNodeMatchingInitial != null)
+                        {
+                            schemaNodeMatchingInitial.IncludedColumns.Clear();
+                            schemaNodeMatchingInitial.IncludedColumns.AddRange(InitialSelection.IncludedColumns);
+                            schemaNodeMatchingInitial.Selected = true;
+                            schemaNodeMatchingInitial.SelectAll = InitialSelection.SelectAll;
+                        }
+                    }
+                    return schemaNodes;
                 }
                 catch (Exception ex)
                 {

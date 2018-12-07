@@ -47,43 +47,61 @@ namespace TabularEditor.UIServices
 
     public static class TableMetadata
     {
+        public static List<MetadataChange> GetChanges(Partition partition)
+        {
+            var result = new List<MetadataChange>();
+            var table = partition.Table;
+
+            if (!(partition.DataSource is ProviderDataSource))
+            {
+                result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.SourceQueryError, SourceQuery = partition.Query });
+                return result;
+            }
+
+            var tds = TypedDataSource.GetFromTabularDs(partition.DataSource as ProviderDataSource);
+
+            var schemaTable = tds.GetSchemaTable(partition.Query);
+            if (schemaTable == null)
+            {
+                result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.SourceQueryError, SourceQuery = table.Partitions[0].Query });
+                return result;
+            }
+            HashSet<Column> matchedColumns = new HashSet<Column>();
+            foreach (DataRow row in schemaTable.Rows)
+            {
+                var colName = row["ColumnName"].ToString();
+                var dataType = row["DataTypeName"].ToString();
+                var mappedType = DataTypeMap(dataType);
+                var tCols = table.DataColumns.Where(col => col.SourceColumn.EqualsI(colName) || col.SourceColumn.EqualsI("[" + colName + "]"));
+                if (tCols.Count() == 0)
+                {
+                    result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.SourceColumnAdded, SourceColumn = colName, SourceType = mappedType, SourceProviderType = dataType });
+                }
+                foreach (var tCol in tCols)
+                {
+                    matchedColumns.Add(tCol);
+                    if (tCol.DataType != mappedType)
+                    {
+                        result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.DataTypeChange, ModelColumn = tCol, SourceColumn = colName, SourceType = mappedType, SourceProviderType = dataType });
+                    }
+                }
+            }
+            foreach (var col in table.DataColumns.Where(c => !matchedColumns.Contains(c)))
+            {
+                result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.SourceColumnNotFound, ModelColumn = col });
+            }
+
+            return result;
+        }
+
         public static List<MetadataChange> GetChanges(ProviderDataSource dataSource)
         {
             var result = new List<MetadataChange>();
             var tds = TypedDataSource.GetFromTabularDs(dataSource);
             foreach (var table in dataSource.Model.Tables.Where(t => t.Partitions[0].DataSource == dataSource))
             {
-                var schemaTable = tds.GetSchemaTable(table.Partitions[0].Query);
-                if(schemaTable == null)
-                {
-                    result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.SourceQueryError, SourceQuery = table.Partitions[0].Query });
-                    continue;
-                }
-                HashSet<Column> matchedColumns = new HashSet<Column>();
-                foreach (DataRow row in schemaTable.Rows)
-                {
-                    var colName = row["ColumnName"].ToString();
-                    var dataType = row["DataTypeName"].ToString();
-                    var mappedType = DataTypeMap(dataType);
-                    var tCols = table.DataColumns.Where(col => col.SourceColumn.EqualsI(colName) || col.SourceColumn.EqualsI("[" + colName + "]"));
-                    if (tCols.Count() == 0)
-                    {
-                        result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.SourceColumnAdded, SourceColumn = colName, SourceType = mappedType, SourceProviderType = dataType });
-                        continue;
-                    }
-                    foreach (var tCol in tCols)
-                    {
-                        matchedColumns.Add(tCol);
-                        if (tCol.DataType != mappedType)
-                        {
-                            result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.DataTypeChange, ModelColumn = tCol, SourceColumn = colName, SourceType = mappedType, SourceProviderType = dataType });
-                        }
-                    }
-                }
-                foreach (var col in table.DataColumns.Where(c => !matchedColumns.Contains(c)))
-                {
-                    result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.SourceColumnNotFound, ModelColumn = col });
-                }
+                var changes = GetChanges(table.Partitions[0]);
+                result.AddRange(changes);
             }
 
             return result;
