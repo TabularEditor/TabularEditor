@@ -42,6 +42,8 @@ namespace TabularEditor.UI.Actions
         /// </summary>
         public Action LastActionExecuted = null;
 
+        public List<ITabularNamedObject> SelectObjects = new List<ITabularNamedObject>();
+
         public Action Delete { get; private set; }
 
         public TabularModelHandler Handler { get { return UI.UIController.Current.Handler; } }
@@ -347,6 +349,21 @@ namespace TabularEditor.UI.Actions
         public static T Edit<T>(this T obj) where T: ITabularNamedObject
         {
             UIController.Current.Actions.LastActionExecuted.EditObjectName = obj;
+            return obj;
+        }
+
+        /// <summary>
+        /// This method flags to the action, that the TreeView should select the object
+        /// immediately after it has been created. Useful for actions that add new objects
+        /// to the model tree, when you want to visually highlight the newly created object(s)
+        /// to the user.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static T Select<T>(this T obj) where T: ITabularNamedObject
+        {
+            UIController.Current.Actions.SelectObjects.Add(obj);
             return obj;
         }
 

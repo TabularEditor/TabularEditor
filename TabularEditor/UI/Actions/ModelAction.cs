@@ -118,6 +118,7 @@ namespace TabularEditor.UI.Actions
         
         private void InternalExecute(object arg, IEnumerable<ITabularNamedObject> alternateSelection = null)
         {
+            ui.Actions.SelectObjects.Clear();
             ui.Actions.LastActionExecuted = this;
             EditObjectName = null;
             ExpandObject = null;
@@ -137,6 +138,16 @@ namespace TabularEditor.UI.Actions
             if (EditObjectName != null)
             {
                 ui.EditName(EditObjectName);
+            }
+            if (ui.Actions.SelectObjects.Count > 0)
+            {
+                var tree = ui.Elements.TreeView;
+                tree.ClearSelection();
+                foreach (var obj in ui.Actions.SelectObjects)
+                {
+                    tree.FindNodeByTag(obj).IsSelected = true;
+                }
+                tree.EnsureVisible(tree.FindNodeByTag(ui.Actions.SelectObjects[0]));
             }
         }
 

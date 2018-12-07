@@ -144,6 +144,10 @@ namespace TabularEditor.UIServices
         {
             throw new NotImplementedException();
         }
+        public override string SuggestSourceName()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class SqlDataSource: TypedDataSource
@@ -208,6 +212,14 @@ namespace TabularEditor.UIServices
                 return csb.InitialCatalog;
             }
         }
+        public string ServerName
+        {
+            get
+            {
+                var csb = new System.Data.SqlClient.SqlConnectionStringBuilder(ProviderString);
+                return csb.DataSource;
+            }
+        }
 
         public override DataTable GetSchemaTable(string sql)
         {
@@ -231,6 +243,11 @@ namespace TabularEditor.UIServices
         {
             return $"[{unQuotedColumnName}]";
         }
+        public override string SuggestSourceName()
+        {
+            return string.IsNullOrEmpty(DatabaseName) ? ServerName : (ServerName + " " + DatabaseName);
+        }
+
     }
 
     public class OleDbDataSource : TypedDataSource
@@ -307,6 +324,10 @@ namespace TabularEditor.UIServices
         {
             throw new NotImplementedException();
         }
+        public override string SuggestSourceName()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class OracleDataSource : TypedDataSource
@@ -346,10 +367,18 @@ namespace TabularEditor.UIServices
         {
             throw new NotImplementedException();
         }
+        public override string SuggestSourceName()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class OdbcDataSource : TypedDataSource
     {
+        public override string SuggestSourceName()
+        {
+            throw new NotImplementedException();
+        }
         public override ProviderType ProviderType => ProviderType.ODBC;
         public override DataSource DataSource => DataSource.OdbcDataSource;
         public override DataProvider DataProvider => DataProvider.OdbcDataProvider;
@@ -443,8 +472,10 @@ namespace TabularEditor.UIServices
 
             }
         }
+        public abstract string SuggestSourceName();
+
         public string ProviderName { get; private set; }
-        public string TabularDsName { get; private set; }
+        public string TabularDsName { get; internal set; }
 
         static public TypedDataSource GetFromTabularDs(TOMWrapper.ProviderDataSource tabularDataSource)
         {
