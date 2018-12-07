@@ -1,6 +1,7 @@
 ﻿extern alias json;
 
 using json::Newtonsoft.Json;
+using Microsoft.Data.ConnectionUI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -41,7 +42,11 @@ namespace TabularEditor.UI.Dialogs
 
                 btnBack.Enabled = CurrentPage > 1;
                 btnImport.Enabled = CanImport();
-                btnNext.Enabled = CurrentPage < 2;
+                if(CurrentPage == 1) {
+                    btnNext.Enabled = page1.Mode != Pages.ImportMode.UseExistingDs || page1.CurrentDataSource != null;
+                }
+                else
+                    btnNext.Enabled = CurrentPage < 2;
             }
         }
 
@@ -50,6 +55,8 @@ namespace TabularEditor.UI.Dialogs
             if (CurrentPage != 2) return false;
             return page2.SelectedSchemas.Any();
         }
+
+        private Model Model;
 
         public static DialogResult ShowWizard(Table table)
         {
@@ -60,6 +67,7 @@ namespace TabularEditor.UI.Dialogs
             }
 
             var dialog = new ImportTablesWizard();
+            dialog.Model = table.Model;
             dialog._currentPage = 2;
             dialog.btnBack.Visible = false;
             dialog.btnNext.Visible = false;
@@ -82,6 +90,7 @@ namespace TabularEditor.UI.Dialogs
         public static DialogResult ShowWizard(Model model)
         {
             var dialog = new ImportTablesWizard();
+            dialog.Model = model;
             dialog.page1.Init(model);
             dialog.CurrentPage = 1;
             var res = dialog.ShowDialog();
@@ -141,7 +150,8 @@ namespace TabularEditor.UI.Dialogs
                 }
                 newTable.Partitions[0].Name = tableSchema.Name;
                 newTable.Partitions[0].Query = tableSchema.GetSql(true, source.UseThreePartName);
-                newTable.Partitions[0].DataSource = model.DataSources[source.TabularDsName];
+                if(source.TabularDsName != null)
+                    newTable.Partitions[0].DataSource = model.DataSources[source.TabularDsName];
 
                 var schemaTable = source.GetSchemaTable(tableSchema);
                 foreach (DataRow row in schemaTable.Rows)
@@ -155,6 +165,7 @@ namespace TabularEditor.UI.Dialogs
                     col.SourceProviderType = row["DataTypeName"].ToString();
                 }
                 newTable.Partitions[0].SetAnnotation("TabularEditor_TableSchema", tableSchema.ToJson());
+                newTable.Select();
             }
         }
 
@@ -167,12 +178,56 @@ namespace TabularEditor.UI.Dialogs
         {
             if(CurrentPage == 1)
             {
-                if(page1.Mode == Pages.ImportMode.UseExistingDs && page1.CurrentDataSource != null)
+                switch (page1.Mode)
                 {
-                    page2.Init(TypedDataSource.GetFromTabularDs(page1.CurrentDataSource));
-                    CurrentPage = 2; return;
+                    case Pages.ImportMode.UseExistingDs:
+                        if (page1.CurrentDataSource != null)
+                        {
+                            page2.Init(TypedDataSource.GetFromTabularDs(page1.CurrentDataSource));
+                            CurrentPage = 2; return;
+                        }
+                        break;
+
+                    case Pages.ImportMode.UseNewDs:
+                        var connectionDialog = ShowConnectionDialog();
+                        if (connectionDialog == null) return;
+                        var source = TypedDataSource.GetFromConnectionUi(connectionDialog);
+                        var tabularDs = Model.AddDataSource(source.SuggestSourceName());
+                        ConnectionUIHelper.ApplyToTabularDs(connectionDialog, tabularDs);
+                        source = TypedDataSource.GetFromTabularDs(tabularDs);
+                        page2.Init(source);
+                        CurrentPage = 2;
+                        return;
+
+
+                    case Pages.ImportMode.UseTempDs:
+                        connectionDialog = ShowConnectionDialog();
+                        if (connectionDialog == null) return;
+                        source = TypedDataSource.GetFromConnectionUi(connectionDialog);
+                        source.TabularDsName = "(Temporary connection)";
+                        page2.Init(source);
+                        CurrentPage = 2;
+                        return;
+
+                    case Pages.ImportMode.UseClipboard:
+                        throw new NotImplementedException();
                 }
             }
+        }
+
+        private DataConnectionDialog ShowConnectionDialog()
+        {
+            var dcd = new DataConnectionDialog();
+            Microsoft.Data.ConnectionUI.DataSource.AddStandardDataSources(dcd);
+            dcd.SelectedDataSource = Microsoft.Data.ConnectionUI.DataSource.SqlDataSource;
+            dcd.SelectedDataProvider = DataProvider.SqlDataProvider;
+            var res = DataConnectionDialog.Show(dcd);
+
+            if (res == DialogResult.OK)
+            {
+                return dcd;
+            }
+            return null;
         }
 
         private void btnBack_Click(object sender, EventArgs e)
