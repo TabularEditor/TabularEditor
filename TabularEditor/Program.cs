@@ -273,7 +273,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             {
                 foreach(var ds in h.Model.DataSources.OfType<ProviderDataSource>())
                 {
-                    ScriptHelper.CheckModelMetadata(ds);
+                    ScriptHelper.SchemaCheck(ds);
                 }
             }
 

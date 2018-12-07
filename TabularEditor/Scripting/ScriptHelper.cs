@@ -17,13 +17,42 @@ namespace TabularEditor.Scripting
     public static class ScriptHelper
     {
         [ScriptMethod]
-        public static void CheckModelMetadata(ProviderDataSource source)
+        public static void SchemaCheck(Partition partition)
+        {
+            var changes = TableMetadata.GetChanges(partition);
+            ReportSchemaCheckChanges(changes);
+        }
+
+        [ScriptMethod]
+        public static void SchemaCheck(Table table)
+        {
+            var changes = TableMetadata.GetChanges(table.Partitions[0]);
+            ReportSchemaCheckChanges(changes);
+        }
+
+        [ScriptMethod]
+        public static void SchemaCheck(ProviderDataSource source)
         {
             var changes = TableMetadata.GetChanges(source);
+            ReportSchemaCheckChanges(changes);
+        }
 
-            if(Program.CommandLineMode)
+        [ScriptMethod]
+        public static void SchemaCheck(Model model)
+        {
+            var changes = new List<MetadataChange>();
+            foreach (var source in model.DataSources.OfType<ProviderDataSource>())
             {
-                foreach(var change in changes)
+                changes.AddRange(TableMetadata.GetChanges(source));
+            }
+            ReportSchemaCheckChanges(changes);
+        }
+
+        private static void ReportSchemaCheckChanges(List<MetadataChange> changes)
+        {
+            if (Program.CommandLineMode)
+            {
+                foreach (var change in changes)
                 {
                     var msg = change.ToString();
                     if (change.ChangeType == MetadataChangeType.SourceColumnNotFound || change.ChangeType == MetadataChangeType.SourceQueryError) Error(msg);
@@ -32,11 +61,11 @@ namespace TabularEditor.Scripting
             }
             else
             {
-                if(changes.Count == 0)
+                if (changes.Count == 0)
                 {
                     MessageBox.Show("No changes detected.", "Refresh Table Metadata", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
-                else 
+                else
                     SchemaDiffDialog.Show(changes);
             }
         }
