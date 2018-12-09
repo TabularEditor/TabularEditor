@@ -9,6 +9,7 @@
       Microsoft.WindowsAPICodePack
       Microsoft.WindowsAPICodePack.Shell
       Newtonsoft.Json
+      Microsoft.Data.ConnectionUI
       Microsoft.Data.ConnectionUI.Dialog
     </IncludeAssemblies>
   </Costura>
