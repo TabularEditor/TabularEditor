@@ -269,13 +269,6 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
 
             var doCheckDs = upperArgList.IndexOf("-SCHEMACHECK");
             if (doCheckDs == -1) doCheckDs = upperArgList.IndexOf("-SC");
-            if(doCheckDs > -1)
-            {
-                foreach(var ds in h.Model.DataSources.OfType<ProviderDataSource>())
-                {
-                    ScriptHelper.SchemaCheck(ds);
-                }
-            }
 
             string saveToFolderOutputPath = null;
 
@@ -348,7 +341,13 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 }
             }
 
-            if(!string.IsNullOrEmpty(buildOutputPath))
+            if (doCheckDs > -1)
+            {
+                cw.WriteLine("Checking source schema...");
+                ScriptHelper.SchemaCheck(h.Model);
+            }
+
+            if (!string.IsNullOrEmpty(buildOutputPath))
             {
                 cw.WriteLine("Building Model.bim file...");
                 h.Save(buildOutputPath, SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
