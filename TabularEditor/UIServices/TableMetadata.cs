@@ -36,7 +36,7 @@ namespace TabularEditor.UIServices
                 case MetadataChangeType.SourceColumnAdded:
                     return $"Column named '{SourceColumn}' exists in the source query for table '{ModelTable.Name}', but is not mapped to any Tabular Model column.";
                 case MetadataChangeType.SourceColumnNotFound:
-                    return $"Column {ModelColumn.DaxObjectFullName} referes to source column {ModelColumn.SourceColumn} which does not seem to exist in the source query.";
+                    return $"Column {ModelColumn.DaxObjectFullName} refers to source column {ModelColumn.SourceColumn} which does not seem to exist in the source query.";
                 case MetadataChangeType.SourceQueryError:
                     return $"Unable to retrieve column metadata for table '{ModelTable.Name}'. Check partition query.";
                 default:

@@ -69,7 +69,7 @@ namespace TabularEditor
 
             var sb = new StringBuilder();
             var pos = 0;
-            foreach (var call in methodCalls)
+            foreach (var call in methodCalls.OrderBy(n => n.StartToken.StartIndex))
             {
                 int actionOffset = customActionsMap.LastOrDefault(c => c < call.StopToken.Line);
                 sb.Append(script.Substring(pos, call.StopToken.StartIndex - pos));

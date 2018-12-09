@@ -55,8 +55,8 @@ namespace TabularEditor.Scripting
                 foreach (var change in changes)
                 {
                     var msg = change.ToString();
-                    if (change.ChangeType == MetadataChangeType.SourceColumnNotFound || change.ChangeType == MetadataChangeType.SourceQueryError) Error(msg);
-                    else Warning(msg);
+                    if (change.ChangeType == MetadataChangeType.SourceColumnNotFound || change.ChangeType == MetadataChangeType.SourceQueryError) Error(msg,-1,true);
+                    else Warning(msg,-1,true);
                 }
             }
             else
@@ -142,19 +142,19 @@ namespace TabularEditor.Scripting
             else MessageBox.Show(message, header, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         [ScriptMethod]
-        public static void Warning(string message, int lineNumber = -1)
+        public static void Warning(string message, int lineNumber = -1, bool suppressHeader = false)
         {
             var header = string.Format("Script warning{0}", lineNumber >= 0 ? " (line " + lineNumber + ")" : "", message);
 
-            if (Program.CommandLineMode) Program.Warning(header + ": " + message);
+            if (Program.CommandLineMode) Program.Warning((suppressHeader ? "" : (header + ": ")) + message);
             else MessageBox.Show(message, header, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
         [ScriptMethod]
-        public static void Error(string message, int lineNumber = -1)
+        public static void Error(string message, int lineNumber = -1, bool suppressHeader = false)
         {
             var header = string.Format("Script error{0}", lineNumber >= 0 ? " (line " + lineNumber + ")" : "", message);
 
-            if (Program.CommandLineMode) Program.Error(header + ": " + message);
+            if (Program.CommandLineMode) Program.Error((suppressHeader ? "" : ( header + ": ")) + message);
             else MessageBox.Show(message, header, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
