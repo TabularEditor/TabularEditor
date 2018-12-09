@@ -306,27 +306,53 @@ namespace TabularEditor.UIServices
 
         }
 
-        public override bool UseThreePartName
+        public override bool UseThreePartName => string.IsNullOrWhiteSpace(DatabaseName);
+        public string DatabaseName
         {
             get
             {
-                var csb = new System.Data.Common.DbConnectionStringBuilder() { ConnectionString = ProviderString };
-                return !csb.ContainsKey("Initial Catalog") && !csb.ContainsKey("Database");
+                var csb = new DbConnectionStringBuilder() { ConnectionString = ProviderString };
+                return csb.ContainsKey("Database") ? csb["Database"].ToString() :
+                       csb.ContainsKey("Initial Catalog") ? csb["Initial Catalog"].ToString() :
+                       csb.ContainsKey("InitialCatalog") ? csb["InitialCatalog"].ToString() : null;
+            }
+        }
+        public string ServerName
+        {
+            get
+            {
+                var csb = new DbConnectionStringBuilder() { ConnectionString = ProviderString };
+                return csb.ContainsKey("DataSource") ? csb["DataSource"].ToString() :
+                    csb.ContainsKey("Data Source") ? csb["Data Source"].ToString() :
+                    csb.ContainsKey("Server") ? csb["Server"].ToString() : null;
             }
         }
 
 
         public override DataTable GetSchemaTable(SchemaNode tableOrView)
         {
-            throw new NotImplementedException();
+            return GetSchemaTable(tableOrView.GetSql(false, UseThreePartName));
         }
         public override DataTable GetSchemaTable(string sql)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (var conn = new System.Data.OleDb.OleDbConnection(ProviderString))
+                {
+                    conn.Open();
+                    var cmd = new System.Data.OleDb.OleDbCommand(sql, conn);
+                    var rdr = cmd.ExecuteReader(CommandBehavior.SchemaOnly);
+                    return rdr.GetSchemaTable();
+                }
+            }
+            catch
+            {
+                return null;
+            }
         }
         public override string SuggestSourceName()
         {
-            throw new NotImplementedException();
+            return string.IsNullOrEmpty(DatabaseName) ? ServerName : (ServerName + " " + DatabaseName);
         }
     }
 

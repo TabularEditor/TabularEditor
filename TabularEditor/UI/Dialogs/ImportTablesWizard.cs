@@ -124,7 +124,10 @@ namespace TabularEditor.UI.Dialogs
             foreach (DataRow row in schemaTable.Rows)
             {
                 var sourceColumn = row["ColumnName"].ToString();
-                var dataTypeName = row["DataTypeName"].ToString();
+                var dataTypeName =
+                    schemaTable.Columns.Contains("DataTypeName") ?
+                        row["DataTypeName"].ToString() :
+                        (row["DataType"] as Type).Name;
                 var column = table.DataColumns.FirstOrDefault(c => c.SourceColumn.EqualsI(sourceColumn));
                 if (column == null) column = table.AddDataColumn(sourceColumn, sourceColumn);
                 column.DataType = TableMetadata.DataTypeMap(dataTypeName);
@@ -157,12 +160,16 @@ namespace TabularEditor.UI.Dialogs
                 foreach (DataRow row in schemaTable.Rows)
                 {
                     var sourceColumn = row["ColumnName"].ToString();
+                    var dataType =
+                        schemaTable.Columns.Contains("DataTypeName") ?
+                            row["DataTypeName"].ToString() :
+                            (row["DataType"] as Type).Name;
                     var col = newTable.AddDataColumn(
                         sourceColumn, sourceColumn,
                         null,
-                        TableMetadata.DataTypeMap(row["DataTypeName"].ToString())
+                        TableMetadata.DataTypeMap(dataType)
                         );
-                    col.SourceProviderType = row["DataTypeName"].ToString();
+                    col.SourceProviderType = dataType;
                 }
                 newTable.Partitions[0].SetAnnotation("TabularEditor_TableSchema", tableSchema.ToJson());
                 newTable.Select();

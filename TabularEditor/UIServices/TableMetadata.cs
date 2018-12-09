@@ -70,7 +70,10 @@ namespace TabularEditor.UIServices
             foreach (DataRow row in schemaTable.Rows)
             {
                 var colName = row["ColumnName"].ToString();
-                var dataType = row["DataTypeName"].ToString();
+                var dataType =
+                    schemaTable.Columns.Contains("DataTypeName") ?
+                        row["DataTypeName"].ToString() :
+                        (row["DataType"] as Type).Name;
                 var mappedType = DataTypeMap(dataType);
                 var tCols = table.DataColumns.Where(col => col.SourceColumn.EqualsI(colName) || col.SourceColumn.EqualsI("[" + colName + "]"));
                 if (tCols.Count() == 0)
