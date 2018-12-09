@@ -95,7 +95,7 @@ namespace TabularEditor.UI.Dialogs
             dialog.CurrentPage = 1;
             var res = dialog.ShowDialog();
 
-            if (res == DialogResult.OK) DoImport(model, dialog.page2.Source, dialog.page2.SelectedSchemas);
+            if (res == DialogResult.OK) DoImport(dialog.page1.Mode, model, dialog.page2.Source, dialog.page2.SelectedSchemas);
 
             return res;
         }
@@ -108,7 +108,7 @@ namespace TabularEditor.UI.Dialogs
             dialog.CurrentPage = 2;
             var res = dialog.ShowDialog();
 
-            if (res == DialogResult.OK) DoImport(model, dialog.page2.Source, dialog.page2.SelectedSchemas);
+            if (res == DialogResult.OK) DoImport(dialog.page1.Mode, model, dialog.page2.Source, dialog.page2.SelectedSchemas);
 
             return res;
         }
@@ -138,7 +138,7 @@ namespace TabularEditor.UI.Dialogs
             }
         }
 
-        private static void DoImport(Model model, TypedDataSource source, IEnumerable<SchemaNode> schemaNodes)
+        private static void DoImport(Pages.ImportMode importMode, Model model, TypedDataSource source, IEnumerable<SchemaNode> schemaNodes)
         {
             foreach (var tableSchema in schemaNodes)
             {
@@ -150,7 +150,7 @@ namespace TabularEditor.UI.Dialogs
                 }
                 newTable.Partitions[0].Name = tableSchema.Name;
                 newTable.Partitions[0].Query = tableSchema.GetSql(true, source.UseThreePartName);
-                if(source.TabularDsName != null)
+                if(importMode != Pages.ImportMode.UseTempDs)
                     newTable.Partitions[0].DataSource = model.DataSources[source.TabularDsName];
 
                 var schemaTable = source.GetSchemaTable(tableSchema);

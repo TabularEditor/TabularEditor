@@ -1,4 +1,6 @@
-﻿using System;
+﻿extern alias json;
+
+using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +16,7 @@ using System.Windows.Forms;
 using TabularEditor.UI.Actions;
 using TabularEditor.Scripting;
 using TabularEditor.TextServices;
+using json::Newtonsoft.Json;
 
 namespace TabularEditor
 {
@@ -40,6 +43,7 @@ namespace TabularEditor
     public static class ScriptEngine
     {
         static readonly string WrapperDllPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\TOMWrapper14.dll";
+        static readonly string NewtonsoftJsonDllPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\newtonsoft.json.dll";
         public static readonly string CustomActionsJsonPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\CustomActions.json";
 
         internal static string AddOutputLineNumbers(string script)
@@ -283,7 +287,7 @@ namespace TabularEditor
             using (var compiler = new CSharpCodeProvider()) {
                 // Allowed assemblies:
                 var tom = Assembly.GetAssembly(typeof(Microsoft.AnalysisServices.Tabular.Database)).Location;
-                var includeAssemblies = new HashSet<string>(new[] { "system.dll", "system.windows.forms.dll", "system.core.dll", Assembly.GetExecutingAssembly().Location, WrapperDllPath, tom, "newtonsoft.json.dll", "microsoft.csharp.dll" });
+                var includeAssemblies = new HashSet<string>(new[] { "system.dll", "system.windows.forms.dll", "system.core.dll", Assembly.GetExecutingAssembly().Location, WrapperDllPath, tom, NewtonsoftJsonDllPath, "microsoft.csharp.dll" });
                 foreach(var asm in Plugins) if(!includeAssemblies.Contains(asm.Location)) includeAssemblies.Add(asm.Location);
                 var cp = new CompilerParameters(includeAssemblies.ToArray()) { GenerateInMemory = true, IncludeDebugInformation = true };
 
@@ -325,7 +329,26 @@ namespace TabularEditor
                     // Check if WrapperDll is of same version as the TabularEditor.exe and same Compatibility Level. If not, output a new one:
                     var wrapperVersion = FileVersionInfo.GetVersionInfo(WrapperDllPath);
                     var currentVersion = Assembly.GetAssembly(typeof(TabularModelHandler)).GetName().Version;
-                    if (wrapperVersion.FileVersion != currentVersion.ToString()) OutputWrapperDll();
+                    if (wrapperVersion.FileVersion != currentVersion.ToString())
+                    {
+                        OutputWrapperDll();
+                    }
+                }
+
+                if (!File.Exists(NewtonsoftJsonDllPath))
+                {
+                    (new FileInfo(NewtonsoftJsonDllPath)).Directory.Create();
+                    OutputNewtonsoftJsonDll();
+                }
+                else
+                {
+                    // Check if Newtonsoft.Json.dll is of same version as that used within TabularEditor.exe. If not, output a new one:
+                    var wrapperVersion = FileVersionInfo.GetVersionInfo(NewtonsoftJsonDllPath);
+                    var currentVersion = Assembly.GetAssembly(typeof(JsonConvert)).GetName().Version;
+                    if (wrapperVersion.FileVersion != currentVersion.ToString())
+                    {
+                        OutputNewtonsoftJsonDll();
+                    }
                 }
             }
             catch (Exception ex)
@@ -397,6 +420,23 @@ namespace TabularEditor
                     stream.CopyTo(memory);
                     byte[] data = memory.ToArray();
                     File.WriteAllBytes(WrapperDllPath, data);
+                }
+            }
+        }
+
+        private static void OutputNewtonsoftJsonDll()
+        {
+            // Export the TOMWrapper library to a .DLL for use with the custom script execution:
+            MemoryStream memory = new MemoryStream();
+            var currentAssembly = Assembly.GetAssembly(typeof(TabularEditor.Program));
+            DeflateStream stream = new DeflateStream(currentAssembly.GetManifestResourceStream("costura.newtonsoft.json.dll.compressed"), CompressionMode.Decompress);
+            if (stream != null)
+            {
+                using (stream)
+                {
+                    stream.CopyTo(memory);
+                    byte[] data = memory.ToArray();
+                    File.WriteAllBytes(NewtonsoftJsonDllPath, data);
                 }
             }
         }

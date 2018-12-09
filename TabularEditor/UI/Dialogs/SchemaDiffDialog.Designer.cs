@@ -210,6 +210,7 @@
             // 
             // chkSelectAll
             // 
+            this.chkSelectAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.chkSelectAll.AutoSize = true;
             this.chkSelectAll.Checked = true;
             this.chkSelectAll.CheckState = System.Windows.Forms.CheckState.Checked;
