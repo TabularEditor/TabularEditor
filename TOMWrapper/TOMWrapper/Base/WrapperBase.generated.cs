@@ -45,6 +45,8 @@ namespace TabularEditor.TOMWrapper
 	    public const string DEFAULTPOWERBIDATASOURCEVERSION = "DefaultPowerBIDataSourceVersion";
 	    public const string DESCRIPTION = "Description";
 	    public const string DETAILROWSDEFINITION = "DetailRowsDefinition";
+	    public const string DISCOURAGEIMPLICITMEASURES = "DiscourageImplicitMeasures";
+	    public const string DISCOURAGEREPORTMEASURES = "DiscourageReportMeasures";
 	    public const string DISPLAYFOLDER = "DisplayFolder";
 	    public const string DISPLAYORDINAL = "DisplayOrdinal";
 	    public const string ENCODINGHINT = "EncodingHint";
@@ -6482,6 +6484,54 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeForceUniqueNames() { return false; }
+/// <summary>
+///             Determines whether to discourage the implicit measures.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at Preview or above.</remarks>
+		[DisplayName("Discourage Implicit Measures")]
+		[Category("Other"),Description(@"Determines whether to discourage the implicit measures."),IntelliSense(@"Determines whether to discourage the implicit measures.")]
+		public bool DiscourageImplicitMeasures {
+			get {
+			    return MetadataObject.DiscourageImplicitMeasures;
+			}
+			set {
+				
+				var oldValue = DiscourageImplicitMeasures;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.DISCOURAGEIMPLICITMEASURES, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				MetadataObject.DiscourageImplicitMeasures = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISCOURAGEIMPLICITMEASURES, oldValue, newValue));
+				OnPropertyChanged(Properties.DISCOURAGEIMPLICITMEASURES, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeDiscourageImplicitMeasures() { return false; }
+/// <summary>
+///             Determines whether to discourage the report measures.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at Preview or above.</remarks>
+		[DisplayName("Discourage Report Measures")]
+		[Category("Other"),Description(@"Determines whether to discourage the report measures."),IntelliSense(@"Determines whether to discourage the report measures.")]
+		public bool DiscourageReportMeasures {
+			get {
+			    return MetadataObject.DiscourageReportMeasures;
+			}
+			set {
+				
+				var oldValue = DiscourageReportMeasures;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.DISCOURAGEREPORTMEASURES, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				MetadataObject.DiscourageReportMeasures = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISCOURAGEREPORTMEASURES, oldValue, newValue));
+				OnPropertyChanged(Properties.DISCOURAGEREPORTMEASURES, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeDiscourageReportMeasures() { return false; }
 /// <summary>
 ///             A reference to a default measure.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
