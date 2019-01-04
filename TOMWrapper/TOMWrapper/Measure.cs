@@ -42,8 +42,8 @@ namespace TabularEditor.TOMWrapper
         }
         public KPI AddKPI()
         {
-            var kpi = new TOM.KPI() { };
-            KPI = KPI.CreateFromMetadata(this, kpi);
+            KPI = KPI.CreateNew();
+
             return KPI;
         }
         public void RemoveKPI()

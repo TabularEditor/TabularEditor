@@ -65,6 +65,7 @@
     <Compile Include="RegressionTests\v2_7_4\PerspectiveAnnotationTests.cs" />
     <Compile Include="RegressionTests\v2_7_4\FormulaFixupTests.cs" />
     <Compile Include="RegressionTests\v2_7_4\CalculatedTableTests.cs" />
+    <Compile Include="RegressionTests\v2_8\SerializationAnnotationsTests.cs" />
     <Compile Include="TabularModelHandlerTests.cs" />
     <Compile Include="TestGenerator.cs">
       <DependentUpon>TestGenerator.tt</DependentUpon>

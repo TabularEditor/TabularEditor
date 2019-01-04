@@ -10,7 +10,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class KPI: ITabularNamedObject, IDaxDependantObject, IExpressionObject
+    public partial class KPI: ITabularNamedObject, IDaxDependantObject, IExpressionObject, ITabularTableObject
     {
         [Browsable(false)]
         public Table Table => Measure.Table;
@@ -39,6 +39,14 @@ namespace TabularEditor.TOMWrapper
             {
                 return 0;
             }
+        }
+
+        public static KPI CreateNew()
+        {
+            var tomKpi = new TOM.KPI();
+            var obj = new KPI(tomKpi);
+            obj.Init();
+            return obj;
         }
 
         public static KPI CreateFromMetadata(Measure parent, TOM.KPI metadataObject)
