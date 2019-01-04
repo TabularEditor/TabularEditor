@@ -475,6 +475,9 @@ namespace TabularEditor
                 var level = item as Level;
                 if (level != null) item = level.Hierarchy;
 
+                var kpi = item as KPI;
+                if (kpi != null) item = kpi.Measure;
+
                 if (item is IFolderObject && Options.HasFlag(LogicalTreeOptions.DisplayFolders))
                 {
                     var folderStack = new Stack<Folder>();
@@ -492,6 +495,7 @@ namespace TabularEditor
 
                 stack.Add(item);
                 if (level != null) stack.Add(level);
+                if (kpi != null) stack.Add(kpi);
             }
             return new TreePath(stack.ToArray());
         }
