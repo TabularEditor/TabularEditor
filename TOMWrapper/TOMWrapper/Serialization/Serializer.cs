@@ -137,6 +137,8 @@ namespace TabularEditor.TOMWrapper.Serialization
             return result.Count > 0 ? result : null;
         }*/
 
+        private const string ANN_SAVESENSITIVE = "TabularEditor_SaveSensitive";
+
         public static string SerializeDB(SerializeOptions options)
         {
             var db = TabularModelHandler.Singleton.Database;
@@ -148,7 +150,7 @@ namespace TabularEditor.TOMWrapper.Serialization
                     IgnoreTimestamps = options.IgnoreTimestamps,
                     IgnoreInferredProperties = options.IgnoreInferredProperties,
                     SplitMultilineStrings = options.SplitMultilineStrings,
-                    IncludeRestrictedInformation = db.Model.Annotations.Contains("TabularEditor_SaveSensitive") && db.Model.Annotations["TabularEditor_SaveSensitive"].Value == "1"
+                    IncludeRestrictedInformation = db.Model.Annotations.Contains(ANN_SAVESENSITIVE) && db.Model.Annotations[ANN_SAVESENSITIVE].Value == "1"
                 });
 
             // Hack: Remove \r characters from multiline strings in the BIM:

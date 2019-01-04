@@ -38,6 +38,7 @@ namespace TabularEditor.TOMWrapper
             // In any other case, assume this is just a regular Model.bim file:
             else LoadModelFile(path);
 
+            Model.ClearTabularEditorAnnotations();
             _disableUpdates = false;
 
             UndoManager.Enabled = true;
@@ -96,15 +97,17 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        private const string ANN_SERIALIZEOPTIONS = "TabularEditor_SerializeOptions";
+
         public bool HasSerializeOptions =>
-            Model.GetAnnotation("TabularEditor_SerializeOptions") != null;
+            Model.GetAnnotation(ANN_SERIALIZEOPTIONS) != null;
 
         private SerializeOptions _serializeOptions = SerializeOptions.Default;
         public SerializeOptions SerializeOptions
         {
             get
             {
-                var annotatedSerializeOptions = Model.GetAnnotation("TabularEditor_SerializeOptions");
+                var annotatedSerializeOptions = Model.GetAnnotation(ANN_SERIALIZEOPTIONS);
                 if (annotatedSerializeOptions != null)
                 {
                     try
@@ -126,9 +129,9 @@ namespace TabularEditor.TOMWrapper
         private void SetSerializeOptions(SerializeOptions options, bool undoable)
         {
             if (options == null)
-                Model.RemoveAnnotation("TabularEditor_SerializeOptions", undoable);
+                Model.RemoveAnnotation(ANN_SERIALIZEOPTIONS, undoable);
             else
-                Model.SetAnnotation("TabularEditor_SerializeOptions", JsonConvert.SerializeObject(options), undoable);
+                Model.SetAnnotation(ANN_SERIALIZEOPTIONS, JsonConvert.SerializeObject(options), undoable);
         }
 
         public void Save(string path, SaveFormat format, SerializeOptions options, bool useAnnotatedSerializeOptions = false, bool resetCheckpoint = false, bool restoreSerializationOptions = true)

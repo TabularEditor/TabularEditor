@@ -11,19 +11,46 @@ namespace TabularEditor.TOMWrapper
 {
     internal static class AnnotationHelper
     {
+        public const string ANN_NAMES = "TabularEditor_TranslatedNames";
+        public const string ANN_DESCRIPTIONS = "TabularEditor_TranslatedDescriptions";
+        public const string ANN_DISPLAYFOLDERS = "TabularEditor_TranslatedDisplayFolders";
+        public const string ANN_INPERSPECTIVE = "TabularEditor_InPerspective";
+        public const string ANN_RLS = "TabularEditor_RLS";
+        public const string ANN_OLS = "TabularEditor_OLS";
+
+        public const string ANN_RELATIONSHIPS = "TabularEditor_Relationships";
+        public const string ANN_CULTURES = "TabularEditor_Cultures";
+        public const string ANN_PERSPECTIVES = "TabularEditor_Perspectives";
+
+        /// <summary>
+        /// Removes all annotations from the model, that are used by Tabular Editor to serialize metadata in a way different from the TOM. For example,
+        /// to store object translations as annotations on the object instead of elsewhere in the TOM tree. All these annotations can be recreated from
+        /// the TOM.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="includeChildren"></param>
         public static void ClearTabularEditorAnnotations(this IAnnotationObject obj, bool includeChildren = false)
         {
-            obj.RemoveAnnotation("TabularEditor_TranslatedNames", false);
-            obj.RemoveAnnotation("TabularEditor_TranslatedDescriptions", false);
-            obj.RemoveAnnotation("TabularEditor_TranslatedDisplayFolders", false);
-            obj.RemoveAnnotation("TabularEditor_InPerspective", false);
-            obj.RemoveAnnotation("TabularEditor_RLS", false);
-            obj.RemoveAnnotation("TabularEditor_OLS", false);
+            obj.RemoveAnnotation(ANN_NAMES, false);
+            obj.RemoveAnnotation(ANN_DESCRIPTIONS, false);
+            obj.RemoveAnnotation(ANN_DISPLAYFOLDERS, false);
+            obj.RemoveAnnotation(ANN_INPERSPECTIVE, false);
+            obj.RemoveAnnotation(ANN_RLS, false);
+            obj.RemoveAnnotation(ANN_OLS, false);
+
+            obj.RemoveAnnotation(ANN_RELATIONSHIPS, false);
 
             if (includeChildren && obj is ITabularObjectContainer)
             {
                 foreach (var child in (obj as ITabularObjectContainer).GetChildren().OfType<IAnnotationObject>()) child.ClearTabularEditorAnnotations(true);
             }
+        }
+
+        public static void ClearTabularEditorAnnotations(this Model model)
+        {
+            model.RemoveAnnotation(ANN_PERSPECTIVES);
+            model.RemoveAnnotation(ANN_CULTURES);
+            foreach (var table in model.Tables) table.ClearTabularEditorAnnotations(true);
         }
 
         /// <summary>
@@ -34,7 +61,7 @@ namespace TabularEditor.TOMWrapper
         public static void SavePerspectives(this ITabularPerspectiveObject obj, bool includeChildren = false)
         {
             if(obj.InPerspective.Any(ip => ip))
-                obj.SetAnnotation("TabularEditor_InPerspective", obj.InPerspective.ToJson(), false);
+                obj.SetAnnotation(ANN_INPERSPECTIVE, obj.InPerspective.ToJson(), false);
 
             if (includeChildren && obj is ITabularObjectContainer)
             {
@@ -49,8 +76,12 @@ namespace TabularEditor.TOMWrapper
         /// <param name="obj"></param>
         public static void LoadPerspectives(this ITabularPerspectiveObject obj, bool includeChildren = false)
         {
-            var p = obj.GetAnnotation("TabularEditor_InPerspective");
-            if (p != null) obj.InPerspective.CopyFrom(JsonConvert.DeserializeObject<string[]>(p));
+            var p = obj.GetAnnotation(ANN_INPERSPECTIVE);
+            if (p != null)
+            {
+                obj.InPerspective.CopyFrom(JsonConvert.DeserializeObject<string[]>(p));
+                obj.RemoveAnnotation(ANN_INPERSPECTIVE, true);
+            }
 
             if (includeChildren && obj is ITabularObjectContainer)
             {
@@ -65,12 +96,16 @@ namespace TabularEditor.TOMWrapper
         public static void SaveRLS(this Table obj)
         {
             if (obj.RowLevelSecurity.Any(rls => !string.IsNullOrEmpty(rls)))
-                obj.SetAnnotation("TabularEditor_RLS", obj.RowLevelSecurity.ToJson(), false);
+                obj.SetAnnotation(ANN_RLS, obj.RowLevelSecurity.ToJson(), false);
         }
         public static void LoadRLS(this Table obj)
         {
-            var p = obj.GetAnnotation("TabularEditor_RLS");
-            if (p != null) obj.RowLevelSecurity.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, string>>(p));
+            var p = obj.GetAnnotation(ANN_RLS);
+            if (p != null)
+            {
+                obj.RowLevelSecurity.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, string>>(p));
+                obj.RemoveAnnotation(ANN_RLS);
+            }
         }
 
         /// <summary>
@@ -80,7 +115,7 @@ namespace TabularEditor.TOMWrapper
         public static void SaveOLS(this Table obj, bool includeChildren = false)
         {
             if (obj.ObjectLevelSecurity.Any(ols => ols != Microsoft.AnalysisServices.Tabular.MetadataPermission.Default))
-                obj.SetAnnotation("TabularEditor_OLS", obj.ObjectLevelSecurity.ToJson(), false);
+                obj.SetAnnotation(ANN_OLS, obj.ObjectLevelSecurity.ToJson(), false);
 
             if (includeChildren)
             {
@@ -90,8 +125,12 @@ namespace TabularEditor.TOMWrapper
 
         public static void LoadOLS(this Table obj, bool includeChildren = false)
         {
-            var p = obj.GetAnnotation("TabularEditor_OLS");
-            if (p != null) obj.ObjectLevelSecurity.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, Microsoft.AnalysisServices.Tabular.MetadataPermission>>(p));
+            var p = obj.GetAnnotation(ANN_OLS);
+            if (p != null)
+            {
+                obj.ObjectLevelSecurity.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, Microsoft.AnalysisServices.Tabular.MetadataPermission>>(p));
+                obj.RemoveAnnotation(ANN_OLS);
+            }
 
             if (includeChildren)
             {
@@ -106,12 +145,16 @@ namespace TabularEditor.TOMWrapper
         public static void SaveOLS(this Column obj)
         {
             if (obj.ObjectLevelSecurity.Any(ols => ols != Microsoft.AnalysisServices.Tabular.MetadataPermission.Default))
-                obj.SetAnnotation("TabularEditor_OLS", obj.ObjectLevelSecurity.ToJson(), false);
+                obj.SetAnnotation(ANN_OLS, obj.ObjectLevelSecurity.ToJson(), false);
         }
         public static void LoadOLS(this Column obj)
         {
-            var p = obj.GetAnnotation("TabularEditor_OLS");
-            if (p != null) obj.ObjectLevelSecurity.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, Microsoft.AnalysisServices.Tabular.MetadataPermission>>(p));
+            var p = obj.GetAnnotation(ANN_OLS);
+            if (p != null)
+            {
+                obj.ObjectLevelSecurity.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, Microsoft.AnalysisServices.Tabular.MetadataPermission>>(p));
+                obj.RemoveAnnotation(ANN_OLS);
+            }
         }
     }
 }
