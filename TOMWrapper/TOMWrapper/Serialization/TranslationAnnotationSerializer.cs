@@ -28,16 +28,17 @@ namespace TabularEditor.TOMWrapper.Serialization
             foreach (var item in model.GetAllTranslatableObjects()) item.SaveTranslations();
 
             // Store the cultures (without translations) as an annotation on the model:
-            model.SetAnnotation("TabularEditor_Cultures", model.Cultures.ToJson(), false);
+            model.SetAnnotation(AnnotationHelper.ANN_CULTURES, model.Cultures.ToJson(), false);
         }
 
         public static void RestoreTranslationsFromAnnotations(this Model model)
         {
-            var translationsJson = model.GetAnnotation("TabularEditor_Cultures");
+            var translationsJson = model.GetAnnotation(AnnotationHelper.ANN_CULTURES);
             if (translationsJson != null)
             {
                 model.Cultures.FromJson(translationsJson);
                 foreach (var item in model.GetAllTranslatableObjects()) item.LoadTranslations();
+                model.RemoveAnnotation(AnnotationHelper.ANN_CULTURES, false);
             }
         }
 
@@ -49,11 +50,11 @@ namespace TabularEditor.TOMWrapper.Serialization
         public static void SaveTranslations(this ITranslatableObject obj, bool includeChildren = false)
         {
             if (!obj.TranslatedNames.IsEmpty)
-                obj.SetAnnotation("TabularEditor_TranslatedNames", obj.TranslatedNames.ToJson(), false);
+                obj.SetAnnotation(AnnotationHelper.ANN_NAMES, obj.TranslatedNames.ToJson(), false);
             if (!obj.TranslatedDescriptions.IsEmpty)
-                obj.SetAnnotation("TabularEditor_TranslatedDescriptions", obj.TranslatedDescriptions.ToJson(), false);
+                obj.SetAnnotation(AnnotationHelper.ANN_DESCRIPTIONS, obj.TranslatedDescriptions.ToJson(), false);
             if (obj is IFolderObject && !(obj as IFolderObject).TranslatedDisplayFolders.IsEmpty)
-                obj.SetAnnotation("TabularEditor_TranslatedDisplayFolders", (obj as IFolderObject).TranslatedDisplayFolders.ToJson(), false);
+                obj.SetAnnotation(AnnotationHelper.ANN_DISPLAYFOLDERS, (obj as IFolderObject).TranslatedDisplayFolders.ToJson(), false);
 
             if (includeChildren && obj is ITabularObjectContainer)
             {
@@ -68,14 +69,26 @@ namespace TabularEditor.TOMWrapper.Serialization
         /// <param name="obj"></param>
         public static void LoadTranslations(this ITranslatableObject obj, bool includeChildren = false)
         {
-            var tn = obj.GetAnnotation("TabularEditor_TranslatedNames");
-            if (tn != null) obj.TranslatedNames.CopyFrom(DeserializeTranslations(tn));
+            var tn = obj.GetAnnotation(AnnotationHelper.ANN_NAMES);
+            if (tn != null)
+            {
+                obj.TranslatedNames.CopyFrom(DeserializeTranslations(tn));
+                obj.RemoveAnnotation(AnnotationHelper.ANN_NAMES, false);
+            }
 
-            var td = obj.GetAnnotation("TabularEditor_TranslatedDescriptions");
-            if (td != null) obj.TranslatedDescriptions.CopyFrom(DeserializeTranslations(td));
+            var td = obj.GetAnnotation(AnnotationHelper.ANN_DESCRIPTIONS);
+            if (td != null)
+            {
+                obj.TranslatedDescriptions.CopyFrom(DeserializeTranslations(td));
+                obj.RemoveAnnotation(AnnotationHelper.ANN_DESCRIPTIONS, false);
+            }
 
-            var tdf = obj.GetAnnotation("TabularEditor_TranslatedDisplayFolders");
-            if (tdf != null && obj is IFolderObject) (obj as IFolderObject).TranslatedDisplayFolders.CopyFrom(DeserializeTranslations(tdf));
+            var tdf = obj.GetAnnotation(AnnotationHelper.ANN_DISPLAYFOLDERS);
+            if (tdf != null && obj is IFolderObject)
+            {
+                (obj as IFolderObject).TranslatedDisplayFolders.CopyFrom(DeserializeTranslations(tdf));
+                obj.RemoveAnnotation(AnnotationHelper.ANN_DISPLAYFOLDERS, false);
+            }
 
             if (includeChildren && obj is ITabularObjectContainer)
             {

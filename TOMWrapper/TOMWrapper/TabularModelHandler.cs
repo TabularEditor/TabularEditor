@@ -130,6 +130,8 @@ namespace TabularEditor.TOMWrapper
         /// <param name="databaseId"></param>
         public TabularModelHandler(string serverName, string databaseId, TabularModelHandlerSettings settings = null)
         {
+            _disableUpdates = true;
+
             Settings = settings ?? TabularModelHandlerSettings.Default;
 
             Singleton = this;
@@ -156,6 +158,9 @@ namespace TabularEditor.TOMWrapper
             Version = database.Version;
             Init();
 
+            Model.ClearTabularEditorAnnotations();
+
+            _disableUpdates = false;
             UndoManager.Enabled = true;
         }
 
