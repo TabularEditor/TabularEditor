@@ -43,5 +43,10 @@ namespace TabularEditor.TOMWrapper
             // Let the RoleRLSIndexer handle the actual value assignment:
             role.RowLevelSecurity[Table] = filterExpression;
         }
+
+        protected override bool IsEmptyValue(string value)
+        {
+            return string.IsNullOrWhiteSpace(value);
+        }
     }
 }
