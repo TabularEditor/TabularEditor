@@ -5720,18 +5720,6 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeIsSimpleMeasure() { return false; }
 /// <summary>
-///             The string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError or EvaluationError.
-///             </summary>
-		[DisplayName("Error Message")]
-		[Category("Metadata"),Description(@"The string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError or EvaluationError."),IntelliSense(@"The string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError or EvaluationError.")]
-		public string ErrorMessage {
-			get {
-			    return MetadataObject.ErrorMessage;
-			}
-			
-		}
-		private bool ShouldSerializeErrorMessage() { return false; }
-/// <summary>
 ///             Defines the display folder for the Measure, for use by clients.
 ///             </summary>
 		[DisplayName("Display Folder")]
@@ -10153,6 +10141,7 @@ namespace TabularEditor.TOMWrapper
 			base.Undelete(collection);
 			Reinit();
 			ReapplyReferences();
+			Handler.Tree.RebuildFolderCacheForTable(this);
 		}
 
 		public override bool Browsable(string propertyName) {

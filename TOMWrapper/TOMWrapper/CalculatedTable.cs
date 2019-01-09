@@ -14,6 +14,16 @@ namespace TabularEditor.TOMWrapper
 {
     public class CalculatedTable: Table, IExpressionObject
     {
+        internal override void ClearError()
+        {
+            var errors = new List<string>();
+            if (!string.IsNullOrEmpty(MetadataObject.Partitions[0].ErrorMessage))
+                errors.Add("Expression: " + MetadataObject.Partitions[0].ErrorMessage);
+            if (Handler.CompatibilityLevel >= 1400 && !string.IsNullOrEmpty(MetadataObject.DefaultDetailRowsDefinition?.ErrorMessage))
+                errors.Add("Detail rows: " + MetadataObject.DefaultDetailRowsDefinition.ErrorMessage);
+
+            ErrorMessage = errors.Count == 0 ? null : string.Join("\r\n", errors);
+        }
         protected override void Init()
         {
             base.Init();

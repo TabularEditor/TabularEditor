@@ -207,6 +207,7 @@ namespace TabularEditor.TOMWrapper
             foreach (var t in database.Model.Tables)
             {
                 result.AddRange(t.Measures.Where(m => !string.IsNullOrEmpty(m.ErrorMessage)).Select(m => new Tuple<TOM.NamedMetadataObject, string>(m, m.ErrorMessage)));
+                if(database.CompatibilityLevel >= 1400) result.AddRange(t.Measures.Where(m => !string.IsNullOrEmpty(m.DetailRowsDefinition?.ErrorMessage)).Select(m => new Tuple<TOM.NamedMetadataObject, string>(m, "Detail rows expression: " + m.DetailRowsDefinition.ErrorMessage)));
                 result.AddRange(t.Columns.Where(c => !string.IsNullOrEmpty(c.ErrorMessage)).Select(c => new Tuple<TOM.NamedMetadataObject, string>(c, c.ErrorMessage)));
                 result.AddRange(t.Partitions.Where(p => !string.IsNullOrEmpty(p.ErrorMessage)).Select(p => new Tuple<TOM.NamedMetadataObject, string>(p, p.ErrorMessage)));
             }
@@ -225,19 +226,28 @@ namespace TabularEditor.TOMWrapper
 
             foreach (var t in database.Model.Tables)
             {
-                errorList.AddRange(t.Measures.Where(m => !string.IsNullOrEmpty(m.ErrorMessage)).Select(obj => GetWrapperObject(obj) as IErrorMessageObject));
-                errorList.AddRange(t.Columns.Where(c => !string.IsNullOrEmpty(c.ErrorMessage)).Select(obj => GetWrapperObject(obj) as IErrorMessageObject));
-                errorList.AddRange(t.Partitions.Where(p => !string.IsNullOrEmpty(p.ErrorMessage)).Select(obj => GetWrapperObject(obj) as IErrorMessageObject));
+                var table = GetWrapperObject(t) as Table;
+                table.ClearError();
+                errorList.AddRange(table.Measures.Where(m => !string.IsNullOrEmpty(m.ErrorMessage)));
+                errorList.AddRange(table.Columns.Where(c => !string.IsNullOrEmpty(c.ErrorMessage)));
+                errorList.AddRange(table.Partitions.Where(p => !string.IsNullOrEmpty(p.ErrorMessage)));
 
-                var table = (WrapperLookup[t] as Table);
-                
-                table?.CheckChildrenErrors();
                 WrapperLookup.Values.OfType<IExpressionObject>().ToList().ForEach(i => i.NeedsValidation = false);
             }
             errorList.AddRange(Model.Roles.Where(r => r.ErrorMessage != null));
             if (errorList.Count > 0 || Errors?.Count > 0)
             {
                 Errors = errorList;
+            }
+
+            foreach(var errObj in errorList)
+            {
+                if (errObj is IFolderObject fo)
+                {
+                    var parentFolder = fo.GetFolder(Tree.Culture);
+                    if (parentFolder != null) parentFolder.AddError(fo);
+                    else if(fo is ITabularTableObject tto) tto.Table.AddError(fo);
+                }
             }
         }
 
