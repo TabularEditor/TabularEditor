@@ -36,6 +36,7 @@ namespace TabularEditor.TOMWrapper.Serialization
             {
                 var json = TOM.JsonSerializer.SerializeObject(rel.MetadataObject, new TOM.SerializeOptions() { IgnoreInferredObjects = true, IgnoreInferredProperties = true, IgnoreTimestamps = true });
                 var jObj = JObject.Parse(json);
+                jObj.Remove("name");
                 rels.Add(jObj);
             }
             return rels.ToString(format);
