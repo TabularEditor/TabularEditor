@@ -105,6 +105,18 @@ namespace TabularEditor.UI
             }
         }
 
+        public virtual void ReplaceFolder(string before, string after, Culture culture)
+        {
+            Handler.BeginUpdate("display folder");
+            foreach (var fo in this.OfType<IFolderObject>().ToList())
+            {
+                var oldFolder = fo.GetDisplayFolder(culture);
+                var newFolder = oldFolder.StartsWith(before) ? after.ConcatPath(oldFolder.Substring(before.Length)) : oldFolder;
+                fo.SetDisplayFolder(newFolder, culture);
+            }
+            Handler.EndUpdate();
+        }
+
         public virtual void ReplaceFolder(string before, string after)
         {
             Handler.BeginUpdate("display folder");

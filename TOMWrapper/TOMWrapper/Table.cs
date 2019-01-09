@@ -351,19 +351,37 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        internal void AddError(IFolderObject folderObject)
+        {
+            if (ErrorMessage == null)
+            {
+                ErrorMessage = "Child objects with errors:";
+            }
+            if (folderObject is Folder f) ErrorMessage += "\r\nObjects inside the '" + f.Name + "' folder.";
+
+            else ErrorMessage += "\r\n" + folderObject.GetTypeName() + " " + folderObject.GetName();
+        }
+
         [Category("Metadata"),DisplayName("Error Message")]
         public virtual string ErrorMessage { get; protected set; }
+        internal virtual void ClearError()
+        {
+            ErrorMessage = null;
+
+            if (Handler.CompatibilityLevel >= 1400 && !string.IsNullOrEmpty(MetadataObject.DefaultDetailRowsDefinition?.ErrorMessage))
+                ErrorMessage = "Detail rows expression: " + MetadataObject.DefaultDetailRowsDefinition.ErrorMessage;
+        }
 
         internal virtual void CheckChildrenErrors()
         {
-            var errObj = GetChildren().OfType<IErrorMessageObject>().FirstOrDefault(c => !string.IsNullOrEmpty(c.ErrorMessage));
-            if (errObj != null && (!(errObj as IExpressionObject)?.NeedsValidation ?? true))
+            foreach(var child in GetChildren().OfType<IErrorMessageObject>().Where(c => !string.IsNullOrEmpty(c.ErrorMessage)))
             {
-                ErrorMessage = "Error on " + (errObj as TabularNamedObject).Name + ": " + errObj.ErrorMessage;
-            }
-            else
-            {
-                ErrorMessage = null;
+                if (child is IFolderObject fo)
+                {
+                    var parentFolder = fo.GetFolder(Handler.Tree.Culture);
+                    if (parentFolder != null) parentFolder.AddError(fo);
+                    else AddError(fo);
+                }
             }
         }
 

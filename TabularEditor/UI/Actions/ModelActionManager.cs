@@ -70,10 +70,10 @@ namespace TabularEditor.UI.Actions
             // "Create New Display Folder"
             Add(new Action((s, m) => s.Count >= 1 && !Handler.UsePowerBIGovernance, 
                 (s, m) => {
-                    var orgDF = (s.Direct.FirstOrDefault() as IFolderObject)?.DisplayFolder;
+                    var orgDF = (s.Direct.FirstOrDefault() as IFolderObject)?.GetDisplayFolder(Handler.Tree.Culture);
                     var newDF = string.IsNullOrWhiteSpace(orgDF) ? "New folder" : (orgDF + @"\New folder"); ;
                     Folder.CreateFolder(s.Table, newDF).Edit().Expand();
-                    s.ReplaceFolder(orgDF, newDF);
+                    s.ReplaceFolder(orgDF, newDF, Handler.Tree.Culture);
                 }, 
                 (s, m) => @"Create New\Display Folder", true, Context.TableObject));
 
