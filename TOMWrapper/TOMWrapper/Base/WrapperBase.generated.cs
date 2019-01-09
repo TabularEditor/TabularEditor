@@ -632,7 +632,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Description = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
 				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
 			}
@@ -656,7 +656,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ISDEFAULT, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.IsDefault = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.IsDefault = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISDEFAULT, oldValue, newValue));
 				OnPropertyChanged(Properties.ISDEFAULT, oldValue, newValue);
 			}
@@ -694,7 +694,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.RELATIONSHIP, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Relationship = value == null ? null : value.MetadataObject;
+				if (!MetadataObject.IsRemoved) MetadataObject.Relationship = value == null ? null : value.MetadataObject;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.RELATIONSHIP, oldValue, newValue));
 				OnPropertyChanged(Properties.RELATIONSHIP, oldValue, newValue);
 			}
@@ -719,7 +719,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DEFAULTHIERARCHY, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.DefaultHierarchy = value == null ? null : value.MetadataObject;
+				if (!MetadataObject.IsRemoved) MetadataObject.DefaultHierarchy = value == null ? null : value.MetadataObject;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DEFAULTHIERARCHY, oldValue, newValue));
 				OnPropertyChanged(Properties.DEFAULTHIERARCHY, oldValue, newValue);
 			}
@@ -744,7 +744,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DEFAULTCOLUMN, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.DefaultColumn = value == null ? null : value.MetadataObject;
+				if (!MetadataObject.IsRemoved) MetadataObject.DefaultColumn = value == null ? null : value.MetadataObject;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DEFAULTCOLUMN, oldValue, newValue));
 				OnPropertyChanged(Properties.DEFAULTCOLUMN, oldValue, newValue);
 			}
@@ -773,7 +773,6 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Variation();
 			metadataObject.Name = parent.Variations.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Variation).GetTypeName() : name);
-
 			var obj = new Variation(metadataObject);
 
 			parent.Variations.Add(obj);
@@ -1021,7 +1020,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.CONTEXTEXPRESSION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.ContextExpression = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.ContextExpression = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.CONTEXTEXPRESSION, oldValue, newValue));
 				OnPropertyChanged(Properties.CONTEXTEXPRESSION, oldValue, newValue);
 			}
@@ -1050,7 +1049,6 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.StructuredDataSource();
 			metadataObject.Name = parent.DataSources.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(StructuredDataSource).GetTypeName() : name);
-
 			var obj = new StructuredDataSource(metadataObject);
 
 			parent.DataSources.Add(obj);
@@ -1183,7 +1181,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ISDATATYPEINFERRED, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.IsDataTypeInferred = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.IsDataTypeInferred = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISDATATYPEINFERRED, oldValue, newValue));
 				OnPropertyChanged(Properties.ISDATATYPEINFERRED, oldValue, newValue);
 			}
@@ -1207,7 +1205,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.EXPRESSION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Expression = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Expression = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EXPRESSION, oldValue, newValue));
 				OnPropertyChanged(Properties.EXPRESSION, oldValue, newValue);
 			}
@@ -1236,7 +1234,6 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.CalculatedColumn();
 			metadataObject.Name = parent.Columns.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(CalculatedColumn).GetTypeName() : name);
-
 			var obj = new CalculatedColumn(metadataObject);
 
 			parent.Columns.Add(obj);
@@ -1367,7 +1364,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ISNAMEINFERRED, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.IsNameInferred = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.IsNameInferred = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISNAMEINFERRED, oldValue, newValue));
 				OnPropertyChanged(Properties.ISNAMEINFERRED, oldValue, newValue);
 			}
@@ -1391,7 +1388,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ISDATATYPEINFERRED, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.IsDataTypeInferred = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.IsDataTypeInferred = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISDATATYPEINFERRED, oldValue, newValue));
 				OnPropertyChanged(Properties.ISDATATYPEINFERRED, oldValue, newValue);
 			}
@@ -1415,7 +1412,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.SOURCECOLUMN, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.SourceColumn = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.SourceColumn = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SOURCECOLUMN, oldValue, newValue));
 				OnPropertyChanged(Properties.SOURCECOLUMN, oldValue, newValue);
 			}
@@ -1534,7 +1531,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DATATYPE, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.DataType = (TOM.DataType)newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.DataType = (TOM.DataType)newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DATATYPE, oldValue, newValue));
 				OnPropertyChanged(Properties.DATATYPE, oldValue, newValue);
 			}
@@ -1737,7 +1734,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DATACATEGORY, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.DataCategory = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.DataCategory = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DATACATEGORY, oldValue, newValue));
 				OnPropertyChanged(Properties.DATACATEGORY, oldValue, newValue);
 			}
@@ -1761,7 +1758,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Description = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
 				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
 			}
@@ -1785,7 +1782,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ISHIDDEN, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.IsHidden = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.IsHidden = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISHIDDEN, oldValue, newValue));
 				OnPropertyChanged(Properties.ISHIDDEN, oldValue, newValue);
 				Handler.UpdateObject(this);
@@ -1822,7 +1819,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ISUNIQUE, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.IsUnique = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.IsUnique = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISUNIQUE, oldValue, newValue));
 				OnPropertyChanged(Properties.ISUNIQUE, oldValue, newValue);
 			}
@@ -1846,7 +1843,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ISKEY, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.IsKey = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.IsKey = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISKEY, oldValue, newValue));
 				OnPropertyChanged(Properties.ISKEY, oldValue, newValue);
 			}
@@ -1870,7 +1867,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ISNULLABLE, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.IsNullable = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.IsNullable = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISNULLABLE, oldValue, newValue));
 				OnPropertyChanged(Properties.ISNULLABLE, oldValue, newValue);
 			}
@@ -1894,7 +1891,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ALIGNMENT, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Alignment = (TOM.Alignment)newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Alignment = (TOM.Alignment)newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ALIGNMENT, oldValue, newValue));
 				OnPropertyChanged(Properties.ALIGNMENT, oldValue, newValue);
 			}
@@ -1918,7 +1915,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.TABLEDETAILPOSITION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.TableDetailPosition = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.TableDetailPosition = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TABLEDETAILPOSITION, oldValue, newValue));
 				OnPropertyChanged(Properties.TABLEDETAILPOSITION, oldValue, newValue);
 			}
@@ -1942,7 +1939,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ISDEFAULTLABEL, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.IsDefaultLabel = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.IsDefaultLabel = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISDEFAULTLABEL, oldValue, newValue));
 				OnPropertyChanged(Properties.ISDEFAULTLABEL, oldValue, newValue);
 			}
@@ -1966,7 +1963,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ISDEFAULTIMAGE, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.IsDefaultImage = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.IsDefaultImage = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISDEFAULTIMAGE, oldValue, newValue));
 				OnPropertyChanged(Properties.ISDEFAULTIMAGE, oldValue, newValue);
 			}
@@ -1990,7 +1987,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.SUMMARIZEBY, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.SummarizeBy = (TOM.AggregateFunction)newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.SummarizeBy = (TOM.AggregateFunction)newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SUMMARIZEBY, oldValue, newValue));
 				OnPropertyChanged(Properties.SUMMARIZEBY, oldValue, newValue);
 			}
@@ -2026,7 +2023,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.FORMATSTRING, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.FormatString = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.FormatString = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FORMATSTRING, oldValue, newValue));
 				OnPropertyChanged(Properties.FORMATSTRING, oldValue, newValue);
 			}
@@ -2050,7 +2047,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ISAVAILABLEINMDX, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.IsAvailableInMDX = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.IsAvailableInMDX = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISAVAILABLEINMDX, oldValue, newValue));
 				OnPropertyChanged(Properties.ISAVAILABLEINMDX, oldValue, newValue);
 			}
@@ -2074,7 +2071,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.KEEPUNIQUEROWS, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.KeepUniqueRows = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.KeepUniqueRows = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.KEEPUNIQUEROWS, oldValue, newValue));
 				OnPropertyChanged(Properties.KEEPUNIQUEROWS, oldValue, newValue);
 			}
@@ -2098,7 +2095,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DISPLAYORDINAL, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.DisplayOrdinal = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.DisplayOrdinal = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISPLAYORDINAL, oldValue, newValue));
 				OnPropertyChanged(Properties.DISPLAYORDINAL, oldValue, newValue);
 			}
@@ -2134,7 +2131,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.SOURCEPROVIDERTYPE, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.SourceProviderType = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.SourceProviderType = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SOURCEPROVIDERTYPE, oldValue, newValue));
 				OnPropertyChanged(Properties.SOURCEPROVIDERTYPE, oldValue, newValue);
 			}
@@ -2158,7 +2155,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DISPLAYFOLDER, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.DisplayFolder = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.DisplayFolder = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISPLAYFOLDER, oldValue, newValue));
 				OnPropertyChanged(Properties.DISPLAYFOLDER, oldValue, newValue);
 				Handler.UpdateFolders(Table);
@@ -2188,7 +2185,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ENCODINGHINT, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.EncodingHint = (TOM.EncodingHintType)newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.EncodingHint = (TOM.EncodingHintType)newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ENCODINGHINT, oldValue, newValue));
 				OnPropertyChanged(Properties.ENCODINGHINT, oldValue, newValue);
 			}
@@ -2226,7 +2223,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.SORTBYCOLUMN, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.SortByColumn = value == null ? null : Table.Columns[value.MetadataObject.Name].MetadataObject;
+				if (!MetadataObject.IsRemoved) MetadataObject.SortByColumn = value == null ? null : Table.Columns[value.MetadataObject.Name].MetadataObject;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SORTBYCOLUMN, oldValue, newValue));
 				OnPropertyChanged(Properties.SORTBYCOLUMN, oldValue, newValue);
 			}
@@ -2855,7 +2852,6 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Culture();
 			metadataObject.Name = parent.Cultures.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Culture).GetTypeName() : name);
-
 			var obj = new Culture(metadataObject);
 
 			parent.Cultures.Add(obj);
@@ -3053,7 +3049,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.SOURCECOLUMN, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.SourceColumn = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.SourceColumn = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SOURCECOLUMN, oldValue, newValue));
 				OnPropertyChanged(Properties.SOURCECOLUMN, oldValue, newValue);
 			}
@@ -3082,7 +3078,6 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.DataColumn();
 			metadataObject.Name = parent.Columns.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(DataColumn).GetTypeName() : name);
-
 			var obj = new DataColumn(metadataObject);
 
 			parent.Columns.Add(obj);
@@ -3393,7 +3388,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Description = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
 				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
 			}
@@ -3429,7 +3424,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.MAXCONNECTIONS, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.MaxConnections = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.MaxConnections = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MAXCONNECTIONS, oldValue, newValue));
 				OnPropertyChanged(Properties.MAXCONNECTIONS, oldValue, newValue);
 			}
@@ -3608,7 +3603,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.IDENTITYPROVIDER, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.IdentityProvider = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.IdentityProvider = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.IDENTITYPROVIDER, oldValue, newValue));
 				OnPropertyChanged(Properties.IDENTITYPROVIDER, oldValue, newValue);
 			}
@@ -3632,7 +3627,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.MEMBERTYPE, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.MemberType = (TOM.RoleMemberType)newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.MemberType = (TOM.RoleMemberType)newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MEMBERTYPE, oldValue, newValue));
 				OnPropertyChanged(Properties.MEMBERTYPE, oldValue, newValue);
 			}
@@ -3660,8 +3655,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.ExternalModelRoleMember();
-			metadataObject.Name = parent.Members.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(ExternalModelRoleMember).GetTypeName() : name);
-
+			metadataObject.MemberName = parent.Members.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(ExternalModelRoleMember).GetTypeName() : name);
 			var obj = new ExternalModelRoleMember(metadataObject);
 
 			parent.Members.Add(obj);
@@ -3970,7 +3964,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Description = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
 				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
 			}
@@ -3994,7 +3988,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ISHIDDEN, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.IsHidden = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.IsHidden = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISHIDDEN, oldValue, newValue));
 				OnPropertyChanged(Properties.ISHIDDEN, oldValue, newValue);
 				Handler.UpdateObject(this);
@@ -4031,7 +4025,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DISPLAYFOLDER, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.DisplayFolder = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.DisplayFolder = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISPLAYFOLDER, oldValue, newValue));
 				OnPropertyChanged(Properties.DISPLAYFOLDER, oldValue, newValue);
 				Handler.UpdateFolders(Table);
@@ -4061,7 +4055,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.HIDEMEMBERS, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.HideMembers = (TOM.HierarchyHideMembersType)newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.HideMembers = (TOM.HierarchyHideMembersType)newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.HIDEMEMBERS, oldValue, newValue));
 				OnPropertyChanged(Properties.HIDEMEMBERS, oldValue, newValue);
 			}
@@ -4120,7 +4114,6 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Hierarchy();
 			metadataObject.Name = parent.Hierarchies.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Hierarchy).GetTypeName() : name);
-
 			var obj = new Hierarchy(metadataObject);
 
 			parent.Hierarchies.Add(obj);
@@ -4586,7 +4579,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Description = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
 				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
 			}
@@ -4610,7 +4603,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.TARGETDESCRIPTION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.TargetDescription = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.TargetDescription = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TARGETDESCRIPTION, oldValue, newValue));
 				OnPropertyChanged(Properties.TARGETDESCRIPTION, oldValue, newValue);
 			}
@@ -4634,7 +4627,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.TARGETEXPRESSION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.TargetExpression = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.TargetExpression = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TARGETEXPRESSION, oldValue, newValue));
 				OnPropertyChanged(Properties.TARGETEXPRESSION, oldValue, newValue);
 			}
@@ -4658,7 +4651,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.TARGETFORMATSTRING, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.TargetFormatString = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.TargetFormatString = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TARGETFORMATSTRING, oldValue, newValue));
 				OnPropertyChanged(Properties.TARGETFORMATSTRING, oldValue, newValue);
 			}
@@ -4682,7 +4675,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.STATUSGRAPHIC, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.StatusGraphic = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.StatusGraphic = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.STATUSGRAPHIC, oldValue, newValue));
 				OnPropertyChanged(Properties.STATUSGRAPHIC, oldValue, newValue);
 			}
@@ -4706,7 +4699,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.STATUSDESCRIPTION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.StatusDescription = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.StatusDescription = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.STATUSDESCRIPTION, oldValue, newValue));
 				OnPropertyChanged(Properties.STATUSDESCRIPTION, oldValue, newValue);
 			}
@@ -4730,7 +4723,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.STATUSEXPRESSION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.StatusExpression = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.StatusExpression = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.STATUSEXPRESSION, oldValue, newValue));
 				OnPropertyChanged(Properties.STATUSEXPRESSION, oldValue, newValue);
 			}
@@ -4754,7 +4747,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.TRENDGRAPHIC, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.TrendGraphic = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.TrendGraphic = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TRENDGRAPHIC, oldValue, newValue));
 				OnPropertyChanged(Properties.TRENDGRAPHIC, oldValue, newValue);
 			}
@@ -4778,7 +4771,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.TRENDDESCRIPTION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.TrendDescription = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.TrendDescription = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TRENDDESCRIPTION, oldValue, newValue));
 				OnPropertyChanged(Properties.TRENDDESCRIPTION, oldValue, newValue);
 			}
@@ -4802,7 +4795,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.TRENDEXPRESSION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.TrendExpression = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.TrendExpression = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TRENDEXPRESSION, oldValue, newValue));
 				OnPropertyChanged(Properties.TRENDEXPRESSION, oldValue, newValue);
 			}
@@ -5088,7 +5081,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ORDINAL, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Ordinal = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Ordinal = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ORDINAL, oldValue, newValue));
 				OnPropertyChanged(Properties.ORDINAL, oldValue, newValue);
 			}
@@ -5112,7 +5105,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Description = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
 				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
 			}
@@ -5150,7 +5143,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.COLUMN, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Column = value == null ? null : Hierarchy.Table.Columns[value.MetadataObject.Name].MetadataObject;
+				if (!MetadataObject.IsRemoved) MetadataObject.Column = value == null ? null : Hierarchy.Table.Columns[value.MetadataObject.Name].MetadataObject;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.COLUMN, oldValue, newValue));
 				OnPropertyChanged(Properties.COLUMN, oldValue, newValue);
 			}
@@ -5190,7 +5183,6 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Level();
 			metadataObject.Name = parent.Levels.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Level).GetTypeName() : name);
-
 			var obj = new Level(metadataObject);
 
 			parent.Levels.Add(obj);
@@ -5592,7 +5584,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Description = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
 				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
 			}
@@ -5628,7 +5620,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.EXPRESSION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Expression = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Expression = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EXPRESSION, oldValue, newValue));
 				OnPropertyChanged(Properties.EXPRESSION, oldValue, newValue);
 			}
@@ -5652,7 +5644,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.FORMATSTRING, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.FormatString = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.FormatString = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FORMATSTRING, oldValue, newValue));
 				OnPropertyChanged(Properties.FORMATSTRING, oldValue, newValue);
 			}
@@ -5676,7 +5668,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ISHIDDEN, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.IsHidden = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.IsHidden = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISHIDDEN, oldValue, newValue));
 				OnPropertyChanged(Properties.ISHIDDEN, oldValue, newValue);
 				Handler.UpdateObject(this);
@@ -5713,7 +5705,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ISSIMPLEMEASURE, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.IsSimpleMeasure = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.IsSimpleMeasure = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISSIMPLEMEASURE, oldValue, newValue));
 				OnPropertyChanged(Properties.ISSIMPLEMEASURE, oldValue, newValue);
 			}
@@ -5737,7 +5729,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DISPLAYFOLDER, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.DisplayFolder = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.DisplayFolder = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISPLAYFOLDER, oldValue, newValue));
 				OnPropertyChanged(Properties.DISPLAYFOLDER, oldValue, newValue);
 				Handler.UpdateFolders(Table);
@@ -5767,7 +5759,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DATACATEGORY, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.DataCategory = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.DataCategory = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DATACATEGORY, oldValue, newValue));
 				OnPropertyChanged(Properties.DATACATEGORY, oldValue, newValue);
 			}
@@ -5826,7 +5818,6 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Measure();
 			metadataObject.Name = parent.Measures.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Measure).GetTypeName() : name);
-
 			var obj = new Measure(metadataObject);
 
 			parent.Measures.Add(obj);
@@ -6320,7 +6311,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Description = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
 				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
 			}
@@ -6344,7 +6335,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.STORAGELOCATION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.StorageLocation = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.StorageLocation = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.STORAGELOCATION, oldValue, newValue));
 				OnPropertyChanged(Properties.STORAGELOCATION, oldValue, newValue);
 			}
@@ -6368,7 +6359,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DEFAULTMODE, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.DefaultMode = (TOM.ModeType)newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.DefaultMode = (TOM.ModeType)newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DEFAULTMODE, oldValue, newValue));
 				OnPropertyChanged(Properties.DEFAULTMODE, oldValue, newValue);
 			}
@@ -6392,7 +6383,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DEFAULTDATAVIEW, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.DefaultDataView = (TOM.DataViewType)newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.DefaultDataView = (TOM.DataViewType)newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DEFAULTDATAVIEW, oldValue, newValue));
 				OnPropertyChanged(Properties.DEFAULTDATAVIEW, oldValue, newValue);
 			}
@@ -6416,7 +6407,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.CULTURE, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Culture = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Culture = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.CULTURE, oldValue, newValue));
 				OnPropertyChanged(Properties.CULTURE, oldValue, newValue);
 			}
@@ -6440,7 +6431,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.COLLATION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Collation = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Collation = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.COLLATION, oldValue, newValue));
 				OnPropertyChanged(Properties.COLLATION, oldValue, newValue);
 			}
@@ -6464,7 +6455,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.FORCEUNIQUENAMES, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.ForceUniqueNames = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.ForceUniqueNames = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FORCEUNIQUENAMES, oldValue, newValue));
 				OnPropertyChanged(Properties.FORCEUNIQUENAMES, oldValue, newValue);
 			}
@@ -6489,7 +6480,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DEFAULTMEASURE, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.DefaultMeasure = value?.MetadataObject;
+				if (!MetadataObject.IsRemoved) MetadataObject.DefaultMeasure = value?.MetadataObject;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DEFAULTMEASURE, oldValue, newValue));
 				OnPropertyChanged(Properties.DEFAULTMEASURE, oldValue, newValue);
 			}
@@ -6869,7 +6860,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Description = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
 				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
 			}
@@ -6893,7 +6884,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.MODELPERMISSION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.ModelPermission = (TOM.ModelPermission)newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.ModelPermission = (TOM.ModelPermission)newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MODELPERMISSION, oldValue, newValue));
 				OnPropertyChanged(Properties.MODELPERMISSION, oldValue, newValue);
 			}
@@ -6922,7 +6913,6 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.ModelRole();
 			metadataObject.Name = parent.Roles.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(ModelRole).GetTypeName() : name);
-
 			var obj = new ModelRole(metadataObject);
 
 			parent.Roles.Add(obj);
@@ -6997,7 +6987,7 @@ namespace TabularEditor.TOMWrapper
         /// The collection of ModelRoleMember objects on this ModelRole.
         /// </summary>
 		[DisplayName("Members")]
-		[Category("Security"),IntelliSense("The collection of Model Role Member objects on this ModelRole.")][Browsable(false)]
+		[Category("Security"),IntelliSense("The collection of Model Role Member objects on this ModelRole.")][Editor(typeof(TabularEditor.PropertyGridUI.RoleMemberCollectionEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public ModelRoleMemberCollection Members { get; private set; }
 
 		/// <summary>
@@ -7347,7 +7337,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.MEMBERNAME, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.MemberName = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.MemberName = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MEMBERNAME, oldValue, newValue));
 				OnPropertyChanged(Properties.MEMBERNAME, oldValue, newValue);
 			}
@@ -7371,7 +7361,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.MEMBERID, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.MemberID = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.MemberID = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MEMBERID, oldValue, newValue));
 				OnPropertyChanged(Properties.MEMBERID, oldValue, newValue);
 			}
@@ -7759,7 +7749,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Description = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
 				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
 			}
@@ -7795,7 +7785,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.MODE, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Mode = (TOM.ModeType)newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Mode = (TOM.ModeType)newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MODE, oldValue, newValue));
 				OnPropertyChanged(Properties.MODE, oldValue, newValue);
 			}
@@ -7819,7 +7809,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DATAVIEW, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.DataView = (TOM.DataViewType)newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.DataView = (TOM.DataViewType)newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DATAVIEW, oldValue, newValue));
 				OnPropertyChanged(Properties.DATAVIEW, oldValue, newValue);
 			}
@@ -7873,7 +7863,6 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Partition();
 			metadataObject.Name = parent.Partitions.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Partition).GetTypeName() : name);
-
 			var obj = new Partition(metadataObject);
 
 			parent.Partitions.Add(obj);
@@ -8281,7 +8270,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Description = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
 				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
 			}
@@ -8321,7 +8310,6 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Perspective();
 			metadataObject.Name = parent.Perspectives.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Perspective).GetTypeName() : name);
-
 			var obj = new Perspective(metadataObject);
 
 			parent.Perspectives.Add(obj);
@@ -8543,7 +8531,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.CONNECTIONSTRING, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.ConnectionString = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.ConnectionString = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.CONNECTIONSTRING, oldValue, newValue));
 				OnPropertyChanged(Properties.CONNECTIONSTRING, oldValue, newValue);
 			}
@@ -8567,7 +8555,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.IMPERSONATIONMODE, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.ImpersonationMode = (TOM.ImpersonationMode)newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.ImpersonationMode = (TOM.ImpersonationMode)newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.IMPERSONATIONMODE, oldValue, newValue));
 				OnPropertyChanged(Properties.IMPERSONATIONMODE, oldValue, newValue);
 			}
@@ -8591,7 +8579,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ACCOUNT, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Account = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Account = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ACCOUNT, oldValue, newValue));
 				OnPropertyChanged(Properties.ACCOUNT, oldValue, newValue);
 			}
@@ -8615,7 +8603,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.PASSWORD, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Password = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Password = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.PASSWORD, oldValue, newValue));
 				OnPropertyChanged(Properties.PASSWORD, oldValue, newValue);
 			}
@@ -8639,7 +8627,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ISOLATION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Isolation = (TOM.DatasourceIsolation)newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Isolation = (TOM.DatasourceIsolation)newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISOLATION, oldValue, newValue));
 				OnPropertyChanged(Properties.ISOLATION, oldValue, newValue);
 			}
@@ -8663,7 +8651,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.TIMEOUT, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Timeout = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Timeout = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TIMEOUT, oldValue, newValue));
 				OnPropertyChanged(Properties.TIMEOUT, oldValue, newValue);
 			}
@@ -8687,7 +8675,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.PROVIDER, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Provider = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Provider = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.PROVIDER, oldValue, newValue));
 				OnPropertyChanged(Properties.PROVIDER, oldValue, newValue);
 			}
@@ -8716,7 +8704,6 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.ProviderDataSource();
 			metadataObject.Name = parent.DataSources.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(ProviderDataSource).GetTypeName() : name);
-
 			var obj = new ProviderDataSource(metadataObject);
 
 			parent.DataSources.Add(obj);
@@ -9054,7 +9041,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ISACTIVE, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.IsActive = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.IsActive = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISACTIVE, oldValue, newValue));
 				OnPropertyChanged(Properties.ISACTIVE, oldValue, newValue);
 			}
@@ -9090,7 +9077,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.CROSSFILTERINGBEHAVIOR, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.CrossFilteringBehavior = (TOM.CrossFilteringBehavior)newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.CrossFilteringBehavior = (TOM.CrossFilteringBehavior)newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.CROSSFILTERINGBEHAVIOR, oldValue, newValue));
 				OnPropertyChanged(Properties.CROSSFILTERINGBEHAVIOR, oldValue, newValue);
 			}
@@ -9114,7 +9101,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.JOINONDATEBEHAVIOR, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.JoinOnDateBehavior = (TOM.DateTimeRelationshipBehavior)newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.JoinOnDateBehavior = (TOM.DateTimeRelationshipBehavior)newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.JOINONDATEBEHAVIOR, oldValue, newValue));
 				OnPropertyChanged(Properties.JOINONDATEBEHAVIOR, oldValue, newValue);
 			}
@@ -9138,7 +9125,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.RELYONREFERENTIALINTEGRITY, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.RelyOnReferentialIntegrity = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.RelyOnReferentialIntegrity = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.RELYONREFERENTIALINTEGRITY, oldValue, newValue));
 				OnPropertyChanged(Properties.RELYONREFERENTIALINTEGRITY, oldValue, newValue);
 			}
@@ -9174,7 +9161,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.SECURITYFILTERINGBEHAVIOR, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.SecurityFilteringBehavior = (TOM.SecurityFilteringBehavior)newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.SecurityFilteringBehavior = (TOM.SecurityFilteringBehavior)newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SECURITYFILTERINGBEHAVIOR, oldValue, newValue));
 				OnPropertyChanged(Properties.SECURITYFILTERINGBEHAVIOR, oldValue, newValue);
 			}
@@ -9390,7 +9377,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.FROMCOLUMN, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.FromColumn = value?.MetadataObject;
+				if (!MetadataObject.IsRemoved) MetadataObject.FromColumn = value?.MetadataObject;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FROMCOLUMN, oldValue, newValue));
 				OnPropertyChanged(Properties.FROMCOLUMN, oldValue, newValue);
 			}
@@ -9415,7 +9402,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.TOCOLUMN, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.ToColumn = value?.MetadataObject;
+				if (!MetadataObject.IsRemoved) MetadataObject.ToColumn = value?.MetadataObject;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TOCOLUMN, oldValue, newValue));
 				OnPropertyChanged(Properties.TOCOLUMN, oldValue, newValue);
 			}
@@ -9439,7 +9426,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.FROMCARDINALITY, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.FromCardinality = (TOM.RelationshipEndCardinality)newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.FromCardinality = (TOM.RelationshipEndCardinality)newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FROMCARDINALITY, oldValue, newValue));
 				OnPropertyChanged(Properties.FROMCARDINALITY, oldValue, newValue);
 			}
@@ -9463,7 +9450,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.TOCARDINALITY, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.ToCardinality = (TOM.RelationshipEndCardinality)newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.ToCardinality = (TOM.RelationshipEndCardinality)newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TOCARDINALITY, oldValue, newValue));
 				OnPropertyChanged(Properties.TOCARDINALITY, oldValue, newValue);
 			}
@@ -9492,7 +9479,6 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.SingleColumnRelationship();
 			metadataObject.Name = parent.Relationships.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(SingleColumnRelationship).GetTypeName() : name);
-
 			var obj = new SingleColumnRelationship(metadataObject);
 
 			parent.Relationships.Add(obj);
@@ -9809,7 +9795,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DATACATEGORY, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.DataCategory = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.DataCategory = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DATACATEGORY, oldValue, newValue));
 				OnPropertyChanged(Properties.DATACATEGORY, oldValue, newValue);
 			}
@@ -9833,7 +9819,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Description = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
 				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
 			}
@@ -9857,7 +9843,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ISHIDDEN, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.IsHidden = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.IsHidden = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISHIDDEN, oldValue, newValue));
 				OnPropertyChanged(Properties.ISHIDDEN, oldValue, newValue);
 				Handler.UpdateObject(this);
@@ -9882,7 +9868,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.SHOWASVARIATIONSONLY, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.ShowAsVariationsOnly = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.ShowAsVariationsOnly = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SHOWASVARIATIONSONLY, oldValue, newValue));
 				OnPropertyChanged(Properties.SHOWASVARIATIONSONLY, oldValue, newValue);
 			}
@@ -9906,7 +9892,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ISPRIVATE, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.IsPrivate = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.IsPrivate = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISPRIVATE, oldValue, newValue));
 				OnPropertyChanged(Properties.ISPRIVATE, oldValue, newValue);
 			}
@@ -9930,7 +9916,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.ALTERNATESOURCEPRECEDENCE, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.AlternateSourcePrecedence = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.AlternateSourcePrecedence = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ALTERNATESOURCEPRECEDENCE, oldValue, newValue));
 				OnPropertyChanged(Properties.ALTERNATESOURCEPRECEDENCE, oldValue, newValue);
 			}
@@ -9976,7 +9962,6 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Table();
 			metadataObject.Name = parent.Tables.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Table).GetTypeName() : name);
-
 			var obj = new Table(metadataObject);
 
 			parent.Tables.Add(obj);
@@ -10340,8 +10325,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.WindowsModelRoleMember();
-			metadataObject.Name = parent.Members.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(WindowsModelRoleMember).GetTypeName() : name);
-
+			metadataObject.MemberName = parent.Members.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(WindowsModelRoleMember).GetTypeName() : name);
 			var obj = new WindowsModelRoleMember(metadataObject);
 
 			parent.Members.Add(obj);
@@ -10645,7 +10629,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Description = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
 				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
 			}
@@ -10669,7 +10653,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.KIND, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Kind = (TOM.ExpressionKind)newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Kind = (TOM.ExpressionKind)newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.KIND, oldValue, newValue));
 				OnPropertyChanged(Properties.KIND, oldValue, newValue);
 			}
@@ -10693,7 +10677,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.EXPRESSION, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.Expression = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.Expression = newValue;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EXPRESSION, oldValue, newValue));
 				OnPropertyChanged(Properties.EXPRESSION, oldValue, newValue);
 			}
@@ -10722,7 +10706,6 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.NamedExpression();
 			metadataObject.Name = parent.Expressions.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(NamedExpression).GetTypeName() : name);
-
 			var obj = new NamedExpression(metadataObject);
 
 			parent.Expressions.Add(obj);

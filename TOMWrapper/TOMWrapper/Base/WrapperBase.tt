@@ -371,8 +371,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.<#= t.Name #>();
-			metadataObject.Name = parent.<#= Rules.GetCollection(t) #>.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(<#= t.Name #>).GetTypeName() : name);
-
+			metadataObject.<#=typeof(ModelRoleMember).IsAssignableFrom(t)?"Member":""#>Name = parent.<#= Rules.GetCollection(t) #>.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(<#= t.Name #>).GetTypeName() : name);
 			var obj = new <#= t.Name #>(metadataObject);
 
 			parent.<#= Rules.GetCollection(t) #>.Add(obj);

@@ -210,7 +210,7 @@ partial class Rules {
 				bool cancel = false;
 				OnPropertyChanging({5}, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				MetadataObject.{0} = {4};
+				if (!MetadataObject.IsRemoved) MetadataObject.{0} = {4};
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, {5}, oldValue, newValue));
 				OnPropertyChanged({5}, oldValue, newValue);{2}{3}
 			}}", 
@@ -356,7 +356,7 @@ partial class Rules {
 		
 		if(propertyName == "DataSources") return "[Browsable(false)]";
 		if(propertyName == "Relationships") return "[Browsable(false)]";
-		if(propertyName == "Members") return "[Browsable(false)]";
+		if(propertyName == "Members") return "[Editor(typeof(TabularEditor.PropertyGridUI.RoleMemberCollectionEditor), typeof(System.Drawing.Design.UITypeEditor))]";
 		if(propertyName == "Columns") return "[Browsable(false)]";
 		if(propertyName == "Measures") return "[Browsable(false)]";
 		if(propertyName == "Hierarchies") return "[Browsable(false)]";
