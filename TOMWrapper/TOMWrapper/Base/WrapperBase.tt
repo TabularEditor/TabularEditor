@@ -82,7 +82,7 @@ namespace TabularEditor.TOMWrapper
 #><#= props.Any(p => p.Name == "DisplayFolder") ? "\n\t\t\t, IFolderObject" : ""
 #><#= props.Any(p => p.Name == "IsHidden") ? "\n\t\t\t, IHideableObject" : ""
 #><#= props.Any(p => p.Name == "ErrorMessage") ? "\n\t\t\t, IErrorMessageObject" : ""
-#><#= props.Any(p => p.Name == "Table") ? "\n\t\t\t, ITabularTableObject" : ""
+#><#= props.Any(p => p.Name == "Table" && t.Name != "CalculationGroup") ? "\n\t\t\t, ITabularTableObject" : ""
 #><#= props.Any(p => p.Name == "Description") ? "\n\t\t\t, IDescriptionObject" : ""
 #><#= props.Any(p => p.Name == "Expression" && t.Name != "NamedExpression") ? "\n\t\t\t, IExpressionObject" : ""
 #><#= props.Any(p => p.Name == "FormatString") ? "\n\t\t\t, IFormattableObject" : ""
@@ -108,8 +108,6 @@ namespace TabularEditor.TOMWrapper
 <#
 	foreach(PropertyInfo p in props) 
 	{   
-		if (p.Name == "ErrorMessage" && t.Name == "Measure") continue;
-
 	    if (p.Name == "ExtendedProperties") { #>
         [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on this object."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
@@ -640,6 +638,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 			foreach(var obj in TOM_Collection) {
 <# if (t.Name == "Table") { #>
                 if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.Calculated) CalculatedTable.CreateFromMetadata(Model, obj);
+				else if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.CalculationGroup) CalculationGroupTable.CreateFromMetadata(Model, obj);
                 else Table.CreateFromMetadata(Model, obj);
 <# } else if (t.Name == "Partition") { #>
 				if(obj.SourceType == TOM.PartitionSourceType.M) MPartition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);

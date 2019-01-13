@@ -1,4 +1,8 @@
 CTP 2019 notes
 ==============
+CL 2147483647
 
 Measure.cs and DaxDependencyHelper.cs: Verify CL requirement for FormatStringExpression
+
+LogicalGroup.cs and ModelActionManager.cs
+Verify CL requirement

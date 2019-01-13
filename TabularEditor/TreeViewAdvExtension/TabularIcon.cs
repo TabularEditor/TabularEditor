@@ -30,7 +30,9 @@ namespace TabularEditor.UI.Tree
             { ObjectType.DataSource, TabularIcons.ICON_DATASOURCE },
             { ObjectType.Partition, TabularIcons.ICON_PARTITION },
             { ObjectType.Expression, TabularIcons.ICON_EFFECTS },
-            { ObjectType.PartitionCollection, TabularIcons.ICON_PARTITION }
+            { ObjectType.PartitionCollection, TabularIcons.ICON_PARTITION },
+            { ObjectType.CalculationGroup, TabularIcons.ICON_CALCULATOR },
+            { ObjectType.CalculationItem, TabularIcons.ICON_FIELD }
         };
 
 
@@ -55,6 +57,7 @@ namespace TabularEditor.UI.Tree
                     return obj is CalculatedTable ? TabularIcons.ICON_CALCTABLE : TabularIcons.ICON_TABLE;
 
                 case ObjectType.Column:
+                    if ((obj as Column).Table.ObjectType == ObjectType.CalculationGroup) return TabularIcons.ICON_FIELDCOLUMN;
                     return obj is CalculatedColumn ? TabularIcons.ICON_CALCCOLUMN : TabularIcons.ICON_COLUMN;
 
                 case ObjectType.Level:
@@ -142,6 +145,12 @@ namespace TabularEditor.UI.Tree
         public const int ICON_EFFECTS = 40;
         public const int ICON_TIMETABLE = 41;
         public const int ICON_CALCTIMETABLE = 42;
+
+        public const int ICON_DATABASE = 43;
+        public const int ICON_VIEW = 44;
+
+        public const int ICON_FIELDCOLUMN = 45;
+        public const int ICON_FIELD = 46;
     }
 
 }

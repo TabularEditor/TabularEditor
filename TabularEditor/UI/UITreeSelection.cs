@@ -164,6 +164,8 @@ namespace TabularEditor.UI
         /// </summary>
         Expressions = 1 << 8,
 
+        //CalculationGroups = 1 << 9,
+
         /// <summary>
         /// Context menu opened on one or more tables
         /// </summary>
@@ -226,6 +228,10 @@ namespace TabularEditor.UI
 
         Expression = 1 << 23,
 
+        CalculationGroup = 1 << 24,
+        CalculationGroupColumn = 1 << 25,
+        CalculationItem = 1 << 26,
+
         /// <summary>
         /// Special context for actions that can be executed regardless of the current selection,
         /// but where the action should show up in the "Tools" menu only.
@@ -234,7 +240,7 @@ namespace TabularEditor.UI
 
         Everywhere = 0x7FFFFFFF,
         TableObject = Measure | Column | Hierarchy,
-        SingularObjects = Model | Table | TableObject | Level | Partition | Relationship | DataSource | Role | Perspective | Translation | KPI | Expression,
+        SingularObjects = Model | Table | TableObject | Level | Partition | Relationship | DataSource | Role | Perspective | Translation | KPI | Expression | CalculationGroup | CalculationGroupColumn | CalculationItem,
         Groups = Tables | Relationships | DataSources | Roles | Perspectives | Translations | Expressions,
         DataObjects = Table | TableObject,
         Scriptable = Table | Partition | DataSource | Role
@@ -279,7 +285,8 @@ namespace TabularEditor.UI
         static public Context GetNodeContext(TreeNodeAdv node)
         {
             var result = Context.None;
-            switch ((node.Tag as ITabularNamedObject).ObjectType)
+            var obj = node.Tag as ITabularNamedObject;
+            switch (obj.ObjectType)
             {
                 case ObjectType.PartitionCollection: return Context.PartitionCollection;
                 case ObjectType.Expression: return Context.Expression;
@@ -291,9 +298,11 @@ namespace TabularEditor.UI
                 case ObjectType.Role: return Context.Role;
                 case ObjectType.Relationship: return Context.Relationship;
                 case ObjectType.Table: return Context.Table;
+                case ObjectType.CalculationGroup: return Context.CalculationGroup;
+                case ObjectType.CalculationItem: return Context.CalculationItem;
                 case ObjectType.Level: return Context.Level;
                 case ObjectType.KPI: return Context.KPI;
-                case ObjectType.Column: return Context.Column;
+                case ObjectType.Column: return (obj as Column).Table.ObjectType == ObjectType.CalculationGroup ? Context.CalculationGroupColumn : Context.Column;
                 case ObjectType.Measure: return Context.Measure;
                 case ObjectType.Hierarchy: return Context.Hierarchy;
                 case ObjectType.Group:
@@ -306,6 +315,7 @@ namespace TabularEditor.UI
                         case LogicalGroups.TRANSLATIONS: return Context.Translations;
                         case LogicalGroups.RELATIONSHIPS: return Context.Relationships;
                         case LogicalGroups.EXPRESSIONS: return Context.Expressions;
+                        //case LogicalGroups.CALCULATIONGROUPS: return Context.CalculationGroups;
                     }
                     break;                   
             }
@@ -352,6 +362,8 @@ namespace TabularEditor.UI
             Perspectives = new UISelectionList<Perspective>(this.OfType<Perspective>());
             CalculatedColumns = new UISelectionList<CalculatedColumn>(this.OfType<CalculatedColumn>());
             CalculatedTableColumns = new UISelectionList<CalculatedTableColumn>(this.OfType<CalculatedTableColumn>());
+            CalculationGroups = new UISelectionList<CalculationGroupTable>(this.OfType<CalculationGroupTable>());
+            CalculationItems = new UISelectionList<CalculationItem>(this.OfType<CalculationItem>());
             SingleColumnRelationships = new UISelectionList<SingleColumnRelationship>(this.OfType<SingleColumnRelationship>());
             DataColumns = new UISelectionList<DataColumn>(this.OfType<DataColumn>());
             Tables = new UISelectionList<Table>(this.OfType<Table>());
@@ -441,6 +453,18 @@ namespace TabularEditor.UI
 
         [IntelliSense("All currently selected perspectives.")]
         public UISelectionList<Perspective> Perspectives { get; private set; }
+
+        [IntelliSense("The currently selected calculation item (if exactly one calculation item is selected in the explorer tree.)")]
+        public CalculationItem CalculationItem { get { return One<CalculationItem>(); } }
+
+        [IntelliSense("All currently selected calculation items.")]
+        public UISelectionList<CalculationItem> CalculationItems { get; private set; }
+
+        [IntelliSense("The currently selected calculation group (if exactly one calculation group is selected in the explorer tree.)")]
+        public CalculationGroupTable CalculationGroup { get { return One<CalculationGroupTable>(); } }
+
+        [IntelliSense("All currently selected calculation groups.")]
+        public UISelectionList<CalculationGroupTable> CalculationGroups { get; private set; }
 
         [IntelliSense("The currently selected calculated column (if exactly one calculated column is selected in the explorer tree).")]
         public CalculatedColumn CalculatedColumn { get { return One<CalculatedColumn>(); } }

@@ -202,6 +202,7 @@ namespace TabularEditor.UI
                 if (ExpressionEditor_Current == null) return false;
                 switch (ExpressionEditor_Current.ObjectType)
                 {
+                    case ObjectType.CalculationItem:
                     case ObjectType.Measure:
                     case ObjectType.Table:
                     case ObjectType.Column:

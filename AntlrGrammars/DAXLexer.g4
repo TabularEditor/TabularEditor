@@ -211,6 +211,8 @@ SAMPLE:                 'SAMPLE'                                                
 SEARCH:                 'SEARCH'                                                                                  -> channel(KEYWORD_CHANNEL);
 SECOND:                 'SECOND'                                                                                  -> channel(KEYWORD_CHANNEL);
 SELECTCOLUMNS:          'SELECTCOLUMNS'                                                                           -> channel(KEYWORD_CHANNEL);
+SELECTEDMEASURE:        'SELECTEDMEASURE'                                                                         -> channel(KEYWORD_CHANNEL);
+SELECTEDMEASURENAME:    'SELECTEDMEASURENAME'                                                                     -> channel(KEYWORD_CHANNEL);
 SIGN:                   'SIGN'                                                                                    -> channel(KEYWORD_CHANNEL);
 SIN:                    'SIN'                                                                                     -> channel(KEYWORD_CHANNEL);
 SINH:                   'SINH'                                                                                    -> channel(KEYWORD_CHANNEL);

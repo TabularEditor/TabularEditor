@@ -233,7 +233,7 @@ namespace TabularEditor.TOMWrapper
         /// Returns all columns, measures and hierarchies inside this table.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<ITabularNamedObject> GetChildren()
+        public virtual IEnumerable<ITabularNamedObject> GetChildren()
         {
             foreach (var m in Measures) yield return m;
             foreach (var c in Columns) yield return c;
@@ -241,7 +241,7 @@ namespace TabularEditor.TOMWrapper
             yield break;
         }
 
-        public IEnumerable<IFolderObject> GetChildrenByFolders()
+        public virtual IEnumerable<IFolderObject> GetChildrenByFolders()
         {
             return FolderCache[""].GetChildrenByFolders();
         }

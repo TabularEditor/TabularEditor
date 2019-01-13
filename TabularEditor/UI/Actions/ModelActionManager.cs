@@ -116,6 +116,11 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => m.DataSources.Any() && !Handler.UsePowerBIGovernance, (s, m) => m.AddTable().Vis().Edit(), (s, m) => @"Create New\Table", false, Context.Tables | Context.Model, Keys.Alt | Keys.D5));
 
             Add(new Action((s, m) => true, (s, m) => m.AddCalculatedTable().Vis().Edit(), (s, m) => @"Create New\Calculated Table", false, Context.Tables | Context.Model, Keys.Alt | Keys.D6));
+            Add(new Action((s, m) => Handler.CompatibilityLevel >= 1460, (s, m) => m.AddCalculationGroup().Vis().Edit(), (s, m) => @"Create New\Calculation Group", false, Context.Tables | Context.Model, Keys.Alt | Keys.D7));
+
+            Add(new Action((s, m) => s.Count == 1, (s, m) => s.CalculationGroup.AddCalculationItem().Edit(), (s, m) => @"New Calculation Item", false, Context.CalculationGroup));
+            Add(new Action((s, m) => true, (s, m) => s.CalculationItems.First().CalculationGroup.AddCalculationItem().Edit(), (s, m) => @"New Calculation Item", false, Context.CalculationItem));
+            Add(new Action((s, m) => true, (s, m) => (s.Column.Table as CalculationGroupTable).AddCalculationItem().Edit(), (s, m) => @"New Calculation Item", false, Context.CalculationGroupColumn));
 
             Add(new Action((s, m) => !Handler.UsePowerBIGovernance, (s, m) => m.AddDataSource().Edit(), (s, m) => @"Create New\Data Source (Legacy)", false, Context.DataSources | Context.Model));
             Add(new Action((s, m) => Handler.CompatibilityLevel >= 1400 && !Handler.UsePowerBIGovernance, (s, m) => m.AddStructuredDataSource().Edit(), (s, m) => @"Create New\Data Source (Power Query)", false, Context.DataSources | Context.Model));
