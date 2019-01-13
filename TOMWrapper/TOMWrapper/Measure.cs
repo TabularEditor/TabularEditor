@@ -23,11 +23,17 @@ namespace TabularEditor.TOMWrapper
             get
             {
                 var errorMessage = "";
-                if (!string.IsNullOrEmpty(MetadataObject.ErrorMessage)) errorMessage += (Handler.CompatibilityLevel >= 1400 ? "Expression: " : "") + MetadataObject.ErrorMessage;
+                if (!string.IsNullOrEmpty(MetadataObject.ErrorMessage))
+                    errorMessage += (Handler.CompatibilityLevel >= 1400 ? "Expression: " : "") + MetadataObject.ErrorMessage;
                 if (Handler.CompatibilityLevel >= 1400 && !string.IsNullOrEmpty(MetadataObject.DetailRowsDefinition?.ErrorMessage))
                 {
                     if (errorMessage != "") errorMessage += "\r\n";
-                    errorMessage += (Handler.CompatibilityLevel >= 1400 ? "Detail rows expression: " : "") + MetadataObject.DetailRowsDefinition.ErrorMessage;
+                    errorMessage += "Detail rows expression: " + MetadataObject.DetailRowsDefinition.ErrorMessage;
+                }
+                if (Handler.CompatibilityLevel >= 1460 && !string.IsNullOrEmpty(MetadataObject.FormatStringDefinition?.ErrorMessage))
+                {
+                    if (errorMessage != "") errorMessage += "\r\n";
+                    errorMessage += "Format string expression: " + MetadataObject.FormatStringDefinition.ErrorMessage;
                 }
                 return errorMessage;
             }
@@ -136,6 +142,7 @@ namespace TabularEditor.TOMWrapper
             switch(propertyName)
             {
                 case Properties.DETAILROWSEXPRESSION:
+                case Properties.FORMATSTRINGEXPRESSION:
                 case Properties.EXPRESSION:
                     NeedsValidation = true;
                     FormulaFixup.BuildDependencyTree(this);
@@ -227,6 +234,7 @@ namespace TabularEditor.TOMWrapper
                 OnPropertyChanged(Properties.DETAILROWSEXPRESSION, oldValue, value);
             }
         }
+        public bool ShouldSerializeDetailRowsExpression() { return false; }
 
         [DisplayName("Format String Expression")]
         [Category("Options"), IntelliSense("A DAX expression that returns a Format String for this measure.")]
@@ -256,6 +264,8 @@ namespace TabularEditor.TOMWrapper
                 OnPropertyChanged(Properties.FORMATSTRINGEXPRESSION, oldValue, value);
             }
         }
+        public bool ShouldSerializeFormatStringExpression() { return false; }
+
 
         [Browsable(false)]
         public string DaxObjectName
