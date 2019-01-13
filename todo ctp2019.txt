@@ -1,0 +1,4 @@
+CTP 2019 notes
+==============
+
+Measure.cs and DaxDependencyHelper.cs: Verify CL requirement for FormatStringExpression

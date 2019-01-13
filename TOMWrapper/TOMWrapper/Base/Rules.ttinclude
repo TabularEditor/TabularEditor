@@ -457,6 +457,8 @@ partial class Rules {
        { "Table", "TabularNamedObject" },
        { "WindowsModelRoleMember", "ModelRoleMember" },
 	   { "NamedExpression", "TabularNamedObject" },
+	   { "CalculationItem", "TabularNamedObject" },
+	   { "CalculationGroup", "TabularObject" }
    };
    public static Dictionary<Type, string> ObjectTypes = Convert(_objectTypes).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
    
@@ -488,7 +490,8 @@ partial class Rules {
 	   { "Relationship", "Relationships" },
 	   { "DataSource", "DataSources" },
 	   { "Variation", "Variations" },
-	   { "NamedExpression", "Expressions" }
+	   { "NamedExpression", "Expressions" },
+	   { "CalculationItem", "CalculationItems" }
    };
    public static Dictionary<Type, string> Collections = Convert(_objectCollections).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
@@ -526,7 +529,9 @@ partial class Rules {
        { new KeyValuePair<string, string>("Variation", "Column") },
 
 	   // Collections owned by a Hierarchy (order of items matters, as this is the order in which child objects will be initialized):
-       { new KeyValuePair<string, string>("Level", "Hierarchy") }
+       { new KeyValuePair<string, string>("Level", "Hierarchy") },
+
+	   { new KeyValuePair<string, string>("CalculationItem", "CalculationGroup") }
    };
    public static readonly List<KeyValuePair<Type, string>> CollectionParent = Convert(_collectionParent).ToList();
 
