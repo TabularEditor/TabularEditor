@@ -33,12 +33,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_0E61312C5CF9E2ADC52533D1EFBE2A5F"
-        "OwnerKey" = "8:_93B74A1938734E17BA0AFB1BEC2AE449"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_0FA5D52823650471FE5A84344531AC8D"
         "OwnerKey" = "8:_93B74A1938734E17BA0AFB1BEC2AE449"
         "MsmSig" = "8:_UNDEFINED"
@@ -58,7 +52,7 @@
         "Entry"
         {
         "MsmKey" = "8:_44AE4CC739DD5171D7F604B5875ED075"
-        "OwnerKey" = "8:_0E61312C5CF9E2ADC52533D1EFBE2A5F"
+        "OwnerKey" = "8:_E60CDF18FAFAA3A947BD3DA19E0E84B7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -100,7 +94,7 @@
         "Entry"
         {
         "MsmKey" = "8:_74D46761367DBFE4193B9727C730D86F"
-        "OwnerKey" = "8:_0E61312C5CF9E2ADC52533D1EFBE2A5F"
+        "OwnerKey" = "8:_E60CDF18FAFAA3A947BD3DA19E0E84B7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -112,7 +106,7 @@
         "Entry"
         {
         "MsmKey" = "8:_87AD501627337103EB29A57FA4B468B9"
-        "OwnerKey" = "8:_0E61312C5CF9E2ADC52533D1EFBE2A5F"
+        "OwnerKey" = "8:_E60CDF18FAFAA3A947BD3DA19E0E84B7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -142,7 +136,7 @@
         "Entry"
         {
         "MsmKey" = "8:_95D6F729A88A77934E748C9F101486AF"
-        "OwnerKey" = "8:_0E61312C5CF9E2ADC52533D1EFBE2A5F"
+        "OwnerKey" = "8:_E60CDF18FAFAA3A947BD3DA19E0E84B7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -172,7 +166,13 @@
         "Entry"
         {
         "MsmKey" = "8:_E1196A10BF8A7B83886FAB26159C7DC6"
-        "OwnerKey" = "8:_0E61312C5CF9E2ADC52533D1EFBE2A5F"
+        "OwnerKey" = "8:_E60CDF18FAFAA3A947BD3DA19E0E84B7"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E60CDF18FAFAA3A947BD3DA19E0E84B7"
+        "OwnerKey" = "8:_93B74A1938734E17BA0AFB1BEC2AE449"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -202,7 +202,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_0E61312C5CF9E2ADC52533D1EFBE2A5F"
+        "OwnerKey" = "8:_E60CDF18FAFAA3A947BD3DA19E0E84B7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -470,37 +470,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_0E61312C5CF9E2ADC52533D1EFBE2A5F"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:TOMWrapper, Version=2.5.6948.42778, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_0E61312C5CF9E2ADC52533D1EFBE2A5F"
-                    {
-                    "Name" = "8:TOMWrapper.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:TOMWrapper.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_86B6DEA1587144389D74191CBF86D6D0"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_0FA5D52823650471FE5A84344531AC8D"
@@ -884,6 +853,37 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E60CDF18FAFAA3A947BD3DA19E0E84B7"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:TOMWrapper, Version=2.5.6948.43075, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_E60CDF18FAFAA3A947BD3DA19E0E84B7"
+                    {
+                    "Name" = "8:TOMWrapper.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:TOMWrapper.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_86B6DEA1587144389D74191CBF86D6D0"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F3F9741EBF78491DAA411584F3DDBF15"
             {
             "SourcePath" = "8:..\\LICENSE"
@@ -1033,15 +1033,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Tabular Editor"
-        "ProductCode" = "8:{11774526-D678-4E5F-A232-4AE949EE4E58}"
-        "PackageCode" = "8:{EDB639CC-2901-474E-9381-929EF7B9B0A9}"
+        "ProductCode" = "8:{7D6F172D-9960-42BE-A1D8-F35ABA3507FF}"
+        "PackageCode" = "8:{B7D64166-C7C8-42DE-AAEA-C3F38B97F654}"
         "UpgradeCode" = "8:{E20734F5-CD2A-4A76-AB20-014819FCDE35}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.2.3"
+        "ProductVersion" = "8:1.2.4"
         "Manufacturer" = "8:Daniel Otykier"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:https://github.com/otykier/TabularEditor/issues"
