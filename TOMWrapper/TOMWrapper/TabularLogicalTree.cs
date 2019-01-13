@@ -260,21 +260,18 @@ namespace TabularEditor.TOMWrapper
         
         private IEnumerable<ITabularNamedObject> GetChildrenForTable(Table table)
         {
-            if (table.SourceType != PartitionSourceType.Calculated)
-            {
-                /*// Don't show the "Partitions" node below tables, when none of the partitions match the filter
-                if (!string.IsNullOrEmpty(Filter))
-                {
-                    // Match on table name:
-                    if (table.Name.IndexOf(Filter, StringComparison.InvariantCultureIgnoreCase) >= 0) yield return table.Partitions;
-                    else if (table.Partitions.Any(p => p.Name.IndexOf(Filter, StringComparison.InvariantCultureIgnoreCase) >= 0)) yield return table.Partitions;
-                }
-                else*/
-                    yield return table.Partitions;
-            }
-
             IEnumerable<ITabularNamedObject> items;
 
+            if (table.SourceType != PartitionSourceType.Calculated && table.ObjectType != ObjectType.CalculationGroup)
+            {
+                yield return table.Partitions;
+            }
+
+            if (table.ObjectType == ObjectType.CalculationGroup)
+            {
+                items = table.GetChildren();
+            }
+            else
             if (Options.HasFlag(LogicalTreeOptions.DisplayFolders))
             {
                 var rootFolder = Folder.CreateFolder(table, "");
@@ -310,7 +307,7 @@ namespace TabularEditor.TOMWrapper
                 // return the objects needed:
                 if (Options.HasFlag(LogicalTreeOptions.AllObjectTypes))
                 {
-                    result = Model.GetChildren().Where(o => VisibleInTree(o));
+                    return Model.GetChildren().Where(o => VisibleInTree(o));
                 }
                 // Otherwise, only show tables:
                 else result = Model.Tables.Where(t => VisibleInTree(t));

@@ -196,18 +196,6 @@ namespace TabularEditor.TOMWrapper
             if (container != null) foreach (var child in container.GetChildren().OfType<TabularNamedObject>()) child.AfterRemoval(GetCollectionForChild(child));
         }
 
-        internal virtual ITabularObjectCollection GetCollectionForChild(TabularObject child)
-        {
-            throw new NotSupportedException("This object does not have any child collections.");
-        }
-
-        protected virtual void Children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == NotifyCollectionChangedAction.Add)
-                Handler.Tree.OnNodesInserted(this, e.NewItems.Cast<ITabularObject>());
-            else if (e.Action == NotifyCollectionChangedAction.Remove)
-                Handler.Tree.OnNodesRemoved(this, e.OldItems.Cast<ITabularObject>());
-        }
 
         protected TabularNamedObject(NamedMetadataObject metadataObject) : base(metadataObject)
         {

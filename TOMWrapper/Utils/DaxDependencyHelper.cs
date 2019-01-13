@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper.Utils
             if (TabularModelHandler.Singleton.CompatibilityLevel >= 1400)
             {
                 if (obj is Measure) yield return DAXProperty.DetailRowsExpression;
-                if (obj is Table) yield return DAXProperty.DefaultDetailRowsExpression;
+                if (obj.ObjectType == ObjectType.Table) yield return DAXProperty.DefaultDetailRowsExpression;
             }
             if (TabularModelHandler.Singleton.CompatibilityLevel >= 1460) // TODO: Check if this is the correct CL for FormatStringDefinition
             {
@@ -29,6 +29,11 @@ namespace TabularEditor.TOMWrapper.Utils
             if (obj is RLSFilterExpression)
             {
                 yield return DAXProperty.Expression;
+            }
+            if (obj.ObjectType == ObjectType.CalculationItem)
+            {
+                yield return DAXProperty.Expression;
+                yield return DAXProperty.FormatStringExpression;
             }
         }
 
@@ -58,6 +63,12 @@ namespace TabularEditor.TOMWrapper.Utils
             if(obj is IExpressionObject && property == DAXProperty.Expression)
             {
                 return (obj as IExpressionObject).Expression;
+            }
+
+            if(obj is CalculationItem ci)
+            {
+                if (property == DAXProperty.Expression) return ci.Expression;
+                if (property == DAXProperty.FormatStringExpression) return ci.FormatStringExpression;
             }
 
             if (TabularModelHandler.Singleton.CompatibilityLevel >= 1400)
@@ -111,7 +122,16 @@ namespace TabularEditor.TOMWrapper.Utils
             }
 
             if (obj is Measure m && property == DAXProperty.FormatStringExpression)
+            {
                 m.FormatStringExpression = expression;
+                return;
+            }
+            if (obj is CalculationItem ci)
+            {
+                if (property == DAXProperty.Expression) { ci.Expression = expression; return; }
+                if (property == DAXProperty.FormatStringExpression) { ci.FormatStringExpression = expression; return; }
+            }
+
 
             throw new ArgumentException(string.Format(Messages.InvalidExpressionProperty, obj.GetTypeName(), property), "property");
         }

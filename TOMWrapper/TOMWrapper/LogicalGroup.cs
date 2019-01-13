@@ -21,6 +21,7 @@ namespace TabularEditor.TOMWrapper
         public const string RELATIONSHIPS = "Relationships";
         public const string DATASOURCES = "Data Sources";
         public const string EXPRESSIONS = "Shared Expressions";
+        //public const string CALCULATIONGROUPS = "Calculation Groups";
 
         public readonly LogicalGroup DataSources = new LogicalGroup(DATASOURCES);
         public readonly LogicalGroup Perspectives = new LogicalGroup(PERSPECTIVES);
@@ -28,6 +29,7 @@ namespace TabularEditor.TOMWrapper
         public readonly LogicalGroup Roles = new LogicalGroup(ROLES);
         public readonly LogicalGroup Expressions = new LogicalGroup(EXPRESSIONS);
         public readonly LogicalGroup Tables = new LogicalGroup(TABLES);
+        //public readonly LogicalGroup CalculationGroups = new LogicalGroup(CALCULATIONGROUPS);
         public readonly LogicalGroup Translations = new LogicalGroup(TRANSLATIONS);
 
         private IEnumerable<LogicalGroup> Groups()
@@ -38,6 +40,7 @@ namespace TabularEditor.TOMWrapper
             yield return Roles;
             if(TabularModelHandler.Singleton.CompatibilityLevel >= 1400) yield return Expressions;
             yield return Tables;
+            //if (TabularModelHandler.Singleton.CompatibilityLevel >= 1460) yield return CalculationGroups; // TODO: Verify CL
             yield return Translations;
         }
 
@@ -79,6 +82,7 @@ namespace TabularEditor.TOMWrapper
                 case LogicalGroups.TRANSLATIONS: return Model.Cultures;
                 case LogicalGroups.RELATIONSHIPS: return Model.Relationships;
                 case LogicalGroups.DATASOURCES: return Model.DataSources;
+                //case LogicalGroups.CALCULATIONGROUPS: return Model.Tables.OfType<CalculationGroupTable>();
             }
             return Enumerable.Empty<TabularNamedObject>();
         }

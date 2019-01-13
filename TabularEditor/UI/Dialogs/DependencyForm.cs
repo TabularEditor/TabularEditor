@@ -162,6 +162,12 @@ namespace TabularEditor
                         newNode.Tag = (d as RLSFilterExpression).Role;
                         n.Nodes.Add(newNode);
                     }
+                    else if (currentDepth < MAX_LEVELS && d is CalculationItem ci)
+                    {
+                        var newNode = new TreeNode(d.GetName(), i, i);
+                        newNode.Tag = ci;
+                        n.Nodes.Add(newNode);
+                    }
                     else n.Nodes.Add("(Infinite recursion)");
                     currentDepth--;
                 }

@@ -182,8 +182,8 @@ namespace TabularEditor.TOMWrapper
             { typeof(Table) , typeof(TOM.Table) },
             { typeof(WindowsModelRoleMember) , typeof(TOM.WindowsModelRoleMember) },
             { typeof(NamedExpression) , typeof(TOM.NamedExpression) },
-            { typeof(CalculationItem) , typeof(TOM.CalculationItem) },
             { typeof(CalculationGroup) , typeof(TOM.CalculationGroup) },
+            { typeof(CalculationItem) , typeof(TOM.CalculationItem) },
 	    };
 
 		public static Type ToTOM(Type wrapperType) {
@@ -9977,29 +9977,6 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeAlternateSourcePrecedence() { return false; }
 
-		[DisplayName("Calculation Group")]
-		[Category("Other"),Description(@"The CalculationGroup of this Table"),IntelliSense(@"The CalculationGroup of this Table")]
-		public CalculationGroup CalculationGroup {
-			get {
-				if (MetadataObject.CalculationGroup == null) return null;
-			    return Handler.WrapperLookup[MetadataObject.CalculationGroup] as CalculationGroup;
-            }
-			set {
-				
-				var oldValue = CalculationGroup;
-				var newValue = value;
-				if (oldValue?.MetadataObject == newValue?.MetadataObject) return;
-				bool undoable = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.CALCULATIONGROUP, newValue, ref undoable, ref cancel);
-				if (cancel) return;
-				if (!MetadataObject.IsRemoved) MetadataObject.CalculationGroup = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.CALCULATIONGROUP, oldValue, newValue));
-				OnPropertyChanged(Properties.CALCULATIONGROUP, oldValue, newValue);
-			}
-		}
-		private bool ShouldSerializeCalculationGroup() { return false; }
-
         /// <Summary>
 		/// Collection of perspectives in which this Table is visible.
 		/// </Summary>
@@ -10279,6 +10256,7 @@ namespace TabularEditor.TOMWrapper
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
 			foreach(var obj in TOM_Collection) {
                 if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.Calculated) CalculatedTable.CreateFromMetadata(Model, obj);
+				else if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.CalculationGroup) CalculationGroupTable.CreateFromMetadata(Model, obj);
                 else Table.CreateFromMetadata(Model, obj);
 		    }
 		}
@@ -10352,18 +10330,6 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("AlternateSourcePrecedence"));
 				this.ToList().ForEach(item => { item.AlternateSourcePrecedence = value; });
-				Handler.UndoManager.EndBatch();
-			}
-		}
-		/// <summary>
-		/// Sets the CalculationGroup property of all objects in the collection at once.
-		/// </summary>
-		[Description("Sets the CalculationGroup property of all objects in the collection at once.")]
-		public CalculationGroup CalculationGroup {
-			set {
-				if(Handler == null) return;
-				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("CalculationGroup"));
-				this.ToList().ForEach(item => { item.CalculationGroup = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}
@@ -10993,6 +10959,227 @@ namespace TabularEditor.TOMWrapper
   
 	
 	[TypeConverter(typeof(DynamicPropertyConverter))]
+	public sealed partial class CalculationGroup: TabularObject
+			, IDescriptionObject
+			, IAnnotationObject
+	{
+	    internal new TOM.CalculationGroup MetadataObject 
+		{ 
+			get 
+			{ 
+				return base.MetadataObject as TOM.CalculationGroup; 
+		    } 
+			set 
+			{ 
+				base.MetadataObject = value; 
+			}
+		}
+
+        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on this object."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+		public AnnotationCollection Annotations { get; private set; }
+		public string GetAnnotation(int index) {
+			return MetadataObject.Annotations[index].Value;
+		}
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
+		public string GetAnnotation(string name) {
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
+		}
+		public void SetAnnotation(int index, string value, bool undoable = true) {
+			var name = MetadataObject.Annotations[index].Name;
+			SetAnnotation(name, value, undoable);
+		}
+		public string GetNewAnnotationName() {
+			return MetadataObject.Annotations.GetNewName("New Annotation");
+		}
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		public void SetAnnotation(string name, string value, bool undoable) {
+			if(name == null) name = GetNewAnnotationName();
+
+			if(value == null) {
+				// Remove annotation if set to null:
+				RemoveAnnotation(name, undoable);
+				return;
+			}
+
+			if(GetAnnotation(name) == value) return;
+			bool undoable2 = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Change existing annotation:
+				var oldValue = GetAnnotation(name);
+				MetadataObject.Annotations[name].Value = value;
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new annotation:
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+			}
+
+		}
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		public void RemoveAnnotation(string name, bool undoable) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Get current value:
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				if (cancel) return;
+
+				var oldValue = MetadataObject.Annotations[name].Value;
+				MetadataObject.Annotations.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			}
+		}
+		[IntelliSense("Gets the number of annotations on the current object.")]
+		public int GetAnnotationsCount() {
+			return MetadataObject.Annotations.Count;
+		}
+		[IntelliSense("Gets a collection of all annotation names on the current object.")]
+		public IEnumerable<string> GetAnnotations() {
+			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		
+		[DisplayName("Description")]
+		[Category("Basic"),Description(@"The Description of this CalculationGroup"),IntelliSense(@"The Description of this CalculationGroup")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		public string Description {
+			get {
+			    return MetadataObject.Description;
+			}
+			set {
+				
+				var oldValue = Description;
+				var newValue = value.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
+				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeDescription() { return false; }
+
+		[DisplayName("Precedence")]
+		[Category("Other"),Description(@"The Precedence of this CalculationGroup"),IntelliSense(@"The Precedence of this CalculationGroup")]
+		public int Precedence {
+			get {
+			    return MetadataObject.Precedence;
+			}
+			set {
+				
+				var oldValue = Precedence;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.PRECEDENCE, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.Precedence = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.PRECEDENCE, oldValue, newValue));
+				OnPropertyChanged(Properties.PRECEDENCE, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializePrecedence() { return false; }
+		[Browsable(false)]
+		public Table Table
+		{ 
+			get 
+			{ 
+				TabularObject t = null;
+				if(MetadataObject == null || MetadataObject.Table == null) return null;
+				if(!Handler.WrapperLookup.TryGetValue(MetadataObject.Table, out t)) {
+				    t = Model.Tables[MetadataObject.Table.Name];
+				}
+				return t as Table;
+			} 
+		}
+
+	
+        internal override void RenewMetadataObject()
+        {
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject = MetadataObject.Clone() as TOM.CalculationGroup;
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+
+        internal override ITabularObjectCollection GetCollectionForChild(TabularObject child)
+        {
+			if (child is CalculationItem) return CalculationItems;
+            return base.GetCollectionForChild(child);
+        }
+
+        /// <summary>
+        /// The collection of CalculationItem objects on this CalculationGroup.
+        /// </summary>
+		[DisplayName("Calculation Items")]
+		[Category("Other"),IntelliSense("The collection of Calculation Item objects on this CalculationGroup.")][Browsable(false)]
+		public CalculationItemCollection CalculationItems { get; private set; }
+
+		/// <summary>
+		/// CTOR - only called from static factory methods on the class
+		/// </summary>
+		CalculationGroup(TOM.CalculationGroup metadataObject) : base(metadataObject)
+		{
+			
+			// Create indexer for annotations:
+			Annotations = new AnnotationCollection(this);
+			
+			// Instantiate child collections:
+			CalculationItems = new CalculationItemCollection(this.GetObjectPath() + ".CalculationItems", MetadataObject.CalculationItems, this);
+
+			// Populate child collections:
+			CalculationItems.CreateChildrenFromMetadata();
+
+			// Hook up event handlers on child collections:
+			CalculationItems.CollectionChanged += Children_CollectionChanged;
+		}
+
+
+		internal override void Reinit() {
+			CalculationItems.Reinit();
+		}
+
+		internal override void Undelete(ITabularObjectCollection collection) {
+			base.Undelete(collection);
+			Reinit();
+			ReapplyReferences();
+		}
+
+		public override bool Browsable(string propertyName) {
+			switch (propertyName) {
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
+    }
+
+  
+	
+	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class CalculationItem: TabularNamedObject
 			, IErrorMessageObject
 			, IDescriptionObject
@@ -11044,16 +11231,6 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeState() { return false; }
 
-		[DisplayName("Error Message")]
-		[Category("Metadata"),Description(@"The ErrorMessage of this CalculationItem"),IntelliSense(@"The ErrorMessage of this CalculationItem")]
-		public string ErrorMessage {
-			get {
-			    return MetadataObject.ErrorMessage;
-			}
-			
-		}
-		private bool ShouldSerializeErrorMessage() { return false; }
-
 		[DisplayName("Expression")]
 		[Category("Options"),Description(@"The Expression of this CalculationItem"),IntelliSense(@"The Expression of this CalculationItem")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Expression {
@@ -11075,17 +11252,6 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeExpression() { return false; }
-
-		[DisplayName("Calculation Group")]
-		[Category("Other"),Description(@"The CalculationGroup of this CalculationItem"),IntelliSense(@"The CalculationGroup of this CalculationItem")]
-		public CalculationGroup CalculationGroup {
-			get {
-				if (MetadataObject.CalculationGroup == null) return null;
-			    return Handler.WrapperLookup[MetadataObject.CalculationGroup] as CalculationGroup;
-            }
-			
-		}
-		private bool ShouldSerializeCalculationGroup() { return false; }
 
 		internal static CalculationItem CreateFromMetadata(CalculationGroup parent, TOM.CalculationItem metadataObject) {
 			var obj = new CalculationItem(metadataObject);
@@ -11273,226 +11439,4 @@ namespace TabularEditor.TOMWrapper
 			return string.Format("({0} {1})", Count, (Count == 1 ? "CalculationItem" : "CalculationItems").ToLower());
 		}
 	}
-  
-	
-	[TypeConverter(typeof(DynamicPropertyConverter))]
-	public sealed partial class CalculationGroup: TabularObject
-			, ITabularTableObject
-			, IDescriptionObject
-			, IAnnotationObject
-	{
-	    internal new TOM.CalculationGroup MetadataObject 
-		{ 
-			get 
-			{ 
-				return base.MetadataObject as TOM.CalculationGroup; 
-		    } 
-			set 
-			{ 
-				base.MetadataObject = value; 
-			}
-		}
-
-        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on this object."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
-		public AnnotationCollection Annotations { get; private set; }
-		public string GetAnnotation(int index) {
-			return MetadataObject.Annotations[index].Value;
-		}
-		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
-		public bool HasAnnotation(string name) {
-		    return MetadataObject.Annotations.ContainsName(name);
-		}
-		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
-		public string GetAnnotation(string name) {
-		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
-		}
-		public void SetAnnotation(int index, string value, bool undoable = true) {
-			var name = MetadataObject.Annotations[index].Name;
-			SetAnnotation(name, value, undoable);
-		}
-		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
-		}
-		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
-		public void SetAnnotation(string name, string value) {
-		    SetAnnotation(name, value, true);
-		}
-		public void SetAnnotation(string name, string value, bool undoable) {
-			if(name == null) name = GetNewAnnotationName();
-
-			if(value == null) {
-				// Remove annotation if set to null:
-				RemoveAnnotation(name, undoable);
-				return;
-			}
-
-			if(GetAnnotation(name) == value) return;
-			bool undoable2 = true;
-			bool cancel = false;
-			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
-			if (cancel) return;
-
-			if(MetadataObject.Annotations.Contains(name)) {
-				// Change existing annotation:
-				var oldValue = GetAnnotation(name);
-				MetadataObject.Annotations[name].Value = value;
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
-			} else {
-				// Add new annotation:
-				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
-				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
-			}
-
-		}
-		[IntelliSense("Remove an annotation by the given name.")]
-		public void RemoveAnnotation(string name) {
-		    RemoveAnnotation(name, true);
-		}
-		public void RemoveAnnotation(string name, bool undoable) {
-			if(MetadataObject.Annotations.Contains(name)) {
-				// Get current value:
-				bool undoable2 = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
-				if (cancel) return;
-
-				var oldValue = MetadataObject.Annotations[name].Value;
-				MetadataObject.Annotations.Remove(name);
-
-				// Undo-handling:
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
-			}
-		}
-		[IntelliSense("Gets the number of annotations on the current object.")]
-		public int GetAnnotationsCount() {
-			return MetadataObject.Annotations.Count;
-		}
-		[IntelliSense("Gets a collection of all annotation names on the current object.")]
-		public IEnumerable<string> GetAnnotations() {
-			return MetadataObject.Annotations.Select(a => a.Name);
-		}
-
-		
-		[DisplayName("Description")]
-		[Category("Basic"),Description(@"The Description of this CalculationGroup"),IntelliSense(@"The Description of this CalculationGroup")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
-		public string Description {
-			get {
-			    return MetadataObject.Description;
-			}
-			set {
-				
-				var oldValue = Description;
-				var newValue = value.Replace("\r", "");
-				if (oldValue == newValue) return;
-				bool undoable = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
-				if (cancel) return;
-				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
-				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
-			}
-		}
-		private bool ShouldSerializeDescription() { return false; }
-
-		[DisplayName("Precedence")]
-		[Category("Other"),Description(@"The Precedence of this CalculationGroup"),IntelliSense(@"The Precedence of this CalculationGroup")]
-		public int Precedence {
-			get {
-			    return MetadataObject.Precedence;
-			}
-			set {
-				
-				var oldValue = Precedence;
-				var newValue = value;
-				if (oldValue == newValue) return;
-				bool undoable = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.PRECEDENCE, newValue, ref undoable, ref cancel);
-				if (cancel) return;
-				if (!MetadataObject.IsRemoved) MetadataObject.Precedence = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.PRECEDENCE, oldValue, newValue));
-				OnPropertyChanged(Properties.PRECEDENCE, oldValue, newValue);
-			}
-		}
-		private bool ShouldSerializePrecedence() { return false; }
-		[Browsable(false)]
-		public Table Table
-		{ 
-			get 
-			{ 
-				TabularObject t = null;
-				if(MetadataObject == null || MetadataObject.Table == null) return null;
-				if(!Handler.WrapperLookup.TryGetValue(MetadataObject.Table, out t)) {
-				    t = Model.Tables[MetadataObject.Table.Name];
-				}
-				return t as Table;
-			} 
-		}
-
-	
-        internal override void RenewMetadataObject()
-        {
-            Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.CalculationGroup;
-            Handler.WrapperLookup.Add(MetadataObject, this);
-        }
-
-
-        internal override ITabularObjectCollection GetCollectionForChild(TabularObject child)
-        {
-			if (child is CalculationItem) return CalculationItems;
-            return base.GetCollectionForChild(child);
-        }
-
-        /// <summary>
-        /// The collection of CalculationItem objects on this CalculationGroup.
-        /// </summary>
-		[DisplayName("Calculation Items")]
-		[Category("Other"),IntelliSense("The collection of Calculation Item objects on this CalculationGroup.")]
-		public CalculationItemCollection CalculationItems { get; private set; }
-
-		/// <summary>
-		/// CTOR - only called from static factory methods on the class
-		/// </summary>
-		CalculationGroup(TOM.CalculationGroup metadataObject) : base(metadataObject)
-		{
-			
-			// Create indexer for annotations:
-			Annotations = new AnnotationCollection(this);
-			
-			// Instantiate child collections:
-			CalculationItems = new CalculationItemCollection(this.GetObjectPath() + ".CalculationItems", MetadataObject.CalculationItems, this);
-
-			// Populate child collections:
-			CalculationItems.CreateChildrenFromMetadata();
-
-			// Hook up event handlers on child collections:
-			CalculationItems.CollectionChanged += Children_CollectionChanged;
-		}
-
-
-		internal override void Reinit() {
-			CalculationItems.Reinit();
-		}
-
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
-			Reinit();
-			ReapplyReferences();
-		}
-
-		public override bool Browsable(string propertyName) {
-			switch (propertyName) {
-				
-				default:
-					return base.Browsable(propertyName);
-			}
-		}
-
-    }
-
 }

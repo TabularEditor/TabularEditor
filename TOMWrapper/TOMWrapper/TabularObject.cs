@@ -9,6 +9,8 @@ using System;
 using TabularEditor.PropertyGridUI;
 using json.Newtonsoft.Json.Linq;
 using TabularEditor.TOMWrapper;
+using System.Collections.Specialized;
+using System.Linq;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -68,6 +70,8 @@ namespace TabularEditor.TOMWrapper
         Expression = 41,
         ColumnPermission = 42,
         DetailRowsDefinition = 43,
+        CalculationGroup = 46,
+        CalculationItem = 47,
         Database = 1000
     }
 
@@ -111,6 +115,19 @@ namespace TabularEditor.TOMWrapper
         internal virtual void DeleteLinkedObjects(bool isChildOfDeleted) { }
         internal virtual void Reinit() { }
 
+        internal virtual ITabularObjectCollection GetCollectionForChild(TabularObject child)
+        {
+            throw new NotSupportedException("This object does not have any child collections.");
+        }
+
+
+        protected virtual void Children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add)
+                Handler.Tree.OnNodesInserted(this, e.NewItems.Cast<ITabularObject>());
+            else if (e.Action == NotifyCollectionChangedAction.Remove)
+                Handler.Tree.OnNodesRemoved(this, e.OldItems.Cast<ITabularObject>());
+        }
         protected virtual void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -148,7 +165,7 @@ namespace TabularEditor.TOMWrapper
         public Model Model { get { return MetadataObject.Model == null ? null : Handler.WrapperLookup[MetadataObject.Model] as Model; } }
 
         [Browsable(false),IntelliSense("The type of this object (Folder, Measure, Table, etc.).")]
-        public ObjectType ObjectType { get { return (ObjectType)MetadataObject.ObjectType; } }
+        public virtual ObjectType ObjectType { get { return (ObjectType)MetadataObject.ObjectType; } }
 
         [Category("Basic")]
         [DisplayName("Object Type"),IntelliSense("The type name of this object (\"Folder\", \"Measure\", \"Table\", etc.).")]
@@ -168,7 +185,7 @@ namespace TabularEditor.TOMWrapper
 
             // Assign collection based on parent:
             if (metadataObject.Parent != null)
-                Collection = (Handler.WrapperLookup[metadataObject.Parent] as TabularNamedObject).GetCollectionForChild(this);
+                Collection = (Handler.WrapperLookup[metadataObject.Parent] as TabularObject).GetCollectionForChild(this);
         }
 
         /// <summary>

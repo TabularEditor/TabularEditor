@@ -21,7 +21,7 @@ namespace TabularEditor.TOMWrapper
         string CollectionName { get; }
         ITabularObjectCollection GetCurrentCollection();
         int IndexOf(TabularNamedObject obj);
-        TabularNamedObject Parent { get; }
+        TabularObject Parent { get; }
         void CreateChildrenFromMetadata();
         Type ItemType { get; }
     }
@@ -31,7 +31,7 @@ namespace TabularEditor.TOMWrapper
     {
         // Functionality:
         #region CTOR
-        protected TabularObjectCollection(string collectionName, TabularNamedObject parent)
+        protected TabularObjectCollection(string collectionName, TabularObject parent)
         {
             _parent = parent;
             _handler = TabularModelHandler.Singleton;
@@ -40,9 +40,9 @@ namespace TabularEditor.TOMWrapper
         }
         #endregion
         #region Internal / private members
-        private TabularNamedObject _parent;
+        private TabularObject _parent;
         private TabularModelHandler _handler;
-        internal protected TabularNamedObject Parent { get { return _parent; } }
+        internal protected TabularObject Parent { get { return _parent; } }
         internal TabularModelHandler Handler { get { return _handler; } }
 
         internal virtual void Add(T item)
@@ -172,7 +172,7 @@ namespace TabularEditor.TOMWrapper
             CreateChildrenFromMetadata();
         }
         TabularModelHandler ITabularObjectCollection.Handler { get { return _handler; } }
-        TabularNamedObject ITabularObjectCollection.Parent { get { return _parent; } }
+        TabularObject ITabularObjectCollection.Parent { get { return _parent; } }
         ITabularObjectCollection ITabularObjectCollection.GetCurrentCollection()
         {
             return Handler.WrapperCollections[CollectionName];

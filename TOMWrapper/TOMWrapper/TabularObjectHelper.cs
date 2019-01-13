@@ -105,6 +105,9 @@ namespace TabularEditor.TOMWrapper
                 case TOM.ObjectType.RoleMembership:
                     var mrm = obj as TOM.ModelRoleMember;
                     return GetObjectPath(mrm.Role) + "." + mrm.Name;
+                case TOM.ObjectType.CalculationGroup:
+                    var cg = obj as TOM.CalculationGroup;
+                    return GetObjectPath(cg.Table) + ".CalculationGroup";
                 default:
                     throw new NotSupportedException($"Cannot create reference for object of type {obj.ObjectType}.");
             }

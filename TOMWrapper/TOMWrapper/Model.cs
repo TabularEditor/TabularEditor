@@ -45,6 +45,15 @@ namespace TabularEditor.TOMWrapper
             return t;
         }
 
+        [IntelliSense("Adds a new calculation group to the model."), Tests.GenerateTest()]
+        public CalculationGroupTable AddCalculationGroup(string name = null, string expression = null)
+        {
+            Handler.BeginUpdate("add calculation group");
+            var t = CalculationGroupTable.CreateNew(this, name);
+            Handler.EndUpdate();
+            return t;
+        }
+
         internal static Model CreateFromMetadata(TOM.Model metadataObject)
         {
             var obj = new Model(metadataObject);
@@ -212,6 +221,17 @@ namespace TabularEditor.TOMWrapper
             set { SetValue(ReturnErrorValuesAsNull, value, v => MetadataObject.DataAccessOptions.ReturnErrorValuesAsNull = (bool)v, Properties.RETURNERRORVALUESASNULL); }
         }
         private bool ShouldSerializeReturnErrorValuesAsNull() { return false; }
+
+        protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
+        {
+            if(propertyName == Properties.DISCOURAGEIMPLICITMEASURES && DiscourageImplicitMeasures && (bool)newValue == false)
+            {
+                if (Model.CalculationGroups.Any()) throw new ArgumentOutOfRangeException(Properties.DISCOURAGEIMPLICITMEASURES, "This property must be set 'True' when a model contains calculation groups.");
+            }
+            base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
+        }
+
+        public IEnumerable<CalculationGroupTable> CalculationGroups => Tables.OfType<CalculationGroupTable>();
     }
 
     internal static partial class Properties
