@@ -71,7 +71,12 @@ namespace TabularEditor.TOMWrapper
         public static string GetDisplayFolder(this IFolderObject folderObject, Culture culture)
         {
             if (culture == null) return folderObject.DisplayFolder.TrimFolder();
-            return folderObject.TranslatedDisplayFolders[culture]?.TrimFolder() ?? "";
+            if(folderObject is Folder f)
+            {
+                return f.DisplayFolder;
+            }
+            var folder = folderObject.TranslatedDisplayFolders[culture];
+            return folder == null ? "" : folder.TrimFolder();
         }
         public static void SetDisplayFolder(this IFolderObject folderObject, string newFolderName, Culture culture)
         {

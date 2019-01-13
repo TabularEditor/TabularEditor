@@ -403,7 +403,7 @@ namespace TabularEditor.UIServices
     {
         public override string SuggestSourceName()
         {
-            throw new NotImplementedException();
+            return "New ODBC Data Source"; // TODO: Maybe we should use the DSN name instead?
         }
         public override ProviderType ProviderType => ProviderType.ODBC;
         public override DataSource DataSource => DataSource.OdbcDataSource;
@@ -430,11 +430,24 @@ namespace TabularEditor.UIServices
 
         public override DataTable GetSchemaTable(SchemaNode tableOrView)
         {
-            throw new NotImplementedException();
+            return GetSchemaTable(tableOrView.GetSql());
         }
         public override DataTable GetSchemaTable(string sql)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (var conn = new System.Data.Odbc.OdbcConnection(ProviderString))
+                {
+                    conn.Open();
+                    var cmd = new System.Data.Odbc.OdbcCommand(sql, conn);
+                    var rdr = cmd.ExecuteReader(CommandBehavior.SchemaOnly);
+                    return rdr.GetSchemaTable();
+                }
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public override string QuoteColumn(string unQuotedColumnName)
@@ -510,7 +523,7 @@ namespace TabularEditor.UIServices
             var providerName = !string.IsNullOrWhiteSpace(tabularDataSource.Provider) ? tabularDataSource.Provider : csb.ContainsKey("Provider") ? csb["Provider"].ToString() : "";
             var pName = providerName.ToUpper();
 
-            if (pName.Contains("OLEDB")) ds = new OleDbDataSource();
+            if (pName.Contains("MSADSQL") || pName.Contains("OLEDB")) ds = new OleDbDataSource();
             else if (pName.Contains("SQLNCLI") || pName.Contains("SQLCLIENT")) ds = new SqlDataSource();
             else if (pName.Contains("ODBC")) ds = new OdbcDataSource();
             else if (pName.Contains("ORACLE")) ds = new OracleDataSource();

@@ -13,6 +13,26 @@ namespace TabularEditor.TOMWrapper
     {
         private DependsOnList _dependsOn = null;
 
+        /// <summary>
+        ///             A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError. It is applicable only to columns of the type Calculated or CalculatedTableColumn. It will be empty for other column objects.
+        ///             </summary>
+        [DisplayName("Error Message")]
+        [Category("Metadata"), Description(@"A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError. It is applicable only to columns of the type Calculated or CalculatedTableColumn. It will be empty for other column objects."), IntelliSense(@"A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError. It is applicable only to columns of the type Calculated or CalculatedTableColumn. It will be empty for other column objects.")]
+        public string ErrorMessage
+        {
+            get
+            {
+                var errorMessage = "";
+                if (!string.IsNullOrEmpty(MetadataObject.ErrorMessage)) errorMessage += (Handler.CompatibilityLevel >= 1400 ? "Expression: " : "") + MetadataObject.ErrorMessage;
+                if (Handler.CompatibilityLevel >= 1400 && !string.IsNullOrEmpty(MetadataObject.DetailRowsDefinition?.ErrorMessage))
+                {
+                    if (errorMessage != "") errorMessage += "\r\n";
+                    errorMessage += (Handler.CompatibilityLevel >= 1400 ? "Detail rows expression: " : "") + MetadataObject.DetailRowsDefinition.ErrorMessage;
+                }
+                return errorMessage;
+            }
+        }
+
         [Browsable(false)]
         public DependsOnList DependsOn
         {

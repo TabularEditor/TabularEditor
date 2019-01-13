@@ -62,7 +62,10 @@ namespace TabularEditor.TOMWrapper
                 if (_options == value) return;
                 _options = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Options"));
-                if(oldOptions.HasFlag(LogicalTreeOptions.DisplayFolders) ^ _options.HasFlag(LogicalTreeOptions.DisplayFolders)) RebuildFolderCache();
+                if (oldOptions.HasFlag(LogicalTreeOptions.DisplayFolders) ^ _options.HasFlag(LogicalTreeOptions.DisplayFolders))
+                {
+                    RebuildFolderCache();
+                }
                 OnStructureChanged();
             }
         }
@@ -116,24 +119,30 @@ namespace TabularEditor.TOMWrapper
             {
                 RebuildFolderCacheForTable(table);
             }
+            
         }
 
         private HashSet<Table> folderCachesToBeRebuilt = new HashSet<Table>();
 
         public void RebuildFolderCacheForTable(Table table)
         {
-            if (!Options.HasFlag(LogicalTreeOptions.DisplayFolders)) return;
-
             if (UpdateLocks > 0)
             {
                 folderCachesToBeRebuilt.Add(table);
                 return;
             }
-            
+
             table.FolderCache.Clear();
-            foreach (var m in table.Measures) BuildFolderForObject(m);
-            foreach (var c in table.Columns) BuildFolderForObject(c);
-            foreach (var h in table.Hierarchies) BuildFolderForObject(h);
+            table.ClearError();
+
+            if (Options.HasFlag(LogicalTreeOptions.DisplayFolders))
+            {
+                foreach (var m in table.Measures) BuildFolderForObject(m);
+                foreach (var c in table.Columns) BuildFolderForObject(c);
+                foreach (var h in table.Hierarchies) BuildFolderForObject(h);
+            }
+
+            table.CheckChildrenErrors();
         }
 
         private void BuildFolderForObject(IFolderObject obj)

@@ -20,6 +20,12 @@ namespace TabularEditor.TOMWrapper
     {
         public readonly ModelRole Role;
 
+        protected override bool IsEmptyValue(string value)
+        {
+            return string.IsNullOrWhiteSpace(value);
+        }
+
+
         internal Dictionary<Table, RLSFilterExpression> _filterExpressions = new Dictionary<Table, RLSFilterExpression>();
         public IReadOnlyDictionary<Table, RLSFilterExpression> FilterExpressions => _filterExpressions;
 

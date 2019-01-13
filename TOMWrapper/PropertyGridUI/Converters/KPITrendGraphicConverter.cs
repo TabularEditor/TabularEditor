@@ -11,10 +11,32 @@ namespace TabularEditor.PropertyGridUI
     internal class KPITrendGraphicConverter: TypeConverter
     {
         public static string[] TrendValues = {
+            "Cylinder",
             "Faces",
+            "Five Bars Colored",
+            "Five Boxes Colored",
+            "Gauge",
+            "Gauge – Ascending",
+            "Gauge – Descending",
+            "Reversed Gauge",
             "Reversed status arrow",
+            "Road Signs",
+            "Shapes",
+            "Smiley",
+            "Smiley Face",
             "Standard Arrow",
-            "Status Arrow"
+            "Status Arrow",
+            "Thermometer",
+            "Three Triangles",
+            "Three Circles Colored",
+            "Three Flags Colored",
+            "Three Stars Colored",
+            "Three Symbols Uncircled Colored",
+            "Traffic Light",
+            "Traffic Light – Single",
+            "Variance Arrow",
+            "Status Arrow – Ascending",
+            "Status Arrow – Descending"
         };
 
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)

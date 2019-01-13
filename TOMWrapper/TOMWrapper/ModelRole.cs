@@ -28,7 +28,7 @@ namespace TabularEditor.TOMWrapper
             }
             RowLevelSecurity._filterExpressions.Clear();
         }
-
+        /*
         [Category("Security"), DisplayName("Members")]
         [Description("Specify domain/usernames of the members in this role. One member per line.")]
         [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
@@ -52,6 +52,7 @@ namespace TabularEditor.TOMWrapper
                 }
             }
         }
+        */
 
         [Category("Basic")]
         public string ErrorMessage

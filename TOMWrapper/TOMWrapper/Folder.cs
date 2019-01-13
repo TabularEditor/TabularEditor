@@ -114,6 +114,18 @@ namespace TabularEditor.TOMWrapper
         {
             ErrorMessage = null;
         }
+        internal void AddError(IFolderObject folderObject)
+        {
+            if(ErrorMessage == null)
+            {
+                ErrorMessage = "Child objects with errors:";
+                var parentFolder = this.GetFolder(Tree.Culture);
+                if (parentFolder != null && parentFolder.Name != "") parentFolder.AddError(this);
+                else Table.AddError(this);
+            }
+            if (folderObject is Folder f) ErrorMessage += "\r\nObjects inside the '" + f.Name + "' folder.";
+            else ErrorMessage += "\r\n" + folderObject.GetTypeName() + " " + folderObject.GetName();
+        }
 
         /// <summary>
         /// Deleting a folder does not delete child objects - it just removes the folder.
