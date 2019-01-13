@@ -182,8 +182,10 @@ namespace TabularEditor.TOMWrapper
             switch (propertyName)
             {
                 case Properties.FORMATSTRING: return DataType != DataType.String;
-                case Properties.DETAILROWSDEFINITION:
+                case Properties.DETAILROWSEXPRESSION:
                     return Handler.CompatibilityLevel >= 1400;
+                case Properties.FORMATSTRINGEXPRESSION:
+                    return Handler.CompatibilityLevel >= 1460; // TODO: Verify CL requirement for Format String
 
                 case Properties.DATACATEGORY:
                     return Handler.CompatibilityLevel >= 1455;
@@ -226,6 +228,35 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        [DisplayName("Format String Expression")]
+        [Category("Options"), IntelliSense("A DAX expression that returns a Format String for this measure.")]
+        [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        public string FormatStringExpression
+        {
+            get
+            {
+                return MetadataObject.FormatStringDefinition?.Expression;
+            }
+            set
+            {
+                var oldValue = FormatStringExpression;
+
+                if (oldValue == value || oldValue == null && string.IsNullOrEmpty(value)) return;
+
+                bool undoable = true;
+                bool cancel = false;
+                OnPropertyChanging(Properties.FORMATSTRINGEXPRESSION, value, ref undoable, ref cancel);
+                if (cancel) return;
+
+                if (MetadataObject.FormatStringDefinition == null) MetadataObject.FormatStringDefinition = new TOM.FormatStringDefinition();
+                MetadataObject.FormatStringDefinition.Expression = value;
+                if (string.IsNullOrWhiteSpace(value)) MetadataObject.FormatStringDefinition = null;
+
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FORMATSTRINGEXPRESSION, oldValue, value));
+                OnPropertyChanged(Properties.FORMATSTRINGEXPRESSION, oldValue, value);
+            }
+        }
+
         [Browsable(false)]
         public string DaxObjectName
         {
@@ -257,6 +288,7 @@ namespace TabularEditor.TOMWrapper
     internal static partial class Properties
     {
         public const string DETAILROWSEXPRESSION = "DetailRowsExpression";
+        public const string FORMATSTRINGEXPRESSION = "FormatStringExpression";
     }
 
     public partial class MeasureCollection
