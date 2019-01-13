@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PropertyGridUI\CollectionEditors\ExtendedPropertyCollectionEditor.cs" />
+    <Compile Include="PropertyGridUI\CollectionEditors\RoleMemberCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\Converters\CultureConverter.cs" />
     <Compile Include="PropertyGridUI\Converters\HierarchyColumnConverter.cs" />
     <Compile Include="PropertyGridUI\DataTypeEnumConverter.cs" />
@@ -84,6 +85,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>WrapperBase.tt</DependentUpon>
     </Compile>
+    <Compile Include="TOMWrapper\ModelRoleMember.cs" />
     <Compile Include="TOMWrapper\Serialization\PerspectiveAnnotationSerializer.cs" />
     <Compile Include="TOMWrapper\Serialization\SplitModelSerializer.cs" />
     <Compile Include="TOMWrapper\Serialization\TranslationAnnotationSerializer.cs" />

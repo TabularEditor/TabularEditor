@@ -21,6 +21,7 @@ namespace TabularEditor.PropertyGridUI
     {
         TabularModelHandler handler;
         bool canceled = false;
+        protected bool Cancelled => canceled;
         Type itemType = null;
 
 
@@ -97,7 +98,7 @@ namespace TabularEditor.PropertyGridUI
 
         protected virtual void OnFormClosed(FormClosedEventArgs e)
         {
-
+            
         }
 
         private void Form_FormClosed(object sender, FormClosedEventArgs e)
