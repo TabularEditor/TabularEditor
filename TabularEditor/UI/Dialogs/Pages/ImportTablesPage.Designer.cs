@@ -51,7 +51,9 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.txtSql = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.chkDisablePreview = new System.Windows.Forms.CheckBox();
+            this.chkEnablePreview = new System.Windows.Forms.CheckBox();
+            this.lblRowReduction = new System.Windows.Forms.Label();
+            this.cmbRowReduction = new System.Windows.Forms.ComboBox();
             this.lblHeader = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -307,7 +309,9 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.chkDisablePreview);
+            this.panel1.Controls.Add(this.chkEnablePreview);
+            this.panel1.Controls.Add(this.lblRowReduction);
+            this.panel1.Controls.Add(this.cmbRowReduction);
             this.panel1.Controls.Add(this.lblHeader);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
@@ -315,19 +319,50 @@
             this.panel1.Size = new System.Drawing.Size(818, 31);
             this.panel1.TabIndex = 1;
             // 
-            // chkDisablePreview
+            // chkEnablePreview
             // 
-            this.chkDisablePreview.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.chkDisablePreview.AutoSize = true;
-            this.chkDisablePreview.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.chkDisablePreview.Location = new System.Drawing.Point(712, 8);
-            this.chkDisablePreview.Name = "chkDisablePreview";
-            this.chkDisablePreview.Size = new System.Drawing.Size(101, 17);
-            this.chkDisablePreview.TabIndex = 1;
-            this.chkDisablePreview.Text = "Disable preview";
-            this.toolTip1.SetToolTip(this.chkDisablePreview, "Disabling preview will cause all queries to be generated as \"SELECT * FROM ...\"");
-            this.chkDisablePreview.UseVisualStyleBackColor = true;
-            this.chkDisablePreview.CheckedChanged += new System.EventHandler(this.chkDisablePreview_CheckedChanged);
+            this.chkEnablePreview.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkEnablePreview.AutoSize = true;
+            this.chkEnablePreview.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.chkEnablePreview.Checked = true;
+            this.chkEnablePreview.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkEnablePreview.Location = new System.Drawing.Point(466, 8);
+            this.chkEnablePreview.Name = "chkEnablePreview";
+            this.chkEnablePreview.Size = new System.Drawing.Size(99, 17);
+            this.chkEnablePreview.TabIndex = 4;
+            this.chkEnablePreview.Text = "Enable preview";
+            this.toolTip1.SetToolTip(this.chkEnablePreview, "Disabling preview will cause all queries to be generated as \"SELECT * FROM ...\"");
+            this.chkEnablePreview.UseVisualStyleBackColor = true;
+            this.chkEnablePreview.CheckedChanged += new System.EventHandler(this.chkEnablePreview_CheckedChanged);
+            // 
+            // lblRowReduction
+            // 
+            this.lblRowReduction.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblRowReduction.AutoSize = true;
+            this.lblRowReduction.Location = new System.Drawing.Point(575, 9);
+            this.lblRowReduction.Name = "lblRowReduction";
+            this.lblRowReduction.Size = new System.Drawing.Size(93, 13);
+            this.lblRowReduction.TabIndex = 3;
+            this.lblRowReduction.Text = "reduce rows using";
+            this.lblRowReduction.Click += new System.EventHandler(this.label1_Click);
+            // 
+            // cmbRowReduction
+            // 
+            this.cmbRowReduction.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbRowReduction.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbRowReduction.FormattingEnabled = true;
+            this.cmbRowReduction.Items.AddRange(new object[] {
+            "(None)",
+            "TOP",
+            "FIRST",
+            "LIMIT and OFFSET",
+            "LIMIT",
+            "SAMPLE",
+            "ANSI SQL-compatible"});
+            this.cmbRowReduction.Location = new System.Drawing.Point(675, 6);
+            this.cmbRowReduction.Name = "cmbRowReduction";
+            this.cmbRowReduction.Size = new System.Drawing.Size(142, 21);
+            this.cmbRowReduction.TabIndex = 2;
             // 
             // lblHeader
             // 
@@ -391,9 +426,11 @@
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.TextBox txtSql;
-        private System.Windows.Forms.CheckBox chkDisablePreview;
         private System.Windows.Forms.CheckBox chkSelectAll;
         private System.Windows.Forms.ToolTip toolTip1;
         public System.Windows.Forms.Label lblHeader;
+        private System.Windows.Forms.Label lblRowReduction;
+        private System.Windows.Forms.ComboBox cmbRowReduction;
+        private System.Windows.Forms.CheckBox chkEnablePreview;
     }
 }

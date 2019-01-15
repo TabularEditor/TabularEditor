@@ -132,7 +132,7 @@ namespace TabularEditor.UIServices
         {
             return $"[{unQuotedColumnName}]";
         }
-        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, out bool isError)
+        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, RowLimitClause rowLimitClause, out bool isError)
         {
             throw new NotSupportedException();
         }
@@ -177,15 +177,16 @@ namespace TabularEditor.UIServices
                     Type = r.Field<string>("TABLE_TYPE") == "VIEW" ? SchemaNodeType.View : SchemaNodeType.Table
                 });
         }
-        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, out bool isError)
+        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, RowLimitClause rowLimitClause, out bool isError)
         {
             try
             {
                 var csb = new System.Data.SqlClient.SqlConnectionStringBuilder(ProviderString);
                 var adapter = new System.Data.SqlClient.SqlDataAdapter($"SELECT TOP 200 * FROM {(UseThreePartName ? tableOrView.ThreePartName : tableOrView.DisplayName)} WITH (NOLOCK)", csb.ConnectionString);
                 adapter.SelectCommand.CommandTimeout = 30;
+                
                 var result = new DataTable();
-                adapter.Fill(result);
+                adapter.Fill(0, 200, result);
                 isError = false;
                 return result;
             }
@@ -286,14 +287,15 @@ namespace TabularEditor.UIServices
             return $"[{unQuotedColumnName}]";
         }
 
-        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, out bool isError)
+        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, RowLimitClause rowLimitClause, out bool isError)
         {
             try
             {
-                var adapter = new System.Data.OleDb.OleDbDataAdapter($"SELECT TOP 200 * FROM {(UseThreePartName ? tableOrView.ThreePartName : tableOrView.DisplayName)} WITH (NOLOCK)", ProviderString);
+                var sql = GetSampleSql(rowLimitClause, (UseThreePartName ? tableOrView.ThreePartName : tableOrView.DisplayName), 200);
+                var adapter = new System.Data.OleDb.OleDbDataAdapter(sql, ProviderString);
                 adapter.SelectCommand.CommandTimeout = 30;
                 var result = new DataTable();
-                adapter.Fill(result);
+                adapter.Fill(0, 200, result);
                 isError = false;
                 return result;
             }
@@ -380,7 +382,7 @@ namespace TabularEditor.UIServices
         {
             return $"{unQuotedColumnName}";
         }
-        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, out bool isError)
+        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, RowLimitClause rowLimitClause, out bool isError)
         {
             throw new NotImplementedException();
         }
@@ -454,14 +456,15 @@ namespace TabularEditor.UIServices
         {
             return $"[{unQuotedColumnName}]";
         }
-        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, out bool isError)
+        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, RowLimitClause rowLimitClause, out bool isError)
         {
             try
             {
-                var adapter = new System.Data.Odbc.OdbcDataAdapter($"SELECT TOP 200 * FROM {tableOrView.DisplayName} WITH (NOLOCK)", ProviderString);
+                var sql = GetSampleSql(rowLimitClause, tableOrView.DisplayName, 200);
+                var adapter = new System.Data.Odbc.OdbcDataAdapter(sql, ProviderString);
                 adapter.SelectCommand.CommandTimeout = 30;
                 var result = new DataTable();
-                adapter.Fill(result);
+                adapter.Fill(0, 200, result);
                 isError = false;
                 return result;
             }
@@ -474,8 +477,34 @@ namespace TabularEditor.UIServices
         }
     }
 
+    public enum RowLimitClause
+    {
+        None = 0,
+        Top = 1,
+        First = 2,
+        LimitOffset = 3,
+        Limit = 4,
+        Sample = 5,
+        ANSI = 6
+    }
+
     public abstract class TypedDataSource
     {
+        protected string GetSampleSql(RowLimitClause limitClause, string tableRef, int maxRecords)
+        {
+            switch(limitClause)
+            {
+                case RowLimitClause.Top: return $"SELECT TOP {maxRecords} * FROM {tableRef}";
+                case RowLimitClause.First: return $"SELECT FIRST {maxRecords} * FROM {tableRef}";
+                case RowLimitClause.Limit: return $"SELECT * FROM {tableRef} LIMIT {maxRecords}";
+                case RowLimitClause.LimitOffset: return $"SELECT * FROM {tableRef} LIMIT {maxRecords} OFFSET 0";
+                case RowLimitClause.Sample: return $"SELECT * FROM {tableRef} SAMPLE {maxRecords}";
+                case RowLimitClause.ANSI: return $"SELECT * FROM {tableRef} FETCH FIRST {maxRecords} ROWS ONLY";
+                default:
+                    return $"SELECT * FROM {tableRef}";
+            }
+        }
+
         public abstract ProviderType ProviderType { get; }
         public abstract DataSource DataSource { get; }
         public abstract DataProvider DataProvider { get; }
@@ -586,14 +615,14 @@ namespace TabularEditor.UIServices
 
         public abstract IEnumerable<SchemaNode> GetTablesAndViews(string databaseName);
 
-        public DataTable GetSampleData(SchemaNode tableOrView, out bool isError)
+        public DataTable GetSampleData(SchemaNode tableOrView, RowLimitClause rowLimitClause, out bool isError)
         {
-            var result = InternalGetSampleData(tableOrView, out isError);
+            var result = InternalGetSampleData(tableOrView, rowLimitClause, out isError);
             tableOrView.LoadColumnsFromSample(result);
             return result;
         }
 
-        protected abstract DataTable InternalGetSampleData(SchemaNode tableOrView, out bool isError);
+        protected abstract DataTable InternalGetSampleData(SchemaNode tableOrView, RowLimitClause rowLimitClause, out bool isError);
 
         public abstract DataTable GetSchemaTable(SchemaNode tableOrView);
         public abstract DataTable GetSchemaTable(string sql);

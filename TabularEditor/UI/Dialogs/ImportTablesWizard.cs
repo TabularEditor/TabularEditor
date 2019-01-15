@@ -76,14 +76,17 @@ namespace TabularEditor.UI.Dialogs
             dialog.btnImport.Text = "OK";
             dialog.page2.SingleSelection = true;
             dialog.page2.InitialSelection = SchemaNode.FromJson(table.Partitions[0].GetAnnotation("TabularEditor_TableSchema"));
-
+            if (int.TryParse(table.Partitions[0].DataSource.GetAnnotation("TabularEditor_RowLimitClause"), out int rlc))
+            {
+                dialog.page2.RowLimitClause = (RowLimitClause)rlc;
+            }
             dialog.page2.Init(TypedDataSource.GetFromTabularDs(table.Partitions[0].DataSource as ProviderDataSource));
             dialog.page2.Visible = true;
 
             // TODO:
 
             var res = dialog.ShowDialog();
-            if (res == DialogResult.OK) DoUpdate(table, dialog.page2.Source, dialog.page2.SelectedSchemas.First());
+            if (res == DialogResult.OK) DoUpdate(table, dialog.page2.Source, dialog.page2.SelectedSchemas.First(), dialog.page2.RowLimitClause);
             return res;
         }
 
@@ -95,7 +98,7 @@ namespace TabularEditor.UI.Dialogs
             dialog.CurrentPage = 1;
             var res = dialog.ShowDialog();
 
-            if (res == DialogResult.OK) DoImport(dialog.page1.Mode, model, dialog.page2.Source, dialog.page2.SelectedSchemas);
+            if (res == DialogResult.OK) DoImport(dialog.page1.Mode, model, dialog.page2.Source, dialog.page2.SelectedSchemas, dialog.page2.RowLimitClause);
 
             return res;
         }
@@ -104,16 +107,21 @@ namespace TabularEditor.UI.Dialogs
         {
             var dialog = new ImportTablesWizard();
             dialog.page1.Init(model);
-            dialog.page2.Init(TypedDataSource.GetFromTabularDs(source));
+            var tds = TypedDataSource.GetFromTabularDs(source);
+            if (!(tds is SqlDataSource) && int.TryParse(source.GetAnnotation("TabularEditor_RowLimitClause"), out int rlc))
+            {
+                dialog.page2.RowLimitClause = (RowLimitClause)rlc;
+            }
+            dialog.page2.Init(tds);
             dialog.CurrentPage = 2;
             var res = dialog.ShowDialog();
 
-            if (res == DialogResult.OK) DoImport(dialog.page1.Mode, model, dialog.page2.Source, dialog.page2.SelectedSchemas);
+            if (res == DialogResult.OK) DoImport(dialog.page1.Mode, model, dialog.page2.Source, dialog.page2.SelectedSchemas, dialog.page2.RowLimitClause);
 
             return res;
         }
 
-        private static void DoUpdate(Table table, TypedDataSource source, SchemaNode tableSchema)
+        private static void DoUpdate(Table table, TypedDataSource source, SchemaNode tableSchema, RowLimitClause rowLimitClause)
         {
             table.Partitions[0].Name = tableSchema.Name;
             table.Partitions[0].Query = tableSchema.GetSql(true, source.UseThreePartName);
@@ -141,7 +149,7 @@ namespace TabularEditor.UI.Dialogs
             }
         }
 
-        private static void DoImport(Pages.ImportMode importMode, Model model, TypedDataSource source, IEnumerable<SchemaNode> schemaNodes)
+        private static void DoImport(Pages.ImportMode importMode, Model model, TypedDataSource source, IEnumerable<SchemaNode> schemaNodes, RowLimitClause rowLimitClause)
         {
             foreach (var tableSchema in schemaNodes)
             {
@@ -154,7 +162,10 @@ namespace TabularEditor.UI.Dialogs
                 newTable.Partitions[0].Name = tableSchema.Name;
                 newTable.Partitions[0].Query = tableSchema.GetSql(true, source.UseThreePartName);
                 if(importMode != Pages.ImportMode.UseTempDs)
+                {
                     newTable.Partitions[0].DataSource = model.DataSources[source.TabularDsName];
+                    model.DataSources[source.TabularDsName].SetAnnotation("TabularEditor_RowLimitClause", ((int)rowLimitClause).ToString());
+                }
 
                 var schemaTable = source.GetSchemaTable(tableSchema);
                 foreach (DataRow row in schemaTable.Rows)
