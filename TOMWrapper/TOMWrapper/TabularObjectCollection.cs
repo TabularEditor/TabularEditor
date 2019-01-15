@@ -75,7 +75,7 @@ namespace TabularEditor.TOMWrapper
             return true;
         }
 
-        internal void Clear()
+        protected internal void Clear()
         {
             Handler.UndoManager.Add(new UndoClearAction(this, this.ToArray()));
             TOM_Clear();
