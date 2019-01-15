@@ -19,6 +19,7 @@ namespace TabularEditor.UI.Dialogs.Pages
         public ImportTablesPage()
         {
             InitializeComponent();
+            RowLimitClause = RowLimitClause.Top;
         }
         public bool SingleSelection = false;
         public TypedDataSource Source;
@@ -29,6 +30,21 @@ namespace TabularEditor.UI.Dialogs.Pages
         {
             Source = source;
             SchemaModel = new SchemaModel(Source, InitialSelection);
+
+            switch(source)
+            {
+                case OdbcDataSource odbc:
+                case OracleDataSource oracle:
+                case OleDbDataSource oledb:
+                case OtherDataSource other:
+                    chkEnablePreview.Left = panel1.ClientSize.Width - 345;
+                    break;
+                case SqlDataSource sql:
+                    lblRowReduction.Visible = false;
+                    cmbRowReduction.Visible = false;
+                    chkEnablePreview.Left = panel1.ClientSize.Width - 101;
+                    break;
+            }
         }
 
         private void nodeCheckBox1_IsVisibleValueNeeded(object sender, Aga.Controls.Tree.NodeControls.NodeControlValueEventArgs e)
@@ -82,7 +98,7 @@ namespace TabularEditor.UI.Dialogs.Pages
             }
             else
             {
-                if (chkDisablePreview.Checked) return;
+                if (!chkEnablePreview.Checked) return;
                 PreviewLoaded = false;
                 chkSelectAll.Visible = false;
                 suspendSelectAll = true; chkSelectAll.Checked = currentNode.SelectAll; suspendSelectAll = false;
@@ -99,6 +115,8 @@ namespace TabularEditor.UI.Dialogs.Pages
 
                 SetSqlText(currentNode.GetSql());
 
+                var rowLimitClause = (RowLimitClause)cmbRowReduction.SelectedIndex;
+
                 cts = new CancellationTokenSource();
                 var ct = cts.Token;
 
@@ -106,7 +124,7 @@ namespace TabularEditor.UI.Dialogs.Pages
                 fillSampleDataTask = Task.Factory.StartNew(() =>
                 {
                     if (ct.IsCancellationRequested) return;
-                    var sampleData = Source.GetSampleData(currentNode, out bool isError);
+                    var sampleData = Source.GetSampleData(currentNode, rowLimitClause, out bool isError);
                     if (ct.IsCancellationRequested) return;
                     this.Invoke(new MethodInvoker(() =>
                     {
@@ -219,10 +237,11 @@ namespace TabularEditor.UI.Dialogs.Pages
 
         bool PreviewLoaded = false;
 
-        private void chkDisablePreview_CheckedChanged(object sender, EventArgs e)
+        private void chkEnablePreview_CheckedChanged(object sender, EventArgs e)
         {
-            splitContainer1.Panel2Collapsed = chkDisablePreview.Checked;
-            previewPane.Visible = !chkDisablePreview.Checked;
+            cmbRowReduction.Enabled = chkEnablePreview.Checked;
+            splitContainer1.Panel2Collapsed = !chkEnablePreview.Checked;
+            previewPane.Visible = chkEnablePreview.Checked;
             if (previewPane.Visible) treeViewAdv1_SelectionChanged(sender, e);
         }
 
@@ -254,9 +273,27 @@ namespace TabularEditor.UI.Dialogs.Pages
             }
         }
 
+        public RowLimitClause RowLimitClause
+        {
+            get
+            {
+                return (RowLimitClause)cmbRowReduction.SelectedIndex;
+            }
+            set
+            {
+                cmbRowReduction.SelectedIndex = (int)value;
+            }
+        }
+        
+
         private void dataGridView1_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
             e.ThrowException = false;
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 

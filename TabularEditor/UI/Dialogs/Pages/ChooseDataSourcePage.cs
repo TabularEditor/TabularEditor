@@ -32,6 +32,9 @@ namespace TabularEditor.UI.Dialogs.Pages
         Model model;
         public void Init(Model model)
         {
+            // Only enable "Temporary data sources" if the model contains at least one structured data source:
+            rdbTemporary.Enabled = model.DataSources.OfType<ProviderDataSource>().Any();
+
             listView1.View = View.List;
             this.model = model;
             listView1.SmallImageList = UIController.Current.Elements.FormMain.tabularTreeImages;
