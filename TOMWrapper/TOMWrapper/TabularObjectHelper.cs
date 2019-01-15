@@ -101,7 +101,7 @@ namespace TabularEditor.TOMWrapper
                 case TOM.ObjectType.Culture:
                     return obj.ObjectType.ToString() + "." + QuotePath((obj as TOM.NamedMetadataObject).Name);
                 case TOM.ObjectType.Partition:
-                    return "TablePartition." + QuotePath((obj as TOM.Partition).Table.Name) + "." + QuotePath((obj as TOM.Partition).Name);
+                    return "TablePartition." + QuotePath((obj as TOM.Partition).Table?.Name ?? "") + "." + QuotePath((obj as TOM.Partition).Name);
                 case TOM.ObjectType.RoleMembership:
                     var mrm = obj as TOM.ModelRoleMember;
                     return GetObjectPath(mrm.Role) + "." + mrm.Name;
