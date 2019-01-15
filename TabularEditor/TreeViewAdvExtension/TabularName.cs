@@ -35,25 +35,29 @@ namespace TabularEditor.UI.Tree
 
         private void TabularNodeTextBox_DrawText(object sender, DrawEventArgs e)
         {
-            bool hasTrans = ((e.Node.Tag as ITranslatableObject)?.TranslatedNames?.TranslatedCount > 0);
+            // toneBlue is set to 'true' if the current object has a translation applied. This menas that its text should be
+            // rendered using a blue color to indicate that a translation exists on the object:
+            bool toneBlue = ((e.Node.Tag as ITranslatableObject)?.TranslatedNames?.TranslatedCount > 0);
 
-            if ((e.Node.Tag as Column)?.IsKey == true)
-                e.Font = BoldFont;
+            // toneDown is set to 'true' if the current object is hidden or disabled (only applies to hideable objects or
+            // relationships respectively):
+            bool toneDown = (e.Node.Tag as IHideableObject)?.IsHidden ?? !((e.Node.Tag as Relationship)?.IsActive ?? true);
 
-            if (e.Node.Tag is IHideableObject)
-            {
-                e.TextColor = (e.Node.Tag as IHideableObject).IsHidden ?
-                    (hasTrans ? Color.FromArgb(127, 127, 255) : Color.Gray) :
-                    (hasTrans ? Color.Blue : e.Node.Tree.ForeColor);
-            }
-            else if (e.Node.Tag is Relationship)
-            {
-                e.TextColor = !(e.Node.Tag as Relationship).IsActive ? Color.Gray : e.Node.Tree.ForeColor;
-            }
-            else
-            {
-                e.TextColor = hasTrans ? Color.Blue : e.Node.Tree.ForeColor;
-            }
+            // toneSelect is set to 'true' if the current object has been selected in the tree (and thus will have a blue
+            // background applied):
+            bool toneSelect = e.Context.DrawSelection == DrawSelectionMode.Active || e.Context.DrawSelection == DrawSelectionMode.FullRowSelect;
+
+            // Key columns should be rendered using a bold font:
+            if (e.Node.Tag is Column c && c.IsKey == true) e.Font = BoldFont;
+
+            e.TextColor =
+                toneSelect ?
+                    (toneBlue ?
+                        (toneDown ? Color.FromArgb(161,161,211) : Color.FromArgb(211, 211, 255)) :
+                        (toneDown ? Color.Silver : SystemColors.HighlightText)) :
+                    (toneBlue ? 
+                        (toneDown ? Color.FromArgb(111,111,191) : Color.FromArgb(0,0,161)) : 
+                        (toneDown ? Color.Gray : SystemColors.ControlText));
         }
 
         private readonly Font BoldFont = new Font(SystemFonts.DefaultFont, FontStyle.Bold);
