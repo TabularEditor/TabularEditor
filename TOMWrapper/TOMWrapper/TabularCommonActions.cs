@@ -97,7 +97,7 @@ namespace TabularEditor.TOMWrapper
         {
             // Possible destinations:
             var destHier = (destination as Level)?.Hierarchy ?? (destination as Hierarchy);
-            var destTable = (destination as Folder)?.Table ?? (destination as Partition)?.Table ?? (destination as PartitionViewTable)?.Table ?? destHier?.Table ?? (destination as IFolderObject)?.Table ?? (destination as Table);
+            var destTable = (destination as Folder)?.Table ?? (destination as Partition)?.Table ?? destHier?.Table ?? (destination as IFolderObject)?.Table ?? (destination as Table);
             var folder = (destination as Folder)?.Path;
 
             bool replaceTable = false;
