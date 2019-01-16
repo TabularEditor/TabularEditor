@@ -78,11 +78,9 @@ namespace TabularEditor.TOMWrapper
         /// Adds an Azure AD member to this role.
         /// </summary>
         [IntelliSense("Adds an Azure AD member to this role.")]
-        public void AddExternalMember(string memberName)
+        public ExternalModelRoleMember AddExternalMember(string memberName)
         {
-            var member = ExternalModelRoleMember.CreateNew(this, memberName);
-            member.IdentityProvider = "AzureAD";
-            member.MemberType = RoleMemberType.Auto;
+            return ExternalModelRoleMember.CreateNew(this, memberName, "AzureAD");
         }
 
         [Category("Basic")]
