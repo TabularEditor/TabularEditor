@@ -59,11 +59,7 @@ namespace TabularEditor.UIServices
         [JsonIgnore]
         public bool Selected;
         [JsonIgnore]
-        public string DisplayName => Type == SchemaNodeType.Database || Type == SchemaNodeType.Root ? Name : TwoPartName;
-        [JsonIgnore]
-        public string ThreePartName => $"[{Database}].[{Schema}].[{Name}]";
-        [JsonIgnore]
-        public string TwoPartName => $"[{Schema}].[{Name}]";
+        public string DisplayName => Type == SchemaNodeType.Database || Type == SchemaNodeType.Root ? Name : $"[{Schema}].[{Name}]";        
         public List<string> IncludedColumns { get; } = new List<string>();
         public void LoadColumnsFromSample(DataTable sampleData)
         {
@@ -74,11 +70,28 @@ namespace TabularEditor.UIServices
         }
         public bool SelectAll { get; set; } = true;
 
-        public string GetSql(bool indented = true, bool useThreePartName = false)
+        public string GetRef(IdentifierQuoting identifierQuoting, bool useThreePartName)
+        {
+            switch(identifierQuoting)
+            {
+                case IdentifierQuoting.None:
+                    return useThreePartName ? $"{Database}.{Schema}.{Name}" : $"{Schema}.{Name}";
+                case IdentifierQuoting.DoubleQuote:
+                    return useThreePartName ? $"\"{Database}\".\"{Schema}\".\"{Name}\"" : $"\"{Schema}\".\"{Name}\"";
+                case IdentifierQuoting.SingleQuote:
+                    return useThreePartName ? $"'{Database}'.'{Schema}'.'{Name}'" : $"'{Schema}'.'{Name}'";
+                case IdentifierQuoting.Backtick:
+                    return useThreePartName ? $"`{Database}`.`{Schema}`.`{Name}`" : $"`{Schema}`.`{Name}`";
+                default:
+                    return useThreePartName ? $"[{Database}].[{Schema}].[{Name}]" : $"[{Schema}].[{Name}]";
+            }
+        }
+
+        public string GetSql(IdentifierQuoting identifierQuoting, bool indented = true, bool useThreePartName = false)
         {
             if (SelectAll)
             {
-                return (indented ? "SELECT\n\t*\nFROM\n\t" : "SELECT * FROM ") + (useThreePartName ? ThreePartName : TwoPartName);
+                return (indented ? "SELECT\n\t*\nFROM\n\t" : "SELECT * FROM ") + GetRef(identifierQuoting, useThreePartName);
             }
             else
             {
@@ -94,7 +107,7 @@ namespace TabularEditor.UIServices
                 sqlText += indented ? "\n" : " ";
                 sqlText += "FROM";
                 sqlText += indented ? "\n\t" : " ";
-                sqlText += useThreePartName ? ThreePartName : TwoPartName;
+                sqlText += GetRef(identifierQuoting, useThreePartName);
                 return sqlText;
             }
         }
@@ -132,11 +145,11 @@ namespace TabularEditor.UIServices
         {
             return $"[{unQuotedColumnName}]";
         }
-        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, RowLimitClause rowLimitClause, out bool isError)
+        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, RowLimitClause rowLimitClause, IdentifierQuoting identifierQuoting, out bool isError)
         {
             throw new NotSupportedException();
         }
-        public override DataTable GetSchemaTable(SchemaNode tableOrView)
+        public override DataTable GetSchemaTable(SchemaNode tableOrView, IdentifierQuoting identifierQuoting)
         {
             throw new NotImplementedException();
         }
@@ -177,12 +190,12 @@ namespace TabularEditor.UIServices
                     Type = r.Field<string>("TABLE_TYPE") == "VIEW" ? SchemaNodeType.View : SchemaNodeType.Table
                 });
         }
-        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, RowLimitClause rowLimitClause, out bool isError)
+        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, RowLimitClause rowLimitClause, IdentifierQuoting identifierQuoting, out bool isError)
         {
             try
             {
                 var csb = new System.Data.SqlClient.SqlConnectionStringBuilder(ProviderString);
-                var adapter = new System.Data.SqlClient.SqlDataAdapter($"SELECT TOP 200 * FROM {(UseThreePartName ? tableOrView.ThreePartName : tableOrView.DisplayName)} WITH (NOLOCK)", csb.ConnectionString);
+                var adapter = new System.Data.SqlClient.SqlDataAdapter($"SELECT TOP 200 * FROM {tableOrView.GetRef(identifierQuoting, UseThreePartName)} WITH (NOLOCK)", csb.ConnectionString);
                 adapter.SelectCommand.CommandTimeout = 30;
                 
                 var result = new DataTable();
@@ -199,9 +212,9 @@ namespace TabularEditor.UIServices
 
         }
 
-        public override DataTable GetSchemaTable(SchemaNode tableOrView)
+        public override DataTable GetSchemaTable(SchemaNode tableOrView, IdentifierQuoting identifierQuoting)
         {
-            return GetSchemaTable(tableOrView.GetSql(false, UseThreePartName));
+            return GetSchemaTable(tableOrView.GetSql(identifierQuoting, false, UseThreePartName));
         }
 
         public override bool UseThreePartName => string.IsNullOrWhiteSpace(DatabaseName);
@@ -287,11 +300,12 @@ namespace TabularEditor.UIServices
             return $"[{unQuotedColumnName}]";
         }
 
-        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, RowLimitClause rowLimitClause, out bool isError)
+        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, RowLimitClause rowLimitClause, IdentifierQuoting identifierQuoting, out bool isError)
         {
             try
             {
-                var sql = GetSampleSql(rowLimitClause, (UseThreePartName ? tableOrView.ThreePartName : tableOrView.DisplayName), 200);
+                var tableRef = tableOrView.GetRef(identifierQuoting, UseThreePartName);
+                var sql = GetSampleSql(rowLimitClause, tableRef, 200);
                 var adapter = new System.Data.OleDb.OleDbDataAdapter(sql, ProviderString);
                 adapter.SelectCommand.CommandTimeout = 30;
                 var result = new DataTable();
@@ -331,9 +345,9 @@ namespace TabularEditor.UIServices
         }
 
 
-        public override DataTable GetSchemaTable(SchemaNode tableOrView)
+        public override DataTable GetSchemaTable(SchemaNode tableOrView, IdentifierQuoting identifierQuoting)
         {
-            return GetSchemaTable(tableOrView.GetSql(false, UseThreePartName));
+            return GetSchemaTable(tableOrView.GetSql(identifierQuoting, false, UseThreePartName));
         }
         public override DataTable GetSchemaTable(string sql)
         {
@@ -382,12 +396,12 @@ namespace TabularEditor.UIServices
         {
             return $"{unQuotedColumnName}";
         }
-        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, RowLimitClause rowLimitClause, out bool isError)
+        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, RowLimitClause rowLimitClause, IdentifierQuoting identifierQuoting, out bool isError)
         {
             throw new NotImplementedException();
         }
 
-        public override DataTable GetSchemaTable(SchemaNode tableOrView)
+        public override DataTable GetSchemaTable(SchemaNode tableOrView, IdentifierQuoting identifierQuoting)
         {
             throw new NotImplementedException();
         }
@@ -430,9 +444,9 @@ namespace TabularEditor.UIServices
             }).Where(n => !n.Schema.EqualsI("sys") && !n.Schema.EqualsI("INFORMATION_SCHEMA"));
         }
 
-        public override DataTable GetSchemaTable(SchemaNode tableOrView)
+        public override DataTable GetSchemaTable(SchemaNode tableOrView, IdentifierQuoting identifierQuoting)
         {
-            return GetSchemaTable(tableOrView.GetSql());
+            return GetSchemaTable(tableOrView.GetSql(identifierQuoting));
         }
         public override DataTable GetSchemaTable(string sql)
         {
@@ -456,11 +470,11 @@ namespace TabularEditor.UIServices
         {
             return $"[{unQuotedColumnName}]";
         }
-        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, RowLimitClause rowLimitClause, out bool isError)
+        protected override DataTable InternalGetSampleData(SchemaNode tableOrView, RowLimitClause rowLimitClause, IdentifierQuoting identifierQuoting, out bool isError)
         {
             try
             {
-                var sql = GetSampleSql(rowLimitClause, tableOrView.DisplayName, 200);
+                var sql = GetSampleSql(rowLimitClause, tableOrView.GetRef(identifierQuoting, false), 200);
                 var adapter = new System.Data.Odbc.OdbcDataAdapter(sql, ProviderString);
                 adapter.SelectCommand.CommandTimeout = 30;
                 var result = new DataTable();
@@ -475,6 +489,15 @@ namespace TabularEditor.UIServices
                 return ErrorTable;
             }
         }
+    }
+
+    public enum IdentifierQuoting
+    {
+        None = 0,
+        SquareBracket = 1,
+        DoubleQuote = 2,
+        SingleQuote = 3,
+        Backtick = 4
     }
 
     public enum RowLimitClause
@@ -615,16 +638,16 @@ namespace TabularEditor.UIServices
 
         public abstract IEnumerable<SchemaNode> GetTablesAndViews(string databaseName);
 
-        public DataTable GetSampleData(SchemaNode tableOrView, RowLimitClause rowLimitClause, out bool isError)
+        public DataTable GetSampleData(SchemaNode tableOrView, RowLimitClause rowLimitClause, IdentifierQuoting identifierQuoting, out bool isError)
         {
-            var result = InternalGetSampleData(tableOrView, rowLimitClause, out isError);
+            var result = InternalGetSampleData(tableOrView, rowLimitClause, identifierQuoting, out isError);
             tableOrView.LoadColumnsFromSample(result);
             return result;
         }
 
-        protected abstract DataTable InternalGetSampleData(SchemaNode tableOrView, RowLimitClause rowLimitClause, out bool isError);
+        protected abstract DataTable InternalGetSampleData(SchemaNode tableOrView, RowLimitClause rowLimitClause, IdentifierQuoting identifierQuoting, out bool isError);
 
-        public abstract DataTable GetSchemaTable(SchemaNode tableOrView);
+        public abstract DataTable GetSchemaTable(SchemaNode tableOrView, IdentifierQuoting identifierQuoting);
         public abstract DataTable GetSchemaTable(string sql);
 
         private DataTable _errorTable;
