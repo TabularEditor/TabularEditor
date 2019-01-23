@@ -75,18 +75,18 @@ namespace TabularEditor.UI.Dialogs
             dialog.page2.lblHeader.Text = "Choose the table/view you want to use as a source for " + table.DaxObjectFullName + ":";
             dialog.btnImport.Text = "OK";
             dialog.page2.SingleSelection = true;
-            dialog.page2.InitialSelection = SchemaNode.FromJson(table.Partitions[0].GetAnnotation("TabularEditor_TableSchema"));
-            if (int.TryParse(table.Partitions[0].DataSource.GetAnnotation("TabularEditor_RowLimitClause"), out int rlc))
-            {
-                dialog.page2.RowLimitClause = (RowLimitClause)rlc;
-            }
+            dialog.page2.InitialSelection = table.GetTableSchema();
+
+            dialog.page2.RowLimitClause = table.GetRowLimitClause();
+            dialog.page2.IdentifierQuoting = table.GetIdentifierQuoting();
+
             dialog.page2.Init(TypedDataSource.GetFromTabularDs(table.Partitions[0].DataSource as ProviderDataSource));
             dialog.page2.Visible = true;
 
             // TODO:
 
             var res = dialog.ShowDialog();
-            if (res == DialogResult.OK) DoUpdate(table, dialog.page2.Source, dialog.page2.SelectedSchemas.First(), dialog.page2.RowLimitClause);
+            if (res == DialogResult.OK) DoUpdate(table, dialog.page2.Source, dialog.page2.SelectedSchemas.First(), dialog.page2.RowLimitClause, dialog.page2.IdentifierQuoting);
             return res;
         }
 
@@ -98,7 +98,7 @@ namespace TabularEditor.UI.Dialogs
             dialog.CurrentPage = 1;
             var res = dialog.ShowDialog();
 
-            if (res == DialogResult.OK) DoImport(dialog.page1.Mode, model, dialog.page2.Source, dialog.page2.SelectedSchemas, dialog.page2.RowLimitClause);
+            if (res == DialogResult.OK) DoImport(dialog.page1.Mode, model, dialog.page2.Source, dialog.page2.SelectedSchemas, dialog.page2.RowLimitClause, dialog.page2.IdentifierQuoting);
 
             return res;
         }
@@ -106,28 +106,38 @@ namespace TabularEditor.UI.Dialogs
         public static DialogResult ShowWizard(Model model, ProviderDataSource source)
         {
             var dialog = new ImportTablesWizard();
-            dialog.page1.Init(model);
+            //dialog.page1.Init(model);
+
+            dialog.btnBack.Visible = false;
+            dialog.btnNext.Visible = false;
+            dialog.btnCancel.Left = 654;
+
+            dialog.page2.RowLimitClause = source.GetRowLimitClause();
+            dialog.page2.IdentifierQuoting = source.GetIdentifierQuoting();
+
             var tds = TypedDataSource.GetFromTabularDs(source);
-            if (!(tds is SqlDataSource) && int.TryParse(source.GetAnnotation("TabularEditor_RowLimitClause"), out int rlc))
-            {
-                dialog.page2.RowLimitClause = (RowLimitClause)rlc;
-            }
             dialog.page2.Init(tds);
             dialog.CurrentPage = 2;
             var res = dialog.ShowDialog();
 
-            if (res == DialogResult.OK) DoImport(dialog.page1.Mode, model, dialog.page2.Source, dialog.page2.SelectedSchemas, dialog.page2.RowLimitClause);
+            if (res == DialogResult.OK) DoImport(dialog.page1.Mode, model, dialog.page2.Source, dialog.page2.SelectedSchemas, dialog.page2.RowLimitClause, dialog.page2.IdentifierQuoting);
 
             return res;
         }
 
-        private static void DoUpdate(Table table, TypedDataSource source, SchemaNode tableSchema, RowLimitClause rowLimitClause)
+        private static void DoUpdate(Table table, TypedDataSource source, SchemaNode tableSchema, RowLimitClause rowLimitClause, IdentifierQuoting identifierQuoting)
         {
             table.Partitions[0].Name = tableSchema.Name;
-            table.Partitions[0].Query = tableSchema.GetSql(true, source.UseThreePartName);
-            table.Partitions[0].SetAnnotation("TabularEditor_TableSchema", tableSchema.ToJson());
+            table.Partitions[0].Query = tableSchema.GetSql(identifierQuoting, true, source.UseThreePartName);
+            table.SetTableSchema(tableSchema);
 
-            var schemaTable = source.GetSchemaTable(tableSchema);
+            if (!(source is SqlDataSource))
+            {
+                table.SetRowLimitClause(rowLimitClause);
+                table.SetIdentifierQuoting(identifierQuoting);
+            }
+
+            var schemaTable = source.GetSchemaTable(tableSchema, identifierQuoting);
             var updatedColumns = new HashSet<TOMWrapper.DataColumn>();
             foreach (DataRow row in schemaTable.Rows)
             {
@@ -149,7 +159,7 @@ namespace TabularEditor.UI.Dialogs
             }
         }
 
-        private static void DoImport(Pages.ImportMode importMode, Model model, TypedDataSource source, IEnumerable<SchemaNode> schemaNodes, RowLimitClause rowLimitClause)
+        private static void DoImport(Pages.ImportMode importMode, Model model, TypedDataSource source, IEnumerable<SchemaNode> schemaNodes, RowLimitClause rowLimitClause, IdentifierQuoting identifierQuoting)
         {
             foreach (var tableSchema in schemaNodes)
             {
@@ -160,14 +170,16 @@ namespace TabularEditor.UI.Dialogs
                     newTable.Partitions[0].Delete();
                 }
                 newTable.Partitions[0].Name = tableSchema.Name;
-                newTable.Partitions[0].Query = tableSchema.GetSql(true, source.UseThreePartName);
-                if(importMode != Pages.ImportMode.UseTempDs)
+                newTable.Partitions[0].Query = tableSchema.GetSql(identifierQuoting, true, source.UseThreePartName);
+
+                if(importMode != Pages.ImportMode.UseTempDs && !(source is SqlDataSource))
                 {
                     newTable.Partitions[0].DataSource = model.DataSources[source.TabularDsName];
-                    model.DataSources[source.TabularDsName].SetAnnotation("TabularEditor_RowLimitClause", ((int)rowLimitClause).ToString());
+                    newTable.SetRowLimitClause(rowLimitClause);
+                    newTable.SetIdentifierQuoting(identifierQuoting);
                 }
 
-                var schemaTable = source.GetSchemaTable(tableSchema);
+                var schemaTable = source.GetSchemaTable(tableSchema, identifierQuoting);
                 foreach (DataRow row in schemaTable.Rows)
                 {
                     var sourceColumn = row["ColumnName"].ToString();
@@ -182,7 +194,7 @@ namespace TabularEditor.UI.Dialogs
                         );
                     col.SourceProviderType = dataType;
                 }
-                newTable.Partitions[0].SetAnnotation("TabularEditor_TableSchema", tableSchema.ToJson());
+                newTable.SetTableSchema(tableSchema);
                 newTable.Select();
             }
         }
@@ -270,6 +282,71 @@ namespace TabularEditor.UI.Dialogs
             {
                 btnImport.Enabled = CanImport();
             }
+        }
+    }
+
+    static class ImportAnnotationsHelper
+    {
+        const string QUOTING = "TabularEditor_IdentifierQuoting";
+        const string LIMITCLAUSE = "TabularEditor_RowLimitClause";
+        const string SCHEMA = "TabularEditor_TableSchema";
+
+        public static IdentifierQuoting GetIdentifierQuoting(this TOMWrapper.DataSource source)
+        {
+            var value = source.GetAnnotation(QUOTING);
+            if (Enum.TryParse(value, out IdentifierQuoting parsedValue))
+            {
+                return parsedValue;
+            }
+
+            return IdentifierQuoting.SquareBracket; // Default
+        }
+
+        public static void SetIdentifierQuoting(this TOMWrapper.DataSource source, IdentifierQuoting identifierQuoting)
+        {
+            source.SetAnnotation(QUOTING, $"{(int)identifierQuoting}");
+        }
+        public static void SetIdentifierQuoting(this Table table, IdentifierQuoting identifierQuoting)
+        {
+            table.Partitions[0].DataSource.SetIdentifierQuoting(identifierQuoting);
+        }
+        public static void SetRowLimitClause(this Table table, RowLimitClause rowLimitClause)
+        {
+            table.Partitions[0].DataSource.SetRowLimitClause(rowLimitClause);
+        }
+
+        public static RowLimitClause GetRowLimitClause(this Table table)
+        {
+            return table.Partitions[0].DataSource.GetRowLimitClause();
+        }
+        public static IdentifierQuoting GetIdentifierQuoting(this Table table)
+        {
+            return table.Partitions[0].DataSource.GetIdentifierQuoting();
+        }
+
+        public static RowLimitClause GetRowLimitClause(this TOMWrapper.DataSource source)
+        {
+            var value = source.GetAnnotation(LIMITCLAUSE);
+            if (Enum.TryParse(value, out RowLimitClause parsedValue))
+            {
+                return parsedValue;
+            }
+
+            return RowLimitClause.Top; // Default
+        }
+        public static void SetRowLimitClause(this TOMWrapper.DataSource source, RowLimitClause rowLimitClause)
+        {
+            source.SetAnnotation(LIMITCLAUSE, $"{(int)rowLimitClause}");
+        }
+
+        public static SchemaNode GetTableSchema(this Table table)
+        {
+            return SchemaNode.FromJson(table.Partitions[0].GetAnnotation(SCHEMA));
+        }
+
+        public static void SetTableSchema(this Table table, SchemaNode schema)
+        {
+            table.Partitions[0].SetAnnotation(SCHEMA, schema.ToJson());
         }
     }
 }

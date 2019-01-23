@@ -99,9 +99,6 @@
             // 
             // page1
             // 
-            this.page1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.page1.Location = new System.Drawing.Point(12, 12);
             this.page1.Name = "page1";
             this.page1.Size = new System.Drawing.Size(812, 444);
@@ -111,11 +108,10 @@
             // 
             // page2
             // 
-            this.page2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.page2.IdentifierQuoting = TabularEditor.UIServices.IdentifierQuoting.SquareBracket;
             this.page2.Location = new System.Drawing.Point(12, 12);
             this.page2.Name = "page2";
+            this.page2.RowLimitClause = TabularEditor.UIServices.RowLimitClause.Top;
             this.page2.Size = new System.Drawing.Size(812, 444);
             this.page2.TabIndex = 0;
             this.page2.Visible = false;
