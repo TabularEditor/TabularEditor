@@ -100,7 +100,15 @@ namespace TabularEditor.UIServices
                 foreach (var col in IncludedColumns)
                 {
                     sqlText += (indented ? "\n\t" : "") + (first ? " " : ",");
-                    sqlText += col;
+                    switch(identifierQuoting)
+                    {
+                        case IdentifierQuoting.None:        sqlText += $"{col}"; break;
+                        case IdentifierQuoting.DoubleQuote: sqlText += $"\"{col}\""; break;
+                        case IdentifierQuoting.SingleQuote: sqlText += $"'{col}'"; break;
+                        case IdentifierQuoting.Backtick:    sqlText += $"`{col}`"; break;
+                        default:                            sqlText += $"[{col}]"; break;
+                    }
+                    
                     first = false;
 
                 }
