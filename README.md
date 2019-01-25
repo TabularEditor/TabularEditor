@@ -11,7 +11,7 @@ Tabular Editor uses the [Tabular Object Model](https://msdn.microsoft.com/en-us/
 ## Introduction
 View the article on www.kapacity.dk/tabular-editor for a general presentation of the tool and the motivations behind it.
 
-* [Webinar: Boosting SSAS Productivity using Tabular Editor](https://www.youtube.com/watch?v=UENChJ_IfRw)
+* [Webinar: Boosting SSAS Productivity using Tabular Editor](https://www.youtube.com/watch?v=UENChJ_IfRw&feature=youtu.be&t=453)
 * [Getting Started](https://github.com/otykier/TabularEditor/wiki/Getting-Started)
 * [Features at a Glance](https://github.com/otykier/TabularEditor/wiki/Features-at-a-glance)
 * [Advanced Features](https://github.com/otykier/TabularEditor/wiki/Advanced-Features)
