@@ -3,14 +3,15 @@ Tabular Editor is a tool that lets you easily manipulate and manage measures, ca
 
 ![](https://raw.githubusercontent.com/otykier/TabularEditor/master/Documentation/Main%20UI%202_1.png)
 
-* [Download Tabular Editor v. 2.7.4 for SQL Server 2016, 2017 or Azure Analysis Services](https://github.com/otykier/TabularEditor/releases/latest)
+* [Download Tabular Editor v. 2.8 for SQL Server 2016, 2017 or Azure Analysis Services](https://github.com/otykier/TabularEditor/releases/latest)
 
 ### Prerequisites
-Tabular Editor uses the [Tabular Object Model](https://msdn.microsoft.com/en-us/library/mt706505.aspx) to load and save metadata to and from Model.bim files or existing databases. If you download the standalone (.zip) version of Tabular Editor, make sure you have the latest AMO libraries available. They can be downloaded from the [Azure Analysis Services Client Libraries](https://docs.microsoft.com/en-us/azure/analysis-services/analysis-services-data-providers) page (Click "AMO" version 15.5.0 or newer). If you choose to download the Tabular Editor .MSI installer, these libraries will be included.
+Tabular Editor uses the [Tabular Object Model](https://msdn.microsoft.com/en-us/library/mt706505.aspx) to load and save metadata to and from Model.bim files or existing databases. If you download the standalone (.zip) version of Tabular Editor, make sure you have the latest AMO libraries available. They can be downloaded from the [Azure Analysis Services Client Libraries](https://docs.microsoft.com/en-us/azure/analysis-services/analysis-services-data-providers) page (Click "AMO" version 15.12.1 or newer). If you choose to download the Tabular Editor .MSI installer, these libraries will be included.
 
 ## Introduction
 View the article on www.kapacity.dk/tabular-editor for a general presentation of the tool and the motivations behind it.
 
+* [Webinar: Boosting SSAS Productivity using Tabular Editor](https://www.youtube.com/watch?v=UENChJ_IfRw)
 * [Getting Started](https://github.com/otykier/TabularEditor/wiki/Getting-Started)
 * [Features at a Glance](https://github.com/otykier/TabularEditor/wiki/Features-at-a-glance)
 * [Advanced Features](https://github.com/otykier/TabularEditor/wiki/Advanced-Features)
