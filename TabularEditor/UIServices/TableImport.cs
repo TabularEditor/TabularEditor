@@ -576,10 +576,55 @@ namespace TabularEditor.UIServices
         public string ProviderName { get; private set; }
         public string TabularDsName { get; internal set; }
 
+        private static Dictionary<string, string> GlobalPasswords = new Dictionary<string, string>();
+        private string MissingPwdConnectionString;
+        public void SetPassword(string password)
+        {
+            if (GlobalPasswords.ContainsKey(MissingPwdConnectionString))
+                GlobalPasswords.Remove(MissingPwdConnectionString);
+            GlobalPasswords.Add(MissingPwdConnectionString, password);
+
+            var csb = new DbConnectionStringBuilder() { ConnectionString = MissingPwdConnectionString };
+            if (csb.ContainsKey("password")) csb["password"] = password;
+            else if (csb.ContainsKey("pwd")) csb["pwd"] = password;
+
+            ProviderString = csb.ConnectionString;
+
+            NeedsPassword = false;
+        }
+
+        public bool NeedsPassword { get; private set; } = false;
+        public string Username { get; private set; }
+
         static public TypedDataSource GetFromTabularDs(TOMWrapper.ProviderDataSource tabularDataSource)
         {
             TypedDataSource ds;
+            bool needsPassword = false;
             var csb = new DbConnectionStringBuilder() { ConnectionString = tabularDataSource.ConnectionString };
+
+            if(!string.IsNullOrEmpty(tabularDataSource.Password) && tabularDataSource.Password != "********")
+            {
+                csb.Add("password", tabularDataSource.Password);
+                csb.Add("user id", tabularDataSource.Account);
+            }
+
+            if (csb.ContainsKey("password") && (string)csb["password"] == "********")
+            {
+                if (GlobalPasswords.TryGetValue(tabularDataSource.ConnectionString, out string password))
+                    csb["password"] = password;
+                else
+                {
+                    needsPassword = true;
+                }
+            }
+            if (csb.ContainsKey("pwd") && (string)csb["pwd"] == "********")
+            {
+                if (GlobalPasswords.TryGetValue(tabularDataSource.ConnectionString, out string password))
+                    csb["pwd"] = password;
+                else
+                    needsPassword = true;
+            }
+
             var providerName = !string.IsNullOrWhiteSpace(tabularDataSource.Provider) ? tabularDataSource.Provider : csb.ContainsKey("Provider") ? csb["Provider"].ToString() : "";
             var pName = providerName.ToUpper();
 
@@ -589,8 +634,23 @@ namespace TabularEditor.UIServices
             else if (pName.Contains("ORACLE")) ds = new OracleDataSource();
             else ds = new OtherDataSource();
 
+            ds.NeedsPassword = needsPassword;
+            if (needsPassword) ds.MissingPwdConnectionString = tabularDataSource.ConnectionString;
             ds.TabularDsName = tabularDataSource.Name;
-            ds.ProviderString = tabularDataSource.ConnectionString;
+            ds.ProviderString = csb.ConnectionString;
+
+            if (!string.IsNullOrEmpty(tabularDataSource.Account))
+            {
+                ds.Username = tabularDataSource.Account;
+            } else
+            {
+                if (csb.ContainsKey("user id")) ds.Username = csb["user id"].ToString();
+                else if (csb.ContainsKey("uid")) ds.Username = csb["uid"].ToString();
+                else if (csb.ContainsKey("username")) ds.Username = csb["username"].ToString();
+                else if (csb.ContainsKey("account")) ds.Username = csb["account"].ToString();
+            }
+
+
 
             return ds;
         }
