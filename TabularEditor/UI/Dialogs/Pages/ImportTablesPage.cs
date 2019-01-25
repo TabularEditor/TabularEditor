@@ -27,8 +27,17 @@ namespace TabularEditor.UI.Dialogs.Pages
         public SchemaNode InitialSelection;
         SchemaModel SchemaModel;
 
-        public void Init(TypedDataSource source)
+        public bool Init(TypedDataSource source)
         {
+            if(source.NeedsPassword)
+            {
+                if (PasswordPromptForm.Show(source.TabularDsName, source.Username, out string password) == DialogResult.OK)
+                {
+                    source.SetPassword(password);
+                }
+                else return false;
+            }
+
             Source = source;
             SchemaModel = new SchemaModel(Source, InitialSelection);
 
@@ -44,6 +53,8 @@ namespace TabularEditor.UI.Dialogs.Pages
                     pnlODBC.Visible = false;
                     break;
             }
+
+            return true;
         }
 
         private void nodeCheckBox1_IsVisibleValueNeeded(object sender, Aga.Controls.Tree.NodeControls.NodeControlValueEventArgs e)
