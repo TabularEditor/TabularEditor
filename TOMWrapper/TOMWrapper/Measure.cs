@@ -30,7 +30,7 @@ namespace TabularEditor.TOMWrapper
                     if (errorMessage != "") errorMessage += "\r\n";
                     errorMessage += "Detail rows expression: " + MetadataObject.DetailRowsDefinition.ErrorMessage;
                 }
-                if (Handler.CompatibilityLevel >= 1460 && !string.IsNullOrEmpty(MetadataObject.FormatStringDefinition?.ErrorMessage))
+                if (Handler.CompatibilityLevel >= 1470 && !string.IsNullOrEmpty(MetadataObject.FormatStringDefinition?.ErrorMessage))
                 {
                     if (errorMessage != "") errorMessage += "\r\n";
                     errorMessage += "Format string expression: " + MetadataObject.FormatStringDefinition.ErrorMessage;
@@ -192,7 +192,7 @@ namespace TabularEditor.TOMWrapper
                 case Properties.DETAILROWSEXPRESSION:
                     return Handler.CompatibilityLevel >= 1400;
                 case Properties.FORMATSTRINGEXPRESSION:
-                    return Handler.CompatibilityLevel >= 1460; // TODO: Verify CL requirement for Format String
+                    return Handler.CompatibilityLevel >= 1470;
 
                 case Properties.DATACATEGORY:
                     return Handler.CompatibilityLevel >= 1455;

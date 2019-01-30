@@ -26,7 +26,7 @@ namespace TabularEditor.TOMWrapper
                 var errorMessage = "";
                 if (!string.IsNullOrEmpty(MetadataObject.ErrorMessage))
                     errorMessage += (Handler.CompatibilityLevel >= 1400 ? "Expression: " : "") + MetadataObject.ErrorMessage;
-                if (Handler.CompatibilityLevel >= 1460 && !string.IsNullOrEmpty(MetadataObject.FormatStringDefinition?.ErrorMessage))
+                if (Handler.CompatibilityLevel >= 1470 && !string.IsNullOrEmpty(MetadataObject.FormatStringDefinition?.ErrorMessage))
                 {
                     if (errorMessage != "") errorMessage += "\r\n";
                     errorMessage += "Format string expression: " + MetadataObject.FormatStringDefinition.ErrorMessage;

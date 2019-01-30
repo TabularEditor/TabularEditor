@@ -318,6 +318,9 @@ namespace TabularEditor.UI
             // Tables have "Default Detail Rows Expressions", but only for CompatibilityLevel 1400 or newer.
             if (obj is Table && !(obj is CalculatedTable) && Handler.CompatibilityLevel < 1400) obj = null;
 
+            // CalculationGroupTables derive from Tables, but should never enable the expression editor:
+            if (obj is CalculationGroupTable) obj = null; 
+
             ExpressionEditor_Preview(obj);
             ScriptEditor_HideErrors();
 

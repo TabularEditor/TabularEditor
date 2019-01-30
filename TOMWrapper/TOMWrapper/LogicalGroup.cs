@@ -40,7 +40,6 @@ namespace TabularEditor.TOMWrapper
             yield return Roles;
             if(TabularModelHandler.Singleton.CompatibilityLevel >= 1400) yield return Expressions;
             yield return Tables;
-            //if (TabularModelHandler.Singleton.CompatibilityLevel >= 1460) yield return CalculationGroups; // TODO: Verify CL
             yield return Translations;
         }
 
