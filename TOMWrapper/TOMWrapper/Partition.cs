@@ -29,8 +29,13 @@ namespace TabularEditor.TOMWrapper
         {
             if (MetadataObject.Source == null && !(Parent is CalculatedTable))
             {
-                if (Model.DataSources.Count(ds => ds is ProviderDataSource) == 0) Model.AddDataSource();
-                MetadataObject.Source = new TOM.QueryPartitionSource() { DataSource = Model.DataSources.First(ds => ds is ProviderDataSource).MetadataObject };
+                if (Model.DataSources.Count == 0) Model.AddDataSource();
+                MetadataObject.Source = new TOM.QueryPartitionSource()
+                {
+                    DataSource = Model.DataSources.Any(ds => ds is ProviderDataSource) ?
+                        Model.DataSources.First(ds => ds is ProviderDataSource).MetadataObject :
+                        Model.DataSources.First().MetadataObject
+                };
             }
             base.Init();
         }
@@ -234,6 +239,38 @@ namespace TabularEditor.TOMWrapper
 
     public partial class PartitionCollection : ITabularNamedObject, ITabularObjectContainer, ITabularTableObject
     {
+        [IntelliSense("Converts all M partitions in this collection to regular partitions. The M query is left as-is and needs to be converted to SQL before the partition can be processed.")]
+        public void ConvertToLegacy(ProviderDataSource providerSource = null)
+        {
+            Handler.BeginUpdate("Convert partitions");
+            foreach(var oldPartition in this.OfType<MPartition>().ToList())
+            {
+                var newPartition = Partition.CreateNew(Table);
+                newPartition.DataSource = providerSource == null ? oldPartition.DataSource : providerSource;
+                newPartition.Expression = oldPartition.Expression;
+
+                oldPartition.Delete();
+                newPartition.Name = oldPartition.Name;
+            }
+            Handler.EndUpdate();
+        }
+
+        [IntelliSense("Converts all provider source partitions in this collection to M partitions. The provider query is left as-is and needs to be converted to an M query before the partition can be processed.")]
+        public void ConvertToPowerQuery()
+        {
+            Handler.BeginUpdate("Convert partitions");
+            foreach (var oldPartition in this.Where(p => p.GetType() == typeof(Partition)).ToList())
+            {
+                var newPartition = MPartition.CreateNew(Table);
+                newPartition.DataSource = oldPartition.DataSource;
+                newPartition.Expression = oldPartition.Query;
+
+                oldPartition.Delete();
+                newPartition.Name = oldPartition.Name;
+            }
+            Handler.EndUpdate();
+        }
+
         /// <summary>
         /// This property points to the PartitionCollection itself. It is used only to display a clickable
         /// "Partitions" property in the Property Grid, which will open the PartitionCollectionEditor when

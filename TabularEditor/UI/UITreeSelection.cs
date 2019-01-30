@@ -334,8 +334,7 @@ namespace TabularEditor.UI
         {
             var allNodes = GetDeep(selectedNodes).ToList();
             SetItems(allNodes.Select(n => n.Tag).OfType<ITabularNamedObject>()
-                .Where(n => !(n is Folder))
-                .Select(n => (n as PartitionViewTable)?.Table ?? n));
+                .Where(n => !(n is Folder)));
 
             _selectedNodes = selectedNodes;
 

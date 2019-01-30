@@ -27,6 +27,29 @@ namespace TabularEditor.TOMWrapper
             obj.Init();
             return obj;
         }
+
+        /// <summary>
+        /// Creates a new ExternalModelRoleMember and adds it to the parent ModelRole.
+        /// Also creates the underlying metadataobject and adds it to the TOM tree.
+        /// </summary>
+        public static ExternalModelRoleMember CreateNew(ModelRole parent, string name, string identityProvider)
+        {
+            if (TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(ExternalModelRoleMember)))
+            {
+                throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject, typeof(ExternalModelRoleMember).GetTypeName()));
+            }
+
+            var metadataObject = new TOM.ExternalModelRoleMember();
+            metadataObject.IdentityProvider = identityProvider;
+            metadataObject.MemberName = name;
+            var obj = new ExternalModelRoleMember(metadataObject);
+
+            parent.Members.Add(obj);
+
+            obj.Init();
+
+            return obj;
+        }
     }
 
     public partial class ModelRoleMember

@@ -246,13 +246,8 @@ namespace TabularEditor.TOMWrapper
             return FolderCache[""].GetChildrenByFolders();
         }
 
-        [Browsable(false)]
-        public PartitionViewTable PartitionViewTable { get; private set; }
-
         protected override void Init()
         {
-            PartitionViewTable = new PartitionViewTable(this);
-
             if (Partitions.Count == 0 && !(this is CalculatedTable))
             {
                 // Make sure the table contains at least one partition (Calculated Tables handles this on their own), but don't add it to the undo stack:
@@ -387,21 +382,7 @@ namespace TabularEditor.TOMWrapper
 
         protected override void Children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (sender is PartitionCollection)
-            {
-                // When a partition is added / removed, we notify the logical tree about changes to the
-                // PartitionViewTable, which is the object that holds the Partitions in the logical tree.
-                if (e.Action == NotifyCollectionChangedAction.Add)
-                    Handler.Tree.OnNodesInserted(PartitionViewTable, e.NewItems.Cast<ITabularObject>());
-                else if (e.Action == NotifyCollectionChangedAction.Remove)
-                    Handler.Tree.OnNodesRemoved(PartitionViewTable, e.OldItems.Cast<ITabularObject>());
-            }
-            else
-            {
-                // All other objects are shown as children of the table in the logical tree, so just
-                // notify in the normal way:
-                base.Children_CollectionChanged(sender, e);
-            }
+            base.Children_CollectionChanged(sender, e);
         }
 
         public override string Name
@@ -501,77 +482,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
     }
-
-    /// <summary>
-    /// Wrapper class for the "Table Partitions" logical group.
-    /// </summary>
-	[TypeConverter(typeof(DynamicPropertyConverter))]
-    public class PartitionViewTable: ITabularNamedObject, ITabularObjectContainer, IDynamicPropertyObject
-    {
-        public Table Table { get; private set; }
-        public bool IsRemoved => Table.IsRemoved;
-        internal PartitionViewTable(Table table)
-        {
-            Table = table;
-        }
-
-        [Category("Partitions"), NoMultiselect()]
-        [Editor(typeof(PartitionCollectionEditor), typeof(UITypeEditor))]
-        public PartitionCollection Partitions { get { return Table.Partitions; } }
-
-        [Category("Partitions"), DisplayName("Table Name")]
-        public string Name
-        {
-            get { return Table.Name; }
-            set { Table.Name = value; }
-        }
-
-        public int MetadataIndex => Table.MetadataIndex;
-
-        public ObjectType ObjectType => ObjectType.Table;
-
-        public Model Model => Table.Model;
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public IEnumerable<ITabularNamedObject> GetChildren()
-        {
-            return Partitions;
-        }
-
-        public bool Browsable(string propertyName)
-        {
-            switch(propertyName)
-            {
-                case Properties.PARTITIONS:
-                    return !(Table is CalculatedTable);
-                case Properties.NAME:
-                    return true;
-            }
-            return false;
-        }
-
-        public bool Editable(string propertyName)
-        {
-            return propertyName == Properties.NAME;
-        }
-
-        public bool CanDelete()
-        {
-            return Table.CanDelete();
-        }
-
-        public bool CanDelete(out string message)
-        {
-            return Table.CanDelete(out message);
-        }
-
-        public void Delete()
-        {
-            Table.Delete();
-        }
-    }
-
+    
     internal static partial class Properties
     {
         public const string DEFAULTDETAILROWSEXPRESSION = "DefaultDetailRowsExpression";
