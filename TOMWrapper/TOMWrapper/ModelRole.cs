@@ -28,10 +28,14 @@ namespace TabularEditor.TOMWrapper
             }
             RowLevelSecurity._filterExpressions.Clear();
         }
-        /*
-        [Category("Security"), DisplayName("Members")]
-        [Description("Specify domain/usernames of the members in this role. One member per line.")]
+
+        /// <summary>
+        /// Specify domain/usernames of the members in this role. One member per line. DEPRECATED: Use the Members collection instead.
+        /// </summary>
+        [Browsable(false)]
         [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [Description("Specify domain/usernames of the members in this role. One member per line. DEPRECATED: Use the Members collection instead.")]
+        [IntelliSense("Specify domain/usernames of the members in this role. One member per line. DEPRECATED: Use the Members collection instead.")]
         public string RoleMembers
         {
             get
@@ -41,18 +45,43 @@ namespace TabularEditor.TOMWrapper
             set
             {
                 if (MetadataObject.Members.Any(m => m is TOM.ExternalModelRoleMember))
-                    throw new InvalidOperationException("This role uses External Role Members. These role members are not supported in this version of Tabular Editor.");
-                if (RoleMembers == value) return;
+                    throw new InvalidOperationException("This role uses External Role Members. To add External Role Members, please use the Members collection instead.");
 
-                Handler.UndoManager.Add(new Undo.UndoPropertyChangedAction(this, "RoleMembers", RoleMembers, value));
-                MetadataObject.Members.Clear();
-                foreach (var member in value.Replace("\r", "").Split('\n'))
+                Members.Clear();
+                foreach(var member in value.Replace("\r", "").Split('\n'))
                 {
-                    MetadataObject.Members.Add(new TOM.WindowsModelRoleMember() { MemberName = member });
+                    WindowsModelRoleMember.CreateNew(this, member);
                 }
             }
         }
-        */
+
+        /// <summary>
+        /// Removes all members from this role.
+        /// </summary>
+        [IntelliSense("Removes all members from this role.")]
+        public void ClearMembers()
+        {
+            Members.Clear();
+        }
+
+        /// <summary>
+        /// Adds a Windows AD member to this role.
+        /// </summary>
+        [IntelliSense("Adds a Windows AD member to this role.")]
+        public void AddWindowsMember(string memberName, string memberId = null)
+        {
+            var member = WindowsModelRoleMember.CreateNew(this, memberName);
+            if (!string.IsNullOrEmpty(memberId)) member.MemberID = memberId;
+        }
+
+        /// <summary>
+        /// Adds an Azure AD member to this role.
+        /// </summary>
+        [IntelliSense("Adds an Azure AD member to this role.")]
+        public ExternalModelRoleMember AddExternalMember(string memberName)
+        {
+            return ExternalModelRoleMember.CreateNew(this, memberName, "AzureAD");
+        }
 
         [Category("Basic")]
         public string ErrorMessage

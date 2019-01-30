@@ -68,7 +68,6 @@ namespace TOMWrapperTest.RegressionTests.v2_8
             ""value"": [
               ""["",
               ""  {"",
-              ""    \""name\"": \""4cbb1f88-29fa-4c09-9b0d-d51bd8823af9\"","",
               ""    \""fromTable\"": \""Table 1\"","",
               ""    \""fromColumn\"": \""Column 1\"","",
               ""    \""toTable\"": \""Table 2\"","",

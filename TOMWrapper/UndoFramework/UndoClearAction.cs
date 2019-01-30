@@ -23,7 +23,7 @@ namespace TabularEditor.TOMWrapper.Undo
 
         public void Undo()
         {
-            foreach (var obj in _objs) _collection.Add(obj);
+            foreach (var obj in _objs) obj.Undelete(_collection);
         }
 
         public string GetSummary()

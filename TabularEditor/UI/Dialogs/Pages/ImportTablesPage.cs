@@ -19,6 +19,8 @@ namespace TabularEditor.UI.Dialogs.Pages
         public ImportTablesPage()
         {
             InitializeComponent();
+            RowLimitClause = RowLimitClause.Top;
+            IdentifierQuoting = IdentifierQuoting.SquareBracket;
         }
         public bool SingleSelection = false;
         public TypedDataSource Source;
@@ -29,6 +31,19 @@ namespace TabularEditor.UI.Dialogs.Pages
         {
             Source = source;
             SchemaModel = new SchemaModel(Source, InitialSelection);
+
+            switch(source)
+            {
+                case OdbcDataSource odbc:
+                case OracleDataSource oracle:
+                case OleDbDataSource oledb:
+                case OtherDataSource other:
+                    pnlODBC.Visible = true;
+                    break;
+                case SqlDataSource sql:
+                    pnlODBC.Visible = false;
+                    break;
+            }
         }
 
         private void nodeCheckBox1_IsVisibleValueNeeded(object sender, Aga.Controls.Tree.NodeControls.NodeControlValueEventArgs e)
@@ -72,7 +87,7 @@ namespace TabularEditor.UI.Dialogs.Pages
 
         SchemaNode currentNode;
 
-        private void treeViewAdv1_SelectionChanged(object sender, EventArgs e)
+        private void RefreshPreviewAndSql()
         {
             currentNode = treeViewAdv1.SelectedNode?.Tag as SchemaNode;
             if (currentNode == null || currentNode.Type == SchemaNodeType.Database || currentNode.Type == SchemaNodeType.Root)
@@ -82,7 +97,7 @@ namespace TabularEditor.UI.Dialogs.Pages
             }
             else
             {
-                if (chkDisablePreview.Checked) return;
+                if (!chkEnablePreview.Checked) return;
                 PreviewLoaded = false;
                 chkSelectAll.Visible = false;
                 suspendSelectAll = true; chkSelectAll.Checked = currentNode.SelectAll; suspendSelectAll = false;
@@ -97,16 +112,19 @@ namespace TabularEditor.UI.Dialogs.Pages
                 lblError.Visible = false;
                 loadingPreviewSpinner.Visible = true;
 
-                SetSqlText(currentNode.GetSql());
+                SetSqlText(currentNode.GetSql(IdentifierQuoting));
 
                 cts = new CancellationTokenSource();
                 var ct = cts.Token;
+
+                var rlc = RowLimitClause;
+                var iq = IdentifierQuoting;
 
                 // Fill the datagridview with sample data asynchronously:
                 fillSampleDataTask = Task.Factory.StartNew(() =>
                 {
                     if (ct.IsCancellationRequested) return;
-                    var sampleData = Source.GetSampleData(currentNode, out bool isError);
+                    var sampleData = Source.GetSampleData(currentNode, rlc, iq, out bool isError);
                     if (ct.IsCancellationRequested) return;
                     this.Invoke(new MethodInvoker(() =>
                     {
@@ -132,7 +150,7 @@ namespace TabularEditor.UI.Dialogs.Pages
                                 var checkBoxHeader = new DatagridViewCheckBoxHeaderCell(currentNode.IncludedColumns.Contains(col.HeaderText));
                                 col.HeaderCell = checkBoxHeader;
                                 checkBoxHeader.OnCheckBoxClicked += CheckBoxHeader_OnCheckBoxClicked;
-                                
+
                             }
                             dataGridView1.ResumeDrawing();
                             PreviewLoaded = true;
@@ -142,6 +160,11 @@ namespace TabularEditor.UI.Dialogs.Pages
                 }, ct);
 
             }
+        }
+
+        private void treeViewAdv1_SelectionChanged(object sender, EventArgs e)
+        {
+            RefreshPreviewAndSql();
         }
 
         private void SetSqlText(string sql)
@@ -157,7 +180,7 @@ namespace TabularEditor.UI.Dialogs.Pages
             {
                 if ((col.HeaderCell as DatagridViewCheckBoxHeaderCell).Checked) currentNode.IncludedColumns.Add(col.HeaderText);
             }
-            SetSqlText(currentNode.GetSql(true, false));
+            SetSqlText(currentNode.GetSql(IdentifierQuoting, true, false));
             suspendSelectAll = true;
             chkSelectAll.Checked = false;
             suspendSelectAll = false;
@@ -214,15 +237,16 @@ namespace TabularEditor.UI.Dialogs.Pages
             }
             dataGridView1.Invalidate();
             currentNode.SelectAll = chkSelectAll.Checked;
-            SetSqlText(currentNode.GetSql(true, false));
+            SetSqlText(currentNode.GetSql(IdentifierQuoting, true, false));
         }
 
         bool PreviewLoaded = false;
 
-        private void chkDisablePreview_CheckedChanged(object sender, EventArgs e)
+        private void chkEnablePreview_CheckedChanged(object sender, EventArgs e)
         {
-            splitContainer1.Panel2Collapsed = chkDisablePreview.Checked;
-            previewPane.Visible = !chkDisablePreview.Checked;
+            cmbRowReduction.Enabled = chkEnablePreview.Checked;
+            splitContainer1.Panel2Collapsed = !chkEnablePreview.Checked;
+            previewPane.Visible = chkEnablePreview.Checked;
             if (previewPane.Visible) treeViewAdv1_SelectionChanged(sender, e);
         }
 
@@ -254,9 +278,49 @@ namespace TabularEditor.UI.Dialogs.Pages
             }
         }
 
+        public RowLimitClause RowLimitClause
+        {
+            get
+            {
+                return (RowLimitClause)cmbRowReduction.SelectedIndex;
+            }
+            set
+            {
+                cmbRowReduction.SelectedIndex = (int)value;
+            }
+        }
+
+        public IdentifierQuoting IdentifierQuoting
+        {
+            get
+            {
+                return (IdentifierQuoting)cmbQuotes.SelectedIndex;
+            }
+            set
+            {
+                cmbQuotes.SelectedIndex = (int)value;
+            }
+        }
+        
+
         private void dataGridView1_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
             e.ThrowException = false;
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cmbQuotes_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            RefreshPreviewAndSql();
+        }
+
+        private void cmbRowReduction_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            RefreshPreviewAndSql();
         }
     }
 
