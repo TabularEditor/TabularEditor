@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
 using TabularEditor.TOMWrapper.Serialization;
 using TabularEditor.TOMWrapper.Utils;
+using TabularEditor.UI.Dialogs;
 using TabularEditor.UIServices;
 
 namespace TabularEditor.UI
@@ -78,27 +79,10 @@ namespace TabularEditor.UI
 
         public void File_New()
         {
-            var cl = 0;
-
-            var td = new TaskDialog();
-            var tdb1200 = new TaskDialogButton("btnCL1200", "CL 1200");
-            var tdb1400 = new TaskDialogButton("btnCL1400", "CL 1400");
-            var tdbCancel = new TaskDialogButton("btnCancel", "Cancel");
-            tdb1200.Click += (s, e) => { cl = 1200;  td.Close(TaskDialogResult.CustomButtonClicked); };
-            tdb1400.Click += (s, e) => { cl = 1400;  td.Close(TaskDialogResult.CustomButtonClicked); };
-            tdbCancel.Click += (s, e) => { td.Close(TaskDialogResult.Cancel); };
-
-            td.Controls.Add(tdb1200);
-            td.Controls.Add(tdb1400);
-            td.Controls.Add(tdbCancel);
-
-            td.Caption = "Choose Compatibility Level";
-            td.Text = "Which Compatibility Level (1200 or 1400) do you want to use for the new model?";
-
-            var tdr = td.Show();
-            if (cl == 0) return;
+            var newModelDialog = new NewModelDialog();
+            if (newModelDialog.ShowDialog() == DialogResult.Cancel) return;
             
-            Handler = new TabularModelHandler(cl, Preferences.Current.GetSettings());
+            Handler = new TabularModelHandler(newModelDialog.CompatibilityLevel, Preferences.Current.GetSettings());
             File_Current = null;
             File_SaveMode = Handler.SourceType;
 

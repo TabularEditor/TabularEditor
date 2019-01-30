@@ -16,7 +16,7 @@ namespace TabularEditor.TOMWrapper.Utils
                 if (obj is Measure) yield return DAXProperty.DetailRowsExpression;
                 if (obj.ObjectType == ObjectType.Table) yield return DAXProperty.DefaultDetailRowsExpression;
             }
-            if (TabularModelHandler.Singleton.CompatibilityLevel >= 1460) // TODO: Check if this is the correct CL for FormatStringDefinition
+            if (TabularModelHandler.Singleton.CompatibilityLevel >= 1470)
             {
                 if (obj is Measure) yield return DAXProperty.FormatStringExpression;
             }
