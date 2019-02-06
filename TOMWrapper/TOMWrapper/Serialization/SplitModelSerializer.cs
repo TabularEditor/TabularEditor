@@ -97,11 +97,17 @@ namespace TabularEditor.TOMWrapper.Serialization
                     }
                 }
 
-                RemoveUnusedFiles(path, CurrentFiles);
+                RemoveUnusedFiles(path + "\\tables", CurrentFiles);
+                RemoveUnusedFiles(path + "\\relationships", CurrentFiles);
+                RemoveUnusedFiles(path + "\\perspectives", CurrentFiles);
+                RemoveUnusedFiles(path + "\\cultures", CurrentFiles);
+                RemoveUnusedFiles(path + "\\dataSources", CurrentFiles);
+                RemoveUnusedFiles(path + "\\roles", CurrentFiles);
             }
 
-            private void RemoveUnusedFiles(string path, HashSet<string> currentFiles)
+            private void RemoveUnusedFiles(string path, HashSet<string> currentFiles, bool recursive = true)
             {
+                if (!Directory.Exists(path)) return;
                 foreach (var f in Directory.GetFiles(path, "*.json"))
                 {
                     if (!currentFiles.Contains(f, StringComparer.InvariantCultureIgnoreCase))
