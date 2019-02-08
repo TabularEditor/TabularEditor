@@ -86,10 +86,10 @@ namespace TabularEditor.TOMWrapper
 #><#= props.Any(p => p.Name == "Description") ? "\n\t\t\t, IDescriptionObject" : ""
 #><#= props.Any(p => p.Name == "Expression" && t.Name != "NamedExpression") ? "\n\t\t\t, IExpressionObject" : ""
 #><#= props.Any(p => p.Name == "FormatString") ? "\n\t\t\t, IFormattableObject" : ""
-#><#= props.Any(p => p.Name == "Annotations") ? "\n\t\t\t, IAnnotationObject" : ""
+#><#= props.Any(p => p.Name == "Annotations") ? "\n\t\t\t, IInternalAnnotationObject" : ""
 #><#= props.Any(p => p.Name == "ExtendedProperties") ? "\n\t\t\t, IExtendedPropertyObject" : ""
-#><#= Rules.IsPerspectiveObject(t) ? "\n\t\t\t, ITabularPerspectiveObject" : ""
-#><#= Rules.IsTranslatable(t) ? "\n\t\t\t, ITranslatableObject" : ""
+#><#= Rules.IsPerspectiveObject(t) ? "\n\t\t\t, IInternalTabularPerspectiveObject" : ""
+#><#= Rules.IsTranslatable(t) ? "\n\t\t\t, IInternalTranslatableObject" : ""
 #><#= Rules.IsCreatable(t) ? "\n\t\t\t, IClonableObject" : ""
 #>
 	{
@@ -109,36 +109,45 @@ namespace TabularEditor.TOMWrapper
 	foreach(PropertyInfo p in props) 
 	{   
 	    if (p.Name == "ExtendedProperties") { #>
-        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on this object."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+		///<summary>The collection of Extended Properties on the current <#=Rules.SplitCamelCase(t.Name)#>.</summary>
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on the current <#=Rules.SplitCamelCase(t.Name)#>."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
+		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
 		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
 		public bool HasExtendedProperty(string name) {
 		    return MetadataObject.ExtendedProperties.ContainsName(name);
 		}
+		///<summary>Gets the type of the ExtendedProperty with the given index, assuming it exists.</summary>
 		public ExtendedPropertyType GetExtendedPropertyType(int index) {
 			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
 		}
+		///<summary>Gets the type of the ExtendedProperty with the given name, assuming it exists.</summary>
 		public ExtendedPropertyType GetExtendedPropertyType(string name) {
 			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
 		}
+		///<summary>Gets the value of the ExtendedProperty with the given index, assuming it exists.</summary>
 		public string GetExtendedProperty(int index) {
 			var ep = MetadataObject.ExtendedProperties[index];
 			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
 		}
+		///<summary>Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.</summary>
 		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
 		public string GetExtendedProperty(string name) {
 		    if(!HasExtendedProperty(name)) return null;
 			var ep = MetadataObject.ExtendedProperties[name];
 			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
 		}
+		///<summary>Sets the value of the ExtendedProperty with the given index, optionally specifiying the type (string or JSON) of the ExtendedProperty.</summary>
 		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
 			var name = MetadataObject.ExtendedProperties[index].Name;
 			SetExtendedProperty(name, value, type);
 		}
+		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
 		public string GetNewExtendedPropertyName() {
 			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
 		}
+		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
 		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
 		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
 			if(name == null) name = GetNewExtendedPropertyName();
@@ -179,6 +188,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 		}
+		///<summary>Remove an ExtendedProperty by the given name.</summary>
 		[IntelliSense("Remove an ExtendedProperty by the given name.")]
 		public void RemoveExtendedProperty(string name) {
 			if(MetadataObject.ExtendedProperties.Contains(name)) {
@@ -197,10 +207,12 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
 			}
 		}
+		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
 		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
 		public int GetExtendedPropertyCount() {
 			return MetadataObject.ExtendedProperties.Count;
 		}
+		///<summary>Gets a collection of all ExtendedProperty names on the current object.</summary>
 		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
 		public IEnumerable<string> GetExtendedProperties() {
 			return MetadataObject.ExtendedProperties.Select(a => a.Name);
@@ -209,31 +221,46 @@ namespace TabularEditor.TOMWrapper
 		<# }
 
 		if (p.Name == "Annotations") { #>
-        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on this object."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+		///<summary>The collection of Annotations on the current <#=Rules.SplitCamelCase(t.Name)#>.</summary>
+        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on the current <#=Rules.SplitCamelCase(t.Name)#>."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
 		public AnnotationCollection Annotations { get; private set; }
+		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
+		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
 		public string GetAnnotation(int index) {
 			return MetadataObject.Annotations[index].Value;
 		}
+		///<summary>Returns true if an annotation with the given name exists. Otherwise false.</summary>
 		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
 		public bool HasAnnotation(string name) {
 		    return MetadataObject.Annotations.ContainsName(name);
 		}
+		///<summary>Gets the value of the annotation with the given name. Returns null if no such annotation exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
 		public string GetAnnotation(string name) {
 		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
 		}
-		public void SetAnnotation(int index, string value, bool undoable = true) {
-			var name = MetadataObject.Annotations[index].Name;
+		///<summary>Sets the value of the annotation with the given index, assuming it exists.</summary>
+		[IntelliSense("Sets the value of the annotation with the given index, assuming it exists.")]
+		public void SetAnnotation(int index, string value) {
+		    SetAnnotation(index, value, true);
+		}
+		internal void SetAnnotation(int index, string value, bool undoable) {
+		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
+		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+			SetAnnotation(index, value, undoable);
+		}
+		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
 			return MetadataObject.Annotations.GetNewName("New Annotation");
 		}
+		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
 		public void SetAnnotation(string name, string value) {
 		    SetAnnotation(name, value, true);
 		}
-		public void SetAnnotation(string name, string value, bool undoable) {
+		internal void SetAnnotation(string name, string value, bool undoable) {
 			if(name == null) name = GetNewAnnotationName();
 
 			if(value == null) {
@@ -260,13 +287,16 @@ namespace TabularEditor.TOMWrapper
 				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
 				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
 			}
-
 		}
+		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+			this.SetAnnotation(name, value, undoable);
+		}
+		///<summary>Remove an annotation by the given name.</summary>
 		[IntelliSense("Remove an annotation by the given name.")]
 		public void RemoveAnnotation(string name) {
 		    RemoveAnnotation(name, true);
 		}
-		public void RemoveAnnotation(string name, bool undoable) {
+		internal void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Get current value:
 				bool undoable2 = true;
@@ -282,11 +312,16 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
 			}
 		}
-		[IntelliSense("Gets the number of annotations on the current object.")]
+		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+			this.RemoveAnnotation(name, undoable);
+		}
+		///<summary>Gets the number of annotations on the current <#=Rules.SplitCamelCase(t.Name)#>.</summary>
+		[IntelliSense("Gets the number of annotations on the current <#=Rules.SplitCamelCase(t.Name)#>.")]
 		public int GetAnnotationsCount() {
 			return MetadataObject.Annotations.Count;
 		}
-		[IntelliSense("Gets a collection of all annotation names on the current object.")]
+		///<summary>Gets a collection of all annotation names on the current <#=Rules.SplitCamelCase(t.Name)#>.</summary>
+		[IntelliSense("Gets a collection of all annotation names on the current <#=Rules.SplitCamelCase(t.Name)#>.")]
 		public IEnumerable<string> GetAnnotations() {
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
@@ -305,12 +340,13 @@ namespace TabularEditor.TOMWrapper
 <#		}
 		if (p.Name == "DisplayFolder") { #>
         /// <summary>
-        /// Collection of localized Display Folders for this <#= t.Name #>.
+        /// Collection of localized Display Folders for the current <#=Rules.SplitCamelCase(t.Name)#>.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Display Folders"),Description("Shows all translated Display Folders of this object."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Display Folders"),Description("Shows all translated Display Folders of the current <#=Rules.SplitCamelCase(t.Name)#>."),Category("Translations and Perspectives")]
 	    public TranslationIndexer TranslatedDisplayFolders { private set; get; }
 <#		}
 		if (p.Name == "Table") { #>
+		///<summary>The parent table of the current <#=Rules.SplitCamelCase(t.Name)#>.</summary>
 		[Browsable(false)]
 		public Table Table
 		{ 
@@ -331,19 +367,19 @@ namespace TabularEditor.TOMWrapper
         /// <Summary>
 		/// Collection of perspectives in which this <#= t.Name #> is visible.
 		/// </Summary>
-		[Browsable(true),DisplayName("Shown in Perspective"), Description("Provides an easy way to include or exclude this object from the perspectives of the model."), Category("Translations and Perspectives")]
+		[Browsable(true),DisplayName("Shown in Perspective"), Description("Provides an easy way to include or exclude the current <#=Rules.SplitCamelCase(t.Name)#> from the perspectives of the model."), Category("Translations and Perspectives")]
         public Perspective<#= t.Name #>Indexer InPerspective { get; private set; }
 		PerspectiveIndexer ITabularPerspectiveObject.InPerspective { get { return this.InPerspective; } }
 <# } if (Rules.IsTranslatable(t)) { #>
         /// <summary>
         /// Collection of localized descriptions for this <#= t.Name #>.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Descriptions"),Description("Shows all translated descriptions of this object."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Descriptions"),Description("Shows all translated descriptions of the current <#=Rules.SplitCamelCase(t.Name)#>."),Category("Translations and Perspectives")]
 	    public TranslationIndexer TranslatedDescriptions { private set; get; }
         /// <summary>
         /// Collection of localized names for this <#= t.Name #>.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of this object."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current <#=Rules.SplitCamelCase(t.Name)#>."),Category("Translations and Perspectives")]
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
 <# } if (!t.IsAbstract && Rules.InCollection(t)) { #>
@@ -460,6 +496,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
         }
 
 <# if (Rules.InCollection(t)) { #>
+		///<summary>The parent <#=Rules.SplitCamelCase(Rules.GetParent(t))#> of the current <#=Rules.SplitCamelCase(t.Name)#>.</summary>
 		public <#= Rules.ObjectTypes[t] != "TabularNamedObject" && Rules.InCollection(t.BaseType) ? "new " : ""#><#= Rules.GetParent(t) #> Parent { 
 			get {
 				return Handler.WrapperLookup[MetadataObject.Parent] as <#= Rules.GetParent(t) #>;
@@ -484,7 +521,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
         /// The collection of <#= c.Key.Name #> objects on this <#= t.Name #>.
         /// </summary>
 		[DisplayName("<#= Rules.GetDisplayName(colName, t.Name) #>")]
-		[Category("<#= Rules.GetCategory(colName, t.Name) #>"),IntelliSense("The collection of <#= Rules.GetDisplayName(c.Key.Name, t.Name) #> objects on this <#= t.Name #>.")]<#= Rules.GetOtherAttributes(colName, t.Name) #>
+		[Category("<#= Rules.GetCategory(colName, t.Name) #>"),IntelliSense("The collection of <#= Rules.GetDisplayName(c.Key.Name, t.Name) #> objects on the current <#=Rules.SplitCamelCase(t.Name)#>.")]<#= Rules.GetOtherAttributes(colName, t.Name) #>
 		public <#= c.Key.Name #>Collection <#= colName #> { get; <#= Rules.Sealed(t) ? "private" : "protected" #> set; }
 <# } #>
 
@@ -548,8 +585,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 			Handler.Tree.RebuildFolderCacheForTable(this);
 <# } #>
 		}
-
-		public override bool Browsable(string propertyName) {
+		internal override bool Browsable(string propertyName) {
 			switch (propertyName) {
 <# if(props.Any(p => p.Name == "ExtendedProperties")) { #> 
 				case Properties.EXTENDEDPROPERTIES:
@@ -593,20 +629,22 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 			TOM_Collection = metadataObjectCollection;
 		}
 		internal override Type GetItemType() { return typeof(<#= t.Name #>); }
-        protected override void TOM_Add(TOM.MetadataObject obj) { TOM_Collection.Add(obj as TOM.<#= t.Name #>); }
-        protected override bool TOM_Contains(TOM.MetadataObject obj) { return TOM_Collection.Contains(obj as TOM.<#= t.Name #>); }
-        protected override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.<#= t.Name #>); }
-        protected override void TOM_Clear() { TOM_Collection.Clear(); }
-        protected override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
-        protected override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
-        protected override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override void TOM_Add(TOM.MetadataObject obj) { TOM_Collection.Add(obj as TOM.<#= t.Name #>); }
+        internal override bool TOM_Contains(TOM.MetadataObject obj) { return TOM_Collection.Contains(obj as TOM.<#= t.Name #>); }
+        internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.<#= t.Name #>); }
+        internal override void TOM_Clear() { TOM_Collection.Clear(); }
+        internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
+        internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+        internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
 <# if (t.Name != "Measure" && t.Name != "Relationship" && t.Name != "Column") { #>
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
 <# } if (t.Name == "Relationship") { #> 
 		internal override string GetNewName(string prefix = null) { return Guid.NewGuid().ToString(); }
 <# } if (t.Name != "Column") { #>
-        public override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.<#= t.Name #>); }
-        public override int Count { get { return TOM_Collection.Count; } }
+        internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.<#= t.Name #>); }
+        /// <summary>The number of items in this collection.</summary>
+		public override int Count { get { return TOM_Collection.Count; } }
+		/// <summary>Returns an enumerator that iterates through the collection.</summary>
         public override IEnumerator<<#= t.Name == "Relationship" ? "SingleColumnRelationship" : t.Name #>> GetEnumerator() { return TOM_Collection.Select(h => Handler.WrapperLookup[h]).OfType<<#= t.Name == "Relationship" ? "SingleColumnRelationship" : t.Name #>>().GetEnumerator(); }
 <# } #>
 		internal override void Reinit() {
@@ -668,7 +706,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 		}
 <#          }
         } #>
-
+		///<summary>Get a string representation of the current <#=Rules.SplitCamelCase(t.Name)#></summary>
 		public override string ToString() {
 			return string.Format("({0} {1})", Count, (Count == 1 ? "<#= t.Name #>" : "<#= t == typeof(Column) ? "Columns" : Rules.Collections[t]#>").ToLower());
 		}

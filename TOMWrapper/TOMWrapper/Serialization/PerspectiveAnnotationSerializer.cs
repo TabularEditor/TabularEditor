@@ -9,9 +9,9 @@ namespace TabularEditor.TOMWrapper.Serialization
     internal static class PerspectiveAnnotationSerializer
     {
 
-        public static IEnumerable<ITabularPerspectiveObject> GetAllPerspectiveObjects(this Model model)
+        public static IEnumerable<IInternalTabularPerspectiveObject> GetAllPerspectiveObjects(this Model model)
         {
-                return model.Tables.OfType<ITabularPerspectiveObject>()
+                return model.Tables.OfType<IInternalTabularPerspectiveObject>()
                     .Concat(model.AllMeasures)
                     .Concat(model.AllColumns)
                     .Concat(model.AllHierarchies);

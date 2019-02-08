@@ -117,7 +117,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        protected override bool IsBrowsable(string propertyName)
+        internal override bool IsBrowsable(string propertyName)
         {
             switch(propertyName)
             {
@@ -169,7 +169,7 @@ namespace TabularEditor.TOMWrapper
             return base.AllowDelete(out message);
         }
 
-        protected override bool IsEditable(string propertyName)
+        internal override bool Editable(string propertyName)
         {
             switch(propertyName)
             {
@@ -239,6 +239,8 @@ namespace TabularEditor.TOMWrapper
 
     public partial class PartitionCollection : ITabularNamedObject, ITabularObjectContainer, ITabularTableObject
     {
+        bool ITabularNamedObject.CanEditName() { return false; }
+
         [IntelliSense("Converts all M partitions in this collection to regular partitions. The M query is left as-is and needs to be converted to SQL before the partition can be processed.")]
         public void ConvertToLegacy(ProviderDataSource providerSource = null)
         {

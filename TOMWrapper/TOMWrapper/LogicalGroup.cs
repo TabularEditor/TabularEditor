@@ -60,6 +60,8 @@ namespace TabularEditor.TOMWrapper
     [TypeConverter(typeof(DynamicPropertyConverter))]
     public sealed class LogicalGroup: ITabularNamedObject, ITabularObjectContainer, IDynamicPropertyObject
     {
+        bool ITabularNamedObject.CanEditName() { return false; }
+
 
         [ReadOnly(true)]
         public string Name { get; set; }

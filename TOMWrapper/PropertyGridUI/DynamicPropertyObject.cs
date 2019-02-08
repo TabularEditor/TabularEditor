@@ -21,7 +21,7 @@ namespace TabularEditor.PropertyGridUI
     /// [TypeConverter(typeof(DynamicPropertyConverter))]
     /// 
     /// </summary>
-    public interface IDynamicPropertyObject
+    internal interface IDynamicPropertyObject
     {
         bool Browsable(string propertyName);
         bool Editable(string propertyName);
