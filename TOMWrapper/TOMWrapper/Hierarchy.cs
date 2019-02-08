@@ -171,7 +171,7 @@ namespace TabularEditor.TOMWrapper
             Handler.Tree.OnStructureChanged(this);
         }
 
-        protected override bool IsBrowsable(string propertyName)
+        internal override bool IsBrowsable(string propertyName)
         {
             switch(propertyName)
             {
@@ -182,7 +182,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        protected override bool IsEditable(string propertyName)
+        internal override bool Editable(string propertyName)
         {
             return true;
         }

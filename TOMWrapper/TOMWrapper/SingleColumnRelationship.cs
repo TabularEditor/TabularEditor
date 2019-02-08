@@ -42,7 +42,7 @@ namespace TabularEditor.TOMWrapper
             return string.Format("'{0}'[{1}]", col.Table.Name, col.Name);
         }
 
-        protected override bool IsBrowsable(string propertyName)
+        internal override bool IsBrowsable(string propertyName)
         {
             switch (propertyName)
             {
@@ -54,7 +54,7 @@ namespace TabularEditor.TOMWrapper
             return true;
         }
 
-        protected override bool IsEditable(string propertyName)
+        internal override bool Editable(string propertyName)
         {
             switch (propertyName)
             {

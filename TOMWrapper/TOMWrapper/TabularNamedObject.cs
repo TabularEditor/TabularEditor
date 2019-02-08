@@ -35,6 +35,11 @@ namespace TabularEditor.TOMWrapper
             return true;
         }
 
+        bool ITabularNamedObject.CanEditName()
+        {
+            return Editable(Properties.NAME);
+        }
+
         /// <summary>
         /// Indicates whether an object can be deleted or not.
         /// </summary>

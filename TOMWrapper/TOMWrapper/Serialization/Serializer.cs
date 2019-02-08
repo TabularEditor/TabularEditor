@@ -32,8 +32,8 @@ namespace TabularEditor.TOMWrapper.Serialization
             var model = objects.FirstOrDefault()?.Model;
             if (model == null) return "[]";
 
-            if (includeTranslations) foreach (var obj in objects.OfType<ITranslatableObject>()) obj.SaveTranslations(true);
-            if (includePerspectives) foreach (var obj in objects.OfType<ITabularPerspectiveObject>()) obj.SavePerspectives(true);
+            if (includeTranslations) foreach (var obj in objects.OfType<IInternalTranslatableObject>()) obj.SaveTranslations(true);
+            if (includePerspectives) foreach (var obj in objects.OfType<IInternalTabularPerspectiveObject>()) obj.SavePerspectives(true);
             if (includeRLS) foreach (var obj in objects.OfType<Table>()) obj.SaveRLS();
             if (includeOLS && model.Handler.CompatibilityLevel >= 1400)
             {
@@ -70,7 +70,7 @@ namespace TabularEditor.TOMWrapper.Serialization
                     jw.WriteEndObject();
                 }
 
-                foreach (var obj in objects.OfType<IAnnotationObject>()) obj.ClearTabularEditorAnnotations();
+                foreach (var obj in objects.OfType<IInternalAnnotationObject>()) obj.ClearTabularEditorAnnotations();
 
                 return sw.ToString();
             }
