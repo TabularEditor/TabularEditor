@@ -78,6 +78,7 @@ namespace TabularEditor.TOMWrapper.Serialization
                         var measures = options.Levels.Contains("Tables/Measures") ? PopArray(t, "measures") : null;
                         var hierarchies = options.Levels.Contains("Tables/Hierarchies") ? PopArray(t, "hierarchies") : null;
                         var annotations = options.Levels.Contains("Tables/Annotations") ? PopArray(t, "annotations") : null;
+                        var calculationItems = options.Levels.Contains("Tables/Calculation Items") ? PopArray(t, "calculationGroup.calculationItems") : null;
 
                         var tableName = Sanitize(table.Name);
                         var tablePath = path + "\\tables\\" + (options.PrefixFilenames ? n.ToString("D3") + " " : "") + tableName;
@@ -92,6 +93,7 @@ namespace TabularEditor.TOMWrapper.Serialization
                         if (hierarchies != null) OutArray(tablePath, "hierarchies", hierarchies, options);
                         if (partitions != null) OutArray(tablePath, "partitions", partitions, options);
                         if (annotations != null) OutArray(tablePath, "annotations", annotations, options);
+                        if (calculationItems != null) OutArray(tablePath, "calculationItems", calculationItems, options);
 
                         n++;
                     }
@@ -152,8 +154,17 @@ namespace TabularEditor.TOMWrapper.Serialization
                 }
             }
 
-            private JArray PopArray(JObject obj, string arrayName)
+            private JArray PopArray(JObject obj, string arrayPath)
             {
+                var objPath = arrayPath.Split('.');
+                for(int i = 0; i < objPath.Length - 1; i++)
+                {
+                    obj = obj[objPath[i]] as JObject;
+                    if (obj == null) return null;
+                }
+
+                var arrayName = objPath.Last();
+
                 var result = obj[arrayName] as JArray;
                 obj.Remove(arrayName);
                 return result;
@@ -188,6 +199,7 @@ namespace TabularEditor.TOMWrapper.Serialization
                     InArray(tablePath, "measures", table);
                     InArray(tablePath, "hierarchies", table);
                     InArray(tablePath, "annotations", table);
+                    InArray(tablePath, "calculationGroup.calculationItems", table);
                     tables.Add(table);
                 }
                 model.Add("tables", tables);
@@ -200,8 +212,11 @@ namespace TabularEditor.TOMWrapper.Serialization
             return jobj.ToString();
         }
 
-        private static void InArray(string path, string arrayName, JObject baseObject)
+        private static void InArray(string path, string arrayPath, JObject baseObject)
         {
+            var objPath = arrayPath.Split('.');
+            var arrayName = objPath.Last();
+
             var array = new JArray();
             if (Directory.Exists(path + "\\" + arrayName))
             {
@@ -209,6 +224,12 @@ namespace TabularEditor.TOMWrapper.Serialization
                 {
                     array.Add(JObject.Parse(File.ReadAllText(file)));
                 }
+
+                for(int i = 0; i < objPath.Length - 1; i++)
+                {
+                    baseObject = baseObject[objPath[i]] as JObject;
+                }
+
                 baseObject.Add(arrayName, array);
             }
         }
