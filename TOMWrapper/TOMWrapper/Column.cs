@@ -205,7 +205,7 @@ namespace TabularEditor.TOMWrapper
             base.OnPropertyChanged(propertyName, oldValue, newValue);
         }
 
-        protected override bool IsBrowsable(string propertyName)
+        internal override bool IsBrowsable(string propertyName)
         {
             switch (propertyName)
             {
@@ -276,7 +276,7 @@ namespace TabularEditor.TOMWrapper
             return testName;
         }
 
-        public override int IndexOf(TOM.MetadataObject value)
+        internal override int IndexOf(TOM.MetadataObject value)
         {
             var ix = TOM_Collection.IndexOf(value as TOM.Column);
             var rnIx = GetRnColIndex();

@@ -21,17 +21,21 @@ namespace TabularEditor.TOMWrapper
         string CollectionName { get; }
         ITabularObjectCollection GetCurrentCollection();
         int IndexOf(TabularNamedObject obj);
-        TabularNamedObject Parent { get; }
+        TabularObject Parent { get; }
         void CreateChildrenFromMetadata();
         Type ItemType { get; }
     }
 
+    /// <summary>
+    /// Represents a collection of Tabular Object Model objects.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class TabularObjectCollection<T> : ITabularObjectCollection, IReadOnlyList<T>
         where T: TabularNamedObject
     {
         // Functionality:
         #region CTOR
-        protected TabularObjectCollection(string collectionName, TabularNamedObject parent)
+        internal TabularObjectCollection(string collectionName, TabularObject parent)
         {
             _parent = parent;
             _handler = TabularModelHandler.Singleton;
@@ -40,9 +44,9 @@ namespace TabularEditor.TOMWrapper
         }
         #endregion
         #region Internal / private members
-        private TabularNamedObject _parent;
+        private TabularObject _parent;
         private TabularModelHandler _handler;
-        internal protected TabularNamedObject Parent { get { return _parent; } }
+        internal TabularObject Parent { get { return _parent; } }
         internal TabularModelHandler Handler { get { return _handler; } }
 
         internal virtual void Add(T item)
@@ -75,7 +79,7 @@ namespace TabularEditor.TOMWrapper
             return true;
         }
 
-        protected internal void Clear()
+        internal void Clear()
         {
             Handler.UndoManager.Add(new UndoClearAction(this, this.ToArray()));
             TOM_Clear();
@@ -90,6 +94,11 @@ namespace TabularEditor.TOMWrapper
         }
         #endregion
         #region Public members
+        /// <summary>
+        /// Gets the item with the specified name.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public virtual T this[string name]
         {
             get
@@ -99,7 +108,11 @@ namespace TabularEditor.TOMWrapper
         }
 
         bool IExpandableIndexer.EnableMultiLine => false;
-
+        /// <summary>
+        /// Gets the item on the specified index.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public virtual T this[int index]
         {
             get
@@ -107,21 +120,34 @@ namespace TabularEditor.TOMWrapper
                 return Handler.WrapperLookup[TOM_Get(index)] as T;
             }
         }
-
+        /// <summary>
+        /// Returns true if this collection contains the specified item.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         [IntelliSense("Returns true if this collection contains the specified item.")]
         public bool Contains(T item)
         {
             return TOM_Contains(item.MetadataObject);
         }
-
+        /// <summary>
+        /// Returns true if this collection contains an item with the specified name.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public bool Contains(string name)
         {
             return TOM_ContainsName(name);
         }
 
+        /// <summary>
+        /// The name of this collection.
+        /// </summary>
         [IntelliSense("The name of this collection."),Browsable(false)]
         public string CollectionName { get; private set; }
-
+        /// <summary>
+        /// Returns the index of the specified item.
+        /// </summary>
         public int IndexOf(T item)
         {
             return IndexOf(item.MetadataObject);
@@ -131,10 +157,13 @@ namespace TabularEditor.TOMWrapper
 
         // Abstract members:
         #region Public abstract members
+        /// <summary>
+        /// The number of items in this collection.
+        /// </summary>
         [IntelliSense("The number of items in this collection."),Browsable(false)]
         public abstract int Count { get; }
         public abstract IEnumerator<T> GetEnumerator();
-        public abstract int IndexOf(TOM.MetadataObject value);
+        internal abstract int IndexOf(TOM.MetadataObject value);
         #endregion
         #region Internal / protected abstract members
         internal abstract string GetNewName(string prefix = null);
@@ -142,13 +171,13 @@ namespace TabularEditor.TOMWrapper
         internal abstract void ReapplyReferences();
         internal abstract void CreateChildrenFromMetadata();
         internal abstract Type GetItemType();
-        protected abstract TOM.MetadataObject TOM_Get(string name);
-        protected abstract TOM.MetadataObject TOM_Get(int index);
-        protected abstract void TOM_Add(TOM.MetadataObject obj);
-        protected abstract void TOM_Remove(TOM.MetadataObject obj);
-        protected abstract void TOM_Clear();
-        protected abstract bool TOM_Contains(TOM.MetadataObject obj);
-        protected abstract bool TOM_ContainsName(string name);
+        internal abstract TOM.MetadataObject TOM_Get(string name);
+        internal abstract TOM.MetadataObject TOM_Get(int index);
+        internal abstract void TOM_Add(TOM.MetadataObject obj);
+        internal abstract void TOM_Remove(TOM.MetadataObject obj);
+        internal abstract void TOM_Clear();
+        internal abstract bool TOM_Contains(TOM.MetadataObject obj);
+        internal abstract bool TOM_ContainsName(string name);
         #endregion
 
         // Interface implementations:
@@ -172,7 +201,7 @@ namespace TabularEditor.TOMWrapper
             CreateChildrenFromMetadata();
         }
         TabularModelHandler ITabularObjectCollection.Handler { get { return _handler; } }
-        TabularNamedObject ITabularObjectCollection.Parent { get { return _parent; } }
+        TabularObject ITabularObjectCollection.Parent { get { return _parent; } }
         ITabularObjectCollection ITabularObjectCollection.GetCurrentCollection()
         {
             return Handler.WrapperCollections[CollectionName];

@@ -38,7 +38,7 @@ namespace TabularEditor.TOMWrapper
             Partitions[0].PropertyChanged += Partition_PropertyChanged;
         }
 
-        protected override bool IsBrowsable(string propertyName)
+        internal override bool IsBrowsable(string propertyName)
         {
             // Calculated Table should not expose all properties that the ancestor Table class has
             // For example, we don't want users to edit the Partitions collection.
@@ -137,7 +137,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public override bool Editable(string propertyName)
+        internal override bool Editable(string propertyName)
         {
             return base.Editable(propertyName);
         }

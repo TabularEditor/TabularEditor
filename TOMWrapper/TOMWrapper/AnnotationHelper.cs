@@ -29,7 +29,7 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="includeChildren"></param>
-        public static void ClearTabularEditorAnnotations(this IAnnotationObject obj, bool includeChildren = false)
+        public static void ClearTabularEditorAnnotations(this IInternalAnnotationObject obj, bool includeChildren = false)
         {
             obj.RemoveAnnotation(ANN_NAMES, false);
             obj.RemoveAnnotation(ANN_DESCRIPTIONS, false);
@@ -42,7 +42,7 @@ namespace TabularEditor.TOMWrapper
 
             if (includeChildren && obj is ITabularObjectContainer)
             {
-                foreach (var child in (obj as ITabularObjectContainer).GetChildren().OfType<IAnnotationObject>()) child.ClearTabularEditorAnnotations(true);
+                foreach (var child in (obj as ITabularObjectContainer).GetChildren().OfType<IInternalAnnotationObject>()) child.ClearTabularEditorAnnotations(true);
             }
         }
 
@@ -58,14 +58,14 @@ namespace TabularEditor.TOMWrapper
         /// as annotations on the object. Perspective membership can later be retrieved using the LoadPerspectives() extension method.
         /// </summary>
         /// <param name="obj"></param>
-        public static void SavePerspectives(this ITabularPerspectiveObject obj, bool includeChildren = false)
+        public static void SavePerspectives(this IInternalTabularPerspectiveObject obj, bool includeChildren = false)
         {
             if(obj.InPerspective.Any(ip => ip))
                 obj.SetAnnotation(ANN_INPERSPECTIVE, obj.InPerspective.ToJson(), false);
 
             if (includeChildren && obj is ITabularObjectContainer)
             {
-                foreach (var child in (obj as ITabularObjectContainer).GetChildren().OfType<ITabularPerspectiveObject>()) child.SavePerspectives(true);
+                foreach (var child in (obj as ITabularObjectContainer).GetChildren().OfType<IInternalTabularPerspectiveObject>()) child.SavePerspectives(true);
             }
         }
 
@@ -74,7 +74,7 @@ namespace TabularEditor.TOMWrapper
         /// and applies them to the model perspectives.
         /// </summary>
         /// <param name="obj"></param>
-        public static void LoadPerspectives(this ITabularPerspectiveObject obj, bool includeChildren = false)
+        public static void LoadPerspectives(this IInternalTabularPerspectiveObject obj, bool includeChildren = false)
         {
             var p = obj.GetAnnotation(ANN_INPERSPECTIVE);
             if (p != null)
@@ -85,7 +85,7 @@ namespace TabularEditor.TOMWrapper
 
             if (includeChildren && obj is ITabularObjectContainer)
             {
-                foreach (var child in (obj as ITabularObjectContainer).GetChildren().OfType<ITabularPerspectiveObject>()) child.LoadPerspectives(true);
+                foreach (var child in (obj as ITabularObjectContainer).GetChildren().OfType<IInternalTabularPerspectiveObject>()) child.LoadPerspectives(true);
             }
         }
 

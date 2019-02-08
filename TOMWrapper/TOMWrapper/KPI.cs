@@ -18,6 +18,8 @@ namespace TabularEditor.TOMWrapper
         [DisplayName("Parent Measure"), Category("Basic")]
         public string MeasureName => Measure?.DaxObjectName;
 
+        bool ITabularNamedObject.CanEditName() { return false; }
+
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
             switch(propertyName)
@@ -130,7 +132,7 @@ namespace TabularEditor.TOMWrapper
             Measure.RemoveKPI();
         }
 
-        protected override bool IsBrowsable(string propertyName)
+        internal override bool IsBrowsable(string propertyName)
         {
             switch(propertyName)
             {
@@ -139,7 +141,7 @@ namespace TabularEditor.TOMWrapper
             return true;
         }
 
-        protected override bool IsEditable(string propertyName)
+        internal override bool Editable(string propertyName)
         {
             if (propertyName == Properties.NAME) return false;
             return true;

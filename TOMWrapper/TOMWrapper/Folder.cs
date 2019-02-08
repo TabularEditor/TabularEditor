@@ -18,7 +18,6 @@ namespace TabularEditor.TOMWrapper
     public class Folder : IFolderObject, IFolder, ITabularTableObject, IErrorMessageObject, IHideableObject
     {
         internal List<IFolderObject> Children { get; private set; } = new List<IFolderObject>();
-
         [Browsable(false)]
         public IFolder Container
         {
@@ -28,6 +27,8 @@ namespace TabularEditor.TOMWrapper
             }
         }
         public bool IsRemoved => false;
+
+        bool ITabularNamedObject.CanEditName() { return true; }
 
         public override int GetHashCode()
         {

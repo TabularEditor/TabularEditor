@@ -96,7 +96,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        protected override bool IsBrowsable(string propertyName)
+        internal override bool IsBrowsable(string propertyName)
         {
             switch (propertyName) {
                 case "MetadataPermission": return Handler.CompatibilityLevel >= 1400;

@@ -29,7 +29,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         public void Save(IAnnotationObject obj)
         {
             obj.RemoveAnnotation("BestPractizeAnalyzer_IgnoreRules"); // Stupid typo in earlier version
-            obj.SetAnnotation(Analyzer.BPAAnnotationIgnore, JsonConvert.SerializeObject(this), false);
+            obj.SetAnnotation(Analyzer.BPAAnnotationIgnore, JsonConvert.SerializeObject(this));
             UI.UIController.Current.Handler.UndoManager.FlagChange();
         }
     }
@@ -175,7 +175,7 @@ namespace TabularEditor.BestPracticeAnalyzer
             _model.RemoveAnnotation("BestPractizeAnalyzer"); // Stupid typo in earlier version
             var previousAnnotation = _model.GetAnnotation(BPAAnnotation);
             var newAnnotation = LocalRules.SerializeToJson();
-            _model.SetAnnotation(BPAAnnotation, newAnnotation, false);
+            _model.SetAnnotation(BPAAnnotation, newAnnotation);
             if (previousAnnotation != newAnnotation) UI.UIController.Current.Handler.UndoManager.FlagChange();
         }
 
