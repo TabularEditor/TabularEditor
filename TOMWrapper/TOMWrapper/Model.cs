@@ -177,7 +177,7 @@ namespace TabularEditor.TOMWrapper
                 MetadataObject.DataAccessOptions = new TOM.DataAccessOptions();
         }
 
-        protected override bool IsBrowsable(string propertyName)
+        internal override bool IsBrowsable(string propertyName)
         {
             switch (propertyName)
             {

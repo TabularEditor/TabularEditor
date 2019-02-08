@@ -131,7 +131,7 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public ObjectTranslationCollection ObjectTranslations { get { return MetadataObject.ObjectTranslations; } }
 
-        protected override bool IsBrowsable(string propertyName)
+        internal override bool IsBrowsable(string propertyName)
         {
             switch(propertyName)
             {
@@ -143,7 +143,7 @@ namespace TabularEditor.TOMWrapper
             
         }
 
-        protected override bool IsEditable(string propertyName)
+        internal override bool Editable(string propertyName)
         {
             return propertyName == Properties.NAME;
         }

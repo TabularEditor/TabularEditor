@@ -31,12 +31,20 @@ namespace TabularEditor.TOMWrapper
         TranslationIndexer TranslatedNames { get; }
         TranslationIndexer TranslatedDescriptions { get; }
     }
+    internal interface IInternalTranslatableObject: ITranslatableObject, IInternalAnnotationObject
+    {
+
+    }
 
     public interface ITabularNamedObject : ITabularObject
     {
         string Name { get; set; }
         int MetadataIndex { get; }
         bool CanDelete();
+        /// <summary>
+        /// True if the Name property of this object can be changed, false otherwise.
+        /// </summary>
+        bool CanEditName();
         bool CanDelete(out string message);
         void Delete();
     }
@@ -56,6 +64,11 @@ namespace TabularEditor.TOMWrapper
     public interface ITabularPerspectiveObject: IHideableObject, IAnnotationObject
     {
         PerspectiveIndexer InPerspective { get; }
+    }
+
+    internal interface IInternalTabularPerspectiveObject: ITabularPerspectiveObject, IInternalAnnotationObject
+    {
+
     }
 
     /// <summary>
@@ -83,12 +96,19 @@ namespace TabularEditor.TOMWrapper
         string GetAnnotation(int index);
         string GetAnnotation(string name);
         string GetNewAnnotationName();
-        void SetAnnotation(int index, string value, bool undoable = true);
-        void SetAnnotation(string name, string value, bool undoable = true);
-        void RemoveAnnotation(string name, bool undoable = true);
+        void SetAnnotation(int index, string value);
+        void SetAnnotation(string name, string value);
+        void RemoveAnnotation(string name);
         int GetAnnotationsCount();
         IEnumerable<string> GetAnnotations();
         AnnotationCollection Annotations { get; }
+    }
+
+    internal interface IInternalAnnotationObject: IAnnotationObject
+    {
+        void SetAnnotation(int index, string value, bool undoable = false);
+        void SetAnnotation(string name, string value, bool undoable = false);
+        void RemoveAnnotation(string name, bool undoable = false);
     }
 
     public interface IExtendedPropertyObject: ITabularObject

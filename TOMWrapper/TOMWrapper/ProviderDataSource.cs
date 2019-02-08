@@ -84,7 +84,7 @@ namespace TabularEditor.TOMWrapper
         [DisplayName("Source ID"), Category("Power BI Source Details")]
         public string SourceID { get { return MetadataObject.Name; } }
 
-        protected override bool IsBrowsable(string propertyName)
+        internal override bool IsBrowsable(string propertyName)
         {
             switch(propertyName)
             {
@@ -95,7 +95,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        protected override bool IsEditable(string propertyName)
+        internal override bool Editable(string propertyName)
         {
             switch(propertyName)
             {

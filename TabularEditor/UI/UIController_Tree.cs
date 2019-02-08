@@ -162,9 +162,9 @@ namespace TabularEditor.UI
 
         private void TvName_EditorShowing(object sender, CancelEventArgs e)
         {
-            if(UI.TreeView.SelectedNode != null && UI.TreeView.SelectedNode.Tag is IDynamicPropertyObject)
+            if(UI.TreeView.SelectedNode != null && UI.TreeView.SelectedNode.Tag is ITabularNamedObject tno)
             {
-                e.Cancel = !(UI.TreeView.SelectedNode.Tag as IDynamicPropertyObject).Editable("Name");
+                e.Cancel = !tno.CanEditName();
             }
         }
 

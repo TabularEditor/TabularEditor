@@ -54,7 +54,7 @@ namespace TabularEditor.TOMWrapper
 
     public partial class ModelRoleMember
     {
-        protected override bool IsBrowsable(string propertyName)
+        internal override bool IsBrowsable(string propertyName)
         {
             switch (propertyName)
             {

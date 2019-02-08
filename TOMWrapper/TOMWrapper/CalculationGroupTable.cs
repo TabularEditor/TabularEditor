@@ -101,7 +101,7 @@ namespace TabularEditor.TOMWrapper
             throw new NotSupportedException();
         }
 
-        protected override bool IsBrowsable(string propertyName)
+        internal override bool IsBrowsable(string propertyName)
         {
             switch(propertyName)
             {

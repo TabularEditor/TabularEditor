@@ -195,23 +195,24 @@ namespace TabularEditor.TOMWrapper
         {
 
         }
-
-        public virtual bool Browsable(string propertyName)
+        bool IDynamicPropertyObject.Browsable(string propertyName) { return Browsable(propertyName); }
+        internal virtual bool Browsable(string propertyName)
         {
             if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowProperty(ObjectType, propertyName)) return false;
 
             return IsBrowsable(propertyName);
         }
-        public virtual bool Editable(string propertyName)
+        bool IDynamicPropertyObject.Editable(string propertyName) { return Editable(propertyName); }
+        internal virtual bool Editable(string propertyName)
         {
             return IsEditable(propertyName);
         }
 
-        protected virtual bool IsBrowsable(string propertyName)
+        internal virtual bool IsBrowsable(string propertyName)
         {
             return true;
         }
-        protected virtual bool IsEditable(string propertyName)
+        internal virtual bool IsEditable(string propertyName)
         {
             return true;
         }

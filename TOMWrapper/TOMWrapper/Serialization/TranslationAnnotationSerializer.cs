@@ -11,9 +11,9 @@ namespace TabularEditor.TOMWrapper.Serialization
 {
     internal static class TranslationAnnotationSerializer
     {
-        internal static IEnumerable<ITranslatableObject> GetAllTranslatableObjects(this Model model)
+        internal static IEnumerable<IInternalTranslatableObject> GetAllTranslatableObjects(this Model model)
         {
-            return Enumerable.Repeat(model as ITranslatableObject, 1)
+            return Enumerable.Repeat(model as IInternalTranslatableObject, 1)
                 .Concat(model.Tables)
                 .Concat(model.AllMeasures)
                 .Concat(model.AllColumns)
@@ -47,7 +47,7 @@ namespace TabularEditor.TOMWrapper.Serialization
         /// Translations can later be retrieved using the LoadTranslations() extension method.
         /// </summary>
         /// <param name="obj"></param>
-        public static void SaveTranslations(this ITranslatableObject obj, bool includeChildren = false)
+        public static void SaveTranslations(this IInternalTranslatableObject obj, bool includeChildren = false)
         {
             if (!obj.TranslatedNames.IsEmpty)
                 obj.SetAnnotation(AnnotationHelper.ANN_NAMES, obj.TranslatedNames.ToJson(), false);
@@ -58,7 +58,7 @@ namespace TabularEditor.TOMWrapper.Serialization
 
             if (includeChildren && obj is ITabularObjectContainer)
             {
-                foreach (var child in (obj as ITabularObjectContainer).GetChildren().OfType<ITranslatableObject>()) child.SaveTranslations(true);
+                foreach (var child in (obj as ITabularObjectContainer).GetChildren().OfType<IInternalTranslatableObject>()) child.SaveTranslations(true);
             }
         }
 
@@ -67,7 +67,7 @@ namespace TabularEditor.TOMWrapper.Serialization
         /// and applies them to the model culture.
         /// </summary>
         /// <param name="obj"></param>
-        public static void LoadTranslations(this ITranslatableObject obj, bool includeChildren = false)
+        public static void LoadTranslations(this IInternalTranslatableObject obj, bool includeChildren = false)
         {
             var tn = obj.GetAnnotation(AnnotationHelper.ANN_NAMES);
             if (tn != null)
@@ -92,7 +92,7 @@ namespace TabularEditor.TOMWrapper.Serialization
 
             if (includeChildren && obj is ITabularObjectContainer)
             {
-                foreach (var child in (obj as ITabularObjectContainer).GetChildren().OfType<ITranslatableObject>()) child.LoadTranslations(true);
+                foreach (var child in (obj as ITabularObjectContainer).GetChildren().OfType<IInternalTranslatableObject>()) child.LoadTranslations(true);
             }
         }
 

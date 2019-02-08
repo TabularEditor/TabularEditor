@@ -184,7 +184,7 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public bool NeedsValidation { get; set; } = false;
 
-        protected override bool IsBrowsable(string propertyName)
+        internal override bool IsBrowsable(string propertyName)
         {
             switch (propertyName)
             {
