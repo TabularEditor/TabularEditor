@@ -24,7 +24,24 @@ namespace TabularEditor.TOMWrapper
             Role = role;
         }
 
-        protected override TabularObjectCollection<Table> GetCollection()
+        private IEnumerable<Table> NonCalculatedGroupTables => Model.Tables.Where(t => !(t is CalculationGroupTable));
+
+        public override IEnumerable<string> Keys { get { return NonCalculatedGroupTables.Select(t => t.Name); } }
+
+        public override string Summary
+        {
+            get
+            {
+                int tableCount = NonCalculatedGroupTables.Count();
+                return string.Format("OLS enabled on {0} out of {1} table{2}",
+                    this.Count(v => v != TOM.MetadataPermission.Default),
+                    NonCalculatedGroupTables.Count(),
+                    tableCount == 1 ? "" : "s");
+
+            }
+        }
+
+    protected override TabularObjectCollection<Table> GetCollection()
         {
             return Model.Tables;
         }

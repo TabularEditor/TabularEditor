@@ -194,7 +194,7 @@ namespace TabularEditor.TOMWrapper
                 case Properties.ROWLEVELSECURITY:
                     return Model.Roles.Any();
                 case Properties.ALTERNATESOURCEPRECEDENCE:
-                    return Handler.CompatibilityLevel >= 1470;
+                    return Handler.CompatibilityLevel >= 1460 && Handler.CompatibilityLevel < 1470;
                 default: return true;
             }
         }

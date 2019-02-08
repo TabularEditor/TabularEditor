@@ -29,6 +29,21 @@ namespace TabularEditor.TOMWrapper
         internal Dictionary<Table, RLSFilterExpression> _filterExpressions = new Dictionary<Table, RLSFilterExpression>();
         public IReadOnlyDictionary<Table, RLSFilterExpression> FilterExpressions => _filterExpressions;
 
+        private IEnumerable<Table> NonCalculatedGroupTables => Model.Tables.Where(t => !(t is CalculationGroupTable));
+
+        public override IEnumerable<string> Keys { get { return NonCalculatedGroupTables.Select(t => t.Name); } }
+
+        public override string Summary
+        {
+            get
+            {
+                int tableCount = NonCalculatedGroupTables.Count();
+                return string.Format("RLS enabled on {0} out of {1} table{2}",
+                    this.Count(v => !string.IsNullOrWhiteSpace(v)),
+                    NonCalculatedGroupTables.Count(),
+                    tableCount == 1 ? "" : "s");
+            }
+        }
         internal RoleRLSIndexer(ModelRole role) : base(role)
         {
             Role = role;
