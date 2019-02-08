@@ -18,7 +18,8 @@
 /TOMWrapper/obj
 /TOMWrapper/TOMWrapper.csproj.user
 /TOMWrapper/TOMWrapper/Base/*.generated.cs
-/packages
+/packages/*
+!/packages/Microsoft.AnalysisServices.retail.amd64.CTP2019
 /.vs/TabularEditor/v14
 /TabularEditor/publish
 /.vs
