@@ -38,6 +38,7 @@ namespace TabularEditor.TOMWrapper.Serialization
                     "Tables/Hierarchies",
                     "Tables/Measures",
                     "Tables/Partitions",
+                    "Tables/CalculationItems",
                     "Translations"
                 };
                 return so;

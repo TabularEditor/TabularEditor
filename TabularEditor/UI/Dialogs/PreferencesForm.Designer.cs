@@ -30,38 +30,42 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PreferencesForm));
-            System.Windows.Forms.TreeNode treeNode23 = new System.Windows.Forms.TreeNode("Data Sources");
-            System.Windows.Forms.TreeNode treeNode24 = new System.Windows.Forms.TreeNode("Perspectives");
-            System.Windows.Forms.TreeNode treeNode25 = new System.Windows.Forms.TreeNode("Relationships");
-            System.Windows.Forms.TreeNode treeNode26 = new System.Windows.Forms.TreeNode("Roles");
-            System.Windows.Forms.TreeNode treeNode27 = new System.Windows.Forms.TreeNode("Annotations");
-            System.Windows.Forms.TreeNode treeNode28 = new System.Windows.Forms.TreeNode("Columns");
-            System.Windows.Forms.TreeNode treeNode29 = new System.Windows.Forms.TreeNode("Hierarchies");
-            System.Windows.Forms.TreeNode treeNode30 = new System.Windows.Forms.TreeNode("Measures");
-            System.Windows.Forms.TreeNode treeNode31 = new System.Windows.Forms.TreeNode("Partitions");
-            System.Windows.Forms.TreeNode treeNode32 = new System.Windows.Forms.TreeNode("Tables", new System.Windows.Forms.TreeNode[] {
-            treeNode27,
-            treeNode28,
-            treeNode29,
-            treeNode30,
-            treeNode31});
-            System.Windows.Forms.TreeNode treeNode33 = new System.Windows.Forms.TreeNode("Translations");
-            System.Windows.Forms.TreeNode treeNode34 = new System.Windows.Forms.TreeNode("Data Sources");
-            System.Windows.Forms.TreeNode treeNode35 = new System.Windows.Forms.TreeNode("Perspectives");
-            System.Windows.Forms.TreeNode treeNode36 = new System.Windows.Forms.TreeNode("Relationships");
-            System.Windows.Forms.TreeNode treeNode37 = new System.Windows.Forms.TreeNode("Roles");
-            System.Windows.Forms.TreeNode treeNode38 = new System.Windows.Forms.TreeNode("Annotations");
-            System.Windows.Forms.TreeNode treeNode39 = new System.Windows.Forms.TreeNode("Columns");
-            System.Windows.Forms.TreeNode treeNode40 = new System.Windows.Forms.TreeNode("Hierarchies");
-            System.Windows.Forms.TreeNode treeNode41 = new System.Windows.Forms.TreeNode("Measures");
-            System.Windows.Forms.TreeNode treeNode42 = new System.Windows.Forms.TreeNode("Partitions");
-            System.Windows.Forms.TreeNode treeNode43 = new System.Windows.Forms.TreeNode("Tables", new System.Windows.Forms.TreeNode[] {
-            treeNode38,
-            treeNode39,
-            treeNode40,
-            treeNode41,
-            treeNode42});
-            System.Windows.Forms.TreeNode treeNode44 = new System.Windows.Forms.TreeNode("Translations");
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Data Sources");
+            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Perspectives");
+            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Relationships");
+            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Roles");
+            System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Annotations");
+            System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Columns");
+            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Hierarchies");
+            System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("Measures");
+            System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("Partitions");
+            System.Windows.Forms.TreeNode treeNode10 = new System.Windows.Forms.TreeNode("Calculation Items");
+            System.Windows.Forms.TreeNode treeNode11 = new System.Windows.Forms.TreeNode("Tables", new System.Windows.Forms.TreeNode[] {
+            treeNode5,
+            treeNode6,
+            treeNode7,
+            treeNode8,
+            treeNode9,
+            treeNode10});
+            System.Windows.Forms.TreeNode treeNode12 = new System.Windows.Forms.TreeNode("Translations");
+            System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("Data Sources");
+            System.Windows.Forms.TreeNode treeNode14 = new System.Windows.Forms.TreeNode("Perspectives");
+            System.Windows.Forms.TreeNode treeNode15 = new System.Windows.Forms.TreeNode("Relationships");
+            System.Windows.Forms.TreeNode treeNode16 = new System.Windows.Forms.TreeNode("Roles");
+            System.Windows.Forms.TreeNode treeNode17 = new System.Windows.Forms.TreeNode("Annotations");
+            System.Windows.Forms.TreeNode treeNode18 = new System.Windows.Forms.TreeNode("Columns");
+            System.Windows.Forms.TreeNode treeNode19 = new System.Windows.Forms.TreeNode("Hierarchies");
+            System.Windows.Forms.TreeNode treeNode20 = new System.Windows.Forms.TreeNode("Measures");
+            System.Windows.Forms.TreeNode treeNode21 = new System.Windows.Forms.TreeNode("Partitions");
+            System.Windows.Forms.TreeNode treeNode22 = new System.Windows.Forms.TreeNode("Calculation Items");
+            System.Windows.Forms.TreeNode treeNode23 = new System.Windows.Forms.TreeNode("Tables", new System.Windows.Forms.TreeNode[] {
+            treeNode17,
+            treeNode18,
+            treeNode19,
+            treeNode20,
+            treeNode21,
+            treeNode22});
+            System.Windows.Forms.TreeNode treeNode24 = new System.Windows.Forms.TreeNode("Translations");
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
@@ -88,6 +92,7 @@
             this.chkIgnoreInfPropsCM = new System.Windows.Forms.CheckBox();
             this.chkIgnoreInfObjectsCM = new System.Windows.Forms.CheckBox();
             this.chkIgnoreTimestampsCM = new System.Windows.Forms.CheckBox();
+            this.cmbSeparators = new System.Windows.Forms.ComboBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage3 = new System.Windows.Forms.TabPage();
@@ -102,6 +107,7 @@
             this.lblAvailableVersion = new System.Windows.Forms.Label();
             this.lblCurrentVersion = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.treeView1 = new System.Windows.Forms.TreeView();
@@ -112,8 +118,6 @@
             this.treeView2 = new System.Windows.Forms.TreeView();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.cmbSeparators = new System.Windows.Forms.ComboBox();
             this.groupBox3.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage3.SuspendLayout();
@@ -122,13 +126,13 @@
             this.groupBox6.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabCurrentModel.SuspendLayout();
             this.grpSaveToFolder.SuspendLayout();
             this.groupBox8.SuspendLayout();
-            this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnOK
@@ -439,6 +443,19 @@
             this.toolTip1.SetToolTip(this.chkIgnoreTimestampsCM, "If checked, editing timestamps are not serialized into the .json files");
             this.chkIgnoreTimestampsCM.UseVisualStyleBackColor = true;
             // 
+            // cmbSeparators
+            // 
+            this.cmbSeparators.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbSeparators.FormattingEnabled = true;
+            this.cmbSeparators.Items.AddRange(new object[] {
+            "US/UK (A, B, C / 1.234)",
+            "Others (A; B; C / 1,234)"});
+            this.cmbSeparators.Location = new System.Drawing.Point(7, 20);
+            this.cmbSeparators.Name = "cmbSeparators";
+            this.cmbSeparators.Size = new System.Drawing.Size(179, 21);
+            this.cmbSeparators.TabIndex = 0;
+            this.toolTip1.SetToolTip(this.cmbSeparators, resources.GetString("cmbSeparators.ToolTip"));
+            // 
             // groupBox3
             // 
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -613,6 +630,18 @@
             this.tabPage2.Text = "DAX";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // groupBox5
+            // 
+            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox5.Controls.Add(this.cmbSeparators);
+            this.groupBox5.Location = new System.Drawing.Point(6, 62);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(357, 53);
+            this.groupBox5.TabIndex = 5;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Separators";
+            // 
             // tabPage4
             // 
             this.tabPage4.Controls.Add(this.groupBox4);
@@ -651,45 +680,47 @@
             this.treeView1.CheckBoxes = true;
             this.treeView1.Location = new System.Drawing.Point(6, 73);
             this.treeView1.Name = "treeView1";
-            treeNode23.Checked = true;
-            treeNode23.Name = "Data Sources";
-            treeNode23.Text = "Data Sources";
-            treeNode24.Checked = true;
-            treeNode24.Name = "Perspectives";
-            treeNode24.Text = "Perspectives";
-            treeNode25.Checked = true;
-            treeNode25.Name = "Relationships";
-            treeNode25.Text = "Relationships";
-            treeNode26.Checked = true;
-            treeNode26.Name = "Roles";
-            treeNode26.Text = "Roles";
-            treeNode27.Name = "Annotations";
-            treeNode27.Text = "Annotations";
-            treeNode28.Checked = true;
-            treeNode28.Name = "Columns";
-            treeNode28.Text = "Columns";
-            treeNode29.Checked = true;
-            treeNode29.Name = "Hierarchies";
-            treeNode29.Text = "Hierarchies";
-            treeNode30.Checked = true;
-            treeNode30.Name = "Measures";
-            treeNode30.Text = "Measures";
-            treeNode31.Checked = true;
-            treeNode31.Name = "Partitions";
-            treeNode31.Text = "Partitions";
-            treeNode32.Checked = true;
-            treeNode32.Name = "Tables";
-            treeNode32.Text = "Tables";
-            treeNode33.Checked = true;
-            treeNode33.Name = "Translations";
-            treeNode33.Text = "Translations";
+            treeNode1.Checked = true;
+            treeNode1.Name = "Data Sources";
+            treeNode1.Text = "Data Sources";
+            treeNode2.Checked = true;
+            treeNode2.Name = "Perspectives";
+            treeNode2.Text = "Perspectives";
+            treeNode3.Checked = true;
+            treeNode3.Name = "Relationships";
+            treeNode3.Text = "Relationships";
+            treeNode4.Checked = true;
+            treeNode4.Name = "Roles";
+            treeNode4.Text = "Roles";
+            treeNode5.Name = "Annotations";
+            treeNode5.Text = "Annotations";
+            treeNode6.Checked = true;
+            treeNode6.Name = "Columns";
+            treeNode6.Text = "Columns";
+            treeNode7.Checked = true;
+            treeNode7.Name = "Hierarchies";
+            treeNode7.Text = "Hierarchies";
+            treeNode8.Checked = true;
+            treeNode8.Name = "Measures";
+            treeNode8.Text = "Measures";
+            treeNode9.Checked = true;
+            treeNode9.Name = "Partitions";
+            treeNode9.Text = "Partitions";
+            treeNode10.Checked = true;
+            treeNode10.Name = "Calculation Items";
+            treeNode10.Text = "Calculation Items";
+            treeNode11.Name = "Tables";
+            treeNode11.Text = "Tables";
+            treeNode12.Checked = true;
+            treeNode12.Name = "Translations";
+            treeNode12.Text = "Translations";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode23,
-            treeNode24,
-            treeNode25,
-            treeNode26,
-            treeNode32,
-            treeNode33});
+            treeNode1,
+            treeNode2,
+            treeNode3,
+            treeNode4,
+            treeNode11,
+            treeNode12});
             this.treeView1.PathSeparator = "/";
             this.treeView1.ShowLines = false;
             this.treeView1.Size = new System.Drawing.Size(345, 136);
@@ -760,45 +791,48 @@
             this.treeView2.CheckBoxes = true;
             this.treeView2.Location = new System.Drawing.Point(6, 73);
             this.treeView2.Name = "treeView2";
-            treeNode34.Checked = true;
-            treeNode34.Name = "Data Sources";
-            treeNode34.Text = "Data Sources";
-            treeNode35.Checked = true;
-            treeNode35.Name = "Perspectives";
-            treeNode35.Text = "Perspectives";
-            treeNode36.Checked = true;
-            treeNode36.Name = "Relationships";
-            treeNode36.Text = "Relationships";
-            treeNode37.Checked = true;
-            treeNode37.Name = "Roles";
-            treeNode37.Text = "Roles";
-            treeNode38.Name = "Annotations";
-            treeNode38.Text = "Annotations";
-            treeNode39.Checked = true;
-            treeNode39.Name = "Columns";
-            treeNode39.Text = "Columns";
-            treeNode40.Checked = true;
-            treeNode40.Name = "Hierarchies";
-            treeNode40.Text = "Hierarchies";
-            treeNode41.Checked = true;
-            treeNode41.Name = "Measures";
-            treeNode41.Text = "Measures";
-            treeNode42.Checked = true;
-            treeNode42.Name = "Partitions";
-            treeNode42.Text = "Partitions";
-            treeNode43.Checked = true;
-            treeNode43.Name = "Tables";
-            treeNode43.Text = "Tables";
-            treeNode44.Checked = true;
-            treeNode44.Name = "Translations";
-            treeNode44.Text = "Translations";
+            treeNode13.Checked = true;
+            treeNode13.Name = "Data Sources";
+            treeNode13.Text = "Data Sources";
+            treeNode14.Checked = true;
+            treeNode14.Name = "Perspectives";
+            treeNode14.Text = "Perspectives";
+            treeNode15.Checked = true;
+            treeNode15.Name = "Relationships";
+            treeNode15.Text = "Relationships";
+            treeNode16.Checked = true;
+            treeNode16.Name = "Roles";
+            treeNode16.Text = "Roles";
+            treeNode17.Name = "Annotations";
+            treeNode17.Text = "Annotations";
+            treeNode18.Checked = true;
+            treeNode18.Name = "Columns";
+            treeNode18.Text = "Columns";
+            treeNode19.Checked = true;
+            treeNode19.Name = "Hierarchies";
+            treeNode19.Text = "Hierarchies";
+            treeNode20.Checked = true;
+            treeNode20.Name = "Measures";
+            treeNode20.Text = "Measures";
+            treeNode21.Checked = true;
+            treeNode21.Name = "Partitions";
+            treeNode21.Text = "Partitions";
+            treeNode22.Checked = true;
+            treeNode22.Name = "Calculation Items";
+            treeNode22.Text = "Calculation Items";
+            treeNode23.Checked = true;
+            treeNode23.Name = "Tables";
+            treeNode23.Text = "Tables";
+            treeNode24.Checked = true;
+            treeNode24.Name = "Translations";
+            treeNode24.Text = "Translations";
             this.treeView2.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode34,
-            treeNode35,
-            treeNode36,
-            treeNode37,
-            treeNode43,
-            treeNode44});
+            treeNode13,
+            treeNode14,
+            treeNode15,
+            treeNode16,
+            treeNode23,
+            treeNode24});
             this.treeView2.PathSeparator = "/";
             this.treeView2.ShowLines = false;
             this.treeView2.Size = new System.Drawing.Size(345, 136);
@@ -830,31 +864,6 @@
             this.groupBox8.TabIndex = 5;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Current Model Serialization Settings";
-            // 
-            // groupBox5
-            // 
-            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox5.Controls.Add(this.cmbSeparators);
-            this.groupBox5.Location = new System.Drawing.Point(6, 62);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(357, 53);
-            this.groupBox5.TabIndex = 5;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Separators";
-            // 
-            // cmbSeparators
-            // 
-            this.cmbSeparators.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbSeparators.FormattingEnabled = true;
-            this.cmbSeparators.Items.AddRange(new object[] {
-            "US/UK (A, B, C / 1.234)",
-            "Others (A; B; C / 1,234)"});
-            this.cmbSeparators.Location = new System.Drawing.Point(7, 20);
-            this.cmbSeparators.Name = "cmbSeparators";
-            this.cmbSeparators.Size = new System.Drawing.Size(179, 21);
-            this.cmbSeparators.TabIndex = 0;
-            this.toolTip1.SetToolTip(this.cmbSeparators, resources.GetString("cmbSeparators.ToolTip"));
             // 
             // PreferencesForm
             // 
@@ -889,6 +898,7 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
+            this.groupBox5.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
@@ -899,7 +909,6 @@
             this.grpSaveToFolder.PerformLayout();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
-            this.groupBox5.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
