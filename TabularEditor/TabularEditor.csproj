@@ -353,6 +353,12 @@
     <Compile Include="UI\Dialogs\Pages\ImportTablesPage.Designer.cs">
       <DependentUpon>ImportTablesPage.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Dialogs\PasswordPromptForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\PasswordPromptForm.Designer.cs">
+      <DependentUpon>PasswordPromptForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Dialogs\PreferencesForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -643,6 +649,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\Pages\ImportTablesPage.resx">
       <DependentUpon>ImportTablesPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\PasswordPromptForm.resx">
+      <DependentUpon>PasswordPromptForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\PreferencesForm.resx">
       <DependentUpon>PreferencesForm.cs</DependentUpon>

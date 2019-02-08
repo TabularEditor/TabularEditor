@@ -208,10 +208,12 @@ namespace TabularEditor.TOMWrapper.Utils
                     if (orgDb.Model.Tables.Contains(tableName))
                     {
                         var t = orgDb.Model.Tables[tableName];
-
-                        var partitions = new JArray();
-                        table["partitions"] = partitions;
-                        foreach (var pt in t.Partitions) partitions.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(pt)));
+                        if (t.Partitions[0].SourceType != TOM.PartitionSourceType.Calculated)
+                        {
+                            var partitions = new JArray();
+                            table["partitions"] = partitions;
+                            foreach (var pt in t.Partitions) partitions.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(pt)));
+                        }
                     }
                 }
             }
