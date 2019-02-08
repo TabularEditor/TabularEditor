@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TabularEditor.PropertyGridUI;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -66,9 +68,17 @@ namespace TabularEditor.TOMWrapper
             if (child is CalculationGroup) return null;
             return base.GetCollectionForChild(child);
         }
-
-        [TypeConverter(typeof(ExpandableObjectConverter))]
+        
         public CalculationGroup CalculationGroup { get; private set; }
+
+        [Category("Calculation Group"),DisplayName("Precedence"),Description("When multiple Calculation Groups are used as a filter condition, this property determines the order of evaluation.")]
+        public int CalculationGroupPrecedence { get { return CalculationGroup.Precedence; } set { CalculationGroup.Precedence = value; } }
+
+        [Category("Calculation Group"),DisplayName("Description"),Description("The description of the Calculation Group object.")]
+        public string CalculationGroupDescription { get { return CalculationGroup.Description; } set { CalculationGroup.Description = value; } }
+
+        [Category("Calculation Group"),DisplayName("Annotations"),Description("Annotations on the Calculation Group object."),NoMultiselect,Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        public AnnotationCollection CalculationGroupAnnotations { get { return CalculationGroup.Annotations; } }
 
         protected override void Init()
         {
@@ -95,11 +105,14 @@ namespace TabularEditor.TOMWrapper
         {
             switch(propertyName)
             {
-                case Properties.CALCULATIONGROUP:
+                case Properties.PRECEDENCE:
+                case Properties.CALCULATIONGROUPDESCRIPTION:
+                case Properties.CALCULATIONGROUPANNOTATIONS:
+                case Properties.CALCULATIONGROUPPRECEDENCE:
                 case Properties.NAME:
                 case Properties.ISHIDDEN:
                 case Properties.DESCRIPTION:
-                case Properties.OBJECTTYPE:
+                case Properties.OBJECTTYPENAME:
                 case Properties.EXTENDEDPROPERTIES:
                 case Properties.ANNOTATIONS:
                 case Properties.TRANSLATEDNAMES:
@@ -128,5 +141,12 @@ namespace TabularEditor.TOMWrapper
         {
             return "Calculation Group";
         }
+    }
+
+    internal partial class Properties
+    {
+        public const string CALCULATIONGROUPDESCRIPTION = "CalculationGroupDescription";
+        public const string CALCULATIONGROUPANNOTATIONS = "CalculationGroupAnnotations";
+        public const string CALCULATIONGROUPPRECEDENCE = "CalculationGroupPrecedence";
     }
 }

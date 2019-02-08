@@ -236,6 +236,7 @@ namespace TabularEditor.TOMWrapper
 
     internal static partial class Properties
     {
+        public const string OBJECTTYPENAME = "ObjectTypeName";
         public const string FASTCOMBINE = "FastCombine";
         public const string LEGACYREDIRECTS = "LegacyRedirects";
         public const string RETURNERRORVALUESASNULL = "ReturnErrorValuesAsNull";

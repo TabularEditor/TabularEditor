@@ -132,7 +132,7 @@ namespace TabularEditor.TOMWrapper
             set { SetValue(key, value); }
         }
 
-        public IEnumerable<string> Keys { get { return Collection.Select(obj => obj.Name); } }
+        public virtual IEnumerable<string> Keys { get { return Collection.Select(obj => obj.Name); } }
 
         public virtual string Summary
         {
