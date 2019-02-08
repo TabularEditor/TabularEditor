@@ -80,7 +80,7 @@ namespace TabularEditor.UI.Dialogs
             dialog.page2.RowLimitClause = table.GetRowLimitClause();
             dialog.page2.IdentifierQuoting = table.GetIdentifierQuoting();
 
-            dialog.page2.Init(TypedDataSource.GetFromTabularDs(table.Partitions[0].DataSource as ProviderDataSource));
+            if (!dialog.page2.Init(TypedDataSource.GetFromTabularDs(table.Partitions[0].DataSource as ProviderDataSource))) return DialogResult.Cancel;
             dialog.page2.Visible = true;
 
             // TODO:
@@ -116,7 +116,7 @@ namespace TabularEditor.UI.Dialogs
             dialog.page2.IdentifierQuoting = source.GetIdentifierQuoting();
 
             var tds = TypedDataSource.GetFromTabularDs(source);
-            dialog.page2.Init(tds);
+            if (!dialog.page2.Init(tds)) return DialogResult.Cancel;
             dialog.CurrentPage = 2;
             var res = dialog.ShowDialog();
 
@@ -213,7 +213,7 @@ namespace TabularEditor.UI.Dialogs
                     case Pages.ImportMode.UseExistingDs:
                         if (page1.CurrentDataSource != null)
                         {
-                            page2.Init(TypedDataSource.GetFromTabularDs(page1.CurrentDataSource));
+                            if (!page2.Init(TypedDataSource.GetFromTabularDs(page1.CurrentDataSource))) return;
                             CurrentPage = 2; return;
                         }
                         break;
