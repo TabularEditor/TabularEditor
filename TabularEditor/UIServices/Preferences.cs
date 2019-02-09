@@ -80,6 +80,7 @@ namespace TabularEditor.UIServices
         public bool View_Measures = true;
         public bool View_Columns = true;
         public bool View_Hierarchies = true;
+        public bool View_Partitions = true;
         public bool View_MetadataInformation = false;
 
         [JsonConverter(typeof(StringEnumConverter))]

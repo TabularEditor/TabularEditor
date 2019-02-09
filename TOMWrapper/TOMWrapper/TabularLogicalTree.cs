@@ -15,12 +15,13 @@ namespace TabularEditor.TOMWrapper
         Measures = 0x04,
         KPIs = 0x08,
         Hierarchies = 0x10,
-        Levels = 0x20,
-        ShowHidden = 0x40,
-        AllObjectTypes = 0x80,
-        ShowRoot = 0x100,
-        OrderByName = 0x200,
-        Default = DisplayFolders | Columns | Measures | KPIs | Hierarchies | Levels | ShowRoot | AllObjectTypes
+        Partitions = 0x20,
+        Levels = 0x40,
+        ShowHidden = 0x80,
+        AllObjectTypes = 0x100,
+        ShowRoot = 0x200,
+        OrderByName = 0x400,
+        Default = DisplayFolders | Columns | Measures | KPIs | Hierarchies | Partitions | Levels | ShowRoot | AllObjectTypes
     }
 
     internal static class ObjectOrderHelper
@@ -260,7 +261,7 @@ namespace TabularEditor.TOMWrapper
         
         private IEnumerable<ITabularNamedObject> GetChildrenForTable(Table table)
         {
-            if (table.SourceType != PartitionSourceType.Calculated)
+            if (table.SourceType != PartitionSourceType.Calculated && Options.HasFlag(LogicalTreeOptions.Partitions))
             {
                 /*// Don't show the "Partitions" node below tables, when none of the partitions match the filter
                 if (!string.IsNullOrEmpty(Filter))
@@ -300,9 +301,9 @@ namespace TabularEditor.TOMWrapper
         {
             IEnumerable<ITabularNamedObject> result = Enumerable.Empty<ITabularNamedObject>();
 
-            if(tabularObject is LogicalGroup)
+            if(tabularObject is LogicalGroup group)
             {
-                result = (tabularObject as LogicalGroup).GetChildren().Where(o => VisibleInTree(o));
+                result = group.GetChildren().Where(o => VisibleInTree(o));
             }
             else if(tabularObject is Model)
             {
@@ -390,6 +391,8 @@ namespace TabularEditor.TOMWrapper
                     return (Options.HasFlag(LogicalTreeOptions.Measures));
                 case ObjectType.Hierarchy:
                     return (Options.HasFlag(LogicalTreeOptions.Hierarchies));
+                case ObjectType.PartitionCollection:
+                    return (Options.HasFlag(LogicalTreeOptions.Partitions));
             }
 
             /*// Always hide empty tables when filtering, unless the table name matches the filter criteria
