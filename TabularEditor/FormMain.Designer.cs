@@ -35,6 +35,7 @@
             this.actToggleHidden = new TabularEditor.UI.UIModelAction();
             this.actToggleOrderByName = new TabularEditor.UI.UIModelAction();
             this.actToggleMeasures = new TabularEditor.UI.UIModelAction();
+            this.actTogglePartitions = new TabularEditor.UI.UIModelAction();
             this.actToggleColumns = new TabularEditor.UI.UIModelAction();
             this.actToggleHierarchies = new TabularEditor.UI.UIModelAction();
             this.actToggleInfoColumns = new TabularEditor.UI.UIModelAction();
@@ -142,6 +143,7 @@
             this.toolStripButton14 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton15 = new System.Windows.Forms.ToolStripButton();
             this.goToDefinitionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripButton16 = new System.Windows.Forms.ToolStripButton();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -270,6 +272,7 @@
             actionsMain.Actions.Add(this.actToggleHidden);
             actionsMain.Actions.Add(this.actToggleOrderByName);
             actionsMain.Actions.Add(this.actToggleMeasures);
+            actionsMain.Actions.Add(this.actTogglePartitions);
             actionsMain.Actions.Add(this.actToggleColumns);
             actionsMain.Actions.Add(this.actToggleHierarchies);
             actionsMain.Actions.Add(this.actToggleInfoColumns);
@@ -358,6 +361,17 @@
             this.actToggleMeasures.Text = "&Measures";
             this.actToggleMeasures.ToolTipText = "Show/hide measures (Ctrl+1)";
             this.actToggleMeasures.Execute += new System.EventHandler(this.actViewOptions_Execute);
+            // 
+            // actTogglePartitions
+            // 
+            this.actTogglePartitions.Checked = true;
+            this.actTogglePartitions.CheckOnClick = true;
+            this.actTogglePartitions.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.actTogglePartitions.Enabled = false;
+            this.actTogglePartitions.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D6)));
+            this.actTogglePartitions.Text = "&Partitions";
+            this.actTogglePartitions.ToolTipText = "Show/hide partitions (Ctrl+6)";
+            this.actTogglePartitions.Execute += new System.EventHandler(this.actViewOptions_Execute);
             // 
             // actToggleColumns
             // 
@@ -1493,6 +1507,21 @@
             this.goToDefinitionToolStripMenuItem.ToolTipText = "Navigate to the symbol under the cursor. If this is a DAX keyword, opens a browse" +
     "r with the corresponding https://dax.guide article (F12)";
             // 
+            // toolStripButton16
+            // 
+            actionsMain.SetAction(this.toolStripButton16, this.actTogglePartitions);
+            this.toolStripButton16.AutoToolTip = false;
+            this.toolStripButton16.Checked = true;
+            this.toolStripButton16.CheckOnClick = true;
+            this.toolStripButton16.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.toolStripButton16.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton16.Enabled = false;
+            this.toolStripButton16.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton16.Name = "toolStripButton16";
+            this.toolStripButton16.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton16.Text = "&Partitions";
+            this.toolStripButton16.ToolTipText = "Show/hide partitions (Ctrl+6)";
+            // 
             // preferencesToolStripMenuItem
             // 
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
@@ -1744,6 +1773,7 @@
             this.tbShowMeasures,
             this.tbShowColumns,
             this.tbShowHierarchies,
+            this.toolStripButton16,
             this.toolStripSeparator2,
             this.tbShowDisplayFolders,
             this.tbShowHidden,
@@ -2747,6 +2777,8 @@
         private System.Windows.Forms.ToolStripButton toolStripButton15;
         private System.Windows.Forms.ToolStripMenuItem goToDefinitionToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem11;
+        private System.Windows.Forms.ToolStripButton toolStripButton16;
+        public UI.UIModelAction actTogglePartitions;
     }
 }
 

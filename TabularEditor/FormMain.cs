@@ -248,6 +248,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 actToggleColumns.Checked,
                 actToggleMeasures.Checked,
                 actToggleHierarchies.Checked,
+                actTogglePartitions.Checked,
                 actToggleAllObjectTypes.Checked,
                 actToggleOrderByName.Checked,
                 actToggleFilter.Checked ? txtFilter.Text : null
@@ -258,6 +259,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             Preferences.Current.View_Columns = actToggleColumns.Checked;
             Preferences.Current.View_Measures = actToggleMeasures.Checked;
             Preferences.Current.View_Hierarchies = actToggleHierarchies.Checked;
+            Preferences.Current.View_Partitions = actTogglePartitions.Checked;
             Preferences.Current.View_AllObjectTypes = actToggleAllObjectTypes.Checked;
             Preferences.Current.View_SortAlphabetically = !actToggleOrderByName.Checked;
             Preferences.Current.Save();
@@ -290,6 +292,8 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void FormMain_Load(object sender, EventArgs e)
         {
+            actTogglePartitions.Image = tabularTreeImages.Images["partition"];
+
             // Auto-load the file specified as command line arguments:
             var args = Environment.GetCommandLineArgs();
             if (args.Length == 2 && (File.Exists(args[1]) || File.Exists(args[1] + "\\database.json")))
