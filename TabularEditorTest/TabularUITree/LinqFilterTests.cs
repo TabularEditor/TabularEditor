@@ -54,12 +54,14 @@ namespace TabularEditor
 
             var items = new List<ITabularNamedObject>();
 
+            uiTree.Filter = null;
+            uiTree.Filter = ":GetAnnotation(\"NotNull\").Contains(\"test\")";
+
+
             var sw = new Stopwatch();
             sw.Start();
             for (int i = 0; i < 1000; i++)
             {
-                uiTree.Filter = null;
-                uiTree.Filter = ":GetAnnotation(\"NotNull\").Contains(\"test\")";
                 items.AddRange(uiTree.GetChildrenInternal(TreePath.Empty));
             }
             sw.Stop();
@@ -67,7 +69,7 @@ namespace TabularEditor
             // Run 1: 3935
             // Run 2: 4042
 
-            Assert.IsTrue(sw.ElapsedMilliseconds < 5000);
+            Assert.IsTrue(sw.ElapsedMilliseconds < 1000);
             Assert.AreEqual(1000, items.Count);
         }
     }
