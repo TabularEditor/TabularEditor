@@ -1161,7 +1161,7 @@ namespace System.Linq.Dynamic
                 if (token.id == TokenId.Dot)
                 {
                     NextToken();
-                    expr = ParseMemberAccess(null, expr);
+                    expr = ParseMemberAccessSafe(null, expr);
                 }
                 else if (token.id == TokenId.OpenBracket)
                 {
@@ -1314,7 +1314,7 @@ namespace System.Linq.Dynamic
                 NextToken();
                 return expr;
             }
-            if (it != null) return ParseMemberAccess(null, it);
+            if (it != null) return ParseMemberAccessSafe(null, it);
             throw ParseError(Res.UnknownIdentifier, token.text);
         }
 
@@ -1481,9 +1481,22 @@ namespace System.Linq.Dynamic
                 GetTypeName(exprType), GetTypeName(type));
         }
 
+        readonly Expression Null = Expression.Constant(null);
+
+        Expression ParseMemberAccessSafe(Type type, Expression instance)
+        {
+            var isNull = Expression.Equal(instance, Null);
+            var memberAccess = ParseMemberAccess(type, instance);
+
+            return
+                Expression.Condition(isNull, Expression.Default(memberAccess.Type), memberAccess);
+        }
+
+
         Expression ParseMemberAccess(Type type, Expression instance)
         {
             if (instance != null) type = instance.Type;
+
             int errorPos = token.pos;
             string id = GetIdentifier();
             NextToken();
@@ -1506,6 +1519,7 @@ namespace System.Linq.Dynamic
                         throw ParseError(errorPos, Res.NoApplicableMethod,
                             id, GetTypeName(type));
                     case 1:
+                        
                         return Expression.Call(instance, (MethodInfo)mb, args);
                     default:
                         throw ParseError(errorPos, Res.AmbiguousMethodInvocation,
