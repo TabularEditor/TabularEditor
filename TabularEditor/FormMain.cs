@@ -268,7 +268,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void txtFilter_TextChanged(object sender, EventArgs e)
         {
             // Only update filter results continously when we're not in LINQ mode:
-            if(!LinqMode) actToggleFilter.DoExecute();        
+            if(!LinqMode && actToggleFilter.Checked) actToggleFilter.DoExecute();        
         }
 
         /// <summary>
