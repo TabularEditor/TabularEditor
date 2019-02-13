@@ -28,6 +28,8 @@ namespace TabularEditor
 
         public TabularUITree(TabularModelHandler handler) : base(handler) { }
 
+        bool FilterActive => !string.IsNullOrEmpty(Filter);
+
         internal IEnumerable<ITabularNamedObject> GetChildrenInternal(TreePath treePath)
         {
             if (UpdateLocks > 0) throw new InvalidOperationException("Tree enumeration attempted while update in progress");
@@ -36,7 +38,7 @@ namespace TabularEditor
 
             if (treePath.IsEmpty())
             {
-                if (!string.IsNullOrEmpty(Filter) && FilterMode == FilterMode.Flat)
+                if (FilterActive && FilterMode == FilterMode.Flat)
                 {
                     foreach (var child in GetAllItems())
                     {
@@ -318,7 +320,7 @@ namespace TabularEditor
         /// <returns></returns>
         public virtual bool CanDrop(TreeNodeAdv[] sourceNodes, TreeNodeAdv targetNode, NodePosition position)
         {
-            if (FilterMode == FilterMode.Flat || sourceNodes == null || sourceNodes.Length == 0) return false;
+            if ((FilterActive && FilterMode == FilterMode.Flat) || sourceNodes == null || sourceNodes.Length == 0) return false;
             DragInfo = TreeDragInformation.FromNodes(sourceNodes, targetNode, position);
 
             // Must not drop nodes on themselves or any of their children:
@@ -490,7 +492,7 @@ namespace TabularEditor
             }
             else
             {
-                if (!string.IsNullOrEmpty(Filter) && FilterMode == FilterMode.Flat)
+                if (FilterActive && FilterMode == FilterMode.Flat)
                 {
                     StructureChanged?.Invoke(this, new TreePathEventArgs());
                 }
@@ -508,7 +510,7 @@ namespace TabularEditor
             }
             else
             {
-                if (!string.IsNullOrEmpty(Filter) && FilterMode == FilterMode.Flat)
+                if (FilterActive && FilterMode == FilterMode.Flat)
                 {
                     StructureChanged?.Invoke(this, new TreePathEventArgs());
                 }
@@ -541,7 +543,7 @@ namespace TabularEditor
             }
             else
             {
-                if(!string.IsNullOrEmpty(Filter) && FilterMode == FilterMode.Flat)
+                if(FilterActive && FilterMode == FilterMode.Flat)
                 {
                     StructureChanged?.Invoke(this, new TreePathEventArgs());
                 }
