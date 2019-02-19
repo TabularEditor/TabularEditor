@@ -195,6 +195,7 @@ namespace TabularEditor.UI
             parser = new TextServices.ScriptParser();
             parser.Types.Add("Selected", typeof(UITreeSelection));
             parser.Types.Add("Model", typeof(Model));
+            parser.Types.Add("DaxToken", typeof(TOMWrapper.Utils.DaxToken));
             foreach (var t in typeof(Model).Assembly.ExportedTypes.Where(t => t.IsEnum)) parser.Types.Add(t.Name, t);
         }
 
@@ -259,6 +260,18 @@ namespace TabularEditor.UI
                         ImageIndex = TabularIcons.ICON_METHOD
                     };
                     Add(last);
+                }
+            }
+
+            // Return constants:
+            foreach(var fi in type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy))
+            {
+                if(fi.IsLiteral)
+                {
+                    Add(new MethodAutocompleteItem(fi.Name) {
+                        ToolTipTitle = $"(constant) int DaxToken.{fi.Name} = {fi.GetRawConstantValue()}",
+                        ImageIndex = TabularIcons.ICON_PROPERTY
+                    });
                 }
             }
 
