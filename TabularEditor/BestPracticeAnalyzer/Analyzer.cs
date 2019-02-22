@@ -9,6 +9,7 @@ using System.Linq;
 using System.Linq.Dynamic;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using TabularEditor.TOMWrapper;
 
@@ -204,73 +205,31 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         public IEnumerable<AnalyzerResult> Analyze(BestPracticeRule rule)
         {
-            if (rule.CompatibilityLevel > Model.Database.CompatibilityLevel)
-            {
-                yield return new AnalyzerResult { Rule = rule, InvalidCompatibilityLevel = true };
-                yield break;
-            }
-
-            // Loop through the types of objects in scope for this rule:
-            foreach (var currentScope in rule.Scope.Enumerate())
-            {
-
-                // Gets a collection of all objects of this type:
-                var collection = GetCollection(currentScope);
-
-                LambdaExpression lambda = null;
-
-                bool isError = false;
-                string errMessage = string.Empty;
-
-                // Parse the expression specified on the rule (this can fail if the expression is malformed):
-                try
-                {
-                    lambda = System.Linq.Dynamic.DynamicExpression.ParseLambda(collection.ElementType, typeof(bool), rule.Expression);
-                }
-                catch (Exception ex)
-                {
-                    // Hack, since compiler does not allow to yield return directly from a catch block:
-                    isError = true;
-                    errMessage = ex.Message;
-                }
-                if (isError)
-                {
-                    yield return new AnalyzerResult { Rule = rule, RuleError = errMessage, RuleErrorScope = currentScope };
-                }
-                else
-                {
-                    var result = new List<ITabularNamedObject>();
-                    try
-                    {
-                        result = collection.Provider.CreateQuery(
-                            Expression.Call(
-                                typeof(Queryable), "Where",
-                                new Type[] { collection.ElementType },
-                                collection.Expression, Expression.Quote(lambda))
-                            ).OfType<ITabularNamedObject>().ToList();
-                    }
-                    catch (Exception ex)
-                    {
-                        isError = true;
-                        errMessage = ex.Message;
-                    }
-                    if (isError)
-                    {
-                        yield return new AnalyzerResult { Rule = rule, RuleError = errMessage, RuleErrorScope = currentScope };
-                    }
-                    else
-                        foreach (var res in result) yield return new AnalyzerResult { Rule = rule, Object = res };
-                }
-            }
+            return rule.Analyze(Model);
         }
 
         public IEnumerable<AnalyzerResult> Analyze(IEnumerable<BestPracticeRule> rules)
         {
             if (Model != null)
             {
-                return rules.SelectMany(r => Analyze(r));
+                return rules.SelectMany(r => r.Analyze(Model));
             }
             return Enumerable.Empty<AnalyzerResult>();
+        }
+
+        internal List<AnalyzerResult> AnalyzeAll(CancellationToken ct)
+        {
+            var results = new List<AnalyzerResult>();
+            if(Model != null)
+            {
+                foreach(var rule in AllRules)
+                {
+                    if (ct.IsCancellationRequested) return new List<AnalyzerResult>();
+                    results.AddRange(rule.Analyze(Model));
+                }
+            }
+            if (ct.IsCancellationRequested) return new List<AnalyzerResult>();
+            return results;
         }
 
         private IQueryable GetCollection(RuleScope scope)

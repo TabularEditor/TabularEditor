@@ -11,6 +11,7 @@ using TabularEditor.UIServices;
 using System.Collections.Generic;
 using System.Threading;
 using Aga.Controls.Tree;
+using System.Threading.Tasks;
 
 namespace TabularEditor
 {
@@ -97,7 +98,6 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             });
         }
 
-
         private void PopulateCustomActionsDropDown()
         {
             customActionsToolStripMenuItem.DropDownItems.Clear();
@@ -138,6 +138,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 ScriptEditor = txtAdvanced,
                 ErrorLabel = lblErrors,
                 StatusLabel = lblStatus,
+                BpaLabel = lblBpaRules,
                 StatusExLabel = lblScriptStatus,
                 OpenBimDialog = dlgOpenFile,
                 CurrentMeasureLabel = lblCurrentMeasure,
@@ -598,6 +599,11 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void bestPracticeAnalyzerToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            ShowBPA();
+        }
+
+        private void ShowBPA()
+        {
             BPAForm.Model = UI.Handler?.Model;
             BPAForm.ModelTree = tvModel;
             BPAForm.FormMain = this;
@@ -801,6 +807,11 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void actSearchResultView_UpdateEx(object sender, UpdateExEventArgs e)
         {
             e.Enabled = actToggleFilter.Checked;
+        }
+
+        private void lblBpaRules_Click(object sender, EventArgs e)
+        {
+            ShowBPA();
         }
     }
 }
