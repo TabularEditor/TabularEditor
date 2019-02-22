@@ -193,6 +193,8 @@ namespace TabularEditor.UI
             UI.ModelMenu.Enabled = true;
 
             InitPlugins();
+
+            InvokeBPABackground();
         }
 
         private void UIController_ObjectDeleting(object sender, ObjectDeletingEventArgs e)
@@ -230,13 +232,14 @@ namespace TabularEditor.UI
             var analyzer = new BestPracticeAnalyzer.Analyzer() { Model = Handler.Model };
             var results = analyzer.AnalyzeAll(token);
 
-            UI.FormMain.Invoke(new System.Action(
-                () =>
-                {
-                    UI.BpaLabel.Text = string.Format("{0} BP issue{1}", results.Count, results.Count == 1 ? "" : "s");
-                }
-                )
-            );
+            if(!token.IsCancellationRequested) 
+                UI.FormMain.Invoke(new System.Action(
+                    () =>
+                    {
+                        UI.BpaLabel.Text = string.Format("{0} BP issue{1}", results.Count, results.Count == 1 ? "" : "s");
+                    }
+                    )
+                );
 
             backgroundBpa = null;
         }
@@ -317,6 +320,7 @@ namespace TabularEditor.UI
                 UI.StatusLabel.Text = "(No model loaded)";
                 UI.StatusExLabel.Text = "";
                 UI.ErrorLabel.Text = "";
+                UI.BpaLabel.Text = "";
             }
             else
             {
@@ -329,6 +333,7 @@ namespace TabularEditor.UI
                 UI.StatusLabel.Text = Handler.Status;
                 UI.ErrorLabel.Text = Handler?.Errors?.Count > 0 ? string.Format("{0} error{1}", Handler.Errors.Count, Handler.Errors.Count > 1 ? "s" : "") : "";
                 UI.ErrorLabel.IsLink = Handler?.Errors?.Count > 0;
+                UI.BpaLabel.Text = "";
             }
         }
 

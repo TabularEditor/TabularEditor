@@ -29,9 +29,14 @@ namespace TabularEditor.UI.Dialogs
 
         private void SetModel(Model model)
         {
-            btnAdd.Enabled = model != null;
-            btnAnalyzeAll.Enabled = model != null;
-            analyzer.Model = model;
+            if (model != analyzer.Model)
+            {
+                btnAdd.Enabled = model != null;
+                btnAnalyzeAll.Enabled = model != null;
+                analyzer.Model = model;
+                listView2.Items.Clear();
+                toolStripStatusLabel1.Text = "";
+            }
         }
 
         public BPAForm()
