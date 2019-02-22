@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.PropertyGridExtension;
@@ -207,13 +208,48 @@ namespace TabularEditor.UI
             UI.TreeView.Invalidate();
             UI.PropertyGrid.Refresh();
 
+            InvokeBPABackground();
+
             if (DependencyForm.Visible) DependencyForm.RefreshTree();
         }
 
+        private void InvokeBPABackground()
+        {
+            if(backgroundBpa != null)
+            {
+                backgroundBpaTokenSource.Cancel();
+                backgroundBpa.Wait();
+            }
+            backgroundBpaTokenSource = new CancellationTokenSource();
+            var token = backgroundBpaTokenSource.Token;
+            backgroundBpa = Task.Factory.StartNew(() => BPABackgroundTask(token), token);
+        }
+
+        private void BPABackgroundTask(CancellationToken token)
+        {
+            var analyzer = new BestPracticeAnalyzer.Analyzer() { Model = Handler.Model };
+            var results = analyzer.AnalyzeAll(token);
+
+            UI.FormMain.Invoke(new System.Action(
+                () =>
+                {
+                    UI.BpaLabel.Text = string.Format("{0} BP issue{1}", results.Count, results.Count == 1 ? "" : "s");
+                }
+                )
+            );
+
+            backgroundBpa = null;
+        }
+        CancellationTokenSource backgroundBpaTokenSource;
+        Task backgroundBpa;
+
         private void UIController_ObjectChanged(object sender, ObjectChangedEventArgs e)
         {
-            if (!Handler.UpdateInProgress && e.PropertyName == "Annotations" && e.TabularObject == UI.PropertyGrid.SelectedObject)
-                UI.PropertyGrid.Refresh();
+            if (!Handler.UpdateInProgress) {
+                if(e.PropertyName == "Annotations" && e.TabularObject == UI.PropertyGrid.SelectedObject)
+                    UI.PropertyGrid.Refresh();
+                InvokeBPABackground();
+            }
         }
 
         private void InitPlugins()
@@ -308,6 +344,7 @@ namespace TabularEditor.UI
         public ToolStripLabel StatusLabel;
         public ToolStripLabel StatusExLabel;
         public ToolStripLabel ErrorLabel;
+        public ToolStripLabel BpaLabel;
         public Label CurrentMeasureLabel;
         public FormMain FormMain;
         public ToolStripDropDownItem ModelMenu;
