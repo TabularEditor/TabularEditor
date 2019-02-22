@@ -309,7 +309,7 @@ namespace TabularEditor.UI
 
         private void UpdateUIText()
         {
-            var appName = Application.ProductName + " 2.8"; // + string.Join(".", Application.ProductVersion.Split('.').Take(2));
+            var appName = Application.ProductName + " 2.8.1"; // + string.Join(".", Application.ProductVersion.Split('.').Take(2));
 
             if (Handler == null)
             {
