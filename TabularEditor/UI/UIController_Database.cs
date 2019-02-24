@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
@@ -38,30 +39,35 @@ namespace TabularEditor.UI
             Application.DoEvents();
             using (new Hourglass())
             {
-                var df = new DeployingForm();
-                var error = false;
+                bool cancelled = false;
+                bool error = false;
                 string message = "";
-                df.DeployAction = () =>
-                {
-                    try
-                    {
-                        TabularDeployer.Deploy(Handler, f.DeployTargetServer.ConnectionString, f.DeployTargetDatabaseID, f.DeployOptions);
-                    }
-                    catch (Exception ex)
-                    {
-                        error = true;
-                        message = ex.Message;
-                        df.ThreadClose();
-                    }
-                };
-                df.ShowDialog();
 
-                if(error)
+                using (var df = new DeployingForm())
                 {
-                    MessageBox.Show(message, "Error occured during deployment", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    df.DeployAction = () =>
+                    {
+                        try
+                        {
+                            TabularDeployer.Deploy(Handler, f.DeployTargetServer.ConnectionString, f.DeployTargetDatabaseID, f.DeployOptions, df.CancelToken);
+                        }
+                        catch (Exception ex)
+                        {
+                            cancelled = df.CancelToken.IsCancellationRequested;
+                            error = !cancelled;
+                            message = ex.Message;
+                            df.ThreadClose();
+                        }
+                    };
+                    df.ShowDialog();
                 }
 
-                UI.StatusLabel.Text = error ? "Deploy failed!" : "Deploy succeeded!";
+                if (error || cancelled)
+                {
+                    MessageBox.Show(message, error ? "Error occured during deployment" : "Deploy cancelled", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                UI.StatusLabel.Text = error ? "Deploy failed!" : cancelled ? "Deploy cancelled!" : "Deploy succeeded!";
             }
         }
 
