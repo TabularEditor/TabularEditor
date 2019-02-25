@@ -215,7 +215,7 @@ namespace TabularEditor.UI
             if (DependencyForm.Visible) DependencyForm.RefreshTree();
         }
 
-        private void InvokeBPABackground()
+        internal void InvokeBPABackground()
         {
             if(backgroundBpa != null)
             {
