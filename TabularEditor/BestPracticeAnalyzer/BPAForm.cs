@@ -85,6 +85,11 @@ namespace TabularEditor.UI.Dialogs
 
         private void btnAnalyzeAll_Click(object sender, EventArgs e)
         {
+            AnalyzeAll();
+        }
+
+        public void AnalyzeAll()
+        {
             listView1.SelectedIndices.Clear();
             Analyze();
         }
@@ -261,6 +266,7 @@ namespace TabularEditor.UI.Dialogs
             {
                 analyzer.AddRule(newRule);
                 analyzer.SaveLocalRulesToModel();
+                UIController.Current.InvokeBPABackground();
             }
         }
 
@@ -293,6 +299,7 @@ namespace TabularEditor.UI.Dialogs
                     }
 
                     PopulateListView();
+                    UIController.Current.InvokeBPABackground();
                 }
             }
         }

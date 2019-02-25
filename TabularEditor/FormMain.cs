@@ -609,6 +609,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             BPAForm.FormMain = this;
             BPAForm.Show();
             BPAForm.BringToFront();
+            BPAForm.AnalyzeAll();
         }
 
         private BPAForm BPAForm = new BPAForm();
