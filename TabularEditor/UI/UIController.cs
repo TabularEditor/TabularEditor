@@ -246,7 +246,7 @@ namespace TabularEditor.UI
                     }
                     )
                 );
-                if (UI.FormMain.BPAForm.Visible) UI.FormMain.BPAForm.BeginInvoke(new System.Action(UI.FormMain.BPAForm.RefreshUI));
+                if(UI.FormMain.BPAForm.IsHandleCreated) UI.FormMain.BPAForm.BeginInvoke(new System.Action(UI.FormMain.BPAForm.RefreshUI));
             }
 
             backgroundBpa = null;
