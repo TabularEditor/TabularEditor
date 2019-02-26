@@ -71,8 +71,19 @@ namespace TabularEditor.BestPracticeAnalyzer
                 _results = newResults;
                 RuleCount = _results.Count;
                 ObjectCount = _results.Sum(r => r.Value.Count);
-                StructureChanged?.Invoke(this, new TreePathEventArgs(TreePath.Empty));
+                OnStructureChanged();
             }
+        }
+
+        private void OnStructureChanged()
+        {
+            StructureChanged?.Invoke(this, new TreePathEventArgs(TreePath.Empty));
+        }
+
+        public void Clear()
+        {
+            _results.Clear();
+            OnStructureChanged();
         }
 
         public IEnumerable GetChildren(TreePath treePath)
@@ -98,7 +109,13 @@ namespace TabularEditor.BestPracticeAnalyzer
         {
             if (node.Tag is AnalyzerResult result)
             {
-                return (result.Rule.Name);
+                if (string.IsNullOrWhiteSpace(result.Rule.Description))
+                    return result.Rule.Name;
+                else
+                    return result.Rule.Description
+                        .Replace("%object%", result.ObjectName)
+                        .Replace("%objectname%", result.Object.Name)
+                        .Replace("%objecttype%", result.Object.GetTypeName());
             }
             return null;
         }
