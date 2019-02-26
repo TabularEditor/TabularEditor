@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
@@ -177,7 +178,18 @@ namespace Aga.Controls.Tree.NodeControls
 			Brush backgroundBrush;
 			Color textColor;
 			Font font;
-			CreateBrushes(node, context, label, out backgroundBrush, out textColor, out font, ref label);
+            bool fullRowDraw;
+            bool skipDraw;
+			CreateBrushes(node, context, label, out backgroundBrush, out textColor, out font, out fullRowDraw, out skipDraw, ref label);
+
+            if (skipDraw) return;
+
+            if (fullRowDraw)
+            {
+                bounds.X = Parent.ClientRectangle.X;
+                bounds.Width = (Parent.UseColumns ? Parent.Columns.Sum(c => c.Width) : Parent.ClientRectangle.Width);
+                context.Graphics.SetClip(bounds);
+            }
 
 			if (backgroundBrush != null)
 				context.Graphics.FillRectangle(backgroundBrush, focusRect);
@@ -191,13 +203,13 @@ namespace Aga.Controls.Tree.NodeControls
 					_focusPen.Color = SystemColors.InactiveCaption;
 				context.Graphics.DrawRectangle(_focusPen, focusRect);
 			}
-			
-			PerformanceAnalyzer.Start("BaseTextControl.DrawText");
-			if (UseCompatibleTextRendering)
-				TextRenderer.DrawText(context.Graphics, label, font, bounds, textColor, _formatFlags);
-			else
-				context.Graphics.DrawString(label, font, GetFrush(textColor), bounds, _format);
-			PerformanceAnalyzer.Finish("BaseTextControl.DrawText");
+
+            PerformanceAnalyzer.Start("BaseTextControl.DrawText");
+            if (UseCompatibleTextRendering)
+                TextRenderer.DrawText(context.Graphics, label, font, bounds, textColor, _formatFlags);
+            else
+                context.Graphics.DrawString(label, font, GetFrush(textColor), bounds, _format);
+            PerformanceAnalyzer.Finish("BaseTextControl.DrawText");
 
 			PerformanceAnalyzer.Finish("BaseTextControl.Draw");
 		}
@@ -216,8 +228,10 @@ namespace Aga.Controls.Tree.NodeControls
 			return br;
 		}
 
-		private void CreateBrushes(TreeNodeAdv node, DrawContext context, string text, out Brush backgroundBrush, out Color textColor, out Font font, ref string label)
+		private void CreateBrushes(TreeNodeAdv node, DrawContext context, string text, out Brush backgroundBrush, out Color textColor, out Font font, out bool fullRowDraw, out bool skipDraw, ref string label)
 		{
+            fullRowDraw = false;
+            skipDraw = false;
 			textColor = SystemColors.ControlText;
 			backgroundBrush = null;
 			font = context.Font;
@@ -251,6 +265,8 @@ namespace Aga.Controls.Tree.NodeControls
 				backgroundBrush = args.BackgroundBrush;
 				font = args.Font;
 				label = args.Text;
+                fullRowDraw = args.FullRowDraw;
+                skipDraw = args.SkipDraw;
 			}
 		}
 

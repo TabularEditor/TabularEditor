@@ -1,7 +1,10 @@
 ﻿extern alias json;
 
+using Aga.Controls.Tree;
+using Aga.Controls.Tree.NodeControls;
 using json.Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -35,12 +38,79 @@ namespace TabularEditor.BestPracticeAnalyzer
         }
     }
 
+    internal class AnalyzerResultsModel : ITreeModel
+    {
+        public event EventHandler<TreeModelEventArgs> NodesChanged;
+        public event EventHandler<TreeModelEventArgs> NodesInserted;
+        public event EventHandler<TreeModelEventArgs> NodesRemoved;
+        public event EventHandler<TreePathEventArgs> StructureChanged;
+
+        Dictionary<BestPracticeRule, List<AnalyzerResult>> _results;
+
+        public int RuleCount { get; private set; } = 0;
+        public int ObjectCount { get; private set; } = 0;
+        public int ObjectCountByRule(BestPracticeRule rule)
+        {
+            if (_results.TryGetValue(rule, out List<AnalyzerResult> results))
+                return results.Count;
+            return 0;
+        }
+
+        public AnalyzerResultsModel()
+        {
+            _results = new Dictionary<BestPracticeRule, List<AnalyzerResult>>();
+        }
+
+        public void Update(IEnumerable<AnalyzerResult> results)
+        {
+            var newResults = results.Where(r => !r.InvalidCompatibilityLevel && !r.RuleHasError && !r.Ignored)
+                .GroupBy(r => r.Rule, r => r).ToDictionary(r => r.Key, r => r.ToList());
+
+            if(!newResults.SelectMany(r => r.Value).SequenceEqual(_results.SelectMany(r => r.Value)))
+            {
+                _results = newResults;
+                RuleCount = _results.Count;
+                ObjectCount = _results.Sum(r => r.Value.Count);
+                StructureChanged?.Invoke(this, new TreePathEventArgs(TreePath.Empty));
+            }
+        }
+
+        public IEnumerable GetChildren(TreePath treePath)
+        {
+            if (treePath.IsEmpty()) return _results.Keys;
+            else
+            {
+                return _results[treePath.LastNode as BestPracticeRule];
+            }
+        }
+
+        public bool IsLeaf(TreePath treePath)
+        {
+            if (treePath.IsEmpty()) return false;
+            if (treePath.LastNode is BestPracticeRule) return false;
+            else return true;
+        }
+    }
+
+    public class AnalyzerResultTooltip : IToolTipProvider
+    {
+        public string GetToolTip(TreeNodeAdv node, NodeControl nodeControl)
+        {
+            if (node.Tag is AnalyzerResult result)
+            {
+                return (result.Rule.Name);
+            }
+            return null;
+        }
+    }
+
     public class AnalyzerResult
     {
         public bool RuleHasError { get { return !string.IsNullOrEmpty(RuleError); } }
         public bool InvalidCompatibilityLevel { get; set; }
         public string RuleError { get; set; }
         public RuleScope RuleErrorScope { get; set; }
+        public string ObjectType => Object.GetTypeName();
         public string ObjectName
         {
             get

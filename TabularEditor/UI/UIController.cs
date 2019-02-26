@@ -147,7 +147,11 @@ namespace TabularEditor.UI
 
         public void LoadTabularModelToUI()
         {
-            if (Handler == null) return;
+            if (Handler == null)
+            {
+                return;
+            }
+
             Handler.Settings = Preferences.Current.GetSettings();
 
             LastDeploymentDb = null;
@@ -194,6 +198,7 @@ namespace TabularEditor.UI
 
             InitPlugins();
 
+            UI.FormMain.BPAForm.Model = Handler.Model;
             InvokeBPABackground();
         }
 
@@ -229,17 +234,20 @@ namespace TabularEditor.UI
 
         private void BPABackgroundTask(CancellationToken token)
         {
-            var analyzer = new BestPracticeAnalyzer.Analyzer() { Model = Handler.Model };
-            var results = analyzer.AnalyzeAll(token);
+            UI.FormMain.BPAForm.AnalyzeAll(token);
 
-            if(!token.IsCancellationRequested) 
-                UI.FormMain.Invoke(new System.Action(
+            if (!token.IsCancellationRequested)
+            {
+                var results = UI.FormMain.BPAForm.AnalyzerResultsTreeModel;
+                UI.FormMain.BeginInvoke(new System.Action(
                     () =>
                     {
-                        UI.BpaLabel.Text = string.Format("{0} BP issue{1}", results.Count, results.Count == 1 ? "" : "s");
+                        UI.BpaLabel.Text = string.Format("{0} BP issue{1}", results.ObjectCount, results.ObjectCount == 1 ? "" : "s");
                     }
                     )
                 );
+                if (UI.FormMain.BPAForm.Visible) UI.FormMain.BPAForm.BeginInvoke(new System.Action(UI.FormMain.BPAForm.RefreshUI));
+            }
 
             backgroundBpa = null;
         }

@@ -38,10 +38,6 @@
             this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.splitter1 = new System.Windows.Forms.Splitter();
-            this.listView2 = new System.Windows.Forms.ListView();
-            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.bpaResultGoTo = new System.Windows.Forms.ToolStripMenuItem();
             this.bpaResultGoToSep = new System.Windows.Forms.ToolStripSeparator();
@@ -62,6 +58,13 @@
             this.btnDelete = new System.Windows.Forms.ToolStripButton();
             this.btnMakeLocal = new System.Windows.Forms.ToolStripButton();
             this.btnAnalyzeAll = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.tvResults = new Aga.Controls.Tree.TreeViewAdv();
+            this.colObject = new Aga.Controls.Tree.TreeColumn();
+            this.colType = new Aga.Controls.Tree.TreeColumn();
+            this.txtObjectName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.txtObjectType = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.contextMenuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -84,10 +87,11 @@
             this.listView1.Location = new System.Drawing.Point(0, 25);
             this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(753, 166);
+            this.listView1.Size = new System.Drawing.Size(379, 166);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
+            this.listView1.Visible = false;
             this.listView1.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listView1_ColumnClick);
             this.listView1.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.listView1_ItemChecked);
             this.listView1.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.listView1_ItemSelectionChanged);
@@ -126,43 +130,9 @@
             this.splitter1.Dock = System.Windows.Forms.DockStyle.Top;
             this.splitter1.Location = new System.Drawing.Point(0, 191);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(753, 3);
+            this.splitter1.Size = new System.Drawing.Size(379, 3);
             this.splitter1.TabIndex = 4;
             this.splitter1.TabStop = false;
-            // 
-            // listView2
-            // 
-            this.listView2.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader6,
-            this.columnHeader8,
-            this.columnHeader7});
-            this.listView2.ContextMenuStrip = this.contextMenuStrip1;
-            this.listView2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listView2.FullRowSelect = true;
-            this.listView2.GridLines = true;
-            this.listView2.Location = new System.Drawing.Point(0, 194);
-            this.listView2.Name = "listView2";
-            this.listView2.Size = new System.Drawing.Size(753, 204);
-            this.listView2.TabIndex = 5;
-            this.listView2.UseCompatibleStateImageBehavior = false;
-            this.listView2.View = System.Windows.Forms.View.Details;
-            this.listView2.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listView1_ColumnClick);
-            this.listView2.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView2_MouseDoubleClick);
-            // 
-            // columnHeader6
-            // 
-            this.columnHeader6.Text = "Object";
-            this.columnHeader6.Width = 200;
-            // 
-            // columnHeader8
-            // 
-            this.columnHeader8.Text = "Object Type";
-            this.columnHeader8.Width = 100;
-            // 
-            // columnHeader7
-            // 
-            this.columnHeader7.Text = "Rule Name";
-            this.columnHeader7.Width = 200;
             // 
             // contextMenuStrip1
             // 
@@ -262,9 +232,9 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 398);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 585);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(753, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(379, 22);
             this.statusStrip1.TabIndex = 7;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -280,10 +250,12 @@
             this.btnEdit,
             this.btnDelete,
             this.btnMakeLocal,
-            this.btnAnalyzeAll});
+            this.btnAnalyzeAll,
+            this.toolStripSeparator1,
+            this.toolStripButton1});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(753, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(379, 25);
             this.toolStrip1.TabIndex = 9;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -334,16 +306,95 @@
             this.btnAnalyzeAll.Image = ((System.Drawing.Image)(resources.GetObject("btnAnalyzeAll.Image")));
             this.btnAnalyzeAll.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnAnalyzeAll.Name = "btnAnalyzeAll";
-            this.btnAnalyzeAll.Size = new System.Drawing.Size(67, 22);
-            this.btnAnalyzeAll.Text = "Analyze all";
+            this.btnAnalyzeAll.Size = new System.Drawing.Size(50, 22);
+            this.btnAnalyzeAll.Text = "Refresh";
             this.btnAnalyzeAll.Click += new System.EventHandler(this.btnAnalyzeAll_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(91, 19);
+            this.toolStripButton1.Text = "Manage rules...";
+            // 
+            // tvResults
+            // 
+            this.tvResults.BackColor = System.Drawing.SystemColors.Window;
+            this.tvResults.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tvResults.Columns.Add(this.colObject);
+            this.tvResults.Columns.Add(this.colType);
+            this.tvResults.DefaultToolTipProvider = null;
+            this.tvResults.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tvResults.DragDropMarkColor = System.Drawing.Color.Black;
+            this.tvResults.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tvResults.FullRowSelect = true;
+            this.tvResults.GridLineStyle = Aga.Controls.Tree.GridLineStyle.Horizontal;
+            this.tvResults.HideSelection = true;
+            this.tvResults.LineColor = System.Drawing.SystemColors.ControlDark;
+            this.tvResults.Location = new System.Drawing.Point(0, 194);
+            this.tvResults.Model = null;
+            this.tvResults.Name = "tvResults";
+            this.tvResults.NodeControls.Add(this.txtObjectName);
+            this.tvResults.NodeControls.Add(this.txtObjectType);
+            this.tvResults.SelectedNode = null;
+            this.tvResults.ShowLines = false;
+            this.tvResults.ShowNodeToolTips = true;
+            this.tvResults.ShowPlusMinus = false;
+            this.tvResults.Size = new System.Drawing.Size(379, 391);
+            this.tvResults.TabIndex = 10;
+            this.tvResults.UseColumns = true;
+            this.tvResults.Collapsed += new System.EventHandler<Aga.Controls.Tree.TreeViewAdvEventArgs>(this.tvResults_Collapsed);
+            this.tvResults.Expanded += new System.EventHandler<Aga.Controls.Tree.TreeViewAdvEventArgs>(this.tvResults_Expanded);
+            this.tvResults.Resize += new System.EventHandler(this.tvResults_Resize);
+            // 
+            // colObject
+            // 
+            this.colObject.Header = "Object";
+            this.colObject.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.colObject.TooltipText = null;
+            this.colObject.Width = 307;
+            this.colObject.WidthChanged += new System.EventHandler(this.colObject_WidthChanged);
+            // 
+            // colType
+            // 
+            this.colType.Header = "Type";
+            this.colType.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.colType.TooltipText = null;
+            this.colType.Width = 70;
+            // 
+            // txtObjectName
+            // 
+            this.txtObjectName.DataPropertyName = "ObjectName";
+            this.txtObjectName.DisplayHiddenContentInToolTip = false;
+            this.txtObjectName.LeftMargin = 3;
+            this.txtObjectName.ParentColumn = this.colObject;
+            this.txtObjectName.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            this.txtObjectName.UseCompatibleTextRendering = true;
+            this.txtObjectName.VirtualMode = true;
+            this.txtObjectName.DrawText += new System.EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(this.txtObjectName_DrawText);
+            this.txtObjectName.ValueNeeded += new System.EventHandler<Aga.Controls.Tree.NodeControls.NodeControlValueEventArgs>(this.txtObjectName_ValueNeeded);
+            // 
+            // txtObjectType
+            // 
+            this.txtObjectType.DataPropertyName = "ObjectType";
+            this.txtObjectType.DisplayHiddenContentInToolTip = false;
+            this.txtObjectType.LeftMargin = 3;
+            this.txtObjectType.ParentColumn = this.colType;
+            this.txtObjectType.UseCompatibleTextRendering = true;
             // 
             // BPAForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(753, 420);
-            this.Controls.Add(this.listView2);
+            this.ClientSize = new System.Drawing.Size(379, 607);
+            this.Controls.Add(this.tvResults);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.listView1);
@@ -371,9 +422,6 @@
         private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.ColumnHeader columnHeader5;
         private System.Windows.Forms.Splitter splitter1;
-        private System.Windows.Forms.ListView listView2;
-        private System.Windows.Forms.ColumnHeader columnHeader6;
-        private System.Windows.Forms.ColumnHeader columnHeader7;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
@@ -388,7 +436,6 @@
         private System.Windows.Forms.ToolStripMenuItem bpaResultFix;
         private System.Windows.Forms.ToolStripMenuItem bpaResultFixSelected;
         private System.Windows.Forms.ToolStripMenuItem bpaResultFixRule;
-        private System.Windows.Forms.ColumnHeader columnHeader8;
         private System.Windows.Forms.ColumnHeader columnHeader9;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton btnAdd;
@@ -396,5 +443,12 @@
         private System.Windows.Forms.ToolStripButton btnDelete;
         private System.Windows.Forms.ToolStripButton btnMakeLocal;
         private System.Windows.Forms.ToolStripButton btnAnalyzeAll;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private Aga.Controls.Tree.TreeViewAdv tvResults;
+        private Aga.Controls.Tree.TreeColumn colObject;
+        private Aga.Controls.Tree.TreeColumn colType;
+        private Aga.Controls.Tree.NodeControls.NodeTextBox txtObjectName;
+        private Aga.Controls.Tree.NodeControls.NodeTextBox txtObjectType;
     }
 }
