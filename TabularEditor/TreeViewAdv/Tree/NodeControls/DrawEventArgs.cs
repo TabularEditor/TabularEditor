@@ -7,7 +7,21 @@ namespace Aga.Controls.Tree.NodeControls
 {
 	public class DrawEventArgs : NodeEventArgs
 	{
-		private DrawContext _context;
+        private bool _fullRowDraw = false;
+        public bool FullRowDraw
+        {
+            get { return _fullRowDraw; }
+            set { _fullRowDraw = value; }
+        }
+
+        private bool _skipDraw = false;
+        public bool SkipDraw
+        {
+            get { return _skipDraw; }
+            set { _skipDraw = value; }
+        }
+
+        private DrawContext _context;
 		public DrawContext Context
 		{
 			get { return _context; }

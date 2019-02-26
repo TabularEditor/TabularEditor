@@ -191,7 +191,7 @@ namespace Aga.Controls.Tree
 			if (Tree.SelectedNodes.Count == 1 && args.Node != null && args.Node.IsSelected)
 				return;
 
-            if (focusOnly)
+            if (focusOnly && Tree.DelaySelectionToMouseUp)
             {
                 if (args.Node != null)
                     Tree.CurrentNode = args.Node;

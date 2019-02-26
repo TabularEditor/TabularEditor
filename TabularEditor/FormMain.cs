@@ -599,20 +599,10 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void bestPracticeAnalyzerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ShowBPA();
+            BPAForm.ShowBPA();
         }
 
-        private void ShowBPA()
-        {
-            BPAForm.Model = UI.Handler?.Model;
-            BPAForm.ModelTree = tvModel;
-            BPAForm.FormMain = this;
-            BPAForm.Show();
-            BPAForm.BringToFront();
-            BPAForm.AnalyzeAll();
-        }
-
-        private BPAForm BPAForm = new BPAForm();
+        internal BPAForm BPAForm = new BPAForm();
 
         private void CanComment(object sender, EventArgs e)
         {
@@ -812,7 +802,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void lblBpaRules_Click(object sender, EventArgs e)
         {
-            ShowBPA();
+            BPAForm.ShowBPA();
         }
     }
 }

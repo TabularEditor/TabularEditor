@@ -11,6 +11,7 @@ using TabularEditor.TOMWrapper;
 using System.Linq.Dynamic;
 using Aga.Controls.Tree;
 using System.Collections;
+using System.Threading;
 
 namespace TabularEditor.UI.Dialogs
 {
@@ -24,8 +25,6 @@ namespace TabularEditor.UI.Dialogs
         public Dictionary<string, BestPracticeRule> RuleIndex = new Dictionary<string, BestPracticeRule>();
 
         public Model Model { get { return analyzer.Model; } set { SetModel(value); } }
-        public TreeViewAdv ModelTree { get; set; }
-        public FormMain FormMain { get; set; }
 
         private void SetModel(Model model)
         {
@@ -34,7 +33,7 @@ namespace TabularEditor.UI.Dialogs
                 btnAdd.Enabled = model != null;
                 btnAnalyzeAll.Enabled = model != null;
                 analyzer.Model = model;
-                listView2.Items.Clear();
+                tvResults.Model = null;
                 toolStripStatusLabel1.Text = "";
             }
         }
@@ -52,6 +51,8 @@ namespace TabularEditor.UI.Dialogs
             btnAnalyzeAll.Enabled = Model != null;
             btnAdd.Enabled = Model != null;
             btnEdit.Enabled = Model != null;
+
+            tvResults.DefaultToolTipProvider = new AnalyzerResultTooltip();
         }
 
         private void Analyzer_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -88,17 +89,11 @@ namespace TabularEditor.UI.Dialogs
             AnalyzeAll();
         }
 
-        public void AnalyzeAll()
-        {
-            listView1.SelectedIndices.Clear();
-            Analyze();
-        }
-
-        private void listView2_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            var item = listView2.GetItemAt(e.X, e.Y);
-            if (item != null) Goto(item);
-        }
+        //private void listView2_MouseDoubleClick(object sender, MouseEventArgs e)
+        //{
+        //    var item = tvResults.GetItemAt(e.X, e.Y);
+        //    if (item != null) Goto(item);
+        //}
 
         public void Goto(ListViewItem item)
         {
@@ -127,29 +122,53 @@ namespace TabularEditor.UI.Dialogs
             btnAdd.Enabled = Model != null;
         }
 
+        internal AnalyzerResultsModel AnalyzerResultsTreeModel { get; private set; } = new AnalyzerResultsModel();
+
+        /*public void PrepareUI()
+        {
+            BestPracticeRule rule = null;
+            ListViewGroup group = null;
+            groups = new List<ListViewGroup>();
+            items = new List<ListViewItem>();
+            foreach (var result in LatestAnalyzerResults.Where(r => !r.InvalidCompatibilityLevel && !r.RuleHasError && !r.Ignored))
+            {
+                if (result.Rule != rule)
+                {
+                    rule = result.Rule;
+                    group = new ListViewGroup(rule.ID, rule.Name);
+                    groups.Add(group);
+                }
+                var item = new ListViewItem(new[] {
+                            result.ObjectName,
+                            result.Object.GetTypeName(),
+                            rule.ID }, group);
+                item.ToolTipText = rule.Name;
+                item.Tag = result.Object;
+                items.Add(item);
+            }
+        }*/
+
+        public void RefreshUI()
+        {
+            var oC = AnalyzerResultsTreeModel.ObjectCount;
+            var rC = AnalyzerResultsTreeModel.RuleCount;
+            toolStripStatusLabel1.Text = string.Format("{0} object{1} in violation of the selected rule{2}.", oC, oC == 1 ? "" : "s", rC == 1 ? "" : "s");
+
+            /*var ruleWithError = LatestAnalyzerResults.FirstOrDefault(r => r.RuleHasError);
+            if (ruleWithError != null)
+                toolStripStatusLabel1.Text = string.Format("Rule error: {0}", ruleWithError.RuleError);
+            else
+            {
+                var ruleWithInvalidCL = LatestAnalyzerResults.FirstOrDefault(r => r.InvalidCompatibilityLevel);
+                if (ruleWithInvalidCL != null)
+                    toolStripStatusLabel1.Text = string.Format("Rule '{0}' is not applicable to models of Compatibility Level {1}", ruleWithInvalidCL.Rule.Name, Model.Database.CompatibilityLevel);
+            }*/
+        }
+
         public void Analyze(IEnumerable<BestPracticeRule> rules)
         {
-            if (Model != null)
-            {
-                listView2.Items.Clear();
-                var results = analyzer.Analyze(rules).ToList();
-                listView2.Items.AddRange(
-                    results.Where(r => !r.InvalidCompatibilityLevel && !r.RuleHasError && !r.Ignored).Select(r => new ListViewItem(new[] { r.ObjectName, r.Object.GetTypeName(), r.RuleName, r.Rule.ID }) { Tag = r.Object }).ToArray());
-
-                var oC = listView2.Items.Count;
-                var rC = rules.Count();
-                toolStripStatusLabel1.Text = string.Format("{0} object{1} in violation of the selected rule{2}.", oC, oC == 1 ? "" : "s", rC == 1 ? "" : "s");
-
-                var ruleWithError = results.FirstOrDefault(r => r.RuleHasError);
-                if (ruleWithError != null)
-                    toolStripStatusLabel1.Text = string.Format("Rule error: {0}", ruleWithError.RuleError);
-                else
-                {
-                    var ruleWithInvalidCL = results.FirstOrDefault(r => r.InvalidCompatibilityLevel);
-                    if (ruleWithInvalidCL != null)
-                        toolStripStatusLabel1.Text = string.Format("Rule '{0}' is not applicable to models of Compatibility Level {1}", ruleWithInvalidCL.Rule.Name, Model.Database.CompatibilityLevel);
-                }
-            }
+            AnalyzerResultsTreeModel.Update(analyzer.Analyze(rules));
+            RefreshUI();
         }
 
         public void Analyze(BestPracticeRule rule)
@@ -157,9 +176,18 @@ namespace TabularEditor.UI.Dialogs
             Analyze(Enumerable.Repeat(rule, 1));
         }
 
-        public void Analyze()
+        public void AnalyzeAll()
         {
             Analyze(analyzer.GlobalRules.Concat(analyzer.LocalRules).Where(r => r.Enabled));
+        }
+
+        /// <summary>
+        /// Analyzes all rules.
+        /// </summary>
+        /// <param name="token"></param>
+        public void AnalyzeAll(CancellationToken token)
+        {
+            AnalyzerResultsTreeModel.Update(analyzer.AnalyzeAll(token));
         }
 
         private bool populatingList;
@@ -181,81 +209,81 @@ namespace TabularEditor.UI.Dialogs
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
         {
-            if (listView2.SelectedItems.Count == 0) {
-                e.Cancel = true;
-                return;
-            }
-            var plural = listView2.SelectedItems.Count > 1;
+            //if (tvResults.SelectedItems.Count == 0) {
+            //    e.Cancel = true;
+            //    return;
+            //}
+            //var plural = tvResults.SelectedItems.Count > 1;
 
-            // SubItems[3] contains the ID of the respective rule:
-            var rules = listView2.SelectedItems.Cast<ListViewItem>().Select(i => i.SubItems[3].Text).Distinct().Select(n => RuleIndex[n]).ToList();
+            //// SubItems[2] contains the ID of the respective rule:
+            //var rules = tvResults.SelectedItems.Cast<ListViewItem>().Select(i => i.SubItems[2].Text).Distinct().Select(n => RuleIndex[n]).ToList();
 
-            bpaResultGoTo.Visible = !plural;
-            bpaResultGoToSep.Visible = !plural;
+            //bpaResultGoTo.Visible = !plural;
+            //bpaResultGoToSep.Visible = !plural;
 
-            var p = "Selected object" + (plural ? "s" : "");
-            bpaResultIgnoreRule.Enabled = rules.Count == 1;
-            bpaResultIgnoreSelected.Text = p;
-            bpaResultScriptSelected.Text = p;
-            bpaResultFixSelected.Text = p;
+            //var p = "Selected object" + (plural ? "s" : "");
+            //bpaResultIgnoreRule.Enabled = rules.Count == 1;
+            //bpaResultIgnoreSelected.Text = p;
+            //bpaResultScriptSelected.Text = p;
+            //bpaResultFixSelected.Text = p;
 
-            var canFix = rules.Any(r => !string.IsNullOrEmpty(r.FixExpression));
-            bpaResultScript.Enabled = canFix;
-            bpaResultFix.Enabled = canFix;
+            //var canFix = rules.Any(r => !string.IsNullOrEmpty(r.FixExpression));
+            //bpaResultScript.Enabled = canFix;
+            //bpaResultFix.Enabled = canFix;
         }
 
         private void bpaResultGoTo_Click(object sender, EventArgs e)
         {
-            if(listView2.SelectedItems.Count == 1)
-            {
-                Goto(listView2.SelectedItems[0]);
-            }
+            //if(tvResults.SelectedItems.Count == 1)
+            //{
+            //    Goto(tvResults.SelectedItems[0]);
+            //}
         }
 
         private void bpaResultIgnoreSelected_Click(object sender, EventArgs e)
         {
-            bool unsupported = false;
+            //bool unsupported = false;
 
-            foreach (ListViewItem item in listView2.SelectedItems)
-            {
-                var rule = RuleIndex[item.SubItems[3].Text];
-                var obj = item.Tag as IAnnotationObject;
+            //foreach (ListViewItem item in tvResults.SelectedItems)
+            //{
+            //    var rule = RuleIndex[item.SubItems[3].Text];
+            //    var obj = item.Tag as IAnnotationObject;
 
-                if (obj == null) unsupported = true;
-                else analyzer.IgnoreRule(rule, true, obj);
-            }
+            //    if (obj == null) unsupported = true;
+            //    else analyzer.IgnoreRule(rule, true, obj);
+            //}
 
-            if (unsupported)
-            {
-                MessageBox.Show("One or more of the selected objects does not support annotations. For this reason, the rule cannot be ignored on these objects.", "Cannot ignore rule", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
+            //if (unsupported)
+            //{
+            //    MessageBox.Show("One or more of the selected objects does not support annotations. For this reason, the rule cannot be ignored on these objects.", "Cannot ignore rule", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //}
         }
 
         private void bpaResultIgnoreRule_Click(object sender, EventArgs e)
         {
-            var rules = listView2.SelectedItems.Cast<ListViewItem>().Select(i => i.SubItems[3].Text).Distinct().Select(n => RuleIndex[n]).ToList();
+            //var rules = tvResults.SelectedItems.Cast<ListViewItem>().Select(i => i.SubItems[3].Text).Distinct().Select(n => RuleIndex[n]).ToList();
 
-            foreach (var rule in rules)
-            {
-                analyzer.IgnoreRule(rule);
-                listView1.Items[rule.ID].Checked = false;
-            }
+            //foreach (var rule in rules)
+            //{
+            //    analyzer.IgnoreRule(rule);
+            //    listView1.Items[rule.ID].Checked = false;
+            //}
         }
 
         private void bpaResultScriptSelected_Click(object sender, EventArgs e)
         {
-            var script = string.Join("\n", listView2.SelectedItems.Cast<ListViewItem>().Select(
-                i =>
-                {
-                    var obj = i.Tag as TabularNamedObject;
-                    var rule = RuleIndex[i.SubItems[3].Text];
-                    if (string.IsNullOrEmpty(rule.FixExpression)) return string.Format("// No automatic fix for rule '{0}' on object {1}", i.SubItems[2], i.SubItems[0]);
-                    return obj.GetLinqPath() + "." + rule.FixExpression + ";";
-                }
-                ).ToArray());
+            //var script = string.Join("\n", tvResults.SelectedItems.Cast<ListViewItem>().Select(
+            //    i =>
+            //    {
+            //        var obj = i.Tag as TabularNamedObject;
+            //        var rule = RuleIndex[i.SubItems[3].Text];
+            //        if (string.IsNullOrEmpty(rule.FixExpression)) return string.Format("// No automatic fix for rule '{0}' on object {1}", i.SubItems[2], i.SubItems[0]);
+            //        return obj.GetLinqPath() + "." + rule.FixExpression + ";";
+            //    }
+            //    ).ToArray());
 
-            Clipboard.SetText(script);
-            MessageBox.Show("Fix script copied to clipboard!\n\nPaste into Advanced Script Editor for review.", "Fix script generation", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //Clipboard.SetText(script);
+            //MessageBox.Show("Fix script copied to clipboard!\n\nPaste into Advanced Script Editor for review.", "Fix script generation", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
@@ -386,29 +414,29 @@ namespace TabularEditor.UI.Dialogs
 
         private void bpaResultScriptRule_Click(object sender, EventArgs e)
         {
-            if(listView2.SelectedItems.Count == 1)
-            {
-                var item = listView2.SelectedItems[0];
-                var rule = RuleIndex[item.SubItems[3].Text];
+            //if(tvResults.SelectedItems.Count == 1)
+            //{
+            //    var item = tvResults.SelectedItems[0];
+            //    var rule = RuleIndex[item.SubItems[3].Text];
 
-                if (string.IsNullOrEmpty(rule.FixExpression))
-                {
-                    MessageBox.Show("No automatic fix exists on this rule.", "No automatic fix", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
+            //    if (string.IsNullOrEmpty(rule.FixExpression))
+            //    {
+            //        MessageBox.Show("No automatic fix exists on this rule.", "No automatic fix", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //        return;
+            //    }
 
-                var script = string.Join("\n", analyzer.Analyze(rule).Select(
-                    ar =>
-                    {
-                        var obj = ar.Object;
-                        return obj.GetLinqPath() + "." + rule.FixExpression + ";";
-                    }
-                    ).ToArray());
+            //    var script = string.Join("\n", analyzer.Analyze(rule).Select(
+            //        ar =>
+            //        {
+            //            var obj = ar.Object;
+            //            return obj.GetLinqPath() + "." + rule.FixExpression + ";";
+            //        }
+            //        ).ToArray());
 
-                Clipboard.SetText(script);
-                MessageBox.Show("Fix script copied to clipboard!\n\nPaste into Advanced Script Editor for review.", "Fix script generation", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //    Clipboard.SetText(script);
+            //    MessageBox.Show("Fix script copied to clipboard!\n\nPaste into Advanced Script Editor for review.", "Fix script generation", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-            }
+            //}
         }
 
         private int listView1SortColumn = -1;
@@ -472,6 +500,81 @@ namespace TabularEditor.UI.Dialogs
                     returnVal *= -1;
                 return returnVal;
             }
+        }
+
+        private void txtObjectName_ValueNeeded(object sender, Aga.Controls.Tree.NodeControls.NodeControlValueEventArgs e)
+        {
+            if(e.Node.Tag is BestPracticeRule rule)
+            {
+                var objCount = AnalyzerResultsTreeModel.ObjectCountByRule(rule);
+                e.Value = rule.Name + " (" + objCount + " object" + (objCount == 1 ? "" : "s") + ")";
+            }
+            else if(e.Node.Tag is AnalyzerResult result)
+            {
+                e.Value = result.ObjectName;
+            }
+        }
+
+        public void ShowBPA()
+        {
+            tvResults.Model = AnalyzerResultsTreeModel;
+            Show();
+            BringToFront();
+        }
+
+        private void txtObjectName_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
+        {
+            if (e.Node.Tag is BestPracticeRule)
+            {
+                e.Font = new Font(e.Font, FontStyle.Bold);
+                if (e.Control == txtObjectName)
+                    e.FullRowDraw = true;
+                else if (e.Control == txtObjectType)
+                    e.SkipDraw = true;
+            }
+        }
+
+        private void tvResults_RowDraw(object sender, TreeViewRowDrawEventArgs e)
+        {
+            
+        }
+
+        bool treeViewResizing = false;
+
+        private void tvResults_Resize(object sender, EventArgs e)
+        {
+            AutofitColObject();
+        }
+
+        private void colObject_WidthChanged(object sender, EventArgs e)
+        {
+            if (!treeViewResizing)
+            {
+                colType.MinColumnWidth = 0;
+                colType.MaxColumnWidth = 0;
+                colType.Width = tvResults.ClientRectangle.Width - colObject.Width -
+                    (tvResults.VerticalScrollbarVisible ? SystemInformation.VerticalScrollBarWidth : 0);
+                colType.MinColumnWidth = colType.Width;
+                colType.MaxColumnWidth = colType.Width;
+            }
+        }
+
+        private void AutofitColObject()
+        {
+            treeViewResizing = true;
+            colObject.Width = tvResults.ClientRectangle.Width - colType.Width -
+                (tvResults.VerticalScrollbarVisible ? SystemInformation.VerticalScrollBarWidth : 0);
+            treeViewResizing = false;
+        }
+
+        private void tvResults_Expanded(object sender, TreeViewAdvEventArgs e)
+        {
+            AutofitColObject();
+        }
+
+        private void tvResults_Collapsed(object sender, TreeViewAdvEventArgs e)
+        {
+            AutofitColObject();
         }
     }
 }
