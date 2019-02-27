@@ -44,6 +44,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         public event EventHandler<TreeModelEventArgs> NodesInserted;
         public event EventHandler<TreeModelEventArgs> NodesRemoved;
         public event EventHandler<TreePathEventArgs> StructureChanged;
+        public event EventHandler<EventArgs> UpdateComplete;
 
         Dictionary<BestPracticeRule, List<AnalyzerResult>> _results;
 
@@ -77,6 +78,8 @@ namespace TabularEditor.BestPracticeAnalyzer
                 RuleCount = _results.Count;
                 ObjectCount = _results.Sum(r => r.Value.Count);
                 OnStructureChanged();
+
+                UpdateComplete?.Invoke(this, new EventArgs());
             }
         }
 
