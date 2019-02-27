@@ -254,9 +254,25 @@ namespace TabularEditor.BestPracticeAnalyzer
             }
         }
 
+        private void UpdateEnabled(Model model)
+        {
+            var ignoreRules = new AnalyzerIgnoreRules(model);
+            Enabled = !ignoreRules.RuleIDs.Contains(ID);
+        }
 
         public IEnumerable<AnalyzerResult> Analyze(Model model)
         {
+            UpdateEnabled(model);
+            if (!Enabled)
+            {
+                yield return new AnalyzerResult
+                {
+                    Rule = this,
+                    RuleIgnored = true
+                };
+                yield break;
+            }
+
             ObjectCount = 0;
             var queries = GetQueries(model);
             if (!IsValid) {
