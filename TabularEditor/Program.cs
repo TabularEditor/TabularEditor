@@ -380,7 +380,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                     }
                     try
                     {
-                        suppliedRules = BPA.BestPracticeCollection.LoadFromJsonFile(rulefile);
+                        suppliedRules = BPA.BestPracticeCollection.LoadFromJsonFile("", rulefile);
                     }
                     catch
                     {
@@ -393,7 +393,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 cw.WriteLine("=================================");
                 IEnumerable<BPA.AnalyzerResult> bpaResults;
                 if (suppliedRules == null) bpaResults = analyzer.AnalyzeAll();
-                else bpaResults = analyzer.Analyze(suppliedRules.Concat(analyzer.LocalRules));                
+                else bpaResults = analyzer.Analyze(suppliedRules.Concat(analyzer.ModelRules));                
 
                 bool none = true;
                 foreach(var res in bpaResults.Where(r => !r.Ignored))

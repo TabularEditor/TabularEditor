@@ -13,6 +13,7 @@ using TabularEditor.TOMWrapper;
 using json.Newtonsoft.Json.Converters;
 using System.ComponentModel;
 using System.Threading;
+using System.Collections;
 
 namespace TabularEditor.BestPracticeAnalyzer
 {
@@ -120,7 +121,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         public string Category { get; set; }
 
         [JsonIgnore]
-        public bool Enabled { get; set; }
+        public bool Enabled { get; set; } = true;
 
         public string Description { get; set; }
         public int Severity { get; set; } = 1;
@@ -254,7 +255,7 @@ namespace TabularEditor.BestPracticeAnalyzer
             }
         }
 
-        private void UpdateEnabled(Model model)
+        public void UpdateEnabled(Model model)
         {
             var ignoreRules = new AnalyzerIgnoreRules(model);
             Enabled = !ignoreRules.RuleIDs.Contains(ID);
@@ -299,58 +300,6 @@ namespace TabularEditor.BestPracticeAnalyzer
         public string ErrorMessage { get; private set; }
     }
 
-    static public class StandardBestPractices
-    {
-        static public BestPracticeCollection GetStandardBestPractices()
-        {
-            var bpc = new BestPracticeCollection();
-
-            // These should be loaded from GitHub instead
-            /*
-            bpc.Add(new BestPracticeRule
-            {
-                Name = "Do not summarize key columns",
-                ID = "KEYCOLUMNS_SUMMARIZEBY_NONE",
-                Scope = RuleScope.CalculatedColumn | RuleScope.CalculatedTableColumn | RuleScope.DataColumn,
-                Description = "Visible numeric columns whose name end with Key or ID should have their 'Summarize By' property set to 'Do Not Summarize'.",
-                Severity = 1,
-                Expression = "(Name.EndsWith(\"Key\", true, null) or Name.EndsWith(\"ID\", true, null)) and SummarizeBy <> \"None\" and not IsHidden and not Table.IsHidden",
-                FixExpression = "SummarizeBy = TOM.AggregateFunction.None",
-                Compatibility = new HashSet<int> { 1200, 1400 }
-            });
-
-            bpc.Add(new BestPracticeRule
-            {
-                Name = "Hide foreign key columns",
-                ID = "FKCOLUMNS_HIDDEN",
-                Scope = RuleScope.CalculatedColumn | RuleScope.CalculatedTableColumn | RuleScope.DataColumn,
-                Description = "Columns used on the Many side of a relationship should be hidden.",
-                Severity = 1,
-                Expression = "Model.Relationships.Any(FromColumn = outerIt) and not IsHidden and not Table.IsHidden",
-                FixExpression = "IsHidden = true",
-                Compatibility = new HashSet<int> { 1200, 1400 }
-            });
-
-            bpc.Add(new BestPracticeRule {
-                Name = "Test rule",
-                ID = "TEST_RULE",
-                Scope = RuleScope.Measure,
-                Expression = "not RegEx.IsMatch(Table.Name,\"KPIs\") and (not Expression.Contains(\"Test\") or (Expression = \"Hej\" and Expression = \"Dav\") or not Name.StartsWith(\"test\",true,null) or Name <> \"Hej\" or Name <> \"1\" or not (Name <> \"2\") or Name <> \"3\") and Description = \"\"",
-                Compatibility = new HashSet<int> { 1200, 1400 }
-            });
-
-            bpc.Add(new BestPracticeRule {
-                Name = "Test rule 2",
-                ID = "TEST_RULE_2",
-                Scope = RuleScope.Measure,
-                Expression = "!string.IsNullOrEmpty(Table.Name)",
-                Compatibility = new HashSet<int> { 1200, 1400 }
-            });*/
-
-            return bpc;
-        }
-    }
-
     public class RuleScopeConverter: StringEnumConverter
     {
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -386,25 +335,51 @@ namespace TabularEditor.BestPracticeAnalyzer
         }
     }
 
-    public class BestPracticeCollection: List<BestPracticeRule>
+    public class BestPracticeCollection: IEnumerable<BestPracticeRule>
     {
-        static public BestPracticeCollection LoadFromJsonFile(string filePath)
+        public bool Internal { get; set; }
+        public bool AllowEdit { get; set; }
+        public string Name { get; set; }
+        public List<BestPracticeRule> Rules { get; private set; } = new List<BestPracticeRule>();
+
+        public BestPracticeCollection(string name)
         {
-            if (!File.Exists(filePath)) return new BestPracticeCollection();
-            return LoadFromJson(File.ReadAllText(filePath));
+            Name = name;
+        }
+
+        public BestPracticeCollection(string name, string json)
+        {
+            Name = name;
+            if (!string.IsNullOrEmpty(json))
+            {
+                try
+                {
+                    Rules = LoadFromJson(json);
+                }
+                catch
+                {
+
+                }
+            }
+        }
+
+        static public BestPracticeCollection LoadFromJsonFile(string name, string filePath)
+        {
+            if (!File.Exists(filePath)) return new BestPracticeCollection(name);
+            return new BestPracticeCollection(name, File.ReadAllText(filePath));
         }
 
         public void AddFromJsonFile(string filePath)
         {
-            var bpc = LoadFromJsonFile(filePath);
-            AddRange(
-                bpc.Where(r => !this.Any(rule => rule.ID.Equals(r.ID, StringComparison.InvariantCultureIgnoreCase)))
+            var bpc = LoadFromJsonFile("", filePath);
+            Rules.AddRange(
+                bpc.Where(r => !Rules.Any(rule => rule.ID.Equals(r.ID, StringComparison.InvariantCultureIgnoreCase)))
                 );
         }
 
-        static public BestPracticeCollection LoadFromJson(string json)
+        static public List<BestPracticeRule> LoadFromJson(string json)
         {
-            return JsonConvert.DeserializeObject<BestPracticeCollection>(json);
+            return JsonConvert.DeserializeObject<List<BestPracticeRule>>(json);
         }
 
         public string SerializeToJson()
@@ -421,13 +396,28 @@ namespace TabularEditor.BestPracticeAnalyzer
         {
             get
             {
-                return this.FirstOrDefault(r => r.ID.Equals(ruleId, StringComparison.InvariantCultureIgnoreCase));
+                return Rules.FirstOrDefault(r => r.ID.Equals(ruleId, StringComparison.InvariantCultureIgnoreCase));
             }
+        }
+
+        public void Add(BestPracticeRule rule)
+        {
+            Rules.Add(rule);
         }
 
         public bool Contains(string Id)
         {
-            return this.Any(r => r.ID.Equals(Id, StringComparison.InvariantCultureIgnoreCase));
+            return Rules.Any(r => r.ID.Equals(Id, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        public IEnumerator<BestPracticeRule> GetEnumerator()
+        {
+            return ((IEnumerable<BestPracticeRule>)Rules).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<BestPracticeRule>)Rules).GetEnumerator();
         }
     }
 }

@@ -191,33 +191,19 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-        public BestPracticeCollection GlobalRules { get; private set; }
-        public BestPracticeCollection LocalRules { get; private set; }
-        public IEnumerable<BestPracticeRule> AllRules { get { return GlobalRules.Concat(LocalRules); } }
+        public BestPracticeCollection LocalMachineRules { get; private set; }
+        public BestPracticeCollection LocalUserRules { get; private set; }
+        public BestPracticeCollection ModelRules { get; private set; }
 
+        public IEnumerable<BestPracticeRule> AllRules {
+            get {
+                var rulePrecedence = new Dictionary<string, BestPracticeRule>(StringComparer.InvariantCultureIgnoreCase);
+                foreach (var rule in LocalMachineRules) rulePrecedence[rule.ID] = rule;
+                foreach (var rule in LocalUserRules) rulePrecedence[rule.ID] = rule;
+                foreach (var rule in ModelRules) rulePrecedence[rule.ID] = rule;
 
-        public string GetUniqueId(string id)
-        {
-            int suffix = 1;
-            var testId = id;
-            while(
-                GlobalRules.Contains(testId) || 
-                LocalRules.Contains(testId)
-            )
-            {
-                suffix++;
-                testId = id + "_" + suffix;
+                return rulePrecedence.Values;
             }
-            return testId;
-        }
-
-        public void AddRule(BestPracticeRule rule, bool global = false)
-        {
-            rule.ID = GetUniqueId(rule.ID);
-            if (global) GlobalRules.Add(rule);
-            else LocalRules.Add(rule);
-
-            DoCollectionChanged(NotifyCollectionChangedAction.Add, rule);
         }
 
         public Model Model { get
@@ -230,26 +216,12 @@ namespace TabularEditor.BestPracticeAnalyzer
                 if (_model != null)
                 {
                     var localRulesJson = _model.GetAnnotation(BPAAnnotation) ?? _model.GetAnnotation("BestPractizeAnalyzer"); // Stupid typo in earlier version
-                    if (!string.IsNullOrEmpty(localRulesJson))
-                    {
-                        LocalRules = BestPracticeCollection.LoadFromJson(localRulesJson);
-                    }
-                    else LocalRules = new BestPracticeCollection();
-
-                    var ignoreRules = new AnalyzerIgnoreRules(_model);
-                    foreach (var rule in LocalRules)
-                    {
-                        rule.Enabled = !ignoreRules.RuleIDs.Contains(rule.ID);
-
-                        // If the global rules contain a rule with the same ID as the local rules being loaded, ignore it in the global list:
-                        var existingGlobalRule = GlobalRules[rule.ID];
-                        if (existingGlobalRule != null) GlobalRules.Remove(existingGlobalRule);
-                    }
-                    foreach (var rule in GlobalRules) rule.Enabled = !ignoreRules.RuleIDs.Contains(rule.ID);
+                    ModelRules = new BestPracticeCollection("(Model rules)", localRulesJson) { Internal = true, AllowEdit = true };
+                    foreach (var rule in ModelRules) rule.UpdateEnabled(_model);
                 }
                 else
                 {
-                    LocalRules = new BestPracticeCollection();
+                    ModelRules = new BestPracticeCollection("(Model rules)");
                 }
                 DoCollectionChanged(NotifyCollectionChangedAction.Reset);
             }
@@ -287,7 +259,7 @@ namespace TabularEditor.BestPracticeAnalyzer
             if (_model == null) return;
             _model.RemoveAnnotation("BestPractizeAnalyzer"); // Stupid typo in earlier version
             var previousAnnotation = _model.GetAnnotation(BPAAnnotation);
-            var newAnnotation = LocalRules.SerializeToJson();
+            var newAnnotation = ModelRules.SerializeToJson();
             _model.SetAnnotation(BPAAnnotation, newAnnotation);
             if (previousAnnotation != newAnnotation) UI.UIController.Current.Handler.UndoManager.FlagChange();
         }
@@ -296,18 +268,22 @@ namespace TabularEditor.BestPracticeAnalyzer
         {
             Model = null;
 
-            GlobalRules = new BestPracticeCollection();
+            LocalMachineRules = new BestPracticeCollection("(Local machine rules)") { Internal = true, AllowEdit = false };
+            LocalUserRules = new BestPracticeCollection("(Local user rules)") { Internal = true, AllowEdit = true };
 
             try
             {
                 var p1 = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\BPARules.json";
-                var p2 = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\TabularEditor\BPARules.json";
-                if (File.Exists(p1)) GlobalRules.AddFromJsonFile(p1);
-                if (File.Exists(p2)) GlobalRules.AddFromJsonFile(p2);
+                if (File.Exists(p1)) LocalUserRules.AddFromJsonFile(p1);
             }
             catch { }
 
-            //StandardBestPractices.GetStandardBestPractices().SaveToFile(@"c:\Projects\test.json");
+            try
+            {
+                var p2 = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\TabularEditor\BPARules.json";
+                if (File.Exists(p2)) LocalMachineRules.AddFromJsonFile(p2);
+            }
+            catch { }
         }
 
         public IEnumerable<AnalyzerResult> AnalyzeAll()
