@@ -50,6 +50,7 @@
             this.btnAddRuleDefinition = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.btnClose = new System.Windows.Forms.Button();
+            this.btnOK = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.SuspendLayout();
@@ -63,7 +64,7 @@
             this.tabControl1.Location = new System.Drawing.Point(13, 13);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(526, 382);
+            this.tabControl1.Size = new System.Drawing.Size(549, 382);
             this.tabControl1.TabIndex = 0;
             // 
             // tabPage1
@@ -82,7 +83,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(518, 356);
+            this.tabPage1.Size = new System.Drawing.Size(541, 356);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Current model";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -113,11 +114,13 @@
             this.tvRules.SelectedNode = null;
             this.tvRules.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.Multi;
             this.tvRules.ShowLines = false;
+            this.tvRules.ShowNodeToolTips = true;
             this.tvRules.ShowPlusMinus = false;
-            this.tvRules.Size = new System.Drawing.Size(418, 205);
+            this.tvRules.Size = new System.Drawing.Size(441, 205);
             this.tvRules.TabIndex = 12;
             this.tvRules.Text = "tvRuleDefinitions";
             this.tvRules.UseColumns = true;
+            this.tvRules.SelectionChanged += new System.EventHandler(this.tvRules_SelectionChanged);
             // 
             // colName
             // 
@@ -146,6 +149,8 @@
             this.chkRuleEnabled.EditEnabled = true;
             this.chkRuleEnabled.LeftMargin = 0;
             this.chkRuleEnabled.ParentColumn = this.colName;
+            this.chkRuleEnabled.CheckStateChanged += new System.EventHandler<Aga.Controls.Tree.TreePathEventArgs>(this.chkRuleEnabled_CheckStateChanged);
+            this.chkRuleEnabled.IsEditEnabledValueNeeded += new System.EventHandler<Aga.Controls.Tree.NodeControls.NodeControlValueEventArgs>(this.chkRuleEnabled_IsEditEnabledValueNeeded);
             // 
             // txtName
             // 
@@ -154,10 +159,11 @@
             this.txtName.ParentColumn = this.colName;
             this.txtName.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             this.txtName.UseCompatibleTextRendering = true;
+            this.txtName.DrawText += new System.EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(this.txtName_DrawText);
             // 
             // txtScope
             // 
-            this.txtScope.DataPropertyName = "Scope";
+            this.txtScope.DataPropertyName = "ScopeString";
             this.txtScope.LeftMargin = 3;
             this.txtScope.ParentColumn = this.colScope;
             this.txtScope.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
@@ -190,7 +196,7 @@
             this.tvRuleDefinitions.SelectedNode = null;
             this.tvRuleDefinitions.ShowLines = false;
             this.tvRuleDefinitions.ShowPlusMinus = false;
-            this.tvRuleDefinitions.Size = new System.Drawing.Size(418, 102);
+            this.tvRuleDefinitions.Size = new System.Drawing.Size(441, 102);
             this.tvRuleDefinitions.TabIndex = 11;
             this.tvRuleDefinitions.Text = "tvRuleDefinitions";
             this.tvRuleDefinitions.SelectionChanged += new System.EventHandler(this.tvRuleDefinitions_SelectionChanged);
@@ -205,17 +211,20 @@
             // btnDeleteRule
             // 
             this.btnDeleteRule.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDeleteRule.Location = new System.Drawing.Point(434, 202);
+            this.btnDeleteRule.Enabled = false;
+            this.btnDeleteRule.Location = new System.Drawing.Point(457, 202);
             this.btnDeleteRule.Name = "btnDeleteRule";
             this.btnDeleteRule.Size = new System.Drawing.Size(75, 23);
             this.btnDeleteRule.TabIndex = 10;
             this.btnDeleteRule.Text = "Delete";
             this.btnDeleteRule.UseVisualStyleBackColor = true;
+            this.btnDeleteRule.Click += new System.EventHandler(this.btnDeleteRule_Click);
             // 
             // btnCopyTo
             // 
             this.btnCopyTo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCopyTo.Location = new System.Drawing.Point(434, 299);
+            this.btnCopyTo.Enabled = false;
+            this.btnCopyTo.Location = new System.Drawing.Point(457, 299);
             this.btnCopyTo.Name = "btnCopyTo";
             this.btnCopyTo.Size = new System.Drawing.Size(75, 23);
             this.btnCopyTo.TabIndex = 9;
@@ -225,7 +234,8 @@
             // btnMoveTo
             // 
             this.btnMoveTo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnMoveTo.Location = new System.Drawing.Point(434, 328);
+            this.btnMoveTo.Enabled = false;
+            this.btnMoveTo.Location = new System.Drawing.Point(457, 328);
             this.btnMoveTo.Name = "btnMoveTo";
             this.btnMoveTo.Size = new System.Drawing.Size(75, 23);
             this.btnMoveTo.TabIndex = 8;
@@ -235,22 +245,26 @@
             // btnEditRule
             // 
             this.btnEditRule.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnEditRule.Location = new System.Drawing.Point(434, 173);
+            this.btnEditRule.Enabled = false;
+            this.btnEditRule.Location = new System.Drawing.Point(457, 173);
             this.btnEditRule.Name = "btnEditRule";
             this.btnEditRule.Size = new System.Drawing.Size(75, 23);
             this.btnEditRule.TabIndex = 7;
             this.btnEditRule.Text = "Edit...";
             this.btnEditRule.UseVisualStyleBackColor = true;
+            this.btnEditRule.Click += new System.EventHandler(this.btnEditRule_Click);
             // 
             // btnNewRule
             // 
             this.btnNewRule.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnNewRule.Location = new System.Drawing.Point(434, 144);
+            this.btnNewRule.Enabled = false;
+            this.btnNewRule.Location = new System.Drawing.Point(457, 144);
             this.btnNewRule.Name = "btnNewRule";
             this.btnNewRule.Size = new System.Drawing.Size(75, 23);
             this.btnNewRule.TabIndex = 6;
             this.btnNewRule.Text = "New...";
             this.btnNewRule.UseVisualStyleBackColor = true;
+            this.btnNewRule.Click += new System.EventHandler(this.btnNewRule_Click);
             // 
             // label2
             // 
@@ -264,7 +278,8 @@
             // btnRemoveRuleDefinition
             // 
             this.btnRemoveRuleDefinition.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRemoveRuleDefinition.Location = new System.Drawing.Point(434, 51);
+            this.btnRemoveRuleDefinition.Enabled = false;
+            this.btnRemoveRuleDefinition.Location = new System.Drawing.Point(457, 51);
             this.btnRemoveRuleDefinition.Name = "btnRemoveRuleDefinition";
             this.btnRemoveRuleDefinition.Size = new System.Drawing.Size(75, 23);
             this.btnRemoveRuleDefinition.TabIndex = 3;
@@ -275,7 +290,7 @@
             // btnAddRuleDefinition
             // 
             this.btnAddRuleDefinition.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAddRuleDefinition.Location = new System.Drawing.Point(434, 22);
+            this.btnAddRuleDefinition.Location = new System.Drawing.Point(457, 22);
             this.btnAddRuleDefinition.Name = "btnAddRuleDefinition";
             this.btnAddRuleDefinition.Size = new System.Drawing.Size(75, 23);
             this.btnAddRuleDefinition.TabIndex = 2;
@@ -295,19 +310,32 @@
             // 
             this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnClose.Location = new System.Drawing.Point(464, 401);
+            this.btnClose.Location = new System.Drawing.Point(406, 401);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(75, 23);
             this.btnClose.TabIndex = 1;
-            this.btnClose.Text = "Close";
+            this.btnClose.Text = "Cancel";
             this.btnClose.UseVisualStyleBackColor = true;
+            // 
+            // btnOK
+            // 
+            this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.btnOK.Location = new System.Drawing.Point(487, 401);
+            this.btnOK.Name = "btnOK";
+            this.btnOK.Size = new System.Drawing.Size(75, 23);
+            this.btnOK.TabIndex = 2;
+            this.btnOK.Text = "OK";
+            this.btnOK.UseVisualStyleBackColor = true;
             // 
             // BPAManager
             // 
+            this.AcceptButton = this.btnOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnClose;
-            this.ClientSize = new System.Drawing.Size(551, 436);
+            this.ClientSize = new System.Drawing.Size(574, 436);
+            this.Controls.Add(this.btnOK);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.tabControl1);
             this.MaximizeBox = false;
@@ -348,5 +376,6 @@
         private Aga.Controls.Tree.NodeControls.NodeTextBox txtSeverity;
         private Aga.Controls.Tree.TreeViewAdv tvRuleDefinitions;
         private Aga.Controls.Tree.NodeControls.NodeTextBox txtRuleDefinitionName;
+        private System.Windows.Forms.Button btnOK;
     }
 }

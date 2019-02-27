@@ -101,7 +101,7 @@ namespace TabularEditor.UI.Dialogs
 
         public void AnalyzeAll()
         {
-            Analyze(analyzer.GlobalRules.Concat(analyzer.LocalRules));
+            Analyze(analyzer.AllRules);
         }
 
         /// <summary>

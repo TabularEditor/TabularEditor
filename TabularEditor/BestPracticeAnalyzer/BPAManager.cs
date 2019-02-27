@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
+using TabularEditor.UI;
 
 namespace TabularEditor.BestPracticeAnalyzer
 {
@@ -28,10 +29,16 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         private void Init()
         {
+            EffectiveRules = new HashSet<BestPracticeRule>(Analyzer.AllRules);
+
             ruleDefinitionsModel = new RuleDefinitionsTreeModel(Model, Analyzer);
             tvRuleDefinitions.Model = ruleDefinitionsModel;
             tvRules.Model = rulesModel;
+
+            UpdateUI();
         }
+
+        HashSet<BestPracticeRule> EffectiveRules;
 
         public static void Show(Model model, Analyzer analyzer)
         {
@@ -40,7 +47,34 @@ namespace TabularEditor.BestPracticeAnalyzer
             form.Analyzer = analyzer;
             form.Init();
 
-            form.ShowDialog();
+            foreach (var rule in analyzer.ModelRules) rule.UpdateEnabled(model);
+            foreach (var rule in analyzer.LocalUserRules) rule.UpdateEnabled(model);
+            foreach (var rule in analyzer.LocalMachineRules) rule.UpdateEnabled(model);
+
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                UIController.Current.Handler.BeginUpdate("BPA rule management");
+
+                // Persist ignore changes to model:
+                var ignoreHandler = new AnalyzerIgnoreRules(model);
+                var newIgnored = new HashSet<string>(analyzer.AllRules.Where(r => !r.Enabled).Select(r => r.ID));
+
+                foreach (var rule in newIgnored.Except(ignoreHandler.RuleIDs).ToList())
+                    ignoreHandler.RuleIDs.Add(rule);
+                foreach (var rule in ignoreHandler.RuleIDs.Except(newIgnored).ToList())
+                    ignoreHandler.RuleIDs.Remove(rule);
+                ignoreHandler.Save(model);
+
+                // Persist rule removal/additions to model / files:
+                foreach (var kvp in form.rulesModel.ToBeDeleted) kvp.Value.Rules.Remove(kvp.Key);
+                foreach (var kvp in form.rulesModel.ToBeAdded) kvp.Value.Add(kvp.Key);
+                UIController.Current.Handler.EndUpdate();
+            }
+            else
+            {
+                foreach (var rule in analyzer.AllRules) rule.UpdateEnabled(model);
+            }
+
         }
 
         private void btnRemoveRuleDefinition_Click(object sender, EventArgs e)
@@ -54,14 +88,70 @@ namespace TabularEditor.BestPracticeAnalyzer
             if (tvRuleDefinitions.SelectedNode == null)
                 rulesModel.SetRuleDefinition(null);
             else
-                rulesModel.SetRuleDefinition(tvRuleDefinitions.SelectedNode.Tag as RuleDefinition);
-        }
-    }
+                rulesModel.SetRuleDefinition(tvRuleDefinitions.SelectedNode.Tag as BestPracticeCollection);
 
-    public class RuleDefinition
-    {
-        public string Name { get; set; }
-        public IEnumerable<BestPracticeRule> Rules { get; set; } = new List<BestPracticeRule>();
+            UpdateUI();
+        }
+
+        private void txtName_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
+        {
+            if (e.Node.Tag is BestPracticeRule rule)
+            {
+                if(!EffectiveRules.Contains(rule))
+                    e.Font = new Font(e.Font, FontStyle.Strikeout);
+            }
+        }
+
+        private void chkRuleEnabled_IsEditEnabledValueNeeded(object sender, Aga.Controls.Tree.NodeControls.NodeControlValueEventArgs e)
+        {
+            if (e.Node.Tag is BestPracticeRule rule)
+                e.Value = EffectiveRules.Contains(rule);
+        }
+
+        private void tvRules_SelectionChanged(object sender, EventArgs e)
+        {
+            UpdateUI();
+        }
+
+        BestPracticeCollection CurrentCollection => tvRuleDefinitions.SelectedNode?.Tag as BestPracticeCollection;
+        IEnumerable<BestPracticeRule> CurrentRules => tvRules.SelectedNodes.Select(n => n.Tag).Cast<BestPracticeRule>();
+
+        private void UpdateUI()
+        {
+            btnRemoveRuleDefinition.Enabled = !(CurrentCollection?.Internal ?? true);
+
+            btnNewRule.Enabled = CurrentCollection?.AllowEdit ?? false;
+            btnEditRule.Enabled = (CurrentCollection?.AllowEdit ?? false) && tvRules.SelectedNodes.Count == 1;
+            btnDeleteRule.Enabled = (CurrentCollection?.AllowEdit ?? false) && tvRules.SelectedNodes.Count > 0;
+            btnCopyTo.Enabled = tvRules.SelectedNodes.Count > 0;
+            btnMoveTo.Enabled = tvRules.SelectedNodes.Count > 0;
+        }
+
+        private void btnNewRule_Click(object sender, EventArgs e)
+        {
+            //rulesModel.ToBeAdded[rule] = CurrentCollection;
+            //rulesModel.DoStructureChanged();
+        }
+
+        private void btnEditRule_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnDeleteRule_Click(object sender, EventArgs e)
+        {
+            foreach (var rule in CurrentRules) rulesModel.ToBeDeleted[rule] = CurrentCollection;
+            rulesModel.DoStructureChanged();
+        }
+
+        private void chkRuleEnabled_CheckStateChanged(object sender, TreePathEventArgs e)
+        {
+            var ignoredRule = e.Path.LastNode as BestPracticeRule;
+
+            foreach (var rule in Analyzer.ModelRules) if (rule.ID.EqualsI(ignoredRule.ID)) rule.Enabled = ignoredRule.Enabled;
+            foreach (var rule in Analyzer.LocalUserRules) if (rule.ID.EqualsI(ignoredRule.ID)) rule.Enabled = ignoredRule.Enabled;
+            foreach (var rule in Analyzer.LocalMachineRules) if (rule.ID.EqualsI(ignoredRule.ID)) rule.Enabled = ignoredRule.Enabled;
+        }
     }
 
     class RuleDefinitionsTreeModel : ITreeModel
@@ -71,13 +161,13 @@ namespace TabularEditor.BestPracticeAnalyzer
         public event EventHandler<TreeModelEventArgs> NodesRemoved;
         public event EventHandler<TreePathEventArgs> StructureChanged;
 
-        List<RuleDefinition> ruleDefinitions = new List<RuleDefinition>();
+        List<BestPracticeCollection> ruleDefinitions = new List<BestPracticeCollection>();
 
         public RuleDefinitionsTreeModel(Model model, Analyzer analyzer)
         {
-            ruleDefinitions.Add(new RuleDefinition { Name = "(Model rules)", Rules = analyzer.LocalRules });
-            ruleDefinitions.Add(new RuleDefinition { Name = "(Local user rules)", Rules = analyzer.GlobalRules });
-            ruleDefinitions.Add(new RuleDefinition { Name = "(Local machine rules)" });
+            ruleDefinitions.Add(analyzer.ModelRules);
+            ruleDefinitions.Add(analyzer.LocalUserRules);
+            ruleDefinitions.Add(analyzer.LocalMachineRules);
         }
 
         public IEnumerable GetChildren(TreePath treePath)
@@ -86,7 +176,7 @@ namespace TabularEditor.BestPracticeAnalyzer
             {
                 return ruleDefinitions;
             }
-            return Enumerable.Empty<RuleDefinition>();
+            return Enumerable.Empty<BestPracticeCollection>();
         }
 
         public bool IsLeaf(TreePath treePath)
@@ -104,9 +194,19 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         IEnumerable<BestPracticeRule> rules = Enumerable.Empty<BestPracticeRule>();
 
-        public void SetRuleDefinition(RuleDefinition ruleDefinition)
+        public Dictionary<BestPracticeRule, BestPracticeCollection> ToBeDeleted = new Dictionary<BestPracticeRule, BestPracticeCollection>();
+        public Dictionary<BestPracticeRule, BestPracticeCollection> ToBeAdded = new Dictionary<BestPracticeRule, BestPracticeCollection>();
+        BestPracticeCollection currentCollection;
+
+        public void SetRuleDefinition(BestPracticeCollection collection)
         {
-            rules = ruleDefinition?.Rules ?? Enumerable.Empty<BestPracticeRule>();
+            currentCollection = collection;
+            rules = collection?.Rules ?? Enumerable.Empty<BestPracticeRule>();
+            DoStructureChanged();
+        }
+
+        public void DoStructureChanged()
+        {
             StructureChanged?.Invoke(this, new TreePathEventArgs());
         }
 
@@ -114,7 +214,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         {
             if (treePath.IsEmpty())
             {
-                return rules;
+                return rules.Except(ToBeDeleted.Keys).Concat(ToBeAdded.Where(kvp => kvp.Value == currentCollection).Select(kvp => kvp.Key));
             }
             else
                 return Enumerable.Empty<BestPracticeRule>();
