@@ -31,18 +31,13 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BPAForm));
             this.splitter1 = new System.Windows.Forms.Splitter();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.menContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.bpaResultGoTo = new System.Windows.Forms.ToolStripMenuItem();
-            this.bpaResultGoToSep = new System.Windows.Forms.ToolStripSeparator();
             this.bpaResultIgnore = new System.Windows.Forms.ToolStripMenuItem();
-            this.bpaResultIgnoreSelected = new System.Windows.Forms.ToolStripMenuItem();
-            this.bpaResultIgnoreRule = new System.Windows.Forms.ToolStripMenuItem();
+            this.bpaResultUnignore = new System.Windows.Forms.ToolStripMenuItem();
+            this.bpaResultGoToSep = new System.Windows.Forms.ToolStripSeparator();
             this.bpaResultScript = new System.Windows.Forms.ToolStripMenuItem();
-            this.bpaResultScriptSelected = new System.Windows.Forms.ToolStripMenuItem();
-            this.bpaResultScriptRule = new System.Windows.Forms.ToolStripMenuItem();
             this.bpaResultFix = new System.Windows.Forms.ToolStripMenuItem();
-            this.bpaResultFixSelected = new System.Windows.Forms.ToolStripMenuItem();
-            this.bpaResultFixRule = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
@@ -56,12 +51,15 @@
             this.btnRefresh = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.btnShowIgnored = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnCollapseAll = new System.Windows.Forms.ToolStripButton();
+            this.btnExpandAll = new System.Windows.Forms.ToolStripButton();
             this.tvResults = new Aga.Controls.Tree.TreeViewAdv();
             this.colObject = new Aga.Controls.Tree.TreeColumn();
             this.colType = new Aga.Controls.Tree.TreeColumn();
             this.txtObjectName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.txtObjectType = new Aga.Controls.Tree.NodeControls.NodeTextBox();
-            this.contextMenuStrip1.SuspendLayout();
+            this.menContext.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -76,99 +74,63 @@
             this.splitter1.TabIndex = 4;
             this.splitter1.TabStop = false;
             // 
-            // contextMenuStrip1
+            // menContext
             // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.bpaResultGoTo,
-            this.bpaResultGoToSep,
             this.bpaResultIgnore,
+            this.bpaResultUnignore,
+            this.bpaResultGoToSep,
             this.bpaResultScript,
             this.bpaResultFix});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(169, 98);
-            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
+            this.menContext.Name = "contextMenuStrip1";
+            this.menContext.Size = new System.Drawing.Size(169, 120);
+            this.menContext.Opening += new System.ComponentModel.CancelEventHandler(this.menContext_Opening);
             // 
             // bpaResultGoTo
             // 
             this.bpaResultGoTo.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.bpaResultGoTo.Image = global::TabularEditor.Resources.GoToDefinition_16x;
             this.bpaResultGoTo.Name = "bpaResultGoTo";
             this.bpaResultGoTo.Size = new System.Drawing.Size(168, 22);
             this.bpaResultGoTo.Text = "Go to object...";
-            this.bpaResultGoTo.Click += new System.EventHandler(this.bpaResultGoTo_Click);
+            this.bpaResultGoTo.Click += new System.EventHandler(this.btnGoto_Click);
+            // 
+            // bpaResultIgnore
+            // 
+            this.bpaResultIgnore.Image = global::TabularEditor.Resources.CloakHide_16x;
+            this.bpaResultIgnore.Name = "bpaResultIgnore";
+            this.bpaResultIgnore.Size = new System.Drawing.Size(168, 22);
+            this.bpaResultIgnore.Text = "Ignore rule";
+            this.bpaResultIgnore.Click += new System.EventHandler(this.bpaResultIgnore_Click);
+            // 
+            // bpaResultUnignore
+            // 
+            this.bpaResultUnignore.Name = "bpaResultUnignore";
+            this.bpaResultUnignore.Size = new System.Drawing.Size(168, 22);
+            this.bpaResultUnignore.Text = "Unignore rule";
+            this.bpaResultUnignore.Click += new System.EventHandler(this.bpaResultUnignore_Click);
             // 
             // bpaResultGoToSep
             // 
             this.bpaResultGoToSep.Name = "bpaResultGoToSep";
             this.bpaResultGoToSep.Size = new System.Drawing.Size(165, 6);
             // 
-            // bpaResultIgnore
-            // 
-            this.bpaResultIgnore.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.bpaResultIgnoreSelected,
-            this.bpaResultIgnoreRule});
-            this.bpaResultIgnore.Name = "bpaResultIgnore";
-            this.bpaResultIgnore.Size = new System.Drawing.Size(168, 22);
-            this.bpaResultIgnore.Text = "Ignore rule";
-            // 
-            // bpaResultIgnoreSelected
-            // 
-            this.bpaResultIgnoreSelected.Name = "bpaResultIgnoreSelected";
-            this.bpaResultIgnoreSelected.Size = new System.Drawing.Size(154, 22);
-            this.bpaResultIgnoreSelected.Text = "Selected object";
-            this.bpaResultIgnoreSelected.Click += new System.EventHandler(this.bpaResultIgnoreSelected_Click);
-            // 
-            // bpaResultIgnoreRule
-            // 
-            this.bpaResultIgnoreRule.Name = "bpaResultIgnoreRule";
-            this.bpaResultIgnoreRule.Size = new System.Drawing.Size(154, 22);
-            this.bpaResultIgnoreRule.Text = "Entire rule";
-            this.bpaResultIgnoreRule.Click += new System.EventHandler(this.bpaResultIgnoreRule_Click);
-            // 
             // bpaResultScript
             // 
-            this.bpaResultScript.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.bpaResultScriptSelected,
-            this.bpaResultScriptRule});
+            this.bpaResultScript.Image = global::TabularEditor.Resources.Script_16x;
             this.bpaResultScript.Name = "bpaResultScript";
             this.bpaResultScript.Size = new System.Drawing.Size(168, 22);
             this.bpaResultScript.Text = "Generate fix script";
-            // 
-            // bpaResultScriptSelected
-            // 
-            this.bpaResultScriptSelected.Name = "bpaResultScriptSelected";
-            this.bpaResultScriptSelected.Size = new System.Drawing.Size(154, 22);
-            this.bpaResultScriptSelected.Text = "Selected object";
-            this.bpaResultScriptSelected.Click += new System.EventHandler(this.bpaResultScriptSelected_Click);
-            // 
-            // bpaResultScriptRule
-            // 
-            this.bpaResultScriptRule.Name = "bpaResultScriptRule";
-            this.bpaResultScriptRule.Size = new System.Drawing.Size(154, 22);
-            this.bpaResultScriptRule.Text = "Entire rule";
-            this.bpaResultScriptRule.Click += new System.EventHandler(this.bpaResultScriptRule_Click);
+            this.bpaResultScript.Click += new System.EventHandler(this.btnScript_Click);
             // 
             // bpaResultFix
             // 
-            this.bpaResultFix.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.bpaResultFixSelected,
-            this.bpaResultFixRule});
+            this.bpaResultFix.Image = global::TabularEditor.Resources.Repair_16x;
             this.bpaResultFix.Name = "bpaResultFix";
             this.bpaResultFix.Size = new System.Drawing.Size(168, 22);
             this.bpaResultFix.Text = "Apply fix";
-            // 
-            // bpaResultFixSelected
-            // 
-            this.bpaResultFixSelected.Enabled = false;
-            this.bpaResultFixSelected.Name = "bpaResultFixSelected";
-            this.bpaResultFixSelected.Size = new System.Drawing.Size(154, 22);
-            this.bpaResultFixSelected.Text = "Selected object";
-            // 
-            // bpaResultFixRule
-            // 
-            this.bpaResultFixRule.Enabled = false;
-            this.bpaResultFixRule.Name = "bpaResultFixRule";
-            this.bpaResultFixRule.Size = new System.Drawing.Size(154, 22);
-            this.bpaResultFixRule.Text = "Entire rule";
+            this.bpaResultFix.Click += new System.EventHandler(this.btnFix_Click);
             // 
             // statusStrip1
             // 
@@ -197,7 +159,10 @@
             this.btnFix,
             this.btnRefresh,
             this.toolStripSeparator3,
-            this.btnShowIgnored});
+            this.btnShowIgnored,
+            this.toolStripSeparator4,
+            this.btnCollapseAll,
+            this.btnExpandAll});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(379, 25);
@@ -212,6 +177,7 @@
             this.btnManageRules.Name = "btnManageRules";
             this.btnManageRules.Size = new System.Drawing.Size(23, 22);
             this.btnManageRules.Text = "Manage rules...";
+            this.btnManageRules.Click += new System.EventHandler(this.btnManageRules_Click);
             // 
             // toolStripSeparator1
             // 
@@ -297,13 +263,41 @@
             this.btnShowIgnored.Text = "Show ignored";
             this.btnShowIgnored.Click += new System.EventHandler(this.btnShowIgnored_Click);
             // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
+            // 
+            // btnCollapseAll
+            // 
+            this.btnCollapseAll.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.btnCollapseAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnCollapseAll.Image = global::TabularEditor.Resources.CollapseAll;
+            this.btnCollapseAll.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnCollapseAll.Name = "btnCollapseAll";
+            this.btnCollapseAll.Size = new System.Drawing.Size(23, 22);
+            this.btnCollapseAll.Text = "Collapse All";
+            this.btnCollapseAll.Click += new System.EventHandler(this.btnCollapseAll_Click);
+            // 
+            // btnExpandAll
+            // 
+            this.btnExpandAll.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.btnExpandAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnExpandAll.Image = global::TabularEditor.Resources.ExpandAll;
+            this.btnExpandAll.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnExpandAll.Name = "btnExpandAll";
+            this.btnExpandAll.Size = new System.Drawing.Size(23, 22);
+            this.btnExpandAll.Text = "Expand All";
+            this.btnExpandAll.Click += new System.EventHandler(this.btnExpandAll_Click);
+            // 
             // tvResults
             // 
             this.tvResults.BackColor = System.Drawing.SystemColors.Window;
             this.tvResults.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tvResults.Columns.Add(this.colObject);
             this.tvResults.Columns.Add(this.colType);
-            this.tvResults.ContextMenuStrip = this.contextMenuStrip1;
+            this.tvResults.ContextMenuStrip = this.menContext;
             this.tvResults.DefaultToolTipProvider = null;
             this.tvResults.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tvResults.DragDropMarkColor = System.Drawing.Color.Black;
@@ -311,7 +305,7 @@
             this.tvResults.FullRowSelect = true;
             this.tvResults.GridLineStyle = Aga.Controls.Tree.GridLineStyle.Horizontal;
             this.tvResults.HideSelection = true;
-            this.tvResults.Indent = 8;
+            this.tvResults.Indent = 0;
             this.tvResults.LineColor = System.Drawing.SystemColors.ControlDark;
             this.tvResults.Location = new System.Drawing.Point(0, 28);
             this.tvResults.Model = null;
@@ -322,7 +316,6 @@
             this.tvResults.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.MultiSameParent;
             this.tvResults.ShowLines = false;
             this.tvResults.ShowNodeToolTips = true;
-            this.tvResults.ShowPlusMinus = false;
             this.tvResults.Size = new System.Drawing.Size(379, 557);
             this.tvResults.TabIndex = 10;
             this.tvResults.UseColumns = true;
@@ -351,7 +344,7 @@
             // 
             this.txtObjectName.DataPropertyName = "ObjectName";
             this.txtObjectName.DisplayHiddenContentInToolTip = false;
-            this.txtObjectName.LeftMargin = 3;
+            this.txtObjectName.LeftMargin = 0;
             this.txtObjectName.ParentColumn = this.colObject;
             this.txtObjectName.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             this.txtObjectName.UseCompatibleTextRendering = true;
@@ -382,7 +375,7 @@
             this.Name = "BPAForm";
             this.Text = "Best Practice Analyzer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.BPAForm_FormClosing);
-            this.contextMenuStrip1.ResumeLayout(false);
+            this.menContext.ResumeLayout(false);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
@@ -396,18 +389,12 @@
         private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ContextMenuStrip menContext;
         private System.Windows.Forms.ToolStripMenuItem bpaResultGoTo;
         private System.Windows.Forms.ToolStripSeparator bpaResultGoToSep;
         private System.Windows.Forms.ToolStripMenuItem bpaResultIgnore;
-        private System.Windows.Forms.ToolStripMenuItem bpaResultIgnoreSelected;
-        private System.Windows.Forms.ToolStripMenuItem bpaResultIgnoreRule;
         private System.Windows.Forms.ToolStripMenuItem bpaResultScript;
-        private System.Windows.Forms.ToolStripMenuItem bpaResultScriptSelected;
-        private System.Windows.Forms.ToolStripMenuItem bpaResultScriptRule;
         private System.Windows.Forms.ToolStripMenuItem bpaResultFix;
-        private System.Windows.Forms.ToolStripMenuItem bpaResultFixSelected;
-        private System.Windows.Forms.ToolStripMenuItem bpaResultFixRule;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton btnRefresh;
         private System.Windows.Forms.ToolStripButton btnManageRules;
@@ -424,5 +411,9 @@
         private System.Windows.Forms.ToolStripButton btnFix;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem bpaResultUnignore;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripButton btnCollapseAll;
+        private System.Windows.Forms.ToolStripButton btnExpandAll;
     }
 }
