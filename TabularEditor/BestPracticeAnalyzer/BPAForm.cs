@@ -46,14 +46,27 @@ namespace TabularEditor.UI.Dialogs
             btnRefresh.Enabled = Model != null;
 
             tvResults.Model = AnalyzerResultsTreeModel;
+            AnalyzerResultsTreeModel.StructureChanged += AnalyzerResultsTreeModel_StructureChanged;
             tvResults.DefaultToolTipProvider = new AnalyzerResultTooltip();
+        }
+
+        private void AnalyzerResultsTreeModel_StructureChanged(object sender, TreePathEventArgs e)
+        {
+            AutofitColObject();
         }
 
         BPAEditorForm editor = new BPAEditorForm();
 
-        private void btnAnalyzeAll_Click(object sender, EventArgs e)
+        private void btnRefresh_Click(object sender, EventArgs e)
         {
-            AnalyzeAll();
+            using (var hourglass = new Hourglass())
+            {
+                btnRefresh.Enabled = false;
+                toolStripStatusLabel1.Text = "Analyzing...";
+                Application.DoEvents();
+                AnalyzeAll();
+                btnRefresh.Enabled = true;
+            }
         }
 
         public void Goto(AnalyzerResult result)
@@ -80,7 +93,7 @@ namespace TabularEditor.UI.Dialogs
 
         public void AnalyzeAll()
         {
-            Analyze(analyzer.GlobalRules.Concat(analyzer.LocalRules).Where(r => r.Enabled));
+            Analyze(analyzer.GlobalRules.Concat(analyzer.LocalRules));
         }
 
         /// <summary>
@@ -94,11 +107,13 @@ namespace TabularEditor.UI.Dialogs
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
         {
-            //if (tvResults.SelectedItems.Count == 0) {
-            //    e.Cancel = true;
-            //    return;
-            //}
-            //var plural = tvResults.SelectedItems.Count > 1;
+
+            if (tvResults.SelectedNodes.Count == 0) {
+                e.Cancel = true;
+                return;
+            }
+            var plural = tvResults.SelectedNodes.Count > 1;
+
 
             //// SubItems[2] contains the ID of the respective rule:
             //var rules = tvResults.SelectedItems.Cast<ListViewItem>().Select(i => i.SubItems[2].Text).Distinct().Select(n => RuleIndex[n]).ToList();
@@ -334,13 +349,25 @@ namespace TabularEditor.UI.Dialogs
 
         private void txtObjectName_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
         {
-            if (e.Node.Tag is BestPracticeRule)
+            if (e.Node.Tag is BestPracticeRule rule)
             {
                 e.Font = new Font(e.Font, FontStyle.Bold);
+                if (!rule.Enabled) e.TextColor = e.Context.DrawSelection == DrawSelectionMode.None ? SystemColors.GrayText : Color.Silver;
                 if (e.Control == txtObjectName)
                     e.FullRowDraw = true;
                 else if (e.Control == txtObjectType)
                     e.SkipDraw = true;
+            } else if (e.Node.Tag is AnalyzerResult result)
+            {
+                if(result.Ignored) e.TextColor = e.Context.DrawSelection == DrawSelectionMode.None ? SystemColors.GrayText : Color.Silver;
+            }
+        }
+
+        private void txtObjectType_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
+        {
+            if (e.Node.Tag is AnalyzerResult result)
+            {
+                if (result.Ignored) e.TextColor = e.Context.DrawSelection == DrawSelectionMode.None ? SystemColors.GrayText : Color.Silver;
             }
         }
 
@@ -394,34 +421,98 @@ namespace TabularEditor.UI.Dialogs
 
         private void btnGoto_Click(object sender, EventArgs e)
         {
-            if (tvResults.SelectedNode != null && tvResults.SelectedNode.Tag is AnalyzerResult result)
-                Goto(result);
+            if (Selection.Count == 1)
+                Goto(Selection[0]);
         }
 
         private void tvResults_SelectionChanged(object sender, EventArgs e)
         {
-            // Goto-button requires a single selection:
-            btnGoto.Enabled = tvResults.SelectedNodes.Count == 1 && tvResults.SelectedNodes[0].Tag is AnalyzerResult;
+            Selection.Clear();
+            foreach(var node in tvResults.SelectedNodes)
+            {
+                if(node.Tag is BestPracticeRule rule)
+                {
+                    Selection.AddRange(AnalyzerResultsTreeModel.ResultsByRule(rule));
+                } else if(node.Tag is AnalyzerResult result)
+                {
+                    Selection.Add(result);
+                }
+            }
+            BeginInvoke(new Action(UpdateUI));
+        }
 
-            // Script-button requires at least a single selection, and that all objects in the selection can be fixed:
-            btnScript.Enabled = tvResults.SelectedNodes.Count >= 1 && tvResults.SelectedNodes.All(n => n.Tag is AnalyzerResult r && r.CanFix);
+        private List<AnalyzerResult> Selection = new List<AnalyzerResult>();
+
+        private bool CanGotoSelection => Selection.Count == 1;
+        private bool CanFixSelection => Selection.Count >= 1 && Selection.All(r => r.CanFix) && Selection.Any(r => !r.Ignored);
+        private bool CanIgnoreSelection =>
+            tvResults.SelectedNodes.Count > 0 &&
+            RuleSelection ?
+                tvResults.SelectedNodes.Any(n => (n.Tag as BestPracticeRule).Enabled) :
+                tvResults.SelectedNodes.Any(n => !(n.Tag as AnalyzerResult).Ignored);
+        private bool CanUnignoreSelection =>
+            tvResults.SelectedNodes.Count > 0 &&
+            RuleSelection ?
+                tvResults.SelectedNodes.Any(n => !(n.Tag as BestPracticeRule).Enabled) :
+                tvResults.SelectedNodes.Any(n => (n.Tag as AnalyzerResult).Ignored);
+
+        private bool RuleSelection => tvResults.SelectedNodes.Count > 0 && tvResults.SelectedNodes[0].Tag is BestPracticeRule;
+
+        private void UpdateUI()
+        {
+            // Goto-button requires a single selection:
+            btnGoto.Enabled = CanGotoSelection;
+
+            // Script-button and Fix-button requires at least a single selection, and that all objects in the selection can be fixed:
+            btnScript.Enabled = CanFixSelection;
+            btnFix.Enabled = CanFixSelection;
 
             // Ignore-button requires at least a single selection:
-            btnIgnore.Enabled = tvResults.SelectedNodes.Count >= 1 && tvResults.SelectedNodes[0].Tag is AnalyzerResult;
+            btnIgnore.Enabled = CanIgnoreSelection || CanUnignoreSelection;
+            btnIgnore.CheckState = CanIgnoreSelection ?
+                (CanUnignoreSelection ? CheckState.Indeterminate : CheckState.Unchecked) :
+                (CanUnignoreSelection ? CheckState.Checked : CheckState.Indeterminate);
+
+            if (tvResults.SelectedNodes.Count > 0)
+            {
+                if (tvResults.SelectedNodes[0].Tag is BestPracticeRule rule)
+                {
+                    btnIgnore.Text = (CanIgnoreSelection ? "Ignore" : "Unignore") + " selected rule" + (tvResults.SelectedNodes.Count == 1 ? "" : "s");
+                }
+                else if (tvResults.SelectedNodes[0].Tag is AnalyzerResult result)
+                    btnIgnore.Text = (CanIgnoreSelection ? "Ignore" : "Unignore") + $" rule '{result.RuleName}' on selected item" + (tvResults.SelectedNodes.Count == 1 ? "" : "s");
+            }
+            else
+                btnIgnore.Text = (CanIgnoreSelection ? "Ignore" : "Unignore") + " selection";
         }
 
         private void btnIgnore_Click(object sender, EventArgs e)
         {
             bool unsupported = false;
 
-            foreach (var node in tvResults.SelectedNodes.Select(n => n.Tag).OfType<AnalyzerResult>())
-            {
-                var rule = node.Rule;
-                var obj = node.Object as IAnnotationObject;
+            UIController.Current.Handler.BeginUpdate("Ignore BPA rules");
 
-                if (obj == null) unsupported = true;
-                else analyzer.IgnoreRule(rule, true, obj);
+            if (RuleSelection)
+            {
+                // Selected rules:
+                foreach (var rule in tvResults.SelectedNodes.Select(n => n.Tag).OfType<BestPracticeRule>())
+                {
+                    analyzer.IgnoreRule(rule, btnIgnore.CheckState == CheckState.Checked);
+                }
+
             }
+            else
+            {
+                // Selected individual items:
+                foreach (var node in tvResults.SelectedNodes.Select(n => n.Tag).OfType<AnalyzerResult>())
+                {
+                    var rule = node.Rule;
+
+                    if (!(node.Object is IAnnotationObject obj)) unsupported = true;
+                    else analyzer.IgnoreRule(rule, btnIgnore.CheckState == CheckState.Checked, obj);
+                }
+            }
+            UIController.Current.Handler.EndUpdate();
 
             if (unsupported)
             {
@@ -429,18 +520,61 @@ namespace TabularEditor.UI.Dialogs
             }
         }
 
-        private void btnScript_Click(object sender, EventArgs e)
+        private string GetFixScript()
+        {
+            return GetFixScript(Selection.Where(r => r.CanFix && !r.Ignored));
+        }
+
+        private string GetFixScript(IEnumerable<AnalyzerResult> items)
         {
             string script = "";
 
-            foreach(var node in tvResults.SelectedNodes.Select(n => n.Tag).OfType<AnalyzerResult>().Where(r => r.CanFix))
+            foreach (var item in items)
             {
                 if (script != "") script += "\n";
-                script += node.Object.GetLinqPath() + "." + node.Rule.FixExpression + ";";
+                script += item.Object.GetLinqPath() + "." + item.Rule.FixExpression + ";";
             }
+
+            return script;
+        }
+
+        private void btnScript_Click(object sender, EventArgs e)
+        {
+            var script = GetFixScript();
 
             Clipboard.SetText(script);
             MessageBox.Show("Fix script copied to clipboard!\n\nPaste into Advanced Script Editor for review.", "Fix script generation", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void btnFix_Click(object sender, EventArgs e)
+        {
+            var script = GetFixScript();
+
+            System.CodeDom.Compiler.CompilerResults result;
+            Scripting.ScriptOutputForm.Reset(false);
+            var dyn = ScriptEngine.CompileScript(script, out result);
+            if (result.Errors.Count > 0)
+            {
+                MessageBox.Show("Could not apply fix automatically. Use the 'Generate fix script' option instead.", "Apply fix", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                UIController.Current.Handler.BeginUpdate("apply BPA fix");
+                dyn.Invoke(Model, null);
+                UIController.Current.Handler.EndUpdateAll();
+            }
+            catch (Exception)
+            {
+                UIController.Current.Handler.EndUpdateAll(true);
+                MessageBox.Show("Could not apply fix automatically. Use the 'Generate fix script' option instead.", "Apply fix", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void btnShowIgnored_Click(object sender, EventArgs e)
+        {
+            AnalyzerResultsTreeModel.ShowIgnored = btnShowIgnored.Checked;
         }
     }
 }

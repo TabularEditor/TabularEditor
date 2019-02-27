@@ -46,12 +46,16 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.btnRefresh = new System.Windows.Forms.ToolStripButton();
             this.btnManageRules = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnGoto = new System.Windows.Forms.ToolStripButton();
-            this.btnScript = new System.Windows.Forms.ToolStripButton();
             this.btnIgnore = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnScript = new System.Windows.Forms.ToolStripButton();
+            this.btnFix = new System.Windows.Forms.ToolStripButton();
+            this.btnRefresh = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnShowIgnored = new System.Windows.Forms.ToolStripButton();
             this.tvResults = new Aga.Controls.Tree.TreeViewAdv();
             this.colObject = new Aga.Controls.Tree.TreeColumn();
             this.colType = new Aga.Controls.Tree.TreeColumn();
@@ -184,36 +188,29 @@
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnRefresh,
             this.btnManageRules,
             this.toolStripSeparator1,
             this.btnGoto,
+            this.btnIgnore,
+            this.toolStripSeparator2,
             this.btnScript,
-            this.btnIgnore});
+            this.btnFix,
+            this.btnRefresh,
+            this.toolStripSeparator3,
+            this.btnShowIgnored});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(379, 25);
             this.toolStrip1.TabIndex = 9;
             this.toolStrip1.Text = "toolStrip1";
             // 
-            // btnRefresh
-            // 
-            this.btnRefresh.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.btnRefresh.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.btnRefresh.Image = ((System.Drawing.Image)(resources.GetObject("btnRefresh.Image")));
-            this.btnRefresh.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(50, 22);
-            this.btnRefresh.Text = "Refresh";
-            this.btnRefresh.Click += new System.EventHandler(this.btnAnalyzeAll_Click);
-            // 
             // btnManageRules
             // 
-            this.btnManageRules.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.btnManageRules.Image = ((System.Drawing.Image)(resources.GetObject("btnManageRules.Image")));
+            this.btnManageRules.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnManageRules.Image = global::TabularEditor.Resources.Checklist_16x;
             this.btnManageRules.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnManageRules.Name = "btnManageRules";
-            this.btnManageRules.Size = new System.Drawing.Size(91, 22);
+            this.btnManageRules.Size = new System.Drawing.Size(23, 22);
             this.btnManageRules.Text = "Manage rules...";
             // 
             // toolStripSeparator1
@@ -223,36 +220,82 @@
             // 
             // btnGoto
             // 
-            this.btnGoto.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnGoto.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnGoto.Enabled = false;
-            this.btnGoto.Image = ((System.Drawing.Image)(resources.GetObject("btnGoto.Image")));
+            this.btnGoto.Image = global::TabularEditor.Resources.GoToDefinition_16x;
             this.btnGoto.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnGoto.Name = "btnGoto";
-            this.btnGoto.Size = new System.Drawing.Size(37, 22);
-            this.btnGoto.Text = "Goto";
+            this.btnGoto.Size = new System.Drawing.Size(23, 22);
+            this.btnGoto.Text = "Go to object";
             this.btnGoto.Click += new System.EventHandler(this.btnGoto_Click);
-            // 
-            // btnScript
-            // 
-            this.btnScript.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.btnScript.Enabled = false;
-            this.btnScript.Image = ((System.Drawing.Image)(resources.GetObject("btnScript.Image")));
-            this.btnScript.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnScript.Name = "btnScript";
-            this.btnScript.Size = new System.Drawing.Size(41, 22);
-            this.btnScript.Text = "Script";
-            this.btnScript.Click += new System.EventHandler(this.btnScript_Click);
             // 
             // btnIgnore
             // 
-            this.btnIgnore.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnIgnore.CheckOnClick = true;
+            this.btnIgnore.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnIgnore.Enabled = false;
-            this.btnIgnore.Image = ((System.Drawing.Image)(resources.GetObject("btnIgnore.Image")));
+            this.btnIgnore.Image = global::TabularEditor.Resources.CloakHide_16x;
             this.btnIgnore.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnIgnore.Name = "btnIgnore";
-            this.btnIgnore.Size = new System.Drawing.Size(45, 22);
+            this.btnIgnore.Size = new System.Drawing.Size(23, 22);
             this.btnIgnore.Text = "Ignore";
             this.btnIgnore.Click += new System.EventHandler(this.btnIgnore_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            // 
+            // btnScript
+            // 
+            this.btnScript.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnScript.Enabled = false;
+            this.btnScript.Image = global::TabularEditor.Resources.Script_16x;
+            this.btnScript.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnScript.Name = "btnScript";
+            this.btnScript.Size = new System.Drawing.Size(23, 22);
+            this.btnScript.Text = "Generate fix script";
+            this.btnScript.Click += new System.EventHandler(this.btnScript_Click);
+            // 
+            // btnFix
+            // 
+            this.btnFix.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnFix.Enabled = false;
+            this.btnFix.Image = global::TabularEditor.Resources.Repair_16x;
+            this.btnFix.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnFix.Name = "btnFix";
+            this.btnFix.Size = new System.Drawing.Size(23, 22);
+            this.btnFix.Text = "Apply fix";
+            this.btnFix.Click += new System.EventHandler(this.btnFix_Click);
+            // 
+            // btnRefresh
+            // 
+            this.btnRefresh.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.btnRefresh.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnRefresh.Image = global::TabularEditor.Resources.Refresh_16x;
+            this.btnRefresh.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(23, 22);
+            this.btnRefresh.Text = "Refresh";
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            // 
+            // btnShowIgnored
+            // 
+            this.btnShowIgnored.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.btnShowIgnored.CheckOnClick = true;
+            this.btnShowIgnored.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnShowIgnored.Image = ((System.Drawing.Image)(resources.GetObject("btnShowIgnored.Image")));
+            this.btnShowIgnored.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnShowIgnored.Name = "btnShowIgnored";
+            this.btnShowIgnored.Size = new System.Drawing.Size(84, 22);
+            this.btnShowIgnored.Text = "Show ignored";
+            this.btnShowIgnored.Click += new System.EventHandler(this.btnShowIgnored_Click);
             // 
             // tvResults
             // 
@@ -260,6 +303,7 @@
             this.tvResults.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tvResults.Columns.Add(this.colObject);
             this.tvResults.Columns.Add(this.colType);
+            this.tvResults.ContextMenuStrip = this.contextMenuStrip1;
             this.tvResults.DefaultToolTipProvider = null;
             this.tvResults.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tvResults.DragDropMarkColor = System.Drawing.Color.Black;
@@ -322,6 +366,7 @@
             this.txtObjectType.LeftMargin = 3;
             this.txtObjectType.ParentColumn = this.colType;
             this.txtObjectType.UseCompatibleTextRendering = true;
+            this.txtObjectType.DrawText += new System.EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(this.txtObjectType_DrawText);
             // 
             // BPAForm
             // 
@@ -333,6 +378,7 @@
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.toolStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MinimumSize = new System.Drawing.Size(290, 130);
             this.Name = "BPAForm";
             this.Text = "Best Practice Analyzer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.BPAForm_FormClosing);
@@ -374,5 +420,9 @@
         private System.Windows.Forms.ToolStripButton btnGoto;
         private System.Windows.Forms.ToolStripButton btnScript;
         private System.Windows.Forms.ToolStripButton btnIgnore;
+        private System.Windows.Forms.ToolStripButton btnShowIgnored;
+        private System.Windows.Forms.ToolStripButton btnFix;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     }
 }

@@ -51,9 +51,14 @@ namespace TabularEditor.BestPracticeAnalyzer
         public int ObjectCount { get; private set; } = 0;
         public int ObjectCountByRule(BestPracticeRule rule)
         {
+            return ResultsByRule(rule).Count(r => !r.Ignored);
+        }
+
+        public List<AnalyzerResult> ResultsByRule(BestPracticeRule rule)
+        {
             if (_results.TryGetValue(rule, out List<AnalyzerResult> results))
-                return results.Count;
-            return 0;
+                return results;
+            return new List<AnalyzerResult>();
         }
 
         public AnalyzerResultsModel()
@@ -63,8 +68,8 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         public void Update(IEnumerable<AnalyzerResult> results)
         {
-            var newResults = results.Where(r => !r.InvalidCompatibilityLevel && !r.RuleHasError && !r.Ignored)
-                .GroupBy(r => r.Rule, r => r).ToDictionary(r => r.Key, r => r.ToList());
+            var newResults = results.Where(r => !r.InvalidCompatibilityLevel && !r.RuleHasError)
+                .GroupBy(r => r.Rule, r => r).ToDictionary(r => r.Key, r => r.Where(res => !res.RuleIgnored).ToList());
 
             if(!newResults.SelectMany(r => r.Value).SequenceEqual(_results.SelectMany(r => r.Value)))
             {
@@ -86,12 +91,27 @@ namespace TabularEditor.BestPracticeAnalyzer
             OnStructureChanged();
         }
 
+        private bool _showIgnored = false;
+        public bool ShowIgnored
+        {
+            get { return _showIgnored; }
+            set
+            {
+                if (_showIgnored == value) return;
+                _showIgnored = value;
+                OnStructureChanged();
+            }
+        }
+
         public IEnumerable GetChildren(TreePath treePath)
         {
-            if (treePath.IsEmpty()) return _results.Keys;
+            if (treePath.IsEmpty()) return _results.Keys.Where(r => r.Enabled || ShowIgnored);
             else
             {
-                return _results[treePath.LastNode as BestPracticeRule];
+                if (ShowIgnored)
+                    return _results[treePath.LastNode as BestPracticeRule];
+                else
+                    return _results[treePath.LastNode as BestPracticeRule].Where(r => !r.Ignored);
             }
         }
 
@@ -123,6 +143,7 @@ namespace TabularEditor.BestPracticeAnalyzer
 
     public class AnalyzerResult
     {
+        public bool RuleIgnored { get; set; }
         public bool RuleHasError { get { return !string.IsNullOrEmpty(RuleError); } }
         public bool InvalidCompatibilityLevel { get; set; }
         public string RuleError { get; set; }
@@ -242,6 +263,7 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         public void IgnoreRule(BestPracticeRule rule, bool ignore = true, IAnnotationObject obj = null)
         {
+            if (obj == null) rule.Enabled = !ignore;
             if (obj == null) obj = _model;
 
             var ignoreRules = new AnalyzerIgnoreRules(obj ?? _model);
