@@ -20,19 +20,19 @@ namespace TabularEditor.UI.Dialogs
         ListViewGroup lvgLocal;
         ListViewGroup lvgGlobal;
 
-        Analyzer analyzer;
+        public Analyzer Analyzer { get; private set; }
 
         public Dictionary<string, BestPracticeRule> RuleIndex = new Dictionary<string, BestPracticeRule>();
 
-        public Model Model { get { return analyzer.Model; } set { SetModel(value); } }
+        public Model Model { get { return Analyzer.Model; } set { SetModel(value); } }
 
         private void SetModel(Model model)
         {
-            if (model != analyzer.Model)
+            if (model != Analyzer.Model)
             {
                 AnalyzerResultsTreeModel.Clear();
                 btnRefresh.Enabled = model != null;
-                analyzer.Model = model;
+                Analyzer.Model = model;
                 toolStripStatusLabel1.Text = "";
                 AnalyzerResultsTreeModel.UpdateComplete += AnalyzerResultsTreeModel_UpdateComplete;
             }
@@ -49,7 +49,7 @@ namespace TabularEditor.UI.Dialogs
         {
             InitializeComponent();
 
-            analyzer = new Analyzer();
+            Analyzer = new Analyzer();
 
             btnRefresh.Enabled = Model != null;
 
@@ -95,13 +95,13 @@ namespace TabularEditor.UI.Dialogs
 
         public void Analyze(IEnumerable<BestPracticeRule> rules)
         {
-            AnalyzerResultsTreeModel.Update(analyzer.Analyze(rules));
+            AnalyzerResultsTreeModel.Update(Analyzer.Analyze(rules));
             RefreshUI();
         }
 
         public void AnalyzeAll()
         {
-            Analyze(analyzer.AllRules);
+            Analyze(Analyzer.EffectiveRules);
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace TabularEditor.UI.Dialogs
         /// <param name="token"></param>
         public void AnalyzeAll(CancellationToken token)
         {
-            AnalyzerResultsTreeModel.Update(analyzer.AnalyzeAll(token));
+            AnalyzerResultsTreeModel.Update(Analyzer.AnalyzeAll(token));
         }
 
         private void menContext_Opening(object sender, CancelEventArgs e)
@@ -120,54 +120,6 @@ namespace TabularEditor.UI.Dialogs
                 return;
             }
         }
-
-        /*
-                private void btnAdd_Click(object sender, EventArgs e)
-                {
-                    editor.PopulateCategories(analyzer.AllRules);
-                    var newRule = editor.NewRule(analyzer.GetUniqueId("New Rule"));
-                    if (newRule != null)
-                    {
-                        analyzer.AddRule(newRule);
-                        analyzer.SaveLocalRulesToModel();
-                        UIController.Current.InvokeBPABackground();
-                    }
-                }
-
-                private void btnEdit_Click(object sender, EventArgs e)
-                {
-                    if (listView1.SelectedItems.Count == 1)
-                    {
-                        var rule = listView1.SelectedItems[0].Tag as BestPracticeRule;
-                        editor.PopulateCategories(analyzer.AllRules);
-                        var oldRuleId = rule.ID;
-                        if(editor.EditRule(rule))
-                        {
-                            if(analyzer.LocalRules.Contains(rule))
-                            {
-                                analyzer.SaveLocalRulesToModel();
-                            } else if(analyzer.GlobalRules.Contains(rule))
-                            {
-                                var bpc = new BestPracticeCollection();
-                                bpc.Add(rule);
-
-                                var globalRulesFile = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\BPARules.json";
-
-                                bpc.AddFromJsonFile(globalRulesFile);
-                                if (oldRuleId != rule.ID) {
-                                    // ID changed - let's delete the rule with the old ID:
-                                    var oldRule = bpc.FirstOrDefault(r => r.ID == oldRuleId);
-                                    if (oldRule != null) bpc.Remove(oldRule);
-                                }
-                                bpc.SaveToFile(globalRulesFile);
-                            }
-
-                            PopulateListView();
-                            UIController.Current.InvokeBPABackground();
-                        }
-                    }
-                }
-        */
 
         private void BPAForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -416,7 +368,7 @@ namespace TabularEditor.UI.Dialogs
                 // Selected rules:
                 foreach (var rule in tvResults.SelectedNodes.Select(n => n.Tag).OfType<BestPracticeRule>())
                 {
-                    analyzer.IgnoreRule(rule, ignore);
+                    Analyzer.IgnoreRule(rule, ignore);
                 }
 
             }
@@ -428,7 +380,7 @@ namespace TabularEditor.UI.Dialogs
                     var rule = node.Rule;
 
                     if (!(node.Object is IAnnotationObject obj)) unsupported = true;
-                    else analyzer.IgnoreRule(rule, ignore, obj);
+                    else Analyzer.IgnoreRule(rule, ignore, obj);
                 }
             }
             UIController.Current.Handler.EndUpdate();
@@ -503,7 +455,7 @@ namespace TabularEditor.UI.Dialogs
 
         private void btnManageRules_Click(object sender, EventArgs e)
         {
-            BPAManager.Show(Model, analyzer);
+            BPAManager.Show(Analyzer);
         }
 
         private void bpaResultIgnore_Click(object sender, EventArgs e)

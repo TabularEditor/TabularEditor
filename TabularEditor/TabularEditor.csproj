@@ -171,6 +171,12 @@
     <Compile Include="BestPracticeAnalyzer\BPAManager.Designer.cs">
       <DependentUpon>BPAManager.cs</DependentUpon>
     </Compile>
+    <Compile Include="BestPracticeAnalyzer\BPAManagerAddCollectionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BestPracticeAnalyzer\BPAManagerAddCollectionDialog.Designer.cs">
+      <DependentUpon>BPAManagerAddCollectionDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="BestPracticeAnalyzer\NodePanels\BaseNodePanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -217,6 +223,7 @@
     <Compile Include="UIServices\ClipboardListener.cs" />
     <Compile Include="UIServices\Crypto.cs" />
     <Compile Include="UIServices\DynamicLinq.cs" />
+    <Compile Include="UIServices\FileSystemHelper.cs" />
     <Compile Include="UIServices\LinqExtensions.cs" />
     <Compile Include="UIServices\ManagedIpHelper.cs" />
     <Compile Include="UIServices\PowerBIHelper.cs" />
@@ -571,6 +578,9 @@
     <EmbeddedResource Include="BestPracticeAnalyzer\BPAManager.resx">
       <DependentUpon>BPAManager.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="BestPracticeAnalyzer\BPAManagerAddCollectionDialog.resx">
+      <DependentUpon>BPAManagerAddCollectionDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
@@ -705,6 +715,7 @@
     <Content Include="FodyWeavers.xml">
       <SubType>Designer</SubType>
     </Content>
+    <None Include="Resources\clipboard-16.png" />
     <None Include="Resources\Repair_16x.png" />
     <None Include="Resources\CloakHide_16x.png" />
     <None Include="Resources\Script_16x.png" />

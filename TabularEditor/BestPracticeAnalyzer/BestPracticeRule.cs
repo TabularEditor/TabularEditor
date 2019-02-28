@@ -14,6 +14,7 @@ using json.Newtonsoft.Json.Converters;
 using System.ComponentModel;
 using System.Threading;
 using System.Collections;
+using TabularEditor.UIServices;
 
 namespace TabularEditor.BestPracticeAnalyzer
 {
@@ -298,6 +299,27 @@ namespace TabularEditor.BestPracticeAnalyzer
         public int ObjectCount { get; private set; }
 
         public string ErrorMessage { get; private set; }
+
+        public BestPracticeRule Clone()
+        {
+            return MemberwiseClone() as BestPracticeRule;
+        }
+        public void AssignFrom(BestPracticeRule other)
+        {
+            Category = other.Category;
+            CompatibilityLevel = other.CompatibilityLevel;
+            Description = other.Description;
+            Enabled = other.Enabled;
+            ErrorMessage = other.ErrorMessage;
+            Expression = other.Expression;
+            FixExpression = other.FixExpression;
+            ID = other.ID;
+            IsValid = other.IsValid;
+            Name = other.Name;
+            ObjectCount = other.ObjectCount;
+            Scope = other.Scope;
+            Severity = other.Severity;
+        }
     }
 
     public class RuleScopeConverter: StringEnumConverter
@@ -335,61 +357,134 @@ namespace TabularEditor.BestPracticeAnalyzer
         }
     }
 
-    public class BestPracticeCollection: IEnumerable<BestPracticeRule>
+    public class BestPracticeCollection: IEnumerable<BestPracticeRule>, IRuleDefinition
     {
+        internal const string BPAAnnotation = "BestPracticeAnalyzer";
+        public string FilePath { get; set; }
+
+        [JsonIgnore]
         public bool Internal { get; set; }
-        public bool AllowEdit { get; set; }
+
+        [JsonIgnore]
+        public bool AllowEdit { get; set; } = false;
+
+        [JsonIgnore]
         public string Name { get; set; }
+
+        [JsonIgnore]
         public List<BestPracticeRule> Rules { get; private set; } = new List<BestPracticeRule>();
 
-        public BestPracticeCollection(string name)
-        {
-            Name = name;
-        }
+        string IRuleDefinition.Name => Name;
 
-        public BestPracticeCollection(string name, string json)
+        IEnumerable<BestPracticeRule> IRuleDefinition.Rules => Rules;
+
+        private Model model;
+
+        public bool Save()
         {
-            Name = name;
-            if (!string.IsNullOrEmpty(json))
+            if(model != null)
+            {
+                if (Rules.Count == 0)
+                    model.RemoveAnnotation(BPAAnnotation);
+                else
+                    model.SetAnnotation(BPAAnnotation, SerializeToJson());
+                return true;
+            }
+            else if(!string.IsNullOrEmpty(FilePath))
             {
                 try
                 {
-                    Rules = LoadFromJson(json);
+                    (new FileInfo(FilePath)).Directory.Create();
+                    File.WriteAllText(FilePath, SerializeToJson());
+                    return true;
                 }
                 catch
                 {
-
+                    return false;
                 }
             }
+            return false;
         }
 
-        static public BestPracticeCollection LoadFromJsonFile(string name, string filePath)
+        public static BestPracticeCollection GetCurrentModelCollection(Model model)
         {
-            if (!File.Exists(filePath)) return new BestPracticeCollection(name);
-            return new BestPracticeCollection(name, File.ReadAllText(filePath));
+            if (model == null) return null;
+            
+            var result = new BestPracticeCollection();
+            result.model = model;
+            var localRulesJson = model.GetAnnotation(BPAAnnotation) ?? model.GetAnnotation("BestPractizeAnalyzer"); // Stupid typo in earlier version
+            if (!string.IsNullOrEmpty(localRulesJson)) result.Rules = LoadFromJson(localRulesJson);
+            result.AllowEdit = true;
+            result.Name = "Rules within the current model";
+            result.Internal = true;
+
+            return result;
+        }
+
+        public static BestPracticeCollection GetLocalUserCollection()
+        {
+            var localUserFileName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\BPARules.json";
+            var result = GetCollectionFromFile(localUserFileName);
+            result.Name = "Rules for the local user";
+            result.Internal = true;
+
+            return result;
+        }
+
+        public static BestPracticeCollection GetLocalMachineCollection()
+        {
+            var localMachineFileName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\BPARules.json";
+            var result = GetCollectionFromFile(localMachineFileName);
+            result.Name = "Rules on the local machine";
+            result.Internal = true;
+
+            return result;
+        }
+
+        public static BestPracticeCollection GetCollectionFromFile(string filePath)
+        {
+            var result = new BestPracticeCollection();
+            result.Name = filePath;            
+            result.FilePath = filePath;
+
+            var fi = new FileInfo(filePath);
+            result.AllowEdit = FileSystemHelper.IsDirectoryWritable(fi.DirectoryName);
+            result.AddFromJsonFile(filePath);
+
+            return result;
         }
 
         public void AddFromJsonFile(string filePath)
         {
-            var bpc = LoadFromJsonFile("", filePath);
-            Rules.AddRange(
-                bpc.Where(r => !Rules.Any(rule => rule.ID.Equals(r.ID, StringComparison.InvariantCultureIgnoreCase)))
-                );
+            try
+            {
+                var json = File.ReadAllText(filePath);
+                var rules = LoadFromJson(json);
+                Rules.AddRange(
+                    rules.Where(r => !Rules.Any(rule => rule.ID.Equals(r.ID, StringComparison.InvariantCultureIgnoreCase)))
+                    );
+            }
+            catch
+            {
+
+            }
         }
 
-        static public List<BestPracticeRule> LoadFromJson(string json)
+        static private List<BestPracticeRule> LoadFromJson(string json)
         {
-            return JsonConvert.DeserializeObject<List<BestPracticeRule>>(json);
+            try
+            {
+                return JsonConvert.DeserializeObject<List<BestPracticeRule>>(json);
+            }
+            catch (Exception ex)
+            {
+                return new List<BestPracticeRule>();
+            }
         }
 
         public string SerializeToJson()
         {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
-        public void SaveToFile(string filePath)
-        {
-            (new FileInfo(filePath)).Directory.Create();
-            File.WriteAllText(filePath, SerializeToJson());
+            return JsonConvert.SerializeObject(Rules, Formatting.Indented);
         }
 
         public BestPracticeRule this[string ruleId]

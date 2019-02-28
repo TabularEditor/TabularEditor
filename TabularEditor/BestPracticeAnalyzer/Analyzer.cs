@@ -24,10 +24,13 @@ namespace TabularEditor.BestPracticeAnalyzer
         public AnalyzerIgnoreRules(IAnnotationObject obj)
         {
             RuleIDs = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
-            var json = obj.GetAnnotation(Analyzer.BPAAnnotationIgnore) ?? obj.GetAnnotation("BestPractizeAnalyzer_IgnoreRules"); // Stupid typo in earlier version
-            if(!string.IsNullOrEmpty(json))
+            if (obj != null)
             {
-                JsonConvert.PopulateObject(json, this);
+                var json = obj.GetAnnotation(Analyzer.BPAAnnotationIgnore) ?? obj.GetAnnotation("BestPractizeAnalyzer_IgnoreRules"); // Stupid typo in earlier version
+                if (!string.IsNullOrEmpty(json))
+                {
+                    JsonConvert.PopulateObject(json, this);
+                }
             }
         }
         public void Save(IAnnotationObject obj)
@@ -184,25 +187,110 @@ namespace TabularEditor.BestPracticeAnalyzer
 
     public class Analyzer: INotifyCollectionChanged
     {
-        internal const string BPAAnnotation = "BestPracticeAnalyzer";
         internal const string BPAAnnotationIgnore = "BestPracticeAnalyzer_IgnoreRules";
+        internal const string BPAAnnotationExternalRules = "BestPracticeAnalyzer_ExternalRuleFiles";
 
         private Model _model;
+
+        public string GetUniqueId(string prefix)
+        {
+            prefix = !string.IsNullOrWhiteSpace(prefix) ? "NEW_RULE" : prefix;
+            var result = prefix;
+            var suffix = 0;
+            while(EffectiveRules.Any(r => r.ID.EqualsI(result)))
+            {
+                suffix++;
+                result = $"{prefix}_{suffix}";
+            }
+            return result;
+        }
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         public BestPracticeCollection LocalMachineRules { get; private set; }
         public BestPracticeCollection LocalUserRules { get; private set; }
         public BestPracticeCollection ModelRules { get; private set; }
+        public List<BestPracticeCollection> ExternalRuleCollections { get; private set; }
 
-        public IEnumerable<BestPracticeRule> AllRules {
+        public IEnumerable<BestPracticeRule> EffectiveRules {
             get {
                 var rulePrecedence = new Dictionary<string, BestPracticeRule>(StringComparer.InvariantCultureIgnoreCase);
-                foreach (var rule in LocalMachineRules) rulePrecedence[rule.ID] = rule;
-                foreach (var rule in LocalUserRules) rulePrecedence[rule.ID] = rule;
-                foreach (var rule in ModelRules) rulePrecedence[rule.ID] = rule;
+                foreach (var externalRuleCollection in ExternalRuleCollections)
+                    foreach (var rule in externalRuleCollection) rulePrecedence[rule.ID] = rule;
+                if (LocalMachineRules != null) foreach (var rule in LocalMachineRules) rulePrecedence[rule.ID] = rule;
+                if (LocalUserRules != null) foreach (var rule in LocalUserRules) rulePrecedence[rule.ID] = rule;
+                if (ModelRules != null) foreach (var rule in ModelRules) rulePrecedence[rule.ID] = rule;
 
                 return rulePrecedence.Values;
+            }
+        }
+
+        public IEnumerable<BestPracticeRule> AllRules
+        {
+            get
+            {
+                foreach (var externalRuleCollection in ExternalRuleCollections)
+                    foreach (var rule in externalRuleCollection) yield return rule;
+                if (LocalMachineRules != null) foreach (var rule in LocalMachineRules) yield return rule;
+                if (LocalUserRules != null) foreach (var rule in LocalUserRules) yield return rule;
+                if (ModelRules != null) foreach (var rule in ModelRules) yield return rule;
+            }
+        }
+
+        public BestPracticeCollection EffectiveCollectionForRule(string ruleId)
+        {
+            foreach (var externalRuleCollection in ExternalRuleCollections)
+                if (externalRuleCollection.Any(r => r.ID.EqualsI(ruleId))) return externalRuleCollection;
+            if (ModelRules != null && ModelRules.Any(r => r.ID.EqualsI(ruleId))) return ModelRules;
+            if (LocalUserRules != null && LocalUserRules.Any(r => r.ID.EqualsI(ruleId))) return LocalUserRules;
+            if (LocalMachineRules != null && LocalMachineRules.Any(r => r.ID.EqualsI(ruleId))) return LocalMachineRules;
+            return null;
+        }
+
+        public void SaveExternalRuleCollections()
+        {
+            if (_model != null)
+            {
+                if (ExternalRuleCollections?.Count > 0)
+                {
+                    var json = JsonConvert.SerializeObject(ExternalRuleCollections.Select(rc => rc.FilePath).ToList());
+                    _model.SetAnnotation(BPAAnnotationExternalRules, json);
+                }
+                else
+                    _model.RemoveAnnotation(BPAAnnotationExternalRules);
+            }
+        }
+
+        public void LoadExternalRuleCollections()
+        {
+            ExternalRuleCollections = new List<BestPracticeCollection>();
+            if (_model != null)
+            {
+                // TODO: Use relative paths with "..\"
+                var externalRuleCollectionsJson = _model.GetAnnotation(BPAAnnotationExternalRules);
+                if (externalRuleCollectionsJson != null)
+                {
+                    try
+                    {
+                        var externalRuleFilePaths = JsonConvert.DeserializeObject<List<string>>(externalRuleCollectionsJson);
+                        foreach (var filePath in externalRuleFilePaths)
+                        {
+                            try
+                            {
+                                var populatedCollection = BestPracticeCollection.GetCollectionFromFile(filePath);
+                                ExternalRuleCollections.Add(populatedCollection);
+                            }
+                            catch
+                            {
+
+                            }
+                        }
+                    }
+                    catch
+                    {
+
+                    }
+                }
             }
         }
 
@@ -213,18 +301,17 @@ namespace TabularEditor.BestPracticeAnalyzer
             set
             {
                 _model = value;
-                if (_model != null)
-                {
-                    var localRulesJson = _model.GetAnnotation(BPAAnnotation) ?? _model.GetAnnotation("BestPractizeAnalyzer"); // Stupid typo in earlier version
-                    ModelRules = new BestPracticeCollection("(Model rules)", localRulesJson) { Internal = true, AllowEdit = true };
-                    foreach (var rule in ModelRules) rule.UpdateEnabled(_model);
-                }
-                else
-                {
-                    ModelRules = new BestPracticeCollection("(Model rules)");
-                }
+                ModelRules = BestPracticeCollection.GetCurrentModelCollection(_model);
+                LoadExternalRuleCollections();
+                UpdateEnabled();
                 DoCollectionChanged(NotifyCollectionChangedAction.Reset);
             }
+        }
+
+        public void UpdateEnabled()
+        {
+            var ignoreRules = new AnalyzerIgnoreRules(Model);
+            foreach (var rule in AllRules) rule.Enabled = !ignoreRules.RuleIDs.Contains(rule.ID);
         }
 
         private void DoCollectionChanged(NotifyCollectionChangedAction action)
@@ -254,6 +341,7 @@ namespace TabularEditor.BestPracticeAnalyzer
             ignoreRules.Save(obj);
         }
 
+        /*
         public void SaveLocalRulesToModel()
         {
             if (_model == null) return;
@@ -262,33 +350,19 @@ namespace TabularEditor.BestPracticeAnalyzer
             var newAnnotation = ModelRules.SerializeToJson();
             _model.SetAnnotation(BPAAnnotation, newAnnotation);
             if (previousAnnotation != newAnnotation) UI.UIController.Current.Handler.UndoManager.FlagChange();
-        }
+        }*/
 
         public Analyzer()
         {
             Model = null;
 
-            LocalMachineRules = new BestPracticeCollection("(Local machine rules)") { Internal = true, AllowEdit = false };
-            LocalUserRules = new BestPracticeCollection("(Local user rules)") { Internal = true, AllowEdit = true };
-
-            try
-            {
-                var p1 = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\BPARules.json";
-                if (File.Exists(p1)) LocalUserRules.AddFromJsonFile(p1);
-            }
-            catch { }
-
-            try
-            {
-                var p2 = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\TabularEditor\BPARules.json";
-                if (File.Exists(p2)) LocalMachineRules.AddFromJsonFile(p2);
-            }
-            catch { }
+            LocalMachineRules = BestPracticeCollection.GetLocalMachineCollection();
+            LocalUserRules = BestPracticeCollection.GetLocalUserCollection();            
         }
 
         public IEnumerable<AnalyzerResult> AnalyzeAll()
         {
-            return Analyze(AllRules);
+            return Analyze(EffectiveRules);
         }
 
         public IEnumerable<AnalyzerResult> Analyze(BestPracticeRule rule)
@@ -310,7 +384,7 @@ namespace TabularEditor.BestPracticeAnalyzer
             var results = new List<AnalyzerResult>();
             if(Model != null)
             {
-                foreach(var rule in AllRules)
+                foreach(var rule in EffectiveRules)
                 {
                     if (ct.IsCancellationRequested) return new List<AnalyzerResult>();
                     results.AddRange(rule.Analyze(Model));

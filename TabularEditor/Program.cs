@@ -380,7 +380,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                     }
                     try
                     {
-                        suppliedRules = BPA.BestPracticeCollection.LoadFromJsonFile("", rulefile);
+                        suppliedRules = BPA.BestPracticeCollection.GetCollectionFromFile(rulefile);
                     }
                     catch
                     {

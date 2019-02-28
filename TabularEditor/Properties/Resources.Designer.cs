@@ -133,6 +133,16 @@ namespace TabularEditor {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap clipboard_16 {
+            get {
+                object obj = ResourceManager.GetObject("clipboard-16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap CloakHide_16x {
             get {
                 object obj = ResourceManager.GetObject("CloakHide_16x", resourceCulture);

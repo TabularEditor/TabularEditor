@@ -48,6 +48,7 @@ namespace TabularEditor.TOMWrapper
         {
             // Change 'path' to point to a directory, in case it doesn't do that already:
             if (!Directory.Exists(path)) path = new FileInfo(path).DirectoryName;
+            Environment.CurrentDirectory = path;
 
             SourceType = ModelSourceType.Folder;
             Source = path;
@@ -64,6 +65,7 @@ namespace TabularEditor.TOMWrapper
 
         private void LoadPowerBiTemplateFile(string path)
         {
+            Environment.CurrentDirectory = (new FileInfo(path)).DirectoryName;
             SourceType = ModelSourceType.Pbit;
             Source = path;
 
@@ -73,6 +75,7 @@ namespace TabularEditor.TOMWrapper
 
         private void LoadModelFile(string path)
         {
+            Environment.CurrentDirectory = (new FileInfo(path)).DirectoryName;
             SourceType = ModelSourceType.File;
             Source = path;
 

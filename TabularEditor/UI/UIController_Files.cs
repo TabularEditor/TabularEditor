@@ -258,6 +258,7 @@ namespace TabularEditor.UI
                         {
                             File_Current = dialog.FileName;
                             File_SaveMode = ModelSourceType.File;
+                            Environment.CurrentDirectory = (new FileInfo(File_Current)).DirectoryName;
                         }
 
                         UpdateUIText();
@@ -326,6 +327,7 @@ namespace TabularEditor.UI
                         {
                             File_SaveMode = ModelSourceType.Folder;
                             File_Current = dialog.FileName;
+                            Environment.CurrentDirectory = File_Current;
                         }
 
                         UpdateUIText();
