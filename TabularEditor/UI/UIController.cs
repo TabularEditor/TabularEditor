@@ -220,10 +220,11 @@ namespace TabularEditor.UI
             if (DependencyForm.Visible) DependencyForm.RefreshTree();
         }
 
-        internal void InvokeBPABackground()
+        internal void InvokeBPABackground(bool cancelIfRunning = true)
         {
             if(backgroundBpa != null)
             {
+                if (!cancelIfRunning) return;
                 backgroundBpaTokenSource.Cancel();
                 backgroundBpa.Wait();
             }

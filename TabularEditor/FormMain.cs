@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Aga.Controls.Tree;
 using System.Threading.Tasks;
+using TabularEditor.BestPracticeAnalyzer;
 
 namespace TabularEditor
 {
@@ -801,6 +802,16 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         }
 
         private void lblBpaRules_Click(object sender, EventArgs e)
+        {
+            BPAForm.ShowBPA();
+        }
+
+        private void manageBPARulesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            BPAManager.Show(BPAForm.Analyzer);
+        }
+
+        private void actOpenBPA_Execute(object sender, EventArgs e)
         {
             BPAForm.ShowBPA();
         }
