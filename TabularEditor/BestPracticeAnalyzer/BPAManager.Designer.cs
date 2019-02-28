@@ -55,6 +55,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.btnClose = new System.Windows.Forms.Button();
             this.btnOK = new System.Windows.Forms.Button();
+            this.lblNoModelWarning = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.SuspendLayout();
@@ -379,6 +380,17 @@
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
             // 
+            // lblNoModelWarning
+            // 
+            this.lblNoModelWarning.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblNoModelWarning.Location = new System.Drawing.Point(13, 401);
+            this.lblNoModelWarning.Name = "lblNoModelWarning";
+            this.lblNoModelWarning.Size = new System.Drawing.Size(387, 36);
+            this.lblNoModelWarning.TabIndex = 3;
+            this.lblNoModelWarning.Text = "NOTE: No model is currently loaded in Tabular Editor. You may still use this UI t" +
+    "o manage the rules in the collections above.";
+            // 
             // BPAManager
             // 
             this.AcceptButton = this.btnOK;
@@ -386,6 +398,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnClose;
             this.ClientSize = new System.Drawing.Size(574, 441);
+            this.Controls.Add(this.lblNoModelWarning);
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.tabControl1);
@@ -395,6 +408,7 @@
             this.Name = "BPAManager";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Manage Best Practice Rules";
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -432,5 +446,6 @@
         private System.Windows.Forms.Button btnDown;
         private System.Windows.Forms.Button btnUp;
         private System.Windows.Forms.Button btnClone;
+        private System.Windows.Forms.Label lblNoModelWarning;
     }
 }
