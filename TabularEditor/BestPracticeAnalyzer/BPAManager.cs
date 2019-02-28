@@ -45,6 +45,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         {
             var model = analyzer.Model;
             var form = new BPAManager();
+            form.lblNoModelWarning.Visible = model == null;
             form.Model = model;
             form.Analyzer = analyzer;
             form.Init();
@@ -244,13 +245,8 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         private void btnAddRuleDefinition_Click(object sender, EventArgs e)
         {
-            Analyzer.ExternalRuleCollections.Add(new BestPracticeCollection()
-            {
-                Name = $"New RC {Analyzer.ExternalRuleCollections.Count + 1}",
-                AllowEdit = true,
-                Internal = false
-            });
-            ruleDefinitionsModel.DoStructureChanged();
+            if(BPAManagerAddCollectionDialog.Show(Analyzer))
+                ruleDefinitionsModel.DoStructureChanged();
         }
 
         private void btnDown_Click(object sender, EventArgs e)
