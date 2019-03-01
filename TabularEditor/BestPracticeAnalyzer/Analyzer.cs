@@ -77,7 +77,7 @@ namespace TabularEditor.BestPracticeAnalyzer
             var newResults = results.Where(r => !r.InvalidCompatibilityLevel && !r.RuleHasError)
                 .GroupBy(r => r.Rule, r => r).ToDictionary(r => r.Key, r => r.Where(res => !res.RuleIgnored).ToList());
 
-            if(!newResults.SelectMany(r => r.Value).SequenceEqual(_results.SelectMany(r => r.Value)))
+            if(!newResults.Any() || !newResults.SelectMany(r => r.Value).SequenceEqual(_results.SelectMany(r => r.Value)))
             {
                 _results = newResults;
                 RuleCount = _results.Count;

@@ -245,6 +245,7 @@ namespace TabularEditor.UI
                 UI.FormMain.BeginInvoke(new System.Action(
                     () =>
                     {
+                        UI.BpaLabel.IsLink = results.ObjectCount > 0;
                         UI.BpaLabel.Text = string.Format("{0} BP issue{1}", results.ObjectCount, results.ObjectCount == 1 ? "" : "s");
                     }
                     )
