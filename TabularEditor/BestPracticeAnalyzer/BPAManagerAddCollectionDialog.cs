@@ -43,15 +43,7 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         public bool NewFile()
         {
-            var currentFile = UIController.Current.File_Current;
-            var startDir = Environment.CurrentDirectory;
-            if (currentFile != null) {
-                var attr = File.GetAttributes(currentFile);
-                if (attr.HasFlag(FileAttributes.Directory))
-                    startDir = currentFile;
-                else
-                    startDir = (new FileInfo(currentFile)).DirectoryName;
-            }
+            var startDir = FileSystemHelper.DirectoryFromPath(UIController.Current.File_Current) ?? Environment.CurrentDirectory;
             
             var sfd = new CommonSaveFileDialog("New Rule File");
             sfd.EnsurePathExists = true;
@@ -94,16 +86,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         }
         public bool LocalFile()
         {
-            var currentFile = UIController.Current.File_Current;
-            var startDir = Environment.CurrentDirectory;
-            if (currentFile != null)
-            {
-                var attr = File.GetAttributes(currentFile);
-                if (attr.HasFlag(FileAttributes.Directory))
-                    startDir = currentFile;
-                else
-                    startDir = (new FileInfo(currentFile)).DirectoryName;
-            }
+            var startDir = FileSystemHelper.DirectoryFromPath(UIController.Current.File_Current) ?? Environment.CurrentDirectory;
 
             var sfd = new CommonOpenFileDialog("Open Rule File");
             sfd.EnsureFileExists = true;
@@ -141,7 +124,7 @@ namespace TabularEditor.BestPracticeAnalyzer
                     analyzer.ExternalRuleCollections.Add(BestPracticeCollection.GetCollectionFromFile(fileName));
                 return true;
             }
-            parent.Enabled = false;
+            parent.Enabled = true;
             return false;
         }
         public bool Url()
