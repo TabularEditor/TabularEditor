@@ -6821,7 +6821,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDiscourageImplicitMeasures() { return false; }
-
+        /*
 		[DisplayName("Discourage Report Measures")]
 		[Category("Other"),Description(@"The DiscourageReportMeasures of this Model"),IntelliSense(@"The DiscourageReportMeasures of this Model")]
 		public bool DiscourageReportMeasures {
@@ -6843,6 +6843,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDiscourageReportMeasures() { return false; }
+        */
 /// <summary>
 ///             A reference to a default measure.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>

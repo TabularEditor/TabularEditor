@@ -26,18 +26,18 @@ namespace TabularEditor.TOMWrapper
                 var errorMessage = "";
                 if (!string.IsNullOrEmpty(MetadataObject.ErrorMessage))
                     errorMessage += (Handler.CompatibilityLevel >= 1400 ? "Expression: " : "") + MetadataObject.ErrorMessage;
-                if (Handler.CompatibilityLevel >= 1470 && !string.IsNullOrEmpty(MetadataObject.FormatStringDefinition?.ErrorMessage))
+                /*if (Handler.CompatibilityLevel >= 1470 && !string.IsNullOrEmpty(MetadataObject.FormatStringDefinition?.ErrorMessage))
                 {
                     if (errorMessage != "") errorMessage += "\r\n";
                     errorMessage += "Format string expression: " + MetadataObject.FormatStringDefinition.ErrorMessage;
-                }
+                }*/
                 return errorMessage;
             }
         }
 
         [Browsable(false)]
         public bool NeedsValidation { get; set; } = false;
-
+        /*
         [DisplayName("Format String Expression")]
         [Category("Options"), IntelliSense("A DAX expression that returns a Format String for this calculation item.")]
         [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
@@ -67,6 +67,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
         public bool ShouldSerializeFormatStringExpression() { return false; }
+        */
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
