@@ -215,10 +215,10 @@ namespace TabularEditor.BestPracticeAnalyzer
         public IEnumerable<BestPracticeRule> EffectiveRules {
             get {
                 var rulePrecedence = new Dictionary<string, BestPracticeRule>(StringComparer.InvariantCultureIgnoreCase);
-                foreach (var externalRuleCollection in ExternalRuleCollections)
-                    foreach (var rule in externalRuleCollection) rulePrecedence[rule.ID] = rule;
                 if (LocalMachineRules != null) foreach (var rule in LocalMachineRules) rulePrecedence[rule.ID] = rule;
                 if (LocalUserRules != null) foreach (var rule in LocalUserRules) rulePrecedence[rule.ID] = rule;
+                for(int i = ExternalRuleCollections.Count - 1; i >= 0; i--)
+                    foreach (var rule in ExternalRuleCollections[i]) rulePrecedence[rule.ID] = rule;
                 if (ModelRules != null) foreach (var rule in ModelRules) rulePrecedence[rule.ID] = rule;
 
                 return rulePrecedence.Values;

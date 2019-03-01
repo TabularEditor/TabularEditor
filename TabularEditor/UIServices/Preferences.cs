@@ -30,6 +30,7 @@ namespace TabularEditor.UIServices
         public bool FormulaFixup = true;
         public bool UseSemicolonsAsSeparators = false;
         public bool AllowUnsupportedPBIFeatures = false;
+        public bool BackgroundBpa = true;
         public string BackupLocation = string.Empty;
 
         // TODO: Handle backwards compatibility

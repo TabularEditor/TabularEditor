@@ -222,6 +222,8 @@ namespace TabularEditor.UI
 
         internal void InvokeBPABackground(bool cancelIfRunning = true)
         {
+            if (!Preferences.Current.BackgroundBpa) return;
+
             if(backgroundBpa != null)
             {
                 if (!cancelIfRunning) return;

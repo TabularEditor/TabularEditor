@@ -547,6 +547,10 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         {
             var usingSemicolons = Preferences.Current.UseSemicolonsAsSeparators;
             PreferencesForm.Show(UI.Handler);
+            if (!Preferences.Current.BackgroundBpa)
+                lblBpaRules.Text = "";
+            else
+                UI.InvokeBPABackground();
 
             if(usingSemicolons != Preferences.Current.UseSemicolonsAsSeparators)
             {

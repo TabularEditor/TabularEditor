@@ -119,6 +119,8 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         private void tvRuleDefinitions_SelectionChanged(object sender, EventArgs e)
         {
+            EffectiveRules = new HashSet<BestPracticeRule>(Analyzer.EffectiveRules);
+
             if (tvRuleDefinitions.SelectedNode == null)
                 rulesModel.SetRuleDefinition(null);
             else
@@ -245,8 +247,11 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         private void btnAddRuleDefinition_Click(object sender, EventArgs e)
         {
-            if(BPAManagerAddCollectionDialog.Show(Analyzer))
+            if (BPAManagerAddCollectionDialog.Show(Analyzer))
+            {
                 ruleDefinitionsModel.DoStructureChanged();
+            }
+            Activate();
         }
 
         private void btnDown_Click(object sender, EventArgs e)
@@ -256,7 +261,9 @@ namespace TabularEditor.BestPracticeAnalyzer
             {
                 Analyzer.ExternalRuleCollections.RemoveAt(currentPrecedence);
                 Analyzer.ExternalRuleCollections.Insert(currentPrecedence + 1, CurrentCollection);
+                EffectiveRules = new HashSet<BestPracticeRule>(Analyzer.EffectiveRules);
                 ruleDefinitionsModel.DoStructureChanged();
+                tvRules.Invalidate();
             }
         }
 
@@ -267,7 +274,9 @@ namespace TabularEditor.BestPracticeAnalyzer
             {
                 Analyzer.ExternalRuleCollections.RemoveAt(currentPrecedence);
                 Analyzer.ExternalRuleCollections.Insert(currentPrecedence - 1, CurrentCollection);
+                EffectiveRules = new HashSet<BestPracticeRule>(Analyzer.EffectiveRules);
                 ruleDefinitionsModel.DoStructureChanged();
+                tvRules.Invalidate();
             }
         }
 
