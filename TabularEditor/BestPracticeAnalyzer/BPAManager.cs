@@ -165,9 +165,9 @@ namespace TabularEditor.BestPracticeAnalyzer
             btnDown.Enabled = CurrentCollection?.Internal == false && Analyzer.ExternalRuleCollections.IndexOf(CurrentCollection) < Analyzer.ExternalRuleCollections.Count - 1;
 
             btnNewRule.Enabled = CurrentCollection?.AllowEdit == true;
-            btnEditRule.Enabled = CurrentRules.Count() == 1 && Analyzer.EffectiveCollectionForRule(CurrentRules.FirstOrDefault().ID).AllowEdit;
-            btnClone.Enabled = CurrentCollection?.AllowEdit == true && CurrentRules.Count() == 1 && Analyzer.EffectiveCollectionForRule(CurrentRules.FirstOrDefault().ID).AllowEdit;
-            btnDeleteRule.Enabled = CurrentRules.Any() && CurrentRules.All(r => Analyzer.EffectiveCollectionForRule(r.ID).AllowEdit);
+            btnEditRule.Enabled = CurrentRules.Count() == 1 && (CurrentCollection ?? Analyzer.EffectiveCollectionForRule(CurrentRules.FirstOrDefault().ID)).AllowEdit;
+            btnClone.Enabled = CurrentCollection?.AllowEdit == true && CurrentRules.Count() == 1 && (CurrentCollection ?? Analyzer.EffectiveCollectionForRule(CurrentRules.FirstOrDefault().ID)).AllowEdit;
+            btnDeleteRule.Enabled = CurrentRules.Any() && CurrentRules.All(r => (CurrentCollection ?? Analyzer.EffectiveCollectionForRule(r.ID)).AllowEdit);
             btnMoveTo.Enabled = CurrentRules.Any();
         }
 
