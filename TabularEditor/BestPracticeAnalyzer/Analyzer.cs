@@ -15,6 +15,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TabularEditor.TOMWrapper;
+using TabularEditor.UI;
+using TabularEditor.UIServices;
 
 namespace TabularEditor.BestPracticeAnalyzer
 {
@@ -283,6 +285,9 @@ namespace TabularEditor.BestPracticeAnalyzer
                     try
                     {
                         var externalRuleFilePaths = JsonConvert.DeserializeObject<List<string>>(externalRuleCollectionsJson);
+
+                        Environment.CurrentDirectory = FileSystemHelper.DirectoryFromPath(UIController.Current.File_Current) ?? Environment.CurrentDirectory;
+
                         foreach (var filePath in externalRuleFilePaths)
                         {
                             try

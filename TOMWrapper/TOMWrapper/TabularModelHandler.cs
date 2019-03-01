@@ -155,7 +155,6 @@ namespace TabularEditor.TOMWrapper
             Source = database.Server.Name + "." + database.Name;
 
             Status = "Connected succesfully.";
-            Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
             Version = database.Version;
             Init();
 

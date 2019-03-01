@@ -30,6 +30,19 @@ namespace TabularEditor.UIServices
             }
         }
 
+        public static string DirectoryFromPath(string filePath)
+        {
+            if (filePath != null)
+            {
+                var attr = File.GetAttributes(filePath);
+                if (attr.HasFlag(FileAttributes.Directory))
+                    return filePath;
+                else
+                    return (new FileInfo(filePath)).DirectoryName;
+            }
+            return null;
+        }
+
         /// <summary>
         /// Creates a relative path from one file or folder to another.
         /// </summary>
