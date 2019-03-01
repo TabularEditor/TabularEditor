@@ -671,7 +671,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Description;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -1061,7 +1061,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = ContextExpression;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -1246,7 +1246,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Expression;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -1453,7 +1453,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = SourceColumn;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -1810,7 +1810,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = DataCategory;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -1834,7 +1834,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Description;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -2099,7 +2099,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = FormatString;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -2207,7 +2207,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = SourceProviderType;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -2231,7 +2231,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				if(value.Contains(@"\\")) throw new Exception("Display Folder names cannot be blank.");
 				var oldValue = DisplayFolder;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -3162,7 +3162,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = SourceColumn;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -3536,7 +3536,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Description;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -3753,7 +3753,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = IdentityProvider;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -4149,7 +4149,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Description;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -4210,7 +4210,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				if(value.Contains(@"\\")) throw new Exception("Display Folder names cannot be blank.");
 				var oldValue = DisplayFolder;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -4802,7 +4802,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Description;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -4826,7 +4826,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = TargetDescription;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -4850,7 +4850,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = TargetExpression;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -4874,7 +4874,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = TargetFormatString;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -4898,7 +4898,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = StatusGraphic;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -4922,7 +4922,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = StatusDescription;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -4946,7 +4946,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = StatusExpression;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -4970,7 +4970,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = TrendGraphic;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -4994,7 +4994,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = TrendDescription;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -5018,7 +5018,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = TrendExpression;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -5362,7 +5362,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Description;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -5878,7 +5878,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Description;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -5914,7 +5914,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Expression;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -5938,7 +5938,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = FormatString;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -6023,7 +6023,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				if(value.Contains(@"\\")) throw new Exception("Display Folder names cannot be blank.");
 				var oldValue = DisplayFolder;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -6053,7 +6053,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = DataCategory;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -6643,7 +6643,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Description;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -6667,7 +6667,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = StorageLocation;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -6739,7 +6739,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Culture;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -6763,7 +6763,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Collation;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -7270,7 +7270,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Description;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -7784,7 +7784,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = MemberName;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -7808,7 +7808,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = MemberID;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -8233,7 +8233,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Description;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -8792,7 +8792,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Description;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -9055,7 +9055,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = ConnectionString;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -9103,7 +9103,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Account;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -9127,7 +9127,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Password;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -9199,7 +9199,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Provider;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -10391,7 +10391,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = DataCategory;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -10415,7 +10415,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Description;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -11263,7 +11263,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Description;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -11311,7 +11311,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Expression;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;

@@ -26,88 +26,55 @@ namespace TabularEditor
 
         public TreeViewAdv TreeView { get; set; }
 
-        /*private string linqFilter;
-        public string LinqFilter
-        {
-            get
-            {
-                return linqFilter;
-            }
-
-            set
-            {
-                if (linqFilter == value) return;
-                linqFilter = value;
-
-                FilterItems.Clear();
-                if(!string.IsNullOrEmpty(LinqFilter))
-                {
-                    var sw = new Stopwatch();
-                    sw.Start();
-                    // Do Dynamic Linq search for each type of object (based on the types available for Best Practice Analyzer):
-                    foreach (RuleScope scope in Enum.GetValues(typeof(RuleScope)))
-                    {
-                        FilterItems.AddRange(Linq(Analyzer.GetCollection(Model, scope), scope.GetScopeType()));
-                    }
-                    sw.Stop();
-                    FilterExecutionTime = sw.ElapsedMilliseconds;
-                }
-
-                OnStructureChanged();
-            }
-        }*/
-
-        public long FilterExecutionTime { get; private set; }
-        public int FilterResultCount => 0;  //FilterItems.Count;
-        //bool LinqMode => !string.IsNullOrEmpty(linqFilter);
-
-        public override void OnNodesChanged()
-        {
-            //if (UpdateLocks == 0) TreeView?.Invalidate();
-            //NodesChanged?.Invoke(this, new TreeModelEventArgs(null, new object[] { }));
-        }
-
         public TabularUITree(TabularModelHandler handler) : base(handler) { }
-        //public List<ITabularNamedObject> FilterItems = new List<ITabularNamedObject>();
 
-        public virtual IEnumerable GetChildren(TreePath treePath)
+        bool FilterActive => !string.IsNullOrEmpty(Filter);
+
+        internal IEnumerable<ITabularNamedObject> GetChildrenInternal(TreePath treePath)
         {
             if (UpdateLocks > 0) throw new InvalidOperationException("Tree enumeration attempted while update in progress");
 
             List<ITabularNamedObject> items = new List<ITabularNamedObject>();
 
-            try
+            if (treePath.IsEmpty())
             {
-                if (treePath.IsEmpty())
+                if (FilterActive && FilterMode == FilterMode.Flat)
                 {
-                    if (!string.IsNullOrEmpty(Filter) && FilterMode == FilterMode.Flat)
+                    foreach (var child in GetAllItems())
                     {
-                        foreach(var child in GetAllItems())
-                        {
-                            if (SatisfiesFilterCriteria(child)) items.Add(child);
-                        }
-                    }
-                    else
-                    {
-                        // If no root was specified, use the entire model
-                        if (Options.HasFlag(LogicalTreeOptions.ShowRoot))
-                            items.Add(Model);
-                        else
-                            return GetChildren(Model);
+                        if (SatisfiesFilterCriteria(child)) items.Add(child);
                     }
                 }
                 else
                 {
-                    var container = treePath.LastNode as ITabularObjectContainer;
-                    return (string.IsNullOrEmpty(Filter) || FilterMode == FilterMode.Flat) ? GetChildren(container) : GetChildrenFilteredLocal(container);
+                    // If no root was specified, use the entire model
+                    if (Options.HasFlag(LogicalTreeOptions.ShowRoot))
+                        items.Add(Model);
+                    else
+                        return GetChildren(Model);
                 }
-
             }
-            catch { }
+            else
+            {
+                var container = treePath.LastNode as ITabularObjectContainer;
+                return (string.IsNullOrEmpty(Filter) || FilterMode == FilterMode.Flat) ? GetChildren(container) : GetChildrenFilteredLocal(container);
+            }
             return items;
         }
 
-        private IEnumerable GetChildrenFilteredLocal(ITabularObjectContainer container)
+        public virtual IEnumerable GetChildren(TreePath treePath)
+        {
+            try
+            {
+                return GetChildrenInternal(treePath);
+            }
+            catch
+            {
+                return Enumerable.Empty<ITabularNamedObject>();
+            }
+        }
+
+        private IEnumerable<ITabularNamedObject> GetChildrenFilteredLocal(ITabularObjectContainer container)
         {
             var items = new List<ITabularNamedObject>();
             try
@@ -264,7 +231,6 @@ namespace TabularEditor
         private Func<Variation, bool> LF_Variation;
         private Func<NamedExpression, bool> LF_NamedExpression;
         private Func<ModelRole, bool> LF_ModelRole;
-        private Func<Folder, bool> LF_Folder;
 
         private void PrepareDynamicLinqLambda<T>(ref Func<T, bool> lf)
         {
@@ -298,7 +264,6 @@ namespace TabularEditor
             PrepareDynamicLinqLambda(ref LF_Variation);
             PrepareDynamicLinqLambda(ref LF_NamedExpression);
             PrepareDynamicLinqLambda(ref LF_ModelRole);
-            PrepareDynamicLinqLambda(ref LF_Folder);
         }
 
         private bool SatisfiesLinq(ITabularNamedObject obj)
@@ -330,7 +295,6 @@ namespace TabularEditor
                 case ObjectType.Variation: return LF_Variation == null ? false : LF_Variation(obj as Variation);
                 case ObjectType.Expression: return LF_NamedExpression == null ? false : LF_NamedExpression(obj as NamedExpression);
                 case ObjectType.Role: return LF_ModelRole == null ? false : LF_ModelRole(obj as ModelRole);
-                case ObjectType.Folder: return LF_Folder == null ? false : LF_Folder(obj as Folder);
                 default:
                     return false;
             }
@@ -356,7 +320,7 @@ namespace TabularEditor
         /// <returns></returns>
         public virtual bool CanDrop(TreeNodeAdv[] sourceNodes, TreeNodeAdv targetNode, NodePosition position)
         {
-            if (FilterMode == FilterMode.Flat || sourceNodes == null || sourceNodes.Length == 0) return false;
+            if ((FilterActive && FilterMode == FilterMode.Flat) || sourceNodes == null || sourceNodes.Length == 0) return false;
             DragInfo = TreeDragInformation.FromNodes(sourceNodes, targetNode, position);
 
             // Must not drop nodes on themselves or any of their children:
@@ -528,7 +492,7 @@ namespace TabularEditor
             }
             else
             {
-                if (!string.IsNullOrEmpty(Filter) && FilterMode == FilterMode.Flat)
+                if (FilterActive && FilterMode == FilterMode.Flat)
                 {
                     StructureChanged?.Invoke(this, new TreePathEventArgs());
                 }
@@ -546,7 +510,7 @@ namespace TabularEditor
             }
             else
             {
-                if (!string.IsNullOrEmpty(Filter) && FilterMode == FilterMode.Flat)
+                if (FilterActive && FilterMode == FilterMode.Flat)
                 {
                     StructureChanged?.Invoke(this, new TreePathEventArgs());
                 }
@@ -579,7 +543,7 @@ namespace TabularEditor
             }
             else
             {
-                if(!string.IsNullOrEmpty(Filter) && FilterMode == FilterMode.Flat)
+                if(FilterActive && FilterMode == FilterMode.Flat)
                 {
                     StructureChanged?.Invoke(this, new TreePathEventArgs());
                 }

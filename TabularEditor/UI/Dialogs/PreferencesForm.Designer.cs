@@ -39,33 +39,29 @@
             System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Hierarchies");
             System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("Measures");
             System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("Partitions");
-            System.Windows.Forms.TreeNode treeNode10 = new System.Windows.Forms.TreeNode("Calculation Items");
-            System.Windows.Forms.TreeNode treeNode11 = new System.Windows.Forms.TreeNode("Tables", new System.Windows.Forms.TreeNode[] {
+            System.Windows.Forms.TreeNode treeNode10 = new System.Windows.Forms.TreeNode("Tables", new System.Windows.Forms.TreeNode[] {
             treeNode5,
             treeNode6,
             treeNode7,
             treeNode8,
-            treeNode9,
-            treeNode10});
-            System.Windows.Forms.TreeNode treeNode12 = new System.Windows.Forms.TreeNode("Translations");
-            System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("Data Sources");
-            System.Windows.Forms.TreeNode treeNode14 = new System.Windows.Forms.TreeNode("Perspectives");
-            System.Windows.Forms.TreeNode treeNode15 = new System.Windows.Forms.TreeNode("Relationships");
-            System.Windows.Forms.TreeNode treeNode16 = new System.Windows.Forms.TreeNode("Roles");
-            System.Windows.Forms.TreeNode treeNode17 = new System.Windows.Forms.TreeNode("Annotations");
-            System.Windows.Forms.TreeNode treeNode18 = new System.Windows.Forms.TreeNode("Columns");
-            System.Windows.Forms.TreeNode treeNode19 = new System.Windows.Forms.TreeNode("Hierarchies");
-            System.Windows.Forms.TreeNode treeNode20 = new System.Windows.Forms.TreeNode("Measures");
-            System.Windows.Forms.TreeNode treeNode21 = new System.Windows.Forms.TreeNode("Partitions");
-            System.Windows.Forms.TreeNode treeNode22 = new System.Windows.Forms.TreeNode("Calculation Items");
-            System.Windows.Forms.TreeNode treeNode23 = new System.Windows.Forms.TreeNode("Tables", new System.Windows.Forms.TreeNode[] {
+            treeNode9});
+            System.Windows.Forms.TreeNode treeNode11 = new System.Windows.Forms.TreeNode("Translations");
+            System.Windows.Forms.TreeNode treeNode12 = new System.Windows.Forms.TreeNode("Data Sources");
+            System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("Perspectives");
+            System.Windows.Forms.TreeNode treeNode14 = new System.Windows.Forms.TreeNode("Relationships");
+            System.Windows.Forms.TreeNode treeNode15 = new System.Windows.Forms.TreeNode("Roles");
+            System.Windows.Forms.TreeNode treeNode16 = new System.Windows.Forms.TreeNode("Annotations");
+            System.Windows.Forms.TreeNode treeNode17 = new System.Windows.Forms.TreeNode("Columns");
+            System.Windows.Forms.TreeNode treeNode18 = new System.Windows.Forms.TreeNode("Hierarchies");
+            System.Windows.Forms.TreeNode treeNode19 = new System.Windows.Forms.TreeNode("Measures");
+            System.Windows.Forms.TreeNode treeNode20 = new System.Windows.Forms.TreeNode("Partitions");
+            System.Windows.Forms.TreeNode treeNode21 = new System.Windows.Forms.TreeNode("Tables", new System.Windows.Forms.TreeNode[] {
+            treeNode16,
             treeNode17,
             treeNode18,
             treeNode19,
-            treeNode20,
-            treeNode21,
-            treeNode22});
-            System.Windows.Forms.TreeNode treeNode24 = new System.Windows.Forms.TreeNode("Translations");
+            treeNode20});
+            System.Windows.Forms.TreeNode treeNode22 = new System.Windows.Forms.TreeNode("Translations");
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
@@ -118,6 +114,7 @@
             this.treeView2 = new System.Windows.Forms.TreeView();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.chkBackgroundBpa = new System.Windows.Forms.CheckBox();
             this.groupBox3.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage3.SuspendLayout();
@@ -274,7 +271,7 @@
             // chkCopyIncludeOLS
             // 
             this.chkCopyIncludeOLS.AutoSize = true;
-            this.chkCopyIncludeOLS.Location = new System.Drawing.Point(6, 88);
+            this.chkCopyIncludeOLS.Location = new System.Drawing.Point(191, 42);
             this.chkCopyIncludeOLS.Name = "chkCopyIncludeOLS";
             this.chkCopyIncludeOLS.Size = new System.Drawing.Size(157, 17);
             this.chkCopyIncludeOLS.TabIndex = 3;
@@ -286,7 +283,7 @@
             // chkCopyIncludeRLS
             // 
             this.chkCopyIncludeRLS.AutoSize = true;
-            this.chkCopyIncludeRLS.Location = new System.Drawing.Point(6, 65);
+            this.chkCopyIncludeRLS.Location = new System.Drawing.Point(191, 19);
             this.chkCopyIncludeRLS.Name = "chkCopyIncludeRLS";
             this.chkCopyIncludeRLS.Size = new System.Drawing.Size(145, 17);
             this.chkCopyIncludeRLS.TabIndex = 2;
@@ -541,9 +538,9 @@
             this.groupBox7.Controls.Add(this.chkCopyIncludeRLS);
             this.groupBox7.Controls.Add(this.chkCopyIncludePerspectives);
             this.groupBox7.Controls.Add(this.chkCopyIncludeTranslations);
-            this.groupBox7.Location = new System.Drawing.Point(6, 162);
+            this.groupBox7.Location = new System.Drawing.Point(6, 214);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(357, 117);
+            this.groupBox7.Size = new System.Drawing.Size(357, 65);
             this.groupBox7.TabIndex = 6;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Clipboard Operations";
@@ -552,13 +549,14 @@
             // 
             this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox6.Controls.Add(this.chkBackgroundBpa);
             this.groupBox6.Controls.Add(this.chkAllowUnsupportedPBIFeatures);
             this.groupBox6.Location = new System.Drawing.Point(6, 111);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(357, 45);
+            this.groupBox6.Size = new System.Drawing.Size(357, 97);
             this.groupBox6.TabIndex = 2;
             this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Power BI Support";
+            this.groupBox6.Text = "Features";
             // 
             // groupBox1
             // 
@@ -707,20 +705,18 @@
             treeNode9.Name = "Partitions";
             treeNode9.Text = "Partitions";
             treeNode10.Checked = true;
-            treeNode10.Name = "Calculation Items";
-            treeNode10.Text = "Calculation Items";
-            treeNode11.Name = "Tables";
-            treeNode11.Text = "Tables";
-            treeNode12.Checked = true;
-            treeNode12.Name = "Translations";
-            treeNode12.Text = "Translations";
+            treeNode10.Name = "Tables";
+            treeNode10.Text = "Tables";
+            treeNode11.Checked = true;
+            treeNode11.Name = "Translations";
+            treeNode11.Text = "Translations";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode1,
             treeNode2,
             treeNode3,
             treeNode4,
-            treeNode11,
-            treeNode12});
+            treeNode10,
+            treeNode11});
             this.treeView1.PathSeparator = "/";
             this.treeView1.ShowLines = false;
             this.treeView1.Size = new System.Drawing.Size(345, 136);
@@ -791,48 +787,45 @@
             this.treeView2.CheckBoxes = true;
             this.treeView2.Location = new System.Drawing.Point(6, 73);
             this.treeView2.Name = "treeView2";
+            treeNode12.Checked = true;
+            treeNode12.Name = "Data Sources";
+            treeNode12.Text = "Data Sources";
             treeNode13.Checked = true;
-            treeNode13.Name = "Data Sources";
-            treeNode13.Text = "Data Sources";
+            treeNode13.Name = "Perspectives";
+            treeNode13.Text = "Perspectives";
             treeNode14.Checked = true;
-            treeNode14.Name = "Perspectives";
-            treeNode14.Text = "Perspectives";
+            treeNode14.Name = "Relationships";
+            treeNode14.Text = "Relationships";
             treeNode15.Checked = true;
-            treeNode15.Name = "Relationships";
-            treeNode15.Text = "Relationships";
-            treeNode16.Checked = true;
-            treeNode16.Name = "Roles";
-            treeNode16.Text = "Roles";
-            treeNode17.Name = "Annotations";
-            treeNode17.Text = "Annotations";
+            treeNode15.Name = "Roles";
+            treeNode15.Text = "Roles";
+            treeNode16.Name = "Annotations";
+            treeNode16.Text = "Annotations";
+            treeNode17.Checked = true;
+            treeNode17.Name = "Columns";
+            treeNode17.Text = "Columns";
             treeNode18.Checked = true;
-            treeNode18.Name = "Columns";
-            treeNode18.Text = "Columns";
+            treeNode18.Name = "Hierarchies";
+            treeNode18.Text = "Hierarchies";
             treeNode19.Checked = true;
-            treeNode19.Name = "Hierarchies";
-            treeNode19.Text = "Hierarchies";
+            treeNode19.Name = "Measures";
+            treeNode19.Text = "Measures";
             treeNode20.Checked = true;
-            treeNode20.Name = "Measures";
-            treeNode20.Text = "Measures";
+            treeNode20.Name = "Partitions";
+            treeNode20.Text = "Partitions";
             treeNode21.Checked = true;
-            treeNode21.Name = "Partitions";
-            treeNode21.Text = "Partitions";
+            treeNode21.Name = "Tables";
+            treeNode21.Text = "Tables";
             treeNode22.Checked = true;
-            treeNode22.Name = "Calculation Items";
-            treeNode22.Text = "Calculation Items";
-            treeNode23.Checked = true;
-            treeNode23.Name = "Tables";
-            treeNode23.Text = "Tables";
-            treeNode24.Checked = true;
-            treeNode24.Name = "Translations";
-            treeNode24.Text = "Translations";
+            treeNode22.Name = "Translations";
+            treeNode22.Text = "Translations";
             this.treeView2.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
+            treeNode12,
             treeNode13,
             treeNode14,
             treeNode15,
-            treeNode16,
-            treeNode23,
-            treeNode24});
+            treeNode21,
+            treeNode22});
             this.treeView2.PathSeparator = "/";
             this.treeView2.ShowLines = false;
             this.treeView2.Size = new System.Drawing.Size(345, 136);
@@ -864,6 +857,18 @@
             this.groupBox8.TabIndex = 5;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Current Model Serialization Settings";
+            // 
+            // chkBackgroundBpa
+            // 
+            this.chkBackgroundBpa.AutoSize = true;
+            this.chkBackgroundBpa.Location = new System.Drawing.Point(6, 44);
+            this.chkBackgroundBpa.Name = "chkBackgroundBpa";
+            this.chkBackgroundBpa.Size = new System.Drawing.Size(223, 17);
+            this.chkBackgroundBpa.TabIndex = 1;
+            this.chkBackgroundBpa.Text = "Background scan for Best Practice issues";
+            this.toolTip1.SetToolTip(this.chkBackgroundBpa, "Checking this, will let you edit all TOM objects and properties when connected to" +
+        " a Power BI data model. USE ONLY FOR EXPERIMENTAL PURPOSES.");
+            this.chkBackgroundBpa.UseVisualStyleBackColor = true;
             // 
             // PreferencesForm
             // 
@@ -966,5 +971,6 @@
         private System.Windows.Forms.CheckBox chkIgnoreTimestampsCM;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.ComboBox cmbSeparators;
+        private System.Windows.Forms.CheckBox chkBackgroundBpa;
     }
 }

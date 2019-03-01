@@ -11,6 +11,8 @@ using TabularEditor.UIServices;
 using System.Collections.Generic;
 using System.Threading;
 using Aga.Controls.Tree;
+using System.Threading.Tasks;
+using TabularEditor.BestPracticeAnalyzer;
 
 namespace TabularEditor
 {
@@ -97,7 +99,6 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             });
         }
 
-
         private void PopulateCustomActionsDropDown()
         {
             customActionsToolStripMenuItem.DropDownItems.Clear();
@@ -138,6 +139,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 ScriptEditor = txtAdvanced,
                 ErrorLabel = lblErrors,
                 StatusLabel = lblStatus,
+                BpaLabel = lblBpaRules,
                 StatusExLabel = lblScriptStatus,
                 OpenBimDialog = dlgOpenFile,
                 CurrentMeasureLabel = lblCurrentMeasure,
@@ -248,6 +250,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 actToggleColumns.Checked,
                 actToggleMeasures.Checked,
                 actToggleHierarchies.Checked,
+                actTogglePartitions.Checked,
                 actToggleAllObjectTypes.Checked,
                 actToggleOrderByName.Checked,
                 actToggleFilter.Checked ? txtFilter.Text : null
@@ -258,6 +261,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             Preferences.Current.View_Columns = actToggleColumns.Checked;
             Preferences.Current.View_Measures = actToggleMeasures.Checked;
             Preferences.Current.View_Hierarchies = actToggleHierarchies.Checked;
+            Preferences.Current.View_Partitions = actTogglePartitions.Checked;
             Preferences.Current.View_AllObjectTypes = actToggleAllObjectTypes.Checked;
             Preferences.Current.View_SortAlphabetically = !actToggleOrderByName.Checked;
             Preferences.Current.Save();
@@ -266,7 +270,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void txtFilter_TextChanged(object sender, EventArgs e)
         {
             // Only update filter results continously when we're not in LINQ mode:
-            if(!LinqMode) actToggleFilter.DoExecute();        
+            if(!LinqMode && actToggleFilter.Checked) actToggleFilter.DoExecute();        
         }
 
         /// <summary>
@@ -290,6 +294,8 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void FormMain_Load(object sender, EventArgs e)
         {
+            actTogglePartitions.Image = tabularTreeImages.Images["partition"];
+
             // Auto-load the file specified as command line arguments:
             var args = Environment.GetCommandLineArgs();
             if (args.Length == 2 && (File.Exists(args[1]) || File.Exists(args[1] + "\\database.json")))
@@ -541,6 +547,10 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         {
             var usingSemicolons = Preferences.Current.UseSemicolonsAsSeparators;
             PreferencesForm.Show(UI.Handler);
+            if (!Preferences.Current.BackgroundBpa)
+                lblBpaRules.Text = "";
+            else
+                UI.InvokeBPABackground();
 
             if(usingSemicolons != Preferences.Current.UseSemicolonsAsSeparators)
             {
@@ -594,14 +604,10 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void bestPracticeAnalyzerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            BPAForm.Model = UI.Handler?.Model;
-            BPAForm.ModelTree = tvModel;
-            BPAForm.FormMain = this;
-            BPAForm.Show();
-            BPAForm.BringToFront();
+            BPAForm.ShowBPA();
         }
 
-        private BPAForm BPAForm = new BPAForm();
+        internal BPAForm BPAForm = new BPAForm();
 
         private void CanComment(object sender, EventArgs e)
         {
@@ -797,6 +803,21 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void actSearchResultView_UpdateEx(object sender, UpdateExEventArgs e)
         {
             e.Enabled = actToggleFilter.Checked;
+        }
+
+        private void lblBpaRules_Click(object sender, EventArgs e)
+        {
+            BPAForm.ShowBPA();
+        }
+
+        private void manageBPARulesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            BPAManager.Show(BPAForm.Analyzer);
+        }
+
+        private void actOpenBPA_Execute(object sender, EventArgs e)
+        {
+            BPAForm.ShowBPA();
         }
     }
 }

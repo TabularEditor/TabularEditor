@@ -35,6 +35,7 @@
             this.actToggleHidden = new TabularEditor.UI.UIModelAction();
             this.actToggleOrderByName = new TabularEditor.UI.UIModelAction();
             this.actToggleMeasures = new TabularEditor.UI.UIModelAction();
+            this.actTogglePartitions = new TabularEditor.UI.UIModelAction();
             this.actToggleColumns = new TabularEditor.UI.UIModelAction();
             this.actToggleHierarchies = new TabularEditor.UI.UIModelAction();
             this.actToggleInfoColumns = new TabularEditor.UI.UIModelAction();
@@ -76,6 +77,7 @@
             this.actSearchFlat = new TabularEditor.UI.UIModelAction();
             this.actSearchParent = new TabularEditor.UI.UIModelAction();
             this.actSearchChild = new TabularEditor.UI.UIModelAction();
+            this.actOpenBPA = new TabularEditor.UI.UIModelAction();
             this.toolStripButton8 = new System.Windows.Forms.ToolStripButton();
             this.fileToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.fromDBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -142,6 +144,7 @@
             this.toolStripButton14 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton15 = new System.Windows.Forms.ToolStripButton();
             this.goToDefinitionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripButton16 = new System.Windows.Forms.ToolStripButton();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -203,6 +206,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblErrors = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblBpaRules = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblScriptStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -232,6 +236,7 @@
             this.toolStripSeparator19 = new System.Windows.Forms.ToolStripSeparator();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bestPracticeAnalyzerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.manageBPARulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabularTreeImages = new System.Windows.Forms.ImageList(this.components);
             this.dlgOpenFile = new System.Windows.Forms.OpenFileDialog();
             this._type = new Aga.Controls.Tree.NodeControls.NodeTextBox();
@@ -270,6 +275,7 @@
             actionsMain.Actions.Add(this.actToggleHidden);
             actionsMain.Actions.Add(this.actToggleOrderByName);
             actionsMain.Actions.Add(this.actToggleMeasures);
+            actionsMain.Actions.Add(this.actTogglePartitions);
             actionsMain.Actions.Add(this.actToggleColumns);
             actionsMain.Actions.Add(this.actToggleHierarchies);
             actionsMain.Actions.Add(this.actToggleInfoColumns);
@@ -311,6 +317,7 @@
             actionsMain.Actions.Add(this.actSearchFlat);
             actionsMain.Actions.Add(this.actSearchParent);
             actionsMain.Actions.Add(this.actSearchChild);
+            actionsMain.Actions.Add(this.actOpenBPA);
             actionsMain.ContainerControl = this;
             // 
             // actToggleDisplayFolders
@@ -358,6 +365,17 @@
             this.actToggleMeasures.Text = "&Measures";
             this.actToggleMeasures.ToolTipText = "Show/hide measures (Ctrl+1)";
             this.actToggleMeasures.Execute += new System.EventHandler(this.actViewOptions_Execute);
+            // 
+            // actTogglePartitions
+            // 
+            this.actTogglePartitions.Checked = true;
+            this.actTogglePartitions.CheckOnClick = true;
+            this.actTogglePartitions.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.actTogglePartitions.Enabled = false;
+            this.actTogglePartitions.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D6)));
+            this.actTogglePartitions.Text = "&Partitions";
+            this.actTogglePartitions.ToolTipText = "Show/hide partitions (Ctrl+6)";
+            this.actTogglePartitions.Execute += new System.EventHandler(this.actViewOptions_Execute);
             // 
             // actToggleColumns
             // 
@@ -687,6 +705,13 @@
             this.actSearchChild.ToolTipText = "Search for child items and display results in a hierarchy";
             this.actSearchChild.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.actSearchResultView_UpdateEx);
             this.actSearchChild.Execute += new System.EventHandler(this.actSearch_Execute);
+            // 
+            // actOpenBPA
+            // 
+            this.actOpenBPA.Image = global::TabularEditor.Resources.clipboard_16;
+            this.actOpenBPA.ShortcutKeys = System.Windows.Forms.Keys.F10;
+            this.actOpenBPA.Text = "&Best Practice Analyzer...";
+            this.actOpenBPA.Execute += new System.EventHandler(this.actOpenBPA_Execute);
             // 
             // toolStripButton8
             // 
@@ -1493,6 +1518,21 @@
             this.goToDefinitionToolStripMenuItem.ToolTipText = "Navigate to the symbol under the cursor. If this is a DAX keyword, opens a browse" +
     "r with the corresponding https://dax.guide article (F12)";
             // 
+            // toolStripButton16
+            // 
+            actionsMain.SetAction(this.toolStripButton16, this.actTogglePartitions);
+            this.toolStripButton16.AutoToolTip = false;
+            this.toolStripButton16.Checked = true;
+            this.toolStripButton16.CheckOnClick = true;
+            this.toolStripButton16.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.toolStripButton16.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton16.Enabled = false;
+            this.toolStripButton16.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton16.Name = "toolStripButton16";
+            this.toolStripButton16.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton16.Text = "&Partitions";
+            this.toolStripButton16.ToolTipText = "Show/hide partitions (Ctrl+6)";
+            // 
             // preferencesToolStripMenuItem
             // 
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
@@ -1611,6 +1651,7 @@
             this.tvModel.Columns.Add(this._colSource);
             this.tvModel.Columns.Add(this._colDescription);
             this.tvModel.DefaultToolTipProvider = null;
+            this.tvModel.DelaySelectionToMouseUp = true;
             this.tvModel.DisplayDraggingNodes = true;
             this.tvModel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tvModel.DragDropMarkColor = System.Drawing.Color.Black;
@@ -1744,6 +1785,7 @@
             this.tbShowMeasures,
             this.tbShowColumns,
             this.tbShowHierarchies,
+            this.toolStripButton16,
             this.toolStripSeparator2,
             this.tbShowDisplayFolders,
             this.tbShowHidden,
@@ -2116,6 +2158,7 @@
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblStatus,
             this.lblErrors,
+            this.lblBpaRules,
             this.lblScriptStatus});
             this.statusStrip1.Location = new System.Drawing.Point(0, 618);
             this.statusStrip1.Name = "statusStrip1";
@@ -2147,6 +2190,19 @@
             this.lblErrors.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.lblErrors.Click += new System.EventHandler(this.lblErrors_Click);
             // 
+            // lblBpaRules
+            // 
+            this.lblBpaRules.AutoSize = false;
+            this.lblBpaRules.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top) 
+            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) 
+            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
+            this.lblBpaRules.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
+            this.lblBpaRules.IsLink = true;
+            this.lblBpaRules.Name = "lblBpaRules";
+            this.lblBpaRules.Size = new System.Drawing.Size(150, 17);
+            this.lblBpaRules.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblBpaRules.Click += new System.EventHandler(this.lblBpaRules_Click);
+            // 
             // lblScriptStatus
             // 
             this.lblScriptStatus.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top) 
@@ -2154,7 +2210,7 @@
             | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
             this.lblScriptStatus.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
             this.lblScriptStatus.Name = "lblScriptStatus";
-            this.lblScriptStatus.Size = new System.Drawing.Size(712, 17);
+            this.lblScriptStatus.Size = new System.Drawing.Size(562, 17);
             this.lblScriptStatus.Spring = true;
             this.lblScriptStatus.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -2165,8 +2221,8 @@
             this.editToolStripMenuItem,
             this.viewToolStripMenuItem,
             this.modelToolStripMenuItem,
-            this.dynamicToolStripMenuItem,
-            this.toolsToolStripMenuItem});
+            this.toolsToolStripMenuItem,
+            this.dynamicToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1067, 24);
@@ -2376,18 +2432,29 @@
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.bestPracticeAnalyzerToolStripMenuItem});
+            this.bestPracticeAnalyzerToolStripMenuItem,
+            this.manageBPARulesToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.toolsToolStripMenuItem.Text = "T&ools";
             // 
             // bestPracticeAnalyzerToolStripMenuItem
             // 
+            actionsMain.SetAction(this.bestPracticeAnalyzerToolStripMenuItem, this.actOpenBPA);
+            this.bestPracticeAnalyzerToolStripMenuItem.AutoToolTip = true;
+            this.bestPracticeAnalyzerToolStripMenuItem.Image = global::TabularEditor.Resources.clipboard_16;
             this.bestPracticeAnalyzerToolStripMenuItem.Name = "bestPracticeAnalyzerToolStripMenuItem";
             this.bestPracticeAnalyzerToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F10;
             this.bestPracticeAnalyzerToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
             this.bestPracticeAnalyzerToolStripMenuItem.Text = "&Best Practice Analyzer...";
             this.bestPracticeAnalyzerToolStripMenuItem.Click += new System.EventHandler(this.bestPracticeAnalyzerToolStripMenuItem_Click);
+            // 
+            // manageBPARulesToolStripMenuItem
+            // 
+            this.manageBPARulesToolStripMenuItem.Name = "manageBPARulesToolStripMenuItem";
+            this.manageBPARulesToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.manageBPARulesToolStripMenuItem.Text = "Manage BPA Rules...";
+            this.manageBPARulesToolStripMenuItem.Click += new System.EventHandler(this.manageBPARulesToolStripMenuItem_Click);
             // 
             // tabularTreeImages
             // 
@@ -2750,6 +2817,11 @@
         private System.Windows.Forms.ToolStripButton toolStripButton15;
         private System.Windows.Forms.ToolStripMenuItem goToDefinitionToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem11;
+        private System.Windows.Forms.ToolStripButton toolStripButton16;
+        public UI.UIModelAction actTogglePartitions;
+        private System.Windows.Forms.ToolStripStatusLabel lblBpaRules;
+        private System.Windows.Forms.ToolStripMenuItem manageBPARulesToolStripMenuItem;
+        public UI.UIModelAction actOpenBPA;
     }
 }
 

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.PropertyGridExtension;
@@ -146,7 +147,11 @@ namespace TabularEditor.UI
 
         public void LoadTabularModelToUI()
         {
-            if (Handler == null) return;
+            if (Handler == null)
+            {
+                return;
+            }
+
             Handler.Settings = Preferences.Current.GetSettings();
 
             LastDeploymentDb = null;
@@ -192,6 +197,9 @@ namespace TabularEditor.UI
             UI.ModelMenu.Enabled = true;
 
             InitPlugins();
+
+            UI.FormMain.BPAForm.Model = Handler.Model;
+            InvokeBPABackground();
         }
 
         private void UIController_ObjectDeleting(object sender, ObjectDeletingEventArgs e)
@@ -207,13 +215,55 @@ namespace TabularEditor.UI
             UI.TreeView.Invalidate();
             UI.PropertyGrid.Refresh();
 
+            InvokeBPABackground();
+
             if (DependencyForm.Visible) DependencyForm.RefreshTree();
         }
 
+        internal void InvokeBPABackground(bool cancelIfRunning = true)
+        {
+            if (!Preferences.Current.BackgroundBpa) return;
+
+            if(backgroundBpa != null)
+            {
+                if (!cancelIfRunning) return;
+                backgroundBpaTokenSource.Cancel();
+                backgroundBpa.Wait();
+            }
+            backgroundBpaTokenSource = new CancellationTokenSource();
+            var token = backgroundBpaTokenSource.Token;
+            backgroundBpa = Task.Factory.StartNew(() => BPABackgroundTask(token), token);
+        }
+
+        private void BPABackgroundTask(CancellationToken token)
+        {
+            UI.FormMain.BPAForm.AnalyzeAll(token);
+
+            if (!token.IsCancellationRequested)
+            {
+                var results = UI.FormMain.BPAForm.AnalyzerResultsTreeModel;
+                UI.FormMain.BeginInvoke(new System.Action(
+                    () =>
+                    {
+                        UI.BpaLabel.Text = string.Format("{0} BP issue{1}", results.ObjectCount, results.ObjectCount == 1 ? "" : "s");
+                    }
+                    )
+                );
+                if(UI.FormMain.BPAForm.IsHandleCreated) UI.FormMain.BPAForm.BeginInvoke(new System.Action(UI.FormMain.BPAForm.RefreshUI));
+            }
+
+            backgroundBpa = null;
+        }
+        CancellationTokenSource backgroundBpaTokenSource;
+        Task backgroundBpa;
+
         private void UIController_ObjectChanged(object sender, ObjectChangedEventArgs e)
         {
-            if (!Handler.UpdateInProgress && e.PropertyName == "Annotations" && e.TabularObject == UI.PropertyGrid.SelectedObject)
-                UI.PropertyGrid.Refresh();
+            if (!Handler.UpdateInProgress) {
+                if(e.PropertyName == "Annotations" && e.TabularObject == UI.PropertyGrid.SelectedObject)
+                    UI.PropertyGrid.Refresh();
+                InvokeBPABackground();
+            }
         }
 
         private void InitPlugins()
@@ -273,7 +323,7 @@ namespace TabularEditor.UI
 
         private void UpdateUIText()
         {
-            var appName = Application.ProductName + " 2.8-CTP2019"; // + string.Join(".", Application.ProductVersion.Split('.').Take(2));
+            var appName = Application.ProductName + " 2.8.1"; // + string.Join(".", Application.ProductVersion.Split('.').Take(2));
 
             if (Handler == null)
             {
@@ -281,6 +331,7 @@ namespace TabularEditor.UI
                 UI.StatusLabel.Text = "(No model loaded)";
                 UI.StatusExLabel.Text = "";
                 UI.ErrorLabel.Text = "";
+                UI.BpaLabel.Text = "";
             }
             else
             {
@@ -293,6 +344,7 @@ namespace TabularEditor.UI
                 UI.StatusLabel.Text = Handler.Status;
                 UI.ErrorLabel.Text = Handler?.Errors?.Count > 0 ? string.Format("{0} error{1}", Handler.Errors.Count, Handler.Errors.Count > 1 ? "s" : "") : "";
                 UI.ErrorLabel.IsLink = Handler?.Errors?.Count > 0;
+                UI.BpaLabel.Text = "";
             }
         }
 
@@ -308,6 +360,7 @@ namespace TabularEditor.UI
         public ToolStripLabel StatusLabel;
         public ToolStripLabel StatusExLabel;
         public ToolStripLabel ErrorLabel;
+        public ToolStripLabel BpaLabel;
         public Label CurrentMeasureLabel;
         public FormMain FormMain;
         public ToolStripDropDownItem ModelMenu;

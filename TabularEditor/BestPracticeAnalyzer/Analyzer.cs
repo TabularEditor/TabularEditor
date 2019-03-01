@@ -1,7 +1,10 @@
 ﻿extern alias json;
 
+using Aga.Controls.Tree;
+using Aga.Controls.Tree.NodeControls;
 using json.Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -9,8 +12,11 @@ using System.Linq;
 using System.Linq.Dynamic;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using TabularEditor.TOMWrapper;
+using TabularEditor.UI;
+using TabularEditor.UIServices;
 
 namespace TabularEditor.BestPracticeAnalyzer
 {
@@ -20,10 +26,13 @@ namespace TabularEditor.BestPracticeAnalyzer
         public AnalyzerIgnoreRules(IAnnotationObject obj)
         {
             RuleIDs = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
-            var json = obj.GetAnnotation(Analyzer.BPAAnnotationIgnore) ?? obj.GetAnnotation("BestPractizeAnalyzer_IgnoreRules"); // Stupid typo in earlier version
-            if(!string.IsNullOrEmpty(json))
+            if (obj != null)
             {
-                JsonConvert.PopulateObject(json, this);
+                var json = obj.GetAnnotation(Analyzer.BPAAnnotationIgnore) ?? obj.GetAnnotation("BestPractizeAnalyzer_IgnoreRules"); // Stupid typo in earlier version
+                if (!string.IsNullOrEmpty(json))
+                {
+                    JsonConvert.PopulateObject(json, this);
+                }
             }
         }
         public void Save(IAnnotationObject obj)
@@ -34,12 +43,120 @@ namespace TabularEditor.BestPracticeAnalyzer
         }
     }
 
+    internal class AnalyzerResultsModel : ITreeModel
+    {
+        public event EventHandler<TreeModelEventArgs> NodesChanged;
+        public event EventHandler<TreeModelEventArgs> NodesInserted;
+        public event EventHandler<TreeModelEventArgs> NodesRemoved;
+        public event EventHandler<TreePathEventArgs> StructureChanged;
+        public event EventHandler<EventArgs> UpdateComplete;
+
+        Dictionary<BestPracticeRule, List<AnalyzerResult>> _results;
+
+        public int RuleCount { get; private set; } = 0;
+        public int ObjectCount { get; private set; } = 0;
+        public int ObjectCountByRule(BestPracticeRule rule)
+        {
+            return ResultsByRule(rule).Count(r => !r.Ignored);
+        }
+
+        public List<AnalyzerResult> ResultsByRule(BestPracticeRule rule)
+        {
+            if (_results.TryGetValue(rule, out List<AnalyzerResult> results))
+                return results;
+            return new List<AnalyzerResult>();
+        }
+
+        public AnalyzerResultsModel()
+        {
+            _results = new Dictionary<BestPracticeRule, List<AnalyzerResult>>();
+        }
+
+        public void Update(IEnumerable<AnalyzerResult> results)
+        {
+            var newResults = results.Where(r => !r.InvalidCompatibilityLevel && !r.RuleHasError)
+                .GroupBy(r => r.Rule, r => r).ToDictionary(r => r.Key, r => r.Where(res => !res.RuleIgnored).ToList());
+
+            if(!newResults.SelectMany(r => r.Value).SequenceEqual(_results.SelectMany(r => r.Value)))
+            {
+                _results = newResults;
+                RuleCount = _results.Count;
+                ObjectCount = _results.Sum(r => r.Value.Count);
+                OnStructureChanged();
+
+                UpdateComplete?.Invoke(this, new EventArgs());
+            }
+        }
+
+        private void OnStructureChanged()
+        {
+            StructureChanged?.Invoke(this, new TreePathEventArgs(TreePath.Empty));
+        }
+
+        public void Clear()
+        {
+            _results.Clear();
+            OnStructureChanged();
+        }
+
+        private bool _showIgnored = false;
+        public bool ShowIgnored
+        {
+            get { return _showIgnored; }
+            set
+            {
+                if (_showIgnored == value) return;
+                _showIgnored = value;
+                OnStructureChanged();
+            }
+        }
+
+        public IEnumerable GetChildren(TreePath treePath)
+        {
+            if (treePath.IsEmpty()) return _results.Keys.Where(r => r.Enabled || ShowIgnored);
+            else
+            {
+                if (ShowIgnored)
+                    return _results[treePath.LastNode as BestPracticeRule];
+                else
+                    return _results[treePath.LastNode as BestPracticeRule].Where(r => !r.Ignored);
+            }
+        }
+
+        public bool IsLeaf(TreePath treePath)
+        {
+            if (treePath.IsEmpty()) return false;
+            if (treePath.LastNode is BestPracticeRule) return false;
+            else return true;
+        }
+    }
+
+    public class AnalyzerResultTooltip : IToolTipProvider
+    {
+        public string GetToolTip(TreeNodeAdv node, NodeControl nodeControl)
+        {
+            if (node.Tag is AnalyzerResult result)
+            {
+                if (string.IsNullOrWhiteSpace(result.Rule.Description))
+                    return result.Rule.Name;
+                else
+                    return result.Rule.Description
+                        .Replace("%object%", result.ObjectName)
+                        .Replace("%objectname%", result.Object.Name)
+                        .Replace("%objecttype%", result.Object.GetTypeName());
+            }
+            return null;
+        }
+    }
+
     public class AnalyzerResult
     {
+        public bool RuleIgnored { get; set; }
         public bool RuleHasError { get { return !string.IsNullOrEmpty(RuleError); } }
         public bool InvalidCompatibilityLevel { get; set; }
         public string RuleError { get; set; }
         public RuleScope RuleErrorScope { get; set; }
+        public string ObjectType => Object.GetTypeName();
         public string ObjectName
         {
             get
@@ -72,40 +189,122 @@ namespace TabularEditor.BestPracticeAnalyzer
 
     public class Analyzer: INotifyCollectionChanged
     {
-        internal const string BPAAnnotation = "BestPracticeAnalyzer";
         internal const string BPAAnnotationIgnore = "BestPracticeAnalyzer_IgnoreRules";
+        internal const string BPAAnnotationExternalRules = "BestPracticeAnalyzer_ExternalRuleFiles";
 
         private Model _model;
 
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
-
-        public BestPracticeCollection GlobalRules { get; private set; }
-        public BestPracticeCollection LocalRules { get; private set; }
-        public IEnumerable<BestPracticeRule> AllRules { get { return GlobalRules.Concat(LocalRules); } }
-
-
-        public string GetUniqueId(string id)
+        public string GetUniqueId(string prefix)
         {
-            int suffix = 1;
-            var testId = id;
-            while(
-                GlobalRules.Contains(testId) || 
-                LocalRules.Contains(testId)
-            )
+            prefix = !string.IsNullOrWhiteSpace(prefix) ? "NEW_RULE" : prefix;
+            var result = prefix;
+            var suffix = 0;
+            while(EffectiveRules.Any(r => r.ID.EqualsI(result)))
             {
                 suffix++;
-                testId = id + "_" + suffix;
+                result = $"{prefix}_{suffix}";
             }
-            return testId;
+            return result;
         }
 
-        public void AddRule(BestPracticeRule rule, bool global = false)
-        {
-            rule.ID = GetUniqueId(rule.ID);
-            if (global) GlobalRules.Add(rule);
-            else LocalRules.Add(rule);
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-            DoCollectionChanged(NotifyCollectionChangedAction.Add, rule);
+        public BestPracticeCollection LocalMachineRules { get; private set; }
+        public BestPracticeCollection LocalUserRules { get; private set; }
+        public BestPracticeCollection ModelRules { get; private set; }
+        public List<BestPracticeCollection> ExternalRuleCollections { get; private set; }
+
+        public IEnumerable<BestPracticeRule> EffectiveRules {
+            get {
+                var rulePrecedence = new Dictionary<string, BestPracticeRule>(StringComparer.InvariantCultureIgnoreCase);
+                if (LocalMachineRules != null) foreach (var rule in LocalMachineRules) rulePrecedence[rule.ID] = rule;
+                if (LocalUserRules != null) foreach (var rule in LocalUserRules) rulePrecedence[rule.ID] = rule;
+                for(int i = ExternalRuleCollections.Count - 1; i >= 0; i--)
+                    foreach (var rule in ExternalRuleCollections[i]) rulePrecedence[rule.ID] = rule;
+                if (ModelRules != null) foreach (var rule in ModelRules) rulePrecedence[rule.ID] = rule;
+
+                return rulePrecedence.Values;
+            }
+        }
+
+        public IEnumerable<BestPracticeCollection> Collections
+        {
+            get
+            {
+                foreach (var rc in ExternalRuleCollections) yield return rc;
+                if (ModelRules != null) yield return ModelRules;
+                if (LocalUserRules != null) yield return LocalUserRules;
+                if (LocalMachineRules != null) yield return LocalMachineRules;
+            }
+        }
+
+        public IEnumerable<BestPracticeRule> AllRules
+        {
+            get
+            {
+                foreach (var externalRuleCollection in ExternalRuleCollections)
+                    foreach (var rule in externalRuleCollection) yield return rule;
+                if (LocalMachineRules != null) foreach (var rule in LocalMachineRules) yield return rule;
+                if (LocalUserRules != null) foreach (var rule in LocalUserRules) yield return rule;
+                if (ModelRules != null) foreach (var rule in ModelRules) yield return rule;
+            }
+        }
+
+        public BestPracticeCollection EffectiveCollectionForRule(string ruleId)
+        {
+            foreach (var externalRuleCollection in ExternalRuleCollections)
+                if (externalRuleCollection.Any(r => r.ID.EqualsI(ruleId))) return externalRuleCollection;
+            if (ModelRules != null && ModelRules.Any(r => r.ID.EqualsI(ruleId))) return ModelRules;
+            if (LocalUserRules != null && LocalUserRules.Any(r => r.ID.EqualsI(ruleId))) return LocalUserRules;
+            if (LocalMachineRules != null && LocalMachineRules.Any(r => r.ID.EqualsI(ruleId))) return LocalMachineRules;
+            return null;
+        }
+
+        public void SaveExternalRuleCollections()
+        {
+            if (_model != null)
+            {
+                if (ExternalRuleCollections?.Count > 0)
+                {
+                    var json = JsonConvert.SerializeObject(ExternalRuleCollections.Select(rc => string.IsNullOrEmpty(rc.FilePath) ? rc.Url : rc.FilePath).ToList());
+                    _model.SetAnnotation(BPAAnnotationExternalRules, json);
+                }
+                else
+                    _model.RemoveAnnotation(BPAAnnotationExternalRules);
+            }
+        }
+
+        public void LoadExternalRuleCollections()
+        {
+            ExternalRuleCollections = new List<BestPracticeCollection>();
+            if (_model != null)
+            {
+                var externalRuleCollectionsJson = _model.GetAnnotation(BPAAnnotationExternalRules);
+                if (externalRuleCollectionsJson != null)
+                {
+                    try
+                    {
+                        var externalRuleFilePaths = JsonConvert.DeserializeObject<List<string>>(externalRuleCollectionsJson);
+
+                        Environment.CurrentDirectory = FileSystemHelper.DirectoryFromPath(UIController.Current.File_Current) ?? Environment.CurrentDirectory;
+
+                        foreach (var filePath in externalRuleFilePaths)
+                        {
+                            try
+                            {
+                                if (filePath.StartsWith("http", StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    ExternalRuleCollections.Add(BestPracticeCollection.GetCollectionFromUrl(filePath));
+                                }
+                                else
+                                    ExternalRuleCollections.Add(BestPracticeCollection.GetCollectionFromFile(filePath));
+                            }
+                            catch { }
+                        }
+                    }
+                    catch { }
+                }
+            }
         }
 
         public Model Model { get
@@ -115,32 +314,22 @@ namespace TabularEditor.BestPracticeAnalyzer
             set
             {
                 _model = value;
-                if (_model != null)
-                {
-                    var localRulesJson = _model.GetAnnotation(BPAAnnotation) ?? _model.GetAnnotation("BestPractizeAnalyzer"); // Stupid typo in earlier version
-                    if (!string.IsNullOrEmpty(localRulesJson))
-                    {
-                        LocalRules = BestPracticeCollection.LoadFromJson(localRulesJson);
-                    }
-                    else LocalRules = new BestPracticeCollection();
-
-                    var ignoreRules = new AnalyzerIgnoreRules(_model);
-                    foreach (var rule in LocalRules)
-                    {
-                        rule.Enabled = !ignoreRules.RuleIDs.Contains(rule.ID);
-
-                        // If the global rules contain a rule with the same ID as the local rules being loaded, ignore it in the global list:
-                        var existingGlobalRule = GlobalRules[rule.ID];
-                        if (existingGlobalRule != null) GlobalRules.Remove(existingGlobalRule);
-                    }
-                    foreach (var rule in GlobalRules) rule.Enabled = !ignoreRules.RuleIDs.Contains(rule.ID);
-                }
-                else
-                {
-                    LocalRules = new BestPracticeCollection();
-                }
+                LoadModelRules();
+                LoadExternalRuleCollections();
+                UpdateEnabled();
                 DoCollectionChanged(NotifyCollectionChangedAction.Reset);
             }
+        }
+
+        public void LoadModelRules()
+        {
+            ModelRules = BestPracticeCollection.GetCurrentModelCollection(_model);
+        }
+
+        public void UpdateEnabled()
+        {
+            var ignoreRules = new AnalyzerIgnoreRules(Model);
+            foreach (var rule in AllRules) rule.Enabled = !ignoreRules.RuleIDs.Contains(rule.ID);
         }
 
         private void DoCollectionChanged(NotifyCollectionChangedAction action)
@@ -154,6 +343,7 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         public void IgnoreRule(BestPracticeRule rule, bool ignore = true, IAnnotationObject obj = null)
         {
+            if (obj == null) rule.Enabled = !ignore;
             if (obj == null) obj = _model;
 
             var ignoreRules = new AnalyzerIgnoreRules(obj ?? _model);
@@ -169,108 +359,62 @@ namespace TabularEditor.BestPracticeAnalyzer
             ignoreRules.Save(obj);
         }
 
+        /*
         public void SaveLocalRulesToModel()
         {
             if (_model == null) return;
             _model.RemoveAnnotation("BestPractizeAnalyzer"); // Stupid typo in earlier version
             var previousAnnotation = _model.GetAnnotation(BPAAnnotation);
-            var newAnnotation = LocalRules.SerializeToJson();
+            var newAnnotation = ModelRules.SerializeToJson();
             _model.SetAnnotation(BPAAnnotation, newAnnotation);
             if (previousAnnotation != newAnnotation) UI.UIController.Current.Handler.UndoManager.FlagChange();
-        }
+        }*/
 
         public Analyzer()
         {
             Model = null;
 
-            GlobalRules = new BestPracticeCollection();
+            LoadInternalRules();
+        }
 
-            try
-            {
-                var p1 = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\BPARules.json";
-                var p2 = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\TabularEditor\BPARules.json";
-                if (File.Exists(p1)) GlobalRules.AddFromJsonFile(p1);
-                if (File.Exists(p2)) GlobalRules.AddFromJsonFile(p2);
-            }
-            catch { }
-
-            //StandardBestPractices.GetStandardBestPractices().SaveToFile(@"c:\Projects\test.json");
+        public void LoadInternalRules()
+        {
+            LocalMachineRules = BestPracticeCollection.GetLocalMachineCollection();
+            LocalUserRules = BestPracticeCollection.GetLocalUserCollection();
         }
 
         public IEnumerable<AnalyzerResult> AnalyzeAll()
         {
-            return Analyze(AllRules);
+            return Analyze(EffectiveRules);
         }
 
         public IEnumerable<AnalyzerResult> Analyze(BestPracticeRule rule)
         {
-            if (rule.CompatibilityLevel > Model.Database.CompatibilityLevel)
-            {
-                yield return new AnalyzerResult { Rule = rule, InvalidCompatibilityLevel = true };
-                yield break;
-            }
-
-            // Loop through the types of objects in scope for this rule:
-            foreach (var currentScope in rule.Scope.Enumerate())
-            {
-
-                // Gets a collection of all objects of this type:
-                var collection = GetCollection(currentScope);
-
-                LambdaExpression lambda = null;
-
-                bool isError = false;
-                string errMessage = string.Empty;
-
-                // Parse the expression specified on the rule (this can fail if the expression is malformed):
-                try
-                {
-                    lambda = System.Linq.Dynamic.DynamicExpression.ParseLambda(collection.ElementType, typeof(bool), rule.Expression);
-                }
-                catch (Exception ex)
-                {
-                    // Hack, since compiler does not allow to yield return directly from a catch block:
-                    isError = true;
-                    errMessage = ex.Message;
-                }
-                if (isError)
-                {
-                    yield return new AnalyzerResult { Rule = rule, RuleError = errMessage, RuleErrorScope = currentScope };
-                }
-                else
-                {
-                    var result = new List<ITabularNamedObject>();
-                    try
-                    {
-                        result = collection.Provider.CreateQuery(
-                            Expression.Call(
-                                typeof(Queryable), "Where",
-                                new Type[] { collection.ElementType },
-                                collection.Expression, Expression.Quote(lambda))
-                            ).OfType<ITabularNamedObject>().ToList();
-                    }
-                    catch (Exception ex)
-                    {
-                        isError = true;
-                        errMessage = ex.Message;
-                    }
-                    if (isError)
-                    {
-                        yield return new AnalyzerResult { Rule = rule, RuleError = errMessage, RuleErrorScope = currentScope };
-                    }
-                    else
-                        foreach (var res in result) yield return new AnalyzerResult { Rule = rule, Object = res };
-                }
-            }
+            return rule.Analyze(Model);
         }
 
         public IEnumerable<AnalyzerResult> Analyze(IEnumerable<BestPracticeRule> rules)
         {
             if (Model != null)
             {
-                return rules.SelectMany(r => Analyze(r));
+                return rules.SelectMany(r => r.Analyze(Model));
             }
             return Enumerable.Empty<AnalyzerResult>();
+        }
+
+        internal List<AnalyzerResult> AnalyzeAll(CancellationToken ct)
+        {
+            var results = new List<AnalyzerResult>();
+            if(Model != null)
+            {
+                foreach(var rule in EffectiveRules)
+                {
+                    if (ct.IsCancellationRequested) return new List<AnalyzerResult>();
+                    results.AddRange(rule.Analyze(Model));
+                }
+            }
+            if (ct.IsCancellationRequested) return new List<AnalyzerResult>();
+            return results;
         }
 
         private IQueryable GetCollection(RuleScope scope)

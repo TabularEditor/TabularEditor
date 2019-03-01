@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Costura.Fody.3.3.2\build\Costura.Fody.props" Condition="Exists('..\packages\Costura.Fody.3.3.2\build\Costura.Fody.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -166,6 +167,24 @@
   <ItemGroup>
     <Compile Include="BestPracticeAnalyzer\Analyzer.cs" />
     <Compile Include="BestPracticeAnalyzer\BestPracticeRule.cs" />
+    <Compile Include="BestPracticeAnalyzer\BPAManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BestPracticeAnalyzer\BPAManager.Designer.cs">
+      <DependentUpon>BPAManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BestPracticeAnalyzer\BPAManagerAddCollectionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BestPracticeAnalyzer\BPAManagerAddCollectionDialog.Designer.cs">
+      <DependentUpon>BPAManagerAddCollectionDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BestPracticeAnalyzer\MoveToCollectionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BestPracticeAnalyzer\MoveToCollectionDialog.Designer.cs">
+      <DependentUpon>MoveToCollectionDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="BestPracticeAnalyzer\NodePanels\BaseNodePanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -212,6 +231,7 @@
     <Compile Include="UIServices\ClipboardListener.cs" />
     <Compile Include="UIServices\Crypto.cs" />
     <Compile Include="UIServices\DynamicLinq.cs" />
+    <Compile Include="UIServices\FileSystemHelper.cs" />
     <Compile Include="UIServices\LinqExtensions.cs" />
     <Compile Include="UIServices\ManagedIpHelper.cs" />
     <Compile Include="UIServices\PowerBIHelper.cs" />
@@ -351,6 +371,12 @@
     </Compile>
     <Compile Include="UI\Dialogs\Pages\ImportTablesPage.Designer.cs">
       <DependentUpon>ImportTablesPage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Dialogs\UrlInputDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\UrlInputDialog.Designer.cs">
+      <DependentUpon>UrlInputDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Dialogs\PasswordPromptForm.cs">
       <SubType>Form</SubType>
@@ -569,6 +595,15 @@
     <EmbeddedResource Include="BestPracticeAnalyzer\BPAForm.resx">
       <DependentUpon>BPAForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="BestPracticeAnalyzer\BPAManager.resx">
+      <DependentUpon>BPAManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BestPracticeAnalyzer\BPAManagerAddCollectionDialog.resx">
+      <DependentUpon>BPAManagerAddCollectionDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BestPracticeAnalyzer\MoveToCollectionDialog.resx">
+      <DependentUpon>MoveToCollectionDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
@@ -649,6 +684,9 @@
     <EmbeddedResource Include="UI\Dialogs\Pages\ImportTablesPage.resx">
       <DependentUpon>ImportTablesPage.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\UrlInputDialog.resx">
+      <DependentUpon>UrlInputDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\PasswordPromptForm.resx">
       <DependentUpon>PasswordPromptForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -706,6 +744,12 @@
     <Content Include="FodyWeavers.xml">
       <SubType>Designer</SubType>
     </Content>
+    <None Include="Resources\clipboard-16.png" />
+    <None Include="Resources\Repair_16x.png" />
+    <None Include="Resources\CloakHide_16x.png" />
+    <None Include="Resources\Script_16x.png" />
+    <None Include="Resources\Checklist_16x.png" />
+    <None Include="Resources\Refresh_16x.png" />
     <None Include="Resources\editdatatype.png" />
     <None Include="Resources\Remove_16xLG.png" />
     <None Include="Resources\GoToDefinition_16x.png" />

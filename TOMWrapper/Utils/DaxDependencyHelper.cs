@@ -3,11 +3,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TabularEditor.TextServices;
 
 namespace TabularEditor.TOMWrapper.Utils
 {
     public static class DaxDependencyHelper
     {
+        /// <summary>
+        /// Return a list of tokens representing the DAX expression on the current object.
+        /// </summary>
+        [IntelliSense("Return a list of tokens representing the DAX expression on the current object.")]
+        public static IList<DaxToken> Tokenize(this IDaxDependantObject obj)
+        {
+            return Tokenize(obj, DAXProperty.Expression);
+        }
+
+        /// <summary>
+        /// Return a list of tokens representing the specified DAX property on the current object.
+        /// </summary>
+        [IntelliSense("Return a list of tokens representing the specified DAX property on the current object.")]
+        public static IList<DaxToken> Tokenize(this IDaxDependantObject obj, DAXProperty property)
+        {
+            var lexer = new DAXLexer(new DAXCharStream(obj.GetDAX(property), false));
+            lexer.RemoveErrorListeners();
+            var result = new List<DaxToken>();
+            var lexerTokens = lexer.GetAllTokens();
+            for(int i = 0; i < lexerTokens.Count; i++)
+            {
+                result.Add(new DaxToken(lexerTokens[i], result, i));
+            }
+
+            return result;
+        }
+
         public static IEnumerable<DAXProperty> GetDAXProperties(this IDaxDependantObject obj)
         {
             if (obj is Measure || obj is CalculatedColumn || obj is CalculatedTable) yield return DAXProperty.Expression;

@@ -148,7 +148,7 @@ namespace TOMWrapperTest.RegressionTests.v2_8
         [TestMethod]
         public void EnsureAnnotationsAreRemovedTest()
         {
-            Directory.CreateDirectory("test_2_8_annotations2");
+            Directory.CreateDirectory("test_2_8_annotations1");
             File.WriteAllText(@"test_2_8_annotations1\database.json", DatabaseJsonCompare);
             var handler = new TabularModelHandler(@"test_2_8_annotations1\database.json");
 

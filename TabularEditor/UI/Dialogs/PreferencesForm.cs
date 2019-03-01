@@ -111,6 +111,7 @@ namespace TabularEditor.UI.Dialogs
             Preferences.Current.FormulaFixup = chkFixup.Checked;
             Preferences.Current.AllowUnsupportedPBIFeatures = chkAllowUnsupportedPBIFeatures.Checked;
             Preferences.Current.UseSemicolonsAsSeparators = cmbSeparators.SelectedIndex == 1;
+            Preferences.Current.BackgroundBpa = chkBackgroundBpa.Checked;
 
             Preferences.Current.IgnoreTimestamps = chkIgnoreTimestamps.Checked;
             Preferences.Current.IgnoreInferredObjects = chkIgnoreInfObjects.Checked;
@@ -162,6 +163,7 @@ namespace TabularEditor.UI.Dialogs
             chkFixup.Checked = Preferences.Current.FormulaFixup;
             cmbSeparators.SelectedIndex = Preferences.Current.UseSemicolonsAsSeparators ? 1 : 0;
             chkAllowUnsupportedPBIFeatures.Checked = Preferences.Current.AllowUnsupportedPBIFeatures;
+            chkBackgroundBpa.Checked = Preferences.Current.BackgroundBpa;
 
             chkCopyIncludeTranslations.Checked = Preferences.Current.Copy_IncludeTranslations;
             chkCopyIncludePerspectives.Checked = Preferences.Current.Copy_IncludePerspectives;
