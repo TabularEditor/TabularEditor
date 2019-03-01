@@ -58,8 +58,9 @@ namespace TabularEditor.TOMWrapper
                         return (MetadataObject.Source as TOM.QueryPartitionSource)?.Query;
                     case TOM.PartitionSourceType.M:
                         return (MetadataObject.Source as TOM.MPartitionSource)?.Expression;
+                    default:
+                        return null;
                 }
-                throw new NotSupportedException();
             }
             set
             {
