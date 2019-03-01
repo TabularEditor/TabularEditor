@@ -225,6 +225,17 @@ namespace TabularEditor.BestPracticeAnalyzer
             }
         }
 
+        public IEnumerable<BestPracticeCollection> Collections
+        {
+            get
+            {
+                foreach (var rc in ExternalRuleCollections) yield return rc;
+                if (ModelRules != null) yield return ModelRules;
+                if (LocalUserRules != null) yield return LocalUserRules;
+                if (LocalMachineRules != null) yield return LocalMachineRules;
+            }
+        }
+
         public IEnumerable<BestPracticeRule> AllRules
         {
             get
@@ -253,7 +264,7 @@ namespace TabularEditor.BestPracticeAnalyzer
             {
                 if (ExternalRuleCollections?.Count > 0)
                 {
-                    var json = JsonConvert.SerializeObject(ExternalRuleCollections.Select(rc => rc.FilePath).ToList());
+                    var json = JsonConvert.SerializeObject(ExternalRuleCollections.Select(rc => string.IsNullOrEmpty(rc.FilePath) ? rc.Url : rc.FilePath).ToList());
                     _model.SetAnnotation(BPAAnnotationExternalRules, json);
                 }
                 else
@@ -266,7 +277,6 @@ namespace TabularEditor.BestPracticeAnalyzer
             ExternalRuleCollections = new List<BestPracticeCollection>();
             if (_model != null)
             {
-                // TODO: Use relative paths with "..\"
                 var externalRuleCollectionsJson = _model.GetAnnotation(BPAAnnotationExternalRules);
                 if (externalRuleCollectionsJson != null)
                 {
@@ -277,19 +287,17 @@ namespace TabularEditor.BestPracticeAnalyzer
                         {
                             try
                             {
-                                var populatedCollection = BestPracticeCollection.GetCollectionFromFile(filePath);
-                                ExternalRuleCollections.Add(populatedCollection);
+                                if (filePath.StartsWith("http", StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    ExternalRuleCollections.Add(BestPracticeCollection.GetCollectionFromUrl(filePath));
+                                }
+                                else
+                                    ExternalRuleCollections.Add(BestPracticeCollection.GetCollectionFromFile(filePath));
                             }
-                            catch
-                            {
-
-                            }
+                            catch { }
                         }
                     }
-                    catch
-                    {
-
-                    }
+                    catch { }
                 }
             }
         }
@@ -301,11 +309,16 @@ namespace TabularEditor.BestPracticeAnalyzer
             set
             {
                 _model = value;
-                ModelRules = BestPracticeCollection.GetCurrentModelCollection(_model);
+                LoadModelRules();
                 LoadExternalRuleCollections();
                 UpdateEnabled();
                 DoCollectionChanged(NotifyCollectionChangedAction.Reset);
             }
+        }
+
+        public void LoadModelRules()
+        {
+            ModelRules = BestPracticeCollection.GetCurrentModelCollection(_model);
         }
 
         public void UpdateEnabled()
@@ -356,8 +369,13 @@ namespace TabularEditor.BestPracticeAnalyzer
         {
             Model = null;
 
+            LoadInternalRules();
+        }
+
+        public void LoadInternalRules()
+        {
             LocalMachineRules = BestPracticeCollection.GetLocalMachineCollection();
-            LocalUserRules = BestPracticeCollection.GetLocalUserCollection();            
+            LocalUserRules = BestPracticeCollection.GetLocalUserCollection();
         }
 
         public IEnumerable<AnalyzerResult> AnalyzeAll()

@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Microsoft.WindowsAPICodePack.Dialogs.Controls;
 using TabularEditor.UI;
+using TabularEditor.UI.Dialogs;
 using TabularEditor.UIServices;
 
 namespace TabularEditor.BestPracticeAnalyzer
@@ -23,13 +24,15 @@ namespace TabularEditor.BestPracticeAnalyzer
         }
 
         Analyzer analyzer;
+        Form parent;
 
-        static public bool Show(Analyzer analyzer)
+        static public bool Show(Analyzer analyzer, Form parent)
         {
             var form = new BPAManagerAddCollectionDialog();
             form.analyzer = analyzer;
-
-            if (form.ShowDialog() == DialogResult.Cancel) return false;
+            form.parent = parent;
+            
+            if (form.ShowDialog(parent) == DialogResult.Cancel) return false;
 
             if (form.rdbNewFile.Checked) return form.NewFile();
             if (form.rdbLocalFile.Checked) return form.LocalFile();
@@ -75,14 +78,18 @@ namespace TabularEditor.BestPracticeAnalyzer
                     }
                 };
             }
-            if( sfd.ShowDialog() == CommonFileDialogResult.Ok)
+
+            parent.Enabled = false;
+            if(sfd.ShowDialog() == CommonFileDialogResult.Ok)
             {
+                parent.Enabled = true;
                 var fileName = localPathCheckBox.Visible && localPathCheckBox.IsChecked
                     ? FileSystemHelper.GetRelativePath(startDir, sfd.FileName) : sfd.FileName;
                 if(!analyzer.ExternalRuleCollections.Any(rc => rc.FilePath.EqualsI(fileName)))
                     analyzer.ExternalRuleCollections.Add(BestPracticeCollection.GetCollectionFromFile(fileName));
                 return true;
             }
+            parent.Enabled = true;
             return false;
         }
         public bool LocalFile()
@@ -123,19 +130,30 @@ namespace TabularEditor.BestPracticeAnalyzer
                     }
                 };
             }
+
+            parent.Enabled = false;
             if (sfd.ShowDialog() == CommonFileDialogResult.Ok)
             {
+                parent.Enabled = true;
                 var fileName = localPathCheckBox.Visible && localPathCheckBox.IsChecked
                     ? FileSystemHelper.GetRelativePath(startDir, sfd.FileName) : sfd.FileName;
                 if (!analyzer.ExternalRuleCollections.Any(rc => rc.FilePath.EqualsI(fileName)))
                     analyzer.ExternalRuleCollections.Add(BestPracticeCollection.GetCollectionFromFile(fileName));
                 return true;
             }
+            parent.Enabled = false;
             return false;
         }
         public bool Url()
         {
-            throw new NotImplementedException();
+            if (UrlInputDialog.Show(out string url))
+            {
+                analyzer.ExternalRuleCollections.Add(BestPracticeCollection.GetCollectionFromUrl(url));
+                return true;
+            }
+            else
+                return false;
+                
         }
     }
 }
