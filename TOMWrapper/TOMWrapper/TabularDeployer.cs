@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TOM = Microsoft.AnalysisServices.Tabular;
+using System.Threading;
 
 namespace TabularEditor.TOMWrapper.Utils
 {
@@ -32,16 +33,16 @@ namespace TabularEditor.TOMWrapper.Utils
 
         public static DeploymentResult Deploy(TabularModelHandler handler, string targetConnectionString, string targetDatabaseName)
         {
-            return Deploy(handler.Database, targetConnectionString, targetDatabaseName, DeploymentOptions.Default);
+            return Deploy(handler.Database, targetConnectionString, targetDatabaseName, DeploymentOptions.Default, CancellationToken.None);
         }
-        public static DeploymentResult Deploy(TabularModelHandler handler, string targetConnectionString, string targetDatabaseName, DeploymentOptions options)
+        public static DeploymentResult Deploy(TabularModelHandler handler, string targetConnectionString, string targetDatabaseName, DeploymentOptions options, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Deploy(handler.Database, targetConnectionString, targetDatabaseName, options);
+            return Deploy(handler.Database, targetConnectionString, targetDatabaseName, options, cancellationToken);
         }
 
         internal static DeploymentResult Deploy(TOM.Database db, string targetConnectionString, string targetDatabaseName)
         {
-            return Deploy(db, targetConnectionString, targetDatabaseName, DeploymentOptions.Default);
+            return Deploy(db, targetConnectionString, targetDatabaseName, DeploymentOptions.Default, CancellationToken.None);
         }
 
         public static void SaveModelMetadataBackup(string connectionString, string targetDatabaseID, string backupFilePath)
@@ -86,16 +87,17 @@ namespace TabularEditor.TOMWrapper.Utils
         /// <param name="targetDatabaseID"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        internal static DeploymentResult Deploy(TOM.Database db, string targetConnectionString, string targetDatabaseID, DeploymentOptions options)
+        internal static DeploymentResult Deploy(TOM.Database db, string targetConnectionString, string targetDatabaseID, DeploymentOptions options, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(targetConnectionString)) throw new ArgumentNullException("targetConnectionString");
             var s = new TOM.Server();
             s.Connect(targetConnectionString);
 
             var tmsl = GetTMSL(db, s, targetDatabaseID, options, true);
+            cancellationToken.Register(s.CancelCommand);
             var result = s.Execute(tmsl);
 
-            if(result.ContainsErrors)
+            if (result.ContainsErrors)
             {
                 throw new Exception(string.Join("\n", result.Cast<XmlaResult>().SelectMany(r => r.Messages.Cast<XmlaMessage>().Select(m => m.Description)).ToArray()));
             }
