@@ -30,11 +30,13 @@ namespace TabularEditor.TOMWrapper
                     if (errorMessage != "") errorMessage += "\r\n";
                     errorMessage += "Detail rows expression: " + MetadataObject.DetailRowsDefinition.ErrorMessage;
                 }
+                /*
                 if (Handler.CompatibilityLevel >= 1470 && !string.IsNullOrEmpty(MetadataObject.FormatStringDefinition?.ErrorMessage))
                 {
                     if (errorMessage != "") errorMessage += "\r\n";
                     errorMessage += "Format string expression: " + MetadataObject.FormatStringDefinition.ErrorMessage;
                 }
+                */
                 return errorMessage;
             }
         }
@@ -235,7 +237,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
         public bool ShouldSerializeDetailRowsExpression() { return false; }
-
+        /*
         [DisplayName("Format String Expression")]
         [Category("Options"), IntelliSense("A DAX expression that returns a Format String for this measure.")]
         [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
@@ -265,7 +267,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
         public bool ShouldSerializeFormatStringExpression() { return false; }
-
+        */
 
         [Browsable(false)]
         public string DaxObjectName
