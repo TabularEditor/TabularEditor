@@ -177,6 +177,12 @@
     <Compile Include="BestPracticeAnalyzer\BPAManagerAddCollectionDialog.Designer.cs">
       <DependentUpon>BPAManagerAddCollectionDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="BestPracticeAnalyzer\MoveToCollectionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BestPracticeAnalyzer\MoveToCollectionDialog.Designer.cs">
+      <DependentUpon>MoveToCollectionDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="BestPracticeAnalyzer\NodePanels\BaseNodePanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -357,6 +363,12 @@
     </Compile>
     <Compile Include="UI\Dialogs\Pages\ImportTablesPage.Designer.cs">
       <DependentUpon>ImportTablesPage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Dialogs\UrlInputDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\UrlInputDialog.Designer.cs">
+      <DependentUpon>UrlInputDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Dialogs\PasswordPromptForm.cs">
       <SubType>Form</SubType>
@@ -581,6 +593,9 @@
     <EmbeddedResource Include="BestPracticeAnalyzer\BPAManagerAddCollectionDialog.resx">
       <DependentUpon>BPAManagerAddCollectionDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="BestPracticeAnalyzer\MoveToCollectionDialog.resx">
+      <DependentUpon>MoveToCollectionDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
@@ -657,6 +672,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\Pages\ImportTablesPage.resx">
       <DependentUpon>ImportTablesPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\UrlInputDialog.resx">
+      <DependentUpon>UrlInputDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\PasswordPromptForm.resx">
       <DependentUpon>PasswordPromptForm.cs</DependentUpon>

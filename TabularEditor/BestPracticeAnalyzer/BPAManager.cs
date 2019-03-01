@@ -51,8 +51,8 @@ namespace TabularEditor.BestPracticeAnalyzer
             form.Init();
 
             analyzer.UpdateEnabled();
-
-            if (form.ShowDialog() == DialogResult.OK)
+            
+            if (form.ShowDialog(ActiveForm) == DialogResult.OK)
             {
                 if (model != null)
                 {
@@ -73,13 +73,12 @@ namespace TabularEditor.BestPracticeAnalyzer
 
                 analyzer.LocalUserRules.Save();
                 analyzer.LocalMachineRules.Save();
+                analyzer.SaveExternalRuleCollections();
 
                 foreach (var externalRuleCollection in analyzer.ExternalRuleCollections) externalRuleCollection.Save();
 
                 if (model != null)
                 {
-                    analyzer.SaveExternalRuleCollections();
-
                     UIController.Current.Handler.EndUpdate();
                     UIController.Current.InvokeBPABackground(false);
                 }
@@ -105,7 +104,7 @@ namespace TabularEditor.BestPracticeAnalyzer
                 // Restore external rule collections:
                 analyzer.LoadExternalRuleCollections();
             }
-
+            
         }
 
         private void btnRemoveRuleDefinition_Click(object sender, EventArgs e)
@@ -226,10 +225,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         private void chkRuleEnabled_CheckStateChanged(object sender, TreePathEventArgs e)
         {
             var ignoredRule = e.Path.LastNode as BestPracticeRule;
-
-            foreach (var rule in Analyzer.ModelRules) if (rule.ID.EqualsI(ignoredRule.ID)) rule.Enabled = ignoredRule.Enabled;
-            foreach (var rule in Analyzer.LocalUserRules) if (rule.ID.EqualsI(ignoredRule.ID)) rule.Enabled = ignoredRule.Enabled;
-            foreach (var rule in Analyzer.LocalMachineRules) if (rule.ID.EqualsI(ignoredRule.ID)) rule.Enabled = ignoredRule.Enabled;
+            foreach (var rule in Analyzer.AllRules.Where(r => r.ID.EqualsI(ignoredRule.ID))) rule.Enabled = ignoredRule.Enabled;
         }
 
         private void chkRuleEnabled_IsVisibleValueNeeded(object sender, Aga.Controls.Tree.NodeControls.NodeControlValueEventArgs e)
@@ -247,7 +243,7 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         private void btnAddRuleDefinition_Click(object sender, EventArgs e)
         {
-            if (BPAManagerAddCollectionDialog.Show(Analyzer))
+            if (BPAManagerAddCollectionDialog.Show(Analyzer, this))
             {
                 ruleDefinitionsModel.DoStructureChanged();
             }
@@ -298,6 +294,35 @@ namespace TabularEditor.BestPracticeAnalyzer
                     tvRules.SelectedNode = node;
                     tvRules.Focus();
                 }
+            }
+        }
+
+        private void btnMoveTo_Click(object sender, EventArgs e)
+        {
+            if(MoveToCollectionDialog.Show(CurrentCollection, CurrentRules.Count() > 1, Analyzer, out BestPracticeCollection destination, out bool clone))
+            {
+                foreach (var rule in CurrentRules.ToList())
+                {
+                    var currentCollection = CurrentCollection ?? Analyzer.EffectiveCollectionForRule(rule.ID);
+
+                    if (clone)
+                    {
+                        var newRule = rule.Clone();
+                        destination.Rules.Add(newRule);
+                        rulesModel.AddedRules[newRule] = destination;
+                    }
+                    else
+                    {
+                        rulesModel.DeletedRules[rule] = currentCollection;
+                        currentCollection.Rules.Remove(rule);
+
+                        rulesModel.AddedRules[rule] = destination;
+                        destination.Rules.Add(rule);
+                    }
+                }
+
+                EffectiveRules = new HashSet<BestPracticeRule>(Analyzer.EffectiveRules);
+                rulesModel.RefreshCategories();
             }
         }
     }

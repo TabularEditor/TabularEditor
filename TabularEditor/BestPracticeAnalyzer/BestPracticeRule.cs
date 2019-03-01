@@ -15,6 +15,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.Collections;
 using TabularEditor.UIServices;
+using System.Net;
 
 namespace TabularEditor.BestPracticeAnalyzer
 {
@@ -362,6 +363,8 @@ namespace TabularEditor.BestPracticeAnalyzer
         internal const string BPAAnnotation = "BestPracticeAnalyzer";
         public string FilePath { get; set; }
 
+        public string Url { get; set; }
+
         [JsonIgnore]
         public bool Internal { get; set; }
 
@@ -421,6 +424,37 @@ namespace TabularEditor.BestPracticeAnalyzer
             return result;
         }
 
+        public static string GetUrl(string url)
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            request.Timeout = 10000;
+            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            using (Stream stream = response.GetResponseStream())
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                return reader.ReadToEnd();
+            }
+        }
+
+        public static BestPracticeCollection GetCollectionFromUrl(string url)
+        {
+            var result = new BestPracticeCollection();
+            result.AllowEdit = false;
+            result.Internal = false;
+            result.Url = url;
+            result.Name = url;
+
+            try
+            {
+                result.Rules = LoadFromJson(GetUrl(url));
+            }
+            catch { }
+
+            return result;
+        }
+
         public static BestPracticeCollection GetLocalUserCollection()
         {
             var localUserFileName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\BPARules.json";
@@ -433,7 +467,7 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         public static BestPracticeCollection GetLocalMachineCollection()
         {
-            var localMachineFileName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\BPARules.json";
+            var localMachineFileName = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\TabularEditor\BPARules.json";
             var result = GetCollectionFromFile(localMachineFileName);
             result.Name = "Rules on the local machine";
             result.Internal = true;
