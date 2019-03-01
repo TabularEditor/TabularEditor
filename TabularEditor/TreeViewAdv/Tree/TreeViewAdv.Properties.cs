@@ -201,6 +201,9 @@ namespace Aga.Controls.Tree
 			}
 		}
 
+        public bool HorizontalScrollbarVisible => _hScrollBar.Visible;
+        public bool VerticalScrollbarVisible => _vScrollBar.Visible;
+
 		private List<TreeNodeAdv> _selection;
 		internal List<TreeNodeAdv> Selection
 		{
@@ -259,6 +262,12 @@ namespace Aga.Controls.Tree
 			get { return _allowColumnReorder; }
 			set { _allowColumnReorder = value; }
 		}
+
+        [DefaultValue(false), Category("Behavior")]
+        public bool DelaySelectionToMouseUp
+        {
+            get; set;
+        } = false;
 
 		private bool _showLines = true;
 		[DefaultValue(true), Category("Behavior")]

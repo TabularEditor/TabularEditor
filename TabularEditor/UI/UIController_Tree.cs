@@ -483,7 +483,7 @@ namespace TabularEditor.UI
         }
 
         public void SetDisplayOptions(bool showHidden, bool showDisplayFolders, bool showColumns, 
-            bool showMeasures, bool showHierarchies, bool showAllObjectTypes, bool orderByName, string filter = null)
+            bool showMeasures, bool showHierarchies, bool showPartitions, bool showAllObjectTypes, bool orderByName, string filter = null)
         {
             CurrentOptions = 
                 (showHidden ? LogicalTreeOptions.ShowHidden : 0) |
@@ -491,6 +491,7 @@ namespace TabularEditor.UI
                 (showColumns ? LogicalTreeOptions.Columns : 0) |
                 (showMeasures ? LogicalTreeOptions.Measures : 0) |
                 (showHierarchies ? LogicalTreeOptions.Hierarchies : 0) |
+                (showPartitions ? LogicalTreeOptions.Partitions : 0) |
                 (showAllObjectTypes ? LogicalTreeOptions.AllObjectTypes : 0) |
                 (orderByName ? LogicalTreeOptions.OrderByName : 0) |
                 LogicalTreeOptions.ShowRoot;

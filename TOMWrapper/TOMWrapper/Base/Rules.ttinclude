@@ -222,7 +222,7 @@ partial class Rules {
 			p.Name == "IsHidden" ? "\n\t\t\t\tHandler.UpdateObject(this);" : "",
 			resolveObject, 
 			"Properties." + p.Name.ToUpper(),
-			p.PropertyType == typeof(string) ? ".Replace(\"\\r\", \"\")" : "",
+			p.PropertyType == typeof(string) ? "?.Replace(\"\\r\", \"\")" : "",
 			p.Name == "DisplayFolder" ? "if(value.Contains(@\"\\\\\")) throw new Exception(\"Display Folder names cannot be blank.\");" : "");
     }
 

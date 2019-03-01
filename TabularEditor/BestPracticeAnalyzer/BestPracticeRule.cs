@@ -12,6 +12,10 @@ using json.Newtonsoft.Json;
 using TabularEditor.TOMWrapper;
 using json.Newtonsoft.Json.Converters;
 using System.ComponentModel;
+using System.Threading;
+using System.Collections;
+using TabularEditor.UIServices;
+using System.Net;
 
 namespace TabularEditor.BestPracticeAnalyzer
 {
@@ -119,13 +123,25 @@ namespace TabularEditor.BestPracticeAnalyzer
         public string Category { get; set; }
 
         [JsonIgnore]
-        public bool Enabled { get; set; }
+        public bool Enabled { get; set; } = true;
 
         public string Description { get; set; }
         public int Severity { get; set; } = 1;
 
         [JsonConverter(typeof(RuleScopeConverter))]
-        public RuleScope Scope { get; set; }
+        public RuleScope Scope
+        {
+            get
+            {
+                return _scope;
+            }
+            set
+            {
+                if (_scope != value) _needsRecompile = true;
+                _scope = value;
+            }
+        }
+        private RuleScope _scope;
 
         [JsonIgnore]
         public string ScopeString
@@ -139,63 +155,171 @@ namespace TabularEditor.BestPracticeAnalyzer
                 }
             }
         }
-        public string Expression { get; set; }
+        private string _expression;
+        public string Expression
+        {
+            get
+            {
+                return _expression;
+            }
+            set
+            {
+                if (_expression != value) _needsRecompile = true;
+                _expression = value;
+            }
+        }
+        private bool _needsRecompile = true;
         public string FixExpression { get; set; }
         public int CompatibilityLevel { get; set; }
 
         [JsonIgnore]
-        public bool IsValid { get; }
-    }
+        public bool IsValid { get; private set; }
 
-    static public class StandardBestPractices
-    {
-        static public BestPracticeCollection GetStandardBestPractices()
+        private List<IQueryable> _queries;
+        public List<IQueryable> GetQueries(Model model)
         {
-            var bpc = new BestPracticeCollection();
-
-            // These should be loaded from GitHub instead
-            /*
-            bpc.Add(new BestPracticeRule
+            if(_needsRecompile)
             {
-                Name = "Do not summarize key columns",
-                ID = "KEYCOLUMNS_SUMMARIZEBY_NONE",
-                Scope = RuleScope.CalculatedColumn | RuleScope.CalculatedTableColumn | RuleScope.DataColumn,
-                Description = "Visible numeric columns whose name end with Key or ID should have their 'Summarize By' property set to 'Do Not Summarize'.",
-                Severity = 1,
-                Expression = "(Name.EndsWith(\"Key\", true, null) or Name.EndsWith(\"ID\", true, null)) and SummarizeBy <> \"None\" and not IsHidden and not Table.IsHidden",
-                FixExpression = "SummarizeBy = TOM.AggregateFunction.None",
-                Compatibility = new HashSet<int> { 1200, 1400 }
-            });
+                CompileQueries(model);
+            }
+            return _queries;
+        }
 
-            bpc.Add(new BestPracticeRule
+        private IQueryable CompileQuery(IQueryable collection)
+        {
+            var lambda = System.Linq.Dynamic.DynamicExpression.ParseLambda(collection.ElementType, typeof(bool), Expression);
+            return collection.Provider.CreateQuery(
+                        System.Linq.Expressions.Expression.Call(
+                            typeof(Queryable), "Where",
+                            new Type[] { collection.ElementType },
+                            collection.Expression, System.Linq.Expressions.Expression.Quote(lambda))
+                        );
+        }
+
+        private bool invalidCompatibilityLevel = false;
+        private RuleScope errorScope;
+
+        private void CompileQueries(Model model)
+        {
+            _queries = new List<IQueryable>();
+            ErrorMessage = null;
+
+            if (CompatibilityLevel > model.Database.CompatibilityLevel)
             {
-                Name = "Hide foreign key columns",
-                ID = "FKCOLUMNS_HIDDEN",
-                Scope = RuleScope.CalculatedColumn | RuleScope.CalculatedTableColumn | RuleScope.DataColumn,
-                Description = "Columns used on the Many side of a relationship should be hidden.",
-                Severity = 1,
-                Expression = "Model.Relationships.Any(FromColumn = outerIt) and not IsHidden and not Table.IsHidden",
-                FixExpression = "IsHidden = true",
-                Compatibility = new HashSet<int> { 1200, 1400 }
-            });
+                invalidCompatibilityLevel = true;
+                IsValid = false;
+                return;
+            }
 
-            bpc.Add(new BestPracticeRule {
-                Name = "Test rule",
-                ID = "TEST_RULE",
-                Scope = RuleScope.Measure,
-                Expression = "not RegEx.IsMatch(Table.Name,\"KPIs\") and (not Expression.Contains(\"Test\") or (Expression = \"Hej\" and Expression = \"Dav\") or not Name.StartsWith(\"test\",true,null) or Name <> \"Hej\" or Name <> \"1\" or not (Name <> \"2\") or Name <> \"3\") and Description = \"\"",
-                Compatibility = new HashSet<int> { 1200, 1400 }
-            });
+            try
+            {
+                foreach (var scope in Scope.Enumerate())
+                {
+                    errorScope = scope;
+                    var collection = Analyzer.GetCollection(model, scope);
+                    _queries.Add(CompileQuery(collection));
+                }
+                IsValid = true;
+            }
+            catch (Exception ex)
+            {
+                IsValid = false;
+                ErrorMessage = ex.Message;
+            }
+        }
 
-            bpc.Add(new BestPracticeRule {
-                Name = "Test rule 2",
-                ID = "TEST_RULE_2",
-                Scope = RuleScope.Measure,
-                Expression = "!string.IsNullOrEmpty(Table.Name)",
-                Compatibility = new HashSet<int> { 1200, 1400 }
-            });*/
+        internal IEnumerable<AnalyzerResult> Analyze(Model model, CancellationToken ct)
+        {
+            ObjectCount = 0;
+            var queries = GetQueries(model);
+            if (!IsValid)
+            {
+                yield return new AnalyzerResult
+                {
+                    Rule = this,
+                    InvalidCompatibilityLevel = invalidCompatibilityLevel,
+                    RuleError = ErrorMessage,
+                    RuleErrorScope = errorScope
+                };
+                yield break;
+            }
 
-            return bpc;
+            foreach (var query in queries)
+            {
+                if (ct.IsCancellationRequested) yield break;
+                var results = query.OfType<ITabularNamedObject>().ToList();
+                ObjectCount += results.Count;
+                foreach (var obj in results)
+                {
+                    if (ct.IsCancellationRequested) yield break;
+                    yield return new AnalyzerResult { Rule = this, Object = obj };
+                }
+            }
+        }
+
+        public void UpdateEnabled(Model model)
+        {
+            var ignoreRules = new AnalyzerIgnoreRules(model);
+            Enabled = !ignoreRules.RuleIDs.Contains(ID);
+        }
+
+        public IEnumerable<AnalyzerResult> Analyze(Model model)
+        {
+            UpdateEnabled(model);
+            if (!Enabled)
+            {
+                yield return new AnalyzerResult
+                {
+                    Rule = this,
+                    RuleIgnored = true
+                };
+                yield break;
+            }
+
+            ObjectCount = 0;
+            var queries = GetQueries(model);
+            if (!IsValid) {
+                yield return new AnalyzerResult
+                {
+                    Rule = this,
+                    InvalidCompatibilityLevel = invalidCompatibilityLevel,
+                    RuleError = ErrorMessage,
+                    RuleErrorScope = errorScope
+                };
+                yield break;
+            }
+
+            foreach(var query in queries)
+            {
+                var results = query.OfType<ITabularNamedObject>().ToList();
+                ObjectCount += results.Count;
+                foreach(var obj in results) yield return new AnalyzerResult { Rule = this, Object = obj };
+            }
+        }
+
+        public int ObjectCount { get; private set; }
+
+        public string ErrorMessage { get; private set; }
+
+        public BestPracticeRule Clone()
+        {
+            return MemberwiseClone() as BestPracticeRule;
+        }
+        public void AssignFrom(BestPracticeRule other)
+        {
+            Category = other.Category;
+            CompatibilityLevel = other.CompatibilityLevel;
+            Description = other.Description;
+            Enabled = other.Enabled;
+            ErrorMessage = other.ErrorMessage;
+            Expression = other.Expression;
+            FixExpression = other.FixExpression;
+            ID = other.ID;
+            IsValid = other.IsValid;
+            Name = other.Name;
+            ObjectCount = other.ObjectCount;
+            Scope = other.Scope;
+            Severity = other.Severity;
         }
     }
 
@@ -234,48 +358,195 @@ namespace TabularEditor.BestPracticeAnalyzer
         }
     }
 
-    public class BestPracticeCollection: List<BestPracticeRule>
+    public class BestPracticeCollection: IEnumerable<BestPracticeRule>, IRuleDefinition
     {
-        static public BestPracticeCollection LoadFromJsonFile(string filePath)
+        internal const string BPAAnnotation = "BestPracticeAnalyzer";
+        public string FilePath { get; set; }
+
+        public string Url { get; set; }
+
+        [JsonIgnore]
+        public bool Internal { get; set; }
+
+        [JsonIgnore]
+        public bool AllowEdit { get; set; } = false;
+
+        [JsonIgnore]
+        public string Name { get; set; }
+
+        [JsonIgnore]
+        public List<BestPracticeRule> Rules { get; private set; } = new List<BestPracticeRule>();
+
+        string IRuleDefinition.Name => Name;
+
+        IEnumerable<BestPracticeRule> IRuleDefinition.Rules => Rules;
+
+        private Model model;
+
+        public bool Save()
         {
-            if (!File.Exists(filePath)) return new BestPracticeCollection();
-            return LoadFromJson(File.ReadAllText(filePath));
+            if(model != null)
+            {
+                if (Rules.Count == 0)
+                    model.RemoveAnnotation(BPAAnnotation);
+                else
+                    model.SetAnnotation(BPAAnnotation, SerializeToJson());
+                return true;
+            }
+            else if(!string.IsNullOrEmpty(FilePath))
+            {
+                try
+                {
+                    (new FileInfo(FilePath)).Directory.Create();
+                    File.WriteAllText(FilePath, SerializeToJson());
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        public static BestPracticeCollection GetCurrentModelCollection(Model model)
+        {
+            if (model == null) return null;
+            
+            var result = new BestPracticeCollection();
+            result.model = model;
+            var localRulesJson = model.GetAnnotation(BPAAnnotation) ?? model.GetAnnotation("BestPractizeAnalyzer"); // Stupid typo in earlier version
+            if (!string.IsNullOrEmpty(localRulesJson)) result.Rules = LoadFromJson(localRulesJson);
+            result.AllowEdit = true;
+            result.Name = "Rules within the current model";
+            result.Internal = true;
+
+            return result;
+        }
+
+        public static string GetUrl(string url)
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            request.Timeout = 10000;
+            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            using (Stream stream = response.GetResponseStream())
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                return reader.ReadToEnd();
+            }
+        }
+
+        public static BestPracticeCollection GetCollectionFromUrl(string url)
+        {
+            var result = new BestPracticeCollection();
+            result.AllowEdit = false;
+            result.Internal = false;
+            result.Url = url;
+            result.Name = url;
+
+            try
+            {
+                result.Rules = LoadFromJson(GetUrl(url));
+            }
+            catch { }
+
+            return result;
+        }
+
+        public static BestPracticeCollection GetLocalUserCollection()
+        {
+            var localUserFileName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\BPARules.json";
+            var result = GetCollectionFromFile(localUserFileName);
+            result.Name = "Rules for the local user";
+            result.Internal = true;
+
+            return result;
+        }
+
+        public static BestPracticeCollection GetLocalMachineCollection()
+        {
+            var localMachineFileName = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\TabularEditor\BPARules.json";
+            var result = GetCollectionFromFile(localMachineFileName);
+            result.Name = "Rules on the local machine";
+            result.Internal = true;
+
+            return result;
+        }
+
+        public static BestPracticeCollection GetCollectionFromFile(string filePath)
+        {
+            var result = new BestPracticeCollection();
+            result.Name = filePath;            
+            result.FilePath = filePath;
+
+            var fi = new FileInfo(filePath);
+            result.AllowEdit = FileSystemHelper.IsDirectoryWritable(fi.DirectoryName);
+            result.AddFromJsonFile(filePath);
+
+            return result;
         }
 
         public void AddFromJsonFile(string filePath)
         {
-            var bpc = LoadFromJsonFile(filePath);
-            AddRange(
-                bpc.Where(r => !this.Any(rule => rule.ID.Equals(r.ID, StringComparison.InvariantCultureIgnoreCase)))
-                );
+            try
+            {
+                var json = File.ReadAllText(filePath);
+                var rules = LoadFromJson(json);
+                Rules.AddRange(
+                    rules.Where(r => !Rules.Any(rule => rule.ID.Equals(r.ID, StringComparison.InvariantCultureIgnoreCase)))
+                    );
+            }
+            catch
+            {
+
+            }
         }
 
-        static public BestPracticeCollection LoadFromJson(string json)
+        static private List<BestPracticeRule> LoadFromJson(string json)
         {
-            return JsonConvert.DeserializeObject<BestPracticeCollection>(json);
+            try
+            {
+                return JsonConvert.DeserializeObject<List<BestPracticeRule>>(json);
+            }
+            catch (Exception ex)
+            {
+                return new List<BestPracticeRule>();
+            }
         }
 
         public string SerializeToJson()
         {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
-        public void SaveToFile(string filePath)
-        {
-            (new FileInfo(filePath)).Directory.Create();
-            File.WriteAllText(filePath, SerializeToJson());
+            return JsonConvert.SerializeObject(Rules, Formatting.Indented);
         }
 
         public BestPracticeRule this[string ruleId]
         {
             get
             {
-                return this.FirstOrDefault(r => r.ID.Equals(ruleId, StringComparison.InvariantCultureIgnoreCase));
+                return Rules.FirstOrDefault(r => r.ID.Equals(ruleId, StringComparison.InvariantCultureIgnoreCase));
             }
+        }
+
+        public void Add(BestPracticeRule rule)
+        {
+            Rules.Add(rule);
         }
 
         public bool Contains(string Id)
         {
-            return this.Any(r => r.ID.Equals(Id, StringComparison.InvariantCultureIgnoreCase));
+            return Rules.Any(r => r.ID.Equals(Id, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        public IEnumerator<BestPracticeRule> GetEnumerator()
+        {
+            return ((IEnumerable<BestPracticeRule>)Rules).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<BestPracticeRule>)Rules).GetEnumerator();
         }
     }
 }

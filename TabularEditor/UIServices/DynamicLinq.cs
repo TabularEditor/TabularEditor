@@ -805,6 +805,11 @@ namespace System.Linq.Dynamic
             typeof(System.StringComparison)
         };
 
+        static readonly Type[] extensionTypes =
+        {
+            typeof(TabularEditor.TOMWrapper.Utils.DaxDependencyHelper)
+        };
+
         static readonly Expression trueLiteral = Expression.Constant(true);
         static readonly Expression falseLiteral = Expression.Constant(false);
         static readonly Expression nullLiteral = Expression.Constant(null);
@@ -1161,7 +1166,7 @@ namespace System.Linq.Dynamic
                 if (token.id == TokenId.Dot)
                 {
                     NextToken();
-                    expr = ParseMemberAccess(null, expr);
+                    expr = ParseMemberAccessSafe(null, expr);
                 }
                 else if (token.id == TokenId.OpenBracket)
                 {
@@ -1314,7 +1319,7 @@ namespace System.Linq.Dynamic
                 NextToken();
                 return expr;
             }
-            if (it != null) return ParseMemberAccess(null, it);
+            if (it != null) return ParseMemberAccessSafe(null, it);
             throw ParseError(Res.UnknownIdentifier, token.text);
         }
 
@@ -1481,9 +1486,22 @@ namespace System.Linq.Dynamic
                 GetTypeName(exprType), GetTypeName(type));
         }
 
+        readonly Expression Null = Expression.Constant(null);
+
+        Expression ParseMemberAccessSafe(Type type, Expression instance)
+        {
+            var isNull = Expression.Equal(instance, Null);
+            var memberAccess = ParseMemberAccess(type, instance);
+
+            return
+                Expression.Condition(isNull, Expression.Default(memberAccess.Type), memberAccess);
+        }
+
+
         Expression ParseMemberAccess(Type type, Expression instance)
         {
             if (instance != null) type = instance.Type;
+
             int errorPos = token.pos;
             string id = GetIdentifier();
             NextToken();
@@ -1503,10 +1521,15 @@ namespace System.Linq.Dynamic
                 switch (FindMethod(type, id, instance == null, args, out mb))
                 {
                     case 0:
-                        throw ParseError(errorPos, Res.NoApplicableMethod,
+                        if(instance != null && FindExtensionMethod(instance, id, args, out mb, out Expression[] extArgs)==1)
+                        {
+                            return Expression.Call(null, (MethodInfo)mb, extArgs);
+                        }
+                        else
+                            throw ParseError(errorPos, Res.NoApplicableMethod,
                             id, GetTypeName(type));
                     case 1:
-                        return Expression.Call(instance, (MethodInfo)mb, args);
+                            return Expression.Call(instance, (MethodInfo)mb, args);
                     default:
                         throw ParseError(errorPos, Res.AmbiguousMethodInvocation,
                             id, GetTypeName(type));
@@ -1518,9 +1541,9 @@ namespace System.Linq.Dynamic
                 if (member == null)
                     throw ParseError(errorPos, Res.UnknownPropertyOrField,
                         id, GetTypeName(type));
-                return member is PropertyInfo ?
-                    Expression.Property(instance, (PropertyInfo)member) :
-                    Expression.Field(instance, (FieldInfo)member);
+                return member is FieldInfo fi ?
+                    Expression.Field(fi.IsStatic ? null : instance, fi) :
+                    Expression.Property(instance, (PropertyInfo)member);
             }            
         }
 
@@ -1743,8 +1766,8 @@ namespace System.Linq.Dynamic
 
         MemberInfo FindPropertyOrField(Type type, string memberName, bool staticAccess)
         {
-            BindingFlags flags = BindingFlags.Public | BindingFlags.DeclaredOnly |
-                (staticAccess ? BindingFlags.Static : BindingFlags.Instance);
+            BindingFlags flags = BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static |
+                (staticAccess ? 0 : BindingFlags.Instance);
             foreach (Type t in SelfAndBaseTypes(type))
             {
                 MemberInfo[] members = t.FindMembers(MemberTypes.Property | MemberTypes.Field,
@@ -1754,17 +1777,43 @@ namespace System.Linq.Dynamic
             return null;
         }
 
+        private static Dictionary<Type, List<Type>> BaseTypesAndInterfaces = new Dictionary<Type, List<Type>>();
+
+        int FindExtensionMethod(Expression instance, string methodName, Expression[] args, out MethodBase method, out Expression[] extArgs)
+        {
+            BindingFlags flags = BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static;
+
+            extArgs = new Expression[args.Length + 1];
+            Array.Copy(args, 0, extArgs, 1, args.Length);
+            extArgs[0] = instance;
+
+            // Extension methods:
+            foreach (Type t in extensionTypes)
+            {
+                MemberInfo[] members = t.FindMembers(MemberTypes.Method, 
+                    flags, Type.FilterNameIgnoreCase, methodName);
+                int count = FindBestMethod(members.Cast<MethodBase>(), extArgs, out method);
+                if (count != 0) return count;
+            }
+
+            method = null;
+            return 0;
+        }
+
         int FindMethod(Type type, string methodName, bool staticAccess, Expression[] args, out MethodBase method)
         {
             BindingFlags flags = BindingFlags.Public | BindingFlags.DeclaredOnly |
                 (staticAccess ? BindingFlags.Static : BindingFlags.Instance);
-            foreach (Type t in SelfAndBaseTypes(type))
+
+            // Type methods:
+            foreach (Type t in SelfAndBaseTypes(type)) // TODO: This also returns interfaces, which is not necessary
             {
                 MemberInfo[] members = t.FindMembers(MemberTypes.Method,
                     flags, Type.FilterNameIgnoreCase, methodName);
                 int count = FindBestMethod(members.Cast<MethodBase>(), args, out method);
                 if (count != 0) return count;
             }
+
             method = null;
             return 0;
         }
@@ -1790,20 +1839,28 @@ namespace System.Linq.Dynamic
 
         static IEnumerable<Type> SelfAndBaseTypes(Type type)
         {
+            if (BaseTypesAndInterfaces.TryGetValue(type, out List<Type> baseTypes)) return baseTypes;
+
+            List<Type> types = new List<Type>();
+
             if (type.IsInterface)
             {
-                List<Type> types = new List<Type>();
                 AddInterface(types, type);
-                return types;
             }
-            return SelfAndBaseClasses(type);
+            else
+            {
+                AddBaseClasses(types, type);
+            }
+
+            BaseTypesAndInterfaces.Add(type, types);
+            return types;
         }
 
-        static IEnumerable<Type> SelfAndBaseClasses(Type type)
+        static void AddBaseClasses(List<Type> types, Type type)
         {
             while (type != null)
             {
-                yield return type;
+                AddInterface(types, type);
                 type = type.BaseType;
             }
         }
@@ -1851,7 +1908,7 @@ namespace System.Linq.Dynamic
 
         bool IsApplicable(MethodData method, Expression[] args)
         {
-            if (method.Parameters.Length != args.Length) return false;
+            if (method.Parameters.Count(p => !p.IsOptional) != args.Length) return false;
             Expression[] promotedArgs = new Expression[args.Length];
             for (int i = 0; i < args.Length; i++)
             {

@@ -30,6 +30,7 @@ namespace TabularEditor.UIServices
         public bool FormulaFixup = true;
         public bool UseSemicolonsAsSeparators = false;
         public bool AllowUnsupportedPBIFeatures = false;
+        public bool BackgroundBpa = true;
         public string BackupLocation = string.Empty;
 
         // TODO: Handle backwards compatibility
@@ -80,6 +81,7 @@ namespace TabularEditor.UIServices
         public bool View_Measures = true;
         public bool View_Columns = true;
         public bool View_Hierarchies = true;
+        public bool View_Partitions = true;
         public bool View_MetadataInformation = false;
 
         [JsonConverter(typeof(StringEnumConverter))]
