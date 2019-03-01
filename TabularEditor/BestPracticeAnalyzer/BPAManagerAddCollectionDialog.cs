@@ -77,7 +77,7 @@ namespace TabularEditor.BestPracticeAnalyzer
                 parent.Enabled = true;
                 var fileName = localPathCheckBox.Visible && localPathCheckBox.IsChecked
                     ? FileSystemHelper.GetRelativePath(startDir, sfd.FileName) : sfd.FileName;
-                if(!analyzer.ExternalRuleCollections.Any(rc => rc.FilePath.EqualsI(fileName)))
+                if(!analyzer.ExternalRuleCollections.Any(rc => rc.FilePath != null && rc.FilePath.EqualsI(fileName)))
                     analyzer.ExternalRuleCollections.Add(BestPracticeCollection.GetCollectionFromFile(fileName));
                 return true;
             }
@@ -120,7 +120,7 @@ namespace TabularEditor.BestPracticeAnalyzer
                 parent.Enabled = true;
                 var fileName = localPathCheckBox.Visible && localPathCheckBox.IsChecked
                     ? FileSystemHelper.GetRelativePath(startDir, sfd.FileName) : sfd.FileName;
-                if (!analyzer.ExternalRuleCollections.Any(rc => rc.FilePath.EqualsI(fileName)))
+                if (!analyzer.ExternalRuleCollections.Any(rc => rc.FilePath != null && rc.FilePath.EqualsI(fileName)))
                     analyzer.ExternalRuleCollections.Add(BestPracticeCollection.GetCollectionFromFile(fileName));
                 return true;
             }
@@ -131,7 +131,8 @@ namespace TabularEditor.BestPracticeAnalyzer
         {
             if (UrlInputDialog.Show(out string url))
             {
-                analyzer.ExternalRuleCollections.Add(BestPracticeCollection.GetCollectionFromUrl(url));
+                if(!analyzer.ExternalRuleCollections.Any(rc => rc.Url != null && rc.Url.EqualsI(url)))
+                    analyzer.ExternalRuleCollections.Add(BestPracticeCollection.GetCollectionFromUrl(url));
                 return true;
             }
             else

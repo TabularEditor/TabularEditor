@@ -450,7 +450,7 @@ namespace TabularEditor.BestPracticeAnalyzer
             {
                 result.Rules = LoadFromJson(GetUrl(url));
             }
-            catch { }
+            catch (Exception ex) { }
 
             return result;
         }
