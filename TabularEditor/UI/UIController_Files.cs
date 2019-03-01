@@ -130,7 +130,7 @@ namespace TabularEditor.UI
             UpdateUIText();
         }
 
-        string File_Current;
+        public string File_Current { get; private set; }
 
         public void File_Open(bool fromFolder = false)
         {
