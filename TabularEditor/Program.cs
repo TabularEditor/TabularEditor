@@ -271,6 +271,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             if (doCheckDs == -1) doCheckDs = upperArgList.IndexOf("-SC");
 
             string saveToFolderOutputPath = null;
+            string saveToFolderReplaceId = null;
 
             var doSaveToFolder = upperArgList.IndexOf("-FOLDER");
             if (doSaveToFolder == -1) doSaveToFolder = upperArgList.IndexOf("-F");
@@ -283,11 +284,13 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                     return true;
                 }
                 saveToFolderOutputPath = argList[doSaveToFolder + 1];
+                if (doSaveToFolder + 2 < argList.Count && !argList[doSaveToFolder + 2].StartsWith("-")) saveToFolderReplaceId = argList[doSaveToFolder + 2];
                 var directoryName = new FileInfo(saveToFolderOutputPath).Directory.FullName;
                 Directory.CreateDirectory(saveToFolderOutputPath);
             }
 
             string buildOutputPath = null;
+            string buildReplaceId = null;
 
             var doSave = upperArgList.IndexOf("-BUILD");
             if (doSave == -1) doSave = upperArgList.IndexOf("-B");
@@ -301,6 +304,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                     return true;
                 }
                 buildOutputPath = argList[doSave + 1];
+                if (doSave + 2 < argList.Count && !argList[doSave + 2].StartsWith("-")) buildReplaceId = argList[doSave + 2];
                 var directoryName = new FileInfo(buildOutputPath).Directory.FullName;
                 Directory.CreateDirectory(directoryName);
             }
@@ -350,13 +354,13 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             if (!string.IsNullOrEmpty(buildOutputPath))
             {
                 cw.WriteLine("Building Model.bim file...");
-                h.Save(buildOutputPath, SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+                h.Save(buildOutputPath, SaveFormat.ModelSchemaOnly, SerializeOptions.Default, replaceId:buildReplaceId);
             }
             else if(!string.IsNullOrEmpty(saveToFolderOutputPath))
             {
                 cw.WriteLine("Saving Model.bim file to Folder Output Path ...");
                 //Note the last parameter, we use whatever SerializeOptions are already in the file
-                h.Save(saveToFolderOutputPath, SaveFormat.TabularEditorFolder, null, true);
+                h.Save(saveToFolderOutputPath, SaveFormat.TabularEditorFolder, null, true, replaceId:saveToFolderReplaceId);
             }
 
             var replaceMap = new Dictionary<string, string>();
@@ -541,7 +545,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
         {
             cw.WriteLine(@"Usage:
 
-TABULAREDITOR ( file | server database ) [-S script] [-SC] [(-B | -F) output] [-A [rulefile]] [-V]
+TABULAREDITOR ( file | server database ) [-S script] [-SC] [(-B | -F) output [id]] [-A [rulefile]] [-V]
     [-D server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]] [-P]] [-R [-M]] [-W]]
 
 file                Full path of the Model.bim file or database.json model folder to load.
@@ -557,6 +561,7 @@ database            Database ID of the model to load
   output              Full path of the Model.bim file to save to.
 -F / -FOLDER         Saves the model (after optional script execution) as a series of JSON objects in a folder.
   output              Full path of the folder to save to.
+  id                  Optional id/name to assign to the Database object when saving.
 -V / -VSTS          Output Visual Studio Team Services logging commands.
 -A / -ANALYZE       Runs Best Practice Analyzer and outputs the result to the console.
   rulefile            Optional path of file containing BPA rules to be analyzed. If not
