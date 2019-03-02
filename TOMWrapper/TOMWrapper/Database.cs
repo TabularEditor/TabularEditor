@@ -24,7 +24,7 @@ namespace TabularEditor.TOMWrapper
         {
             return TOMDatabase?.Server == null ? "(Metadata loaded from file)" : ServerName + "." + Name;
         }
-
+        
         public string Name
         {
             get { return TOMDatabase?.Name; }

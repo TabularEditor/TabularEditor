@@ -41,7 +41,7 @@ namespace TabularEditor.TOMWrapper.Serialization
             /// <summary>
             /// Saves the model to the specified folder using the specified serialize options.
             /// </summary>
-            public void SaveToFolder(Model model, string path, SerializeOptions options)
+            public void SaveToFolder(Model model, string path, SerializeOptions options, string replaceId = null)
             {
                 if (options.LocalTranslations) model.StoreTranslationsAsAnnotations();
                 if (options.LocalPerspectives) model.StorePerspectivesToAnnotations();
@@ -49,6 +49,12 @@ namespace TabularEditor.TOMWrapper.Serialization
 
                 var json = Serializer.SerializeDB(options);
                 var jobj = JObject.Parse(json);
+
+                if(replaceId != null)
+                {
+                    jobj["name"] = replaceId;
+                    if (jobj["id"] != null) jobj["id"].Remove();
+                }
 
                 var jModel = jobj["model"] as JObject;
                 var dataSources = options.Levels.Contains("Data Sources") ? PopArray(jModel, "dataSources") : null;
@@ -170,11 +176,12 @@ namespace TabularEditor.TOMWrapper.Serialization
                 return result;
             }
         }
-        public static void SaveToFolder(this Model model, string path, SerializeOptions options)
+        public static void SaveToFolder(this Model model, string path, SerializeOptions options, string replaceId = null)
         {
             var serializer = new FileWriter();
-            serializer.SaveToFolder(model, path, options);
+            serializer.SaveToFolder(model, path, options, replaceId);
         }
+
 
         public static string CombineFolderJson(string path)
         {

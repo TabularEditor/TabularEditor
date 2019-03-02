@@ -1,6 +1,7 @@
 ﻿extern alias json;
 
 using json::Newtonsoft.Json;
+using json::Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -134,7 +135,7 @@ namespace TabularEditor.TOMWrapper
                 Model.SetAnnotation(ANN_SERIALIZEOPTIONS, JsonConvert.SerializeObject(options), undoable);
         }
 
-        public void Save(string path, SaveFormat format, SerializeOptions options, bool useAnnotatedSerializeOptions = false, bool resetCheckpoint = false, bool restoreSerializationOptions = true)
+        public void Save(string path, SaveFormat format, SerializeOptions options, bool useAnnotatedSerializeOptions = false, bool resetCheckpoint = false, bool restoreSerializationOptions = true, string replaceId = null)
         {
             _disableUpdates = true;
             bool hasOptions = HasSerializeOptions;
@@ -161,13 +162,13 @@ namespace TabularEditor.TOMWrapper
                 {
                     case SaveFormat.ModelSchemaOnly:
                         if (options != SerializeOptions.Default) SerializeOptions = options;
-                        SaveFile(path, options);
+                        SaveFile(path, options, replaceId);
                         break;
                     case SaveFormat.PowerBiTemplate:
                         SavePbit(path);
                         break;
                     case SaveFormat.TabularEditorFolder:
-                        Model.SaveToFolder(path, options);
+                        Model.SaveToFolder(path, options, replaceId);
                         break;
 
                     case SaveFormat.VisualStudioProject:
@@ -208,6 +209,19 @@ namespace TabularEditor.TOMWrapper
             // Save to .pbit file:
             pbit.ModelJson = dbcontent;
             pbit.SaveAs(fileName);
+        }
+
+        private void SaveFile(string fileName, SerializeOptions options, string id)
+        {
+            var dbcontent = Serializer.SerializeDB(options);
+            var jObject = JObject.Parse(dbcontent);
+            jObject["name"] = id;
+            if (jObject["id"] != null) jObject["id"].Remove();
+            dbcontent = jObject.ToString(Formatting.Indented);
+            (new FileInfo(fileName)).Directory.Create();
+
+            // Save to Model.bim:
+            File.WriteAllText(fileName, dbcontent);
         }
 
         private void SaveFile(string fileName, SerializeOptions options)
