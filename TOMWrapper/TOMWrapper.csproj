@@ -107,6 +107,11 @@
     <Compile Include="TOMWrapper\Tests\CompatibilityLevelAttribute.cs" />
     <Compile Include="Utils\CTCBackup.cs" />
     <Compile Include="Utils\DaxToken.cs" />
+    <Compile Include="Utils\DaxToken.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DaxToken.tt</DependentUpon>
+    </Compile>
     <Compile Include="Utils\DependencyList.cs" />
     <Compile Include="TOMWrapper\NamedExpression.cs" />
     <Compile Include="TOMWrapper\TabularModelHandlerSettings.cs" />
@@ -221,6 +226,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Utils\DaxToken.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DaxToken.Generated.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

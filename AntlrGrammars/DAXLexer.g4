@@ -265,15 +265,35 @@ VAR:                    'VAR'                                                   
 RETURN:                 'RETURN'                                                                                  -> channel(KEYWORD_CHANNEL);
 
 CONTAINSROW:            'CONTAINSROW'                                                                             -> channel(KEYWORD_CHANNEL);
-ERROR:                  'ERROR'                                                                                   -> channel(KEYWORD_CHANNEL);
-USEROBJECTID:           'USEROBJECTID'                                                                            -> channel(KEYWORD_CHANNEL);
-USERPRINCIPALNAME:      'USERPRINCIPALNAME'                                                                       -> channel(KEYWORD_CHANNEL);
-UNICHAR:                'UNICHAR'                                                                                 -> channel(KEYWORD_CHANNEL);
 DETAILROWS:             'DETAILROWS'                                                                              -> channel(KEYWORD_CHANNEL);
-GENERATESERIES:         'GENERATESERIES'                                                                          -> channel(KEYWORD_CHANNEL);
 SELECTEDVALUE:          'SELECTEDVALUE'                                                                           -> channel(KEYWORD_CHANNEL);
-TREATAS:                'TREATAS'                                                                                 -> channel(KEYWORD_CHANNEL);
 TOPNSKIP:               'TOPNSKIP'                                                                                -> channel(KEYWORD_CHANNEL);
+
+APPROXIMATEDISTINCTCOUNT:      'APPROXIMATEDISTINCTCOUNT'           -> channel(KEYWORD_CHANNEL);
+COMBINEVALUES:                 'COMBINEVALUES'                      -> channel(KEYWORD_CHANNEL);
+CONTAINSSTRING:                'CONTAINSSTRING'                     -> channel(KEYWORD_CHANNEL);
+CONTAINSSTRINGEXACT:           'CONTAINSSTRINGEXACT'                -> channel(KEYWORD_CHANNEL);
+DISTINCTCOUNTNOBLANK:          'DISTINCTCOUNTNOBLANK'               -> channel(KEYWORD_CHANNEL);
+ERROR:                         'ERROR'                              -> channel(KEYWORD_CHANNEL);
+GENERATESERIES:                'GENERATESERIES'                     -> channel(KEYWORD_CHANNEL);
+ISINSCOPE:                     'ISINSCOPE'                          -> channel(KEYWORD_CHANNEL);
+KEYWORDMATCH:                  'KEYWORDMATCH'                       -> channel(KEYWORD_CHANNEL);
+NONVISUAL:                     'NONVISUAL'                          -> channel(KEYWORD_CHANNEL);
+NORMDIST:                      'NORM.DIST'                          -> channel(KEYWORD_CHANNEL);
+NORMINV:                       'NORM.INV'                           -> channel(KEYWORD_CHANNEL);
+NORMSDIST:                     'NORM.S.DIST'                        -> channel(KEYWORD_CHANNEL);
+NORMSINV:                      'NORM.S.INV'                         -> channel(KEYWORD_CHANNEL);
+TDIST:                         'T.DIST'                             -> channel(KEYWORD_CHANNEL);
+TDIST2T:                       'T.DIST.2T'                          -> channel(KEYWORD_CHANNEL);
+TDISTRT:                       'T.DIST.RT'                          -> channel(KEYWORD_CHANNEL);
+TINV:                          'T.INV'                              -> channel(KEYWORD_CHANNEL);
+TINV2T:                        'T.INV.2T'                           -> channel(KEYWORD_CHANNEL);
+TREATAS:                       'TREATAS'                            -> channel(KEYWORD_CHANNEL);
+UNICHAR:                       'UNICHAR'                            -> channel(KEYWORD_CHANNEL);
+USEROBJECTID:                  'USEROBJECTID'                       -> channel(KEYWORD_CHANNEL);
+USERPRINCIPALNAME:             'USERPRINCIPALNAME'                  -> channel(KEYWORD_CHANNEL);
+UTCNOW:                        'UTCNOW'                             -> channel(KEYWORD_CHANNEL);
+UTCTODAY:                      'UTCTODAY'                           -> channel(KEYWORD_CHANNEL);
 
 QUARTER:                'QUARTER'                                                                                 -> channel(KEYWORD_CHANNEL);
 BOTH:                   'BOTH'                                                                                    -> channel(KEYWORD_CHANNEL);

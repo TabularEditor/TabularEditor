@@ -1,0 +1,24 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.IO" #>
+<#@ assembly name="System.Linq" #>
+<#@ assembly name="EnvDTE" #>
+<#@ import namespace="EnvDTE" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".Generated.cs" #>
+
+namespace TabularEditor.TOMWrapper.Utils
+{
+    public partial class DaxToken
+    {
+		public const int <# 
+    var solutionPath = this.Host.ResolveAssemblyReference("$(SolutionDir)"); 
+    var tokens = System.IO.File.ReadAllLines(solutionPath + @"\AntlrGrammars\obj\Debug\DAXLexer.tokens");
+	var first = true;
+	foreach(var token in tokens.Where(t => !t.StartsWith("'"))) { #><#= first ? "" : "," #>
+	        <#= token #><# first = false; } #>;
+
+	}
+}
