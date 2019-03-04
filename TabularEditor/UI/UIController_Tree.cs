@@ -400,15 +400,17 @@ namespace TabularEditor.UI
             {
                 // TODO: Handle this through actions
                 TreeNodeAdv dropTarget = UI.TreeView.DropPosition.Node;
+                if (!dropTarget.IsLeaf) dropTarget.Expand();
+                var draggedObjects = draggedNodes.Select(n => n.Tag).OfType<ITabularObject>().ToList();
                 TreeModel.DoDrop(draggedNodes, dropTarget, UI.TreeView.DropPosition.Position);
 
-                if (!dropTarget.IsLeaf) dropTarget.Expand();
-
-                /*
-                UI.TreeView.SuspendSelectionEvent = true;
-                UI.TreeView.ClearSelectionInternal();
-                UI.TreeView.Selection.AddRange(draggedNodes);
-                UI.TreeView.SuspendSelectionEvent = false;*/
+                /*if (newNodes.Length > 0)
+                {
+                    UI.TreeView.SuspendSelectionEvent = true;
+                    UI.TreeView.ClearSelectionInternal();
+                    UI.TreeView.Selection.AddRange(newNodes);
+                    UI.TreeView.SuspendSelectionEvent = false;
+                }*/
             }
 
             Tree_CurrentDragObject = null;
