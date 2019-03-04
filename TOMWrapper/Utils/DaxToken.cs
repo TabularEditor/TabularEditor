@@ -4,7 +4,7 @@ using TabularEditor.TextServices;
 
 namespace TabularEditor.TOMWrapper.Utils
 {
-    public class DaxToken
+    public partial class DaxToken
     {
         public int Type { get; private set; }
         public int TokenIndex { get; private set; }
@@ -66,6 +66,7 @@ namespace TabularEditor.TOMWrapper.Utils
             return $"Token #{TokenIndex}, {cow}{StartIndex}-{StopIndex}: DaxToken.{DAXLexer.DefaultVocabulary.GetSymbolicName(Type)}: \"{Text}\"";
         }
 
+        /*
         public const int
         SINGLE_LINE_COMMENT = 1, DELIMITED_COMMENT = 2, WHITESPACES = 3, ABS = 4, ACOS = 5,
         ACOSH = 6, ACOT = 7, ACOTH = 8, ADDCOLUMNS = 9, ADDMISSINGITEMS = 10, ALL = 11, ALLEXCEPT = 12,
@@ -119,5 +120,6 @@ namespace TabularEditor.TOMWrapper.Utils
         OPEN_PARENS = 277, CLOSE_PARENS = 278, COMMA = 279, PLUS = 280, MINUS = 281, STAR = 282,
         DIV = 283, CARET = 284, AMP = 285, ASSIGNMENT = 286, LT = 287, GT = 288, OP_AND = 289,
         OP_OR = 290, OP_NE = 291, OP_LE = 292, OP_GE = 293;
+        */
     }
 }
