@@ -111,7 +111,7 @@ namespace TabularEditor.TOMWrapper
             }
             set
             {
-                var oldValue = KPI;
+                var oldValue = MetadataObject.KPI != null ? KPI : null;
                 if (oldValue?.MetadataObject == value?.MetadataObject) return;
                 bool undoable = true;
                 bool cancel = false;

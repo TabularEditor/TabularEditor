@@ -238,80 +238,44 @@ namespace TabularEditor.TOMWrapper
             return inserted;
         }
 
-        public void MoveObjects(IEnumerable<IFolderObject> objects, Table newTable)
+        public enum CheckResult
         {
-            if (objects == null) throw new ArgumentNullException("objects");
-            if (newTable == null) throw new ArgumentNullException("newContainer");
-            if (objects.Count() == 0) return;
-            if (!objects.All(obj => obj is Measure || obj is CalculatedColumn)) throw new ArgumentException("Only Measures and Calculated Columns can be moved between tables.");
+            Ok,
+            CantMove,
+            ConfirmOverwrite
+        }
 
-            var res = System.Windows.Forms.DialogResult.Yes;
-
-            // Check if an object with the given name already exists:
-            if (objects.OfType<Measure>().Any(obj => obj.Table == null && newTable.Measures.GetNewName(obj.Name) != obj.Name) ||
-                objects.OfType<CalculatedColumn>().Any(obj => obj.Table == null && NewColumnName(obj.Name, newTable) != obj.Name)) {
-                res = System.Windows.Forms.MessageBox.Show("One or more objects with the given name already exists in the destination. Do you want to overwrite the destination objects?", "Overwrite existing objects?", System.Windows.Forms.MessageBoxButtons.YesNoCancel, System.Windows.Forms.MessageBoxIcon.Exclamation);
-                if (res == System.Windows.Forms.DialogResult.Cancel) return;
-            }
-
-            Handler.BeginUpdate("move objects");
-            foreach (var obj in objects)
+        public CheckResult CheckMoveObjects(IEnumerable<IFolderObject> objects, Table newDestinationTable)
+        {
+            if (newDestinationTable == null || newDestinationTable is CalculationGroupTable) return CheckResult.CantMove;
+            var result = CheckResult.Ok;
+            foreach(var obj in objects)
             {
-                // TODO: When dragging between two tables, the original object (measure or calc column) is actually being deleted
-                // and a copy is created in the destination table. This means that the Tree Explorer cannot re-select the node
-                // corresponding to the created copy, as it searches for a node corresponding to an object that no longer exists
-                // in the logical TOM. This happens in the _model_StructureChanged method of TreeViewAdv.cs.
-                // In order to fix this, we would need a lookup mechanism that relies on the names of the objects within the TOM.
-
-                // Objects moved between two tables:
-                if(obj.Table != null || (obj as TabularNamedObject).MetadataObject.IsRemoved)
-                {
-                    var name = obj.Name;
-                    TabularNamedObject newObj = null;
-                    if (obj is Measure) { newObj = (obj as Measure).Clone(newParent: newTable); }
-                    if (obj is CalculatedColumn) { newObj = (obj as CalculatedColumn).Clone(newParent: newTable); }
-
-                    (obj as TabularNamedObject).Delete();
-
-                    Handler.UndoManager.Enabled = false;
-                    newObj.Name = name;
-                    Handler.UndoManager.Enabled = true;
-                }
-                else
-                // Objects moved between two instances of Tabular Editor (source Table will be null in this case):
-                {
-                    var name = obj.Name;
-                    bool setNewName = false;
-                    if (res == System.Windows.Forms.DialogResult.No) (obj as TabularNamedObject).MetadataObject.Name = "_temp_" + Guid.NewGuid().ToString();
-
-                    if (obj is Measure)
-                    {
-                        var existingMeasureTable = Handler.Model.Tables.FirstOrDefault(t => t.Measures.Contains(name));
-
-                        if(existingMeasureTable != null)
-                        {
-                            if (res == System.Windows.Forms.DialogResult.Yes) existingMeasureTable.Measures[obj.Name].Delete();
-                            else setNewName = true;
-                        }
-                        newTable.Measures.Add(obj as Measure);
-                        if (setNewName) obj.Name = newTable.Measures.GetNewName(name);
-                    }
-                    if (obj is CalculatedColumn)
-                    {
-                        if (newTable.Columns.Contains(name))
-                        {
-                            if (res == System.Windows.Forms.DialogResult.Yes) newTable.Columns[obj.Name].Delete();
-                            else setNewName = true;
-                        }
-                        newTable.Columns.Add(obj as CalculatedColumn);
-                        if (setNewName) obj.Name = NewColumnName(name, newTable);
-                    }
-                }
-
-                //obj.SetDisplayFolder((newContainer as Folder)?.Path ?? "", culture);
+                if (obj == null) return CheckResult.CantMove;
+                if (newDestinationTable.Columns.Contains(obj.Name)
+                    || newDestinationTable.Measures.Contains(obj.Name)) result = CheckResult.ConfirmOverwrite;
+                if (!(obj is Measure || obj is CalculatedColumn)) return CheckResult.CantMove;
             }
+            return result;
+        }
 
-            Handler.EndUpdate();
+        public void MoveObject(IFolderObject sourceObject, Table newDestinationTable, bool allowOverwrite)
+        {
+            var name = sourceObject.Name;
+            if (sourceObject is Measure m)
+            {
+                var kpi = m.KPI;
+                m.Delete();
+                m.RenewMetadataObject();
+                if (kpi != null) { kpi.RenewMetadataObject(); m.Reinit(); }
+                newDestinationTable.Measures.Add(m);
+            }
+            if (sourceObject is CalculatedColumn c)
+            {
+                c.Delete();
+                c.RenewMetadataObject();
+                newDestinationTable.Columns.Add(c);
+            }
         }
     }
 }

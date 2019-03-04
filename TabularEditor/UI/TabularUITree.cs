@@ -379,8 +379,17 @@ namespace TabularEditor
                 case DropMode.AddColumns: Handler.Actions.AddColumnsToHierarchy(sourceNodes.Select(n => n.Tag as Column), DragInfo.TargetHierarchy, DragInfo.TargetOrdinal); break;
                 case DropMode.Folder: Handler.Actions.SetContainer(sourceNodes.Select(n => n.Tag as IFolderObject), targetNode.Tag as IFolder, Culture); break;
                 case DropMode.MoveObject:
-                    Handler.Actions.MoveObjects(sourceNodes.Select(n => n.Tag as IFolderObject), targetNode.Tag as Table);
-                    break;
+                    var sourceObjects = sourceNodes.Select(n => n.Tag as IFolderObject).ToList();
+                    var destinationTable = targetNode.Tag as Table;
+                    var checkMove = Handler.Actions.CheckMoveObjects(sourceObjects, destinationTable);
+                    Handler.BeginUpdate("Move objects");
+                    for(int i = 0; i < sourceObjects.Count; i++)
+                    {
+                        Handler.Actions.MoveObject(sourceObjects[i], destinationTable, false);
+                    }
+                    Handler.EndUpdate();
+                    
+            break;
             }
         }
 
