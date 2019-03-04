@@ -48,7 +48,6 @@ namespace TabularEditor.TOMWrapper
 	    public const string DESCRIPTION = "Description";
 	    public const string DETAILROWSDEFINITION = "DetailRowsDefinition";
 	    public const string DISCOURAGEIMPLICITMEASURES = "DiscourageImplicitMeasures";
-	    public const string DISCOURAGEREPORTMEASURES = "DiscourageReportMeasures";
 	    public const string DISPLAYFOLDER = "DisplayFolder";
 	    public const string DISPLAYORDINAL = "DisplayOrdinal";
 	    public const string ENCODINGHINT = "EncodingHint";
@@ -58,7 +57,6 @@ namespace TabularEditor.TOMWrapper
 	    public const string EXTENDEDPROPERTIES = "ExtendedProperties";
 	    public const string FORCEUNIQUENAMES = "ForceUniqueNames";
 	    public const string FORMATSTRING = "FormatString";
-	    public const string FORMATSTRINGDEFINITION = "FormatStringDefinition";
 	    public const string FROMCARDINALITY = "FromCardinality";
 	    public const string FROMCOLUMN = "FromColumn";
 	    public const string FROMTABLE = "FromTable";
@@ -493,23 +491,31 @@ namespace TabularEditor.TOMWrapper
 				return;
 			}
 
-			if(GetAnnotation(name) == value) return;
-			bool undoable2 = true;
-			bool cancel = false;
-			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
-			if (cancel) return;
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
 
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Change existing annotation:
+
 				var oldValue = GetAnnotation(name);
 				MetadataObject.Annotations[name].Value = value;
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
 			} else {
 				// Add new annotation:
+
 				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
-				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
 			}
 		}
 		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
@@ -522,18 +528,22 @@ namespace TabularEditor.TOMWrapper
 		}
 		internal void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
-				// Get current value:
-				bool undoable2 = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
-				if (cancel) return;
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
 
-				var oldValue = MetadataObject.Annotations[name].Value;
+			    var oldValue = MetadataObject.Annotations[name].Value;
 				MetadataObject.Annotations.Remove(name);
 
-				// Undo-handling:
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
 			}
 		}
 		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
@@ -1632,23 +1642,31 @@ namespace TabularEditor.TOMWrapper
 				return;
 			}
 
-			if(GetAnnotation(name) == value) return;
-			bool undoable2 = true;
-			bool cancel = false;
-			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
-			if (cancel) return;
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
 
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Change existing annotation:
+
 				var oldValue = GetAnnotation(name);
 				MetadataObject.Annotations[name].Value = value;
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
 			} else {
 				// Add new annotation:
+
 				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
-				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
 			}
 		}
 		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
@@ -1661,18 +1679,22 @@ namespace TabularEditor.TOMWrapper
 		}
 		internal void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
-				// Get current value:
-				bool undoable2 = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
-				if (cancel) return;
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
 
-				var oldValue = MetadataObject.Annotations[name].Value;
+			    var oldValue = MetadataObject.Annotations[name].Value;
 				MetadataObject.Annotations.Remove(name);
 
-				// Undo-handling:
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
 			}
 		}
 		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
@@ -2780,23 +2802,31 @@ namespace TabularEditor.TOMWrapper
 				return;
 			}
 
-			if(GetAnnotation(name) == value) return;
-			bool undoable2 = true;
-			bool cancel = false;
-			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
-			if (cancel) return;
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
 
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Change existing annotation:
+
 				var oldValue = GetAnnotation(name);
 				MetadataObject.Annotations[name].Value = value;
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
 			} else {
 				// Add new annotation:
+
 				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
-				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
 			}
 		}
 		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
@@ -2809,18 +2839,22 @@ namespace TabularEditor.TOMWrapper
 		}
 		internal void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
-				// Get current value:
-				bool undoable2 = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
-				if (cancel) return;
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
 
-				var oldValue = MetadataObject.Annotations[name].Value;
+			    var oldValue = MetadataObject.Annotations[name].Value;
 				MetadataObject.Annotations.Remove(name);
 
-				// Undo-handling:
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
 			}
 		}
 		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
@@ -3358,23 +3392,31 @@ namespace TabularEditor.TOMWrapper
 				return;
 			}
 
-			if(GetAnnotation(name) == value) return;
-			bool undoable2 = true;
-			bool cancel = false;
-			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
-			if (cancel) return;
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
 
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Change existing annotation:
+
 				var oldValue = GetAnnotation(name);
 				MetadataObject.Annotations[name].Value = value;
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
 			} else {
 				// Add new annotation:
+
 				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
-				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
 			}
 		}
 		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
@@ -3387,18 +3429,22 @@ namespace TabularEditor.TOMWrapper
 		}
 		internal void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
-				// Get current value:
-				bool undoable2 = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
-				if (cancel) return;
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
 
-				var oldValue = MetadataObject.Annotations[name].Value;
+			    var oldValue = MetadataObject.Annotations[name].Value;
 				MetadataObject.Annotations.Remove(name);
 
-				// Undo-handling:
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
 			}
 		}
 		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
@@ -3971,23 +4017,31 @@ namespace TabularEditor.TOMWrapper
 				return;
 			}
 
-			if(GetAnnotation(name) == value) return;
-			bool undoable2 = true;
-			bool cancel = false;
-			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
-			if (cancel) return;
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
 
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Change existing annotation:
+
 				var oldValue = GetAnnotation(name);
 				MetadataObject.Annotations[name].Value = value;
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
 			} else {
 				// Add new annotation:
+
 				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
-				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
 			}
 		}
 		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
@@ -4000,18 +4054,22 @@ namespace TabularEditor.TOMWrapper
 		}
 		internal void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
-				// Get current value:
-				bool undoable2 = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
-				if (cancel) return;
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
 
-				var oldValue = MetadataObject.Annotations[name].Value;
+			    var oldValue = MetadataObject.Annotations[name].Value;
 				MetadataObject.Annotations.Remove(name);
 
-				// Undo-handling:
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
 			}
 		}
 		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
@@ -4624,23 +4682,31 @@ namespace TabularEditor.TOMWrapper
 				return;
 			}
 
-			if(GetAnnotation(name) == value) return;
-			bool undoable2 = true;
-			bool cancel = false;
-			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
-			if (cancel) return;
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
 
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Change existing annotation:
+
 				var oldValue = GetAnnotation(name);
 				MetadataObject.Annotations[name].Value = value;
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
 			} else {
 				// Add new annotation:
+
 				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
-				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
 			}
 		}
 		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
@@ -4653,18 +4719,22 @@ namespace TabularEditor.TOMWrapper
 		}
 		internal void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
-				// Get current value:
-				bool undoable2 = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
-				if (cancel) return;
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
 
-				var oldValue = MetadataObject.Annotations[name].Value;
+			    var oldValue = MetadataObject.Annotations[name].Value;
 				MetadataObject.Annotations.Remove(name);
 
-				// Undo-handling:
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
 			}
 		}
 		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
@@ -5160,23 +5230,31 @@ namespace TabularEditor.TOMWrapper
 				return;
 			}
 
-			if(GetAnnotation(name) == value) return;
-			bool undoable2 = true;
-			bool cancel = false;
-			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
-			if (cancel) return;
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
 
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Change existing annotation:
+
 				var oldValue = GetAnnotation(name);
 				MetadataObject.Annotations[name].Value = value;
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
 			} else {
 				// Add new annotation:
+
 				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
-				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
 			}
 		}
 		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
@@ -5189,18 +5267,22 @@ namespace TabularEditor.TOMWrapper
 		}
 		internal void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
-				// Get current value:
-				bool undoable2 = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
-				if (cancel) return;
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
 
-				var oldValue = MetadataObject.Annotations[name].Value;
+			    var oldValue = MetadataObject.Annotations[name].Value;
 				MetadataObject.Annotations.Remove(name);
 
-				// Undo-handling:
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
 			}
 		}
 		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
@@ -5700,23 +5782,31 @@ namespace TabularEditor.TOMWrapper
 				return;
 			}
 
-			if(GetAnnotation(name) == value) return;
-			bool undoable2 = true;
-			bool cancel = false;
-			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
-			if (cancel) return;
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
 
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Change existing annotation:
+
 				var oldValue = GetAnnotation(name);
 				MetadataObject.Annotations[name].Value = value;
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
 			} else {
 				// Add new annotation:
+
 				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
-				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
 			}
 		}
 		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
@@ -5729,18 +5819,22 @@ namespace TabularEditor.TOMWrapper
 		}
 		internal void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
-				// Get current value:
-				bool undoable2 = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
-				if (cancel) return;
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
 
-				var oldValue = MetadataObject.Annotations[name].Value;
+			    var oldValue = MetadataObject.Annotations[name].Value;
 				MetadataObject.Annotations.Remove(name);
 
-				// Undo-handling:
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
 			}
 		}
 		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
@@ -6465,23 +6559,31 @@ namespace TabularEditor.TOMWrapper
 				return;
 			}
 
-			if(GetAnnotation(name) == value) return;
-			bool undoable2 = true;
-			bool cancel = false;
-			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
-			if (cancel) return;
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
 
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Change existing annotation:
+
 				var oldValue = GetAnnotation(name);
 				MetadataObject.Annotations[name].Value = value;
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
 			} else {
 				// Add new annotation:
+
 				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
-				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
 			}
 		}
 		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
@@ -6494,18 +6596,22 @@ namespace TabularEditor.TOMWrapper
 		}
 		internal void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
-				// Get current value:
-				bool undoable2 = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
-				if (cancel) return;
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
 
-				var oldValue = MetadataObject.Annotations[name].Value;
+			    var oldValue = MetadataObject.Annotations[name].Value;
 				MetadataObject.Annotations.Remove(name);
 
-				// Undo-handling:
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
 			}
 		}
 		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
@@ -6821,29 +6927,6 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDiscourageImplicitMeasures() { return false; }
-        /*
-		[DisplayName("Discourage Report Measures")]
-		[Category("Other"),Description(@"The DiscourageReportMeasures of this Model"),IntelliSense(@"The DiscourageReportMeasures of this Model")]
-		public bool DiscourageReportMeasures {
-			get {
-			    return MetadataObject.DiscourageReportMeasures;
-			}
-			set {
-				
-				var oldValue = DiscourageReportMeasures;
-				var newValue = value;
-				if (oldValue == newValue) return;
-				bool undoable = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.DISCOURAGEREPORTMEASURES, newValue, ref undoable, ref cancel);
-				if (cancel) return;
-				if (!MetadataObject.IsRemoved) MetadataObject.DiscourageReportMeasures = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISCOURAGEREPORTMEASURES, oldValue, newValue));
-				OnPropertyChanged(Properties.DISCOURAGEREPORTMEASURES, oldValue, newValue);
-			}
-		}
-		private bool ShouldSerializeDiscourageReportMeasures() { return false; }
-        */
 /// <summary>
 ///             A reference to a default measure.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
@@ -7093,23 +7176,31 @@ namespace TabularEditor.TOMWrapper
 				return;
 			}
 
-			if(GetAnnotation(name) == value) return;
-			bool undoable2 = true;
-			bool cancel = false;
-			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
-			if (cancel) return;
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
 
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Change existing annotation:
+
 				var oldValue = GetAnnotation(name);
 				MetadataObject.Annotations[name].Value = value;
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
 			} else {
 				// Add new annotation:
+
 				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
-				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
 			}
 		}
 		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
@@ -7122,18 +7213,22 @@ namespace TabularEditor.TOMWrapper
 		}
 		internal void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
-				// Get current value:
-				bool undoable2 = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
-				if (cancel) return;
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
 
-				var oldValue = MetadataObject.Annotations[name].Value;
+			    var oldValue = MetadataObject.Annotations[name].Value;
 				MetadataObject.Annotations.Remove(name);
 
-				// Undo-handling:
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
 			}
 		}
 		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
@@ -7607,23 +7702,31 @@ namespace TabularEditor.TOMWrapper
 				return;
 			}
 
-			if(GetAnnotation(name) == value) return;
-			bool undoable2 = true;
-			bool cancel = false;
-			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
-			if (cancel) return;
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
 
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Change existing annotation:
+
 				var oldValue = GetAnnotation(name);
 				MetadataObject.Annotations[name].Value = value;
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
 			} else {
 				// Add new annotation:
+
 				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
-				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
 			}
 		}
 		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
@@ -7636,18 +7739,22 @@ namespace TabularEditor.TOMWrapper
 		}
 		internal void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
-				// Get current value:
-				bool undoable2 = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
-				if (cancel) return;
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
 
-				var oldValue = MetadataObject.Annotations[name].Value;
+			    var oldValue = MetadataObject.Annotations[name].Value;
 				MetadataObject.Annotations.Remove(name);
 
-				// Undo-handling:
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
 			}
 		}
 		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
@@ -8056,23 +8163,31 @@ namespace TabularEditor.TOMWrapper
 				return;
 			}
 
-			if(GetAnnotation(name) == value) return;
-			bool undoable2 = true;
-			bool cancel = false;
-			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
-			if (cancel) return;
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
 
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Change existing annotation:
+
 				var oldValue = GetAnnotation(name);
 				MetadataObject.Annotations[name].Value = value;
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
 			} else {
 				// Add new annotation:
+
 				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
-				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
 			}
 		}
 		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
@@ -8085,18 +8200,22 @@ namespace TabularEditor.TOMWrapper
 		}
 		internal void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
-				// Get current value:
-				bool undoable2 = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
-				if (cancel) return;
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
 
-				var oldValue = MetadataObject.Annotations[name].Value;
+			    var oldValue = MetadataObject.Annotations[name].Value;
 				MetadataObject.Annotations.Remove(name);
 
-				// Undo-handling:
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
 			}
 		}
 		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
@@ -8615,23 +8734,31 @@ namespace TabularEditor.TOMWrapper
 				return;
 			}
 
-			if(GetAnnotation(name) == value) return;
-			bool undoable2 = true;
-			bool cancel = false;
-			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
-			if (cancel) return;
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
 
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Change existing annotation:
+
 				var oldValue = GetAnnotation(name);
 				MetadataObject.Annotations[name].Value = value;
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
 			} else {
 				// Add new annotation:
+
 				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
-				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
 			}
 		}
 		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
@@ -8644,18 +8771,22 @@ namespace TabularEditor.TOMWrapper
 		}
 		internal void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
-				// Get current value:
-				bool undoable2 = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
-				if (cancel) return;
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
 
-				var oldValue = MetadataObject.Annotations[name].Value;
+			    var oldValue = MetadataObject.Annotations[name].Value;
 				MetadataObject.Annotations.Remove(name);
 
-				// Undo-handling:
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
 			}
 		}
 		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
@@ -9423,23 +9554,31 @@ namespace TabularEditor.TOMWrapper
 				return;
 			}
 
-			if(GetAnnotation(name) == value) return;
-			bool undoable2 = true;
-			bool cancel = false;
-			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
-			if (cancel) return;
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
 
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Change existing annotation:
+
 				var oldValue = GetAnnotation(name);
 				MetadataObject.Annotations[name].Value = value;
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
 			} else {
 				// Add new annotation:
+
 				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
-				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
 			}
 		}
 		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
@@ -9452,18 +9591,22 @@ namespace TabularEditor.TOMWrapper
 		}
 		internal void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
-				// Get current value:
-				bool undoable2 = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
-				if (cancel) return;
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
 
-				var oldValue = MetadataObject.Annotations[name].Value;
+			    var oldValue = MetadataObject.Annotations[name].Value;
 				MetadataObject.Annotations.Remove(name);
 
-				// Undo-handling:
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
 			}
 		}
 		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
@@ -10214,23 +10357,31 @@ namespace TabularEditor.TOMWrapper
 				return;
 			}
 
-			if(GetAnnotation(name) == value) return;
-			bool undoable2 = true;
-			bool cancel = false;
-			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
-			if (cancel) return;
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
 
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Change existing annotation:
+
 				var oldValue = GetAnnotation(name);
 				MetadataObject.Annotations[name].Value = value;
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
 			} else {
 				// Add new annotation:
+
 				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
-				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
 			}
 		}
 		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
@@ -10243,18 +10394,22 @@ namespace TabularEditor.TOMWrapper
 		}
 		internal void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
-				// Get current value:
-				bool undoable2 = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
-				if (cancel) return;
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
 
-				var oldValue = MetadataObject.Annotations[name].Value;
+			    var oldValue = MetadataObject.Annotations[name].Value;
 				MetadataObject.Annotations.Remove(name);
 
-				// Undo-handling:
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
 			}
 		}
 		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
@@ -11086,23 +11241,31 @@ namespace TabularEditor.TOMWrapper
 				return;
 			}
 
-			if(GetAnnotation(name) == value) return;
-			bool undoable2 = true;
-			bool cancel = false;
-			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
-			if (cancel) return;
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
 
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Change existing annotation:
+
 				var oldValue = GetAnnotation(name);
 				MetadataObject.Annotations[name].Value = value;
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
 			} else {
 				// Add new annotation:
+
 				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
-				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
 			}
 		}
 		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
@@ -11115,18 +11278,22 @@ namespace TabularEditor.TOMWrapper
 		}
 		internal void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
-				// Get current value:
-				bool undoable2 = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
-				if (cancel) return;
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
 
-				var oldValue = MetadataObject.Annotations[name].Value;
+			    var oldValue = MetadataObject.Annotations[name].Value;
 				MetadataObject.Annotations.Remove(name);
 
-				// Undo-handling:
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
 			}
 		}
 		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
@@ -11611,23 +11778,31 @@ namespace TabularEditor.TOMWrapper
 				return;
 			}
 
-			if(GetAnnotation(name) == value) return;
-			bool undoable2 = true;
-			bool cancel = false;
-			OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
-			if (cancel) return;
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
 
 			if(MetadataObject.Annotations.Contains(name)) {
 				// Change existing annotation:
+
 				var oldValue = GetAnnotation(name);
 				MetadataObject.Annotations[name].Value = value;
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
 			} else {
 				// Add new annotation:
+
 				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
-				OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
 			}
 		}
 		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
@@ -11640,18 +11815,22 @@ namespace TabularEditor.TOMWrapper
 		}
 		internal void RemoveAnnotation(string name, bool undoable) {
 			if(MetadataObject.Annotations.Contains(name)) {
-				// Get current value:
-				bool undoable2 = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
-				if (cancel) return;
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
 
-				var oldValue = MetadataObject.Annotations[name].Value;
+			    var oldValue = MetadataObject.Annotations[name].Value;
 				MetadataObject.Annotations.Remove(name);
 
-				// Undo-handling:
-				if (undoable) Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
-				OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
 			}
 		}
 		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
@@ -11678,7 +11857,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Description;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -11819,7 +11998,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Description;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
@@ -11851,7 +12030,7 @@ namespace TabularEditor.TOMWrapper
 			set {
 				
 				var oldValue = Expression;
-				var newValue = value.Replace("\r", "");
+				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;

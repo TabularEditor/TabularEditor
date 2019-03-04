@@ -107,6 +107,14 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        public virtual T FindByName(string name)
+        {
+            if (Handler.WrapperLookup.TryGetValue(TOM_Get(name), out TabularObject value))
+                return value as T;
+            else
+                return null;
+        }
+
         bool IExpandableIndexer.EnableMultiLine => false;
         /// <summary>
         /// Gets the item on the specified index.
