@@ -48,8 +48,8 @@ namespace TabularEditor.TOMWrapper
 
         public static void ClearTabularEditorAnnotations(this Model model)
         {
-            model.RemoveAnnotation(ANN_PERSPECTIVES);
-            model.RemoveAnnotation(ANN_CULTURES);
+            model.RemoveAnnotation(ANN_PERSPECTIVES, false);
+            model.RemoveAnnotation(ANN_CULTURES, false);
             foreach (var table in model.Tables) table.ClearTabularEditorAnnotations(true);
         }
 

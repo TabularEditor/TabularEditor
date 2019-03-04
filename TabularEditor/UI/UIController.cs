@@ -229,6 +229,15 @@ namespace TabularEditor.UI
                 if (!cancelIfRunning) return;
                 backgroundBpaTokenSource.Cancel();
                 backgroundBpa.Wait();
+                try
+                {
+                    backgroundBpa.Wait();
+                }
+                catch { }
+                finally
+                {
+                    backgroundBpaTokenSource.Dispose();
+                }
             }
             backgroundBpaTokenSource = new CancellationTokenSource();
             var token = backgroundBpaTokenSource.Token;
