@@ -260,8 +260,9 @@
             this.cmbCompatibility.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbCompatibility.FormattingEnabled = true;
             this.cmbCompatibility.Items.AddRange(new object[] {
-            "CL 1200 (SQL Server 2016)",
-            "CL 1400 (SQL Server 2017 / Azure AS)"});
+            "CL 1200 (SQL Server 2016 / Azure AS)",
+            "CL 1400 (SQL Server 2017 / Azure AS)",
+            "CL 1470 (SQL Server 2019 / Azure AS)"});
             this.cmbCompatibility.Location = new System.Drawing.Point(159, 366);
             this.cmbCompatibility.Name = "cmbCompatibility";
             this.cmbCompatibility.Size = new System.Drawing.Size(231, 21);
