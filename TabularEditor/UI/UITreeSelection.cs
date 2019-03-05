@@ -164,7 +164,10 @@ namespace TabularEditor.UI
         /// </summary>
         Expressions = 1 << 8,
 
-        //CalculationGroups = 1 << 9,
+        /// <summary>
+        /// Context menu opened on a Table Permission
+        /// </summary>
+        TablePermission = 1 << 9,
 
         /// <summary>
         /// Context menu opened on one or more tables
@@ -240,7 +243,7 @@ namespace TabularEditor.UI
 
         Everywhere = 0x7FFFFFFF,
         TableObject = Measure | Column | Hierarchy,
-        SingularObjects = Model | Table | TableObject | Level | Partition | Relationship | DataSource | Role | Perspective | Translation | KPI | Expression | CalculationGroup | CalculationGroupColumn | CalculationItem,
+        SingularObjects = Model | Table | TableObject | Level | Partition | Relationship | DataSource | Role | TablePermission | Perspective | Translation | KPI | Expression | CalculationGroup | CalculationGroupColumn | CalculationItem,
         Groups = Tables | Relationships | DataSources | Roles | Perspectives | Translations | Expressions,
         DataObjects = Table | TableObject,
         Scriptable = Table | Partition | DataSource | Role
@@ -300,6 +303,7 @@ namespace TabularEditor.UI
                 case ObjectType.Table: return Context.Table;
                 case ObjectType.CalculationGroup: return Context.CalculationGroup;
                 case ObjectType.CalculationItem: return Context.CalculationItem;
+                case ObjectType.TablePermission: return Context.TablePermission;
                 case ObjectType.Level: return Context.Level;
                 case ObjectType.KPI: return Context.KPI;
                 case ObjectType.Column: return (obj as Column).Table.ObjectType == ObjectType.CalculationGroup ? Context.CalculationGroupColumn : Context.Column;
@@ -363,6 +367,7 @@ namespace TabularEditor.UI
             CalculatedTableColumns = new UISelectionList<CalculatedTableColumn>(this.OfType<CalculatedTableColumn>());
             CalculationGroups = new UISelectionList<CalculationGroupTable>(this.OfType<CalculationGroupTable>());
             CalculationItems = new UISelectionList<CalculationItem>(this.OfType<CalculationItem>());
+            TablePermissions = new UISelectionList<TablePermission>(this.OfType<TablePermission>());
             SingleColumnRelationships = new UISelectionList<SingleColumnRelationship>(this.OfType<SingleColumnRelationship>());
             DataColumns = new UISelectionList<DataColumn>(this.OfType<DataColumn>());
             Tables = new UISelectionList<Table>(this.OfType<Table>());
@@ -459,6 +464,8 @@ namespace TabularEditor.UI
         [IntelliSense("All currently selected calculation items.")]
         public UISelectionList<CalculationItem> CalculationItems { get; private set; }
 
+        [IntelliSense("All currently selected table permissions.")]
+        public UISelectionList<TablePermission> TablePermissions { get; private set; }
         [IntelliSense("The currently selected calculation group (if exactly one calculation group is selected in the explorer tree.)")]
         public CalculationGroupTable CalculationGroup { get { return One<CalculationGroupTable>(); } }
 
