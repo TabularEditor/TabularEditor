@@ -87,13 +87,14 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>WrapperBase.tt</DependentUpon>
     </Compile>
+    <Compile Include="TOMWrapper\Indexers\RoleColumnOLSIndexer.cs" />
     <Compile Include="TOMWrapper\ModelRoleMember.cs" />
     <Compile Include="TOMWrapper\Serialization\PerspectiveAnnotationSerializer.cs" />
     <Compile Include="TOMWrapper\Serialization\SplitModelSerializer.cs" />
     <Compile Include="TOMWrapper\Serialization\TranslationAnnotationSerializer.cs" />
     <Compile Include="TOMWrapper\Serialization\RelationshipAnnotationSerializer.cs" />
     <Compile Include="TOMWrapper\CalculatedTableColumn.cs" />
-    <Compile Include="TOMWrapper\RLSFilterExpression.cs" />
+    <Compile Include="TOMWrapper\TablePermission.cs" />
     <Compile Include="TOMWrapper\StructuredDataSource.cs" />
     <Compile Include="TOMWrapper\TabularModelHandler.Database.cs" />
     <Compile Include="TOMWrapper\TabularModelHandler.Events.cs" />

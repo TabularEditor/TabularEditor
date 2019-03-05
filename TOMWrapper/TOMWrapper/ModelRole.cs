@@ -9,24 +9,24 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class ModelRole: IErrorMessageObject
+    public partial class ModelRole: IErrorMessageObject, ITabularObjectContainer
     {
         [Browsable(true), DisplayName("Row Level Security"), Category("Security")]
         public RoleRLSIndexer RowLevelSecurity { get; private set; }
 
-        [Browsable(true), DisplayName("Object Level Security"), Category("Security")]
+        [Browsable(true), DisplayName("Table Permissions"), Category("Security")]
         public RoleOLSIndexer MetadataPermission { get; private set; }
 
         internal override void RemoveReferences()
         {
             base.RemoveReferences();
 
-            foreach(var fEx in RowLevelSecurity.FilterExpressions.Values)
+            foreach(var tp in TablePermissions)
             {
-                fEx.DependsOn.Keys.ToList().ForEach(d => d.ReferencedBy.Remove(fEx));
-                fEx.DependsOn.Clear();
+                tp.DependsOn.Keys.ToList().ForEach(d => d.ReferencedBy.Remove(tp));
+                tp.DependsOn.Clear();
             }
-            RowLevelSecurity._filterExpressions.Clear();
+            TablePermissions.Clear();
         }
 
         /// <summary>
@@ -100,6 +100,7 @@ namespace TabularEditor.TOMWrapper
         {
             switch (propertyName) {
                 case "MetadataPermission": return Handler.CompatibilityLevel >= 1400;
+                case Properties.TABLEPERMISSIONS: return false;
                 default:  return true;
             }
         }
@@ -109,7 +110,14 @@ namespace TabularEditor.TOMWrapper
             RowLevelSecurity = new RoleRLSIndexer(this);
             if (Handler.CompatibilityLevel >= 1400) MetadataPermission = new RoleOLSIndexer(this);
 
+
+
             base.Init();
+        }
+
+        public IEnumerable<ITabularNamedObject> GetChildren()
+        {
+            return TablePermissions;
         }
     }
 }

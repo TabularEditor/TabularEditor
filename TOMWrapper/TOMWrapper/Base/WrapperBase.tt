@@ -82,7 +82,7 @@ namespace TabularEditor.TOMWrapper
 #><#= props.Any(p => p.Name == "DisplayFolder") ? "\n\t\t\t, IFolderObject" : ""
 #><#= props.Any(p => p.Name == "IsHidden") ? "\n\t\t\t, IHideableObject" : ""
 #><#= props.Any(p => p.Name == "ErrorMessage") ? "\n\t\t\t, IErrorMessageObject" : ""
-#><#= props.Any(p => p.Name == "Table" && t.Name != "CalculationGroup") ? "\n\t\t\t, ITabularTableObject" : ""
+#><#= props.Any(p => p.Name == "Table" && t.Name != "CalculationGroup" && t.Name != "TablePermission") ? "\n\t\t\t, ITabularTableObject" : ""
 #><#= props.Any(p => p.Name == "Description") ? "\n\t\t\t, IDescriptionObject" : ""
 #><#= props.Any(p => p.Name == "Expression" && t.Name != "NamedExpression") ? "\n\t\t\t, IExpressionObject" : ""
 #><#= props.Any(p => p.Name == "FormatString") ? "\n\t\t\t, IFormattableObject" : ""
@@ -648,6 +648,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
         internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
 <# if (t.Name != "Measure" && t.Name != "Relationship" && t.Name != "Column") { #>
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
 <# } if (t.Name == "Relationship") { #> 

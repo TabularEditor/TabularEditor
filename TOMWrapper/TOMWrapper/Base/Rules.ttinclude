@@ -238,7 +238,7 @@ partial class Rules {
 		{
 			return string.Format(@"get {{
 			    return ({1})MetadataObject.{0};
-			}}", p.Name, p.PropertyType.Name);
+			}}", p.Name, PropertyType(p));
 		}
 		else 
 		{
@@ -264,7 +264,7 @@ partial class Rules {
 	public static string GetDisplayName(string propertyName, string typeName)
     {
 		var result = propertyName;
-
+		if(result == "MetadataPermission" && typeName == "TablePermission") return "OLS Table Permission";
 		if(result.StartsWith("Is") && char.IsUpper(result[2])) result = result.Substring(2);
 
 		if(typeName == "Variation" && propertyName == "Column") return "Parent Column";
@@ -276,6 +276,9 @@ partial class Rules {
     {
 		switch(propertyName)
         {
+			case "MetadataPermission": 
+			case "FilterExpression":
+				return "Security";
 		    case "Perspectives":
 			case "Cultures":
 				return "Translations and Perspectives";
@@ -421,7 +424,8 @@ partial class Rules {
 		{ typeof(bool), "bool" },
 		{ typeof(char), "char" },
 		{ typeof(string), "string" },
-		{ typeof(void), "void" }
+		{ typeof(void), "void" },
+		{ typeof(MetadataPermission), "TOM.MetadataPermission" }
 	};	
 
 	public static Type ASType(string type) {
@@ -463,7 +467,8 @@ partial class Rules {
        { "WindowsModelRoleMember", "ModelRoleMember" },
 	   { "NamedExpression", "TabularNamedObject" },
 	   { "CalculationGroup", "TabularObject" },
-	   { "CalculationItem", "TabularNamedObject" }
+	   { "CalculationItem", "TabularNamedObject" },
+	   { "TablePermission", "TabularNamedObject" }
    };
    public static Dictionary<Type, string> ObjectTypes = Convert(_objectTypes).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
    
@@ -496,7 +501,8 @@ partial class Rules {
 	   { "DataSource", "DataSources" },
 	   { "Variation", "Variations" },
 	   { "NamedExpression", "Expressions" },
-	   { "CalculationItem", "CalculationItems" }
+	   { "CalculationItem", "CalculationItems" },
+	   { "TablePermission", "TablePermissions" }
    };
    public static Dictionary<Type, string> Collections = Convert(_objectCollections).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
@@ -529,6 +535,7 @@ partial class Rules {
 
 	   // Collections owned by a ModelRole (order of items matters, as this is the order in which child objects will be initialized):
        { new KeyValuePair<string, string>("ModelRoleMember", "ModelRole") },
+	   { new KeyValuePair<string, string>("TablePermission", "ModelRole") },
 
 	   // Collections owned by a Hierarchy (order of items matters, as this is the order in which child objects will be initialized):
        { new KeyValuePair<string, string>("Variation", "Column") },

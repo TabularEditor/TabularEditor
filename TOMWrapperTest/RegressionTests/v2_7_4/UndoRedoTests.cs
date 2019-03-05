@@ -49,17 +49,17 @@ namespace TOMWrapperTest.RegressionTests.v2_7_4
             r1.RowLevelSecurity[t1] = "[Column 1] = 123";
 
             Assert.AreEqual(1, c1.ReferencedBy.Roles.Count());
-            Assert.AreEqual(1, r1.RowLevelSecurity.FilterExpressions[t1].DependsOn.Columns.Count());
+            Assert.AreEqual(1, r1.TablePermissions[t1].DependsOn.Columns.Count());
 
             c1.Delete();
 
-            Assert.AreEqual(0, r1.RowLevelSecurity.FilterExpressions[t1].DependsOn.Columns.Count());
+            Assert.AreEqual(0, r1.TablePermissions[t1].DependsOn.Columns.Count());
 
             handler.UndoManager.Undo();
 
             c1 = t1.Columns["Column 1"] as CalculatedColumn;
             Assert.AreEqual(1, c1.ReferencedBy.Roles.Count());
-            Assert.AreEqual(1, r1.RowLevelSecurity.FilterExpressions[t1].DependsOn.Columns.Count());
+            Assert.AreEqual(1, r1.TablePermissions[t1].DependsOn.Columns.Count());
 
         }
 
@@ -75,7 +75,7 @@ namespace TOMWrapperTest.RegressionTests.v2_7_4
             r1.RowLevelSecurity[t1] = "[Column 1] = 123";
 
             Assert.AreEqual(1, c1.ReferencedBy.Roles.Count());
-            Assert.AreEqual(1, r1.RowLevelSecurity.FilterExpressions[t1].DependsOn.Columns.Count());
+            Assert.AreEqual(1, r1.TablePermissions[t1].DependsOn.Columns.Count());
 
             r1.Delete();
 
@@ -85,7 +85,7 @@ namespace TOMWrapperTest.RegressionTests.v2_7_4
 
             r1 = model.Roles["Role 1"];
             Assert.AreEqual(1, c1.ReferencedBy.Roles.Count());
-            Assert.AreEqual(1, r1.RowLevelSecurity.FilterExpressions[t1].DependsOn.Columns.Count());
+            Assert.AreEqual(1, r1.TablePermissions[t1].DependsOn.Columns.Count());
 
         }
     }

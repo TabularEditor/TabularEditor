@@ -207,7 +207,7 @@ namespace TabularEditor.UI
                     case ObjectType.Table:
                     case ObjectType.Column:
                     case ObjectType.KPI:
-                    case ObjectType.RLSFilterExpression:
+                    case ObjectType.TablePermission:
                         // These are the only object types that contain DAX expression properties:
                         return true;
                     default:

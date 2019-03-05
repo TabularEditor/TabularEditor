@@ -24,6 +24,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string COLLATION = "Collation";
 	    public const string COLUMN = "Column";
 	    public const string COLUMNORIGIN = "ColumnOrigin";
+	    public const string COLUMNPERMISSIONS = "ColumnPermissions";
 	    public const string COLUMNS = "Columns";
 	    public const string CONNECTIONDETAILS = "ConnectionDetails";
 	    public const string CONNECTIONSTRING = "ConnectionString";
@@ -55,6 +56,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string EXPRESSION = "Expression";
 	    public const string EXPRESSIONS = "Expressions";
 	    public const string EXTENDEDPROPERTIES = "ExtendedProperties";
+	    public const string FILTEREXPRESSION = "FilterExpression";
 	    public const string FORCEUNIQUENAMES = "ForceUniqueNames";
 	    public const string FORMATSTRING = "FormatString";
 	    public const string FROMCARDINALITY = "FromCardinality";
@@ -94,6 +96,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string MEMBERNAME = "MemberName";
 	    public const string MEMBERS = "Members";
 	    public const string MEMBERTYPE = "MemberType";
+	    public const string METADATAPERMISSION = "MetadataPermission";
 	    public const string MODE = "Mode";
 	    public const string MODELPERMISSION = "ModelPermission";
 	    public const string MODIFIEDTIME = "ModifiedTime";
@@ -182,6 +185,7 @@ namespace TabularEditor.TOMWrapper
             { typeof(NamedExpression) , typeof(TOM.NamedExpression) },
             { typeof(CalculationGroup) , typeof(TOM.CalculationGroup) },
             { typeof(CalculationItem) , typeof(TOM.CalculationItem) },
+            { typeof(TablePermission) , typeof(TOM.TablePermission) },
 	    };
 
 		public static Type ToTOM(Type wrapperType) {
@@ -211,6 +215,7 @@ namespace TabularEditor.TOMWrapper
             typeof(WindowsModelRoleMember),
             typeof(NamedExpression),
             typeof(CalculationItem),
+            typeof(TablePermission),
 	        typeof(CalculatedTable)
         };
 	}
@@ -940,6 +945,7 @@ namespace TabularEditor.TOMWrapper
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
         internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Variation); }
         /// <summary>The number of items in this collection.</summary>
@@ -2456,6 +2462,7 @@ namespace TabularEditor.TOMWrapper
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
         internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
@@ -3125,6 +3132,7 @@ namespace TabularEditor.TOMWrapper
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
         internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Culture); }
         /// <summary>The number of items in this collection.</summary>
@@ -3703,6 +3711,7 @@ namespace TabularEditor.TOMWrapper
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
         internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.DataSource); }
         /// <summary>The number of items in this collection.</summary>
@@ -4525,6 +4534,7 @@ namespace TabularEditor.TOMWrapper
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
         internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Hierarchy); }
         /// <summary>The number of items in this collection.</summary>
@@ -5652,6 +5662,7 @@ namespace TabularEditor.TOMWrapper
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
         internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Level); }
         /// <summary>The number of items in this collection.</summary>
@@ -6352,6 +6363,7 @@ namespace TabularEditor.TOMWrapper
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
         internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Measure); }
         /// <summary>The number of items in this collection.</summary>
 		public override int Count { get { return TOM_Collection.Count; } }
@@ -7493,6 +7505,7 @@ namespace TabularEditor.TOMWrapper
         internal override ITabularObjectCollection GetCollectionForChild(TabularObject child)
         {
 			if (child is ModelRoleMember) return Members;
+			if (child is TablePermission) return TablePermissions;
             return base.GetCollectionForChild(child);
         }
 
@@ -7502,6 +7515,12 @@ namespace TabularEditor.TOMWrapper
 		[DisplayName("Members")]
 		[Category("Security"),IntelliSense("The collection of Model Role Member objects on the current Model Role.")][Editor(typeof(TabularEditor.PropertyGridUI.RoleMemberCollectionEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public ModelRoleMemberCollection Members { get; private set; }
+        /// <summary>
+        /// The collection of TablePermission objects on this ModelRole.
+        /// </summary>
+		[DisplayName("Table Permissions")]
+		[Category("Security"),IntelliSense("The collection of Table Permission objects on the current Model Role.")]
+		public TablePermissionCollection TablePermissions { get; private set; }
 
 		/// <summary>
 		/// CTOR - only called from static factory methods on the class
@@ -7517,17 +7536,21 @@ namespace TabularEditor.TOMWrapper
 			
 			// Instantiate child collections:
 			Members = new ModelRoleMemberCollection(this.GetObjectPath() + ".Members", MetadataObject.Members, this);
+			TablePermissions = new TablePermissionCollection(this.GetObjectPath() + ".TablePermissions", MetadataObject.TablePermissions, this);
 
 			// Populate child collections:
 			Members.CreateChildrenFromMetadata();
+			TablePermissions.CreateChildrenFromMetadata();
 
 			// Hook up event handlers on child collections:
 			Members.CollectionChanged += Children_CollectionChanged;
+			TablePermissions.CollectionChanged += Children_CollectionChanged;
 		}
 
 
 		internal override void Reinit() {
 			Members.Reinit();
+			TablePermissions.Reinit();
 		}
 
 		internal override void Undelete(ITabularObjectCollection collection) {
@@ -7570,6 +7593,7 @@ namespace TabularEditor.TOMWrapper
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
         internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.ModelRole); }
         /// <summary>The number of items in this collection.</summary>
@@ -8014,6 +8038,7 @@ namespace TabularEditor.TOMWrapper
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
         internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.ModelRoleMember); }
         /// <summary>The number of items in this collection.</summary>
@@ -8586,6 +8611,7 @@ namespace TabularEditor.TOMWrapper
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
         internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Partition); }
         /// <summary>The number of items in this collection.</summary>
@@ -9104,6 +9130,7 @@ namespace TabularEditor.TOMWrapper
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
         internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Perspective); }
         /// <summary>The number of items in this collection.</summary>
@@ -9949,6 +9976,7 @@ namespace TabularEditor.TOMWrapper
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
         internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
  
 		internal override string GetNewName(string prefix = null) { return Guid.NewGuid().ToString(); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Relationship); }
@@ -10931,6 +10959,7 @@ namespace TabularEditor.TOMWrapper
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
         internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Table); }
         /// <summary>The number of items in this collection.</summary>
@@ -11636,6 +11665,7 @@ namespace TabularEditor.TOMWrapper
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
         internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.NamedExpression); }
         /// <summary>The number of items in this collection.</summary>
@@ -12168,6 +12198,7 @@ namespace TabularEditor.TOMWrapper
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
         internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.CalculationItem); }
         /// <summary>The number of items in this collection.</summary>
@@ -12229,6 +12260,553 @@ namespace TabularEditor.TOMWrapper
 		///<summary>Get a string representation of the current Calculation Item</summary>
 		public override string ToString() {
 			return string.Format("({0} {1})", Count, (Count == 1 ? "CalculationItem" : "CalculationItems").ToLower());
+		}
+	}
+  
+	/// <summary>
+///             Defines the security rules of the Role on the Table. It is a child of a Role object.
+///             </summary>
+	[TypeConverter(typeof(DynamicPropertyConverter))]
+	public sealed partial class TablePermission: TabularNamedObject
+			, IErrorMessageObject
+			, IInternalAnnotationObject
+			, IExtendedPropertyObject
+			, IClonableObject
+	{
+	    internal new TOM.TablePermission MetadataObject 
+		{ 
+			get 
+			{ 
+				return base.MetadataObject as TOM.TablePermission; 
+		    } 
+			set 
+			{ 
+				base.MetadataObject = value; 
+			}
+		}
+
+		///<summary>The collection of Annotations on the current Table Permission.</summary>
+        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on the current Table Permission."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+		public AnnotationCollection Annotations { get; private set; }
+		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
+		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
+		public string GetAnnotation(int index) {
+			return MetadataObject.Annotations[index].Value;
+		}
+		///<summary>Returns true if an annotation with the given name exists. Otherwise false.</summary>
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		///<summary>Gets the value of the annotation with the given name. Returns null if no such annotation exists.</summary>
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
+		public string GetAnnotation(string name) {
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
+		}
+		///<summary>Sets the value of the annotation with the given index, assuming it exists.</summary>
+		[IntelliSense("Sets the value of the annotation with the given index, assuming it exists.")]
+		public void SetAnnotation(int index, string value) {
+		    SetAnnotation(index, value, true);
+		}
+		internal void SetAnnotation(int index, string value, bool undoable) {
+		    var name = MetadataObject.Annotations[index].Name;
+			SetAnnotation(name, value, undoable);
+		}
+		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+			SetAnnotation(index, value, undoable);
+		}
+		///<summary>Returns a unique name for a new annotation.</summary>
+		public string GetNewAnnotationName() {
+			return MetadataObject.Annotations.GetNewName("New Annotation");
+		}
+		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		internal void SetAnnotation(string name, string value, bool undoable) {
+			if(name == null) name = GetNewAnnotationName();
+
+			if(value == null) {
+				// Remove annotation if set to null:
+				RemoveAnnotation(name, undoable);
+				return;
+			}
+
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
+
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Change existing annotation:
+
+				var oldValue = GetAnnotation(name);
+				MetadataObject.Annotations[name].Value = value;
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
+			} else {
+				// Add new annotation:
+
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
+			}
+		}
+		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+			this.SetAnnotation(name, value, undoable);
+		}
+		///<summary>Remove an annotation by the given name.</summary>
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		internal void RemoveAnnotation(string name, bool undoable) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
+
+			    var oldValue = MetadataObject.Annotations[name].Value;
+				MetadataObject.Annotations.Remove(name);
+
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
+			}
+		}
+		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+			this.RemoveAnnotation(name, undoable);
+		}
+		///<summary>Gets the number of annotations on the current Table Permission.</summary>
+		[IntelliSense("Gets the number of annotations on the current Table Permission.")]
+		public int GetAnnotationsCount() {
+			return MetadataObject.Annotations.Count;
+		}
+		///<summary>Gets a collection of all annotation names on the current Table Permission.</summary>
+		[IntelliSense("Gets a collection of all annotation names on the current Table Permission.")]
+		public IEnumerable<string> GetAnnotations() {
+			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+				///<summary>The collection of Extended Properties on the current Table Permission.</summary>
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on the current Table Permission."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
+
+		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
+		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
+		public bool HasExtendedProperty(string name) {
+		    return MetadataObject.ExtendedProperties.ContainsName(name);
+		}
+		///<summary>Gets the type of the ExtendedProperty with the given index, assuming it exists.</summary>
+		public ExtendedPropertyType GetExtendedPropertyType(int index) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
+		}
+		///<summary>Gets the type of the ExtendedProperty with the given name, assuming it exists.</summary>
+		public ExtendedPropertyType GetExtendedPropertyType(string name) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
+		}
+		///<summary>Gets the value of the ExtendedProperty with the given index, assuming it exists.</summary>
+		public string GetExtendedProperty(int index) {
+			var ep = MetadataObject.ExtendedProperties[index];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		///<summary>Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.</summary>
+		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
+		public string GetExtendedProperty(string name) {
+		    if(!HasExtendedProperty(name)) return null;
+			var ep = MetadataObject.ExtendedProperties[name];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		///<summary>Sets the value of the ExtendedProperty with the given index, optionally specifiying the type (string or JSON) of the ExtendedProperty.</summary>
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			var name = MetadataObject.ExtendedProperties[index].Name;
+			SetExtendedProperty(name, value, type);
+		}
+		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
+		public string GetNewExtendedPropertyName() {
+			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+		}
+		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
+		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+			if(name == null) name = GetNewExtendedPropertyName();
+
+			if(value == null) {
+				// Remove ExtendedProperty if set to null:
+				RemoveExtendedProperty(name);
+				return;
+			}
+
+			if(GetExtendedProperty(name) == value) return;
+			bool undoable = true;
+			bool cancel = false;
+			OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+			if (cancel) return;
+
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Change existing ExtendedProperty:
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				var ep = MetadataObject.ExtendedProperties[name];
+				if (ep is TOM.JsonExtendedProperty)
+					(ep as TOM.JsonExtendedProperty).Value = value;
+				else 
+					(ep as TOM.StringExtendedProperty).Value = value;
+					
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new ExtendedProperty:
+				if (type == ExtendedPropertyType.Json)
+					MetadataObject.ExtendedProperties.Add(new TOM.JsonExtendedProperty{ Name = name, Value = value });
+				else
+					MetadataObject.ExtendedProperties.Add(new TOM.StringExtendedProperty{ Name = name, Value = value });
+
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
+			}
+
+		}
+		///<summary>Remove an ExtendedProperty by the given name.</summary>
+		[IntelliSense("Remove an ExtendedProperty by the given name.")]
+		public void RemoveExtendedProperty(string name) {
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Get current value:
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+				if (cancel) return;
+
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				MetadataObject.ExtendedProperties.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
+			}
+		}
+		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
+		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
+		public int GetExtendedPropertyCount() {
+			return MetadataObject.ExtendedProperties.Count;
+		}
+		///<summary>Gets a collection of all ExtendedProperty names on the current object.</summary>
+		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
+		public IEnumerable<string> GetExtendedProperties() {
+			return MetadataObject.ExtendedProperties.Select(a => a.Name);
+		}
+
+		/// <summary>
+///             The DAX expression that filters the rows in the table when this security role is in effect.
+///             </summary>
+		[DisplayName("Filter Expression")]
+		[Category("Security"),Description(@"The DAX expression that filters the rows in the table when this security role is in effect."),IntelliSense(@"The DAX expression that filters the rows in the table when this security role is in effect.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		public string FilterExpression {
+			get {
+			    return MetadataObject.FilterExpression;
+			}
+			set {
+				
+				var oldValue = FilterExpression;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.FILTEREXPRESSION, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.FilterExpression = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FILTEREXPRESSION, oldValue, newValue));
+				OnPropertyChanged(Properties.FILTEREXPRESSION, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeFilterExpression() { return false; }
+/// <summary>
+///             Provides information on the state of the permission. Possible values and their interpretation are as follows. Ready (1) The permission has a valid expression. NoData (3) Not applicable. CalculationNeeded (4) Not applicable. SemanticError (5) The expression of the TablePermission object has a semantic error. EvaluationError (6) Not applicable. DependencyError (7) A dependency associated with this TablePermission object is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable. SyntaxError (9) The TablePermission object is in an error state because of a syntax error in its expression. The TablePermission object is not queryable. This state applies only to TablePermission objects of the type Calculated.
+///             </summary>
+		[DisplayName("State")]
+		[Category("Metadata"),Description(@"Provides information on the state of the permission. Possible values and their interpretation are as follows. Ready (1) The permission has a valid expression. NoData (3) Not applicable. CalculationNeeded (4) Not applicable. SemanticError (5) The expression of the TablePermission object has a semantic error. EvaluationError (6) Not applicable. DependencyError (7) A dependency associated with this TablePermission object is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable. SyntaxError (9) The TablePermission object is in an error state because of a syntax error in its expression. The TablePermission object is not queryable. This state applies only to TablePermission objects of the type Calculated."),IntelliSense(@"Provides information on the state of the permission. Possible values and their interpretation are as follows. Ready (1) The permission has a valid expression. NoData (3) Not applicable. CalculationNeeded (4) Not applicable. SemanticError (5) The expression of the TablePermission object has a semantic error. EvaluationError (6) Not applicable. DependencyError (7) A dependency associated with this TablePermission object is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable. SyntaxError (9) The TablePermission object is in an error state because of a syntax error in its expression. The TablePermission object is not queryable. This state applies only to TablePermission objects of the type Calculated.")]
+		public ObjectState State {
+			get {
+			    return (ObjectState)MetadataObject.State;
+			}
+			
+		}
+		private bool ShouldSerializeState() { return false; }
+/// <summary>
+///             A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError.
+///             </summary>
+		[DisplayName("Error Message")]
+		[Category("Metadata"),Description(@"A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError."),IntelliSense(@"A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError.")]
+		public string ErrorMessage {
+			get {
+			    return MetadataObject.ErrorMessage;
+			}
+			
+		}
+		private bool ShouldSerializeErrorMessage() { return false; }
+/// <summary>
+///             Defines whether the metadata of this table should be secured from users belonging to this role.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+		[DisplayName("OLS Table Permission")]
+		[Category("Security"),Description(@"Defines whether the metadata of this table should be secured from users belonging to this role."),IntelliSense(@"Defines whether the metadata of this table should be secured from users belonging to this role.")]
+		public TOM.MetadataPermission MetadataPermission {
+			get {
+			    return (TOM.MetadataPermission)MetadataObject.MetadataPermission;
+			}
+			set {
+				
+				var oldValue = MetadataPermission;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.METADATAPERMISSION, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.MetadataPermission = (TOM.MetadataPermission)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.METADATAPERMISSION, oldValue, newValue));
+				OnPropertyChanged(Properties.METADATAPERMISSION, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeMetadataPermission() { return false; }
+/// <summary>
+///             A reference to a Role object that owns this TablePermission.
+///             </summary>
+		[DisplayName("Role")]
+		[Category("Other"),Description(@"A reference to a Role object that owns this TablePermission."),IntelliSense(@"A reference to a Role object that owns this TablePermission.")]
+		public ModelRole Role {
+			get {
+				if (MetadataObject.Role == null) return null;
+			    return Handler.WrapperLookup[MetadataObject.Role] as ModelRole;
+            }
+			
+		}
+		private bool ShouldSerializeRole() { return false; }
+		///<summary>The parent table of the current Table Permission.</summary>
+		[Browsable(false)]
+		public Table Table
+		{ 
+			get 
+			{ 
+				TabularObject t = null;
+				if(MetadataObject == null || MetadataObject.Table == null) return null;
+				if(!Handler.WrapperLookup.TryGetValue(MetadataObject.Table, out t)) {
+				    t = Model.Tables[MetadataObject.Table.Name];
+				}
+				return t as Table;
+			} 
+		}
+
+		internal static TablePermission CreateFromMetadata(ModelRole parent, TOM.TablePermission metadataObject) {
+			var obj = new TablePermission(metadataObject);
+			parent.TablePermissions.Add(obj);
+			
+			obj.Init();
+
+			return obj;
+		}
+
+
+		/// <summary>
+		/// Creates a new TablePermission and adds it to the parent ModelRole.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
+		/// </summary>
+		public static TablePermission CreateNew(ModelRole parent, string name = null)
+		{
+			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(TablePermission))) {
+				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(TablePermission).GetTypeName()));
+			}
+
+			var metadataObject = new TOM.TablePermission();
+			metadataObject.Name = parent.TablePermissions.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(TablePermission).GetTypeName() : name);
+			var obj = new TablePermission(metadataObject);
+
+			parent.TablePermissions.Add(obj);
+			
+			obj.Init();
+
+			return obj;
+		}
+
+
+		/// <summary>
+		/// Creates an exact copy of this TablePermission object.
+		/// </summary>
+		public TablePermission Clone(string newName = null, ModelRole newParent = null) {
+			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(TablePermission))) {
+				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(TablePermission).GetTypeName()));
+			}
+
+		    Handler.BeginUpdate("Clone TablePermission");
+
+			// Create a clone of the underlying metadataobject:
+			var tom = MetadataObject.Clone() as TOM.TablePermission;
+
+
+			// Assign a new, unique name:
+			tom.Name = Parent.TablePermissions.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				
+			// Create the TOM Wrapper object, representing the metadataobject
+			TablePermission obj = CreateFromMetadata(newParent ?? Parent, tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
+			return Clone(newName);
+		}
+
+	
+        internal override void RenewMetadataObject()
+        {
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject = MetadataObject.Clone() as TOM.TablePermission;
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+		///<summary>The parent Model Role of the current Table Permission.</summary>
+		public ModelRole Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as ModelRole;
+			}
+		}
+
+
+
+		/// <summary>
+		/// CTOR - only called from static factory methods on the class
+		/// </summary>
+		TablePermission(TOM.TablePermission metadataObject) : base(metadataObject)
+		{
+			
+			// Create indexer for annotations:
+			Annotations = new AnnotationCollection(this);
+			
+			// Create indexer for extended properties:
+			ExtendedProperties = new ExtendedPropertyCollection(this);
+		}
+
+
+
+		internal override void Undelete(ITabularObjectCollection collection) {
+			base.Undelete(collection);
+			Reinit();
+			ReapplyReferences();
+		}
+		internal override bool Browsable(string propertyName) {
+			switch (propertyName) {
+ 
+				case Properties.EXTENDEDPROPERTIES:
+					return Handler.CompatibilityLevel >= 1400;
+				case Properties.PARENT:
+					return false;
+				
+				default:
+					return base.Browsable(propertyName);
+			}
+		}
+
+    }
+
+
+	/// <summary>
+	/// Collection class for TablePermission. Provides convenient properties for setting a property on multiple objects at once.
+	/// </summary>
+	public sealed partial class TablePermissionCollection: TabularObjectCollection<TablePermission>
+	{
+		internal ModelRole ModelRole { get { return Parent as ModelRole; } }
+		TOM.TablePermissionCollection TOM_Collection;
+		internal TablePermissionCollection(string collectionName, TOM.TablePermissionCollection metadataObjectCollection, ModelRole parent) : base(collectionName, parent)
+		{
+			TOM_Collection = metadataObjectCollection;
+		}
+		internal override Type GetItemType() { return typeof(TablePermission); }
+        internal override void TOM_Add(TOM.MetadataObject obj) { TOM_Collection.Add(obj as TOM.TablePermission); }
+        internal override bool TOM_Contains(TOM.MetadataObject obj) { return TOM_Collection.Contains(obj as TOM.TablePermission); }
+        internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.TablePermission); }
+        internal override void TOM_Clear() { TOM_Collection.Clear(); }
+        internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
+        internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+        internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
+        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.TablePermission); }
+        /// <summary>The number of items in this collection.</summary>
+		public override int Count { get { return TOM_Collection.Count; } }
+		/// <summary>Returns an enumerator that iterates through the collection.</summary>
+        public override IEnumerator<TablePermission> GetEnumerator() { return TOM_Collection.Select(h => Handler.WrapperLookup[h]).OfType<TablePermission>().GetEnumerator(); }
+		internal override void Reinit() {
+			var ixOffset = 0;
+			for(int i = 0; i < Count; i++) {
+				var item = this[i];
+				Handler.WrapperLookup.Remove(item.MetadataObject);
+				item.MetadataObject = ModelRole.MetadataObject.TablePermissions[i + ixOffset] as TOM.TablePermission;
+				Handler.WrapperLookup.Add(item.MetadataObject, item);
+				item.Collection = this;
+			}
+			TOM_Collection = ModelRole.MetadataObject.TablePermissions;
+			foreach(var item in this) item.Reinit();
+		}
+
+		internal override void ReapplyReferences() {
+			foreach(var item in this) item.ReapplyReferences();
+		}
+
+		/// <summary>
+		/// Calling this method will populate the TablePermissionCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
+		/// </summary>
+		internal override void CreateChildrenFromMetadata()
+		{
+			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
+			foreach(var obj in TOM_Collection) {
+				if(obj is TOM.TablePermission) TablePermission.CreateFromMetadata(ModelRole, obj as TOM.TablePermission);
+		    }
+		}
+
+		/// <summary>
+		/// Sets the FilterExpression property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the FilterExpression property of all objects in the collection at once.")]
+		public string FilterExpression {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("FilterExpression"));
+				this.ToList().ForEach(item => { item.FilterExpression = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the MetadataPermission property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the MetadataPermission property of all objects in the collection at once.")]
+		public TOM.MetadataPermission MetadataPermission {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("MetadataPermission"));
+				this.ToList().ForEach(item => { item.MetadataPermission = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		///<summary>Get a string representation of the current Table Permission</summary>
+		public override string ToString() {
+			return string.Format("({0} {1})", Count, (Count == 1 ? "TablePermission" : "TablePermissions").ToLower());
 		}
 	}
 }

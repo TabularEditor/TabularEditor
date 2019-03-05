@@ -25,22 +25,18 @@ namespace TabularEditor.TOMWrapper
             return string.IsNullOrWhiteSpace(value);
         }
 
+        private IEnumerable<Table> NonCalculationGroupTables => Model.Tables.Where(t => !(t is CalculationGroupTable));
 
-        internal Dictionary<Table, RLSFilterExpression> _filterExpressions = new Dictionary<Table, RLSFilterExpression>();
-        public IReadOnlyDictionary<Table, RLSFilterExpression> FilterExpressions => _filterExpressions;
-
-        private IEnumerable<Table> NonCalculatedGroupTables => Model.Tables.Where(t => !(t is CalculationGroupTable));
-
-        public override IEnumerable<string> Keys { get { return NonCalculatedGroupTables.Select(t => t.Name); } }
+        public override IEnumerable<string> Keys { get { return NonCalculationGroupTables.Select(t => t.Name); } }
 
         public override string Summary
         {
             get
             {
-                int tableCount = NonCalculatedGroupTables.Count();
+                int tableCount = NonCalculationGroupTables.Count();
                 return string.Format("RLS enabled on {0} out of {1} table{2}",
                     this.Count(v => !string.IsNullOrWhiteSpace(v)),
-                    NonCalculatedGroupTables.Count(),
+                    NonCalculationGroupTables.Count(),
                     tableCount == 1 ? "" : "s");
             }
         }
@@ -63,8 +59,9 @@ namespace TabularEditor.TOMWrapper
 
         protected override void SetValue(Table table, string filterExpression)
         {
-            var tps = Role.MetadataObject.TablePermissions;
-            var tp = tps.Find(table.Name);
+            Handler.BeginUpdate("Filter Expression");
+
+            var tp = Role.TablePermissions.FindByName(table.Name);
 
             // Filter expression removed:
             if (string.IsNullOrWhiteSpace(filterExpression)) {
@@ -72,35 +69,22 @@ namespace TabularEditor.TOMWrapper
                 // Don't do anything if there is no TablePermission for this table anyway:
                 if (tp == null) return;
 
-                // Otherwise, remove the TablePermission:
-                tps.Remove(tp);
-                Handler.UndoManager.Add(new UndoPropertyChangedAction(Role, "RowLevelSecurity", tp.FilterExpression, null, table.Name));
-
-                RLSFilterExpression rls;
-                if (FilterExpressions.TryGetValue(table, out rls))
-                {
-                    FormulaFixup.ClearDependsOn(rls);
-                    _filterExpressions.Remove(table);
-                }
+                // Otherwise, remove the filter expression:
+                if (Handler.CompatibilityLevel >= 1400 && (tp.MetadataObject.MetadataPermission != TOM.MetadataPermission.Default ||
+                    tp.MetadataObject.ColumnPermissions.Any(cp => cp.MetadataPermission != TOM.MetadataPermission.Default)))
+                    tp.FilterExpression = string.Empty;
+                else
+                    tp.Delete();
             }
             else // Filter expression assigned:
             {
                 // Create a new TablePermission if we don't already have one for this table:
-                if (tp == null)
-                {
-                    tp = new TOM.TablePermission() { Table = table.MetadataObject };
-                    tps.Add(tp);
-                }
+                if (tp == null) tp = TablePermission.CreateFromMetadata(Role, new TOM.TablePermission { Table = table.MetadataObject });
 
-                // Assign the new expression to the TablePermission:
-                var oldValue = tp.FilterExpression;
                 tp.FilterExpression = filterExpression;
-
-                Role.Handler.UndoManager.Add(new UndoPropertyChangedAction(Role, "RowLevelSecurity", oldValue, filterExpression, table.Name));
-
-                var rls = RLSFilterExpression.Get(Role, table);
-                FormulaFixup.BuildDependencyTree(rls);
             }
+
+            Handler.EndUpdate();
         }
     }
 }

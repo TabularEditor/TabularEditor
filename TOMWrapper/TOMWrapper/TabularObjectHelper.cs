@@ -14,8 +14,7 @@ namespace TabularEditor.TOMWrapper
         {
             if ((obj is ITabularNamedObject)) return (obj as ITabularNamedObject)?.Name;
 
-            var tryRlsFilterExpr = obj as RLSFilterExpression;
-            if(tryRlsFilterExpr != null) return tryRlsFilterExpr.Role.Name;
+            if(obj is TablePermission tp) return tp.Role.Name;
 
             return obj.GetTypeName();
         }
@@ -62,6 +61,8 @@ namespace TabularEditor.TOMWrapper
                     return string.Format("{0}.Roles[\"{1}\"]", obj.Model.GetLinqPath(), obj.Name);
                 case ObjectType.Expression:
                     return string.Format("{0}.Expressions[\"{1}\"]", obj.Model.GetLinqPath(), obj.Name);
+                case ObjectType.TablePermission:
+                    return string.Format("{0}.TablePermissions[\"{1}\"]", (obj as TablePermission).Role.GetLinqPath(), (obj as TablePermission).Table.Name);
                 default:
                     throw new NotSupportedException();
             }
@@ -108,6 +109,9 @@ namespace TabularEditor.TOMWrapper
                 case TOM.ObjectType.CalculationGroup:
                     var cg = obj as TOM.CalculationGroup;
                     return GetObjectPath(cg.Table) + ".CalculationGroup";
+                case TOM.ObjectType.TablePermission:
+                    var tp = obj as TOM.TablePermission;
+                    return GetObjectPath(tp.Role) + "." + tp.Table.Name;
                 default:
                     throw new NotSupportedException($"Cannot create reference for object of type {obj.ObjectType}.");
             }

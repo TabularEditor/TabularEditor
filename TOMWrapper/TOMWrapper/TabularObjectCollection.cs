@@ -109,7 +109,9 @@ namespace TabularEditor.TOMWrapper
 
         public virtual T FindByName(string name)
         {
-            if (Handler.WrapperLookup.TryGetValue(TOM_Get(name), out TabularObject value))
+            var tom = TOM_Find(name);
+
+            if (tom != null && Handler.WrapperLookup.TryGetValue(tom, out TabularObject value))
                 return value as T;
             else
                 return null;
@@ -180,6 +182,7 @@ namespace TabularEditor.TOMWrapper
         internal abstract void CreateChildrenFromMetadata();
         internal abstract Type GetItemType();
         internal abstract TOM.MetadataObject TOM_Get(string name);
+        internal abstract TOM.MetadataObject TOM_Find(string name);
         internal abstract TOM.MetadataObject TOM_Get(int index);
         internal abstract void TOM_Add(TOM.MetadataObject obj);
         internal abstract void TOM_Remove(TOM.MetadataObject obj);
