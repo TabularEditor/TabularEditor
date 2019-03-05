@@ -24,9 +24,11 @@ namespace TabularEditor.TOMWrapper.Utils
         [IntelliSense("Return a list of tokens representing the specified DAX property on the current object.")]
         public static IList<DaxToken> Tokenize(this IDaxDependantObject obj, DAXProperty property)
         {
+            var result = new List<DaxToken>();
+            var dax = obj.GetDAX(property);
+            if(string.IsNullOrEmpty(dax)) return result;
             var lexer = new DAXLexer(new DAXCharStream(obj.GetDAX(property), false));
             lexer.RemoveErrorListeners();
-            var result = new List<DaxToken>();
             var lexerTokens = lexer.GetAllTokens();
             for(int i = 0; i < lexerTokens.Count; i++)
             {

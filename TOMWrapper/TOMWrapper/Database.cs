@@ -9,31 +9,59 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public sealed class Database
+    public sealed class Database: ITabularObject
     {
         [Browsable(false)]
         public TOM.Database TOMDatabase { get; private set; }
 
-        internal Database(Microsoft.AnalysisServices.Core.Database tomDatabase)
+        private Model _model;
+
+        internal Database(Model model, Microsoft.AnalysisServices.Core.Database tomDatabase)
         {
             var db = tomDatabase as TOM.Database;
             TOMDatabase = db;
+            _model = model;
+            _name = tomDatabase.Name;
+            _id = tomDatabase.ID;
         }
 
         public override string ToString()
         {
             return TOMDatabase?.Server == null ? "(Metadata loaded from file)" : ServerName + "." + Name;
         }
-        
+
+        private string _name;
+        private string _id;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        internal void DoPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        [Description("The name of the deployed database. Changing this has no effect on an already deployed database.")]
         public string Name
         {
-            get { return TOMDatabase?.Name; }
+            get { return _name; }
+            set
+            {
+                if (_id == _name) _id = value;
+                _name = value;
+                DoPropertyChanged("Name");
+            }
         }
+        [Description("The ID of the deployed database. Changing this has no effect on an already deployed database.")]
         public string ID
         {
             get
             {
-                return TOMDatabase?.ID;
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                DoPropertyChanged("ID");
             }
         }
         [DisplayName("Compatibility Level")]
@@ -107,5 +135,14 @@ namespace TabularEditor.TOMWrapper
                 return string.Format("{0} ({1}) {2}",s.ProductName, s.ProductLevel, s.Version);
             }
         }
+
+        [Browsable(false)]
+        public ObjectType ObjectType => ObjectType.Database;
+
+        [Browsable(false)]
+        public Model Model => _model;
+
+        [Browsable(false)]
+        public bool IsRemoved => false;
     }
 }
