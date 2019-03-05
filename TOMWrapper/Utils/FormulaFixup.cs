@@ -103,7 +103,7 @@ namespace TabularEditor.TOMWrapper.Utils
                         // No table reference before the object reference
                         else
                         {
-                            var table = (expressionObj as ITabularTableObject)?.Table ?? (expressionObj as RLSFilterExpression)?.Table;
+                            var table = (expressionObj as ITabularTableObject)?.Table ?? (expressionObj as TablePermission)?.Table;
                             // Referencing a column without specifying a table (assume column in same table):
                             if (table != null && table.Columns.Contains(tok.Text.NoQ()))
                             {
@@ -171,10 +171,9 @@ namespace TabularEditor.TOMWrapper.Utils
             }
             foreach (var role in Model.Roles)
             {
-                foreach(var table in Model.Tables.Where(t => !string.IsNullOrWhiteSpace(role.RowLevelSecurity[t])))
+                foreach(var tp in role.TablePermissions)
                 {
-                    var rfe = RLSFilterExpression.Get(role, table);
-                    BuildDependencyTree(rfe);
+                    BuildDependencyTree(tp);
                 }
             }
 

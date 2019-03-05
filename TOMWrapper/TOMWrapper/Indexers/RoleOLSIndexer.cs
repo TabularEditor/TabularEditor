@@ -53,18 +53,16 @@ namespace TabularEditor.TOMWrapper
 
         protected override void SetValue(Table table, TOM.MetadataPermission permission)
         {
-            var tps = Role.MetadataObject.TablePermissions;
-            var tp = tps.Find(table.Name);
+            Handler.BeginUpdate("object level security");
+
+            var tp = Role.TablePermissions.FindByName(table.Name);
             if (tp == null && permission == TOM.MetadataPermission.Default) return;
-            if (tp == null)
-            {
-                tp = new TOM.TablePermission() { Table = table.MetadataObject };
-                tps.Add(tp);
-            }
-            var oldValue = tp.MetadataPermission;
+
+            if (tp == null) tp = TablePermission.CreateFromMetadata(Role, new TOM.TablePermission { Table = table.MetadataObject });
+
             tp.MetadataPermission = permission;
 
-            Role.Handler.UndoManager.Add(new UndoPropertyChangedAction(Role, "MetadataPermission", oldValue, permission, table.Name));
+            Handler.EndUpdate();
         }
     }
 }

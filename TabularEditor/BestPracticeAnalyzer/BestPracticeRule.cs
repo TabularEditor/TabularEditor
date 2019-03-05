@@ -40,7 +40,10 @@ namespace TabularEditor.BestPracticeAnalyzer
         StructuredDataSource    = 0x8000,
         Variation               = 0x10000,
         NamedExpression         = 0x20000,
-        ModelRole               = 0x40000
+        ModelRole               = 0x40000,
+        TablePermission         = 0x80000,
+        CalculationGroup        = 0x100000,
+        CalculationItem         = 0x200000
     }
 
     public static class RuleScopeHelper
@@ -90,6 +93,9 @@ namespace TabularEditor.BestPracticeAnalyzer
                 case RuleScope.Variation: return typeof(Variation);
                 case RuleScope.NamedExpression: return typeof(NamedExpression);
                 case RuleScope.ModelRole: return typeof(ModelRole);
+                case RuleScope.CalculationGroup: return typeof(CalculationGroupTable);
+                case RuleScope.CalculationItem: return typeof(CalculationItem);
+                case RuleScope.TablePermission: return typeof(TablePermission);
                 default:
                     throw new InvalidOperationException("Unknown scope type");
             }

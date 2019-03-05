@@ -45,7 +45,7 @@ namespace TabularEditor.TOMWrapper
                 obj => 
                     (obj is ITabularTableObject && (obj as ITabularTableObject).Table != this) || 
                     (obj is Table && obj != this) || 
-                    (obj is RLSFilterExpression)
+                    (obj is TablePermission)
             ))
                 message += Messages.ReferencedByDAX;
             if (message == string.Empty) message = null;

@@ -156,10 +156,10 @@ namespace TabularEditor
                         n.Nodes.Add(new TreeNode(d.GetName() + " (circular dependency)", i, i));
                     }
                     else if (currentDepth < MAX_LEVELS && d is IDaxObject) InverseRecursiveAdd(d as IDaxObject, n.Nodes);
-                    else if (currentDepth < MAX_LEVELS && d is RLSFilterExpression)
+                    else if (currentDepth < MAX_LEVELS && d is TablePermission tp)
                     {
-                        var newNode = new TreeNode(d.GetName(), i, i);
-                        newNode.Tag = (d as RLSFilterExpression).Role;
+                        var newNode = new TreeNode(tp.Role.Name + " RLS on " + tp.Table.DaxObjectFullName, i, i);
+                        newNode.Tag = tp;
                         n.Nodes.Add(newNode);
                     }
                     else if (currentDepth < MAX_LEVELS && d is CalculationItem ci)

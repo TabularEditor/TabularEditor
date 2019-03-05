@@ -43,33 +43,31 @@ namespace TabularEditor.TOMWrapper
 
         protected override void SetValue(ModelRole role, TOM.MetadataPermission permission)
         {
-            var tps = role.MetadataObject.TablePermissions;
-            var tp = tps.Find(Column.Table.Name);
-            var cp = tp?.ColumnPermissions?.Find(Column.Name);
+            Handler.BeginUpdate("object level security");
+
+            var tp = role.TablePermissions.FindByName(Column.Table.Name);
+            var cp = tp != null ? tp.MetadataObject.ColumnPermissions.Find(Column.Name) : null;
 
             // Permission removed:
             if (permission == TOM.MetadataPermission.Default)
             {
                 // Do nothing if same value or no CP defined
-                if (cp == null || cp.MetadataPermission == permission) return;
+                if (cp == null) return;
 
                 // Otherwise, remove CP:
                 Column.Handler.UndoManager.Add(new UndoPropertyChangedAction(Column, "ObjectLevelSecurity", cp.MetadataPermission, permission, role.Name));
-                tp.ColumnPermissions.Remove(cp);
+                tp.MetadataObject.ColumnPermissions.Remove(cp);
             }
             else // Non-default permission assigned:
             {
                 // Create TP if not exists:
-                if (tp == null)
-                {
-                    tp = new TOM.TablePermission { Table = Column.Table.MetadataObject };
-                    tps.Add(tp);
-                }
+                if (tp == null) tp = TablePermission.CreateFromMetadata(role, new TOM.TablePermission { Table = Column.Table.MetadataObject });
+
                 // Create CP if not exists:
                 if (cp == null)
                 {
                     cp = new TOM.ColumnPermission { Column = Column.MetadataObject };
-                    tp.ColumnPermissions.Add(cp);
+                    tp.MetadataObject.ColumnPermissions.Add(cp);
                 }
 
                 // Do nothing if same value
@@ -79,6 +77,8 @@ namespace TabularEditor.TOMWrapper
                 Column.Handler.UndoManager.Add(new UndoPropertyChangedAction(Column, "ObjectLevelSecurity", cp.MetadataPermission, permission, role.Name));
                 cp.MetadataPermission = permission;
             }
+
+            Handler.EndUpdate();
         }
     }
 }

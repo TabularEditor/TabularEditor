@@ -62,7 +62,7 @@ namespace TabularEditor.Scripting
                 // corresponding roles instead.
                 var v = (value as IEnumerable<IDaxDependantObject>);
                 testTabularCollection = v.OfType<ITabularNamedObject>()
-                    .Concat(v.OfType<RLSFilterExpression>().Select(rls => rls.Role));
+                    .Concat(v.OfType<TablePermission>().Select(rls => rls.Role));
             }
             else
                 testTabularCollection = value as IEnumerable<ITabularNamedObject>;

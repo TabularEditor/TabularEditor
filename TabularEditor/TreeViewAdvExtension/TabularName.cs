@@ -41,7 +41,7 @@ namespace TabularEditor.UI.Tree
 
             // toneDown is set to 'true' if the current object is hidden or disabled (only applies to hideable objects or
             // relationships respectively):
-            bool toneDown = (e.Node.Tag as IHideableObject)?.IsHidden ?? !((e.Node.Tag as Relationship)?.IsActive ?? true);
+            bool toneDown = (e.Node.Tag as TablePermission)?.NoEffect ?? (e.Node.Tag as IHideableObject)?.IsHidden ?? !((e.Node.Tag as Relationship)?.IsActive ?? true);
 
             // toneSelect is set to 'true' if the current object has been selected in the tree (and thus will have a blue
             // background applied):

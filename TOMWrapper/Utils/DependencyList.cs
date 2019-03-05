@@ -240,7 +240,7 @@ namespace TabularEditor.TOMWrapper.Utils
         public IEnumerable<Measure> Measures { get { return this.OfType<Measure>(); } }
         public IEnumerable<CalculatedColumn> Columns { get { return this.OfType<CalculatedColumn>(); } }
         public IEnumerable<CalculatedTable> Tables { get { return this.OfType<CalculatedTable>(); } }
-        public IEnumerable<ModelRole> Roles { get { return this.OfType<RLSFilterExpression>().Select(r => r.Role); } }
+        public IEnumerable<ModelRole> Roles { get { return this.OfType<TablePermission>().Select(r => r.Role); } }
     }
 
     public enum DAXProperty

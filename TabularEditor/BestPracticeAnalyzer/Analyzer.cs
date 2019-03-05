@@ -464,6 +464,8 @@ namespace TabularEditor.BestPracticeAnalyzer
                     return model.Expressions.AsQueryable();
                 case RuleScope.Variation:
                     return model.AllColumns.SelectMany(c => c.Variations).AsQueryable();
+                case RuleScope.TablePermission:
+                    return model.Roles.SelectMany(r => r.TablePermissions).AsQueryable();
                 default:
                     return Enumerable.Empty<TabularNamedObject>().AsQueryable();
             }
