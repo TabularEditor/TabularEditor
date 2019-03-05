@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
@@ -54,16 +55,32 @@ namespace TabularEditor.UI.Actions
 
         protected override void OnUpdate(EventArgs e)
         {
-            try
-            {
-                Enabled = (ActiveTextBox != null && Clipboard.ContainsData(DataFormats.Text) && UIController.Current.ClipboardObjects == null) ||
-                    (UIController.Current.ClipboardObjects?.Count > 0 && TreeHasFocus);
-            }
-            catch {
-                Enabled = false;
-            }
+            Enabled = (ActiveTextBox != null && UIController.Current.ClipboardObjects == null && ClipboardContainsText()) ||
+                   (UIController.Current.ClipboardObjects?.Count > 0 && TreeHasFocus);
 
             base.OnUpdate(e);
+
+            bool ClipboardContainsText()
+            {
+                var result = false;
+
+                var thread = new Thread(() =>
+                {
+                    try
+                    {
+                        result = Clipboard.ContainsData(DataFormats.Text);
+                    }
+                    catch
+                    {
+                        result = false;
+                    }
+                });
+                thread.SetApartmentState(ApartmentState.STA);
+                thread.Start();
+                thread.Join();
+
+                return result;
+            }
         }
     }
 }
