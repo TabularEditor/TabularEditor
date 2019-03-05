@@ -69,7 +69,7 @@ namespace TabularEditor.TOMWrapper
             UndoManager = new UndoManager(this);
             Actions = new TabularCommonActions(this);
             Model = Model.CreateFromMetadata(database.Model);
-            Model.Database = new Database(database);
+            Model.Database = new Database(Model, database);
             CheckErrors();
 
             FormulaFixup.BuildDependencyTree();
@@ -92,7 +92,7 @@ namespace TabularEditor.TOMWrapper
             Singleton = this;
             server = null;
 
-            database = new TOM.Database("New Tabular Database") { CompatibilityLevel = compatibilityLevel };
+            database = new TOM.Database("SemanticModel") { CompatibilityLevel = compatibilityLevel };
             CompatibilityLevel = compatibilityLevel;
             database.Model = new TOM.Model();
 

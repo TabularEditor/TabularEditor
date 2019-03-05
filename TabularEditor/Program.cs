@@ -354,13 +354,16 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             if (!string.IsNullOrEmpty(buildOutputPath))
             {
                 cw.WriteLine("Building Model.bim file...");
-                h.Save(buildOutputPath, SaveFormat.ModelSchemaOnly, SerializeOptions.Default, replaceId:buildReplaceId);
+                if (buildReplaceId != null) { h.Database.Name = buildReplaceId; h.Database.ID = buildReplaceId; }
+                h.Save(buildOutputPath, SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
             }
             else if(!string.IsNullOrEmpty(saveToFolderOutputPath))
             {
                 cw.WriteLine("Saving Model.bim file to Folder Output Path ...");
+                if (buildReplaceId != null) { h.Database.Name = buildReplaceId; h.Database.ID = buildReplaceId; }
+
                 //Note the last parameter, we use whatever SerializeOptions are already in the file
-                h.Save(saveToFolderOutputPath, SaveFormat.TabularEditorFolder, null, true, replaceId:saveToFolderReplaceId);
+                h.Save(saveToFolderOutputPath, SaveFormat.TabularEditorFolder, null, true);
             }
 
             var replaceMap = new Dictionary<string, string>();
