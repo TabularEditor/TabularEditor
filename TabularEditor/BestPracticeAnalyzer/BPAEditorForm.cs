@@ -35,7 +35,7 @@ namespace TabularEditor.UI.Dialogs
             txtID.Text = rule.ID;
             txtDescription.Text = rule.Description;
             numSeverity.Value = rule.Severity > 5 ? 5 : rule.Severity;
-            cmbCompatibility.SelectedIndex = rule.CompatibilityLevel == 1400 ? 1 : 0;
+            cmbCompatibility.SelectedIndex = rule.CompatibilityLevel == 1400 ? 1 : (rule.CompatibilityLevel == 1470 ? 2 : 0);
             cmbCategory.Text = rule.Category?.Trim();
 
             btnOK.Enabled = ValidateRuleData();
@@ -48,7 +48,7 @@ namespace TabularEditor.UI.Dialogs
                 rule.ID = txtID.Text;
                 rule.Description = txtDescription.Text;
                 rule.Severity = (int)numSeverity.Value;
-                rule.CompatibilityLevel = cmbCompatibility.SelectedIndex == 0 ? 1200 : 1400;
+                rule.CompatibilityLevel = cmbCompatibility.SelectedIndex == 0 ? 1200 : (cmbCompatibility.SelectedIndex == 1 ? 1400 : 1470);
                 rule.Category = cmbCategory.Text;
                 return true;
             }
@@ -83,7 +83,7 @@ namespace TabularEditor.UI.Dialogs
                     Description = txtDescription.Text,
                     Severity = (int)numSeverity.Value,
                     Enabled = true,
-                    CompatibilityLevel = cmbCompatibility.SelectedIndex == 0 ? 1200 : 1400,
+                    CompatibilityLevel = cmbCompatibility.SelectedIndex == 0 ? 1200 : (cmbCompatibility.SelectedIndex == 1 ? 1400 : 1470),
                     Category = cmbCategory.Text
             };
             }
