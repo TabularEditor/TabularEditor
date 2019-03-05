@@ -228,7 +228,6 @@ namespace TabularEditor.UI
             {
                 if (!cancelIfRunning) return;
                 backgroundBpaTokenSource.Cancel();
-                backgroundBpa.Wait();
                 try
                 {
                     backgroundBpa.Wait();
