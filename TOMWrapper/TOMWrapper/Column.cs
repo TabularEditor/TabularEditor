@@ -41,7 +41,7 @@ namespace TabularEditor.TOMWrapper
         /// True if this column is hosted by a table which is used as a Calculation Group. False, otherwise.
         /// </summary>
         [Browsable(false)]
-        public bool IsCalculationGroupAttribute => Table.ObjectType == ObjectType.CalculationGroup;
+        public bool IsCalculationGroupAttribute => Handler.CompatibilityLevel >= 1470 && Table?.ObjectType == ObjectType.CalculationGroup;
 
         /// <summary>
         /// Collection of objects that depend on this column.
