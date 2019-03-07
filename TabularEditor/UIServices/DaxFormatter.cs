@@ -20,6 +20,7 @@ namespace TabularEditor.Dax
     public class DaxFormatterRequest
     {
         public string Dax { get; set; }
+        public int MaxLineLenght { get; set; } = 0;
         public char ListSeparator { get; set; }
         public char DecimalSeparator { get; set; }
         public string CallerApp { get; set; }
@@ -34,10 +35,11 @@ namespace TabularEditor.Dax
         public string DatabaseName { get; set; }
         public string DatabaseCompatibilityLevel { get; set; }
 
-        public DaxFormatterRequest(bool useSemicolonsAsSeparators)
+        public DaxFormatterRequest(bool useSemicolonsAsSeparators, bool shortFormat)
         {
             this.ListSeparator = useSemicolonsAsSeparators ? ';' : ',';
             this.DecimalSeparator = useSemicolonsAsSeparators ? ',' : '.';
+            this.MaxLineLenght = shortFormat ? 1 : 0;
 
             // Save caller app and version
             var assemblyName = System.Reflection.Assembly.GetEntryAssembly().GetName();
@@ -74,9 +76,9 @@ namespace TabularEditor.Dax
         public const string DaxTextFormatUri = "http://daxtest02.azurewebsites.net/api/daxformatter/DaxFormat";
         public const int DaxFormatterRequestTimeout = 10;
 
-        public static DaxFormatterResult FormatDax(string query, bool useSemicolonsAsSeparators)
+        public static DaxFormatterResult FormatDax(string query, bool useSemicolonsAsSeparators, bool shortFormat)
         {
-            string output = CallDaxFormatter(DaxTextFormatUri, query, useSemicolonsAsSeparators);
+            string output = CallDaxFormatter(DaxTextFormatUri, query, useSemicolonsAsSeparators, shortFormat);
             var res2 = new DaxFormatterResult();
             if (output.StartsWith("{"))
             {
@@ -88,12 +90,12 @@ namespace TabularEditor.Dax
             return res2;
         }
 
-        private static string CallDaxFormatter(string uri, string query, bool useSemicolonsAsSeparators)
+        private static string CallDaxFormatter(string uri, string query, bool useSemicolonsAsSeparators, bool shortFormat)
         {
             try
             {
 
-                DaxFormatterRequest req = new DaxFormatterRequest(useSemicolonsAsSeparators);
+                DaxFormatterRequest req = new DaxFormatterRequest(useSemicolonsAsSeparators, shortFormat);
                 req.Dax = query;
 
                 var data = JsonConvert.SerializeObject(req, Formatting.Indented);

@@ -70,6 +70,7 @@ namespace TabularEditor.Scripting
             }
         }
 
+
         [ScriptMethod]
         public static string ConvertDax(string dax, bool useSemicolons = true)
         {
@@ -77,12 +78,12 @@ namespace TabularEditor.Scripting
         }
 
         [ScriptMethod]
-        public static string FormatDax(string dax)
+        public static string FormatDax(string dax, bool shortFormat = false)
         {
             var textToFormat = "x :=" + dax;
             try
             {
-                var result = TabularEditor.Dax.DaxFormatterProxy.FormatDax(textToFormat, false).FormattedDax;
+                var result = TabularEditor.Dax.DaxFormatterProxy.FormatDax(textToFormat, false, shortFormat).FormattedDax;
                 if (string.IsNullOrWhiteSpace(result))
                 {
                     return dax;
