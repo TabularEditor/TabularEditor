@@ -419,21 +419,24 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void actExpressionFormatDAX_Execute(object sender, EventArgs e)
         {
-            var textToFormat = "x :=" + txtExpression.Text;
-            try
+            using (var hg = new Hourglass())
             {
-                var result = TabularEditor.Dax.DaxFormatterProxy.FormatDax(textToFormat, Preferences.Current.UseSemicolonsAsSeparators).FormattedDax;
-                if (string.IsNullOrWhiteSpace(result))
+                var textToFormat = "x :=" + txtExpression.Text;
+                try
+                {
+                    var result = TabularEditor.Dax.DaxFormatterProxy.FormatDax(textToFormat, Preferences.Current.UseSemicolonsAsSeparators, sender == actExpressionFormatDAXShort).FormattedDax;
+                    if (string.IsNullOrWhiteSpace(result))
+                    {
+                        lblStatus.Text = "Could not format DAX.";
+                        return;
+                    }
+                    lblStatus.Text = "DAX formatted succesfully";
+                    txtExpression.Text = result.Substring(6).Trim();
+                }
+                catch
                 {
                     lblStatus.Text = "Could not format DAX.";
-                    return;
                 }
-                lblStatus.Text = "DAX formatted succesfully";
-                txtExpression.Text = result.Substring(6).Trim();
-            }
-            catch
-            {
-                lblStatus.Text = "Could not format DAX.";
             }
         }
 
@@ -818,6 +821,11 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void actOpenBPA_Execute(object sender, EventArgs e)
         {
             BPAForm.ShowBPA();
+        }
+
+        private void btnFormatDAX_ButtonClick(object sender, EventArgs e)
+        {
+            actExpressionFormatDAX.DoExecute();
         }
     }
 }

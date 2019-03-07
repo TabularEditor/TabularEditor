@@ -361,6 +361,16 @@ namespace TabularEditor {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap icon_dax_formatter_16 {
+            get {
+                object obj = ResourceManager.GetObject("icon-dax-formatter-16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] loading_icon {
