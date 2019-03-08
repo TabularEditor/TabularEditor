@@ -24,7 +24,9 @@ namespace TabularEditor.UI.Tree
             return node.Tag is ITabularNamedObject
                 && !(node.Tag is LogicalGroup)
                 && !(node.Tag is Culture)
-                && !(node.Tag is Relationship);
+                && !(node.Tag is Relationship)
+                && !(node.Tag is TablePermission)
+                && !(node.Tag is KPI);
         }
 
         public TabularNodeTextBox(UIController UI)
