@@ -11,7 +11,7 @@ namespace TOMWrapperTest.RegressionTests.v2_7_4
     {
         #region Model.bim metadata
         const string DatabaseJson = @"{
-  ""name"": ""New Tabular Database"",
+  ""name"": ""SemanticModel"",
   ""compatibilityLevel"": 1200,
   ""model"": {
     ""tables"": [

@@ -35,6 +35,7 @@ namespace TabularEditor.TOMWrapper
 
         protected override TOM.MetadataPermission GetValue(ModelRole role)
         {
+            if (role == null) return TOM.MetadataPermission.Default;
             var tp = role.MetadataObject.TablePermissions.Find(Column.Table.Name);
             if (tp == null) return TOM.MetadataPermission.Default;
 
