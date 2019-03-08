@@ -330,7 +330,7 @@ namespace TabularEditor.UI
             UI.PropertyGrid.Refresh();
         }
 
-        private void UpdateUIText()
+        private void UpdateUIText(bool clearText = true)
         {
             var appName = Application.ProductName + " 2.8.1"; // + string.Join(".", Application.ProductVersion.Split('.').Take(2));
 
@@ -340,7 +340,6 @@ namespace TabularEditor.UI
                 UI.StatusLabel.Text = "(No model loaded)";
                 UI.StatusExLabel.Text = "";
                 UI.ErrorLabel.Text = "";
-                UI.BpaLabel.Text = "";
             }
             else
             {
@@ -353,7 +352,6 @@ namespace TabularEditor.UI
                 UI.StatusLabel.Text = Handler.Status;
                 UI.ErrorLabel.Text = Handler?.Errors?.Count > 0 ? string.Format("{0} error{1}", Handler.Errors.Count, Handler.Errors.Count > 1 ? "s" : "") : "";
                 UI.ErrorLabel.IsLink = Handler?.Errors?.Count > 0;
-                UI.BpaLabel.Text = "";
             }
         }
 

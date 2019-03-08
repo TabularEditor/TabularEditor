@@ -241,7 +241,8 @@ namespace TabularEditor.UI
                         if (changeFilePointer)
                         {
                             File_Current = dialog.FileName;
-                            File_SaveMode = ModelSourceType.File;
+                            File_LastWrite = DateTime.Now;
+                            File_SaveMode = dialog.FileType == "pbit" ? ModelSourceType.Pbit : ModelSourceType.File;
                             Environment.CurrentDirectory = (new FileInfo(File_Current)).DirectoryName;
                         }
 
