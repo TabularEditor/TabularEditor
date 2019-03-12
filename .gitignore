@@ -2,8 +2,13 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
+/AntlrGrammars/obj/Debug/*
+!/AntlrGrammars/obj/Debug/DAXLexer.cs
+!/AntlrGrammars/obj/Debug/DAXLexer.tokens
+!/AntlrGrammars/obj/Debug/CSharpLexer.cs
+!/AntlrGrammars/obj/Debug/CSharpLexer.tokens
+/AntlrGrammars/obj/Release/*
 /AntlrGrammars/bin
-/AntlrGrammars/obj
 /AntlrGrammars/CSharpLexer.g4.cs
 /AntlrGrammars/DAXLexer.g4.cs
 /TabularEditor/bin

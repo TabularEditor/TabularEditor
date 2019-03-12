@@ -72,13 +72,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\AntlrGrammars\obj\Debug\DAXLexer.cs">
+      <Link>TextServices\DAXLexer.cs</Link>
+    </Compile>
     <Compile Include="PropertyGridUI\CollectionEditors\ExtendedPropertyCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\RoleMemberCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\Converters\CultureConverter.cs" />
     <Compile Include="PropertyGridUI\Converters\HierarchyColumnConverter.cs" />
     <Compile Include="PropertyGridUI\DataTypeEnumConverter.cs" />
     <Compile Include="TextServices\DAXCharStream.cs" />
-    <Compile Include="TextServices\DAXLexer.cs" />
     <Compile Include="TOMWrapper\CalculationGroupTable.cs" />
     <Compile Include="TOMWrapper\CalculationItem.cs" />
     <Compile Include="TOMWrapper\ExtendedPropertyCollection.cs" />

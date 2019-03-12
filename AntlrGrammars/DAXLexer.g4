@@ -300,6 +300,8 @@ BOTH:                   'BOTH'                                                  
 NONE:                   'NONE'                                                                                    -> channel(KEYWORD_CHANNEL);
 ONEWAY:                 'ONEWAY'                                                                                  -> channel(KEYWORD_CHANNEL);
 
+IN:                 'IN'                                                                                  -> channel(KEYWORD_CHANNEL);
+
 INTEGER_LITERAL:       [0-9]+;
 REAL_LITERAL:          [0-9]* '.' [0-9]+;
 STRING_LITERAL:        '"' (~'"' | '""')* '"';
