@@ -120,7 +120,7 @@ namespace TabularEditor.UI.Actions
 
             Add(new Action((s, m) => s.Count == 1, (s, m) => s.CalculationGroup.AddCalculationItem().Edit(), (s, m) => @"New Calculation Item", false, Context.CalculationGroup));
             Add(new Action((s, m) => true, (s, m) => s.CalculationItems.First().CalculationGroup.AddCalculationItem().Edit(), (s, m) => @"New Calculation Item", false, Context.CalculationItem));
-            Add(new Action((s, m) => true, (s, m) => (s.Column.Table as CalculationGroupTable).AddCalculationItem().Edit(), (s, m) => @"New Calculation Item", false, Context.CalculationGroupColumn));
+            Add(new Action((s, m) => true, (s, m) => (s.First() as CalculationGroupAttribute).CalculationGroup.AddCalculationItem().Edit(), (s, m) => @"New Calculation Item", false, Context.CalculationGroupAttribute));
 
             Add(new Action((s, m) => !Handler.UsePowerBIGovernance, (s, m) => m.AddDataSource().Edit(), (s, m) => @"Create New\Data Source (Legacy)", false, Context.DataSources | Context.Model));
             Add(new Action((s, m) => Handler.CompatibilityLevel >= 1400 && !Handler.UsePowerBIGovernance, (s, m) => m.AddStructuredDataSource().Edit(), (s, m) => @"Create New\Data Source (Power Query)", false, Context.DataSources | Context.Model));
@@ -272,7 +272,7 @@ namespace TabularEditor.UI.Actions
                     }
 
                     s.Delete();
-                }, (s, m) => "Delete " + s.Summary() + "...", true, Context.SingularObjects ^ Context.Model);
+                }, (s, m) => "Delete " + s.Summary() + "...", true, Context.SingularObjects ^ Context.Model ^ Context.CalculationGroupAttribute);
             Add(Delete);
 
             Add(new Separator());
