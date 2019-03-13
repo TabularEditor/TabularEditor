@@ -425,6 +425,14 @@ namespace TabularEditor.TOMWrapper
         String = 0,
         Json = 1,
 	}
+	/// <summary>
+///             Access control to a data defined by a metadata object.
+///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+	public enum MetadataPermission {    
+        Default = 0,
+        None = 1,
+        Read = 2,
+	}
   
 	/// <summary>
 ///             Variation object.
@@ -6917,9 +6925,11 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeForceUniqueNames() { return false; }
-
+/// <summary>
+///             Determines whether to discourage the implicit measures.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1470 or above.</remarks>
 		[DisplayName("Discourage Implicit Measures")]
-		[Category("Other"),Description(@"The DiscourageImplicitMeasures of this Model"),IntelliSense(@"The DiscourageImplicitMeasures of this Model")]
+		[Category("Other"),Description(@"Determines whether to discourage the implicit measures."),IntelliSense(@"Determines whether to discourage the implicit measures.")]
 		public bool DiscourageImplicitMeasures {
 			get {
 			    return MetadataObject.DiscourageImplicitMeasures;
@@ -11742,7 +11752,9 @@ namespace TabularEditor.TOMWrapper
 		}
 	}
   
-	
+	/// <summary>
+///             Represents a collection of Calculation Items.
+///             </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1470 or above.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class CalculationGroup: TabularObject
 			, IDescriptionObject
@@ -11877,9 +11889,11 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
 
-		
+		/// <summary>
+///             The description of the CalculationGroup, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+///             </summary>
 		[DisplayName("Description")]
-		[Category("Basic"),Description(@"The Description of this CalculationGroup"),IntelliSense(@"The Description of this CalculationGroup")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"The description of the CalculationGroup, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the CalculationGroup, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;
@@ -11899,9 +11913,11 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
-
+/// <summary>
+///             Defines an evaluation order of CalculationGroup objects.
+///             </summary>
 		[DisplayName("Precedence")]
-		[Category("Other"),Description(@"The Precedence of this CalculationGroup"),IntelliSense(@"The Precedence of this CalculationGroup")]
+		[Category("Other"),Description(@"Defines an evaluation order of CalculationGroup objects."),IntelliSense(@"Defines an evaluation order of CalculationGroup objects.")]
 		public int Precedence {
 			get {
 			    return MetadataObject.Precedence;
@@ -11998,7 +12014,9 @@ namespace TabularEditor.TOMWrapper
     }
 
   
-	
+	/// <summary>
+///             A Tabular Calculation Item.
+///             </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1470 or above.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class CalculationItem: TabularNamedObject
 			, IErrorMessageObject
@@ -12018,9 +12036,11 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
-
+/// <summary>
+///             The description of the CalculationItem, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+///             </summary>
 		[DisplayName("Description")]
-		[Category("Basic"),Description(@"The Description of this CalculationItem"),IntelliSense(@"The Description of this CalculationItem")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Basic"),Description(@"The description of the CalculationItem, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the CalculationItem, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
 			get {
 			    return MetadataObject.Description;
@@ -12040,9 +12060,11 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
-
+/// <summary>
+///             Provides information on the state of the Expression. Possible values and their interpretation are as follows. Ready (1) The Expression is queryable and has up-to-date data. SemanticError (5) The Expression has a semantic error. DependencyError (7) A dependency associated with this Expression is in an error state (SemanticError, EvaluationError, or DependencyError). SyntaxError (9) The Expression has a syntax error.
+///             </summary>
 		[DisplayName("State")]
-		[Category("Metadata"),Description(@"The State of this CalculationItem"),IntelliSense(@"The State of this CalculationItem")]
+		[Category("Metadata"),Description(@"Provides information on the state of the Expression. Possible values and their interpretation are as follows. Ready (1) The Expression is queryable and has up-to-date data. SemanticError (5) The Expression has a semantic error. DependencyError (7) A dependency associated with this Expression is in an error state (SemanticError, EvaluationError, or DependencyError). SyntaxError (9) The Expression has a syntax error."),IntelliSense(@"Provides information on the state of the Expression. Possible values and their interpretation are as follows. Ready (1) The Expression is queryable and has up-to-date data. SemanticError (5) The Expression has a semantic error. DependencyError (7) A dependency associated with this Expression is in an error state (SemanticError, EvaluationError, or DependencyError). SyntaxError (9) The Expression has a syntax error.")]
 		public ObjectState State {
 			get {
 			    return (ObjectState)MetadataObject.State;
@@ -12050,9 +12072,11 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeState() { return false; }
-
+/// <summary>
+///             The DAX expression that is evaluated for this CalculationItem.
+///             </summary>
 		[DisplayName("Expression")]
-		[Category("Options"),Description(@"The Expression of this CalculationItem"),IntelliSense(@"The Expression of this CalculationItem")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Options"),Description(@"The DAX expression that is evaluated for this CalculationItem."),IntelliSense(@"The DAX expression that is evaluated for this CalculationItem.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Expression {
 			get {
 			    return MetadataObject.Expression;
@@ -12564,9 +12588,9 @@ namespace TabularEditor.TOMWrapper
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("OLS Table Permission")]
 		[Category("Security"),Description(@"Defines whether the metadata of this table should be secured from users belonging to this role."),IntelliSense(@"Defines whether the metadata of this table should be secured from users belonging to this role.")]
-		public TOM.MetadataPermission MetadataPermission {
+		public MetadataPermission MetadataPermission {
 			get {
-			    return (TOM.MetadataPermission)MetadataObject.MetadataPermission;
+			    return (MetadataPermission)MetadataObject.MetadataPermission;
 			}
 			set {
 				
@@ -12796,7 +12820,7 @@ namespace TabularEditor.TOMWrapper
 		/// Sets the MetadataPermission property of all objects in the collection at once.
 		/// </summary>
 		[Description("Sets the MetadataPermission property of all objects in the collection at once.")]
-		public TOM.MetadataPermission MetadataPermission {
+		public MetadataPermission MetadataPermission {
 			set {
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("MetadataPermission"));

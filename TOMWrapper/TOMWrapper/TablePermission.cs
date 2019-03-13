@@ -22,8 +22,8 @@ namespace TabularEditor.TOMWrapper
                 if(Handler.CompatibilityLevel >= 1400)
                 {
                     if (
-                        MetadataPermission != TOM.MetadataPermission.Default ||
-                        ColumnPermissions.Any(cp => cp != TOM.MetadataPermission.Default)
+                        MetadataPermission != MetadataPermission.Default ||
+                        ColumnPermissions.Any(cp => cp != MetadataPermission.Default)
                     ) return false;
                 }
                 if (!string.IsNullOrWhiteSpace(FilterExpression)) return false;

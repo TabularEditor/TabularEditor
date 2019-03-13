@@ -18,7 +18,7 @@ namespace TabularEditor.TOMWrapper
     /// which browses the permissions across all tables for one specific role.
     /// </summary>
     [TypeConverter(typeof(IndexerConverter))]
-    public sealed class ColumnOLSIndexer: GenericIndexer<ModelRole, TOM.MetadataPermission>
+    public sealed class ColumnOLSIndexer: GenericIndexer<ModelRole, MetadataPermission>
     {
         public readonly Column Column;
 
@@ -33,24 +33,22 @@ namespace TabularEditor.TOMWrapper
             return Model.Roles;
         }
 
-        protected override TOM.MetadataPermission GetValue(ModelRole role)
+        protected override MetadataPermission GetValue(ModelRole role)
         {
-            if (role == null) return TOM.MetadataPermission.Default;
+            if (role == null) return MetadataPermission.Default;
             var tp = role.MetadataObject.TablePermissions.Find(Column.Table.Name);
-            if (tp == null) return TOM.MetadataPermission.Default;
+            if (tp == null) return MetadataPermission.Default;
 
-            return tp.ColumnPermissions.Find(Column.Name)?.MetadataPermission ?? TOM.MetadataPermission.Default;
+            return (MetadataPermission) (tp.ColumnPermissions.Find(Column.Name)?.MetadataPermission ?? TOM.MetadataPermission.Default);
         }
 
-        protected override void SetValue(ModelRole role, TOM.MetadataPermission permission)
+        protected override void SetValue(ModelRole role, MetadataPermission permission)
         {
-            Handler.BeginUpdate("object level security");
-
             var tp = role.TablePermissions.FindByName(Column.Table.Name);
             var cp = tp != null ? tp.MetadataObject.ColumnPermissions.Find(Column.Name) : null;
 
             // Permission removed:
-            if (permission == TOM.MetadataPermission.Default)
+            if (permission == MetadataPermission.Default)
             {
                 // Do nothing if same value or no CP defined
                 if (cp == null) return;
@@ -61,6 +59,8 @@ namespace TabularEditor.TOMWrapper
             }
             else // Non-default permission assigned:
             {
+                Handler.BeginUpdate("object level security");
+
                 // Create TP if not exists:
                 if (tp == null) tp = TablePermission.CreateFromMetadata(role, new TOM.TablePermission { Table = Column.Table.MetadataObject });
 
@@ -72,14 +72,14 @@ namespace TabularEditor.TOMWrapper
                 }
 
                 // Do nothing if same value
-                if (cp.MetadataPermission == permission) return;
+                if ((MetadataPermission)cp.MetadataPermission == permission) return;
 
                 // Otherwise, assign the new permission to CP:
                 Column.Handler.UndoManager.Add(new UndoPropertyChangedAction(Column, "ObjectLevelSecurity", cp.MetadataPermission, permission, role.Name));
-                cp.MetadataPermission = permission;
-            }
+                cp.MetadataPermission = (TOM.MetadataPermission)permission;
 
-            Handler.EndUpdate();
+                Handler.EndUpdate();
+            }
         }
     }
 }

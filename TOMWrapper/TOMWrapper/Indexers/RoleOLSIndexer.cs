@@ -15,7 +15,7 @@ namespace TabularEditor.TOMWrapper
     /// tables in the model, for one specific role.
     /// </summary>
     [TypeConverter(typeof(IndexerConverter))]
-    public class RoleOLSIndexer: GenericIndexer<Table, TOM.MetadataPermission>
+    public class RoleOLSIndexer: GenericIndexer<Table, MetadataPermission>
     {
         public readonly ModelRole Role;
 
@@ -34,7 +34,7 @@ namespace TabularEditor.TOMWrapper
             {
                 int tableCount = NonCalculatedGroupTables.Count();
                 return string.Format("OLS enabled on {0} out of {1} table{2}",
-                    this.Count(v => v != TOM.MetadataPermission.Default),
+                    this.Count(v => v != MetadataPermission.Default),
                     NonCalculatedGroupTables.Count(),
                     tableCount == 1 ? "" : "s");
 
@@ -46,23 +46,19 @@ namespace TabularEditor.TOMWrapper
             return Model.Tables;
         }
 
-        protected override TOM.MetadataPermission GetValue(Table table)
+        protected override MetadataPermission GetValue(Table table)
         {
-            return Role.MetadataObject.TablePermissions.Find(table.Name)?.MetadataPermission ?? TOM.MetadataPermission.Default;
+            return (MetadataPermission) ( Role.MetadataObject.TablePermissions.Find(table.Name)?.MetadataPermission ?? TOM.MetadataPermission.Default);
         }
 
-        protected override void SetValue(Table table, TOM.MetadataPermission permission)
+        protected override void SetValue(Table table, MetadataPermission permission)
         {
-            Handler.BeginUpdate("object level security");
-
             var tp = Role.TablePermissions.FindByName(table.Name);
-            if (tp == null && permission == TOM.MetadataPermission.Default) return;
+            if (tp == null && permission == MetadataPermission.Default) return;
 
             if (tp == null) tp = TablePermission.CreateFromMetadata(Role, new TOM.TablePermission { Table = table.MetadataObject });
 
             tp.MetadataPermission = permission;
-
-            Handler.EndUpdate();
         }
     }
 }

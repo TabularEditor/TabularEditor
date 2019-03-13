@@ -403,7 +403,8 @@ partial class Rules {
 		"HierarchyHideMembersType",
 		"EncodingHintType",
 		"RefreshType",
-		"ExtendedPropertyType"
+		"ExtendedPropertyType",
+		"MetadataPermission"
 	};
 	public static readonly Type[] EnumTypes = _enumTypes.Select(t => ASType(t)).Where(t => t != null).ToArray();
 
@@ -424,8 +425,7 @@ partial class Rules {
 		{ typeof(bool), "bool" },
 		{ typeof(char), "char" },
 		{ typeof(string), "string" },
-		{ typeof(void), "void" },
-		{ typeof(MetadataPermission), "TOM.MetadataPermission" }
+		{ typeof(void), "void" }
 	};	
 
 	public static Type ASType(string type) {

@@ -114,7 +114,7 @@ namespace TabularEditor.TOMWrapper
         /// <param name="obj"></param>
         public static void SaveOLS(this Table obj, bool includeChildren = false)
         {
-            if (obj.ObjectLevelSecurity.Any(ols => ols != Microsoft.AnalysisServices.Tabular.MetadataPermission.Default))
+            if (obj.ObjectLevelSecurity.Any(ols => ols != MetadataPermission.Default))
                 obj.SetAnnotation(ANN_OLS, obj.ObjectLevelSecurity.ToJson(), false);
 
             if (includeChildren)
@@ -128,7 +128,7 @@ namespace TabularEditor.TOMWrapper
             var p = obj.GetAnnotation(ANN_OLS);
             if (p != null)
             {
-                obj.ObjectLevelSecurity.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, Microsoft.AnalysisServices.Tabular.MetadataPermission>>(p));
+                obj.ObjectLevelSecurity.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, MetadataPermission>>(p));
                 obj.RemoveAnnotation(ANN_OLS);
             }
 
@@ -144,7 +144,7 @@ namespace TabularEditor.TOMWrapper
         /// <param name="obj"></param>
         public static void SaveOLS(this Column obj)
         {
-            if (obj.ObjectLevelSecurity.Any(ols => ols != Microsoft.AnalysisServices.Tabular.MetadataPermission.Default))
+            if (obj.ObjectLevelSecurity.Any(ols => ols != MetadataPermission.Default))
                 obj.SetAnnotation(ANN_OLS, obj.ObjectLevelSecurity.ToJson(), false);
         }
         public static void LoadOLS(this Column obj)
@@ -152,7 +152,7 @@ namespace TabularEditor.TOMWrapper
             var p = obj.GetAnnotation(ANN_OLS);
             if (p != null)
             {
-                obj.ObjectLevelSecurity.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, Microsoft.AnalysisServices.Tabular.MetadataPermission>>(p));
+                obj.ObjectLevelSecurity.CopyFrom(JsonConvert.DeserializeObject<Dictionary<string, MetadataPermission>>(p));
                 obj.RemoveAnnotation(ANN_OLS);
             }
         }
