@@ -1491,10 +1491,15 @@ namespace System.Linq.Dynamic
         Expression ParseMemberAccessSafe(Type type, Expression instance)
         {
             var isNull = Expression.Equal(instance, Null);
+            if (instance.Type == typeof(string))
+            {
+                instance = Expression.Condition(isNull, Expression.Constant(""), instance);
+                return ParseMemberAccess(type, instance);
+            }
             var memberAccess = ParseMemberAccess(type, instance);
 
-            return
-                Expression.Condition(isNull, Expression.Default(memberAccess.Type), memberAccess);
+            return Expression.Condition(isNull, Expression.Default(memberAccess.Type), memberAccess);
+
         }
 
 
