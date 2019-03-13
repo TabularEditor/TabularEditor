@@ -33,6 +33,26 @@ namespace TabularEditor
         }
 
         [TestMethod]
+        public void NullExpressionTest()
+        {
+            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var model = handler.Model;
+            var analyzer = new Analyzer();
+            analyzer.Model = model;
+
+            var rule = new BestPracticeRule()
+            {
+                Scope = RuleScope.Partition,
+                Expression = "Expression.IndexOf(\"todo\", StringComparison.InvariantCultureIgnoreCase) >= 0"
+            };
+
+            model.Tables["Currency"].Partitions[0].Expression = null;
+
+            var results = analyzer.Analyze(rule).ToList();
+            Assert.AreEqual(0, results.Count);
+        }
+
+        [TestMethod]
         public void PerformanceTest()
         {
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
@@ -51,6 +71,11 @@ namespace TabularEditor
 
             var results = new List<AnalyzerResult>();
 
+            // Warm the cache:
+            results.AddRange(analyzer.Analyze(rule));
+
+            results.Clear();
+
             var sw = new Stopwatch();
             sw.Start();
             for (int i = 0; i < 1000; i++)
@@ -58,6 +83,7 @@ namespace TabularEditor
                 results.AddRange(analyzer.Analyze(rule));
             }
             sw.Stop(); // 2600
+            Assert.IsTrue(sw.ElapsedMilliseconds < 5000);
             Assert.AreEqual(1000, results.Count);
         }
 
