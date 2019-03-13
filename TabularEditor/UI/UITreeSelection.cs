@@ -232,7 +232,7 @@ namespace TabularEditor.UI
         Expression = 1 << 23,
 
         CalculationGroup = 1 << 24,
-        CalculationGroupColumn = 1 << 25,
+        CalculationGroupAttribute = 1 << 25,
         CalculationItem = 1 << 26,
 
         /// <summary>
@@ -243,7 +243,7 @@ namespace TabularEditor.UI
 
         Everywhere = 0x7FFFFFFF,
         TableObject = Measure | Column | Hierarchy,
-        SingularObjects = Model | Table | TableObject | Level | Partition | Relationship | DataSource | Role | TablePermission | Perspective | Translation | KPI | Expression | CalculationGroup | CalculationGroupColumn | CalculationItem,
+        SingularObjects = Model | Table | TableObject | Level | Partition | Relationship | DataSource | Role | TablePermission | Perspective | Translation | KPI | Expression | CalculationGroup | CalculationGroupAttribute | CalculationItem,
         Groups = Tables | Relationships | DataSources | Roles | Perspectives | Translations | Expressions,
         DataObjects = Table | TableObject,
         Scriptable = Table | Partition | DataSource | Role
@@ -304,9 +304,10 @@ namespace TabularEditor.UI
                 case ObjectType.CalculationGroup: return Context.CalculationGroup;
                 case ObjectType.CalculationItem: return Context.CalculationItem;
                 case ObjectType.TablePermission: return Context.TablePermission;
+                case ObjectType.CalculationGroupAttribute: return Context.CalculationGroupAttribute;
                 case ObjectType.Level: return Context.Level;
                 case ObjectType.KPI: return Context.KPI;
-                case ObjectType.Column: return (obj as Column).Table.ObjectType == ObjectType.CalculationGroup ? Context.CalculationGroupColumn : Context.Column;
+                case ObjectType.Column: return Context.Column;
                 case ObjectType.Measure: return Context.Measure;
                 case ObjectType.Hierarchy: return Context.Hierarchy;
                 case ObjectType.Group:

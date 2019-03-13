@@ -159,7 +159,7 @@ namespace TabularEditor.TOMWrapper
         public static string GetTypeName(this ITabularObject obj, bool plural = false)
         {
             if (obj is CalculatedTable) return "Calculated Table" + (plural ? "s" : "");
-            if (obj is DataColumn dc) return dc.IsCalculationGroupAttribute ? "Calculation Group Attribute" : "Column" + (plural ? "s" : "");
+            if (obj is DataColumn) return "Column" + (plural ? "s" : "");
             if (obj is CalculatedColumn) return "Calculated Column" + (plural ? "s" : "");
             if (obj is CalculatedTableColumn) return "Calculated Table Column" + (plural ? "s" : "");
             if (obj is StructuredDataSource) return "Data Source (Power Query)";

@@ -677,15 +677,12 @@ namespace Aga.Controls.Tree
 				BeginUpdate();
 				try
 				{
-					if (value == null)
+					if (value == null || !IsMyNode(value))
 					{
 						ClearSelectionInternal();
 					}
 					else
 					{
-						if (!IsMyNode(value))
-							throw new ArgumentException();
-
 						ClearSelectionInternal();
 						value.IsSelected = true;
 						CurrentNode = value;

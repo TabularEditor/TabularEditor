@@ -10,6 +10,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
+
     /// <summary>
     /// Calculation Group Tables are special tables that only contain a single column
     /// </summary>
@@ -30,7 +31,7 @@ namespace TabularEditor.TOMWrapper
             parent.Tables.Add(obj);
 
             obj.Init();
-            obj.Field = obj.Columns[0] as DataColumn;
+            obj.Field = new CalculationGroupAttribute(obj.DataColumns.First());
 
             return obj;
         }
@@ -55,7 +56,7 @@ namespace TabularEditor.TOMWrapper
             return CreateFromMetadata(parent, metadataObject);
         }
 
-        DataColumn Field { get; set; }
+        CalculationGroupAttribute Field { get; set; }
 
         CalculationGroupTable(TOM.Table table) : base(table)
         {
@@ -87,6 +88,14 @@ namespace TabularEditor.TOMWrapper
             base.Init();
         }
 
+        internal override void Reinit()
+        {
+            base.Reinit();
+            CalculationGroup.RenewMetadataObject();
+            CalculationGroup.Reinit();
+            Field = new CalculationGroupAttribute(DataColumns.First());
+        }
+
         public override ObjectType ObjectType => ObjectType.CalculationGroup;
 
         public CalculationItemCollection CalculationItems => CalculationGroup.CalculationItems;
@@ -94,11 +103,9 @@ namespace TabularEditor.TOMWrapper
         public override IEnumerable<ITabularNamedObject> GetChildren()
         {
             yield return Field;
-            foreach (var item in CalculationItems) yield return item;
-        }
-        public override IEnumerable<IFolderObject> GetChildrenByFolders()
-        {
-            throw new NotSupportedException();
+            foreach (var item in CalculatedColumns) yield return item;
+            foreach (var item in Measures) yield return item;
+            foreach (var item in Hierarchies) yield return item;
         }
 
         internal override bool IsBrowsable(string propertyName)

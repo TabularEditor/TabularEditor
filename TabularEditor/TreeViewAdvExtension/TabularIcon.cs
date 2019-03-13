@@ -56,8 +56,10 @@ namespace TabularEditor.UI.Tree
                         return obj is CalculatedTable ? TabularIcons.ICON_CALCTIMETABLE : TabularIcons.ICON_TIMETABLE;
                     return obj is CalculatedTable ? TabularIcons.ICON_CALCTABLE : TabularIcons.ICON_TABLE;
 
+                case ObjectType.CalculationGroupAttribute:
+                    return TabularIcons.ICON_FIELDCOLUMN;
+
                 case ObjectType.Column:
-                    if ((obj as Column).IsCalculationGroupAttribute) return TabularIcons.ICON_FIELDCOLUMN;
                     return obj is CalculatedColumn ? TabularIcons.ICON_CALCCOLUMN : TabularIcons.ICON_COLUMN;
 
                 case ObjectType.Level:

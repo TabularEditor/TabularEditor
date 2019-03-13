@@ -74,7 +74,7 @@ namespace TabularEditor.UI
             {
                 var tree = ctr as TreeViewAdv;
                 // Update the delete text depending on which type of object(s) is selected:
-                if (tree.SelectedNode == null || tree.SelectedNode.Tag is Model)
+                if (tree.SelectedNode == null || tree.SelectedNode.Tag is Model || tree.SelectedNode.Tag is CalculationGroupAttribute)
                 {
                     Text = "Delete";
                     Enabled = false;

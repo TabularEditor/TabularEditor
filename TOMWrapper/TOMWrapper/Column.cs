@@ -38,12 +38,6 @@ namespace TabularEditor.TOMWrapper
         #endregion
 
         /// <summary>
-        /// True if this column is hosted by a table which is used as a Calculation Group. False, otherwise.
-        /// </summary>
-        [Browsable(false)]
-        public bool IsCalculationGroupAttribute => Handler.CompatibilityLevel >= 1470 && Table?.ObjectType == ObjectType.CalculationGroup;
-
-        /// <summary>
         /// Collection of objects that depend on this column.
         /// </summary>
         [Browsable(false)]
@@ -213,29 +207,6 @@ namespace TabularEditor.TOMWrapper
 
         internal override bool IsBrowsable(string propertyName)
         {
-            if (IsCalculationGroupAttribute)
-            {
-                // If this column represents a calculation group attribute, we will hide
-                // almost all of the properties on it:
-                switch (propertyName)
-                {
-                    case Properties.NAME:
-                    case Properties.DESCRIPTION:
-                    case Properties.DISPLAYFOLDER:
-                    case Properties.ISHIDDEN:
-                    case Properties.EXTENDEDPROPERTIES:
-                    case Properties.ANNOTATIONS:
-                    case Properties.TRANSLATEDNAMES:
-                    case Properties.TRANSLATEDDESCRIPTIONS:
-                    case Properties.TRANSLATEDDISPLAYFOLDERS:
-                    case Properties.OBJECTTYPENAME:
-                    case Properties.INPERSPECTIVE:
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-
             switch (propertyName)
             {
                 case "ObjectLevelSecurity":
