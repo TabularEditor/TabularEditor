@@ -15,7 +15,7 @@ namespace TabularEditor.TOMWrapper
     /// tables in the model, for one specific role.
     /// </summary>
     [TypeConverter(typeof(IndexerConverter))]
-    public class RoleColumnOLSIndexer: GenericIndexer<Column, TOM.MetadataPermission>
+    public class RoleColumnOLSIndexer: GenericIndexer<Column, MetadataPermission>
     {
         public readonly TablePermission TablePermission;
 
@@ -34,7 +34,7 @@ namespace TabularEditor.TOMWrapper
             {
                 int columnCount = TablePermission.Table.Columns.Count;
                 return string.Format("OLS enabled on {0} out of {1} column{2}",
-                    this.Count(v => v != TOM.MetadataPermission.Default),
+                    this.Count(v => v != MetadataPermission.Default),
                     columnCount,
                     columnCount == 1 ? "" : "s");
 
@@ -46,12 +46,12 @@ namespace TabularEditor.TOMWrapper
             return TablePermission.Table.Columns;
         }
 
-        protected override TOM.MetadataPermission GetValue(Column column)
+        protected override MetadataPermission GetValue(Column column)
         {
             return column.ObjectLevelSecurity[TablePermission.Role];
         }
 
-        protected override void SetValue(Column column, TOM.MetadataPermission permission)
+        protected override void SetValue(Column column, MetadataPermission permission)
         {
             column.ObjectLevelSecurity[TablePermission.Role] = permission;
         }

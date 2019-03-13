@@ -18,7 +18,7 @@ namespace TabularEditor.TOMWrapper
     /// filters across all tables for one specific role.
     /// </summary>
     [TypeConverter(typeof(IndexerConverter))]
-    public sealed class TableOLSIndexer : GenericIndexer<ModelRole, TOM.MetadataPermission>
+    public sealed class TableOLSIndexer : GenericIndexer<ModelRole, MetadataPermission>
     {
         public readonly Table Table;
 
@@ -33,13 +33,13 @@ namespace TabularEditor.TOMWrapper
             return Model.Roles;
         }
 
-        protected override TOM.MetadataPermission GetValue(ModelRole role)
+        protected override MetadataPermission GetValue(ModelRole role)
         {
             // Get the acutal value from the RoleOLSIndexer:
             return role.MetadataPermission[Table];
         }
 
-        protected override void SetValue(ModelRole role, TOM.MetadataPermission permission)
+        protected override void SetValue(ModelRole role, MetadataPermission permission)
         {
             // Let the RoleOLSIndexer handle the actual value assignment:
             role.MetadataPermission[Table] = permission;

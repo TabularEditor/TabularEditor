@@ -59,8 +59,6 @@ namespace TabularEditor.TOMWrapper
 
         protected override void SetValue(Table table, string filterExpression)
         {
-            Handler.BeginUpdate("Filter Expression");
-
             var tp = Role.TablePermissions.FindByName(table.Name);
 
             // Filter expression removed:
@@ -83,8 +81,6 @@ namespace TabularEditor.TOMWrapper
 
                 tp.FilterExpression = filterExpression;
             }
-
-            Handler.EndUpdate();
         }
     }
 }
