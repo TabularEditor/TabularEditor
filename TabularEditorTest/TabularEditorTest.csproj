@@ -79,6 +79,7 @@
     <Compile Include="ScriptParser\ScriptParserTests.cs" />
     <Compile Include="ScriptEngineTests.cs" />
     <Compile Include="TabularUITree\LinqFilterTests.cs" />
+    <Compile Include="TabularUITree\GetPathTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TabularEditor\TabularEditor.csproj">
