@@ -8,7 +8,7 @@ using TabularEditor.TOMWrapper.Utils;
 namespace TabularEditor.TOMWrapper
 {
     [DebuggerDisplay("{ObjectType} {Name}")]
-    public class CalculationGroupAttribute: ITabularObjectContainer, ITabularNamedObject, ITabularTableObject, IDaxObject, IFolderObject
+    public class CalculationGroupAttribute: ITabularObjectContainer, ITabularNamedObject, ITabularTableObject, IDaxObject, IFolderObject, IHideableObject, IAnnotationObject, ITranslatableObject
     {
         private DataColumn Column;
         internal CalculationGroupAttribute(DataColumn column)
@@ -64,12 +64,16 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public CalculationGroupTable CalculationGroup => Column.Table as CalculationGroupTable;
 
+        [Browsable(false)]
         public string DaxObjectName => Column.DaxObjectName;
 
+        [Browsable(false)]
         public string DaxObjectFullName => Column.DaxObjectFullName;
 
+        [Browsable(false)]
         public string DaxTableName => Column.DaxTableName;
 
+        [Browsable(false)]
         public ReferencedByList ReferencedBy => Column.ReferencedBy;
 
         public event PropertyChangedEventHandler PropertyChanged
@@ -105,9 +109,54 @@ namespace TabularEditor.TOMWrapper
         {
         }
 
+        public string GetAnnotation(int index)
+        {
+            return Column.GetAnnotation(index);
+        }
+
+        public string GetAnnotation(string name)
+        {
+            return Column.GetAnnotation(name);
+        }
+
+        public IEnumerable<string> GetAnnotations()
+        {
+            return Column.GetAnnotations();
+        }
+
+        public int GetAnnotationsCount()
+        {
+            return Column.GetAnnotationsCount();
+        }
+
         public IEnumerable<ITabularNamedObject> GetChildren()
         {
             return CalculationGroup.CalculationItems;
+        }
+
+        public string GetNewAnnotationName()
+        {
+            return Column.GetNewAnnotationName();
+        }
+
+        public bool HasAnnotation(string name)
+        {
+            return Column.HasAnnotation(name);
+        }
+
+        public void RemoveAnnotation(string name)
+        {
+            Column.RemoveAnnotation(name);
+        }
+
+        public void SetAnnotation(int index, string value)
+        {
+            Column.SetAnnotation(index, value);
+        }
+
+        public void SetAnnotation(string name, string value)
+        {
+            Column.SetAnnotation(name, value);
         }
     }
 }
