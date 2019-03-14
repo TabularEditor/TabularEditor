@@ -14,6 +14,20 @@ namespace TabularEditor.TOMWrapper
 {
     public class CalculatedTable: Table, IExpressionObject
     {
+        [IntelliSense("Adds a new Calculated Table column to the table."), Tests.GenerateTest()]
+        public CalculatedTableColumn AddCalculatedTableColumn(string name = null, string sourceColumn = null, string displayFolder = null, DataType dataType = DataType.String)
+        {
+            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(CalculatedTableColumn))) return null;
+
+            Handler.BeginUpdate("add Calculated Table column");
+            var column = CalculatedTableColumn.CreateNew(this, name);
+            column.DataType = dataType;
+            if (!string.IsNullOrEmpty(sourceColumn)) column.SourceColumn = sourceColumn;
+            if (!string.IsNullOrEmpty(displayFolder)) column.DisplayFolder = displayFolder;
+            Handler.EndUpdate();
+            return column;
+        }
+
         internal override void ClearError()
         {
             var errors = new List<string>();

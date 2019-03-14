@@ -445,6 +445,9 @@ namespace TabularEditor
             {
                 stack.Add((item as ITabularTableObject).Table);
 
+                var calcItem = item as CalculationItem;
+                if (calcItem != null) item = calcItem.Field;
+                
                 var level = item as Level;
                 if (level != null) item = level.Hierarchy;
 
@@ -467,6 +470,7 @@ namespace TabularEditor
                 }
 
                 stack.Add(item);
+                if (calcItem != null) stack.Add(calcItem);
                 if (level != null) stack.Add(level);
                 if (kpi != null) stack.Add(kpi);
             }
