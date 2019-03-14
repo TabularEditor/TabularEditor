@@ -200,6 +200,7 @@ namespace TabularEditor.TOMWrapper
             typeof(Variation),
             typeof(StructuredDataSource),
             typeof(CalculatedColumn),
+            typeof(CalculatedTableColumn),
             typeof(Culture),
             typeof(DataColumn),
             typeof(ExternalModelRoleMember),
@@ -1404,6 +1405,7 @@ namespace TabularEditor.TOMWrapper
 ///             </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class CalculatedTableColumn: Column
+			, IClonableObject
 	{
 	    internal new TOM.CalculatedTableColumn MetadataObject 
 		{ 
@@ -1510,6 +1512,67 @@ namespace TabularEditor.TOMWrapper
 			obj.Init();
 
 			return obj;
+		}
+
+
+		/// <summary>
+		/// Creates a new CalculatedTableColumn and adds it to the parent Table.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
+		/// </summary>
+		public static CalculatedTableColumn CreateNew(Table parent, string name = null)
+		{
+			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(CalculatedTableColumn))) {
+				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(CalculatedTableColumn).GetTypeName()));
+			}
+
+			var metadataObject = new TOM.CalculatedTableColumn();
+			metadataObject.Name = parent.Columns.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(CalculatedTableColumn).GetTypeName() : name);
+			var obj = new CalculatedTableColumn(metadataObject);
+
+			parent.Columns.Add(obj);
+			
+			obj.Init();
+
+			return obj;
+		}
+
+
+		/// <summary>
+		/// Creates an exact copy of this CalculatedTableColumn object.
+		/// </summary>
+		public CalculatedTableColumn Clone(string newName = null, bool includeTranslations = true, Table newParent = null) {
+			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(CalculatedTableColumn))) {
+				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(CalculatedTableColumn).GetTypeName()));
+			}
+
+		    Handler.BeginUpdate("Clone CalculatedTableColumn");
+
+			// Create a clone of the underlying metadataobject:
+			var tom = MetadataObject.Clone() as TOM.CalculatedTableColumn;
+
+
+			// Assign a new, unique name:
+			tom.Name = Parent.Columns.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				
+			// Create the TOM Wrapper object, representing the metadataobject
+			CalculatedTableColumn obj = CreateFromMetadata(newParent ?? Parent, tom);
+
+			// Copy translations, if applicable:
+			if(includeTranslations) {
+				obj.CopyTranslationsFrom(this);
+			}
+				
+			// Copy perspectives:
+			obj.InPerspective.CopyFrom(InPerspective);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
+			return Clone(newName);
 		}
 
 	

@@ -79,13 +79,7 @@ partial class Rules {
 	// are not abstract, and are not auto-inferred by the SSAS engine:
 	public static bool IsCreatable(Type t) {
 		if(!InCollection(t) || t.IsAbstract) return false;
-
-		switch(t.Name) {
-			case "CalculatedTableColumn":
-				return false;
-			default:
-				return true;
-		}
+		return true;
 	}
 
 	public static bool CloneRequiresDependencyTreeRebuild(Type t) {

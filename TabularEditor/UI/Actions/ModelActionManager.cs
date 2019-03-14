@@ -82,6 +82,13 @@ namespace TabularEditor.UI.Actions
             // Add calc column:
             Add(new Action((s, m) => s.Count == 1 || s.Context.HasX(Context.TableObject), (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Calculated Column", true, Context.Table | Context.TableObject, Keys.Alt | Keys.D2));
 
+            // Add calc table column:
+            Add(new Action((s, m) => Handler.SourceType != ModelSourceType.Database
+                && !Handler.UsePowerBIGovernance
+                && (s.Count == 1 || s.Context.HasX(Context.TableObject))
+                && (s.Table is CalculatedTable),
+                (s, m) => (s.Table as CalculatedTable).AddCalculatedTableColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Calculated Table Column", true, Context.Table | Context.TableObject));
+
             // Add hierarchy:
             Add(new Action((s, m) => s.Count == 1 || s.Context.HasX(Context.TableObject), 
                 (s, m) => s.Table.AddHierarchy(displayFolder: s.CurrentFolder, levels: s.Direct.OfType<Column>().ToArray()).Expand().Vis().Edit(), 
@@ -293,7 +300,7 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => s.DirectCount == 1 && s.Direct.First() is IDaxObject, (s, m) =>
             {
                 UIController.Current.ShowDependencies(s.Direct.First() as IDaxObject);
-            }, (s, m) => @"Show &dependencies...", true, Context.Table | Context.TableObject, Keys.F3));
+            }, (s, m) => @"Show &dependencies...", true, Context.Table | Context.TableObject | Context.CalculationGroupAttribute, Keys.F3));
 
             // Filter related...
             // TODO
