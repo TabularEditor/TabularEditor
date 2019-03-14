@@ -20,8 +20,10 @@ namespace TabularEditor.TOMWrapper
             var tree = TabularModelHandler.Singleton.Tree;
 
             if (obj is Model) return null;
-            if (obj is Partition) return (obj as Partition).Table.Partitions;
-            if (obj is KPI) return (obj as KPI).Measure;
+            if (obj is Partition p) return p.Table.Partitions;
+            if (obj is KPI kpi) return kpi.Measure;
+            if (obj is CalculationItem ci) return ci.Field;
+            if (obj is CalculationGroupAttribute cga) return cga.CalculationGroup;
 
             if(tree.Options.HasFlag(LogicalTreeOptions.AllObjectTypes))
             {

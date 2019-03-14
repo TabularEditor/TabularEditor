@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing.Design;
 using TabularEditor.PropertyGridUI;
+using TabularEditor.TOMWrapper.Utils;
 
 namespace TabularEditor.TOMWrapper
 {
-    public class CalculationGroupAttribute: ITabularObjectContainer, ITabularNamedObject, ITabularTableObject
+    [DebuggerDisplay("{ObjectType} {Name}")]
+    public class CalculationGroupAttribute: ITabularObjectContainer, ITabularNamedObject, ITabularTableObject, IDaxObject, IFolderObject
     {
         private DataColumn Column;
         internal CalculationGroupAttribute(DataColumn column)
@@ -60,6 +63,14 @@ namespace TabularEditor.TOMWrapper
         public Table Table => Column.Table;
         [Browsable(false)]
         public CalculationGroupTable CalculationGroup => Column.Table as CalculationGroupTable;
+
+        public string DaxObjectName => Column.DaxObjectName;
+
+        public string DaxObjectFullName => Column.DaxObjectFullName;
+
+        public string DaxTableName => Column.DaxTableName;
+
+        public ReferencedByList ReferencedBy => Column.ReferencedBy;
 
         public event PropertyChangedEventHandler PropertyChanged
         {

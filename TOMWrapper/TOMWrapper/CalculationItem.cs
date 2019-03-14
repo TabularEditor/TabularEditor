@@ -10,8 +10,10 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class CalculationItem: IDaxDependantObject
+    public partial class CalculationItem: IDaxDependantObject, ITabularTableObject
     {
+
+
         [Browsable(false)]
         public CalculationGroupTable CalculationGroup => Parent.Table as CalculationGroupTable;
         /// <summary>
@@ -69,6 +71,9 @@ namespace TabularEditor.TOMWrapper
         public bool ShouldSerializeFormatStringExpression() { return false; }
         */
 
+        [Browsable(false)]
+        public CalculationGroupAttribute Field => CalculationGroup.Field;
+
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
             switch (propertyName)
@@ -94,5 +99,6 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        Table ITabularTableObject.Table => Parent.Table;
     }
 }

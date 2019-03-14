@@ -56,7 +56,8 @@ namespace TabularEditor.TOMWrapper
             return CreateFromMetadata(parent, metadataObject);
         }
 
-        CalculationGroupAttribute Field { get; set; }
+        [Browsable(false)]
+        public CalculationGroupAttribute Field { get; private set; }
 
         CalculationGroupTable(TOM.Table table) : base(table)
         {

@@ -169,6 +169,10 @@ namespace TabularEditor.TOMWrapper.Utils
             {
                 BuildDependencyTree(eo);
             }
+            foreach (var ci in Model.CalculationGroups.SelectMany(cg => cg.CalculationItems))
+            {
+                BuildDependencyTree(ci);
+            }
             foreach (var role in Model.Roles)
             {
                 foreach(var tp in role.TablePermissions)
