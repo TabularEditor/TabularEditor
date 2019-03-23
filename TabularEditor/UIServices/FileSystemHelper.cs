@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security;
+using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,23 +13,9 @@ namespace TabularEditor.UIServices
     {
         public static bool IsDirectoryWritable(string dirPath)
         {
-            try
-            {
-                using (FileStream fs = File.Create(
-                    Path.Combine(
-                        dirPath,
-                        Path.GetRandomFileName()
-                    ),
-                    1,
-                    FileOptions.DeleteOnClose)
-                )
-                { }
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            var permissionSet = new PermissionSet(PermissionState.None);
+            permissionSet.AddPermission(perm: new FileIOPermission(FileIOPermissionAccess.Write, dirPath));
+            return permissionSet.IsSubsetOf(AppDomain.CurrentDomain.PermissionSet);
         }
 
         public static string DirectoryFromPath(string filePath)
