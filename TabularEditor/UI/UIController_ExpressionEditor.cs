@@ -82,7 +82,7 @@ namespace TabularEditor.UI
             }
         }
 
-        private List<Antlr4.Runtime.IToken> currentTokens;
+        private List<Antlr4.Runtime.IToken> currentTokens = new List<Antlr4.Runtime.IToken>();
 
         private void ExpressionEditor_ExpressionSelectorChanged(object sender, EventArgs e)
         {
