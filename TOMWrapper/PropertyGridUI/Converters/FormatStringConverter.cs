@@ -34,7 +34,7 @@ namespace TabularEditor.PropertyGridUI
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
             return new StandardValuesCollection(
-                DateTimeFormatInfo.CurrentInfo.GetAllDateTimePatterns()
+                DateTimeFormatInfo.CurrentInfo.GetAllDateTimePatterns().Select(p => p.Replace("tt", "AMPM")).ToArray()
                 );
         }
 
@@ -200,7 +200,7 @@ namespace TabularEditor.PropertyGridUI
             {
                 try
                 {
-                    return string.Format("{0:" + baseObject.FormatString + "}", -1234.567);
+                    return string.Format("{0:" + baseObject.FormatString.Replace("AMPM", "tt") + "}", -1234.567);
                 }
                 catch
                 {
