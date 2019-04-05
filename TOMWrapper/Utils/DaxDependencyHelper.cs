@@ -46,10 +46,10 @@ namespace TabularEditor.TOMWrapper.Utils
                 if (obj is Measure) yield return DAXProperty.DetailRowsExpression;
                 if (obj.ObjectType == ObjectType.Table) yield return DAXProperty.DefaultDetailRowsExpression;
             }
-            /*if (TabularModelHandler.Singleton.CompatibilityLevel >= 1470)
+            if (TabularModelHandler.Singleton.CompatibilityLevel >= 1470)
             {
                 if (obj is Measure) yield return DAXProperty.FormatStringExpression;
-            }*/
+            }
             if (obj is KPI)
             {
                 yield return DAXProperty.StatusExpression;
@@ -63,7 +63,7 @@ namespace TabularEditor.TOMWrapper.Utils
             if (obj.ObjectType == ObjectType.CalculationItem)
             {
                 yield return DAXProperty.Expression;
-                //yield return DAXProperty.FormatStringExpression;
+                yield return DAXProperty.FormatStringExpression;
             }
         }
 
@@ -97,7 +97,7 @@ namespace TabularEditor.TOMWrapper.Utils
             if(obj is CalculationItem ci)
             {
                 if (property == DAXProperty.Expression) return ci.Expression;
-                //if (property == DAXProperty.FormatStringExpression) return ci.FormatStringExpression;
+                if (property == DAXProperty.FormatStringExpression) return ci.FormatStringExpression;
             }
 
             if (TabularModelHandler.Singleton.CompatibilityLevel >= 1400)
@@ -112,8 +112,8 @@ namespace TabularEditor.TOMWrapper.Utils
                 }
             }
 
-            //if (obj is Measure m && property == DAXProperty.FormatStringExpression)
-            //    return m.FormatStringExpression;
+            if (obj is Measure m && property == DAXProperty.FormatStringExpression)
+                return m.FormatStringExpression;
 
             throw new ArgumentException(string.Format(Messages.InvalidExpressionProperty, obj.GetTypeName(), property), "property");
         }
@@ -149,15 +149,15 @@ namespace TabularEditor.TOMWrapper.Utils
                 return;
             }
 
-            /*if (obj is Measure m && property == DAXProperty.FormatStringExpression)
+            if (obj is Measure m && property == DAXProperty.FormatStringExpression)
             {
                 m.FormatStringExpression = expression;
                 return;
-            }*/
+            }
             if (obj is CalculationItem ci)
             {
                 if (property == DAXProperty.Expression) { ci.Expression = expression; return; }
-                //if (property == DAXProperty.FormatStringExpression) { ci.FormatStringExpression = expression; return; }
+                if (property == DAXProperty.FormatStringExpression) { ci.FormatStringExpression = expression; return; }
             }
 
 

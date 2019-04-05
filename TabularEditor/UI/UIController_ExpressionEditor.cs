@@ -321,7 +321,7 @@ namespace TabularEditor.UI
             // Only show label bar for DAX objects, when editing their expression:
             if (_expressionEditor_Current is IDaxObject)
             {
-                UI.CurrentMeasureLabel.Text = (_expressionEditor_Current as IDaxObject).DaxObjectName + " :=";
+                UI.CurrentMeasureLabel.Text = (_expressionEditor_Current as IDaxObject).DaxObjectName + (CurrentDaxProperty == DAXProperty.Expression ? "" : "." + CurrentDaxProperty.ToString()) + " :=";
                 UI.CurrentMeasureLabel.Visible = true;
             }
             else
