@@ -4,7 +4,7 @@
 <#@ assembly name="System.Data.Linq" #>
 <#@ assembly name="System.Xml" #>
 <#@ assembly name="System.Xml.Linq" #>
-<#@ assembly name="$(SolutionDir)\packages\Microsoft.AnalysisServices.retail.amd64.CTP2019\lib\net45\Microsoft.AnalysisServices.Tabular.dll" #>
+<#@ assembly name="$(SolutionDir)\packages\Microsoft.AnalysisServices.retail.amd64.15.17.1\lib\net45\Microsoft.AnalysisServices.Tabular.dll" #>
 <#@ assembly name="EnvDTE" #>
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System.Linq" #>
@@ -26,7 +26,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
 <#
-   Rules.XmlDocFile = Host.ResolvePath(@"..\..\..\packages\Microsoft.AnalysisServices.retail.amd64.15.15.0\lib\net45\Microsoft.AnalysisServices.Tabular.xml");
+   Rules.XmlDocFile = Host.ResolvePath(@"..\..\..\packages\Microsoft.AnalysisServices.retail.amd64.15.17.1\lib\net45\Microsoft.AnalysisServices.Tabular.xml");
 
    if(!File.Exists(Rules.XmlDocFile)) {
 	   throw new Exception("Could not locate file: " + Rules.XmlDocFile);
