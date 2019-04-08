@@ -152,6 +152,7 @@ namespace TabularEditor.TOMWrapper
             // Remove row-level-security for this table:
             RowLevelSecurity.Clear();
             if(Handler.CompatibilityLevel >= 1400) ObjectLevelSecurity.Clear();
+            foreach (var r in Model.Roles) if(r.TablePermissions.Contains(Name)) r.TablePermissions[this].Delete();
 
             base.DeleteLinkedObjects(isChildOfDeleted);
         }
