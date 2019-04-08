@@ -37,6 +37,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string DATABASE = "Database";
 	    public const string DATACATEGORY = "DataCategory";
 	    public const string DATASOURCES = "DataSources";
+	    public const string DATASOURCEVARIABLESOVERRIDEBEHAVIOR = "DataSourceVariablesOverrideBehavior";
 	    public const string DATATYPE = "DataType";
 	    public const string DATAVIEW = "DataView";
 	    public const string DEFAULTCOLUMN = "DefaultColumn";

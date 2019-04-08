@@ -131,6 +131,7 @@ partial class Rules {
 
 	public static bool ShouldWrapProperty(PropertyInfo p, Type t)
     {
+		if(p.Name == "DataSourceVariablesOverrideBehavior") return false;
 		if (p.Name == "ErrorMessage" && (t.Name == "Measure" || t.Name == "CalculationItem")) return false;
 		if(p.Name == "KPI") return false;
 		if(p.Name == "CalculationGroup") return false;
