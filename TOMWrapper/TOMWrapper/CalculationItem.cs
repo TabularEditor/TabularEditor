@@ -85,6 +85,8 @@ namespace TabularEditor.TOMWrapper
                     FormulaFixup.BuildDependencyTree(this);
                     break;
             }
+
+            base.OnPropertyChanged(propertyName, oldValue, newValue);
         }
 
         private DependsOnList _dependsOn;
