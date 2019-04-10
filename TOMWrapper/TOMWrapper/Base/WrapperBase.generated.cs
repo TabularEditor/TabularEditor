@@ -37,7 +37,6 @@ namespace TabularEditor.TOMWrapper
 	    public const string DATABASE = "Database";
 	    public const string DATACATEGORY = "DataCategory";
 	    public const string DATASOURCES = "DataSources";
-	    public const string DATASOURCEVARIABLESOVERRIDEBEHAVIOR = "DataSourceVariablesOverrideBehavior";
 	    public const string DATATYPE = "DataType";
 	    public const string DATAVIEW = "DataView";
 	    public const string DEFAULTCOLUMN = "DefaultColumn";
@@ -49,8 +48,8 @@ namespace TabularEditor.TOMWrapper
 	    public const string DEFAULTPOWERBIDATASOURCEVERSION = "DefaultPowerBIDataSourceVersion";
 	    public const string DESCRIPTION = "Description";
 	    public const string DETAILROWSDEFINITION = "DetailRowsDefinition";
-	    public const string DISCOURAGEIMPLICITMEASURES = "DiscourageImplicitMeasures";
-	    public const string DISPLAYFOLDER = "DisplayFolder";
+        public const string DISCOURAGEIMPLICITMEASURES = "DiscourageImplicitMeasures";
+        public const string DISPLAYFOLDER = "DisplayFolder";
 	    public const string DISPLAYORDINAL = "DisplayOrdinal";
 	    public const string ENCODINGHINT = "EncodingHint";
 	    public const string ERRORMESSAGE = "ErrorMessage";
@@ -60,6 +59,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string FILTEREXPRESSION = "FilterExpression";
 	    public const string FORCEUNIQUENAMES = "ForceUniqueNames";
 	    public const string FORMATSTRING = "FormatString";
+	    public const string FORMATSTRINGDEFINITION = "FormatStringDefinition";
 	    public const string FROMCARDINALITY = "FromCardinality";
 	    public const string FROMCOLUMN = "FromColumn";
 	    public const string FROMTABLE = "FromTable";
@@ -113,6 +113,10 @@ namespace TabularEditor.TOMWrapper
 	    public const string PERSPECTIVETABLES = "PerspectiveTables";
 	    public const string PRECEDENCE = "Precedence";
 	    public const string PROVIDER = "Provider";
+	    public const string RANGEEND = "RangeEnd";
+	    public const string RANGEGRANULARITY = "RangeGranularity";
+	    public const string RANGESTART = "RangeStart";
+	    public const string REFRESHBOOKMARK = "RefreshBookmark";
 	    public const string REFRESHEDTIME = "RefreshedTime";
 	    public const string REFRESHPOLICY = "RefreshPolicy";
 	    public const string RELATIONSHIP = "Relationship";
