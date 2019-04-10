@@ -128,6 +128,7 @@ ISNUMBER:               'ISNUMBER'                                              
 ISOCEILING:             'ISO.CEILING'                                                                             -> channel(KEYWORD_CHANNEL);
 ISODD:                  'ISODD'                                                                                   -> channel(KEYWORD_CHANNEL);
 ISONORAFTER:            'ISONORAFTER'                                                                             -> channel(KEYWORD_CHANNEL);
+ISSELECTEDMEASURE:      'ISSELECTEDMEASURE'                                                                       -> channel(KEYWORD_CHANNEL);
 ISSUBTOTAL:             'ISSUBTOTAL'                                                                              -> channel(KEYWORD_CHANNEL);
 ISTEXT:                 'ISTEXT'                                                                                  -> channel(KEYWORD_CHANNEL);
 KEEPFILTERS:            'KEEPFILTERS'                                                                             -> channel(KEYWORD_CHANNEL);
