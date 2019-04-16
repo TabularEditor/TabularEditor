@@ -418,14 +418,17 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                     else
                     {
                         none = false;
-                        var text = string.Format("{0} {1} violates rule \"{2}\"",
-                            res.Object.GetTypeName(),
-                            (res.Object as IDaxObject)?.DaxObjectFullName ?? res.ObjectName,
-                            res.RuleName
-                            );
-                        if (res.Rule.Severity <= 1) cw.WriteLine(text);
-                        else if (res.Rule.Severity == 2) Warning(text);
-                        else if (res.Rule.Severity >= 3) Error(text);
+                        if (res.Object != null)
+                        {
+                            var text = string.Format("{0} {1} violates rule \"{2}\"",
+                                res.Object.GetTypeName(),
+                                (res.Object as IDaxObject)?.DaxObjectFullName ?? res.ObjectName,
+                                res.RuleName
+                                );
+                            if (res.Rule.Severity <= 1) cw.WriteLine(text);
+                            else if (res.Rule.Severity == 2) Warning(text);
+                            else if (res.Rule.Severity >= 3) Error(text);
+                        }
                     }
 
                 }
