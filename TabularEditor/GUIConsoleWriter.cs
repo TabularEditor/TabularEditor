@@ -34,13 +34,16 @@ namespace TabularEditor
 
         public void WriteLine(string line)
         {
-            _stdOutWriter.WriteLine(line);
+            //_stdOutWriter.WriteLine(line);
             Console.WriteLine(line);
         }
 
         public void WriteLine(string line, params object[] args)
         {
-            WriteLine(string.Format(line, args));
+            if (args == null || args.Length == 0)
+                WriteLine(line);
+            else
+                WriteLine(string.Format(line, args));
         }
     }
 }
