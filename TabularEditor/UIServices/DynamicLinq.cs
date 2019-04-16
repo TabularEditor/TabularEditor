@@ -1490,6 +1490,9 @@ namespace System.Linq.Dynamic
 
         Expression ParseMemberAccessSafe(Type type, Expression instance)
         {
+            if (instance.Type.IsGenericType || instance.Type.IsValueType)
+                return ParseMemberAccess(type, instance); // Null checks are not supported for generic types
+
             var isNull = Expression.Equal(instance, Null);
             if (instance.Type == typeof(string))
             {

@@ -106,5 +106,47 @@ namespace TabularEditor
             Assert.IsInstanceOfType(results[0].Object, typeof(Measure));
             Assert.IsTrue((results[0].Object as Measure).Expression.Contains("/"));
         }
+        
+        [TestMethod]
+        public void ComplexTest1()
+        {
+            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var model = handler.Model;
+            var analyzer = new Analyzer();
+            analyzer.Model = model;
+
+            var rule = new BestPracticeRule()
+            {
+                Scope = RuleScope.Measure,
+                Expression = "DependsOn.Any(Key.ObjectType = \"Column\")"
+            };
+
+            var results = analyzer.Analyze(rule).ToList();
+            Assert.IsTrue(results.Count > 0);
+            Assert.IsFalse(results[0].RuleHasError);
+            Assert.IsInstanceOfType(results[0].Object, typeof(Measure));
+            Assert.IsTrue((results[0].Object as Measure).DependsOn.Any(d => d.Key.ObjectType == ObjectType.Column));
+        }
+
+        [TestMethod]
+        public void ComplexTest2()
+        {
+            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var model = handler.Model;
+            var analyzer = new Analyzer();
+            analyzer.Model = model;
+
+            var rule = new BestPracticeRule()
+            {
+                Scope = RuleScope.Measure,
+                Expression = "DependsOn.Any(Value.Any(not FullyQualified))"
+            };
+
+            var results = analyzer.Analyze(rule).ToList();
+            Assert.IsTrue(results.Count > 0);
+            Assert.IsFalse(results[0].RuleHasError);
+            Assert.IsInstanceOfType(results[0].Object, typeof(Measure));
+            Assert.IsTrue((results[0].Object as Measure).DependsOn.Any(d => d.Value.Any(v => !v.fullyQualified)));
+        }
     }
 }
