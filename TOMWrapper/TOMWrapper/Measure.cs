@@ -14,6 +14,12 @@ namespace TabularEditor.TOMWrapper
         private DependsOnList _dependsOn = null;
 
         /// <summary>
+        /// Gets the visibility of the Measure. Takes into consideration that a measure is visible regardless of its parent table being visible.
+        /// </summary>
+        [Browsable(false)]
+        public bool IsVisible => !IsHidden;
+
+        /// <summary>
         ///             A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError. It is applicable only to columns of the type Calculated or CalculatedTableColumn. It will be empty for other column objects.
         ///             </summary>
         [DisplayName("Error Message")]

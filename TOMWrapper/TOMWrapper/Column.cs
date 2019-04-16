@@ -38,6 +38,12 @@ namespace TabularEditor.TOMWrapper
         #endregion
 
         /// <summary>
+        /// Gets the visibility of the Column. Takes into consideration that a column is not visible if its parent table is hidden. 
+        /// </summary>
+        [Browsable(false)]
+        public bool IsVisible => !(IsHidden || Table.IsHidden);
+
+        /// <summary>
         /// Collection of objects that depend on this column.
         /// </summary>
         [Browsable(false)]

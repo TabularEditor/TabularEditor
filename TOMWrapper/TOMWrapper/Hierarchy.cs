@@ -9,6 +9,12 @@ namespace TabularEditor.TOMWrapper
 {
     partial class Hierarchy: ITabularObjectContainer, ITabularPerspectiveObject, IErrorMessageObject
     {
+        /// <summary>
+        /// Gets the visibility of the Hierarchy. Takes into consideration that a hierarchy is not visible if its parent table is hidden. 
+        /// </summary>
+        [Browsable(false)]
+        public bool IsVisible => !(IsHidden || Table.IsHidden);
+
         internal override void DeleteLinkedObjects(bool isChildOfDeleted)
         {
             // Make sure the hierarchy is no longer used in any Variations:

@@ -56,6 +56,7 @@ namespace TabularEditor.TOMWrapper
     public interface IHideableObject
     {
         bool IsHidden { get; set; }
+        bool IsVisible { get; }
     }
 
     /// <summary>
