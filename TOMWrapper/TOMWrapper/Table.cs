@@ -17,6 +17,12 @@ namespace TabularEditor.TOMWrapper
     partial class Table: IFolder, ITabularPerspectiveObject, IDaxObject,
         IErrorMessageObject, IDaxDependantObject, IExpressionObject
     {
+        /// <summary>
+        /// Gets the visibility of the Table. Shorthand for !<see cref="IsHidden"/>.
+        /// </summary>
+        [Browsable(false)]
+        public bool IsVisible => !IsHidden;
+
         internal Dictionary<string, Folder> FolderCache = new Dictionary<string, Folder>();
 
 

@@ -10,6 +10,12 @@ namespace TabularEditor.TOMWrapper
     [DebuggerDisplay("{ObjectType} {Name}")]
     public class CalculationGroupAttribute: ITabularObjectContainer, ITabularNamedObject, ITabularTableObject, IDaxObject, IFolderObject, IHideableObject, IAnnotationObject, ITranslatableObject
     {
+        /// <summary>
+        /// Gets the visibility of the CalculationGroupAttribute. Shorthand for <see cref="Column.IsVisible"/>.
+        /// </summary>
+        [Browsable(false)]
+        public bool IsVisible => Column.IsVisible;
+
         private DataColumn Column;
         internal CalculationGroupAttribute(DataColumn column)
         {

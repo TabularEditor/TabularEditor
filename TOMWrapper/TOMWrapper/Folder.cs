@@ -255,6 +255,13 @@ namespace TabularEditor.TOMWrapper
             set { }
         }
 
+        /// <summary>
+        /// Gets the visibility of the Folder. Shorthand for !<see cref="IsHidden"/>.
+        /// </summary>
+        [Browsable(false)]
+        public bool IsVisible => !IsHidden;
+
+
         public IEnumerable<IFolderObject> GetChildrenByFolders()
         {
             var items = Children.OrderBy(i => i.GetDisplayOrder());
