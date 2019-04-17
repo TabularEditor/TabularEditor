@@ -32,6 +32,14 @@ namespace TabularEditor.TOMWrapper
             };
         }
 
+        public void KeepAlive()
+        {
+            if (database?.Server != null) {
+                if (database.Server.GetConnectionState(true) != System.Data.ConnectionState.Open)
+                    database.Server.Reconnect();
+             }
+        }
+
         /// <summary>
         /// Saves the changes to the database. It is the users responsibility to check if changes were made
         /// to the database since it was loaded to the TOMWrapper. You can use Handler.CheckConflicts() for
@@ -43,6 +51,8 @@ namespace TabularEditor.TOMWrapper
             {
                 throw new InvalidOperationException("The model is currently not connected to any server. Please use Deploy() instead of SaveDB().");
             }
+
+            KeepAlive();
 
             _disableUpdates = true;
             UndoManager.Enabled = false;

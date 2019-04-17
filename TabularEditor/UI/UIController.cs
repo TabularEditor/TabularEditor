@@ -61,21 +61,25 @@ namespace TabularEditor.UI
 
             Actions = new ModelActionManager();
             Actions.CreateStandardActions();
-            if(ScriptEngine.AddCustomActions != null)
+            if (ScriptEngine.AddCustomActions != null)
             {
                 Actions.Add(new Separator());
                 ScriptEngine.AddCustomActions?.Invoke(Actions);
-                UI.StatusExLabel.Text = string.Format("Succesfully loaded {0} custom action{1}. Compilation took {2} seconds.", 
+                UI.StatusExLabel.Text = string.Format("Succesfully loaded {0} custom action{1}. Compilation took {2} seconds.",
                     ScriptEngine.CustomActionCount, ScriptEngine.CustomActionCount == 1 ? "" : "s", ScriptEngine.CustomActionCompiletime / 1000m);
             } else
             {
                 if (ScriptEngine.CustomActionError) UI.StatusExLabel.Text = "Failed loading custom actions. See CustomActionsError.log for more details.";
             }
 
-            foreach(var plugin in Program.Plugins)
+            foreach (var plugin in Program.Plugins)
             {
                 plugin.RegisterActions(RegisterPluginCallback);
             }
+
+            KeepAliveTimer = new System.Windows.Forms.Timer { Enabled = false };
+            KeepAliveTimer.Interval = 60000;
+            KeepAliveTimer.Tick += KeepAliveTimer_Tick;
         }
 
         private void ClipboardListener_ClipboardUpdate(object sender, EventArgs e)
@@ -147,6 +151,8 @@ namespace TabularEditor.UI
 
         public void LoadTabularModelToUI()
         {
+            KeepAliveTimer.Enabled = false;
+
             if (Handler == null)
             {
                 return;
@@ -200,6 +206,26 @@ namespace TabularEditor.UI
 
             UI.FormMain.BPAForm.Model = Handler.Model;
             InvokeBPABackground();
+
+            if (Handler.SourceType == ModelSourceType.Database) KeepAliveTimer.Enabled = true;
+        }
+
+        private void KeepAliveTimer_Tick(object sender, EventArgs e)
+        {
+            KeepAliveTimer.Enabled = false;
+            new Task(() =>
+            {
+                Console.WriteLine("Tick");
+                try
+                {
+                    Handler.KeepAlive();
+                    UI.FormMain.BeginInvoke(new System.Action(() => { KeepAliveTimer.Enabled = true; }));
+                }
+                catch
+                {
+                    UI.FormMain.BeginInvoke(new System.Action(() => { UI.StatusLabel.Text = "Connection lost!"; }));
+                }
+            }).Start();
         }
 
         private void UIController_ObjectDeleting(object sender, ObjectDeletingEventArgs e)

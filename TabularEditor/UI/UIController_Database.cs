@@ -101,6 +101,8 @@ namespace TabularEditor.UI
                 string.IsNullOrEmpty(ConnectForm.LocalInstanceName) ? SelectDatabaseForm.DatabaseID : null);
         }
 
+        private System.Windows.Forms.Timer KeepAliveTimer;
+
         public void Database_Open(string connectionString, string databaseId)
         {
             using (new Hourglass())
@@ -116,7 +118,6 @@ namespace TabularEditor.UI
                     File_SaveMode = ModelSourceType.Database;
                     LocalInstanceName = ConnectForm.LocalInstanceName;
                     LocalInstanceType = ConnectForm.LocalInstanceType;
-
                 }
                 catch (Exception ex)
                 {
