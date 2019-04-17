@@ -8,7 +8,7 @@ using TabularEditor.TOMWrapper.Utils;
 namespace TabularEditor.TOMWrapper
 {
     [DebuggerDisplay("{ObjectType} {Name}")]
-    public class CalculationGroupAttribute: ITabularObjectContainer, ITabularNamedObject, ITabularTableObject, IDaxObject, IFolderObject, IHideableObject, IAnnotationObject, ITranslatableObject
+    public class CalculationGroupAttribute: ITabularObjectContainer, ITabularNamedObject, ITabularTableObject, IDaxObject, IFolderObject, IHideableObject, IAnnotationObject, ITranslatableObject, IErrorMessageObject
     {
         /// <summary>
         /// Gets the visibility of the CalculationGroupAttribute. Shorthand for <see cref="Column.IsVisible"/>.
@@ -21,6 +21,8 @@ namespace TabularEditor.TOMWrapper
         {
             Column = column;
         }
+
+        public string ErrorMessage => CalculationGroup.CalculationItemErrors;
 
         [DisplayName("Description")]
         [Category("Basic"), Description(@"The description of the column, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."), IntelliSense(@"The description of the column, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")]

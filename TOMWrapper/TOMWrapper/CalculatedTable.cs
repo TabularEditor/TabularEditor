@@ -126,9 +126,9 @@ namespace TabularEditor.TOMWrapper
             base.OnPropertyChanged(propertyName, oldValue, newValue);
         }
 
-        internal override void CheckChildrenErrors()
+        internal override void PropagateChildErrors()
         {
-            base.CheckChildrenErrors();
+            base.PropagateChildErrors();
             if (Partitions.Count > 0 && !string.IsNullOrEmpty(Partitions[0].ErrorMessage)) ErrorMessage = Partitions[0].ErrorMessage;
         }
 

@@ -338,7 +338,25 @@ namespace TabularEditor.TOMWrapper.Serialization
             var dataSource = StructuredDataSource.CreateFromMetadata(model, tom);
             return dataSource;
         }
-#endregion
+
+        public static CalculationItem DeserializeCalculationItem(JObject json, CalculationGroupTable calculationGroupTable)
+        {
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.CalculationItem>(json.ToString());
+            tom.Name = calculationGroupTable.CalculationItems.GetNewName(tom.Name);
+
+            var calculationItem = CalculationItem.CreateFromMetadata(calculationGroupTable.CalculationGroup, tom);
+            return calculationItem;
+        }
+
+        public static CalculationGroupTable DeserializeCalculationGroupTable(JObject json, Model model)
+        {
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Table>(json.ToString());
+            tom.Name = model.Tables.GetNewName(tom.Name);
+
+            var calculationGroupTable = CalculationGroupTable.CreateFromMetadata(model, tom);
+            return calculationGroupTable;
+        }
+        #endregion
     }
 
     public static class ObjectJsonContainerHelper

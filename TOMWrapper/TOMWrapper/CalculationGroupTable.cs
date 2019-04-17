@@ -23,6 +23,29 @@ namespace TabularEditor.TOMWrapper
             return item;
         }
 
+        internal string CalculationItemErrors { get; private set; } = null;
+
+        internal void AddError(CalculationItem calculationItem)
+        {
+            if(ErrorMessage == null) ErrorMessage = $"Error on \"{calculationItem.Name}\": {calculationItem.ErrorMessage}";
+            else ErrorMessage += $"Error on \"{calculationItem.Name}\": {calculationItem.ErrorMessage}";
+
+            if (CalculationItemErrors == null) CalculationItemErrors = $"Error on \"{calculationItem.Name}\": {calculationItem.ErrorMessage}";
+            else CalculationItemErrors += $"Error on \"{calculationItem.Name}\": {calculationItem.ErrorMessage}";
+        }
+
+        internal override void ClearError()
+        {
+            CalculationItemErrors = null;
+            base.ClearError();
+        }
+
+        internal override void PropagateChildErrors()
+        {
+            foreach (var calcItem in CalculationItems) if (!string.IsNullOrEmpty(calcItem.ErrorMessage)) AddError(calcItem);
+            base.PropagateChildErrors();
+        }
+
         internal new static CalculationGroupTable CreateFromMetadata(Model parent, TOM.Table metadataObject)
         {
             if (metadataObject.GetSourceType() != TOM.PartitionSourceType.CalculationGroup)
@@ -107,6 +130,11 @@ namespace TabularEditor.TOMWrapper
             foreach (var item in CalculatedColumns) yield return item;
             foreach (var item in Measures) yield return item;
             foreach (var item in Hierarchies) yield return item;
+        }
+
+        public override IEnumerable<IFolderObject> GetChildrenByFolders()
+        {
+            return base.GetChildrenByFolders();
         }
 
         internal override bool IsBrowsable(string propertyName)

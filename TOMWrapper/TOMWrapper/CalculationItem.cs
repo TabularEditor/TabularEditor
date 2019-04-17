@@ -12,7 +12,12 @@ namespace TabularEditor.TOMWrapper
 {
     public partial class CalculationItem: IDaxDependantObject, ITabularTableObject
     {
-
+        protected override void Init()
+        {
+            if (!string.IsNullOrEmpty(ErrorMessage))
+                CalculationGroup.AddError(this);
+            base.Init();
+        }
 
         [Browsable(false)]
         public CalculationGroupTable CalculationGroup => Parent.Table as CalculationGroupTable;
@@ -85,6 +90,8 @@ namespace TabularEditor.TOMWrapper
                     FormulaFixup.BuildDependencyTree(this);
                     break;
             }
+
+            base.OnPropertyChanged(propertyName, oldValue, newValue);
         }
 
         private DependsOnList _dependsOn;

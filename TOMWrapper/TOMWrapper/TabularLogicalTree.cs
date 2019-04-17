@@ -139,11 +139,13 @@ namespace TabularEditor.TOMWrapper
             if (Options.HasFlag(LogicalTreeOptions.DisplayFolders))
             {
                 foreach (var m in table.Measures) BuildFolderForObject(m);
-                foreach (var c in table.Columns) BuildFolderForObject(c);
                 foreach (var h in table.Hierarchies) BuildFolderForObject(h);
+
+                if (table is CalculationGroupTable cgt) BuildFolderForObject(cgt.Field);
+                else foreach (var c in table.Columns) BuildFolderForObject(c);
             }
 
-            table.CheckChildrenErrors();
+            table.PropagateChildErrors();
         }
 
         private void BuildFolderForObject(IFolderObject obj)
@@ -267,12 +269,7 @@ namespace TabularEditor.TOMWrapper
             {
                 yield return table.Partitions;
             }
-
-            if (table.ObjectType == ObjectType.CalculationGroup)
-            {
-                items = table.GetChildren();
-            }
-            else
+            
             if (Options.HasFlag(LogicalTreeOptions.DisplayFolders))
             {
                 var rootFolder = Folder.CreateFolder(table, "");
