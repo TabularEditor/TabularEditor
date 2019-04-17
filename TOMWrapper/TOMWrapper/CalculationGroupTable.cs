@@ -32,6 +32,8 @@ namespace TabularEditor.TOMWrapper
 
             if (CalculationItemErrors == null) CalculationItemErrors = $"Error on \"{calculationItem.Name}\": {calculationItem.ErrorMessage}";
             else CalculationItemErrors += $"Error on \"{calculationItem.Name}\": {calculationItem.ErrorMessage}";
+
+            Handler._errors.Add(calculationItem);
         }
 
         internal override void ClearError()

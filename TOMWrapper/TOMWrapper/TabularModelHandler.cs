@@ -179,8 +179,9 @@ namespace TabularEditor.TOMWrapper
 
         private string _status;
         public string Status { get { return _status; } set { _status = value; } }
-        
-        public IList<IErrorMessageObject> Errors { get; private set; }
+
+        internal HashSet<IErrorMessageObject> _errors { get; private set; } = new HashSet<IErrorMessageObject>();
+        public IReadOnlyCollection<IErrorMessageObject> Errors => _errors;
 
         internal static List<Tuple<TOM.NamedMetadataObject, TOM.ObjectState>> GetObjectsNotReady(TOM.Database database)
         {
@@ -239,7 +240,7 @@ namespace TabularEditor.TOMWrapper
             errorList.AddRange(Model.Roles.Where(r => r.ErrorMessage != null));
             if (errorList.Count > 0 || Errors?.Count > 0)
             {
-                Errors = errorList;
+                _errors = new HashSet<IErrorMessageObject>(errorList);
             }
 
             foreach(var errObj in errorList)
