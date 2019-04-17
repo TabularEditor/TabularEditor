@@ -75,6 +75,7 @@ namespace TabularEditor.TOMWrapper
         protected override void Init()
         {
             ColumnPermissions = new RoleColumnOLSIndexer(this);
+            if (!string.IsNullOrEmpty(ErrorMessage)) Handler._errors.Add(this);
         }
 
         [Browsable(true), DisplayName("OLS Column Permissions"), Category("Security")]

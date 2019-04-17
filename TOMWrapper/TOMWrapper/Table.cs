@@ -385,6 +385,7 @@ namespace TabularEditor.TOMWrapper
         {
             foreach(var child in GetChildren().OfType<IErrorMessageObject>().Where(c => !string.IsNullOrEmpty(c.ErrorMessage)))
             {
+                if(!(child is CalculationGroupAttribute)) Handler._errors.Add(child);
                 if (child is IFolderObject fo)
                 {
                     var parentFolder = fo.GetFolder(Handler.Tree.Culture);
