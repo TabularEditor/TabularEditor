@@ -150,8 +150,12 @@ namespace TabularEditor.TOMWrapper
 
         private void BuildFolderForObject(IFolderObject obj)
         {
-            var folder = Folder.CreateFolder(obj.Table, obj.GetDisplayFolder(Culture));
-            folder.Children.Add(obj);
+            var folderStrings = obj.GetDisplayFolder(Culture).Split(';').Distinct(StringComparer.InvariantCultureIgnoreCase);
+            foreach (var folderString in folderStrings)
+            {
+                var folder = Folder.CreateFolder(obj.Table, folderString);
+                folder.Children.Add(obj);
+            }
         }
 
         public Perspective Perspective

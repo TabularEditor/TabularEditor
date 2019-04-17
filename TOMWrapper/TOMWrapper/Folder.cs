@@ -214,7 +214,18 @@ namespace TabularEditor.TOMWrapper
                 // Rename child objects:
                 foreach(var c in GetChildrenByFolders())
                 {
-                    c.SetDisplayFolder(value.ConcatPath(c.GetDisplayFolder(Culture).Substring(_path.Length)), Culture);
+                    var folderStrings = c.GetDisplayFolder(Culture).Split(';');
+                    if(folderStrings.Length == 1)
+                        c.SetDisplayFolder(value.ConcatPath(folderStrings[0].Substring(_path.Length)), Culture);
+                    else
+                    {
+                        var ix = Array.FindIndex(folderStrings, s => s.EqualsI(Path));
+                        if(ix >= 0)
+                        {
+                            folderStrings[ix] = value.ConcatPath(folderStrings[ix].Substring(_path.Length));
+                            c.SetDisplayFolder(string.Join(";", folderStrings), Culture);
+                        }
+                    }
                 }
 
                 var oldPath = _path;
