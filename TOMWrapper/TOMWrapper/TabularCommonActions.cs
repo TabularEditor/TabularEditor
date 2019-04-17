@@ -206,6 +206,15 @@ namespace TabularEditor.TOMWrapper
                 foreach (var obj in objectContainer.Get<StructuredDataSource>()) inserted.Add(Serializer.DeserializeStructuredDataSource(obj, Handler.Model));
             }
 
+            if(Handler.CompatibilityLevel >= 1470)
+            {
+                CalculationGroupTable destCalcGroup = destination is CalculationGroupTable cgt ? cgt : 
+                    (destination is CalculationGroupAttribute cga ? cga.CalculationGroup : 
+                    (destination is CalculationItem ci ? ci.CalculationGroup : null));
+                if(destCalcGroup != null) foreach (var obj in objectContainer.Get<CalculationItem>()) inserted.Add(Serializer.DeserializeCalculationItem(obj, destCalcGroup));
+                foreach (var obj in objectContainer.Get<CalculationGroupTable>()) inserted.Add(Serializer.DeserializeCalculationGroupTable(obj, Handler.Model));
+            }
+
             foreach (var obj in inserted)
             {
                 var tableObj = obj as Table;

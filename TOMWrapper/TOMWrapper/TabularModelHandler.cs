@@ -70,7 +70,7 @@ namespace TabularEditor.TOMWrapper
             Actions = new TabularCommonActions(this);
             Model = Model.CreateFromMetadata(database.Model);
             Model.Database = new Database(Model, database);
-            CheckErrors();
+            //CheckErrors();
 
             FormulaFixup.BuildDependencyTree();
         }
@@ -231,6 +231,8 @@ namespace TabularEditor.TOMWrapper
                 errorList.AddRange(table.Measures.Where(m => !string.IsNullOrEmpty(m.ErrorMessage)));
                 errorList.AddRange(table.Columns.Where(c => !string.IsNullOrEmpty(c.ErrorMessage)));
                 errorList.AddRange(table.Partitions.Where(p => !string.IsNullOrEmpty(p.ErrorMessage)));
+                if (CompatibilityLevel >= 1470 && table is CalculationGroupTable cgt)
+                    errorList.AddRange(cgt.CalculationItems.Where(ci => !string.IsNullOrEmpty(ci.ErrorMessage)));
 
                 WrapperLookup.Values.OfType<IExpressionObject>().ToList().ForEach(i => i.NeedsValidation = false);
             }
@@ -247,6 +249,11 @@ namespace TabularEditor.TOMWrapper
                     var parentFolder = fo.GetFolder(Tree.Culture);
                     if (parentFolder != null) parentFolder.AddError(fo);
                     else if(fo is ITabularTableObject tto) tto.Table.AddError(fo);
+                }
+                else if (errObj is CalculationItem ci)
+                {
+                    var parentTable = ci.CalculationGroup;
+                    parentTable.AddError(ci);
                 }
             }
         }

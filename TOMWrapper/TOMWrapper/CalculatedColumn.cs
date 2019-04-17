@@ -35,6 +35,12 @@ namespace TabularEditor.TOMWrapper
             base.OnPropertyChanged(propertyName, oldValue, newValue);
         }
 
+        protected override void Init()
+        {
+            if (!string.IsNullOrEmpty(ErrorMessage)) Table.AddError(this);
+            base.Init();
+        }
+
 
         [Browsable(false)]
         public bool NeedsValidation { get; set; }

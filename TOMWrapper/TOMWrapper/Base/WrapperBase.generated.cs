@@ -218,7 +218,8 @@ namespace TabularEditor.TOMWrapper
             typeof(NamedExpression),
             typeof(CalculationItem),
             typeof(TablePermission),
-	        typeof(CalculatedTable)
+	        typeof(CalculatedTable),
+            typeof(CalculationGroupTable)
         };
 	}
 	/// <summary>

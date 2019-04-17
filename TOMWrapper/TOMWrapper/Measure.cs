@@ -143,6 +143,8 @@ namespace TabularEditor.TOMWrapper
         protected override void Init()
         {
             if (MetadataObject.KPI != null) this.KPI = KPI.CreateFromMetadata(this, MetadataObject.KPI);
+
+            if (!string.IsNullOrEmpty(ErrorMessage)) Table.AddError(this);
         }
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)

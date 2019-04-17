@@ -275,8 +275,6 @@ namespace TabularEditor.TOMWrapper
                 ObjectLevelSecurity = new TableOLSIndexer(this);
             }
 
-            CheckChildrenErrors();
-
             base.Init();
         }
 
@@ -364,8 +362,13 @@ namespace TabularEditor.TOMWrapper
             else ErrorMessage += "\r\n" + folderObject.GetTypeName() + " " + folderObject.GetName();
         }
 
+        private string em;
+
         [Category("Metadata"),DisplayName("Error Message")]
-        public virtual string ErrorMessage { get; protected set; }
+        public virtual string ErrorMessage {
+            get { return em; }
+            protected set { em = value; }
+        }
         internal virtual void ClearError()
         {
             ErrorMessage = null;
@@ -374,7 +377,11 @@ namespace TabularEditor.TOMWrapper
                 ErrorMessage = "Detail rows expression: " + MetadataObject.DefaultDetailRowsDefinition.ErrorMessage;
         }
 
-        internal virtual void CheckChildrenErrors()
+        /// <summary>
+        /// Loops through all child objects and propagates any error messages to their immediate parents - this should be called
+        /// whenever the folder structure is changed
+        /// </summary>
+        internal virtual void PropagateChildErrors()
         {
             foreach(var child in GetChildren().OfType<IErrorMessageObject>().Where(c => !string.IsNullOrEmpty(c.ErrorMessage)))
             {
