@@ -156,6 +156,7 @@
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Management" />
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Net.Http" />
@@ -234,6 +235,7 @@
     <Compile Include="UIServices\ManagedIpHelper.cs" />
     <Compile Include="UIServices\PowerBIHelper.cs" />
     <Compile Include="UIServices\Preferences.cs" />
+    <Compile Include="UIServices\ProxyCache.cs" />
     <Compile Include="UIServices\RecentFiles.cs" />
     <Compile Include="UIServices\TableImport.cs" />
     <Compile Include="UIServices\TableMetadata.cs" />

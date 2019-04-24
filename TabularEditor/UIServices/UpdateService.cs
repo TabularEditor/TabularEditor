@@ -37,7 +37,7 @@ namespace TabularEditor.UIServices
             try
             {
                 var cli = new WebClient();
-                cli.Proxy = WebRequest.GetSystemWebProxy();
+                cli.Proxy = ProxyCache.GetProxy(VERSION_MANIFEST_URL);
                 var availableVersionString = cli.DownloadString(VERSION_MANIFEST_URL + "?q=" + Guid.NewGuid().ToString());
                 AvailableVersion = Version.Parse(availableVersionString);
                 if (AvailableVersion > CurrentVersion)

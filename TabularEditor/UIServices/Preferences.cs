@@ -39,6 +39,15 @@ namespace TabularEditor.UIServices
         public bool IgnoreTimestamps = true;
         public bool SplitMultilineStrings = true;
 
+        public bool ProxyUseSystem = true;
+        public string ProxyAddress = string.Empty;
+        public string ProxyUser = string.Empty;
+
+        /// <summary>
+        /// Stores an encrypted version of the user password. Use the string Decrypt() extension method to decrypt.
+        /// </summary>
+        public string ProxyPasswordEncrypted = string.Empty;
+
         #region Deprecated
         // Deprecated
         public bool? SaveToFolder_IgnoreInferredObjects = null;

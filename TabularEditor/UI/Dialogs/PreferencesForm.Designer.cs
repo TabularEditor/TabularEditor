@@ -89,22 +89,18 @@
             this.chkIgnoreInfObjectsCM = new System.Windows.Forms.CheckBox();
             this.chkIgnoreTimestampsCM = new System.Windows.Forms.CheckBox();
             this.cmbSeparators = new System.Windows.Forms.ComboBox();
+            this.chkBackgroundBpa = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.tabFeatures = new System.Windows.Forms.TabPage();
             this.grpDeployment = new System.Windows.Forms.GroupBox();
             this.btnFolder = new System.Windows.Forms.Button();
             this.txtBackupPath = new System.Windows.Forms.TextBox();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.chkAutoUpdate = new System.Windows.Forms.CheckBox();
-            this.btnVersionCheck = new System.Windows.Forms.Button();
-            this.lblAvailableVersion = new System.Windows.Forms.Label();
-            this.lblCurrentVersion = new System.Windows.Forms.Label();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.tabDAX = new System.Windows.Forms.TabPage();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.tabSerialization = new System.Windows.Forms.TabPage();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.label1 = new System.Windows.Forms.Label();
@@ -114,22 +110,37 @@
             this.treeView2 = new System.Windows.Forms.TreeView();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.chkBackgroundBpa = new System.Windows.Forms.CheckBox();
+            this.tabGeneral = new System.Windows.Forms.TabPage();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.chkAutoUpdate = new System.Windows.Forms.CheckBox();
+            this.btnVersionCheck = new System.Windows.Forms.Button();
+            this.lblAvailableVersion = new System.Windows.Forms.Label();
+            this.lblCurrentVersion = new System.Windows.Forms.Label();
+            this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.chkSystemProxy = new System.Windows.Forms.CheckBox();
+            this.txtProxyAddress = new System.Windows.Forms.TextBox();
+            this.txtProxyUser = new System.Windows.Forms.TextBox();
+            this.txtProxyPassword = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.tabControl1.SuspendLayout();
-            this.tabPage3.SuspendLayout();
+            this.tabFeatures.SuspendLayout();
             this.grpDeployment.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.groupBox6.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
+            this.tabDAX.SuspendLayout();
             this.groupBox5.SuspendLayout();
-            this.tabPage4.SuspendLayout();
+            this.tabSerialization.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabCurrentModel.SuspendLayout();
             this.grpSaveToFolder.SuspendLayout();
             this.groupBox8.SuspendLayout();
+            this.tabGeneral.SuspendLayout();
+            this.groupBox1.SuspendLayout();
+            this.groupBox9.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnOK
@@ -453,6 +464,18 @@
             this.cmbSeparators.TabIndex = 0;
             this.toolTip1.SetToolTip(this.cmbSeparators, resources.GetString("cmbSeparators.ToolTip"));
             // 
+            // chkBackgroundBpa
+            // 
+            this.chkBackgroundBpa.AutoSize = true;
+            this.chkBackgroundBpa.Location = new System.Drawing.Point(6, 44);
+            this.chkBackgroundBpa.Name = "chkBackgroundBpa";
+            this.chkBackgroundBpa.Size = new System.Drawing.Size(223, 17);
+            this.chkBackgroundBpa.TabIndex = 1;
+            this.chkBackgroundBpa.Text = "Background scan for Best Practice issues";
+            this.toolTip1.SetToolTip(this.chkBackgroundBpa, "Checking this, will let you edit all TOM objects and properties when connected to" +
+        " a Power BI data model. USE ONLY FOR EXPERIMENTAL PURPOSES.");
+            this.chkBackgroundBpa.UseVisualStyleBackColor = true;
+            // 
             // groupBox3
             // 
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -470,9 +493,10 @@
             this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Controls.Add(this.tabPage4);
+            this.tabControl1.Controls.Add(this.tabFeatures);
+            this.tabControl1.Controls.Add(this.tabGeneral);
+            this.tabControl1.Controls.Add(this.tabDAX);
+            this.tabControl1.Controls.Add(this.tabSerialization);
             this.tabControl1.Controls.Add(this.tabCurrentModel);
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
@@ -480,19 +504,18 @@
             this.tabControl1.Size = new System.Drawing.Size(377, 389);
             this.tabControl1.TabIndex = 2;
             // 
-            // tabPage3
+            // tabFeatures
             // 
-            this.tabPage3.Controls.Add(this.grpDeployment);
-            this.tabPage3.Controls.Add(this.groupBox7);
-            this.tabPage3.Controls.Add(this.groupBox6);
-            this.tabPage3.Controls.Add(this.groupBox1);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(369, 363);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "General";
-            this.tabPage3.UseVisualStyleBackColor = true;
+            this.tabFeatures.Controls.Add(this.grpDeployment);
+            this.tabFeatures.Controls.Add(this.groupBox7);
+            this.tabFeatures.Controls.Add(this.groupBox6);
+            this.tabFeatures.Location = new System.Drawing.Point(4, 22);
+            this.tabFeatures.Name = "tabFeatures";
+            this.tabFeatures.Padding = new System.Windows.Forms.Padding(3);
+            this.tabFeatures.Size = new System.Drawing.Size(369, 363);
+            this.tabFeatures.TabIndex = 2;
+            this.tabFeatures.Text = "Features";
+            this.tabFeatures.UseVisualStyleBackColor = true;
             // 
             // grpDeployment
             // 
@@ -501,7 +524,7 @@
             this.grpDeployment.Controls.Add(this.btnFolder);
             this.grpDeployment.Controls.Add(this.txtBackupPath);
             this.grpDeployment.Controls.Add(this.chkAutoBackup);
-            this.grpDeployment.Location = new System.Drawing.Point(6, 285);
+            this.grpDeployment.Location = new System.Drawing.Point(6, 180);
             this.grpDeployment.Name = "grpDeployment";
             this.grpDeployment.Size = new System.Drawing.Size(356, 72);
             this.grpDeployment.TabIndex = 7;
@@ -538,7 +561,7 @@
             this.groupBox7.Controls.Add(this.chkCopyIncludeRLS);
             this.groupBox7.Controls.Add(this.chkCopyIncludePerspectives);
             this.groupBox7.Controls.Add(this.chkCopyIncludeTranslations);
-            this.groupBox7.Location = new System.Drawing.Point(6, 214);
+            this.groupBox7.Location = new System.Drawing.Point(6, 109);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(357, 65);
             this.groupBox7.TabIndex = 6;
@@ -551,82 +574,24 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox6.Controls.Add(this.chkBackgroundBpa);
             this.groupBox6.Controls.Add(this.chkAllowUnsupportedPBIFeatures);
-            this.groupBox6.Location = new System.Drawing.Point(6, 111);
+            this.groupBox6.Location = new System.Drawing.Point(6, 6);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(357, 97);
             this.groupBox6.TabIndex = 2;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Features";
             // 
-            // groupBox1
+            // tabDAX
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.chkAutoUpdate);
-            this.groupBox1.Controls.Add(this.btnVersionCheck);
-            this.groupBox1.Controls.Add(this.lblAvailableVersion);
-            this.groupBox1.Controls.Add(this.lblCurrentVersion);
-            this.groupBox1.Location = new System.Drawing.Point(6, 6);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(357, 99);
-            this.groupBox1.TabIndex = 1;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Tabular Editor Updates";
-            // 
-            // chkAutoUpdate
-            // 
-            this.chkAutoUpdate.AutoSize = true;
-            this.chkAutoUpdate.Location = new System.Drawing.Point(6, 75);
-            this.chkAutoUpdate.Name = "chkAutoUpdate";
-            this.chkAutoUpdate.Size = new System.Drawing.Size(204, 17);
-            this.chkAutoUpdate.TabIndex = 4;
-            this.chkAutoUpdate.Text = "Check for updated version on start-up";
-            this.chkAutoUpdate.UseVisualStyleBackColor = true;
-            // 
-            // btnVersionCheck
-            // 
-            this.btnVersionCheck.Location = new System.Drawing.Point(6, 46);
-            this.btnVersionCheck.Name = "btnVersionCheck";
-            this.btnVersionCheck.Size = new System.Drawing.Size(126, 23);
-            this.btnVersionCheck.TabIndex = 3;
-            this.btnVersionCheck.Text = "Check for updates";
-            this.btnVersionCheck.UseVisualStyleBackColor = true;
-            this.btnVersionCheck.Click += new System.EventHandler(this.btnVersionCheck_Click);
-            // 
-            // lblAvailableVersion
-            // 
-            this.lblAvailableVersion.AutoSize = true;
-            this.lblAvailableVersion.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.lblAvailableVersion.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAvailableVersion.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.lblAvailableVersion.Location = new System.Drawing.Point(6, 51);
-            this.lblAvailableVersion.Name = "lblAvailableVersion";
-            this.lblAvailableVersion.Size = new System.Drawing.Size(126, 13);
-            this.lblAvailableVersion.TabIndex = 2;
-            this.lblAvailableVersion.Text = "Available version: 2.0.0.0";
-            this.lblAvailableVersion.Visible = false;
-            this.lblAvailableVersion.Click += new System.EventHandler(this.lblAvailableVersion_Click);
-            // 
-            // lblCurrentVersion
-            // 
-            this.lblCurrentVersion.AutoSize = true;
-            this.lblCurrentVersion.Location = new System.Drawing.Point(6, 26);
-            this.lblCurrentVersion.Name = "lblCurrentVersion";
-            this.lblCurrentVersion.Size = new System.Drawing.Size(117, 13);
-            this.lblCurrentVersion.TabIndex = 1;
-            this.lblCurrentVersion.Text = "Current version: 2.0.0.0";
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.groupBox5);
-            this.tabPage2.Controls.Add(this.groupBox3);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(369, 363);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "DAX";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.tabDAX.Controls.Add(this.groupBox5);
+            this.tabDAX.Controls.Add(this.groupBox3);
+            this.tabDAX.Location = new System.Drawing.Point(4, 22);
+            this.tabDAX.Name = "tabDAX";
+            this.tabDAX.Padding = new System.Windows.Forms.Padding(3);
+            this.tabDAX.Size = new System.Drawing.Size(369, 363);
+            this.tabDAX.TabIndex = 1;
+            this.tabDAX.Text = "DAX";
+            this.tabDAX.UseVisualStyleBackColor = true;
             // 
             // groupBox5
             // 
@@ -640,17 +605,17 @@
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Separators";
             // 
-            // tabPage4
+            // tabSerialization
             // 
-            this.tabPage4.Controls.Add(this.groupBox4);
-            this.tabPage4.Controls.Add(this.groupBox2);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(369, 363);
-            this.tabPage4.TabIndex = 3;
-            this.tabPage4.Text = "Serialization";
-            this.tabPage4.UseVisualStyleBackColor = true;
+            this.tabSerialization.Controls.Add(this.groupBox4);
+            this.tabSerialization.Controls.Add(this.groupBox2);
+            this.tabSerialization.Location = new System.Drawing.Point(4, 22);
+            this.tabSerialization.Name = "tabSerialization";
+            this.tabSerialization.Padding = new System.Windows.Forms.Padding(3);
+            this.tabSerialization.Size = new System.Drawing.Size(369, 363);
+            this.tabSerialization.TabIndex = 3;
+            this.tabSerialization.Text = "Serialization";
+            this.tabSerialization.UseVisualStyleBackColor = true;
             // 
             // groupBox4
             // 
@@ -858,17 +823,157 @@
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Current Model Serialization Settings";
             // 
-            // chkBackgroundBpa
+            // tabGeneral
             // 
-            this.chkBackgroundBpa.AutoSize = true;
-            this.chkBackgroundBpa.Location = new System.Drawing.Point(6, 44);
-            this.chkBackgroundBpa.Name = "chkBackgroundBpa";
-            this.chkBackgroundBpa.Size = new System.Drawing.Size(223, 17);
-            this.chkBackgroundBpa.TabIndex = 1;
-            this.chkBackgroundBpa.Text = "Background scan for Best Practice issues";
-            this.toolTip1.SetToolTip(this.chkBackgroundBpa, "Checking this, will let you edit all TOM objects and properties when connected to" +
-        " a Power BI data model. USE ONLY FOR EXPERIMENTAL PURPOSES.");
-            this.chkBackgroundBpa.UseVisualStyleBackColor = true;
+            this.tabGeneral.Controls.Add(this.groupBox9);
+            this.tabGeneral.Controls.Add(this.groupBox1);
+            this.tabGeneral.Location = new System.Drawing.Point(4, 22);
+            this.tabGeneral.Name = "tabGeneral";
+            this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
+            this.tabGeneral.Size = new System.Drawing.Size(369, 363);
+            this.tabGeneral.TabIndex = 6;
+            this.tabGeneral.Text = "General";
+            this.tabGeneral.UseVisualStyleBackColor = true;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.chkAutoUpdate);
+            this.groupBox1.Controls.Add(this.btnVersionCheck);
+            this.groupBox1.Controls.Add(this.lblAvailableVersion);
+            this.groupBox1.Controls.Add(this.lblCurrentVersion);
+            this.groupBox1.Location = new System.Drawing.Point(6, 138);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(357, 99);
+            this.groupBox1.TabIndex = 2;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Tabular Editor Updates";
+            // 
+            // chkAutoUpdate
+            // 
+            this.chkAutoUpdate.AutoSize = true;
+            this.chkAutoUpdate.Location = new System.Drawing.Point(6, 75);
+            this.chkAutoUpdate.Name = "chkAutoUpdate";
+            this.chkAutoUpdate.Size = new System.Drawing.Size(204, 17);
+            this.chkAutoUpdate.TabIndex = 4;
+            this.chkAutoUpdate.Text = "Check for updated version on start-up";
+            this.chkAutoUpdate.UseVisualStyleBackColor = true;
+            this.chkAutoUpdate.Click += new System.EventHandler(this.chkAutoBackup_CheckedChanged);
+            // 
+            // btnVersionCheck
+            // 
+            this.btnVersionCheck.Location = new System.Drawing.Point(6, 46);
+            this.btnVersionCheck.Name = "btnVersionCheck";
+            this.btnVersionCheck.Size = new System.Drawing.Size(126, 23);
+            this.btnVersionCheck.TabIndex = 3;
+            this.btnVersionCheck.Text = "Check for updates";
+            this.btnVersionCheck.UseVisualStyleBackColor = true;
+            this.btnVersionCheck.Click += new System.EventHandler(this.btnVersionCheck_Click);
+            // 
+            // lblAvailableVersion
+            // 
+            this.lblAvailableVersion.AutoSize = true;
+            this.lblAvailableVersion.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.lblAvailableVersion.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAvailableVersion.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.lblAvailableVersion.Location = new System.Drawing.Point(6, 51);
+            this.lblAvailableVersion.Name = "lblAvailableVersion";
+            this.lblAvailableVersion.Size = new System.Drawing.Size(126, 13);
+            this.lblAvailableVersion.TabIndex = 2;
+            this.lblAvailableVersion.Text = "Available version: 2.0.0.0";
+            this.lblAvailableVersion.Visible = false;
+            this.lblAvailableVersion.Click += new System.EventHandler(this.lblAvailableVersion_Click);
+            // 
+            // lblCurrentVersion
+            // 
+            this.lblCurrentVersion.AutoSize = true;
+            this.lblCurrentVersion.Location = new System.Drawing.Point(6, 26);
+            this.lblCurrentVersion.Name = "lblCurrentVersion";
+            this.lblCurrentVersion.Size = new System.Drawing.Size(117, 13);
+            this.lblCurrentVersion.TabIndex = 1;
+            this.lblCurrentVersion.Text = "Current version: 2.0.0.0";
+            // 
+            // groupBox9
+            // 
+            this.groupBox9.Controls.Add(this.label5);
+            this.groupBox9.Controls.Add(this.label4);
+            this.groupBox9.Controls.Add(this.label3);
+            this.groupBox9.Controls.Add(this.txtProxyPassword);
+            this.groupBox9.Controls.Add(this.txtProxyUser);
+            this.groupBox9.Controls.Add(this.txtProxyAddress);
+            this.groupBox9.Controls.Add(this.chkSystemProxy);
+            this.groupBox9.Location = new System.Drawing.Point(6, 6);
+            this.groupBox9.Name = "groupBox9";
+            this.groupBox9.Size = new System.Drawing.Size(357, 126);
+            this.groupBox9.TabIndex = 3;
+            this.groupBox9.TabStop = false;
+            this.groupBox9.Text = "Proxy settings";
+            // 
+            // chkSystemProxy
+            // 
+            this.chkSystemProxy.AutoSize = true;
+            this.chkSystemProxy.Checked = true;
+            this.chkSystemProxy.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkSystemProxy.Location = new System.Drawing.Point(7, 20);
+            this.chkSystemProxy.Name = "chkSystemProxy";
+            this.chkSystemProxy.Size = new System.Drawing.Size(108, 17);
+            this.chkSystemProxy.TabIndex = 0;
+            this.chkSystemProxy.Text = "Use system proxy";
+            this.chkSystemProxy.UseVisualStyleBackColor = true;
+            this.chkSystemProxy.CheckedChanged += new System.EventHandler(this.chkSystemProxy_CheckedChanged);
+            // 
+            // txtProxyAddress
+            // 
+            this.txtProxyAddress.Enabled = false;
+            this.txtProxyAddress.Location = new System.Drawing.Point(89, 43);
+            this.txtProxyAddress.Name = "txtProxyAddress";
+            this.txtProxyAddress.Size = new System.Drawing.Size(262, 20);
+            this.txtProxyAddress.TabIndex = 4;
+            // 
+            // txtProxyUser
+            // 
+            this.txtProxyUser.Enabled = false;
+            this.txtProxyUser.Location = new System.Drawing.Point(89, 69);
+            this.txtProxyUser.Name = "txtProxyUser";
+            this.txtProxyUser.Size = new System.Drawing.Size(151, 20);
+            this.txtProxyUser.TabIndex = 5;
+            // 
+            // txtProxyPassword
+            // 
+            this.txtProxyPassword.Enabled = false;
+            this.txtProxyPassword.Location = new System.Drawing.Point(89, 95);
+            this.txtProxyPassword.Name = "txtProxyPassword";
+            this.txtProxyPassword.PasswordChar = '●';
+            this.txtProxyPassword.Size = new System.Drawing.Size(151, 20);
+            this.txtProxyPassword.TabIndex = 6;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 46);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(76, 13);
+            this.label3.TabIndex = 7;
+            this.label3.Text = "Proxy address:";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 72);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(58, 13);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "Username:";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 98);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(56, 13);
+            this.label5.TabIndex = 9;
+            this.label5.Text = "Password:";
             // 
             // PreferencesForm
             // 
@@ -893,18 +998,16 @@
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.tabControl1.ResumeLayout(false);
-            this.tabPage3.ResumeLayout(false);
+            this.tabFeatures.ResumeLayout(false);
             this.grpDeployment.ResumeLayout(false);
             this.grpDeployment.PerformLayout();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
+            this.tabDAX.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
-            this.tabPage4.ResumeLayout(false);
+            this.tabSerialization.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -914,6 +1017,11 @@
             this.grpSaveToFolder.PerformLayout();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
+            this.tabGeneral.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            this.groupBox9.ResumeLayout(false);
+            this.groupBox9.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -925,15 +1033,10 @@
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.CheckBox chkFixup;
         private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.TabPage tabSerialization;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.CheckBox chkAutoUpdate;
-        private System.Windows.Forms.Button btnVersionCheck;
-        private System.Windows.Forms.Label lblAvailableVersion;
-        private System.Windows.Forms.Label lblCurrentVersion;
+        private System.Windows.Forms.TabPage tabDAX;
+        private System.Windows.Forms.TabPage tabFeatures;
         private System.Windows.Forms.CheckBox chkIgnoreTimestamps;
         private System.Windows.Forms.CheckBox chkIgnoreInfObjects;
         private System.Windows.Forms.CheckBox chkIgnoreInfProps;
@@ -972,5 +1075,19 @@
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.ComboBox cmbSeparators;
         private System.Windows.Forms.CheckBox chkBackgroundBpa;
+        private System.Windows.Forms.TabPage tabGeneral;
+        private System.Windows.Forms.GroupBox groupBox9;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox txtProxyPassword;
+        private System.Windows.Forms.TextBox txtProxyUser;
+        private System.Windows.Forms.TextBox txtProxyAddress;
+        private System.Windows.Forms.CheckBox chkSystemProxy;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.CheckBox chkAutoUpdate;
+        private System.Windows.Forms.Button btnVersionCheck;
+        private System.Windows.Forms.Label lblAvailableVersion;
+        private System.Windows.Forms.Label lblCurrentVersion;
     }
 }
