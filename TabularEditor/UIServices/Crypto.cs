@@ -22,5 +22,21 @@ namespace TabularEditor.UIServices
             }
             return sb.ToString();
         }
+
+        private static byte[] entropy = { 18, 155, 3, 200, 17, 78, 163, 49 };
+
+        private static UTF8Encoding encoder = new UTF8Encoding();
+
+        public static string Encrypt(this string unencrypted)
+        {
+            if (string.IsNullOrWhiteSpace(unencrypted)) return string.Empty;
+            return Convert.ToBase64String(ProtectedData.Protect(encoder.GetBytes(unencrypted), entropy, DataProtectionScope.CurrentUser));
+        }
+
+        public static string Decrypt(this string encrypted)
+        {
+            if (string.IsNullOrWhiteSpace(encrypted)) return string.Empty;
+            return encoder.GetString(ProtectedData.Unprotect(Convert.FromBase64String(encrypted), entropy, DataProtectionScope.CurrentUser));
+        }
     }
 }

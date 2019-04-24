@@ -47,9 +47,38 @@ namespace TabularEditor.UI.Dialogs
             lblCurrentVersion.Text = "Current Version: " + UpdateService.CurrentVersion;
         }
 
+        private bool tmpProxyUseSystem;
+        private string tmpProxyAddress;
+        private string tmpProxyUser;
+        private string tmpProxyPassword;
+
+        private void SaveProxySettings()
+        {
+            tmpProxyUseSystem = Preferences.Current.ProxyUseSystem;
+            tmpProxyAddress = Preferences.Current.ProxyAddress;
+            tmpProxyUser = Preferences.Current.ProxyUser;
+            tmpProxyPassword = Preferences.Current.ProxyPasswordEncrypted;
+
+            Preferences.Current.ProxyUseSystem = chkSystemProxy.Checked;
+            Preferences.Current.ProxyAddress = txtProxyAddress.Text;
+            Preferences.Current.ProxyUser = txtProxyUser.Text;
+            Preferences.Current.ProxyPasswordEncrypted = txtProxyPassword.Text.Encrypt();
+        }
+        private void RestoreProxySettings()
+        {
+            Preferences.Current.ProxyUseSystem = tmpProxyUseSystem;
+            Preferences.Current.ProxyAddress = tmpProxyAddress;
+            Preferences.Current.ProxyUser = tmpProxyUser;
+            Preferences.Current.ProxyPasswordEncrypted = tmpProxyPassword;
+        }
+
         private void btnVersionCheck_Click(object sender, EventArgs e)
         {
+            ProxyCache.ClearProxyCache();
+            SaveProxySettings();
             var newVersion = UpdateService.Check(true);
+            RestoreProxySettings();
+
             if (!newVersion.HasValue) return;
             if(newVersion.Value)
             {
@@ -126,6 +155,12 @@ namespace TabularEditor.UI.Dialogs
             Preferences.Current.Copy_IncludeRLS = chkCopyIncludeRLS.Checked;
             Preferences.Current.Copy_IncludeOLS = chkCopyIncludeOLS.Checked;
 
+            Preferences.Current.ProxyUseSystem = chkSystemProxy.Checked;
+            Preferences.Current.ProxyAddress = txtProxyAddress.Text;
+            Preferences.Current.ProxyUser = txtProxyUser.Text;
+            Preferences.Current.ProxyPasswordEncrypted = txtProxyPassword.Text.Encrypt();
+            ProxyCache.ClearProxyCache();
+
             Preferences.Current.SaveToFolder_Levels = new HashSet<string>();
             SaveCheckedNodes(treeView1.Nodes, Preferences.Current.SaveToFolder_Levels);
         }
@@ -184,6 +219,13 @@ namespace TabularEditor.UI.Dialogs
             SetNodeVisible("Perspectives", !chkLocalPerspectives.Checked, treeView1);
             SetNodeVisible("Translations", !chkLocalTranslations.Checked, treeView1);
             SetNodeVisible("Relationships", !chkLocalRelationships.Checked, treeView1);
+
+            chkSystemProxy.Checked = Preferences.Current.ProxyUseSystem;
+            txtProxyAddress.Text = Preferences.Current.ProxyAddress;
+            txtProxyUser.Text = Preferences.Current.ProxyUser;
+            txtProxyPassword.Text = Preferences.Current.ProxyPasswordEncrypted.Decrypt();
+            UpdateProxyUI();
+
         }
 
         private void PreferencesForm_Shown(object sender, EventArgs e)
@@ -314,6 +356,18 @@ namespace TabularEditor.UI.Dialogs
                     p = p.Parent;
                 }
             }
+        }
+
+        private void chkSystemProxy_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateProxyUI();
+        }
+
+        private void UpdateProxyUI()
+        {
+            txtProxyAddress.Enabled = !chkSystemProxy.Checked;
+            txtProxyUser.Enabled = !chkSystemProxy.Checked;
+            txtProxyPassword.Enabled = !chkSystemProxy.Checked;
         }
     }
 }

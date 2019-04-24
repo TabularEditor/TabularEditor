@@ -427,15 +427,15 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                     var result = TabularEditor.Dax.DaxFormatterProxy.FormatDax(textToFormat, Preferences.Current.UseSemicolonsAsSeparators, sender == actExpressionFormatDAXShort).FormattedDax;
                     if (string.IsNullOrWhiteSpace(result))
                     {
-                        lblStatus.Text = "Could not format DAX.";
+                        lblStatus.Text = "Could not format DAX (invalid syntax).";
                         return;
                     }
                     lblStatus.Text = "DAX formatted succesfully";
                     txtExpression.Text = result.Substring(6).Trim();
                 }
-                catch
+                catch (Exception ex)
                 {
-                    lblStatus.Text = "Could not format DAX.";
+                    lblStatus.Text = "Could not format DAX (" + ex.Message + ").";
                 }
             }
         }
