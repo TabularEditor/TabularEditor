@@ -60,7 +60,8 @@ namespace TabularEditor.TOMWrapper
 		public static readonly Type[] Creatable = {
 <# foreach(var t in Rules.ObjectTypes.Keys.Where(obj => Rules.IsCreatable(obj))) { #>
             typeof(<#= t.Name #>),
-<# } #>	        typeof(CalculatedTable)
+<# } #>	        typeof(CalculatedTable),
+				typeof(CalculationGroupTable)
         };
 	}
 <#
