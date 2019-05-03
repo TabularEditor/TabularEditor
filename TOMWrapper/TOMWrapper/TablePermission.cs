@@ -74,6 +74,7 @@ namespace TabularEditor.TOMWrapper
 
         protected override void Init()
         {
+            if (MetadataObject.Table == null) throw new InvalidOperationException($"Role '{Role.Name}' points to table '{Name}', which doesn't exist.");
             ColumnPermissions = new RoleColumnOLSIndexer(this);
             if (!string.IsNullOrEmpty(ErrorMessage)) Handler._errors.Add(this);
         }
