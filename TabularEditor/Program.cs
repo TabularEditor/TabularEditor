@@ -11,6 +11,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.TOMWrapper.Serialization;
 using TabularEditor.Scripting;
+using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor
 {
@@ -512,6 +513,22 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                         switches.Remove("-M"); switches.Remove("-MEMBERS");
                     }
                 }
+                var xmla_scripting_only = switches.Contains("-X") || switches.Contains("-XMLA");
+                string xmla_script_file = null;
+                if (xmla_scripting_only)
+                {
+                    var switchPos = upperArgList.IndexOf("-XMLA"); if (switchPos == -1) switchPos = upperArgList.IndexOf("-X");
+                    xmla_script_file = argList.Skip(switchPos + 1).FirstOrDefault(); if (String.IsNullOrWhiteSpace(xmla_script_file) && xmla_script_file.StartsWith("-")) xmla_script_file = null;
+                    if (string.IsNullOrEmpty(xmla_script_file))
+                    {
+                        Error("Missing xmla_script_file.\n");
+                        OutputUsage();
+                        return true;
+                    }
+                    switches.Remove("-X");
+                    switches.Remove("-XMLA");
+
+                }
                 /*if(switches.Count > 0)
                 {
                     Error("Unknown switch {0}\n", switches[0]);
@@ -530,12 +547,25 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                     cw.WriteLine("Deploying...");
                     var cs = string.IsNullOrEmpty(userName) ? TabularConnection.GetConnectionString(serverName) :
                         TabularConnection.GetConnectionString(serverName, userName, password);
-                    var deploymentResult = TabularDeployer.Deploy(h, cs, databaseID, options);
-                    cw.WriteLine("Deployment succeeded.");
-                    foreach (var err in deploymentResult.Issues) if(errorOnDaxErr) Error(err); else Warning(err);
-                    foreach (var err in deploymentResult.Warnings) Warning(err);
-                    foreach (var err in deploymentResult.Unprocessed)
-                        if (warnOnUnprocessed) Warning(err); else cw.WriteLine(err);
+                    if (xmla_scripting_only)
+                    {
+                        var s = new TOM.Server();
+                        s.Connect(cs);
+                        var xmla = TabularDeployer.GetTMSL(h.Database, s, databaseID, options);
+                        using(var sw = new StreamWriter(xmla_script_file))
+                        {
+                            sw.Write(xmla);
+                        }
+                    }
+                    else
+                    {
+                        var deploymentResult = TabularDeployer.Deploy(h, cs, databaseID, options);
+                        cw.WriteLine("Deployment succeeded.");
+                        foreach (var err in deploymentResult.Issues) if (errorOnDaxErr) Error(err); else Warning(err);
+                        foreach (var err in deploymentResult.Warnings) Warning(err);
+                        foreach (var err in deploymentResult.Unprocessed)
+                            if (warnOnUnprocessed) Warning(err); else cw.WriteLine(err);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -552,7 +582,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             cw.WriteLine(@"Usage:
 
 TABULAREDITOR ( file | server database ) [-S script] [-SC] [(-B | -F) output [id]] [-A [rulefile]] [-V]
-    [-D server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]] [-P]] [-R [-M]] [-W]]
+    [-D server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]] [-P]] [-R [-M]] [-W]] -X xmla_script_file
 
 file                Full path of the Model.bim file or database.json model folder to load.
 server              Server\instance name or connection string from which to load the model
@@ -587,7 +617,9 @@ database            Database ID of the model to load
     -P / -PARTITIONS    Deploy (overwrite) existing table partitions in the model.
   -R / -ROLES         Deploy roles.
     -M / -MEMBERS       Deploy role members.
-  -W / -WARN          Outputs information about unprocessed objects as warnings.");
+  -W / -WARN          Outputs information about unprocessed objects as warnings.
+  -X / -XMLA          No deployment will be performed immediately. Generate XMLA script for later deployment instead. 
+    xmla_script_file    File name of the new XMLA script output");
         }
     }
 }
