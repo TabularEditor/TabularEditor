@@ -544,11 +544,11 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                         foreach (var map in replaceMap) h.Model.DataSources.SetPlaceholder(map.Key, map.Value);
                     }
 
-                    cw.WriteLine("Deploying...");
                     var cs = string.IsNullOrEmpty(userName) ? TabularConnection.GetConnectionString(serverName) :
                         TabularConnection.GetConnectionString(serverName, userName, password);
                     if (xmla_scripting_only)
                     {
+                        cw.WriteLine("Generating XMLA/TMSL script...");
                         var s = new TOM.Server();
                         s.Connect(cs);
                         var xmla = TabularDeployer.GetTMSL(h.Database, s, databaseID, options);
@@ -556,9 +556,11 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                         {
                             sw.Write(xmla);
                         }
+                        cw.WriteLine("XMLA/TMSL script is generated.");
                     }
                     else
                     {
+                        cw.WriteLine("Deploying...");
                         var deploymentResult = TabularDeployer.Deploy(h, cs, databaseID, options);
                         cw.WriteLine("Deployment succeeded.");
                         foreach (var err in deploymentResult.Issues) if (errorOnDaxErr) Error(err); else Warning(err);
@@ -569,7 +571,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 }
                 catch (Exception ex)
                 {
-                    Error("Deployment failed! " + ex.Message);
+                    Error($"{(xmla_scripting_only ? "Script generation" : "Deployment")} failed! {ex.Message}");
                 }
                 return true;
             }
@@ -618,8 +620,8 @@ database            Database ID of the model to load
   -R / -ROLES         Deploy roles.
     -M / -MEMBERS       Deploy role members.
   -W / -WARN          Outputs information about unprocessed objects as warnings.
-  -X / -XMLA          No deployment will be performed immediately. Generate XMLA script for later deployment instead. 
-    xmla_script_file    File name of the new XMLA script output");
+  -X / -XMLA          No deployment will be performed. Generate XMLA/TMSL script for later deployment instead. 
+    xmla_script_file    File name of the new XMLA/TMSL script output");
         }
     }
 }
