@@ -62,9 +62,15 @@ namespace TabularEditor
 
             var handle = GetConsoleWindow();
             ShowWindow(handle, SW_HIDE);
-
-            var mf = new FormMain();
-            mf.ShowDialog();
+            try
+            {
+                var mf = new FormMain();
+                mf.ShowDialog();
+            }
+            finally
+            {
+                ShowWindow(handle, SW_SHOW);
+            }
         }
 
         private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
