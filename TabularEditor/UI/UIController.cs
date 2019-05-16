@@ -215,7 +215,6 @@ namespace TabularEditor.UI
             KeepAliveTimer.Enabled = false;
             new Task(() =>
             {
-                Console.WriteLine("Tick");
                 try
                 {
                     Handler.KeepAlive();
