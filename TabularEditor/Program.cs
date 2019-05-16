@@ -57,7 +57,7 @@ namespace TabularEditor
 
         private static void Exit(int exitCode)
         {
-            cw.DettachConsole();
+            cw.DetachConsole();
             Environment.Exit(exitCode);
         }
 
