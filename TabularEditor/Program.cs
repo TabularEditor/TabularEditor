@@ -25,34 +25,46 @@ namespace TabularEditor
         [STAThread]
         static void Main()
         {
-            var args = Environment.GetCommandLineArgs();
-            if(args.Length > 1)
+            try
             {
-                cw.WriteLine("");
-                cw.WriteLine(Application.ProductName + " " + Application.ProductVersion);
-                cw.WriteLine("--------------------------------");
-            }
-
-            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-
-            var plugins = LoadPlugins();
-            SetupLibraries(plugins);
-
-            CommandLineMode = true;
-            if (args.Length > 1 && HandleCommandLine(args))
-            {
-                if(enableVSTS)
+                var args = Environment.GetCommandLineArgs();
+                if (args.Length > 1)
                 {
-                    cw.WriteLine("##vso[task.complete result={0};]Done.", errorCount > 0 ? "Failed" : ( (warningCount > 0) ? "SucceededWithIssues" : "Succeeded" ));
+                    cw.WriteLine("");
+                    cw.WriteLine(Application.ProductName + " " + Application.ProductVersion);
+                    cw.WriteLine("--------------------------------");
                 }
-                Environment.Exit(errorCount > 0 ? 1 : 0);
-                return;
-            }
-            CommandLineMode = false;
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FormMain());
+                AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+
+                var plugins = LoadPlugins();
+                SetupLibraries(plugins);
+
+                CommandLineMode = true;
+                if (args.Length > 1 && HandleCommandLine(args))
+                {
+                    if (enableVSTS)
+                    {
+                        cw.WriteLine("##vso[task.complete result={0};]Done.", errorCount > 0 ? "Failed" : ((warningCount > 0) ? "SucceededWithIssues" : "Succeeded"));
+                    }
+                    Exit(errorCount > 0 ? 1 : 0);
+                    return;
+                }
+                CommandLineMode = false;
+
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new FormMain());
+            }
+            finally
+            {
+                cw.DettachConsole();
+            }
+        }
+        private static void Exit(int exitCode)
+        {
+            cw.DettachConsole();
+            Environment.Exit(exitCode);
         }
 
         private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
@@ -79,7 +91,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 td.HyperlinksEnabled = true;
                 td.HyperlinkClick += Td_HyperlinkClick;
                 td.Show();
-                Environment.Exit(1);
+                Exit(1);
             }
 
             return null;
