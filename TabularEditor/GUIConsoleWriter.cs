@@ -58,7 +58,7 @@ namespace TabularEditor
                 WriteLine(string.Format(line, args));
         }
 
-        public void DettachConsole()
+        public void DetachConsole()
         {
             if ((int)cwin != 0)
             {
