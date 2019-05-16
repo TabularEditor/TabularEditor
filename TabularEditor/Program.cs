@@ -34,6 +34,7 @@ namespace TabularEditor
             }
 
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
 
             var plugins = LoadPlugins();
             SetupLibraries(plugins);
@@ -45,7 +46,7 @@ namespace TabularEditor
                 {
                     cw.WriteLine("##vso[task.complete result={0};]Done.", errorCount > 0 ? "Failed" : ((warningCount > 0) ? "SucceededWithIssues" : "Succeeded"));
                 }
-                Exit(errorCount > 0 ? 1 : 0);
+                Environment.Exit(errorCount > 0 ? 1 : 0);
                 return;
             }
             CommandLineMode = false;
@@ -55,10 +56,9 @@ namespace TabularEditor
             Application.Run(new FormMain());
         }
 
-        private static void Exit(int exitCode)
+        private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
         {
             cw.DetachConsole();
-            Environment.Exit(exitCode);
         }
 
         private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
@@ -85,7 +85,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 td.HyperlinksEnabled = true;
                 td.HyperlinkClick += Td_HyperlinkClick;
                 td.Show();
-                Exit(1);
+                Environment.Exit(1);
             }
 
             return null;
