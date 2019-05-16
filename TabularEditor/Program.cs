@@ -11,6 +11,8 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.TOMWrapper.Serialization;
 using TabularEditor.Scripting;
+using TOM = Microsoft.AnalysisServices.Tabular;
+using System.Runtime.InteropServices;
 
 namespace TabularEditor
 {
@@ -25,7 +27,7 @@ namespace TabularEditor
         static void Main()
         {
             var args = Environment.GetCommandLineArgs();
-            if(args.Length > 1)
+            if (args.Length > 1)
             {
                 cw.WriteLine("");
                 cw.WriteLine(Application.ProductName + " " + Application.ProductVersion);
@@ -40,25 +42,24 @@ namespace TabularEditor
             CommandLineMode = true;
             if (args.Length > 1 && HandleCommandLine(args))
             {
-                if(enableVSTS)
+                if (enableVSTS)
                 {
-                    cw.WriteLine("##vso[task.complete result={0};]Done.", errorCount > 0 ? "Failed" : ( (warningCount > 0) ? "SucceededWithIssues" : "Succeeded" ));
+                    cw.WriteLine("##vso[task.complete result={0};]Done.", errorCount > 0 ? "Failed" : ((warningCount > 0) ? "SucceededWithIssues" : "Succeeded"));
                 }
                 Environment.Exit(errorCount > 0 ? 1 : 0);
                 return;
             }
             CommandLineMode = false;
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FormMain());
+            var mf = new FormMain();
+            mf.ShowDialog();
         }
 
         private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
             var asmName = new AssemblyName(args.Name);
 
-            if(
+            if (
                 asmName.Name == "Microsoft.AnalysisServices.Core" ||
                 asmName.Name == "Microsoft.AnalysisServices.Tabular" ||
                 asmName.Name == "Microsoft.AnalysisServices.Tabular.Json"
@@ -112,7 +113,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 try
                 {
                     var pluginAssembly = Assembly.LoadFile(dll);
-                    if(pluginAssembly != null && !pluginAssembly.FullName.StartsWith("TOMWrapper"))
+                    if (pluginAssembly != null && !pluginAssembly.FullName.StartsWith("TOMWrapper"))
                     {
                         var pluginType = pluginAssembly.GetTypes().Where(t => typeof(ITabularEditorPlugin).IsAssignableFrom(t)).FirstOrDefault();
                         if (pluginType != null)
@@ -220,7 +221,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 }
 
             }
-            else if(args.Length == 3 || args[3].StartsWith("-"))
+            else if (args.Length == 3 || args[3].StartsWith("-"))
             {
                 // Server + Database argument provided (either alone or with switches), i.e.:
                 //      TabularEditor.exe localhost AdventureWorks
@@ -251,14 +252,14 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             if (doScript == -1) doScript = upperArgList.IndexOf("-S");
             if (doScript > -1)
             {
-                if(upperArgList.Count <= doScript)
+                if (upperArgList.Count <= doScript)
                 {
                     Error("Invalid argument syntax.\n");
                     OutputUsage();
                     return true;
                 }
                 scriptFile = argList[doScript + 1];
-                if(!File.Exists(scriptFile))
+                if (!File.Exists(scriptFile))
                 {
                     Error("Specified script file not found.\n");
                     return true;
@@ -277,7 +278,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             if (doSaveToFolder == -1) doSaveToFolder = upperArgList.IndexOf("-F");
             if (doSaveToFolder > -1)
             {
-                if(upperArgList.Count <= doSaveToFolder)
+                if (upperArgList.Count <= doSaveToFolder)
                 {
                     Error("Invalid argument syntax.\n");
                     OutputUsage();
@@ -297,7 +298,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             if (doSave == -1) doSave = upperArgList.IndexOf("-BIM");
             if (doSave > -1)
             {
-                if(upperArgList.Count <= doSave)
+                if (upperArgList.Count <= doSave)
                 {
                     Error("Invalid argument syntax.\n");
                     OutputUsage();
@@ -309,10 +310,11 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 Directory.CreateDirectory(directoryName);
             }
 
-            if (doSaveToFolder > -1 && doSave > -1 ) {
-                    Error("-FOLDER and -BUILD arguments are mutually exclusive.\n");
-                    OutputUsage();
-                    return true;
+            if (doSaveToFolder > -1 && doSave > -1)
+            {
+                Error("-FOLDER and -BUILD arguments are mutually exclusive.\n");
+                OutputUsage();
+                return true;
             }
 
             // Load model:
@@ -357,7 +359,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 if (buildReplaceId != null) { h.Database.Name = buildReplaceId; h.Database.ID = buildReplaceId; }
                 h.Save(buildOutputPath, SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
             }
-            else if(!string.IsNullOrEmpty(saveToFolderOutputPath))
+            else if (!string.IsNullOrEmpty(saveToFolderOutputPath))
             {
                 cw.WriteLine("Saving Model.bim file to Folder Output Path ...");
                 if (buildReplaceId != null) { h.Database.Name = buildReplaceId; h.Database.ID = buildReplaceId; }
@@ -380,7 +382,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 BPA.BestPracticeCollection suppliedRules = null;
                 if (!string.IsNullOrEmpty(rulefile))
                 {
-                    if(!File.Exists(rulefile))
+                    if (!File.Exists(rulefile))
                     {
                         Error("Rulefile not found: {0}", rulefile);
                         return true;
@@ -400,10 +402,10 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 cw.WriteLine("=================================");
                 IEnumerable<BPA.AnalyzerResult> bpaResults;
                 if (suppliedRules == null) bpaResults = analyzer.AnalyzeAll();
-                else bpaResults = analyzer.Analyze(suppliedRules.Concat(analyzer.ModelRules));                
+                else bpaResults = analyzer.Analyze(suppliedRules.Concat(analyzer.ModelRules));
 
                 bool none = true;
-                foreach(var res in bpaResults.Where(r => !r.Ignored))
+                foreach (var res in bpaResults.Where(r => !r.Ignored))
                 {
                     if (res.InvalidCompatibilityLevel)
                     {
@@ -432,20 +434,21 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                     }
 
                 }
-                if(none) cw.WriteLine("No objects in violation of Best Practices.");
+                if (none) cw.WriteLine("No objects in violation of Best Practices.");
                 cw.WriteLine("=================================");
             }
 
             var deploy = upperArgList.IndexOf("-DEPLOY");
             if (deploy == -1) deploy = upperArgList.IndexOf("-D");
-            if(deploy > -1)
+            if (deploy > -1)
             {
                 var serverName = argList.Skip(deploy + 1).FirstOrDefault(); if (serverName != null && serverName.StartsWith("-")) serverName = null;
                 var databaseID = argList.Skip(deploy + 2).FirstOrDefault(); if (databaseID != null && databaseID.StartsWith("-")) databaseID = null;
 
                 var conn = upperArgList.IndexOf("-CONNECTIONS");
                 if (conn == -1) conn = upperArgList.IndexOf("-C");
-                if (conn > -1) {
+                if (conn > -1)
+                {
                     var replaces = argList.Skip(conn + 1).TakeWhile(s => s[0] != '-').ToList();
 
                     if (replaces.Count > 0 && replaces.Count % 2 == 0)
@@ -464,18 +467,18 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
 
                 var switches = args.Skip(deploy + 1).Where(arg => arg.StartsWith("-")).Select(arg => arg.ToUpper()).ToList();
 
-                if(string.IsNullOrEmpty(serverName) || string.IsNullOrEmpty(databaseID))
+                if (string.IsNullOrEmpty(serverName) || string.IsNullOrEmpty(databaseID))
                 {
                     Error("Invalid argument syntax.\n");
                     OutputUsage();
                     return true;
                 }
-                if(switches.Contains("-L") || switches.Contains("-LOGIN"))
+                if (switches.Contains("-L") || switches.Contains("-LOGIN"))
                 {
                     var switchPos = upperArgList.IndexOf("-LOGIN"); if (switchPos == -1) switchPos = upperArgList.IndexOf("-L");
                     userName = argList.Skip(switchPos + 1).FirstOrDefault(); if (userName != null && userName.StartsWith("-")) userName = null;
                     password = argList.Skip(switchPos + 2).FirstOrDefault(); if (password != null && password.StartsWith("-")) password = null;
-                    if(string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
+                    if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
                     {
                         Error("Missing username or password.\n");
                         OutputUsage();
@@ -487,7 +490,8 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 {
                     options.DeployMode = DeploymentMode.CreateOrAlter;
                     switches.Remove("-O"); switches.Remove("-OVERWRITE");
-                } else
+                }
+                else
                 {
                     options.DeployMode = DeploymentMode.CreateDatabase;
                 }
@@ -512,6 +516,22 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                         switches.Remove("-M"); switches.Remove("-MEMBERS");
                     }
                 }
+                var xmla_scripting_only = switches.Contains("-X") || switches.Contains("-XMLA");
+                string xmla_script_file = null;
+                if (xmla_scripting_only)
+                {
+                    var switchPos = upperArgList.IndexOf("-XMLA"); if (switchPos == -1) switchPos = upperArgList.IndexOf("-X");
+                    xmla_script_file = argList.Skip(switchPos + 1).FirstOrDefault(); if (String.IsNullOrWhiteSpace(xmla_script_file) && xmla_script_file.StartsWith("-")) xmla_script_file = null;
+                    if (string.IsNullOrEmpty(xmla_script_file))
+                    {
+                        Error("Missing xmla_script_file.\n");
+                        OutputUsage();
+                        return true;
+                    }
+                    switches.Remove("-X");
+                    switches.Remove("-XMLA");
+
+                }
                 /*if(switches.Count > 0)
                 {
                     Error("Unknown switch {0}\n", switches[0]);
@@ -521,25 +541,40 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
 
                 try
                 {
-                    if(replaceMap.Count > 0)
+                    if (replaceMap.Count > 0)
                     {
                         cw.WriteLine("Switching connection string placeholders...");
                         foreach (var map in replaceMap) h.Model.DataSources.SetPlaceholder(map.Key, map.Value);
                     }
 
-                    cw.WriteLine("Deploying...");
                     var cs = string.IsNullOrEmpty(userName) ? TabularConnection.GetConnectionString(serverName) :
                         TabularConnection.GetConnectionString(serverName, userName, password);
-                    var deploymentResult = TabularDeployer.Deploy(h, cs, databaseID, options);
-                    cw.WriteLine("Deployment succeeded.");
-                    foreach (var err in deploymentResult.Issues) if(errorOnDaxErr) Error(err); else Warning(err);
-                    foreach (var err in deploymentResult.Warnings) Warning(err);
-                    foreach (var err in deploymentResult.Unprocessed)
-                        if (warnOnUnprocessed) Warning(err); else cw.WriteLine(err);
+                    if (xmla_scripting_only)
+                    {
+                        cw.WriteLine("Generating XMLA/TMSL script...");
+                        var s = new TOM.Server();
+                        s.Connect(cs);
+                        var xmla = TabularDeployer.GetTMSL(h.Database, s, databaseID, options);
+                        using (var sw = new StreamWriter(xmla_script_file))
+                        {
+                            sw.Write(xmla);
+                        }
+                        cw.WriteLine("XMLA/TMSL script is generated.");
+                    }
+                    else
+                    {
+                        cw.WriteLine("Deploying...");
+                        var deploymentResult = TabularDeployer.Deploy(h, cs, databaseID, options);
+                        cw.WriteLine("Deployment succeeded.");
+                        foreach (var err in deploymentResult.Issues) if (errorOnDaxErr) Error(err); else Warning(err);
+                        foreach (var err in deploymentResult.Warnings) Warning(err);
+                        foreach (var err in deploymentResult.Unprocessed)
+                            if (warnOnUnprocessed) Warning(err); else cw.WriteLine(err);
+                    }
                 }
                 catch (Exception ex)
                 {
-                    Error("Deployment failed! " + ex.Message);
+                    Error($"{(xmla_scripting_only ? "Script generation" : "Deployment")} failed! {ex.Message}");
                 }
                 return true;
             }
@@ -552,7 +587,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             cw.WriteLine(@"Usage:
 
 TABULAREDITOR ( file | server database ) [-S script] [-SC] [(-B | -F) output [id]] [-A [rulefile]] [-V]
-    [-D server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]] [-P]] [-R [-M]] [-W]]
+    [-D server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]] [-P]] [-R [-M]] [-W]] -X xmla_script_file
 
 file                Full path of the Model.bim file or database.json model folder to load.
 server              Server\instance name or connection string from which to load the model
@@ -587,7 +622,9 @@ database            Database ID of the model to load
     -P / -PARTITIONS    Deploy (overwrite) existing table partitions in the model.
   -R / -ROLES         Deploy roles.
     -M / -MEMBERS       Deploy role members.
-  -W / -WARN          Outputs information about unprocessed objects as warnings.");
+  -W / -WARN          Outputs information about unprocessed objects as warnings.
+  -X / -XMLA          No deployment will be performed. Generate XMLA/TMSL script for later deployment instead. 
+    xmla_script_file    File name of the new XMLA/TMSL script output");
         }
     }
 }
