@@ -27,7 +27,7 @@ namespace TabularEditor
 
         StreamWriter _stdOutWriter;
 
-        IntPtr cw = (IntPtr)0;
+        IntPtr cwin = (IntPtr)0;
 
         // this must be called early in the program
         public GUIConsoleWriter()
@@ -41,7 +41,7 @@ namespace TabularEditor
 
             AttachConsole(ATTACH_PARENT_PROCESS);
 
-            cw = GetConsoleWindow();
+            cwin = GetConsoleWindow();
         }
 
         public void WriteLine(string line)
@@ -60,10 +60,11 @@ namespace TabularEditor
 
         public void DettachConsole()
         {
-            if ((int)cw != 0)
+            if ((int)cwin != 0)
             {
-                SendMessage(cw, WM_CHAR, (IntPtr)VK_ENTER, IntPtr.Zero);
+                SendMessage(cwin, WM_CHAR, (IntPtr)VK_ENTER, IntPtr.Zero);
                 FreeConsole();
+                cwin = (IntPtr)0;
             }
         }
     }
