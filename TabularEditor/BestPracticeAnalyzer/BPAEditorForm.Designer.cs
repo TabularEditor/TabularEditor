@@ -55,6 +55,7 @@
             this.txtID = new System.Windows.Forms.TextBox();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnOK = new System.Windows.Forms.Button();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.numSeverity)).BeginInit();
             this.menuConditions.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -90,6 +91,8 @@
             this.numSeverity.Size = new System.Drawing.Size(44, 20);
             this.numSeverity.TabIndex = 20;
             this.numSeverity.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.toolTip1.SetToolTip(this.numSeverity, "The severity level specifies how the rule is being reported. 1 = Informational on" +
+        "ly. 2 = Warning. 3 = Error.");
             this.numSeverity.Value = new decimal(new int[] {
             1,
             0,
@@ -417,5 +420,6 @@
         private System.Windows.Forms.ComboBox cmbCategory;
         private System.Windows.Forms.ComboBox cmbCompatibility;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }

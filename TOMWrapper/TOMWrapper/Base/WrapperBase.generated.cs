@@ -60,6 +60,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string FILTEREXPRESSION = "FilterExpression";
 	    public const string FORCEUNIQUENAMES = "ForceUniqueNames";
 	    public const string FORMATSTRING = "FormatString";
+	    public const string FORMATSTRINGDEFINITION = "FormatStringDefinition";
 	    public const string FROMCARDINALITY = "FromCardinality";
 	    public const string FROMCOLUMN = "FromColumn";
 	    public const string FROMTABLE = "FromTable";
@@ -219,7 +220,7 @@ namespace TabularEditor.TOMWrapper
             typeof(CalculationItem),
             typeof(TablePermission),
 	        typeof(CalculatedTable),
-            typeof(CalculationGroupTable)
+				typeof(CalculationGroupTable)
         };
 	}
 	/// <summary>

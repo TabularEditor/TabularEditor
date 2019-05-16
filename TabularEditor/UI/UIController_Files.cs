@@ -226,7 +226,11 @@ namespace TabularEditor.UI
                         // Save as a Power BI Template, if that's the type of file chosen in the dialog:
                         var saveFormat = dialog.FileType == "pbit" ? SaveFormat.PowerBiTemplate : SaveFormat.ModelSchemaOnly;
 
-                        Handler.Save(dialog.FileName,
+                        var fileName = dialog.FileName;
+                        if (dialog.FileType == "pbit" && !fileName.EndsWith(".pbit")) fileName += ".pbit";
+                        else if (dialog.FileType == "bim" && !fileName.EndsWith(".bim")) fileName += ".bim";
+
+                        Handler.Save(fileName,
                             saveFormat,
                             serializationOptions,
                             dialog.UseSerializationFromAnnotations,
