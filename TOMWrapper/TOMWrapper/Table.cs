@@ -214,7 +214,7 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                return string.Format("'{0}'", Name);
+                return string.Format("'{0}'", Name.Replace("'", "''"));
             }
         }
 
@@ -400,16 +400,6 @@ namespace TabularEditor.TOMWrapper
             base.Children_CollectionChanged(sender, e);
         }
 
-        public override string Name
-        {
-            set
-            {
-                if (value.IndexOfAny(InvalidTableNameChars) != -1) throw new ArgumentException("Table name cannot contain any of the following characters: " + string.Join(" ", InvalidTableNameChars));
-                base.Name = value;
-            }
-            get { return base.Name; }
-        }
-
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
             if (propertyName == Properties.NAME)
@@ -447,12 +437,6 @@ namespace TabularEditor.TOMWrapper
             }
             base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
         }
-
-        public static readonly char[] InvalidTableNameChars = {
-            '.', ',', ';', '\'', '`', ':', '/', '\\', '*', '|',
-            '?', '"', '&', '%', '$' , '!', '+', '=', '(', ')',
-            '[', ']', '{', '}', '<', '>'
-        };
 
         [DisplayName("Default Detail Rows Expression")]
         [Category("Options"), IntelliSense("A DAX expression specifying default detail rows for this table (drill-through in client tools).")]
