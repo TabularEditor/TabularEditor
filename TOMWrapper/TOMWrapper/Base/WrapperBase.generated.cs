@@ -54,6 +54,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string DISPLAYORDINAL = "DisplayOrdinal";
 	    public const string ENCODINGHINT = "EncodingHint";
 	    public const string ERRORMESSAGE = "ErrorMessage";
+	    public const string EXCLUDEFROMMODELREFRESH = "ExcludeFromModelRefresh";
 	    public const string EXPRESSION = "Expression";
 	    public const string EXPRESSIONS = "Expressions";
 	    public const string EXTENDEDPROPERTIES = "ExtendedProperties";
@@ -114,6 +115,8 @@ namespace TabularEditor.TOMWrapper
 	    public const string PERSPECTIVETABLES = "PerspectiveTables";
 	    public const string PRECEDENCE = "Precedence";
 	    public const string PROVIDER = "Provider";
+	    public const string QUERYGROUP = "QueryGroup";
+	    public const string QUERYGROUPS = "QueryGroups";
 	    public const string REFRESHEDTIME = "RefreshedTime";
 	    public const string REFRESHPOLICY = "RefreshPolicy";
 	    public const string RELATIONSHIP = "Relationship";
@@ -10784,6 +10787,30 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeAlternateSourcePrecedence() { return false; }
+/// <summary>
+///             A boolean value that indicates whether the table is excluded from model refresh.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1480 or above.</remarks>
+		[DisplayName("Exclude From Model Refresh")]
+		[Category("Options"),Description(@"A boolean value that indicates whether the table is excluded from model refresh."),IntelliSense(@"A boolean value that indicates whether the table is excluded from model refresh.")]
+		public bool ExcludeFromModelRefresh {
+			get {
+			    return MetadataObject.ExcludeFromModelRefresh;
+			}
+			set {
+				
+				var oldValue = ExcludeFromModelRefresh;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXCLUDEFROMMODELREFRESH, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.ExcludeFromModelRefresh = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EXCLUDEFROMMODELREFRESH, oldValue, newValue));
+				OnPropertyChanged(Properties.EXCLUDEFROMMODELREFRESH, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeExcludeFromModelRefresh() { return false; }
 
         /// <Summary>
 		/// Collection of perspectives in which this Table is visible.
@@ -11141,6 +11168,18 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("AlternateSourcePrecedence"));
 				this.ToList().ForEach(item => { item.AlternateSourcePrecedence = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the ExcludeFromModelRefresh property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the ExcludeFromModelRefresh property of all objects in the collection at once.")]
+		public bool ExcludeFromModelRefresh {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("ExcludeFromModelRefresh"));
+				this.ToList().ForEach(item => { item.ExcludeFromModelRefresh = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}

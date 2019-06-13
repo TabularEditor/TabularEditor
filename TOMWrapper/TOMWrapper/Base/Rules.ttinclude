@@ -294,6 +294,7 @@ partial class Rules {
 			case "IsPrivate":
 			case "ShowAsVariationsOnly":
 			case "AlternateSourcePredence":
+			case "ExcludeFromModelRefresh":
 				return "Options";
 			case "Column":
 				if(typeName == "Variation") return "Basic";
