@@ -56,7 +56,7 @@ namespace TabularEditor.TOMWrapper.Utils
             StartIndex = antlrToken.StartIndex;
             StopIndex = antlrToken.StopIndex;
             Text = antlrToken.Text;
-            CommentOrWhitespace = antlrToken.Channel == 1 || antlrToken.Channel == 2;
+            CommentOrWhitespace = antlrToken.Channel == DAXLexer.COMMENTS_CHANNEL || antlrToken.Channel == DAXLexer.Hidden;
             Collection = collection;
         }
 

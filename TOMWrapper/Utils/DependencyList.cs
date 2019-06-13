@@ -270,21 +270,6 @@ namespace TabularEditor.TOMWrapper.Utils
             target.DependsOn.Add(dependsOn, property, fromChar, toChar, fullyQualified);
             if (!dependsOn.ReferencedBy.Contains(target)) dependsOn.ReferencedBy.Add(target);
         }
-
-        /// <summary>
-        /// Removes qualifiers such as ' ' and [ ] around a name.
-        /// </summary>
-        static public string NoQ(this string objectName, bool table = false)
-        {
-            if (table)
-            {
-                return objectName.StartsWith("'") ? objectName.Substring(1, objectName.Length - 2) : objectName;
-            }
-            else
-            {
-                return objectName.StartsWith("[") ? objectName.Substring(1, objectName.Length - 2) : objectName;
-            }
-        }
     }
 
 

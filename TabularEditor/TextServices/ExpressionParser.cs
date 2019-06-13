@@ -32,14 +32,6 @@ namespace TabularEditor.TextServices
                         }
                     }
                 }
-                else if (token.Type == DAXLexer.DATA)
-                {
-                    for (var i = token.StartIndex; i <= token.StopIndex; i++)
-                    {
-                        if (sb[i] == ',') sb[i] = '.';
-                        else if (sb[i] == ';') sb[i] = ',';
-                    }
-                }
             }
             return sb.ToString();
         }
@@ -60,14 +52,6 @@ namespace TabularEditor.TextServices
                             sb[i] = ',';
                             break;
                         }
-                    }
-                }
-                else if (token.Type == DAXLexer.DATA)
-                {
-                    for (var i = token.StartIndex; i <= token.StopIndex; i++)
-                    {
-                        if (sb[i] == '.') sb[i] = ',';
-                        else if (sb[i] == ',') sb[i] = ';';
                     }
                 }
             }

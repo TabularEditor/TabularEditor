@@ -305,12 +305,13 @@ IN:                 'IN'                                                        
 
 INTEGER_LITERAL:       [0-9]+;
 REAL_LITERAL:          [0-9]* '.' [0-9]+;
-STRING_LITERAL:        '"' (~'"' | '""')* '"';
-DATA:                  '{' .*? '}';
-TABLE:                 '\'' (~["\'\r\n\u0085\u2028\u2029])* '\'';
-COLUMN_OR_MEASURE:     '[' (~["\]\r\n\u0085\u2028\u2029])* ']';
+STRING_LITERAL:        '"' (~'"' | '""')* '"' {Text = Text.Substring(1, Text.Length - 2);};
+TABLE:                 '\'' (~["\'\r\n\u0085\u2028\u2029] | '\'\'')* '\'' {Text = Text.Substring(1, Text.Length - 2).Replace("''","'");};
+COLUMN_OR_MEASURE:     '[' (~["\]\r\n\u0085\u2028\u2029] | ']]')* ']'   {Text = Text.Substring(1, Text.Length - 2).Replace("]]","]");};
 TABLE_OR_VARIABLE:     IdentifierOrKeyword;
 
+OPEN_CURLY:			   '{';
+CLOSE_CURLY:		   '}';
 OPEN_PARENS:           '(';
 CLOSE_PARENS:          ')';
 COMMA:                 ',';

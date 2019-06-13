@@ -68,10 +68,10 @@ namespace TabularEditor.TOMWrapper.Utils
                             lastTableRef = null;
                         }
 
-                        if (Model.Tables.Contains(tok.Text.NoQ(true)))
+                        if (Model.Tables.Contains(tok.Text))
                         {
-                            if (dependsOn != null) dependsOn.Add(Model.Tables[tok.Text.NoQ(true)], prop, tok.StartIndex, tok.StopIndex, true);
-                            else expressionObj.AddDep(Model.Tables[tok.Text.NoQ(true)], prop, tok.StartIndex, tok.StopIndex, true);
+                            if (dependsOn != null) dependsOn.Add(Model.Tables[tok.Text], prop, tok.StartIndex, tok.StopIndex, true);
+                            else expressionObj.AddDep(Model.Tables[tok.Text], prop, tok.StartIndex, tok.StopIndex, true);
                         }
                         else
                         {
@@ -82,22 +82,22 @@ namespace TabularEditor.TOMWrapper.Utils
                         // Referencing a table just before the object reference
                         if (lastTableRef != null)
                         {
-                            var tableName = lastTableRef.Text.NoQ(true);
+                            var tableName = lastTableRef.Text;
                             lastTableRef = null;
                             if (!Model.Tables.Contains(tableName)) return; // Invalid reference (no table with that name)
 
                             var table = Model.Tables[tableName];
                             // Referencing a column on a specific table
-                            if (table.Columns.Contains(tok.Text.NoQ()))
+                            if (table.Columns.Contains(tok.Text))
                             {
-                                if (dependsOn != null) dependsOn.Add(table.Columns[tok.Text.NoQ()], prop, startTableIndex, tok.StopIndex, true);
-                                else expressionObj.AddDep(table.Columns[tok.Text.NoQ()], prop, startTableIndex, tok.StopIndex, true);
+                                if (dependsOn != null) dependsOn.Add(table.Columns[tok.Text], prop, startTableIndex, tok.StopIndex, true);
+                                else expressionObj.AddDep(table.Columns[tok.Text], prop, startTableIndex, tok.StopIndex, true);
                             }
                             // Referencing a measure on a specific table
-                            else if (table.Measures.Contains(tok.Text.NoQ()))
+                            else if (table.Measures.Contains(tok.Text))
                             {
-                                if (dependsOn != null) dependsOn.Add(table.Measures[tok.Text.NoQ()], prop, startTableIndex, tok.StopIndex, true);
-                                else expressionObj.AddDep(table.Measures[tok.Text.NoQ()], prop, startTableIndex, tok.StopIndex, true);
+                                if (dependsOn != null) dependsOn.Add(table.Measures[tok.Text], prop, startTableIndex, tok.StopIndex, true);
+                                else expressionObj.AddDep(table.Measures[tok.Text], prop, startTableIndex, tok.StopIndex, true);
                             }
                         }
                         // No table reference before the object reference
@@ -105,18 +105,18 @@ namespace TabularEditor.TOMWrapper.Utils
                         {
                             var table = (expressionObj as ITabularTableObject)?.Table ?? (expressionObj as TablePermission)?.Table;
                             // Referencing a column without specifying a table (assume column in same table):
-                            if (table != null && table.Columns.Contains(tok.Text.NoQ()))
+                            if (table != null && table.Columns.Contains(tok.Text))
                             {
-                                if (dependsOn != null) dependsOn.Add(table.Columns[tok.Text.NoQ()], prop, tok.StartIndex, tok.StopIndex, false);
-                                else expressionObj.AddDep(table.Columns[tok.Text.NoQ()], prop, tok.StartIndex, tok.StopIndex, false);
+                                if (dependsOn != null) dependsOn.Add(table.Columns[tok.Text], prop, tok.StartIndex, tok.StopIndex, false);
+                                else expressionObj.AddDep(table.Columns[tok.Text], prop, tok.StartIndex, tok.StopIndex, false);
                             }
                             // Referencing a measure or column without specifying a table
                             else
                             {
                                 Measure m = null;
-                                if (table != null && table.Measures.Contains(tok.Text.NoQ())) m = table.Measures[tok.Text.NoQ()];
+                                if (table != null && table.Measures.Contains(tok.Text)) m = table.Measures[tok.Text];
                                 else
-                                    m = Model.Tables.FirstOrDefault(t => t.Measures.Contains(tok.Text.NoQ()))?.Measures[tok.Text.NoQ()];
+                                    m = Model.Tables.FirstOrDefault(t => t.Measures.Contains(tok.Text))?.Measures[tok.Text];
 
                                 if (m != null)
                                 {
