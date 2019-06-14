@@ -34,6 +34,7 @@ namespace TabularEditor
             }
 
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
 
             var plugins = LoadPlugins();
             SetupLibraries(plugins);
@@ -53,6 +54,11 @@ namespace TabularEditor
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new FormMain());
+        }
+
+        private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        {
+            cw.DetachConsole();
         }
 
         private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
