@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace TabularEditor
 {
@@ -12,12 +9,25 @@ namespace TabularEditor
     // write to the console) but it doesn't seem possible.
     public class GUIConsoleWriter
     {
-        [System.Runtime.InteropServices.DllImport("kernel32.dll")]
-        private static extern bool AttachConsole(int dwProcessId);
+        const uint WM_CHAR = 0x0102;
+        const int VK_ENTER = 0x0D;
 
+        [DllImport("kernel32.dll")]
+        static extern bool AttachConsole(int dwProcessId);
         private const int ATTACH_PARENT_PROCESS = -1;
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern bool FreeConsole();
+
+        [DllImport("kernel32.dll")]
+        static extern IntPtr GetConsoleWindow();
+
+        [DllImport("user32.dll")]
+        static extern int SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+
         StreamWriter _stdOutWriter;
+
+        IntPtr cwin = (IntPtr)0;
 
         // this must be called early in the program
         public GUIConsoleWriter()
@@ -30,6 +40,8 @@ namespace TabularEditor
             _stdOutWriter.AutoFlush = true;
 
             AttachConsole(ATTACH_PARENT_PROCESS);
+
+            cwin = GetConsoleWindow();
         }
 
         public void WriteLine(string line)
@@ -44,6 +56,16 @@ namespace TabularEditor
                 WriteLine(line);
             else
                 WriteLine(string.Format(line, args));
+        }
+
+        public void DetachConsole()
+        {
+            if ((int)cwin != 0)
+            {
+                SendMessage(cwin, WM_CHAR, (IntPtr)VK_ENTER, IntPtr.Zero);
+                FreeConsole();
+                cwin = (IntPtr)0;
+            }
         }
     }
 }
