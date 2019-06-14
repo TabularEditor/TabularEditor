@@ -46,7 +46,7 @@ namespace TabularEditor
 
         public void WriteLine(string line)
         {
-            //_stdOutWriter.WriteLine(line);
+            _stdOutWriter.WriteLine(line);
             Console.WriteLine(line);
         }
 
