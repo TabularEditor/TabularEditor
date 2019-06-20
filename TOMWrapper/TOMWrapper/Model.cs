@@ -49,9 +49,10 @@ namespace TabularEditor.TOMWrapper
         public CalculationGroupTable AddCalculationGroup(string name = null)
         {
             Handler.BeginUpdate("add calculation group");
-            var maxPrecedence = Model.CalculationGroups.Max(c => c.CalculationGroupPrecedence);
+            var maxPrecedence = Model.CalculationGroups.Select(c => c.CalculationGroupPrecedence).DefaultIfEmpty(-1).Max();
             var t = CalculationGroupTable.CreateNew(this, name);
             t.CalculationGroupPrecedence = maxPrecedence + 1;
+            Handler.Tree.RebuildFolderCacheForTable(t);
             Handler.EndUpdate();
             return t;
         }
