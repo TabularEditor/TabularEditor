@@ -23,6 +23,11 @@ namespace TabularEditor.TOMWrapper
         bool IsRemoved { get; }
     }
 
+    internal interface IInternalTabularObject: ITabularObject
+    {
+        void ReapplyReferences();
+    }
+
     /// <summary>
     /// Objects whose name and description properties can be translated
     /// </summary>
@@ -47,6 +52,11 @@ namespace TabularEditor.TOMWrapper
         bool CanEditName();
         bool CanDelete(out string message);
         void Delete();
+    }
+
+    internal interface IInternalTabularNamedObject: ITabularNamedObject, IInternalTabularObject
+    {
+        void RemoveReferences();
     }
 
     #region Common interfaces
