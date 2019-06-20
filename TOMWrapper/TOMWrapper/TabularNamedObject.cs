@@ -18,7 +18,7 @@ namespace TabularEditor.TOMWrapper
     /// method for editing the (localized) name and description.
     /// </summary>
     [DebuggerDisplay("{ObjectType} {Name}")]
-    public abstract class TabularNamedObject: TabularObject, ITabularNamedObject, IComparable
+    public abstract class TabularNamedObject: TabularObject, IInternalTabularNamedObject, IComparable
     {
         /// <summary>
         /// Derived classes should override this method to prevent an object from being deleted.
@@ -115,7 +115,7 @@ namespace TabularEditor.TOMWrapper
         internal override void ReapplyReferences()
         {
             var container = this as ITabularObjectContainer;
-            if (container != null) foreach (var child in container.GetChildren().OfType<TabularObject>()) child.ReapplyReferences();
+            if (container != null) foreach (var child in container.GetChildren().OfType<IInternalTabularObject>()) child.ReapplyReferences();
 
             if (this is IDaxDependantObject || this is IDaxObject || this is ModelRole) FormulaFixup.BuildDependencyTree();
         }
@@ -141,6 +141,8 @@ namespace TabularEditor.TOMWrapper
             Collection.Add(this);
         }
 
+        void IInternalTabularNamedObject.RemoveReferences() => RemoveReferences();
+
         /// <summary>
         /// The RemoveReferences method is called before an object is deleted. Derived classes
         /// should override this to remove all references to this object, from other objects.
@@ -155,7 +157,7 @@ namespace TabularEditor.TOMWrapper
         internal virtual void RemoveReferences()
         {
             var container = this as ITabularObjectContainer;
-            if (container != null) foreach (var child in container.GetChildren().OfType<TabularNamedObject>()) child.RemoveReferences();
+            if (container != null) foreach (var child in container.GetChildren().OfType<IInternalTabularNamedObject>()) child.RemoveReferences();
 
             // Remove translations for names, if this object supports translations:
             (this as ITranslatableObject)?.TranslatedNames?.Clear();
