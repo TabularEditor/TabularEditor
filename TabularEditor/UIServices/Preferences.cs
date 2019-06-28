@@ -32,6 +32,7 @@ namespace TabularEditor.UIServices
         public bool AllowUnsupportedPBIFeatures = false;
         public bool BackgroundBpa = true;
         public string BackupLocation = string.Empty;
+        public bool AnnotateDeploymentMetadata = false;
 
         // TODO: Handle backwards compatibility
         public bool IgnoreInferredObjects = true;

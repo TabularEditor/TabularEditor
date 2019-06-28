@@ -12,6 +12,7 @@ using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.TOMWrapper.Serialization;
 using TabularEditor.Scripting;
 using TOM = Microsoft.AnalysisServices.Tabular;
+using TabularEditor.UIServices;
 
 namespace TabularEditor
 {
@@ -570,6 +571,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                     else
                     {
                         cw.WriteLine("Deploying...");
+                        UpdateDeploymentMetadata(h.Model, DeploymentModeMetadata.CLI);
                         var deploymentResult = TabularDeployer.Deploy(h, cs, databaseID, options);
                         cw.WriteLine("Deployment succeeded.");
                         foreach (var err in deploymentResult.Issues) if (errorOnDaxErr) Error(err); else Warning(err);
@@ -588,31 +590,47 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             return true;
         }
 
+        public static void UpdateDeploymentMetadata(Model model, DeploymentModeMetadata deploymentMode)
+        {
+            model.DeploymentMetadata = Preferences.Current.AnnotateDeploymentMetadata ?
+                new DeploymentMetadata
+                {
+                    ClientMachine = Environment.MachineName,
+                    DeploymentMode = deploymentMode,
+                    TabularEditorBuild = Application.ProductVersion,
+                    Time = DateTime.Now,
+                    User = Environment.UserDomainName + "\\" + Environment.UserName
+                } : null;
+            model.UpdateDeploymentMetadata();
+        }
+
         static void OutputUsage()
         {
             cw.WriteLine(@"Usage:
 
 TABULAREDITOR ( file | server database ) [-S script] [-SC] [(-B | -F) output [id]] [-A [rulefile]] [-V]
-    [-D server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]] [-P]] [-R [-M]] [-W]] -X xmla_script_file
+    [-D server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]] [-P] [-R [-M]]]
+        [-W] [-E] [-X xmla_script]]
 
 file                Full path of the Model.bim file or database.json model folder to load.
 server              Server\instance name or connection string from which to load the model
 database            Database ID of the model to load
 -S / -SCRIPT        Execute the specified script on the model after loading.
   script              Full path of a file containing a C# script to execute.
--SC / -SCHEMACHECK  Attempts to connect to all Provider Data Sources in order to detect
-                      table schema changes. Outputs...
-                        ...warnings for mismatched data types and unmapped source columns
-                        ...errors for unmapped model columns.
--B / -BUILD         Saves the model (after optional script execution) as a Model.bim file.
+-SC / -SCHEMACHECK  Attempts to connect to all Provider Data Sources in order to detect table schema
+                    changes. Outputs...
+                      ...warnings for mismatched data types and unmapped source columns
+                      ...errors for unmapped model columns.
+-B / -BIM / -BUILD  Saves the model (after optional script execution) as a Model.bim file.
   output              Full path of the Model.bim file to save to.
--F / -FOLDER         Saves the model (after optional script execution) as a series of JSON objects in a folder.
-  output              Full path of the folder to save to.
+  id                  Optional id/name to assign to the Database object when saving.
+-F / -FOLDER        Saves the model (after optional script execution) as a Folder structure.
+  output              Full path of the folder to save to. Folder is created if it does not exist.
   id                  Optional id/name to assign to the Database object when saving.
 -V / -VSTS          Output Visual Studio Team Services logging commands.
 -A / -ANALYZE       Runs Best Practice Analyzer and outputs the result to the console.
-  rulefile            Optional path of file containing BPA rules to be analyzed. If not
-                      specified, model is analyzed against global rules on the machine.
+  rulefile            Optional path of file containing BPA rules to be analyzed. If not specified,
+                      model is analyzed against global rules on the machine.
 -D / -DEPLOY        Command-line deployment
   server              Name of server to deploy to or connection string to Analysis Services.
   database            ID of the database to deploy (create/overwrite).
@@ -620,17 +638,19 @@ database            Database ID of the model to load
     user                Username (must be a user with admin rights on the server)
     pass                Password
   -O / -OVERWRITE     Allow deploy (overwrite) of an existing database.
-    -C / -CONNECTIONS   Deploy (overwrite) existing data sources in the model. After the -C
-                        switch, you can (optionally) specify any number of placeholder-value
-                        pairs. Doing so, will replace any occurrence of the specified
-                        placeholders (plch1, plch2, ...) in the connection strings of every
-                        data source in the model, with the specified values (value1, value2, ...).
+    -C / -CONNECTIONS   Deploy (overwrite) existing data sources in the model. After the -C switch, you
+                        can (optionally) specify any number of placeholder-value pairs. Doing so, will
+                        replace any occurrence of the specified placeholders (plch1, plch2, ...) in the
+                        connection strings of every data source in the model, with the specified values
+                        (value1, value2, ...).
     -P / -PARTITIONS    Deploy (overwrite) existing table partitions in the model.
     -R / -ROLES         Deploy roles.
       -M / -MEMBERS       Deploy role members.
   -W / -WARN          Outputs information about unprocessed objects as warnings.
+  -E / -ERR           Returns a non-zero exit code if Analysis Services returns any error messages
+                      after deployment.
   -X / -XMLA          No deployment. Generate XMLA/TMSL script for later deployment instead. 
-    xmla_script_file    File name of the new XMLA/TMSL script output.");
+    xmla_script         File name of the new XMLA/TMSL script output.");
         }
     }
 }

@@ -88,7 +88,7 @@ namespace TabularEditor.TOMWrapper
 #><#= props.Any(p => p.Name == "Expression" && t.Name != "NamedExpression") ? "\n\t\t\t, IExpressionObject" : ""
 #><#= props.Any(p => p.Name == "FormatString") ? "\n\t\t\t, IFormattableObject" : ""
 #><#= props.Any(p => p.Name == "Annotations") ? "\n\t\t\t, IInternalAnnotationObject" : ""
-#><#= props.Any(p => p.Name == "ExtendedProperties") ? "\n\t\t\t, IExtendedPropertyObject" : ""
+#><#= props.Any(p => p.Name == "ExtendedProperties") ? "\n\t\t\t, IInternalExtendedPropertyObject" : ""
 #><#= Rules.IsPerspectiveObject(t) ? "\n\t\t\t, IInternalTabularPerspectiveObject" : ""
 #><#= Rules.IsTranslatable(t) ? "\n\t\t\t, IInternalTranslatableObject" : ""
 #><#= Rules.IsCreatable(t) ? "\n\t\t\t, IClonableObject" : ""
@@ -140,9 +140,15 @@ namespace TabularEditor.TOMWrapper
 			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
 		}
 		///<summary>Sets the value of the ExtendedProperty with the given index, optionally specifiying the type (string or JSON) of the ExtendedProperty.</summary>
-		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
+			SetExtendedProperty(index, value, type, true);
+		}
+		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+			SetExtendedProperty(index, value, type, undoable);
+		}
+		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
 			var name = MetadataObject.ExtendedProperties[index].Name;
-			SetExtendedProperty(name, value, type);
+			SetExtendedProperty(name, value, type, undoable);
 		}
 		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
 		public string GetNewExtendedPropertyName() {
@@ -150,7 +156,10 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
 		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
-		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type = ExtendedPropertyType.String) {
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type) {
+			SetExtendedProperty(name, value, type, true);
+		}
+		internal void SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
 			if(name == null) name = GetNewExtendedPropertyName();
 
 			if(value == null) {
@@ -160,10 +169,11 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			if(GetExtendedProperty(name) == value) return;
-			bool undoable = true;
-			bool cancel = false;
-			OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
-			if (cancel) return;
+			if(undoable) {
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+				if (cancel) return;
+			}
 
 			if(MetadataObject.ExtendedProperties.Contains(name)) {
 				// Change existing ExtendedProperty:
@@ -187,17 +197,25 @@ namespace TabularEditor.TOMWrapper
 				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
 			}
-
 		}
+		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+			this.SetExtendedProperty(name, value, type, undoable);
+		}
+
 		///<summary>Remove an ExtendedProperty by the given name.</summary>
 		[IntelliSense("Remove an ExtendedProperty by the given name.")]
 		public void RemoveExtendedProperty(string name) {
+			RemoveExtendedProperty(name, true);
+		}
+
+		internal void RemoveExtendedProperty(string name, bool undoable) {
 			if(MetadataObject.ExtendedProperties.Contains(name)) {
 				// Get current value:
-				bool undoable = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
-				if (cancel) return;
+				if(undoable) {
+					bool cancel = false;
+					OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+					if (cancel) return;
+				}
 
 				var oldValue = GetExtendedProperty(name);
 				var oldType = GetExtendedPropertyType(name);
@@ -207,6 +225,9 @@ namespace TabularEditor.TOMWrapper
 				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
 			}
+		}
+		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+			this.RemoveExtendedProperty(name, undoable);
 		}
 		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
 		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
