@@ -82,6 +82,7 @@
     <Compile Include="TextServices\DAXCharStream.cs" />
     <Compile Include="TOMWrapper\CalculationGroupTable.cs" />
     <Compile Include="TOMWrapper\CalculationItem.cs" />
+    <Compile Include="TOMWrapper\DeploymentMetadata.cs" />
     <Compile Include="TOMWrapper\ExtendedPropertyCollection.cs" />
     <Compile Include="TOMWrapper\Base\WrapperBase.generated.cs">
       <AutoGen>True</AutoGen>

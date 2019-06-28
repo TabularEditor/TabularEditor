@@ -49,6 +49,7 @@ namespace TabularEditor.UI
                     {
                         try
                         {
+                            Program.UpdateDeploymentMetadata(Handler.Model, DeploymentModeMetadata.WizardUI);
                             TabularDeployer.Deploy(Handler, f.DeployTargetServer.ConnectionString, f.DeployTargetDatabaseID, f.DeployOptions, df.CancelToken);
                         }
                         catch (Exception ex)
@@ -170,6 +171,7 @@ namespace TabularEditor.UI
 
                 try
                 {
+                    Program.UpdateDeploymentMetadata(Handler.Model, DeploymentModeMetadata.SaveUI);
                     Handler.SaveDB();
                 }
                 catch (Exception e)
