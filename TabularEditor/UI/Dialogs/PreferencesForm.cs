@@ -141,6 +141,7 @@ namespace TabularEditor.UI.Dialogs
             Preferences.Current.AllowUnsupportedPBIFeatures = chkAllowUnsupportedPBIFeatures.Checked;
             Preferences.Current.UseSemicolonsAsSeparators = cmbSeparators.SelectedIndex == 1;
             Preferences.Current.BackgroundBpa = chkBackgroundBpa.Checked;
+            Preferences.Current.AnnotateDeploymentMetadata = chkAnnotateDeploymentMetadata.Checked;
 
             Preferences.Current.IgnoreTimestamps = chkIgnoreTimestamps.Checked;
             Preferences.Current.IgnoreInferredObjects = chkIgnoreInfObjects.Checked;
@@ -204,6 +205,8 @@ namespace TabularEditor.UI.Dialogs
             chkCopyIncludePerspectives.Checked = Preferences.Current.Copy_IncludePerspectives;
             chkCopyIncludeRLS.Checked = Preferences.Current.Copy_IncludeRLS;
             chkCopyIncludeOLS.Checked = Preferences.Current.Copy_IncludeOLS;
+
+            chkAnnotateDeploymentMetadata.Checked = Preferences.Current.AnnotateDeploymentMetadata;
 
             LoadCheckedNodes(treeView1.Nodes, Preferences.Current.SaveToFolder_Levels);
 

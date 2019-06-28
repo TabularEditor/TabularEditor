@@ -1,4 +1,7 @@
-﻿using System;
+﻿extern alias json;
+
+using json::Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -163,6 +166,41 @@ namespace TabularEditor.TOMWrapper
         public IEnumerable<Level> AllLevels { get { return Tables.SelectMany(t => t.Hierarchies).SelectMany(h => h.Levels); } }
         #endregion
 
+        [IntelliSense("Metadata related to the latest deployment performed on this model using Tabular Editor.")]
+        public DeploymentMetadata DeploymentMetadata { get; set; }
+        const string DM = "TabularEditor_DeploymentMetadata";
+        private void InitDeploymentMetadata()
+        {
+            var deploymentMetadataJson =
+                Handler.CompatibilityLevel >= 1400 && HasExtendedProperty(DM) ? GetExtendedProperty(DM) : GetAnnotation(DM);
+            if (deploymentMetadataJson != null)
+            {
+                try
+                {
+                    DeploymentMetadata = JsonConvert.DeserializeObject<DeploymentMetadata>(deploymentMetadataJson);
+                }
+                catch { }
+            }
+        }
+        public void RemoveDeploymentMetadata()
+        {
+            DeploymentMetadata = null;
+            UpdateDeploymentMetadata();
+        }
+
+        public void UpdateDeploymentMetadata()
+        {
+            if (Handler.CompatibilityLevel >= 1400) RemoveExtendedProperty(DM);
+            RemoveAnnotation(DM);
+            if (DeploymentMetadata == null) return;
+
+            var json = JsonConvert.SerializeObject(DeploymentMetadata);
+            if (Handler.CompatibilityLevel >= 1400)
+                SetExtendedProperty(DM, json, ExtendedPropertyType.Json, false);
+            else
+                SetAnnotation(DM, json, false);
+        }
+
         public IEnumerable<ITabularNamedObject> GetChildren()
         {
             return Groups;
@@ -178,6 +216,8 @@ namespace TabularEditor.TOMWrapper
         {
             if (Handler.CompatibilityLevel >= 1400 && MetadataObject.DataAccessOptions == null)
                 MetadataObject.DataAccessOptions = new TOM.DataAccessOptions();
+
+            InitDeploymentMetadata();
         }
 
         internal override bool IsBrowsable(string propertyName)

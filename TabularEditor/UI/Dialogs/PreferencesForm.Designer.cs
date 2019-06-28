@@ -98,6 +98,20 @@
             this.txtBackupPath = new System.Windows.Forms.TextBox();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.tabGeneral = new System.Windows.Forms.TabPage();
+            this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.txtProxyPassword = new System.Windows.Forms.TextBox();
+            this.txtProxyUser = new System.Windows.Forms.TextBox();
+            this.txtProxyAddress = new System.Windows.Forms.TextBox();
+            this.chkSystemProxy = new System.Windows.Forms.CheckBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.chkAutoUpdate = new System.Windows.Forms.CheckBox();
+            this.btnVersionCheck = new System.Windows.Forms.Button();
+            this.lblAvailableVersion = new System.Windows.Forms.Label();
+            this.lblCurrentVersion = new System.Windows.Forms.Label();
             this.tabDAX = new System.Windows.Forms.TabPage();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.tabSerialization = new System.Windows.Forms.TabPage();
@@ -110,26 +124,16 @@
             this.treeView2 = new System.Windows.Forms.TreeView();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.tabGeneral = new System.Windows.Forms.TabPage();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.chkAutoUpdate = new System.Windows.Forms.CheckBox();
-            this.btnVersionCheck = new System.Windows.Forms.Button();
-            this.lblAvailableVersion = new System.Windows.Forms.Label();
-            this.lblCurrentVersion = new System.Windows.Forms.Label();
-            this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.chkSystemProxy = new System.Windows.Forms.CheckBox();
-            this.txtProxyAddress = new System.Windows.Forms.TextBox();
-            this.txtProxyUser = new System.Windows.Forms.TextBox();
-            this.txtProxyPassword = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
+            this.chkAnnotateDeploymentMetadata = new System.Windows.Forms.CheckBox();
             this.groupBox3.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabFeatures.SuspendLayout();
             this.grpDeployment.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.groupBox6.SuspendLayout();
+            this.tabGeneral.SuspendLayout();
+            this.groupBox9.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.tabDAX.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.tabSerialization.SuspendLayout();
@@ -138,9 +142,6 @@
             this.tabCurrentModel.SuspendLayout();
             this.grpSaveToFolder.SuspendLayout();
             this.groupBox8.SuspendLayout();
-            this.tabGeneral.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            this.groupBox9.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnOK
@@ -328,7 +329,7 @@
             // chkAutoBackup
             // 
             this.chkAutoBackup.AutoSize = true;
-            this.chkAutoBackup.Location = new System.Drawing.Point(6, 19);
+            this.chkAutoBackup.Location = new System.Drawing.Point(6, 44);
             this.chkAutoBackup.Name = "chkAutoBackup";
             this.chkAutoBackup.Size = new System.Drawing.Size(168, 17);
             this.chkAutoBackup.TabIndex = 6;
@@ -521,12 +522,13 @@
             // 
             this.grpDeployment.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.grpDeployment.Controls.Add(this.chkAnnotateDeploymentMetadata);
             this.grpDeployment.Controls.Add(this.btnFolder);
             this.grpDeployment.Controls.Add(this.txtBackupPath);
             this.grpDeployment.Controls.Add(this.chkAutoBackup);
             this.grpDeployment.Location = new System.Drawing.Point(6, 180);
             this.grpDeployment.Name = "grpDeployment";
-            this.grpDeployment.Size = new System.Drawing.Size(356, 72);
+            this.grpDeployment.Size = new System.Drawing.Size(356, 98);
             this.grpDeployment.TabIndex = 7;
             this.grpDeployment.TabStop = false;
             this.grpDeployment.Text = "Deployment Options";
@@ -535,7 +537,7 @@
             // 
             this.btnFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnFolder.Enabled = false;
-            this.btnFolder.Location = new System.Drawing.Point(323, 42);
+            this.btnFolder.Location = new System.Drawing.Point(323, 67);
             this.btnFolder.Name = "btnFolder";
             this.btnFolder.Size = new System.Drawing.Size(27, 20);
             this.btnFolder.TabIndex = 8;
@@ -548,7 +550,7 @@
             this.txtBackupPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtBackupPath.Enabled = false;
-            this.txtBackupPath.Location = new System.Drawing.Point(6, 42);
+            this.txtBackupPath.Location = new System.Drawing.Point(6, 67);
             this.txtBackupPath.Name = "txtBackupPath";
             this.txtBackupPath.Size = new System.Drawing.Size(311, 20);
             this.txtBackupPath.TabIndex = 7;
@@ -580,6 +582,158 @@
             this.groupBox6.TabIndex = 2;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Features";
+            // 
+            // tabGeneral
+            // 
+            this.tabGeneral.Controls.Add(this.groupBox9);
+            this.tabGeneral.Controls.Add(this.groupBox1);
+            this.tabGeneral.Location = new System.Drawing.Point(4, 22);
+            this.tabGeneral.Name = "tabGeneral";
+            this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
+            this.tabGeneral.Size = new System.Drawing.Size(369, 363);
+            this.tabGeneral.TabIndex = 6;
+            this.tabGeneral.Text = "General";
+            this.tabGeneral.UseVisualStyleBackColor = true;
+            // 
+            // groupBox9
+            // 
+            this.groupBox9.Controls.Add(this.label5);
+            this.groupBox9.Controls.Add(this.label4);
+            this.groupBox9.Controls.Add(this.label3);
+            this.groupBox9.Controls.Add(this.txtProxyPassword);
+            this.groupBox9.Controls.Add(this.txtProxyUser);
+            this.groupBox9.Controls.Add(this.txtProxyAddress);
+            this.groupBox9.Controls.Add(this.chkSystemProxy);
+            this.groupBox9.Location = new System.Drawing.Point(6, 6);
+            this.groupBox9.Name = "groupBox9";
+            this.groupBox9.Size = new System.Drawing.Size(357, 126);
+            this.groupBox9.TabIndex = 3;
+            this.groupBox9.TabStop = false;
+            this.groupBox9.Text = "Proxy settings";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 98);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(56, 13);
+            this.label5.TabIndex = 9;
+            this.label5.Text = "Password:";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 72);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(58, 13);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "Username:";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 46);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(76, 13);
+            this.label3.TabIndex = 7;
+            this.label3.Text = "Proxy address:";
+            // 
+            // txtProxyPassword
+            // 
+            this.txtProxyPassword.Enabled = false;
+            this.txtProxyPassword.Location = new System.Drawing.Point(89, 95);
+            this.txtProxyPassword.Name = "txtProxyPassword";
+            this.txtProxyPassword.PasswordChar = '●';
+            this.txtProxyPassword.Size = new System.Drawing.Size(151, 20);
+            this.txtProxyPassword.TabIndex = 6;
+            // 
+            // txtProxyUser
+            // 
+            this.txtProxyUser.Enabled = false;
+            this.txtProxyUser.Location = new System.Drawing.Point(89, 69);
+            this.txtProxyUser.Name = "txtProxyUser";
+            this.txtProxyUser.Size = new System.Drawing.Size(151, 20);
+            this.txtProxyUser.TabIndex = 5;
+            // 
+            // txtProxyAddress
+            // 
+            this.txtProxyAddress.Enabled = false;
+            this.txtProxyAddress.Location = new System.Drawing.Point(89, 43);
+            this.txtProxyAddress.Name = "txtProxyAddress";
+            this.txtProxyAddress.Size = new System.Drawing.Size(262, 20);
+            this.txtProxyAddress.TabIndex = 4;
+            // 
+            // chkSystemProxy
+            // 
+            this.chkSystemProxy.AutoSize = true;
+            this.chkSystemProxy.Checked = true;
+            this.chkSystemProxy.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkSystemProxy.Location = new System.Drawing.Point(7, 20);
+            this.chkSystemProxy.Name = "chkSystemProxy";
+            this.chkSystemProxy.Size = new System.Drawing.Size(108, 17);
+            this.chkSystemProxy.TabIndex = 0;
+            this.chkSystemProxy.Text = "Use system proxy";
+            this.chkSystemProxy.UseVisualStyleBackColor = true;
+            this.chkSystemProxy.CheckedChanged += new System.EventHandler(this.chkSystemProxy_CheckedChanged);
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.chkAutoUpdate);
+            this.groupBox1.Controls.Add(this.btnVersionCheck);
+            this.groupBox1.Controls.Add(this.lblAvailableVersion);
+            this.groupBox1.Controls.Add(this.lblCurrentVersion);
+            this.groupBox1.Location = new System.Drawing.Point(6, 138);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(357, 99);
+            this.groupBox1.TabIndex = 2;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Tabular Editor Updates";
+            // 
+            // chkAutoUpdate
+            // 
+            this.chkAutoUpdate.AutoSize = true;
+            this.chkAutoUpdate.Location = new System.Drawing.Point(6, 75);
+            this.chkAutoUpdate.Name = "chkAutoUpdate";
+            this.chkAutoUpdate.Size = new System.Drawing.Size(204, 17);
+            this.chkAutoUpdate.TabIndex = 4;
+            this.chkAutoUpdate.Text = "Check for updated version on start-up";
+            this.chkAutoUpdate.UseVisualStyleBackColor = true;
+            this.chkAutoUpdate.Click += new System.EventHandler(this.chkAutoBackup_CheckedChanged);
+            // 
+            // btnVersionCheck
+            // 
+            this.btnVersionCheck.Location = new System.Drawing.Point(6, 46);
+            this.btnVersionCheck.Name = "btnVersionCheck";
+            this.btnVersionCheck.Size = new System.Drawing.Size(126, 23);
+            this.btnVersionCheck.TabIndex = 3;
+            this.btnVersionCheck.Text = "Check for updates";
+            this.btnVersionCheck.UseVisualStyleBackColor = true;
+            this.btnVersionCheck.Click += new System.EventHandler(this.btnVersionCheck_Click);
+            // 
+            // lblAvailableVersion
+            // 
+            this.lblAvailableVersion.AutoSize = true;
+            this.lblAvailableVersion.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.lblAvailableVersion.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAvailableVersion.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.lblAvailableVersion.Location = new System.Drawing.Point(6, 51);
+            this.lblAvailableVersion.Name = "lblAvailableVersion";
+            this.lblAvailableVersion.Size = new System.Drawing.Size(126, 13);
+            this.lblAvailableVersion.TabIndex = 2;
+            this.lblAvailableVersion.Text = "Available version: 2.0.0.0";
+            this.lblAvailableVersion.Visible = false;
+            this.lblAvailableVersion.Click += new System.EventHandler(this.lblAvailableVersion_Click);
+            // 
+            // lblCurrentVersion
+            // 
+            this.lblCurrentVersion.AutoSize = true;
+            this.lblCurrentVersion.Location = new System.Drawing.Point(6, 26);
+            this.lblCurrentVersion.Name = "lblCurrentVersion";
+            this.lblCurrentVersion.Size = new System.Drawing.Size(117, 13);
+            this.lblCurrentVersion.TabIndex = 1;
+            this.lblCurrentVersion.Text = "Current version: 2.0.0.0";
             // 
             // tabDAX
             // 
@@ -823,157 +977,16 @@
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Current Model Serialization Settings";
             // 
-            // tabGeneral
+            // chkAnnotateDeploymentMetadata
             // 
-            this.tabGeneral.Controls.Add(this.groupBox9);
-            this.tabGeneral.Controls.Add(this.groupBox1);
-            this.tabGeneral.Location = new System.Drawing.Point(4, 22);
-            this.tabGeneral.Name = "tabGeneral";
-            this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(369, 363);
-            this.tabGeneral.TabIndex = 6;
-            this.tabGeneral.Text = "General";
-            this.tabGeneral.UseVisualStyleBackColor = true;
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.chkAutoUpdate);
-            this.groupBox1.Controls.Add(this.btnVersionCheck);
-            this.groupBox1.Controls.Add(this.lblAvailableVersion);
-            this.groupBox1.Controls.Add(this.lblCurrentVersion);
-            this.groupBox1.Location = new System.Drawing.Point(6, 138);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(357, 99);
-            this.groupBox1.TabIndex = 2;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Tabular Editor Updates";
-            // 
-            // chkAutoUpdate
-            // 
-            this.chkAutoUpdate.AutoSize = true;
-            this.chkAutoUpdate.Location = new System.Drawing.Point(6, 75);
-            this.chkAutoUpdate.Name = "chkAutoUpdate";
-            this.chkAutoUpdate.Size = new System.Drawing.Size(204, 17);
-            this.chkAutoUpdate.TabIndex = 4;
-            this.chkAutoUpdate.Text = "Check for updated version on start-up";
-            this.chkAutoUpdate.UseVisualStyleBackColor = true;
-            this.chkAutoUpdate.Click += new System.EventHandler(this.chkAutoBackup_CheckedChanged);
-            // 
-            // btnVersionCheck
-            // 
-            this.btnVersionCheck.Location = new System.Drawing.Point(6, 46);
-            this.btnVersionCheck.Name = "btnVersionCheck";
-            this.btnVersionCheck.Size = new System.Drawing.Size(126, 23);
-            this.btnVersionCheck.TabIndex = 3;
-            this.btnVersionCheck.Text = "Check for updates";
-            this.btnVersionCheck.UseVisualStyleBackColor = true;
-            this.btnVersionCheck.Click += new System.EventHandler(this.btnVersionCheck_Click);
-            // 
-            // lblAvailableVersion
-            // 
-            this.lblAvailableVersion.AutoSize = true;
-            this.lblAvailableVersion.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.lblAvailableVersion.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAvailableVersion.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.lblAvailableVersion.Location = new System.Drawing.Point(6, 51);
-            this.lblAvailableVersion.Name = "lblAvailableVersion";
-            this.lblAvailableVersion.Size = new System.Drawing.Size(126, 13);
-            this.lblAvailableVersion.TabIndex = 2;
-            this.lblAvailableVersion.Text = "Available version: 2.0.0.0";
-            this.lblAvailableVersion.Visible = false;
-            this.lblAvailableVersion.Click += new System.EventHandler(this.lblAvailableVersion_Click);
-            // 
-            // lblCurrentVersion
-            // 
-            this.lblCurrentVersion.AutoSize = true;
-            this.lblCurrentVersion.Location = new System.Drawing.Point(6, 26);
-            this.lblCurrentVersion.Name = "lblCurrentVersion";
-            this.lblCurrentVersion.Size = new System.Drawing.Size(117, 13);
-            this.lblCurrentVersion.TabIndex = 1;
-            this.lblCurrentVersion.Text = "Current version: 2.0.0.0";
-            // 
-            // groupBox9
-            // 
-            this.groupBox9.Controls.Add(this.label5);
-            this.groupBox9.Controls.Add(this.label4);
-            this.groupBox9.Controls.Add(this.label3);
-            this.groupBox9.Controls.Add(this.txtProxyPassword);
-            this.groupBox9.Controls.Add(this.txtProxyUser);
-            this.groupBox9.Controls.Add(this.txtProxyAddress);
-            this.groupBox9.Controls.Add(this.chkSystemProxy);
-            this.groupBox9.Location = new System.Drawing.Point(6, 6);
-            this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(357, 126);
-            this.groupBox9.TabIndex = 3;
-            this.groupBox9.TabStop = false;
-            this.groupBox9.Text = "Proxy settings";
-            // 
-            // chkSystemProxy
-            // 
-            this.chkSystemProxy.AutoSize = true;
-            this.chkSystemProxy.Checked = true;
-            this.chkSystemProxy.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkSystemProxy.Location = new System.Drawing.Point(7, 20);
-            this.chkSystemProxy.Name = "chkSystemProxy";
-            this.chkSystemProxy.Size = new System.Drawing.Size(108, 17);
-            this.chkSystemProxy.TabIndex = 0;
-            this.chkSystemProxy.Text = "Use system proxy";
-            this.chkSystemProxy.UseVisualStyleBackColor = true;
-            this.chkSystemProxy.CheckedChanged += new System.EventHandler(this.chkSystemProxy_CheckedChanged);
-            // 
-            // txtProxyAddress
-            // 
-            this.txtProxyAddress.Enabled = false;
-            this.txtProxyAddress.Location = new System.Drawing.Point(89, 43);
-            this.txtProxyAddress.Name = "txtProxyAddress";
-            this.txtProxyAddress.Size = new System.Drawing.Size(262, 20);
-            this.txtProxyAddress.TabIndex = 4;
-            // 
-            // txtProxyUser
-            // 
-            this.txtProxyUser.Enabled = false;
-            this.txtProxyUser.Location = new System.Drawing.Point(89, 69);
-            this.txtProxyUser.Name = "txtProxyUser";
-            this.txtProxyUser.Size = new System.Drawing.Size(151, 20);
-            this.txtProxyUser.TabIndex = 5;
-            // 
-            // txtProxyPassword
-            // 
-            this.txtProxyPassword.Enabled = false;
-            this.txtProxyPassword.Location = new System.Drawing.Point(89, 95);
-            this.txtProxyPassword.Name = "txtProxyPassword";
-            this.txtProxyPassword.PasswordChar = '●';
-            this.txtProxyPassword.Size = new System.Drawing.Size(151, 20);
-            this.txtProxyPassword.TabIndex = 6;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 46);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(76, 13);
-            this.label3.TabIndex = 7;
-            this.label3.Text = "Proxy address:";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 72);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(58, 13);
-            this.label4.TabIndex = 8;
-            this.label4.Text = "Username:";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 98);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(56, 13);
-            this.label5.TabIndex = 9;
-            this.label5.Text = "Password:";
+            this.chkAnnotateDeploymentMetadata.AutoSize = true;
+            this.chkAnnotateDeploymentMetadata.Location = new System.Drawing.Point(7, 20);
+            this.chkAnnotateDeploymentMetadata.Name = "chkAnnotateDeploymentMetadata";
+            this.chkAnnotateDeploymentMetadata.Size = new System.Drawing.Size(229, 17);
+            this.chkAnnotateDeploymentMetadata.TabIndex = 9;
+            this.chkAnnotateDeploymentMetadata.Text = "Add metadata annotation upon deployment";
+            this.toolTip1.SetToolTip(this.chkAnnotateDeploymentMetadata, resources.GetString("chkAnnotateDeploymentMetadata.ToolTip"));
+            this.chkAnnotateDeploymentMetadata.UseVisualStyleBackColor = true;
             // 
             // PreferencesForm
             // 
@@ -1005,6 +1018,11 @@
             this.groupBox7.PerformLayout();
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
+            this.tabGeneral.ResumeLayout(false);
+            this.groupBox9.ResumeLayout(false);
+            this.groupBox9.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.tabDAX.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
             this.tabSerialization.ResumeLayout(false);
@@ -1017,11 +1035,6 @@
             this.grpSaveToFolder.PerformLayout();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
-            this.tabGeneral.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.groupBox9.ResumeLayout(false);
-            this.groupBox9.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1089,5 +1102,6 @@
         private System.Windows.Forms.Button btnVersionCheck;
         private System.Windows.Forms.Label lblAvailableVersion;
         private System.Windows.Forms.Label lblCurrentVersion;
+        private System.Windows.Forms.CheckBox chkAnnotateDeploymentMetadata;
     }
 }

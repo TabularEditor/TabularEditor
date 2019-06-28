@@ -128,14 +128,21 @@ namespace TabularEditor.TOMWrapper
         string GetExtendedProperty(string name);
         string GetExtendedProperty(int index);
         string GetNewExtendedPropertyName();
-        void SetExtendedProperty(int index, string value, ExtendedPropertyType type = ExtendedPropertyType.String);
-        void SetExtendedProperty(string name, string value, ExtendedPropertyType type = ExtendedPropertyType.String);
+        void SetExtendedProperty(int index, string value, ExtendedPropertyType type);
+        void SetExtendedProperty(string name, string value, ExtendedPropertyType type);
         void RemoveExtendedProperty(string name);
         ExtendedPropertyType GetExtendedPropertyType(string name);
         ExtendedPropertyType GetExtendedPropertyType(int index);
         IEnumerable<string> GetExtendedProperties();
         int GetExtendedPropertyCount();
         ExtendedPropertyCollection ExtendedProperties { get; }
+    }
+
+    internal interface IInternalExtendedPropertyObject: IExtendedPropertyObject
+    {
+        void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable = false);
+        void SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable = false);
+        void RemoveExtendedProperty(string name, bool undoable = false);
     }
 
     /// <summary>
