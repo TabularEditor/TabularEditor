@@ -1,4 +1,7 @@
-﻿using System;
+﻿extern alias json;
+
+using json::Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -51,7 +54,13 @@ namespace TabularEditor.TOMWrapper
 
             set
             {
-                Parent.SetExtendedProperty(index, value.ToString());
+                if (value == null)
+                {
+                    Parent.RemoveExtendedProperty(index);
+                    return;
+                }
+                var stringValue = value is string ? (string)value : JsonConvert.SerializeObject(value);
+                Parent.SetExtendedProperty(index, stringValue, value is string ? ExtendedPropertyType.String : ExtendedPropertyType.Json);
             }
         }
 

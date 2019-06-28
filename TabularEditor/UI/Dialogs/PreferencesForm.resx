@@ -131,4 +131,11 @@ using the current date and time as the filename.</value>
   <data name="cmbSeparators.ToolTip" xml:space="preserve">
     <value>Choose how the DAX Expression Editor should display list and decimal separators. NOTE: This will not affect the content of DAX expressions in the model metadata, which are always stored in the US/UK format.</value>
   </data>
+  <data name="chkAnnotateDeploymentMetadata.ToolTip" xml:space="preserve">
+    <value>If you enable this option, Tabular Editor will add an annotations to the model that provides the following information:
+- Date and time of deployment
+- Domain and username of the person that performed the deployment
+- Client machine
+- Build # of Tabular Editor</value>
+  </data>
 </root>

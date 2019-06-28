@@ -88,6 +88,9 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        public ProviderDataSource ProviderDataSource => DataSource as ProviderDataSource;
+        public StructuredDataSource StructuredDataSource => DataSource as StructuredDataSource;
+
         [Category("Other"),DisplayName("Data Source"),Description("The Data Source used by this partition."),TypeConverter(typeof(DataSourceConverter))]
         public DataSource DataSource
         {
