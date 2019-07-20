@@ -99,15 +99,18 @@ namespace TabularEditor.PropertyGridUI
 
         protected virtual void OnFormClosed(FormClosedEventArgs e)
         {
-
         }
 
         private void Form_FormClosed(object sender, FormClosedEventArgs e)
         {
-            PropertyInfo propInfo = Context.GetType().GetProperty("OwnerGrid");
-            var grid = propInfo.GetValue(Context) as PropertyGrid;
-            
+            //PropertyInfo propInfo = Context.GetType().GetProperty("OwnerGrid");
+            //var grid = propInfo.GetValue(Context) as PropertyGrid;            
             //grid.Refresh();
+
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                CancelChanges();
+            }
 
             OnFormClosed(e);
 
