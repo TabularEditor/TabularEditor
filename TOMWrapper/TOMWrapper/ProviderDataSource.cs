@@ -47,7 +47,7 @@ namespace TabularEditor.TOMWrapper
                 string mashupBase64;
                 if (cs.ContainsKey("Mashup")) mashupBase64 = cs["Mashup"].ToString();
                 else mashupBase64 = cs["Extended Properties"].ToString();
-                Location = cs["Location"].ToString();
+                Location = cs.ContainsKey("Location") ? cs["Location"].ToString() : null ;
 
                 var mashupZip = Convert.FromBase64String(mashupBase64);
                 var stream = new MemoryStream(mashupZip);
