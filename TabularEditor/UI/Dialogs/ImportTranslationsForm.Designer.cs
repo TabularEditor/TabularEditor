@@ -28,16 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.txtJsonFile = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.btnBrowse = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.btnBrowse = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.chkOverwriteExisting = new System.Windows.Forms.CheckBox();
             this.chkIgnoreInvalid = new System.Windows.Forms.CheckBox();
+            this.chkOverwriteExisting = new System.Windows.Forms.CheckBox();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnImport = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -62,6 +64,15 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Translations JSON File";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 36);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(55, 13);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "File name:";
+            // 
             // btnBrowse
             // 
             this.btnBrowse.Location = new System.Drawing.Point(343, 59);
@@ -71,15 +82,6 @@
             this.btnBrowse.Text = "Browse";
             this.btnBrowse.UseVisualStyleBackColor = true;
             this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 36);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(55, 13);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "File name:";
             // 
             // groupBox2
             // 
@@ -92,16 +94,6 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Import Options";
             // 
-            // chkOverwriteExisting
-            // 
-            this.chkOverwriteExisting.AutoSize = true;
-            this.chkOverwriteExisting.Location = new System.Drawing.Point(9, 29);
-            this.chkOverwriteExisting.Name = "chkOverwriteExisting";
-            this.chkOverwriteExisting.Size = new System.Drawing.Size(165, 17);
-            this.chkOverwriteExisting.TabIndex = 0;
-            this.chkOverwriteExisting.Text = "Overwrite existing translations";
-            this.chkOverwriteExisting.UseVisualStyleBackColor = true;
-            // 
             // chkIgnoreInvalid
             // 
             this.chkIgnoreInvalid.AutoSize = true;
@@ -110,7 +102,21 @@
             this.chkIgnoreInvalid.Size = new System.Drawing.Size(126, 17);
             this.chkIgnoreInvalid.TabIndex = 1;
             this.chkIgnoreInvalid.Text = "Ignore invalid objects";
+            this.toolTip1.SetToolTip(this.chkIgnoreInvalid, "If a translation references an object that does not exist in the model, an error " +
+        "is generated, unless this is checked.");
             this.chkIgnoreInvalid.UseVisualStyleBackColor = true;
+            // 
+            // chkOverwriteExisting
+            // 
+            this.chkOverwriteExisting.AutoSize = true;
+            this.chkOverwriteExisting.Location = new System.Drawing.Point(9, 29);
+            this.chkOverwriteExisting.Name = "chkOverwriteExisting";
+            this.chkOverwriteExisting.Size = new System.Drawing.Size(165, 17);
+            this.chkOverwriteExisting.TabIndex = 0;
+            this.chkOverwriteExisting.Text = "Overwrite existing translations";
+            this.toolTip1.SetToolTip(this.chkOverwriteExisting, "If this is left unchecked, properties that already have a translation will not be" +
+        " modified.");
+            this.chkOverwriteExisting.UseVisualStyleBackColor = true;
             // 
             // btnCancel
             // 
@@ -177,5 +183,6 @@
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnImport;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }

@@ -53,7 +53,7 @@ namespace TabularEditor.TOMWrapper
                     // delete all translations for the particular culture, to make sure
                     // that only the translations in the Json appear in the model after import.
                     culture.Delete();
-                    culture = new Culture(cultureName);
+                    culture = Model.AddTranslation(cultureName);
                 }
 
                 var trans = cult["translations"];

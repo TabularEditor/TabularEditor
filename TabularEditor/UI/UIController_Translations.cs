@@ -22,7 +22,7 @@ namespace TabularEditor.UI
 
             var fileName = Translation_SaveDlg.FileName;
             (new FileInfo(fileName)).Directory.Create();
-            File.WriteAllText(fileName, Scripter.ScriptTranslations(Handler.Model.Cultures));
+            File.WriteAllText(fileName, Scripter.ScriptTranslations(Handler.Model, Handler.Model.Cultures));
         }
         public void Translations_ExportSelected()
         {
@@ -30,7 +30,7 @@ namespace TabularEditor.UI
             if (res == DialogResult.Cancel) return;
 
             var fileName = Translation_SaveDlg.FileName;
-            File.WriteAllText(fileName, Scripter.ScriptTranslations(Selection.Cultures));
+            File.WriteAllText(fileName, Scripter.ScriptTranslations(Handler.Model, Selection.Cultures));
         }
 
         public void Translations_Import()
