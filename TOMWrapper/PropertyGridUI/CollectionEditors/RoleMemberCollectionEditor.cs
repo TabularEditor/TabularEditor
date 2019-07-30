@@ -62,13 +62,11 @@ namespace TabularEditor.PropertyGridUI
                 return WindowsModelRoleMember.CreateUnassigned();
             else
                 return ExternalModelRoleMember.CreateUnassigned();
-        }
-
-        
+        }        
 
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
-            if(!Cancelled)
+            if(!Cancelled && items != null)
             {
                 var modelRole = Context.Instance as ModelRole;
 
