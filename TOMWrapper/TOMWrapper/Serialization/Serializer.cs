@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using System.Collections;
 using TabularEditor.TOMWrapper;
+using json::Newtonsoft.Json.Serialization;
 
 namespace TabularEditor.TOMWrapper.Serialization
 {
@@ -19,6 +20,38 @@ namespace TabularEditor.TOMWrapper.Serialization
         internal static string TypeToJson(Type type)
         {
             return type.Name.Pluralize().ToLower();
+        }
+
+        public static string SerializeCultures(Model model, IEnumerable<Culture> cultures)
+        {
+            var referenceCulture = ReferenceCulture.Create(model.Handler.Database);
+            string json;
+
+            var settings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
+
+            using (var sw = new StringWriter())
+            {
+                using (var jw = new JsonTextWriter(sw))
+                {
+                    jw.Formatting = Formatting.Indented;
+                    jw.WriteStartObject();
+                    jw.WritePropertyName("referenceCulture");
+                    jw.WriteRawValue(JsonConvert.SerializeObject(referenceCulture, settings));
+                    jw.WritePropertyName("cultures");
+                    jw.WriteStartArray();
+                    foreach (var culture in cultures)
+                    {
+                        jw.WriteRawValue(TOM.JsonSerializer.SerializeObject(culture.MetadataObject));
+                    }
+                    jw.WriteEndArray();
+                    jw.WriteEndObject();
+
+                    json = sw.ToString();
+                }
+            }
+
+            dynamic jsonObj = JsonConvert.DeserializeObject(json);
+            return JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
         }
 
         public static string SerializeObjects(IEnumerable<TabularObject> objects 

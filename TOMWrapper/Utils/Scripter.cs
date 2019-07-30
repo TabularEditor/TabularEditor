@@ -49,9 +49,9 @@ namespace TabularEditor.TOMWrapper.Utils
             return TOM.JsonScripter.ScriptCreateOrReplace(obj.MetadataObject);
         }
 
-        public static string ScriptTranslations(IEnumerable<Culture> translations)
+        public static string ScriptTranslations(Model model, IEnumerable<Culture> translations)
         {
-            return Serializer.SerializeObjects(translations);
+            return Serializer.SerializeCultures(model, translations);
         }
 
         public static string ScriptProcess(TabularNamedObject obj, RefreshType refreshType = RefreshType.Automatic)

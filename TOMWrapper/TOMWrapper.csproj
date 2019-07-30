@@ -92,6 +92,7 @@
     <Compile Include="TOMWrapper\Indexers\RoleColumnOLSIndexer.cs" />
     <Compile Include="TOMWrapper\ModelRoleMember.cs" />
     <Compile Include="TOMWrapper\Serialization\PerspectiveAnnotationSerializer.cs" />
+    <Compile Include="TOMWrapper\Serialization\ReferenceCulture.cs" />
     <Compile Include="TOMWrapper\Serialization\SplitModelSerializer.cs" />
     <Compile Include="TOMWrapper\Serialization\TranslationAnnotationSerializer.cs" />
     <Compile Include="TOMWrapper\Serialization\RelationshipAnnotationSerializer.cs" />
