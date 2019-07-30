@@ -8,10 +8,14 @@ using TabularEditor.TOMWrapper.Utils;
 namespace TabularEditor.TOMWrapper
 {
     [DebuggerDisplay("{ObjectType} {Name}")]
-    public class CalculationGroupAttribute: ITabularObjectContainer, IInternalTabularNamedObject, ITabularTableObject, IDaxObject, IFolderObject, IHideableObject, IAnnotationObject, ITranslatableObject, IErrorMessageObject
+    public class CalculationGroupAttribute: ITabularObjectContainer, IInternalTabularNamedObject, ITabularTableObject, IDaxObject, IFolderObject, IHideableObject, IAnnotationObject, ITranslatableObject, IErrorMessageObject, IInternalTabularPerspectiveObject
     {
         void IInternalTabularNamedObject.RemoveReferences() => Column.RemoveReferences();
         void IInternalTabularObject.ReapplyReferences() => Column.ReapplyReferences();
+
+        void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) => Column.RemoveAnnotation(name, undoable);
+        void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) => Column.SetAnnotation(index, value, undoable);
+        void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) => Column.SetAnnotation(name, value, undoable);
 
         /// <summary>
         /// Gets the visibility of the CalculationGroupAttribute. Shorthand for <see cref="Column.IsVisible"/>.
