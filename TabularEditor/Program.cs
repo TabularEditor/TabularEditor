@@ -30,7 +30,7 @@ namespace TabularEditor
             if (args.Length > 1)
             {
                 cw.WriteLine("");
-                cw.WriteLine(Application.ProductName + " " + Application.ProductVersion);
+                cw.WriteLine($"{ Application.ProductName } { Application.ProductVersion } (build { UpdateService.CurrentBuild })");
                 cw.WriteLine("--------------------------------");
             }
 
@@ -597,7 +597,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 {
                     ClientMachine = Environment.MachineName,
                     DeploymentMode = deploymentMode,
-                    TabularEditorBuild = Application.ProductVersion,
+                    TabularEditorBuild = UpdateService.CurrentBuild.ToString(),
                     Time = DateTime.Now,
                     User = Environment.UserDomainName + "\\" + Environment.UserName
                 } : null;

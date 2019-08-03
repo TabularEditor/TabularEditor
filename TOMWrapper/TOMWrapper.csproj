@@ -73,6 +73,9 @@
     <Compile Include="..\AntlrGrammars\obj\Debug\DAXLexer.cs">
       <Link>TextServices\DAXLexer.cs</Link>
     </Compile>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="TOMWrapper\CalculationGroupAttribute.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\ExtendedPropertyCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\RoleMemberCollectionEditor.cs" />
