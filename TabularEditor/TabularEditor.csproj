@@ -164,6 +164,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="BestPracticeAnalyzer\Analyzer.cs" />
     <Compile Include="BestPracticeAnalyzer\BestPracticeRule.cs" />
     <Compile Include="BestPracticeAnalyzer\BPAManager.cs">

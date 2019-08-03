@@ -44,7 +44,7 @@ namespace TabularEditor.UI.Dialogs
 
         private void PreferencesForm_Load(object sender, EventArgs e)
         {
-            lblCurrentVersion.Text = "Current Version: " + UpdateService.CurrentVersion;
+            lblCurrentVersion.Text = "Current Version: " + UpdateService.CurrentBuild;
         }
 
         private bool tmpProxyUseSystem;
@@ -84,7 +84,7 @@ namespace TabularEditor.UI.Dialogs
             {
                 btnVersionCheck.Visible = false;
                 lblAvailableVersion.Visible = true;
-                lblAvailableVersion.Text = "Available Version: " + UpdateService.AvailableVersion + " (click to download)";
+                lblAvailableVersion.Text = "Available Version: " + UpdateService.AvailableBuild + " (click to download)";
             } else
             {
                 MessageBox.Show("You are currently using the latest version of Tabular Editor.", "No updates available", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -190,7 +190,7 @@ namespace TabularEditor.UI.Dialogs
             {
                 btnVersionCheck.Visible = false;
                 lblAvailableVersion.Visible = true;
-                lblAvailableVersion.Text = "Available Version: " + UpdateService.AvailableVersion + " (click to download)";
+                lblAvailableVersion.Text = "Available Version: " + UpdateService.AvailableBuild + " (click to download)";
             }
 
             chkAutoBackup.Checked = Preferences.Current.BackupOnSave;
