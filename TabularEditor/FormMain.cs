@@ -496,39 +496,45 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void SaveCustomAction()
         {
             // TODO: Move this somewhere else
-            var form = new SaveCustomActionForm();
-            form.Context = UI.Selection.Context;
-            form.txtName.Text = CurrentCustomAction;
-
-            var res = form.ShowDialog();
-
-            if(res == DialogResult.OK)
+            using (var form = new SaveCustomActionForm())
             {
-                var act = new CustomActionJson();
-                act.Name = form.txtName.Text;
-                act.Tooltip = form.txtTooltip.Text;
-                act.Execute = txtAdvanced.Text;
-                act.Enabled = "true";
-                act.ValidContexts = form.Context;
+                form.Context = UI.Selection.Context;
+                form.txtName.Text = CurrentCustomAction;
 
-                if (custActions == null) custActions = new CustomActionsJson() { Actions = new CustomActionJson[0] };
+                var res = form.ShowDialog();
 
-                // Remove any existing actions with the same name:
-                custActions.Actions = custActions.Actions.Where(a => !a.Name.Equals(act.Name, StringComparison.InvariantCultureIgnoreCase)).ToArray();
-                var toRemove = UI.Actions.OfType<CustomAction>().FirstOrDefault(a => a.BaseName.Equals(act.Name, StringComparison.InvariantCultureIgnoreCase));
-                if (toRemove != null) UI.Actions.Remove(toRemove);
+                if (res == DialogResult.OK)
+                {
+                    var act = new CustomActionJson();
+                    act.Name = form.txtName.Text;
+                    act.Tooltip = form.txtTooltip.Text;
+                    act.Execute = txtAdvanced.Text;
+                    act.Enabled = "true";
+                    act.ValidContexts = form.Context;
+                    
+                    ScriptEngine.CompileCustomActions(new CustomActionsJson() { Actions = new[] { act } });
+                    if (ScriptEngine.CustomActionError)
+                    {
+                        MessageBox.Show("Compile failed, custom action contains errors and cannot be saved.", "Validation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
 
-                var list = custActions.Actions.ToList();
+                    if (custActions == null) custActions = new CustomActionsJson() { Actions = new CustomActionJson[0] };
 
-                list.Add(act);
+                    // Remove any existing actions with the same name:
+                    custActions.Actions = custActions.Actions.Where(a => !a.Name.Equals(act.Name, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+                    var toRemove = UI.Actions.OfType<CustomAction>().FirstOrDefault(a => a.BaseName.Equals(act.Name, StringComparison.InvariantCultureIgnoreCase));
+                    if (toRemove != null) UI.Actions.Remove(toRemove);
 
-                custActions.Actions = list.ToArray();
-                custActions.SaveToJson(ScriptEngine.CustomActionsJsonPath);
+                    var list = custActions.Actions.ToList();
+                    list.Add(act);
 
-                // Compile and add the newly created action:
-                ScriptEngine.CompileCustomActions(new CustomActionsJson() { Actions = new []{ act } });
-                if (!ScriptEngine.CustomActionError) ScriptEngine.AddCustomActions(UI.Actions);
-                PopulateCustomActionsDropDown();
+                    custActions.Actions = list.ToArray();
+                    custActions.SaveToJson(ScriptEngine.CustomActionsJsonPath);
+
+                    ScriptEngine.AddCustomActions(UI.Actions);
+                    PopulateCustomActionsDropDown();
+                }
             }
         }
 
