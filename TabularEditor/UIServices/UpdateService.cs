@@ -14,8 +14,8 @@ namespace TabularEditor.UIServices
         public const string VERSION_MANIFEST_URL = "https://raw.githubusercontent.com/otykier/TabularEditor/master/TabularEditor/version.txt";
         public const string DOWNLOAD_UPDATE_URL = "https://github.com/otykier/TabularEditor/releases/latest";
 
-        public static Version CurrentVersion { get { return Version.Parse(Application.ProductVersion); } }
-        public static Version AvailableVersion { get; private set; } = null;
+        public static Version CurrentBuild { get; } = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+        public static Version AvailableBuild { get; private set; } = null;
         public static bool? UpdateAvailable { get; private set; } = false;
 
         /// <summary>
@@ -38,9 +38,9 @@ namespace TabularEditor.UIServices
             {
                 var cli = new WebClient();
                 cli.Proxy = ProxyCache.GetProxy(VERSION_MANIFEST_URL);
-                var availableVersionString = cli.DownloadString(VERSION_MANIFEST_URL + "?q=" + Guid.NewGuid().ToString());
-                AvailableVersion = Version.Parse(availableVersionString);
-                if (AvailableVersion > CurrentVersion)
+                var availableBuildString = cli.DownloadString(VERSION_MANIFEST_URL + "?q=" + Guid.NewGuid().ToString());
+                AvailableBuild = Version.Parse(availableBuildString);
+                if (AvailableBuild > CurrentBuild)
                 {
                     return true;
                 }
