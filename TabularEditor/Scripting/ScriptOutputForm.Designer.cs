@@ -167,6 +167,7 @@
             this.MinimizeBox = false;
             this.Name = "ScriptOutputForm";
             this.ShowIcon = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Script Output";
             this.DataProperties.ResumeLayout(false);
             this.ResumeLayout(false);
