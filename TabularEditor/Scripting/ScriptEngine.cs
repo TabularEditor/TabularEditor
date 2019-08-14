@@ -121,7 +121,9 @@ namespace TabularEditor
     {{
         public static void Execute(TabularEditor.TOMWrapper.Model Model, TabularEditor.UI.UITreeSelection Selected)
         {{ 
+#line 1
 {0}
+#line default
         }}
     }}
 }}", script);
@@ -223,10 +225,10 @@ namespace TabularEditor
 
         public static void CompileCustomActions(CustomActionsJson actions)
         {
+            if (actions == null || actions.Actions.Length == 0) return;
+
             var sw = new Stopwatch();
             sw.Start();
-
-            if (actions == null || actions.Actions.Length == 0) return;
 
             var code = GetCustomActionsCode(actions);
 

@@ -357,7 +357,7 @@ namespace TabularEditor.UI
 
         private void UpdateUIText(bool clearText = true)
         {
-            var appName = Application.ProductName + " 2.8.4"; // + string.Join(".", Application.ProductVersion.Split('.').Take(2));
+            var appName = $"{ Application.ProductName } { Application.ProductVersion }";
 
             if (Handler == null)
             {

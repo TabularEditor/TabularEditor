@@ -101,28 +101,36 @@ namespace TabularEditor.UI
         {
             using (new Hourglass())
             {
-
-                System.CodeDom.Compiler.CompilerResults result;
+                ScriptEditor_HideErrors();
+                Scripting.ScriptOutputForm.Reset();
 
                 var script = !string.IsNullOrEmpty(UI.ScriptEditor.SelectedText) ? UI.ScriptEditor.SelectedText : UI.ScriptEditor.Text;
                 var offset = (!string.IsNullOrEmpty(UI.ScriptEditor.SelectedText) ? UI.ScriptEditor.Selection.FromLine : 0);
 
-                Scripting.ScriptOutputForm.Reset();
-                var dyn = ScriptEngine.CompileScript(script, out result);
-                if (result.Errors.Count > 0)
+                var dyn = ScriptEngine.CompileScript(script, out var compilerResults);
+                if (compilerResults.Errors.Count > 0)
                 {
-                    foreach (System.CodeDom.Compiler.CompilerError err in result.Errors)
+                    var outputMessages = new List<string>();
+                    foreach (System.CodeDom.Compiler.CompilerError error in compilerResults.Errors)
                     {
-                        var line = err.Line - 12 + offset;
-
+                        var line = error.Line + offset - 1;
                         if (line >= 0 && line < UI.ScriptEditor.LinesCount)
                         {
                             UI.ScriptEditor.GetLine(line).SetStyle((StyleIndex)WAVY_STYLE);
                             UI.ScriptEditor.Refresh();
                             scriptEditorErrorsVisible = true;
+                            outputMessages.Add($"({ line + 1 },{ error.Column }) {(error.IsWarning ? "warning" : "error") } { error.ErrorNumber }: { error.ErrorText }");
                         }
                     }
-                    MessageBox.Show(result.Errors[0].ErrorText, "Syntax error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    if (outputMessages.Count > 1)
+                    {
+                        Scripting.ScriptOutputForm.ShowObject(outputMessages, "Compile errors", false);
+                    }
+                    else
+                    {
+                        var error = compilerResults.Errors[0];
+                        MessageBox.Show($"{ error.ErrorNumber } - { error.ErrorText }", "Error compiling code", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
                 if (dyn == null) return;
 
@@ -142,10 +150,10 @@ namespace TabularEditor.UI
                     if (st.FrameCount >= 2)
                     {
                         var frame = st.GetFrame(st.FrameCount - 2);
-                        var line = frame.GetFileLineNumber() - 13 + offset; // TODO: Correct this if changes are made to generated code!
+                        var line = frame.GetFileLineNumber() + offset - 1;
                         if (line >= 0 && line < UI.ScriptEditor.LinesCount)
                         {
-                            msg = string.Format("Error on line {0}:\n{1}", line + 1, msg);
+                            msg = string.Format("Error on line {0}\n\n{1}\n{2}", line + 1, ex.GetType().Name, msg);
                             UI.ScriptEditor.GetLine(line).SetStyle((StyleIndex)WAVY_STYLE);
                             UI.ScriptEditor.Refresh();
                             scriptEditorErrorsVisible = true;
