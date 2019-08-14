@@ -107,5 +107,15 @@ namespace TabularEditor.TOMWrapper
         }
 
         Table ITabularTableObject.Table => Parent.Table;
+
+        internal override bool IsBrowsable(string propertyName)
+        {
+            switch(propertyName)
+            {
+                case Properties.ORDINAL: return Handler.CompatibilityLevel >= 1500;
+                default:
+                    return true;
+            }
+        }
     }
 }
