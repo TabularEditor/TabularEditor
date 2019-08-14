@@ -28,7 +28,7 @@ namespace TabularEditor.UI.Dialogs
             {
                 return comboBox1.SelectedIndex == 0 ? 1200
                     : comboBox1.SelectedIndex == 1 ? 1400
-                    : 1470;
+                    : 1500;
             }
         }
     }

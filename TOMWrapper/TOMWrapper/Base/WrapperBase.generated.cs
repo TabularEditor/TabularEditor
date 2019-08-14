@@ -17,6 +17,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string ALIGNMENT = "Alignment";
 	    public const string ALTERNATEOF = "AlternateOf";
 	    public const string ALTERNATESOURCEPRECEDENCE = "AlternateSourcePrecedence";
+	    public const string ANALYTICSAIMETADATA = "AnalyticsAIMetadata";
 	    public const string ANNOTATIONS = "Annotations";
 	    public const string ATTRIBUTEHIERARCHY = "AttributeHierarchy";
 	    public const string CALCULATIONGROUP = "CalculationGroup";
@@ -5646,7 +5647,7 @@ namespace TabularEditor.TOMWrapper
 ///             The position of the level within the hierarchy. The levels in the hierarchy must be properly ordered, starting with 1 and increasing monotonically.
 ///             </summary>
 		[DisplayName("Ordinal")]
-		[Category("Other"),Description(@"The position of the level within the hierarchy. The levels in the hierarchy must be properly ordered, starting with 1 and increasing monotonically."),IntelliSense(@"The position of the level within the hierarchy. The levels in the hierarchy must be properly ordered, starting with 1 and increasing monotonically.")][NoMultiselect()]
+		[Category("Options"),Description(@"The position of the level within the hierarchy. The levels in the hierarchy must be properly ordered, starting with 1 and increasing monotonically."),IntelliSense(@"The position of the level within the hierarchy. The levels in the hierarchy must be properly ordered, starting with 1 and increasing monotonically.")][NoMultiselect()]
 		public int Ordinal {
 			get {
 			    return MetadataObject.Ordinal;
@@ -5707,7 +5708,7 @@ namespace TabularEditor.TOMWrapper
 ///             A reference to a Column object associated with this Level.
 ///             </summary>
 		[DisplayName("Column")]
-		[Category("Other"),Description(@"A reference to a Column object associated with this Level."),IntelliSense(@"A reference to a Column object associated with this Level.")][TypeConverter(typeof(HierarchyColumnConverter)),NoMultiselect()]
+		[Category("Options"),Description(@"A reference to a Column object associated with this Level."),IntelliSense(@"A reference to a Column object associated with this Level.")][TypeConverter(typeof(HierarchyColumnConverter)),NoMultiselect()]
 		public Column Column {
 			get {
 				if (MetadataObject.Column == null) return null;
@@ -11103,10 +11104,10 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeAlternateSourcePrecedence() { return false; }
 /// <summary>
-///             A boolean value that indicates whether the table is excluded from model refresh.
+///             A boolean value that indicates whether the table is excluded from model refresh. When this is true, a refresh operation on the model would not trigger a refresh on the partitions of the table if they were already processed.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1480 or above.</remarks>
 		[DisplayName("Exclude From Model Refresh")]
-		[Category("Options"),Description(@"A boolean value that indicates whether the table is excluded from model refresh."),IntelliSense(@"A boolean value that indicates whether the table is excluded from model refresh.")]
+		[Category("Options"),Description(@"A boolean value that indicates whether the table is excluded from model refresh. When this is true, a refresh operation on the model would not trigger a refresh on the partitions of the table if they were already processed."),IntelliSense(@"A boolean value that indicates whether the table is excluded from model refresh. When this is true, a refresh operation on the model would not trigger a refresh on the partitions of the table if they were already processed.")]
 		public bool ExcludeFromModelRefresh {
 			get {
 			    return MetadataObject.ExcludeFromModelRefresh;
@@ -12537,6 +12538,30 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeExpression() { return false; }
+/// <summary>
+///             The zero-based ordinal value associated with a Calculation Item.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1500 or above.</remarks>
+		[DisplayName("Ordinal")]
+		[Category("Options"),Description(@"The zero-based ordinal value associated with a Calculation Item."),IntelliSense(@"The zero-based ordinal value associated with a Calculation Item.")][NoMultiselect()]
+		public int Ordinal {
+			get {
+			    return MetadataObject.Ordinal;
+			}
+			set {
+				
+				var oldValue = Ordinal;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ORDINAL, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.Ordinal = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ORDINAL, oldValue, newValue));
+				OnPropertyChanged(Properties.ORDINAL, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeOrdinal() { return false; }
 
 		internal static CalculationItem CreateFromMetadata(CalculationGroup parent, TOM.CalculationItem metadataObject) {
 			var obj = new CalculationItem(metadataObject);

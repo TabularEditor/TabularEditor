@@ -157,6 +157,12 @@ partial class Rules {
             }
         }
 
+		if(t == typeof(CalculationItem)) {
+			switch(p.Name) {
+			    case "Ordinal": return false;
+			}
+		}
+
 		return ShouldWrapProperty(p, t) && p.SetMethod != null && p.SetMethod.IsPublic;
     }
 
@@ -295,10 +301,11 @@ partial class Rules {
 			case "ShowAsVariationsOnly":
 			case "AlternateSourcePredence":
 			case "ExcludeFromModelRefresh":
+			case "Ordinal":
 				return "Options";
 			case "Column":
 				if(typeName == "Variation") return "Basic";
-				return "Other";
+				return "Options";
 			case "IsDefault":
 			case "DefaultColumn":
 			case "DefaultHierarchy":
@@ -339,6 +346,7 @@ partial class Rules {
 		if(className == "Level" && propertyName == "Hierarchy") return "[Browsable(false)]";
 		if(className == "Level" && propertyName == "Column") return "[TypeConverter(typeof(HierarchyColumnConverter)),NoMultiselect()]";
 		if(className == "Level" && propertyName == "Ordinal") return "[NoMultiselect()]";
+		if(className == "CalculationItem" && propertyName == "Ordinal") return "[NoMultiselect()]";
 		if(className == "Model" && propertyName == "Culture") return "[TypeConverter(typeof(CultureConverter))]";
 		if(className == "Column" && propertyName == "Type") return "[Browsable(false)]";
 		if(propertyName == "DataType") return "[TypeConverter(typeof(DataTypeEnumConverter))]";
