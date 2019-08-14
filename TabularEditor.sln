@@ -24,6 +24,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{75A8F23A-0A05-4410-A04A-4A6E3A8004C1}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
 	EndProjectSection
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "TabularEditorInstaller", "TabularEditorInstaller\TabularEditorInstaller.vdproj", "{3CF53981-9965-436B-9805-D6F844C2CE15}"
