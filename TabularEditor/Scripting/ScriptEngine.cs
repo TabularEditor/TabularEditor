@@ -121,7 +121,9 @@ namespace TabularEditor
     {{
         public static void Execute(TabularEditor.TOMWrapper.Model Model, TabularEditor.UI.UITreeSelection Selected)
         {{ 
+#line 1
 {0}
+#line default
         }}
     }}
 }}", script);
