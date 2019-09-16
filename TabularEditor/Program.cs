@@ -345,7 +345,9 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 }
                 try
                 {
+                    h.BeginUpdate("script");
                     dyn.Invoke(h.Model, null);
+                    h.EndUpdateAll();
                 }
                 catch (Exception ex)
                 {
