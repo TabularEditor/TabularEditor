@@ -102,5 +102,19 @@ namespace Microsoft.AnalysisServices.Tabular.Helper
                 if (!obj.IsRemoved) obj.Name = newName;
             }
         }    
+
+        public static List<Column> GetDuplictedKeyColumns(this TableCollection tables)
+        {
+            var duplicatedKeyColumns = new List<Column>();
+
+            foreach (var table in tables)
+            {
+                var keyColumns = table.Columns.Where(c => c.IsKey).ToList();
+                if (keyColumns.Count > 1)
+                    duplicatedKeyColumns.AddRange(keyColumns.Where(c => c.Type != ColumnType.RowNumber));
+            }
+
+            return duplicatedKeyColumns;
+        }
     }
 }

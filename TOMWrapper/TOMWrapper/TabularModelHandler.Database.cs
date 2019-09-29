@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AnalysisServices.Tabular.Helper;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -70,7 +71,14 @@ namespace TabularEditor.TOMWrapper
             //DetachCalculatedTableMetadata();
             try
             {
-                // TODO: Deleting a column with IsKey = true, then undoing, then saving causes an error... Check if this is still the case.
+                var duplicatedKeyColumns = database.Model.Tables.GetDuplictedKeyColumns();
+                if (duplicatedKeyColumns.Any())
+                {
+                    duplicatedKeyColumns.ForEach(c => c.IsKey = false);
+                    database.Model.SaveChanges();
+                    duplicatedKeyColumns.ForEach(c => c.IsKey = true);
+                }
+
                 database.Model.SaveChanges();
 
                 AttachCalculatedTableMetadata();
