@@ -498,11 +498,14 @@ namespace TabularEditor.BestPracticeAnalyzer
         {
             try
             {
-                var json = File.ReadAllText(filePath);
-                var rules = LoadFromJson(json);
-                Rules.AddRange(
-                    rules.Where(r => !Rules.Any(rule => rule.ID.Equals(r.ID, StringComparison.InvariantCultureIgnoreCase)))
-                    );
+                if (File.Exists(filePath))
+                {
+                    var json = File.ReadAllText(filePath);
+                    var rules = LoadFromJson(json);
+                    Rules.AddRange(
+                        rules.Where(r => !Rules.Any(rule => rule.ID.Equals(r.ID, StringComparison.InvariantCultureIgnoreCase)))
+                        );
+                }
             }
             catch
             {
