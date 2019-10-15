@@ -96,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="AdventureWorks.bim" />
+    <None Include="app.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
