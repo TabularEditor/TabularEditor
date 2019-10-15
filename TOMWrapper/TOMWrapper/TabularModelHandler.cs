@@ -318,6 +318,9 @@ namespace TabularEditor.TOMWrapper
             {
                 actionCount = UndoManager.EndBatch(rollback);
             }
+
+            if (EoB_RequireRebuildDependencyTree) { EoB_PostponeOperations = false; FormulaFixup.BuildDependencyTree(); EoB_RequireRebuildDependencyTree = false; }
+
             while (Tree.UpdateLocks > 0)
             {
                 Tree.EndUpdate();

@@ -96,6 +96,71 @@ namespace TabularEditor.UI
         #endregion
 
         public bool ScriptEditor_IsExecuting { get; private set; }
+        
+        public void ExecuteScript(string script, int offset = 0, bool undoErrors = false)
+        {
+            var dyn = ScriptEngine.CompileScript(script, out var compilerResults);
+            if (compilerResults.Errors.Count > 0)
+            {
+                var outputMessages = new List<string>();
+                foreach (System.CodeDom.Compiler.CompilerError error in compilerResults.Errors)
+                {
+                    var line = error.Line + offset - 1;
+                    if (line >= 0 && line < UI.ScriptEditor.LinesCount)
+                    {
+                        UI.ScriptEditor.GetLine(line).SetStyle((StyleIndex)WAVY_STYLE);
+                        UI.ScriptEditor.Refresh();
+                        scriptEditorErrorsVisible = true;
+                        outputMessages.Add($"({ line + 1 },{ error.Column }) {(error.IsWarning ? "warning" : "error") } { error.ErrorNumber }: { error.ErrorText }");
+                    }
+                }
+                if (outputMessages.Count > 1)
+                {
+                    Scripting.ScriptOutputForm.ShowObject(outputMessages, "Compile errors", false);
+                }
+                else
+                {
+                    var error = compilerResults.Errors[0];
+                    MessageBox.Show($"{ error.ErrorNumber } - { error.ErrorText }", "Error compiling code", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            if (dyn == null) return;
+
+            Handler.BeginUpdate("script");
+            try
+            {
+                ScriptEditor_IsExecuting = true;
+                dyn.Invoke(Handler.Model, Selection);
+                var actionCount = Handler.EndUpdateAll();
+                UI.StatusExLabel.Text = string.Format("Script executed succesfully. {0} model change{1}.", actionCount, actionCount == 1 ? "" : "s");
+                UI.TreeView.Focus();
+            }
+            catch (Exception ex)
+            {
+                var st = new StackTrace(ex, true);
+                var msg = ex.Message;
+                if (st.FrameCount >= 2)
+                {
+                    var frame = st.GetFrame(st.FrameCount - 2);
+                    var line = frame.GetFileLineNumber() + offset - 1;
+                    if (line >= 0 && line < UI.ScriptEditor.LinesCount)
+                    {
+                        msg = string.Format("Error on line {0}\n\n{1}\n{2}", line + 1, ex.GetType().Name, msg);
+                        UI.ScriptEditor.GetLine(line).SetStyle((StyleIndex)WAVY_STYLE);
+                        UI.ScriptEditor.Refresh();
+                        scriptEditorErrorsVisible = true;
+                    }
+                }
+                var actionCount = Handler.EndUpdateAll(undoErrors);
+
+                MessageBox.Show(msg, "Error executing code", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                UI.StatusExLabel.Text = string.Format("Script execution failed. {0} model change{1}.", actionCount, actionCount == 1 ? "" : "s");
+            }
+            finally
+            {
+                ScriptEditor_IsExecuting = false;
+            }
+        }
 
         public void ScriptEditor_ExecuteScript(bool undoErrors)
         {
@@ -107,67 +172,7 @@ namespace TabularEditor.UI
                 var script = !string.IsNullOrEmpty(UI.ScriptEditor.SelectedText) ? UI.ScriptEditor.SelectedText : UI.ScriptEditor.Text;
                 var offset = (!string.IsNullOrEmpty(UI.ScriptEditor.SelectedText) ? UI.ScriptEditor.Selection.FromLine : 0);
 
-                var dyn = ScriptEngine.CompileScript(script, out var compilerResults);
-                if (compilerResults.Errors.Count > 0)
-                {
-                    var outputMessages = new List<string>();
-                    foreach (System.CodeDom.Compiler.CompilerError error in compilerResults.Errors)
-                    {
-                        var line = error.Line + offset - 1;
-                        if (line >= 0 && line < UI.ScriptEditor.LinesCount)
-                        {
-                            UI.ScriptEditor.GetLine(line).SetStyle((StyleIndex)WAVY_STYLE);
-                            UI.ScriptEditor.Refresh();
-                            scriptEditorErrorsVisible = true;
-                            outputMessages.Add($"({ line + 1 },{ error.Column }) {(error.IsWarning ? "warning" : "error") } { error.ErrorNumber }: { error.ErrorText }");
-                        }
-                    }
-                    if (outputMessages.Count > 1)
-                    {
-                        Scripting.ScriptOutputForm.ShowObject(outputMessages, "Compile errors", false);
-                    }
-                    else
-                    {
-                        var error = compilerResults.Errors[0];
-                        MessageBox.Show($"{ error.ErrorNumber } - { error.ErrorText }", "Error compiling code", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-                if (dyn == null) return;
-
-                Handler.BeginUpdate("script");
-                try
-                {
-                    ScriptEditor_IsExecuting = true;
-                    dyn.Invoke(Handler.Model, Selection);
-                    var actionCount = Handler.EndUpdateAll();
-                    UI.StatusExLabel.Text = string.Format("Script executed succesfully. {0} model change{1}.", actionCount, actionCount == 1 ? "" : "s");
-                    UI.TreeView.Focus();
-                }
-                catch (Exception ex)
-                {
-                    var st = new StackTrace(ex, true);
-                    var msg = ex.Message;
-                    if (st.FrameCount >= 2)
-                    {
-                        var frame = st.GetFrame(st.FrameCount - 2);
-                        var line = frame.GetFileLineNumber() + offset - 1;
-                        if (line >= 0 && line < UI.ScriptEditor.LinesCount)
-                        {
-                            msg = string.Format("Error on line {0}\n\n{1}\n{2}", line + 1, ex.GetType().Name, msg);
-                            UI.ScriptEditor.GetLine(line).SetStyle((StyleIndex)WAVY_STYLE);
-                            UI.ScriptEditor.Refresh();
-                            scriptEditorErrorsVisible = true;
-                        }
-                    }
-                    var actionCount = Handler.EndUpdateAll(undoErrors);
-
-                    MessageBox.Show(msg, "Error executing code", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    UI.StatusExLabel.Text = string.Format("Script execution failed. {0} model change{1}.", actionCount, actionCount == 1 ? "" : "s");
-                }
-                finally
-                {
-                    ScriptEditor_IsExecuting = false;
-                }
+                ExecuteScript(script, offset, undoErrors);
 
             }
         }

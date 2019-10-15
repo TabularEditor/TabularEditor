@@ -18,7 +18,7 @@ namespace TabularEditor
 {
     public partial class FormMain : Form
     {
-        private UIController UI;
+        public UIController UI;
 
         private string CurrentCustomAction;
 

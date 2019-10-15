@@ -25,7 +25,8 @@ namespace TabularEditor.RegressionTests
         [TestMethod]
         public void DeleteColumnTest()
         {
-            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException);
+            UiTester.EnsureCorrectExceptionMode();
+
             var fm = new FormMain();
             var ui = UI.UIController.Current;
             //fm.Show();

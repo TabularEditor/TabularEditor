@@ -296,6 +296,12 @@ namespace TabularEditor.UI
             if (!Handler.UpdateInProgress) {
                 if(e.PropertyName == "Annotations" && e.TabularObject == UI.PropertyGrid.SelectedObject)
                     UI.PropertyGrid.Refresh();
+
+                if (e.PropertyName.EndsWith("Expression")
+                    && DependencyForm.Visible
+                    && e.TabularObject is IDaxDependantObject daxObject
+                    ) DependencyForm.RefreshTree();
+
                 InvokeBPABackground();
             }
         }

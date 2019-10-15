@@ -35,6 +35,7 @@ namespace TabularEditor.PropertyGridUI
 
         public static void RegisterEditor(string propertyName, ICustomEditor editor)
         {
+            if (editors.ContainsKey(propertyName)) return;
             editors.Add(propertyName, editor);
         }
 
