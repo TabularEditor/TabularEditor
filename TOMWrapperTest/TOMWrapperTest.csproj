@@ -67,6 +67,7 @@
     <Compile Include="RegressionTests\v2_7_4\CalculatedTableTests.cs" />
     <Compile Include="RegressionTests\v2_8\SerializationAnnotationsTests.cs" />
     <Compile Include="RegressionTests\v2_8_1\DeleteObjectTests.cs" />
+    <Compile Include="RegressionTests\v2_8_5\ErrorReportingTests.cs" />
     <Compile Include="TabularModelHandlerTests.cs" />
     <Compile Include="TestGenerator.cs">
       <DependentUpon>TestGenerator.tt</DependentUpon>
@@ -89,6 +90,11 @@
       <Project>{19dde9a0-227f-4e8b-849d-c91c25322826}</Project>
       <Name>TOMWrapper</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="AdventureWorks.bim">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
