@@ -102,8 +102,8 @@ namespace TabularEditor.TOMWrapper.Utils
                 throw new Exception(string.Join("\n", result.Cast<XmlaResult>().SelectMany(r => r.Messages.Cast<XmlaMessage>().Select(m => m.Description)).ToArray()));
             }
 
-            s.Refresh();
             var deployedDB = s.Databases[targetDatabaseID];
+            deployedDB.Refresh(true);
             return
                 new DeploymentResult(
                     TabularModelHandler.CheckErrors(deployedDB).Select(t => string.Format("Error on {0}: {1}", GetName(t.Item1), t.Item2)),
