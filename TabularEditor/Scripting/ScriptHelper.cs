@@ -139,7 +139,7 @@ namespace TabularEditor.Scripting
         {
             var header = string.Format("Script info{0}", lineNumber >= 0 ? " (line " + lineNumber + ")": "", message);
 
-            if (Program.CommandLineMode) Program.cw.WriteLine(message);
+            if (Program.CommandLineMode) Console.WriteLine(message);
             else MessageBox.Show(message, header, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         [ScriptMethod]
