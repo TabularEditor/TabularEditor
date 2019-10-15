@@ -2222,7 +2222,7 @@
             | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
             this.lblStatus.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(240, 17);
+            this.lblStatus.Size = new System.Drawing.Size(360, 17);
             this.lblStatus.Text = "(No model loaded)";
             this.lblStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
