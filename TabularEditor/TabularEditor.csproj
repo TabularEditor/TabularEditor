@@ -201,6 +201,7 @@
     <Compile Include="BestPracticeAnalyzer\Operator.cs" />
     <Compile Include="BindingHelper.cs" />
     <Compile Include="CommandLine.cs" />
+    <Compile Include="ConsoleHandler.cs" />
     <Compile Include="CustomCombobox\CustomComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -244,7 +245,6 @@
     <Compile Include="UIServices\TableMetadata.cs" />
     <Compile Include="UIServices\UpdateService.cs" />
     <Compile Include="UIServices\DaxFormatter.cs" />
-    <Compile Include="GUIConsoleWriter.cs" />
     <Compile Include="Scripting\ScriptEngine.cs" />
     <Compile Include="PropertyGrid\NavigatablePropertyGrid.cs">
       <SubType>Component</SubType>

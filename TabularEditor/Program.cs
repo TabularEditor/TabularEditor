@@ -26,16 +26,17 @@ namespace TabularEditor
         [STAThread]
         static void Main()
         {
+            ConsoleHandler.RedirectToParent();
+
             var args = Environment.GetCommandLineArgs();
             if (args.Length > 1)
             {
-                cw.WriteLine("");
-                cw.WriteLine($"{ Application.ProductName } { Application.ProductVersion } (build { UpdateService.CurrentBuild })");
-                cw.WriteLine("--------------------------------");
+                Console.WriteLine("");
+                Console.WriteLine($"{ Application.ProductName } { Application.ProductVersion } (build { UpdateService.CurrentBuild })");
+                Console.WriteLine("--------------------------------");
             }
 
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
 
             var plugins = LoadPlugins();
             SetupLibraries(plugins);
@@ -45,7 +46,7 @@ namespace TabularEditor
             {
                 if (enableVSTS)
                 {
-                    cw.WriteLine("##vso[task.complete result={0};]Done.", errorCount > 0 ? "Failed" : ((warningCount > 0) ? "SucceededWithIssues" : "Succeeded"));
+                    Console.WriteLine("##vso[task.complete result={0};]Done.", errorCount > 0 ? "Failed" : ((warningCount > 0) ? "SucceededWithIssues" : "Succeeded"));
                 }
                 Environment.Exit(errorCount > 0 ? 1 : 0);
                 return;
@@ -55,11 +56,6 @@ namespace TabularEditor
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new FormMain());
-        }
-
-        private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
-        {
-            cw.DetachConsole();
         }
 
         private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
@@ -96,8 +92,6 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
         {
             System.Diagnostics.Process.Start(e.LinkText);
         }
-
-        public static readonly GUIConsoleWriter cw = new GUIConsoleWriter();
 
         /// <summary>
         /// Make sure that the TOMWrapper.dll is available in the current user's temp folder.
@@ -154,10 +148,10 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
         {
             if (enableVSTS)
             {
-                cw.WriteLine("##vso[task.logissue type=error;]" + errorMessage, args);
+                Console.WriteLine("##vso[task.logissue type=error;]" + errorMessage, args);
             }
             else
-                cw.WriteLine(errorMessage, args);
+                Console.WriteLine(errorMessage, args);
 
             errorCount++;
         }
@@ -165,10 +159,10 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
         {
             if (enableVSTS)
             {
-                cw.WriteLine("##vso[task.logissue type=warning;]" + errorMessage, args);
+                Console.WriteLine("##vso[task.logissue type=warning;]" + errorMessage, args);
             }
             else
-                cw.WriteLine(errorMessage, args);
+                Console.WriteLine(errorMessage, args);
 
             warningCount++;
         }
@@ -177,10 +171,10 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
         {
             if (enableVSTS)
             {
-                cw.WriteLine(string.Format("##vso[task.logissue type=error;sourcepath={0};linenumber={1};columnnumber={2};code={3}]{4}", sourcePath, line, column, code, errorMessage), args);
+                Console.WriteLine(string.Format("##vso[task.logissue type=error;sourcepath={0};linenumber={1};columnnumber={2};code={3}]{4}", sourcePath, line, column, code, errorMessage), args);
             }
             else
-                cw.WriteLine(string.Format("Error {0} on line {1}, col {2}: {3}", code, line, column, errorMessage));
+                Console.WriteLine(string.Format("Error {0} on line {1}, col {2}: {3}", code, line, column, errorMessage));
 
             errorCount++;
         }
@@ -325,11 +319,11 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             }
 
             // Load model:
-            cw.WriteLine("Loading model...");
+            Console.WriteLine("Loading model...");
 
             if (!string.IsNullOrEmpty(script))
             {
-                cw.WriteLine("Executing script...");
+                Console.WriteLine("Executing script...");
 
                 System.CodeDom.Compiler.CompilerResults result;
                 Scripting.ScriptOutputForm.Reset(false);
@@ -358,19 +352,19 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
 
             if (doCheckDs > -1)
             {
-                cw.WriteLine("Checking source schema...");
+                Console.WriteLine("Checking source schema...");
                 ScriptHelper.SchemaCheck(h.Model);
             }
 
             if (!string.IsNullOrEmpty(buildOutputPath))
             {
-                cw.WriteLine("Building Model.bim file...");
+                Console.WriteLine("Building Model.bim file...");
                 if (buildReplaceId != null) { h.Database.Name = buildReplaceId; h.Database.ID = buildReplaceId; }
                 h.Save(buildOutputPath, SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
             }
             else if (!string.IsNullOrEmpty(saveToFolderOutputPath))
             {
-                cw.WriteLine("Saving Model.bim file to Folder Output Path ...");
+                Console.WriteLine("Saving Model.bim file to Folder Output Path ...");
                 if (buildReplaceId != null) { h.Database.Name = buildReplaceId; h.Database.ID = buildReplaceId; }
 
                 //Note the last parameter, we use whatever SerializeOptions are already in the file
@@ -407,8 +401,8 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                     }
                 }
 
-                cw.WriteLine("Running Best Practice Analyzer...");
-                cw.WriteLine("=================================");
+                Console.WriteLine("Running Best Practice Analyzer...");
+                Console.WriteLine("=================================");
                 IEnumerable<BPA.AnalyzerResult> bpaResults;
                 if (suppliedRules == null) bpaResults = analyzer.AnalyzeAll();
                 else bpaResults = analyzer.Analyze(suppliedRules.Concat(analyzer.ModelRules));
@@ -418,7 +412,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 {
                     if (res.InvalidCompatibilityLevel)
                     {
-                        cw.WriteLine("Skipping rule '{0}' as it does not apply to Compatibility Level {1}.", res.RuleName, h.CompatibilityLevel);
+                        Console.WriteLine("Skipping rule '{0}' as it does not apply to Compatibility Level {1}.", res.RuleName, h.CompatibilityLevel);
                     }
                     else
                     if (res.RuleHasError)
@@ -436,15 +430,15 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                                 (res.Object as IDaxObject)?.DaxObjectFullName ?? res.ObjectName,
                                 res.RuleName
                                 );
-                            if (res.Rule.Severity <= 1) cw.WriteLine(text);
+                            if (res.Rule.Severity <= 1) Console.WriteLine(text);
                             else if (res.Rule.Severity == 2) Warning(text);
                             else if (res.Rule.Severity >= 3) Error(text);
                         }
                     }
 
                 }
-                if (none) cw.WriteLine("No objects in violation of Best Practices.");
-                cw.WriteLine("=================================");
+                if (none) Console.WriteLine("No objects in violation of Best Practices.");
+                Console.WriteLine("=================================");
             }
 
             var deploy = upperArgList.IndexOf("-DEPLOY");
@@ -552,7 +546,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 {
                     if (replaceMap.Count > 0)
                     {
-                        cw.WriteLine("Switching connection string placeholders...");
+                        Console.WriteLine("Switching connection string placeholders...");
                         foreach (var map in replaceMap) h.Model.DataSources.SetPlaceholder(map.Key, map.Value);
                     }
 
@@ -560,7 +554,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                         TabularConnection.GetConnectionString(serverName, userName, password);
                     if (xmla_scripting_only)
                     {
-                        cw.WriteLine("Generating XMLA/TMSL script...");
+                        Console.WriteLine("Generating XMLA/TMSL script...");
                         var s = new TOM.Server();
                         s.Connect(cs);
                         var xmla = TabularDeployer.GetTMSL(h.Database, s, databaseID, options);
@@ -568,18 +562,18 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                         {
                             sw.Write(xmla);
                         }
-                        cw.WriteLine("XMLA/TMSL script generated.");
+                        Console.WriteLine("XMLA/TMSL script generated.");
                     }
                     else
                     {
-                        cw.WriteLine("Deploying...");
+                        Console.WriteLine("Deploying...");
                         UpdateDeploymentMetadata(h.Model, DeploymentModeMetadata.CLI);
                         var deploymentResult = TabularDeployer.Deploy(h, cs, databaseID, options);
-                        cw.WriteLine("Deployment succeeded.");
+                        Console.WriteLine("Deployment succeeded.");
                         foreach (var err in deploymentResult.Issues) if (errorOnDaxErr) Error(err); else Warning(err);
                         foreach (var err in deploymentResult.Warnings) Warning(err);
                         foreach (var err in deploymentResult.Unprocessed)
-                            if (warnOnUnprocessed) Warning(err); else cw.WriteLine(err);
+                            if (warnOnUnprocessed) Warning(err); else Console.WriteLine(err);
                     }
                 }
                 catch (Exception ex)
@@ -608,7 +602,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
 
         static void OutputUsage()
         {
-            cw.WriteLine(@"Usage:
+            Console.WriteLine(@"Usage:
 
 TABULAREDITOR ( file | server database ) [-S script] [-SC] [(-B | -F) output [id]] [-A [rulefile]] [-V]
     [-D server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]] [-P] [-R [-M]]]
