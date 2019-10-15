@@ -45,6 +45,7 @@ namespace TabularEditor
         static readonly string WrapperDllPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\TOMWrapper14.dll";
         static readonly string NewtonsoftJsonDllPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\newtonsoft.json.dll";
         public static readonly string CustomActionsJsonPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\CustomActions.json";
+        public static readonly string CustomActionsErrorLogPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\CustomActionsError.log";
 
         internal static string AddOutputLineNumbers(string script)
         {
@@ -235,19 +236,11 @@ namespace TabularEditor
             code = AddOutputLineNumbers(code);
             code = ReplaceGlobalMethodCalls(code);
 
-            var result = Compile(code);
+            var result = Compile(code, errorCallback);
 
-            CustomActionError = false;
+            CustomActionError = result.Errors.Count > 0;
 
-            if(result.Errors.Count > 0)
-            {
-                Console.WriteLine("Could not compile Custom Actions.");
-                foreach(CompilerError err in result.Errors)
-                {
-                    Console.WriteLine("Line {0}, col {1}: {2}", err.Line, err.Column, err.ErrorText);
-                }
-                CustomActionError = true;
-            } else
+            if (!CustomActionError)
             {
                 var assembly = result.CompiledAssembly;
                 var type = assembly.GetType("TabularEditor.Scripting.CustomActions");
@@ -257,6 +250,25 @@ namespace TabularEditor
 
             sw.Stop();
             CustomActionCompiletime = sw.ElapsedMilliseconds;
+
+            void errorCallback(CompilerErrorCollection errors, string source)
+            {
+                Console.WriteLine("Could not compile Custom Actions.");
+
+                var messages = errors.Cast<CompilerError>()
+                    .Select(e => $"({ e.Line + errors.Count },{ e.Column }) { (e.IsWarning ? "warning" : "error") } {e.ErrorNumber}: {e.ErrorText}").ToList();
+
+                messages.ForEach(Console.WriteLine);
+                try
+                {
+                    messages.Add(source);
+                    File.WriteAllLines(CustomActionsErrorLogPath, messages);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to write to file [{ CustomActionsErrorLogPath }] { ex }");
+                }
+            }
         }
 
         public static long CustomActionCompiletime { get; private set; } = -1;
@@ -266,7 +278,7 @@ namespace TabularEditor
         public static Action<ModelActionManager> AddCustomActions { get; private set; } = null;
         
 
-        private static CompilerResults Compile(string code)
+        private static CompilerResults Compile(string code, Action<CompilerErrorCollection, string> errorCallback = null)
         {
             // Allowed namespaces:
             var includeUsings = new HashSet<string>(new[] {
@@ -296,6 +308,10 @@ namespace TabularEditor
                 result = compiler.CompileAssemblyFromSource(cp, source);
             }
 
+            if (result.Errors.Count > 0)
+            {
+                errorCallback?.Invoke(result.Errors, source);
+            }
 
             return result;
         }
