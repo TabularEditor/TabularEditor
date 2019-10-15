@@ -68,7 +68,7 @@ namespace TabularEditor.UI
                     MessageBox.Show(message, error ? "Error occured during deployment" : "Deploy cancelled", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
-                UI.StatusLabel.Text = string.Format(error ? "Deploy failed! {0}" : cancelled ? "Deploy cancelled! {0}" : "Deploy succeeded! {0}", f.DeployTargetServer.Name);
+                UI.StatusLabel.Text = string.Format(error ? "{0}: Deployment failed!" : cancelled ? "{0}: Deployment cancelled!" : "{0}: Deployment succeeded!", f.DeployTargetServer.Name);
             }
         }
 
