@@ -182,8 +182,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.TreeView treeObjects;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.RadioButton radioButton2;
@@ -193,5 +191,6 @@
         private System.Windows.Forms.ToolStripMenuItem copyTreeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem goToObjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyTreeAsJSONToolStripMenuItem;
+        public System.Windows.Forms.TreeView treeObjects;
     }
 }
