@@ -188,7 +188,7 @@ namespace TabularEditor.TOMWrapper.Serialization
         {
             if (!File.Exists(path + "\\database.json")) throw new FileNotFoundException("This folder does not contain a database.json file");
 
-            var jobj = JObject.Parse(File.ReadAllText(path + "\\database.json"));
+            var jobj = JObjectParse(path + "\\database.json");
             var model = jobj["model"] as JObject;
 
             InArray(path, "dataSources", model);
@@ -201,7 +201,7 @@ namespace TabularEditor.TOMWrapper.Serialization
                     if (filesInTableFolder.Length != 1) throw new FileNotFoundException(string.Format("Folder '{0}' is expected to contain exactly one .json file.", tablePath));
                     var tableFile = filesInTableFolder[0];
 
-                    var table = JObject.Parse(File.ReadAllText(tableFile));
+                    var table = JObjectParse(tableFile);
                     InArray(tablePath, "columns", table);
                     InArray(tablePath, "partitions", table);
                     InArray(tablePath, "measures", table);
@@ -230,7 +230,7 @@ namespace TabularEditor.TOMWrapper.Serialization
             {
                 foreach (var file in Directory.GetFiles(path + "\\" + arrayName, "*.json").OrderBy(n => n))
                 {
-                    array.Add(JObject.Parse(File.ReadAllText(file)));
+                    array.Add(JObjectParse(file));
                 }
 
                 for(int i = 0; i < objPath.Length - 1; i++)
@@ -241,6 +241,17 @@ namespace TabularEditor.TOMWrapper.Serialization
                 baseObject.Add(arrayName, array);
             }
         }
-    }
 
+        private static JObject JObjectParse(string path)
+        {
+            try
+            {
+                return JObject.Parse(File.ReadAllText(path));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Unable to load Tabular Model (Compatibility Level 1200+) from { path }.\r\nError:\r\n{ ex.GetType() } - { ex.Message }", ex);
+            }
+        }
+    }
 }
