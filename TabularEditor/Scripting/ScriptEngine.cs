@@ -17,6 +17,7 @@ using TabularEditor.UI.Actions;
 using TabularEditor.Scripting;
 using TabularEditor.TextServices;
 using json::Newtonsoft.Json;
+using System.Runtime.InteropServices;
 
 namespace TabularEditor
 {
@@ -44,6 +45,7 @@ namespace TabularEditor
     {
         static readonly string WrapperDllPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\TOMWrapper14.dll";
         static readonly string NewtonsoftJsonDllPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\newtonsoft.json.dll";
+        static readonly string TomDllPath = Assembly.GetAssembly(typeof(Microsoft.AnalysisServices.Tabular.Database)).Location;
         public static readonly string CustomActionsJsonPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\CustomActions.json";
         public static readonly string CustomActionsErrorLogPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\CustomActionsError.log";
 
@@ -83,6 +85,47 @@ namespace TabularEditor
             return sb.ToString();
         }
 
+        internal static string ParseAssemblyRefsAndUsings(string script, out List<string> assemblyRefs, out List<string> usings)
+        {
+            bool assemblyRefAllowed = true;
+            bool inBlockComment = false;
+            assemblyRefs = new List<string>();
+            usings = new List<string>();
+            var lines = script.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            for(int i = 0; i < lines.Length; i++)
+            {
+                var trimmedLine = lines[i].Trim();
+                if(inBlockComment && trimmedLine.Contains("*/"))
+                {
+                    inBlockComment = false;
+                }
+                else if (assemblyRefAllowed && trimmedLine.StartsWith("#r \"") && trimmedLine.EndsWith("\"") && trimmedLine.Length > 5)
+                {
+                    assemblyRefs.Add(trimmedLine.Substring(4, trimmedLine.Length - 5));
+                    lines[i] = "";
+                }
+                else if (trimmedLine.StartsWith("using ") && !trimmedLine.Contains("(") && trimmedLine.EndsWith(";") && trimmedLine.Length > 8)
+                {
+                    assemblyRefAllowed = false;
+                    usings.Add(trimmedLine);
+                    lines[i] = "";
+                }
+                else if (trimmedLine.StartsWith("//")) { }
+                else if (trimmedLine.Contains("/*"))
+                {
+                    inBlockComment = true; // If the block comment appears within a string, this will not work... but I'm too lazy to properly parse the code 
+                }
+                else if (trimmedLine == "")
+                {
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return string.Join(Environment.NewLine, lines);
+        }
+        
         internal static string ReplaceGlobalMethodCalls(string script)
         {
             var parser = new TextServices.ScriptParser();
@@ -113,23 +156,26 @@ namespace TabularEditor
 
         public static Action<Model, UITreeSelection> CompileScript(string script, out CompilerResults compilerResults)
         {
+            script = ParseAssemblyRefsAndUsings(script, out List<string> assemblyRefs, out List<string> usings);
             script = AddOutputLineNumbers(script);
             script = ReplaceGlobalMethodCalls(script);
 
-            var code = string.Format(@"namespace TabularEditor.Scripting
+
+            var code = string.Format(@"{0}
+namespace TabularEditor.Scripting
 {{
     public static class ScriptHost
     {{
         public static void Execute(TabularEditor.TOMWrapper.Model Model, TabularEditor.UI.UITreeSelection Selected)
         {{ 
 #line 1
-{0}
+{1}
 #line default
         }}
     }}
-}}", script);
+}}", string.Join(Environment.NewLine, usings), script);
 
-            compilerResults = Compile(code);
+            compilerResults = Compile(code, assemblyRefs);
 
             if (compilerResults.Errors.Count > 0) return null;
 
@@ -193,7 +239,7 @@ namespace TabularEditor
                 // ExecuteDelegate:
                 sb.AppendLine(t4 + "(Selected, Model) => {");
                 sb.AppendLine(CUSTOMACTIONS_CODEINDICATOR);
-                sb.AppendLine(act.Execute);
+                sb.AppendLine(act.CleansedCode);
                 sb.AppendLine(t4 + "},");
 
                 // Name:
@@ -231,12 +277,22 @@ namespace TabularEditor
             var sw = new Stopwatch();
             sw.Start();
 
-            var code = GetCustomActionsCode(actions);
+            var assemblyRefs = new List<string>();
+            var usings = new List<string>();
+            foreach(var act in actions.Actions)
+            {
+                act.CleansedCode = ParseAssemblyRefsAndUsings(act.Execute, out List<string> actionAssemblyRefs, out List<string> actionUsings);
+                assemblyRefs.AddRange(actionAssemblyRefs);
+                usings.AddRange(actionUsings);
+            }
 
+            var code = GetCustomActionsCode(actions);
             code = AddOutputLineNumbers(code);
             code = ReplaceGlobalMethodCalls(code);
 
-            var result = Compile(code, errorCallback);
+            code = string.Format("{0}\n{1}", string.Join(Environment.NewLine, usings), code);
+
+            var result = Compile(code, assemblyRefs, errorCallback);
 
             CustomActionError = result.Errors.Count > 0;
 
@@ -276,33 +332,63 @@ namespace TabularEditor
         public static bool CustomActionError { get; private set; } = false;
 
         public static Action<ModelActionManager> AddCustomActions { get; private set; } = null;
-        
 
-        private static CompilerResults Compile(string code, Action<CompilerErrorCollection, string> errorCallback = null)
+        private static readonly string[] defaultUsings = new string[]
         {
-            // Allowed namespaces:
-            var includeUsings = new HashSet<string>(new[] {
-                "System",
-                "System.Linq",
-                "System.Collections.Generic",
-                "Newtonsoft.Json",
-                "TabularEditor.TOMWrapper",
-                "TabularEditor.TOMWrapper.Utils",
-                "TabularEditor.UI",
-                "TOM = Microsoft.AnalysisServices.Tabular"
-            });
-            foreach (var pluginNs in TabularEditor.UIServices.Preferences.Current.Scripting_UsingNamespaces)
-                if(_pluginNamespaces.Any(an => an.Namespace == pluginNs)) includeUsings.Add(pluginNs);
+            "System",
+            "System.Linq",
+            "System.Collections.Generic",
+            "Newtonsoft.Json",
+            "TabularEditor.TOMWrapper",
+            "TabularEditor.TOMWrapper.Utils",
+            "TabularEditor.UI",
+            "TOM = Microsoft.AnalysisServices.Tabular"
+        };
 
+        private static readonly string[] defaultAssemblies = new string[]
+        {
+            "system.data.dll",
+            "system.dll",
+            "system.windows.forms.dll",
+            "system.core.dll",
+            "microsoft.csharp.dll"
+        };
+
+
+        private static CompilerResults Compile(string code, List<string> customAssemblies = null, Action<CompilerErrorCollection, string> errorCallback = null)
+        {
             CompilerResults result;
 
-            string source = string.Format("{0}\n{1}", GetUsing(includeUsings), code);
+            // Apply default usings:
+            string source = string.Format("{0}\n{1}", GetUsing(defaultUsings), code);
+
+            // Default assemblies:
+            var includeAssemblies = new HashSet<string>(defaultAssemblies, StringComparer.OrdinalIgnoreCase);
+            includeAssemblies.Add(Assembly.GetExecutingAssembly().Location);       // TabularEditor.exe
+            includeAssemblies.Add(WrapperDllPath);                                 // TOMWrapper.dll
+            includeAssemblies.Add(TomDllPath);                                            // Microsoft.AnalysisServices.Tabular.dll
+            includeAssemblies.Add(NewtonsoftJsonDllPath);                          // Newtonsoft.Json.dll
+
+            // Custom assemblies:
+            if (customAssemblies != null)
+            {
+                foreach (var asm in customAssemblies)
+                {
+                    if (string.IsNullOrEmpty(asm)) continue;
+                    
+                    var asmPath = GetAssemblyPath(asm);
+                    if (!string.IsNullOrEmpty(asmPath))
+                    {
+                        if (includeAssemblies.Contains(asmPath)) continue;
+                        includeAssemblies.Add(asmPath);
+                    }
+                    else
+                        includeAssemblies.Add(asm);
+                }
+            }
 
             using (var compiler = new CSharpCodeProvider()) {
-                // Allowed assemblies:
-                var tom = Assembly.GetAssembly(typeof(Microsoft.AnalysisServices.Tabular.Database)).Location;
-                var includeAssemblies = new HashSet<string>(new[] { "system.data.dll", "system.dll", "system.windows.forms.dll", "system.core.dll", Assembly.GetExecutingAssembly().Location, WrapperDllPath, tom, NewtonsoftJsonDllPath, "microsoft.csharp.dll" });
-                foreach(var asm in Plugins) if(!includeAssemblies.Contains(asm.Location)) includeAssemblies.Add(asm.Location);
+
                 var cp = new CompilerParameters(includeAssemblies.ToArray()) { GenerateInMemory = true, IncludeDebugInformation = true };
 
                 result = compiler.CompileAssemblyFromSource(cp, source);
@@ -316,7 +402,54 @@ namespace TabularEditor
             return result;
         }
 
-        private static string GetUsing(HashSet<string> usingStatements)
+        // See: https://stackoverflow.com/questions/6121276/is-it-possible-to-load-an-assembly-from-the-gac-without-the-fullname
+        public static string GetAssemblyPath(string name)
+        {
+            if (name == null)
+                throw new ArgumentNullException("name");
+
+            string finalName = name;
+            AssemblyInfo aInfo = new AssemblyInfo();
+            aInfo.cchBuf = 1024; // should be fine...
+            aInfo.currentAssemblyPath = new String('\0', aInfo.cchBuf);
+
+            IAssemblyCache ac;
+            int hr = CreateAssemblyCache(out ac, 0);
+            if (hr >= 0)
+            {
+                hr = ac.QueryAssemblyInfo(0, finalName, ref aInfo);
+                if (hr < 0)
+                    return null;
+            }
+
+            return aInfo.currentAssemblyPath;
+        }
+
+
+        [ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("e707dcde-d1cd-11d2-bab9-00c04f8eceae")]
+        private interface IAssemblyCache
+        {
+            void Reserved0();
+
+            [PreserveSig]
+            int QueryAssemblyInfo(int flags, [MarshalAs(UnmanagedType.LPWStr)] string assemblyName, ref AssemblyInfo assemblyInfo);
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct AssemblyInfo
+        {
+            public int cbAssemblyInfo;
+            public int assemblyFlags;
+            public long assemblySizeInKB;
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string currentAssemblyPath;
+            public int cchBuf; // size of path buf.
+        }
+
+        [DllImport("fusion.dll")]
+        private static extern int CreateAssemblyCache(out IAssemblyCache ppAsmCache, int reserved);
+
+        private static string GetUsing(IEnumerable<string> usingStatements)
         {
             StringBuilder result = new StringBuilder();
             foreach (string usingStatement in usingStatements)
