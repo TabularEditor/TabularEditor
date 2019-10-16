@@ -39,9 +39,6 @@ namespace TabularEditor
             // Assign our own custom Designer, to make sure we can handle property changes on multiple objects simultaneously:
             propertyGrid1.Site = new DesignerHost();
 
-            // "Select Namespace" button should only be visible if we have loaded any plug-ins:
-            toolStripButton3.Visible = ScriptEngine.PluginNamespaces.Count > 0;
-
             SetupUIController();
             txtFilter.Control.SetCueBanner("Filter");
 
@@ -684,24 +681,6 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         {
             int zoom = txtAdvanced.Zoom;
             toolStripComboBox1.Text = string.Format("{0} %", zoom);
-        }
-
-        private void toolStripButton3_Click(object sender, EventArgs e)
-        {
-            var srf = new SelectReferencesForm();
-            srf.lstReferences.Items.AddRange(ScriptEngine.PluginNamespaces
-                .Select(pn => new ListViewItem(new[] { pn.Namespace, Path.GetFileName(pn.Assembly.Location), pn.Assembly.GetName().Version.ToString() }) {
-                    Checked = Preferences.Current.Scripting_UsingNamespaces.Contains(pn.Namespace) }).ToArray());
-
-            if (srf.ShowDialog() == DialogResult.OK)
-            {
-                Preferences.Current.Scripting_UsingNamespaces.Clear();
-                foreach(ListViewItem item in srf.lstReferences.CheckedItems)
-                {
-                    Preferences.Current.Scripting_UsingNamespaces.Add(item.SubItems[0].Text);
-                }
-                Preferences.Current.Save();
-            }
         }
 
         private void actBack_Update(object sender, EventArgs e)

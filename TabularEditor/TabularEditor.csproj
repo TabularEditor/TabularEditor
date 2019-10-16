@@ -417,12 +417,6 @@
     <Compile Include="UI\Dialogs\SelectDatabaseForm.Designer.cs">
       <DependentUpon>SelectDatabaseForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\Dialogs\SelectReferencesForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\SelectReferencesForm.Designer.cs">
-      <DependentUpon>SelectReferencesForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="UI\Dialogs\ValidationEventArgs.cs" />
     <Compile Include="UI\Extensions\WatermarkTextBox.cs" />
     <Compile Include="UI\Hourglass.cs" />
@@ -713,9 +707,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\SelectDatabaseForm.resx">
       <DependentUpon>SelectDatabaseForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\SelectReferencesForm.resx">
-      <DependentUpon>SelectReferencesForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="packages.config">

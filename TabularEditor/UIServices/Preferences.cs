@@ -82,8 +82,6 @@ namespace TabularEditor.UIServices
         public bool Copy_IncludeRLS = true;
         public bool Copy_IncludeOLS = true;
 
-        public HashSet<string> Scripting_UsingNamespaces = new HashSet<string>();
-
         public bool View_DisplayFolders = true;
         public bool View_HiddenObjects = false;
         public bool View_AllObjectTypes = true;
