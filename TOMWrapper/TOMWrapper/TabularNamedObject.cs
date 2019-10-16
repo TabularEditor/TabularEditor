@@ -252,12 +252,15 @@ namespace TabularEditor.TOMWrapper
                 if (string.IsNullOrEmpty(value?.Trim()))
                     throw new ArgumentException(string.Format(Messages.ParameterBlankNotAllowed, Properties.NAME), Properties.NAME);
 
+                // We have to validate the name first, as an invalid name should cause an exception which is catched by the UI.
+                // This needs to happen before firing the OnPropertyChanging event.
+                MetadataObject.ValidateName(value);
+
                 bool undoable = true;
                 bool cancel = false;
                 OnPropertyChanging(Properties.NAME, value, ref undoable, ref cancel);
                 if (cancel) return;
-
-                // This will take care of throwing exception in case of duplicate names:
+                
                 MetadataObject.SetName(value, null);
                 
                 Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.NAME, oldValue, value));
