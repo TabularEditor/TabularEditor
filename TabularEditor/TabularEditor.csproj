@@ -702,7 +702,6 @@
     <EmbeddedResource Include="UI\Dialogs\SelectDatabaseForm.resx">
       <DependentUpon>SelectDatabaseForm.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="app.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
