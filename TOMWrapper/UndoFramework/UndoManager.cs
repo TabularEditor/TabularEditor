@@ -110,8 +110,10 @@ namespace TabularEditor.TOMWrapper.Undo
             _handler = handler;
         }
 
-        public bool UndoInProgress { get { return inProgress; } }
-        private bool inProgress = false;
+        bool inProgress;
+        public bool UndoInProgress => inProgress;
+        public bool IsUndoing { get; private set; }
+        public bool IsRedoing { get; private set; }
 
         internal void XDo(bool redo, bool inversable)
         {
@@ -126,9 +128,11 @@ namespace TabularEditor.TOMWrapper.Undo
             if (stack.Count > 0)
             {
                 inProgress = true;
+                IsRedoing = redo;
+                IsUndoing = !IsRedoing;
 
                 var item = stack.Pop();
-                if (redo) item.Redo();
+                if (redo) { item.Redo(); }
                 else item.Undo();
 
                 if(inversable) inverseStack.Push(item);
@@ -149,7 +153,9 @@ namespace TabularEditor.TOMWrapper.Undo
 
 
                 }
-
+                
+                IsRedoing = false;
+                IsUndoing = false;
                 inProgress = false;
             }
             UndoStateChanged?.Invoke(this, new EventArgs());

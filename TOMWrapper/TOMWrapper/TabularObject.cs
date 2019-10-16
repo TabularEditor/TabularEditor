@@ -132,6 +132,20 @@ namespace TabularEditor.TOMWrapper
         }
         protected virtual void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
+            switch (propertyName)
+            {
+                case Properties.EXPRESSION:
+                case Properties.DETAILROWSEXPRESSION:
+                case Properties.DEFAULTDETAILROWSEXPRESSION:
+                case Properties.FILTEREXPRESSION:
+                case Properties.STATUSEXPRESSION:
+                case Properties.TARGETEXPRESSION:
+                case Properties.TRENDEXPRESSION:
+                case Properties.FORMATSTRINGEXPRESSION:
+                    expressionChangeCounter += Handler.UndoManager.IsUndoing ? -1 : 1;
+                    break;
+            }
+
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             Handler.DoObjectChanged(this, propertyName, oldValue, newValue);
 
@@ -162,6 +176,10 @@ namespace TabularEditor.TOMWrapper
             if (cancel) return;
             Handler.DoObjectChanging(this, propertyName, newValue, ref cancel);
         }
+
+        int expressionChangeCounter = 0;
+        protected bool IsExpressionModified => expressionChangeCounter != 0;
+        public void ResetModifiedState() { expressionChangeCounter = 0; }
 
         [Browsable(false),IntelliSense("The model this object belongs to.")]
         public Model Model { get { return MetadataObject.Model == null ? null : Handler.WrapperLookup[MetadataObject.Model] as Model; } }

@@ -28,7 +28,6 @@ namespace TabularEditor.TOMWrapper
         {
             if (propertyName == Properties.EXPRESSION)
             {
-                NeedsValidation = true;
                 FormulaFixup.BuildDependencyTree(this);
             }
 
@@ -43,6 +42,6 @@ namespace TabularEditor.TOMWrapper
 
 
         [Browsable(false)]
-        public bool NeedsValidation { get; set; }
+        public bool NeedsValidation => IsExpressionModified;
     }
 }

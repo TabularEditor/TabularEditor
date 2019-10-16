@@ -50,7 +50,7 @@ namespace TabularEditor.TOMWrapper
         public string RoleName => Role.Name;
 
         [Browsable(false)]
-        public bool NeedsValidation { get; set; } = false;
+        public bool NeedsValidation => IsExpressionModified;
         string IExpressionObject.Expression { get => FilterExpression; set => FilterExpression = value; }
         string ITabularNamedObject.Name { get => Table.Name; set { } }
 
@@ -67,7 +67,6 @@ namespace TabularEditor.TOMWrapper
         {
             if (propertyName == Properties.EXPRESSION || propertyName == Properties.FILTEREXPRESSION)
             {
-                NeedsValidation = true;
                 FormulaFixup.BuildDependencyTree(this);
             }
         }

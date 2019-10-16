@@ -89,18 +89,7 @@ namespace TabularEditor.TOMWrapper
         }
 
         [Browsable(false)]
-        public bool NeedsValidation
-        {
-            get
-            {
-                return false;
-            }
-
-            set
-            {
-                
-            }
-        }
+        public bool NeedsValidation => IsExpressionModified;
 
         [Browsable(false)]
         public string Expression

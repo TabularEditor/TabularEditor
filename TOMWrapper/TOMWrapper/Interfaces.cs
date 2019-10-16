@@ -150,7 +150,8 @@ namespace TabularEditor.TOMWrapper
     /// </summary>
     public interface IExpressionObject: ITabularNamedObject
     {
-        bool NeedsValidation { get; set; }
+        bool NeedsValidation { get; }
+        void ResetModifiedState();
         string Expression { get; set; }
     }
 
