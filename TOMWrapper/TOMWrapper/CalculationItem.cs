@@ -43,7 +43,7 @@ namespace TabularEditor.TOMWrapper
         }
 
         [Browsable(false)]
-        public bool NeedsValidation { get; set; } = false;
+        public bool NeedsValidation => IsExpressionModified;
         
         [DisplayName("Format String Expression")]
         [Category("Options"), IntelliSense("A DAX expression that returns a Format String for this calculation item.")]
@@ -86,7 +86,6 @@ namespace TabularEditor.TOMWrapper
                 case Properties.DETAILROWSEXPRESSION:
                 case Properties.FORMATSTRINGEXPRESSION:
                 case Properties.EXPRESSION:
-                    NeedsValidation = true;
                     FormulaFixup.BuildDependencyTree(this);
                     break;
             }

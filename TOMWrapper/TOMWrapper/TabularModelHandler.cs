@@ -235,7 +235,7 @@ namespace TabularEditor.TOMWrapper
                 if (CompatibilityLevel >= 1470 && table is CalculationGroupTable cgt)
                     errorList.AddRange(cgt.CalculationItems.Where(ci => !string.IsNullOrEmpty(ci.ErrorMessage)));
 
-                WrapperLookup.Values.OfType<IExpressionObject>().ToList().ForEach(i => i.NeedsValidation = false);
+                WrapperLookup.Values.OfType<IExpressionObject>().ToList().ForEach(i => i.ResetModifiedState());
             }
             errorList.AddRange(Model.Roles.Where(r => r.ErrorMessage != null));
             if (errorList.Count > 0 || Errors?.Count > 0)

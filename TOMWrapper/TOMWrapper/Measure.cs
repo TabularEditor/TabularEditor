@@ -36,13 +36,13 @@ namespace TabularEditor.TOMWrapper
                     if (errorMessage != "") errorMessage += "\r\n";
                     errorMessage += "Detail rows expression: " + MetadataObject.DetailRowsDefinition.ErrorMessage;
                 }
-                
+
                 /*if (Handler.CompatibilityLevel >= 1470 && !string.IsNullOrEmpty(MetadataObject.FormatStringDefinition?.ErrorMessage))
                 {
                     if (errorMessage != "") errorMessage += "\r\n";
                     errorMessage += "Format string expression: " + MetadataObject.FormatStringDefinition.ErrorMessage;
                 }*/
-                
+
                 return errorMessage;
             }
         }
@@ -86,6 +86,8 @@ namespace TabularEditor.TOMWrapper
         }
 
         private KPI KPIBackup;
+        private bool _needsValidation = false;
+
         internal override void RemoveReferences()
         {
             KPIBackup = KPI;
@@ -94,7 +96,7 @@ namespace TabularEditor.TOMWrapper
 
         internal override void Reinit()
         {
-            if(KPIBackup != null)
+            if (KPIBackup != null)
             {
                 Handler.WrapperLookup.Remove(KPIBackup.MetadataObject);
                 KPIBackup.MetadataObject = MetadataObject.KPI;
@@ -125,7 +127,7 @@ namespace TabularEditor.TOMWrapper
                 if (cancel) return;
 
                 var newKPI = value?.MetadataObject;
-                if(newKPI != null && newKPI.IsRemoved)
+                if (newKPI != null && newKPI.IsRemoved)
                 {
                     Handler.WrapperLookup.Remove(newKPI);
                     newKPI = newKPI.Clone();
@@ -149,12 +151,12 @@ namespace TabularEditor.TOMWrapper
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
-            switch(propertyName)
+            switch (propertyName)
             {
                 case Properties.DETAILROWSEXPRESSION:
                 case Properties.FORMATSTRINGEXPRESSION:
                 case Properties.EXPRESSION:
-                    NeedsValidation = true;
+                    _needsValidation = true;
                     FormulaFixup.BuildDependencyTree(this);
                     break;
 
@@ -163,7 +165,7 @@ namespace TabularEditor.TOMWrapper
                     break;
 
                 case Properties.NAME:
-                    if(Handler.Settings.AutoFixup)
+                    if (Handler.Settings.AutoFixup)
                     {
                         // Fixup is not performed during an undo operation. We rely on the undo stack to fixup the expressions
                         // affected by the name change (the undo stack should contain the expression changes that were made
@@ -192,7 +194,7 @@ namespace TabularEditor.TOMWrapper
         }
 
         [Browsable(false)]
-        public bool NeedsValidation { get; set; } = false;
+        public bool NeedsValidation => IsExpressionModified;
 
         internal override bool IsBrowsable(string propertyName)
         {
@@ -245,7 +247,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
         public bool ShouldSerializeDetailRowsExpression() { return false; }
-        
+
         /*[DisplayName("Format String Expression")]
         [Category("Options"), IntelliSense("A DAX expression that returns a Format String for this measure.")]
         [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
@@ -275,7 +277,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
         public bool ShouldSerializeFormatStringExpression() { return false; }*/
-        
+
 
         [Browsable(false)]
         public string DaxObjectName

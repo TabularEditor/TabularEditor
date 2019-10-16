@@ -119,7 +119,6 @@ namespace TabularEditor.TOMWrapper
         {
             if(propertyName == Properties.EXPRESSION)
             {
-                NeedsValidation = true;
                 FormulaFixup.BuildDependencyTree(this);
             }
 
@@ -146,8 +145,7 @@ namespace TabularEditor.TOMWrapper
                 var oldValue = Partitions[0].Expression;
                 if (value == oldValue) return;
                 Partitions[0].Expression = value;
-                NeedsValidation = true;
-                OnPropertyChanged("Expression", oldValue, value);
+                OnPropertyChanged(Properties.EXPRESSION, oldValue, value);
             }
         }
 
@@ -157,6 +155,6 @@ namespace TabularEditor.TOMWrapper
         }
 
         [Browsable(false)]
-        public override bool NeedsValidation { get; set; } = false;
+        public override bool NeedsValidation => IsExpressionModified;
     }
 }
