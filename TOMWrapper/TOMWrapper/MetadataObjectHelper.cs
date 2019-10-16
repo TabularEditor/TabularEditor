@@ -45,6 +45,39 @@ namespace Microsoft.AnalysisServices.Tabular.Helper
             return name;
         }
 
+        /// <summary>
+        /// Throws an exception of the provided new name is invalid for the specified object.
+        /// </summary>
+        public static void ValidateName(this NamedMetadataObject obj, string newName)
+        {
+            if (obj.Name.Equals(newName, StringComparison.InvariantCultureIgnoreCase)) return;
+
+            if (obj is Measure)
+            {
+                var measure = obj as Measure;
+
+                // Do not allow multiple measures with the same name:
+                if (measure.Model.Tables.Any(t => t.Measures.Any(m => m != obj && m.Name.Equals(newName, StringComparison.InvariantCultureIgnoreCase))))
+                    throw new ArgumentException(string.Format(Messages.DuplicateMeasureName, newName));
+
+                // Do not allow a measure with the same name as a column in the table:
+                if (measure.Table.Columns.Any(c => c.Name.Equals(newName, StringComparison.InvariantCultureIgnoreCase)))
+                    throw new ArgumentException(string.Format(Messages.DuplicateColumnName, newName));
+            }
+            else if (obj is Column)
+            {
+                var column = obj as Column;
+
+                // Do not allow a column with the same name as a measure in the table:
+                if (column.Table.Measures.Any(m => m.Name.Equals(newName, StringComparison.InvariantCultureIgnoreCase)))
+                    throw new ArgumentException(string.Format(Messages.DuplicateMeasureName, newName));
+
+                // Do not allow a column with the same name as another column in the table:
+                if (column.Table.Columns.Any(c => c != obj && c.Name.Equals(newName, StringComparison.InvariantCultureIgnoreCase)))
+                    throw new ArgumentException(string.Format(Messages.DuplicateColumnName, newName));
+            }
+        }
+
         public static void SetName(this NamedMetadataObject obj, string newName, Culture culture = null)
         {
             if (culture != null)
@@ -57,31 +90,6 @@ namespace Microsoft.AnalysisServices.Tabular.Helper
                 {
                     obj.Name = newName;
                     return;
-                }
-
-                if (obj is Measure)
-                {
-                    var measure = obj as Measure;
-
-                    // Do not allow multiple measures with the same name:
-                    if (measure.Model.Tables.Any(t => t.Measures.Any(m => m != obj && m.Name.Equals(newName, StringComparison.InvariantCultureIgnoreCase))))
-                        throw new ArgumentException(string.Format(Messages.DuplicateMeasureName, newName));
-
-                    // Do not allow a measure with the same name as a column in the table:
-                    if (measure.Table.Columns.Any(c => c.Name.Equals(newName, StringComparison.InvariantCultureIgnoreCase)))
-                        throw new ArgumentException(string.Format(Messages.DuplicateColumnName, newName));
-                }
-                else if (obj is Column)
-                {
-                    var column = obj as Column;
-
-                    // Do not allow a column with the same name as a measure in the table:
-                    if (column.Table.Measures.Any(m => m.Name.Equals(newName, StringComparison.InvariantCultureIgnoreCase)))
-                        throw new ArgumentException(string.Format(Messages.DuplicateMeasureName, newName));
-
-                    // Do not allow a column with the same name as another column in the table:
-                    if (column.Table.Columns.Any(c => c != obj && c.Name.Equals(newName, StringComparison.InvariantCultureIgnoreCase)))
-                        throw new ArgumentException(string.Format(Messages.DuplicateColumnName, newName));
                 }
 
                 // Automatically apply name change to translations (but only if the translation is identical to the old name):
