@@ -252,9 +252,9 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         public BestPracticeCollection EffectiveCollectionForRule(string ruleId)
         {
+            if (ModelRules != null && ModelRules.Any(r => r.ID.EqualsI(ruleId))) return ModelRules;
             foreach (var externalRuleCollection in ExternalRuleCollections)
                 if (externalRuleCollection.Any(r => r.ID.EqualsI(ruleId))) return externalRuleCollection;
-            if (ModelRules != null && ModelRules.Any(r => r.ID.EqualsI(ruleId))) return ModelRules;
             if (LocalUserRules != null && LocalUserRules.Any(r => r.ID.EqualsI(ruleId))) return LocalUserRules;
             if (LocalMachineRules != null && LocalMachineRules.Any(r => r.ID.EqualsI(ruleId))) return LocalMachineRules;
             return null;
@@ -274,6 +274,11 @@ namespace TabularEditor.BestPracticeAnalyzer
             }
         }
 
+        /// <summary>
+        /// Base path when the analyzer searches for rule files (typically the same path as the Model.bim or database.json file is stored in)
+        /// </summary>
+        public string BasePath { get; set; } = Environment.CurrentDirectory;
+
         public void LoadExternalRuleCollections()
         {
             ExternalRuleCollections = new List<BestPracticeCollection>();
@@ -286,8 +291,6 @@ namespace TabularEditor.BestPracticeAnalyzer
                     {
                         var externalRuleFilePaths = JsonConvert.DeserializeObject<List<string>>(externalRuleCollectionsJson);
 
-                        Environment.CurrentDirectory = FileSystemHelper.DirectoryFromPath(UIController.Current.File_Current) ?? Environment.CurrentDirectory;
-
                         foreach (var filePath in externalRuleFilePaths)
                         {
                             try
@@ -297,7 +300,9 @@ namespace TabularEditor.BestPracticeAnalyzer
                                     ExternalRuleCollections.Add(BestPracticeCollection.GetCollectionFromUrl(filePath));
                                 }
                                 else
-                                    ExternalRuleCollections.Add(BestPracticeCollection.GetCollectionFromFile(filePath));
+                                {
+                                    ExternalRuleCollections.Add(BestPracticeCollection.GetCollectionFromFile(BasePath, filePath));
+                                }
                             }
                             catch { }
                         }

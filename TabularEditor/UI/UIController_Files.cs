@@ -20,6 +20,7 @@ namespace TabularEditor.UI
         public void File_Open(string fileName)
         {
             var oldFile = File_Current;
+            var oldDirectory = File_Directory;
             var oldLastWrite = File_LastWrite;
             var oldSaveMode = File_SaveMode;
             var oldHandler = Handler;
@@ -48,6 +49,7 @@ namespace TabularEditor.UI
                     if (!cancel)
                     {
                         File_Current = Handler.Source;
+                        File_Directory = FileSystemHelper.DirectoryFromPath(Handler.Source);
                         File_SaveMode = Handler.SourceType;
 
                         // TODO: Use a FileSystemWatcher to watch for changes to the currently loaded file(s)
@@ -72,6 +74,7 @@ namespace TabularEditor.UI
             {
                 Handler = oldHandler;
                 File_Current = oldFile;
+                File_Directory = oldDirectory;
                 File_SaveMode = oldSaveMode;
                 File_LastWrite = oldLastWrite;
             }
@@ -84,6 +87,7 @@ namespace TabularEditor.UI
             
             Handler = new TabularModelHandler(newModelDialog.CompatibilityLevel, Preferences.Current.GetSettings());
             File_Current = null;
+            File_Directory = null;
             File_SaveMode = Handler.SourceType;
 
             LoadTabularModelToUI();
@@ -115,6 +119,7 @@ namespace TabularEditor.UI
         }
 
         public string File_Current { get; private set; }
+        public string File_Directory { get; private set; } = null;
 
         public void File_Open(bool fromFolder = false)
         {
@@ -245,9 +250,9 @@ namespace TabularEditor.UI
                         if (changeFilePointer)
                         {
                             File_Current = dialog.FileName;
+                            File_Directory = FileSystemHelper.DirectoryFromPath(File_Current);
                             File_LastWrite = DateTime.Now;
                             File_SaveMode = dialog.FileType == "pbit" ? ModelSourceType.Pbit : ModelSourceType.File;
-                            Environment.CurrentDirectory = (new FileInfo(File_Current)).DirectoryName;
                         }
 
                         UpdateUIText();
@@ -316,7 +321,7 @@ namespace TabularEditor.UI
                         {
                             File_SaveMode = ModelSourceType.Folder;
                             File_Current = dialog.FileName;
-                            Environment.CurrentDirectory = File_Current;
+                            File_Directory = FileSystemHelper.DirectoryFromPath(File_Current);
                         }
 
                         UpdateUIText();

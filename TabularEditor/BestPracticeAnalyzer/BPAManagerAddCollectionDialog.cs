@@ -43,11 +43,9 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         public bool NewFile()
         {
-            var startDir = FileSystemHelper.DirectoryFromPath(UIController.Current.File_Current) ?? Environment.CurrentDirectory;
-            
             var sfd = new CommonSaveFileDialog("New Rule File");
             sfd.EnsurePathExists = true;
-            sfd.InitialDirectory = startDir;
+            sfd.InitialDirectory = analyzer.BasePath;
             sfd.DefaultFileName = "BPARules.json";
             sfd.DefaultExtension = "json";
             sfd.Filters.Add(new CommonFileDialogFilter("JSON file", "*.json"));
@@ -60,7 +58,7 @@ namespace TabularEditor.BestPracticeAnalyzer
                 localPathCheckBox.Visible = true;
                 sfd.FolderChanging += (s, e) =>
                 {
-                    var relativePath = FileSystemHelper.GetRelativePath(startDir, e.Folder);
+                    var relativePath = FileSystemHelper.GetRelativePath(analyzer.BasePath, e.Folder);
                     if(relativePath.Length >= 2 && relativePath[1] == ':')
                     {
                         localPathCheckBox.Visible = false;
@@ -76,9 +74,11 @@ namespace TabularEditor.BestPracticeAnalyzer
             {
                 parent.Enabled = true;
                 var fileName = localPathCheckBox.Visible && localPathCheckBox.IsChecked
-                    ? FileSystemHelper.GetRelativePath(startDir, sfd.FileName) : sfd.FileName;
-                if(!analyzer.ExternalRuleCollections.Any(rc => rc.FilePath != null && rc.FilePath.EqualsI(fileName)))
-                    analyzer.ExternalRuleCollections.Add(BestPracticeCollection.GetCollectionFromFile(fileName));
+                    ? FileSystemHelper.GetRelativePath(analyzer.BasePath, sfd.FileName) : sfd.FileName;
+                if (!analyzer.ExternalRuleCollections.Any(
+                    rc => rc.FilePath != null && FileSystemHelper.GetAbsolutePath(analyzer.BasePath, rc.FilePath).EqualsI(sfd.FileName)
+                    ))
+                    analyzer.ExternalRuleCollections.Add(BestPracticeCollection.GetCollectionFromFile(analyzer.BasePath, fileName));
                 return true;
             }
             parent.Enabled = true;
@@ -120,8 +120,10 @@ namespace TabularEditor.BestPracticeAnalyzer
                 parent.Enabled = true;
                 var fileName = localPathCheckBox.Visible && localPathCheckBox.IsChecked
                     ? FileSystemHelper.GetRelativePath(startDir, sfd.FileName) : sfd.FileName;
-                if (!analyzer.ExternalRuleCollections.Any(rc => rc.FilePath != null && rc.FilePath.EqualsI(fileName)))
-                    analyzer.ExternalRuleCollections.Add(BestPracticeCollection.GetCollectionFromFile(fileName));
+                if (!analyzer.ExternalRuleCollections.Any(
+                    rc => rc.FilePath != null && FileSystemHelper.GetAbsolutePath(analyzer.BasePath, rc.FilePath).EqualsI(sfd.FileName)
+                    ))
+                    analyzer.ExternalRuleCollections.Add(BestPracticeCollection.GetCollectionFromFile(analyzer.BasePath, fileName));
                 return true;
             }
             parent.Enabled = true;

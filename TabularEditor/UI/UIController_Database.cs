@@ -114,9 +114,10 @@ namespace TabularEditor.UI
                 try
                 {
                     Handler = new TabularModelHandler(connectionString, databaseId);
-                    LoadTabularModelToUI();
                     File_Current = null;
+                    File_Directory = null;
                     File_SaveMode = ModelSourceType.Database;
+                    LoadTabularModelToUI();
                     LocalInstanceName = ConnectForm.LocalInstanceName;
                     LocalInstanceType = ConnectForm.LocalInstanceType;
                 }

@@ -68,14 +68,14 @@ namespace TabularEditor.BestPracticeAnalyzer
                         ignoreHandler.RuleIDs.Remove(rule);
                     ignoreHandler.Save(model);
 
-                    analyzer.ModelRules.Save();
+                    analyzer.ModelRules.Save(null);
                 }
 
-                analyzer.LocalUserRules.Save();
-                analyzer.LocalMachineRules.Save();
+                analyzer.LocalUserRules.Save(analyzer.BasePath);
+                analyzer.LocalMachineRules.Save(analyzer.BasePath);
                 analyzer.SaveExternalRuleCollections();
 
-                foreach (var externalRuleCollection in analyzer.ExternalRuleCollections) externalRuleCollection.Save();
+                foreach (var externalRuleCollection in analyzer.ExternalRuleCollections) externalRuleCollection.Save(analyzer.BasePath);
 
                 if (model != null)
                 {
@@ -368,8 +368,8 @@ namespace TabularEditor.BestPracticeAnalyzer
             if(treePath.IsEmpty())
             {
                 if (effectiveRules != null) yield return effectiveRules;
-                foreach (var externalRules in analyzer.ExternalRuleCollections) yield return externalRules;
                 if (analyzer.ModelRules != null) yield return analyzer.ModelRules;
+                foreach (var externalRules in analyzer.ExternalRuleCollections) yield return externalRules;
                 if (analyzer.LocalUserRules != null) yield return analyzer.LocalUserRules;
                 if (analyzer.LocalMachineRules != null) yield return analyzer.LocalMachineRules;
             }
