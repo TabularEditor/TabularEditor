@@ -383,8 +383,8 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 Console.WriteLine("Running Best Practice Analyzer...");
                 Console.WriteLine("=================================");
 
-                var analyzer = new BPA.Analyzer() { Model = h.Model };
-                if (h.SourceType != ModelSourceType.Database) analyzer.BasePath = FileSystemHelper.DirectoryFromPath(h.Source);
+                var analyzer = new BPA.Analyzer();
+                analyzer.SetModel(h.Model, h.SourceType == ModelSourceType.Database ? null : FileSystemHelper.DirectoryFromPath(h.Source));
 
                 BPA.BestPracticeCollection suppliedRules = null;
                 if (!string.IsNullOrEmpty(rulefile))
@@ -407,7 +407,10 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
 
                 IEnumerable<BPA.AnalyzerResult> bpaResults;
                 if (suppliedRules == null) bpaResults = analyzer.AnalyzeAll();
-                else bpaResults = analyzer.Analyze(suppliedRules.Concat(analyzer.ModelRules));
+                else {
+                    var effectiveRules = analyzer.GetEffectiveRules(false, false, true, true, suppliedRules);
+                    bpaResults = analyzer.Analyze(effectiveRules);
+                }
 
                 bool none = true;
                 foreach (var res in bpaResults.Where(r => !r.Ignored))
@@ -627,8 +630,9 @@ database            Database ID of the model to load
   id                  Optional id/name to assign to the Database object when saving.
 -V / -VSTS          Output Visual Studio Team Services logging commands.
 -A / -ANALYZE       Runs Best Practice Analyzer and outputs the result to the console.
-  rulefile            Optional path of file containing BPA rules to be analyzed. If not specified,
-                      model is analyzed against global rules on the machine.
+  rulefile            Optional path of file containing additional BPA rules to be analyzed. If
+                      specified, model is not analyzed against local user/local machine rules,
+                      but rules defined within the model are still applied.
 -D / -DEPLOY        Command-line deployment
   server              Name of server to deploy to or connection string to Analysis Services.
   database            ID of the database to deploy (create/overwrite).

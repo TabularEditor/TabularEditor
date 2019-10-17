@@ -214,17 +214,20 @@ namespace TabularEditor.BestPracticeAnalyzer
         public BestPracticeCollection ModelRules { get; private set; }
         public List<BestPracticeCollection> ExternalRuleCollections { get; private set; }
 
-        public IEnumerable<BestPracticeRule> EffectiveRules {
-            get {
-                var rulePrecedence = new Dictionary<string, BestPracticeRule>(StringComparer.InvariantCultureIgnoreCase);
-                if (LocalMachineRules != null) foreach (var rule in LocalMachineRules) rulePrecedence[rule.ID] = rule;
-                if (LocalUserRules != null) foreach (var rule in LocalUserRules) rulePrecedence[rule.ID] = rule;
-                for(int i = ExternalRuleCollections.Count - 1; i >= 0; i--)
-                    foreach (var rule in ExternalRuleCollections[i]) rulePrecedence[rule.ID] = rule;
-                if (ModelRules != null) foreach (var rule in ModelRules) rulePrecedence[rule.ID] = rule;
+        public IEnumerable<BestPracticeRule> EffectiveRules => GetEffectiveRules(true, true, true, true);
 
-                return rulePrecedence.Values;
-            }
+        public IEnumerable<BestPracticeRule> GetEffectiveRules(bool includeLocalMachineRules, bool includeLocalUserRules, bool includeModelRules, bool includeExternalRules, IEnumerable<BestPracticeRule> additionalRules = null)
+        {
+            var rulePrecedence = new Dictionary<string, BestPracticeRule>(StringComparer.InvariantCultureIgnoreCase);
+
+            if (additionalRules != null) foreach (var rule in additionalRules) rulePrecedence[rule.ID] = rule;
+            if (includeLocalMachineRules && LocalMachineRules != null) foreach (var rule in LocalMachineRules) rulePrecedence[rule.ID] = rule;
+            if (includeLocalUserRules && LocalUserRules != null) foreach (var rule in LocalUserRules) rulePrecedence[rule.ID] = rule;
+            if (includeExternalRules && ExternalRuleCollections != null) for (int i = ExternalRuleCollections.Count - 1; i >= 0; i--) foreach (var rule in ExternalRuleCollections[i]) rulePrecedence[rule.ID] = rule;
+            if (includeModelRules && ModelRules != null) foreach (var rule in ModelRules) rulePrecedence[rule.ID] = rule;
+
+            return rulePrecedence.Values;
+
         }
 
         public IEnumerable<BestPracticeCollection> Collections
@@ -277,7 +280,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         /// <summary>
         /// Base path when the analyzer searches for rule files (typically the same path as the Model.bim or database.json file is stored in)
         /// </summary>
-        public string BasePath { get; set; } = Environment.CurrentDirectory;
+        public string BasePath { get; private set; } = Environment.CurrentDirectory;
 
         public void LoadExternalRuleCollections()
         {
@@ -316,7 +319,7 @@ namespace TabularEditor.BestPracticeAnalyzer
             {
                 return _model;
             }
-            set
+            private set
             {
                 _model = value;
                 LoadModelRules();
@@ -380,6 +383,12 @@ namespace TabularEditor.BestPracticeAnalyzer
             Model = null;
 
             LoadInternalRules();
+        }
+
+        public void SetModel(Model model, string basePath = null)
+        {
+            BasePath = basePath ?? Environment.CurrentDirectory;
+            Model = model;
         }
 
         public void LoadInternalRules()

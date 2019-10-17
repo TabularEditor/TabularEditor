@@ -32,8 +32,7 @@ namespace TabularEditor.UI.Dialogs
             {
                 AnalyzerResultsTreeModel.Clear();
                 btnRefresh.Enabled = model != null;
-                Analyzer.BasePath = UIController.Current?.File_Directory ?? Environment.CurrentDirectory;
-                Analyzer.Model = model;
+                Analyzer.SetModel(model, UIController.Current?.File_Directory);
                 toolStripStatusLabel1.Text = "";
                 AnalyzerResultsTreeModel.UpdateComplete += AnalyzerResultsTreeModel_UpdateComplete;
             }
