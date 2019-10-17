@@ -17,7 +17,7 @@ namespace TabularEditor
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
             var model = handler.Model;
             var analyzer = new Analyzer();
-            analyzer.Model = model;
+            analyzer.SetModel(model);
 
             var rule = new BestPracticeRule() {
                 Scope = RuleScope.Measure | RuleScope.CalculatedColumn | RuleScope.DataColumn | RuleScope.Table | RuleScope.Hierarchy,
@@ -38,7 +38,7 @@ namespace TabularEditor
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
             var model = handler.Model;
             var analyzer = new Analyzer();
-            analyzer.Model = model;
+            analyzer.SetModel(model);
 
             var rule = new BestPracticeRule()
             {
@@ -58,7 +58,7 @@ namespace TabularEditor
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
             var model = handler.Model;
             var analyzer = new Analyzer();
-            analyzer.Model = model;
+            analyzer.SetModel(model);
 
             var rule = new BestPracticeRule()
             {
@@ -93,7 +93,7 @@ namespace TabularEditor
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
             var model = handler.Model;
             var analyzer = new Analyzer();
-            analyzer.Model = model;
+            analyzer.SetModel(model);
 
             var rule = new BestPracticeRule()
             {
@@ -113,7 +113,7 @@ namespace TabularEditor
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
             var model = handler.Model;
             var analyzer = new Analyzer();
-            analyzer.Model = model;
+            analyzer.SetModel(model);
 
             var rule = new BestPracticeRule()
             {
@@ -134,7 +134,7 @@ namespace TabularEditor
             var handler = new TabularModelHandler("localhost", "AdventureWorks");
             var model = handler.Model;
             var analyzer = new Analyzer();
-            analyzer.Model = model;
+            analyzer.SetModel(model);
 
             var rule = new BestPracticeRule()
             {

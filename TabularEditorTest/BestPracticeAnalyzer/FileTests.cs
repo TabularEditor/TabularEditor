@@ -301,8 +301,8 @@ namespace TabularEditor.BestPracticeAnalyzer
         {
             var h = new TabularModelHandler(ModelFile);
             var a = new Analyzer();
-            a.BasePath = ModelFolder;
-            a.Model = h.Model;
+            a.SetModel(h.Model, ModelFolder);
+
             Assert.AreEqual(2, a.ExternalRuleCollections.Count);
 
             Assert.AreEqual(LocalMachineRules, a.LocalMachineRules.FilePath);
