@@ -380,7 +380,11 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 var rulefile = analyze + 1 < argList.Count ? argList[analyze + 1] : "";
                 if (rulefile.StartsWith("-") || string.IsNullOrEmpty(rulefile)) rulefile = null;
 
+                Console.WriteLine("Running Best Practice Analyzer...");
+                Console.WriteLine("=================================");
+
                 var analyzer = new BPA.Analyzer() { Model = h.Model };
+                if (h.SourceType != ModelSourceType.Database) analyzer.BasePath = FileSystemHelper.DirectoryFromPath(h.Source);
 
                 BPA.BestPracticeCollection suppliedRules = null;
                 if (!string.IsNullOrEmpty(rulefile))
@@ -392,7 +396,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                     }
                     try
                     {
-                        suppliedRules = BPA.BestPracticeCollection.GetCollectionFromFile(rulefile);
+                        suppliedRules = BPA.BestPracticeCollection.GetCollectionFromFile(Environment.CurrentDirectory, rulefile);
                     }
                     catch
                     {
@@ -401,8 +405,6 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                     }
                 }
 
-                Console.WriteLine("Running Best Practice Analyzer...");
-                Console.WriteLine("=================================");
                 IEnumerable<BPA.AnalyzerResult> bpaResults;
                 if (suppliedRules == null) bpaResults = analyzer.AnalyzeAll();
                 else bpaResults = analyzer.Analyze(suppliedRules.Concat(analyzer.ModelRules));

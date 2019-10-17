@@ -54,6 +54,7 @@
           {
             "name": "Currency",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[DimCurrency].* \t\tFROM [dbo].[DimCurrency]",
               "dataSource": "SqlServer localhost"
             },
@@ -263,6 +264,7 @@
           {
             "name": "Customer",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[DimCustomer].* \t\tFROM [dbo].[DimCustomer]",
               "dataSource": "SqlServer localhost"
             },
@@ -415,6 +417,7 @@
           {
             "name": "Date",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[DimDate].* \t\tFROM [dbo].[DimDate]",
               "dataSource": "SqlServer localhost"
             },
@@ -748,6 +751,7 @@
           {
             "name": "Employee",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[DimEmployee].* \t\tFROM [dbo].[DimEmployee]",
               "dataSource": "SqlServer localhost"
             },
@@ -844,6 +848,7 @@
           {
             "name": "Geography",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[DimGeography].* \t\tFROM [dbo].[DimGeography]",
               "dataSource": "SqlServer localhost"
             },
@@ -1112,6 +1117,7 @@
           {
             "name": "Product",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[DimProduct].* \t\tFROM [dbo].[DimProduct]",
               "dataSource": "SqlServer localhost"
             },
@@ -1199,6 +1205,7 @@
           {
             "name": "Product Category",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[DimProductCategory].* \t\tFROM [dbo].[DimProductCategory]",
               "dataSource": "SqlServer localhost"
             },
@@ -1267,6 +1274,7 @@
           {
             "name": "Product Subcategory",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[DimProductSubcategory].* \t\tFROM [dbo].[DimProductSubcategory]",
               "dataSource": "SqlServer localhost"
             },
@@ -1371,6 +1379,7 @@
           {
             "name": "Promotion",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[DimPromotion].* \t\tFROM [dbo].[DimPromotion]",
               "dataSource": "SqlServer localhost"
             },
@@ -1566,6 +1575,7 @@
           {
             "name": "Reseller",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[DimReseller].* \t\tFROM [dbo].[DimReseller]",
               "dataSource": "SqlServer localhost"
             },
@@ -1645,6 +1655,7 @@
           {
             "name": "Sales Territory",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[DimSalesTerritory].* \t\tFROM [dbo].[DimSalesTerritory]",
               "dataSource": "SqlServer localhost"
             },
@@ -2208,6 +2219,7 @@
           {
             "name": "Internet Sales 2005",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[FactInternetSales].* \t\tFROM [dbo].[FactInternetSales]  WHERE (([OrderDateKey] >= 20050101) AND ([OrderDateKey] <= 20051231))",
               "dataSource": "SqlServer localhost"
             },
@@ -2703,6 +2715,7 @@
             "name": "Internet Sales 2006",
             "mode": "import",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[FactInternetSales].* \t\tFROM [dbo].[FactInternetSales]  WHERE (([OrderDateKey] >= 20060101) AND ([OrderDateKey] <= 20061231))",
               "dataSource": "SqlServer localhost"
             },
@@ -3198,6 +3211,7 @@
             "name": "Internet Sales 2007",
             "mode": "import",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[FactInternetSales].* \t\tFROM [dbo].[FactInternetSales]  WHERE (([OrderDateKey] >= 20070101) AND ([OrderDateKey] <= 20071231))",
               "dataSource": "SqlServer localhost"
             },
@@ -3693,6 +3707,7 @@
             "name": "Internet Sales 2008",
             "mode": "import",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[FactInternetSales].* \t\tFROM [dbo].[FactInternetSales]  WHERE (([OrderDateKey] >= 20080101) AND ([OrderDateKey] <= 20081231))",
               "dataSource": "SqlServer localhost"
             },
@@ -4188,6 +4203,7 @@
             "name": "Internet Sales 2009",
             "mode": "import",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[FactInternetSales].* \t\tFROM [dbo].[FactInternetSales]  WHERE (([OrderDateKey] >= 20090101) AND ([OrderDateKey] <= 20091231))",
               "dataSource": "SqlServer localhost"
             },
@@ -4683,6 +4699,7 @@
             "name": "Internet Sales 2010",
             "mode": "import",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[FactInternetSales].* \t\tFROM [dbo].[FactInternetSales]  WHERE (([OrderDateKey] >= 20100101) AND ([OrderDateKey] <= 20101231))",
               "dataSource": "SqlServer localhost"
             },
@@ -5570,6 +5587,7 @@
           {
             "name": "Product Inventory 2005",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[FactProductInventory].* \t\tFROM [dbo].[FactProductInventory]  WHERE (([DateKey] >= 20050101) AND ([DateKey] <= 20051231))",
               "dataSource": "SqlServer localhost"
             },
@@ -5761,6 +5779,7 @@
             "name": "Product Inventory 2006",
             "mode": "import",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[FactProductInventory].* \t\tFROM [dbo].[FactProductInventory]  WHERE (([DateKey] >= 20060101) AND ([DateKey] <= 20061231))",
               "dataSource": "SqlServer localhost"
             },
@@ -5952,6 +5971,7 @@
             "name": "Product Inventory 2007",
             "mode": "import",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[FactProductInventory].* \t\tFROM [dbo].[FactProductInventory]  WHERE (([DateKey] >= 20070101) AND ([DateKey] <= 20071231))",
               "dataSource": "SqlServer localhost"
             },
@@ -6143,6 +6163,7 @@
             "name": "Product Inventory 2008",
             "mode": "import",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[FactProductInventory].* \t\tFROM [dbo].[FactProductInventory]  WHERE (([DateKey] >= 20080101) AND ([DateKey] <= 20081231))",
               "dataSource": "SqlServer localhost"
             },
@@ -6334,6 +6355,7 @@
             "name": "Product Inventory 2009",
             "mode": "import",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[FactProductInventory].* \t\tFROM [dbo].[FactProductInventory]  WHERE (([DateKey] >= 20090101) AND ([DateKey] <= 20091231))",
               "dataSource": "SqlServer localhost"
             },
@@ -6525,6 +6547,7 @@
             "name": "Product Inventory 2010",
             "mode": "import",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[FactProductInventory].* \t\tFROM [dbo].[FactProductInventory]  WHERE (([DateKey] >= 20100101) AND ([DateKey] <= 20101231))",
               "dataSource": "SqlServer localhost"
             },
@@ -7259,6 +7282,7 @@
           {
             "name": "Reseller Sales 2005",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[FactResellerSales].* \t\tFROM [dbo].[FactResellerSales]  WHERE (([OrderDateKey] >= 20050101) AND ([OrderDateKey] <= 20051231))",
               "dataSource": "SqlServer localhost"
             },
@@ -7770,6 +7794,7 @@
             "name": "Reseller Sales 2006",
             "mode": "import",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[FactResellerSales].* \t\tFROM [dbo].[FactResellerSales]  WHERE (([OrderDateKey] >= 20060101) AND ([OrderDateKey] <= 20061231))",
               "dataSource": "SqlServer localhost"
             },
@@ -8281,6 +8306,7 @@
             "name": "Reseller Sales 2007",
             "mode": "import",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[FactResellerSales].* \t\tFROM [dbo].[FactResellerSales]  WHERE (([OrderDateKey] >= 20070101) AND ([OrderDateKey] <= 20071231))",
               "dataSource": "SqlServer localhost"
             },
@@ -8792,6 +8818,7 @@
             "name": "Reseller Sales 2008",
             "mode": "import",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[FactResellerSales].* \t\tFROM [dbo].[FactResellerSales]  WHERE (([OrderDateKey] >= 20080101) AND ([OrderDateKey] <= 20081231))",
               "dataSource": "SqlServer localhost"
             },
@@ -9303,6 +9330,7 @@
             "name": "Reseller Sales 2009",
             "mode": "import",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[FactResellerSales].* \t\tFROM [dbo].[FactResellerSales]  WHERE (([OrderDateKey] >= 20090101) AND ([OrderDateKey] <= 20091231))",
               "dataSource": "SqlServer localhost"
             },
@@ -9814,6 +9842,7 @@
             "name": "Reseller Sales 2010",
             "mode": "import",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[FactResellerSales].* \t\tFROM [dbo].[FactResellerSales]  WHERE (([OrderDateKey] >= 20100101) AND ([OrderDateKey] <= 20101231))",
               "dataSource": "SqlServer localhost"
             },
@@ -10674,6 +10703,7 @@
           {
             "name": "Sales Quota",
             "source": {
+              "type": "query",
               "query": "SELECT [dbo].[FactSalesQuota].* \t\tFROM [dbo].[FactSalesQuota]",
               "dataSource": "SqlServer localhost"
             },
@@ -12460,7 +12490,48 @@
     "annotations": [
       {
         "name": "TabularEditor_SerializeOptions",
-        "value": "{\"IgnoreInferredObjects\":false,\"IgnoreInferredProperties\":true,\"IgnoreTimestamps\":true,\"SplitMultilineStrings\":true,\"PrefixFilenames\":false,\"LocalTranslations\":false,\"LocalPerspectives\":false,\"Levels\":[]}"
+        "value": "{\"IgnoreInferredObjects\":false,\"IgnoreInferredProperties\":true,\"IgnoreTimestamps\":true,\"SplitMultilineStrings\":true,\"PrefixFilenames\":false,\"LocalTranslations\":false,\"LocalPerspectives\":false,\"LocalRelationships\":false,\"Levels\":[]}"
+      },
+      {
+        "name": "BestPracticeAnalyzer_IgnoreRules",
+        "value": "{\"RuleIDs\":[]}"
+      },
+      {
+        "name": "BestPracticeAnalyzer_ExternalRuleFiles",
+        "value": "[\"RelativePathRules.json\",\"${DEBUGPATH}\\\\AbsolutePathRules.json\"]"
+      },
+      {
+        "name": "BestPracticeAnalyzer",
+        "value": [
+          "[",
+          "  {",
+          "    \"ID\": \"RULE1\",",
+          "    \"Name\": \"Rule1\",",
+          "    \"Category\": \"\",",
+          "    \"Description\": \"\",",
+          "    \"Severity\": 1,",
+          "    \"Scope\": \"Model\",",
+          "    \"Expression\": \"true\",",
+          "    \"FixExpression\": null,",
+          "    \"CompatibilityLevel\": 1200,",
+          "    \"ObjectCount\": 0,",
+          "    \"ErrorMessage\": null",
+          "  },",
+          "  {",
+          "    \"ID\": \"CM_RULE1\",",
+          "    \"Name\": \"CM_Rule1\",",
+          "    \"Category\": \"\",",
+          "    \"Description\": \"\",",
+          "    \"Severity\": 1,",
+          "    \"Scope\": \"Model\",",
+          "    \"Expression\": \"true\",",
+          "    \"FixExpression\": null,",
+          "    \"CompatibilityLevel\": 1200,",
+          "    \"ObjectCount\": 0,",
+          "    \"ErrorMessage\": null",
+          "  }",
+          "]"
+        ]
       }
     ]
   }

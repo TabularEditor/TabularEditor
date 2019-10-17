@@ -366,8 +366,10 @@ namespace TabularEditor.BestPracticeAnalyzer
 
     public class BestPracticeCollection: IEnumerable<BestPracticeRule>, IRuleDefinition
     {
-        internal const string BPAAnnotation = "BestPracticeAnalyzer";
-        public string FilePath { get; set; }
+        internal static readonly string LocalUserRulesFile = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\BPARules.json";
+        internal static readonly string LocalMachineRulesFile = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\TabularEditor\BPARules.json";
+        internal static readonly string BPAAnnotation = "BestPracticeAnalyzer";
+        public string FilePath { get; private set; }
 
         public string Url { get; set; }
 
@@ -389,7 +391,7 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         private Model model;
 
-        public bool Save()
+        public bool Save(string basePath)
         {
             if(model != null)
             {
@@ -403,8 +405,9 @@ namespace TabularEditor.BestPracticeAnalyzer
             {
                 try
                 {
-                    (new FileInfo(FilePath)).Directory.Create();
-                    File.WriteAllText(FilePath, SerializeToJson());
+                    var filePath = FileSystemHelper.GetAbsolutePath(basePath, FilePath);
+                    (new FileInfo(filePath)).Directory.Create();
+                    File.WriteAllText(filePath, SerializeToJson());
                     return true;
                 }
                 catch
@@ -461,10 +464,10 @@ namespace TabularEditor.BestPracticeAnalyzer
             return result;
         }
 
+
         public static BestPracticeCollection GetLocalUserCollection()
         {
-            var localUserFileName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\BPARules.json";
-            var result = GetCollectionFromFile(localUserFileName);
+            var result = GetCollectionFromFile(Environment.CurrentDirectory, LocalUserRulesFile);
             result.Name = "Rules for the local user";
             result.Internal = true;
 
@@ -473,20 +476,20 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         public static BestPracticeCollection GetLocalMachineCollection()
         {
-            var localMachineFileName = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\TabularEditor\BPARules.json";
-            var result = GetCollectionFromFile(localMachineFileName);
+            var result = GetCollectionFromFile(Environment.CurrentDirectory, LocalMachineRulesFile);
             result.Name = "Rules on the local machine";
             result.Internal = true;
 
             return result;
         }
 
-        public static BestPracticeCollection GetCollectionFromFile(string filePath)
+        public static BestPracticeCollection GetCollectionFromFile(string basePath, string fileName)
         {
             var result = new BestPracticeCollection();
-            result.Name = filePath;            
-            result.FilePath = filePath;
+            result.Name = fileName;
+            result.FilePath = fileName;
 
+            var filePath = FileSystemHelper.GetAbsolutePath(basePath, fileName);
             var fi = new FileInfo(filePath);
             result.AllowEdit = FileSystemHelper.IsDirectoryWritable(fi.DirectoryName);
             result.AddFromJsonFile(filePath);

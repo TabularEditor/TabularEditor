@@ -6,6 +6,7 @@ using System.Security;
 using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
+using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.UIServices
 {
@@ -18,6 +19,13 @@ namespace TabularEditor.UIServices
             return permissionSet.IsSubsetOf(AppDomain.CurrentDomain.PermissionSet);
         }
 
+        /// <summary>
+        /// Returns the directory of the provided filePath.
+        ///  - If <paramref name="filePath"/> is a directory, it is returned.
+        ///  - If <paramref name="filePath"/> is a file, its parent directory is returned.
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
         public static string DirectoryFromPath(string filePath)
         {
             if (filePath != null)
@@ -29,6 +37,19 @@ namespace TabularEditor.UIServices
                     return (new FileInfo(filePath)).DirectoryName;
             }
             return null;
+        }
+
+        /// <summary>
+        /// Constructs an absolute path from a base path and a path which can be absolute (in which case it is returned as-is) or relative with respect to the base path.
+        /// </summary>
+        public static string GetAbsolutePath(string basePath, string relativeOrAbsolutePath)
+        {
+            if (string.IsNullOrWhiteSpace(basePath)) throw new ArgumentException("basePath must be specified");
+            if (string.IsNullOrWhiteSpace(relativeOrAbsolutePath)) throw new System.IO.FileNotFoundException();
+
+            var isAbsolutePath = relativeOrAbsolutePath.StartsWith(@"\\") || (char.IsLetter(relativeOrAbsolutePath[0]) && relativeOrAbsolutePath[1] == ':');
+
+            return isAbsolutePath ? relativeOrAbsolutePath : Path.GetFullPath(basePath.ConcatPath(relativeOrAbsolutePath));
         }
 
         /// <summary>
