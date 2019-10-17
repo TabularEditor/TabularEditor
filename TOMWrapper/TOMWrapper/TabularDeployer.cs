@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using System.Threading;
+using Microsoft.AnalysisServices.Tabular.Helper;
 
 namespace TabularEditor.TOMWrapper.Utils
 {
@@ -225,13 +226,18 @@ namespace TabularEditor.TOMWrapper.Utils
 
         private static string DeployExistingTMSL(TOM.Database db, TOM.Server server, string dbId, DeploymentOptions options, bool includeRestricted)
         {
-            var rawTmsl = TOM.JsonScripter.ScriptCreateOrReplace(db, includeRestricted);
+            var rawTmsl = new StringBuilder("{\"sequence\": {\"operations\": [");
 
+            foreach (var column in db.Model.Tables.GetDuplictedKeyColumns())
+                rawTmsl.Append($"{ TOM.JsonScripter.ScriptDelete((TOM.Table)column.Parent) }, ");
+            
+            var jTmsl = JObject.Parse(TOM.JsonScripter.ScriptCreateOrReplace(db, includeRestricted));
             var orgDb = server.Databases[dbId];
 
-            var jTmsl = JObject.Parse(rawTmsl);
+            rawTmsl.Append(TransformCreateOrReplaceTmsl(jTmsl, orgDb, options).ToString());
+            rawTmsl.Append("]}}");
 
-            return TransformCreateOrReplaceTmsl(jTmsl, orgDb, options).ToString();
+            return rawTmsl.ToString();
         }
     }
 
