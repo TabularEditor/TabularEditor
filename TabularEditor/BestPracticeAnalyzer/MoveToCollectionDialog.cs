@@ -22,6 +22,8 @@ namespace TabularEditor.BestPracticeAnalyzer
             var form = new MoveToCollectionDialog();
             form.lblHeader.Text = "Which collection do you want to move the selected rule" + (plural ? "s" : "") + " to?";
             form.chkCopy.Text = "Clone rule" + (plural ? "s" : "") + " to collection";
+            form.chkCopy.Enabled = source.AllowEdit;
+            if (!source.AllowEdit) form.chkCopy.Checked = true; // Only allow copying when sourcing rules from a read-only collection
             form.comboBox1.DisplayMember = "Name";
             form.comboBox1.Items.AddRange(analyzer.Collections.Where(rc => rc.AllowEdit && rc != source).ToArray());
             if (form.comboBox1.Items.Count == 0) form.btnOK.Enabled = true;
