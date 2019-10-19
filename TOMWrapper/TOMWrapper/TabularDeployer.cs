@@ -101,7 +101,11 @@ namespace TabularEditor.TOMWrapper.Utils
             {
                 throw new Exception(string.Join("\n", result.Cast<XmlaResult>().SelectMany(r => r.Messages.Cast<XmlaMessage>().Select(m => m.Description)).ToArray()));
             }
+            
+            // Refresh the server object to make sure we get an updated list of databases, in case a new database was made:
+            s.Refresh();
 
+            // Fully refresh the deployed database object, to make sure we get updated error messages for the full object tree:
             var deployedDB = s.Databases[targetDatabaseID];
             deployedDB.Refresh(true);
             return
@@ -159,7 +163,7 @@ namespace TabularEditor.TOMWrapper.Utils
         /// addition, the method will replace any Roles, RoleMembers, Data Sources and Partitions in the TMSL with
         /// the corresponding TMSL from the specified orgDb, depending on the provided DeploymentOptions.
         /// </summary>
-        private static JObject TransformCreateOrReplaceTmsl(JObject tmslJObj, TOM.Database orgDb, DeploymentOptions options)
+        private static JObject TransformCreateOrReplaceTmsl(JObject tmslJObj, TOM.Database db, TOM.Database orgDb, DeploymentOptions options)
         {
             // Deployment target / existing database (note that TMSL uses the NAME of an existing database, not the ID, to identify the object)
             tmslJObj["createOrReplace"]["object"]["database"] = orgDb.Name;
@@ -195,10 +199,14 @@ namespace TabularEditor.TOMWrapper.Utils
 
             if (!options.DeployConnections)
             {
-                // Remove dataSources if present
-                var dataSources = new JArray();
-                model["dataSources"] = dataSources;
-                foreach (var ds in orgDb.Model.DataSources) dataSources.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(ds)));
+                // Replace existing data sources with those in the target DB:
+                // TODO: Can we do anything to retain credentials on PowerQuery data sources?
+                var dataSources = model["dataSources"] as JArray;
+                foreach (var orgDataSource in orgDb.Model.DataSources)
+                {
+                    dataSources.FirstOrDefault(d => d.Value<string>("name").EqualsI(orgDataSource.Name))?.Remove();
+                    dataSources.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(orgDataSource)));
+                }
             }
 
             if (!options.DeployPartitions)
@@ -207,15 +215,16 @@ namespace TabularEditor.TOMWrapper.Utils
                 foreach (var table in tables)
                 {
                     var tableName = table["name"].Value<string>();
+                    if (db.Model.Tables[tableName].IsCalculatedOrCalculationGroup()) continue;
+
                     if (orgDb.Model.Tables.Contains(tableName))
                     {
                         var t = orgDb.Model.Tables[tableName];
-                        if (t.Partitions[0].SourceType != TOM.PartitionSourceType.Calculated)
-                        {
-                            var partitions = new JArray();
-                            table["partitions"] = partitions;
-                            foreach (var pt in t.Partitions) partitions.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(pt)));
-                        }
+                        if (t.IsCalculatedOrCalculationGroup()) continue;
+
+                        var partitions = new JArray();
+                        table["partitions"] = partitions;
+                        foreach (var pt in t.Partitions) partitions.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(pt)));
                     }
                 }
             }
@@ -223,15 +232,115 @@ namespace TabularEditor.TOMWrapper.Utils
             return tmslJObj;
         }
 
+        private static JToken GetNamedObj(JToken collection, string objectName)
+        {
+            if (collection == null) return null;
+            return (collection as JArray).FirstOrDefault(t => t.Value<string>("name").EqualsI(objectName));
+        }
+
         private static string DeployExistingTMSL(TOM.Database db, TOM.Server server, string dbId, DeploymentOptions options, bool includeRestricted)
         {
-            var rawTmsl = TOM.JsonScripter.ScriptCreateOrReplace(db, includeRestricted);
-
             var orgDb = server.Databases[dbId];
+            orgDb.Refresh(true);
 
-            var jTmsl = JObject.Parse(rawTmsl);
+            var orgTables = orgDb.Model.Tables;
+            var newTables = db.Model.Tables;
 
-            return TransformCreateOrReplaceTmsl(jTmsl, orgDb, options).ToString();
+            var tmslJson = TOM.JsonScripter.ScriptCreateOrReplace(db, includeRestricted);
+            var tmsl = TransformCreateOrReplaceTmsl(JObject.Parse(tmslJson), db, orgDb, options);
+            var orgTmsl = tmsl.DeepClone();
+
+            var tmslModel = tmsl["createOrReplace"]["database"]["model"] as JObject;
+            bool needsTwoStepCreateOrReplace = false;
+
+            // Detect tables/columns that are change from imported to calculated or vice versa:
+            foreach (var newTable in newTables)
+            {
+                if (!orgTables.ContainsName(newTable.Name)) continue;
+                var orgTable = orgTables[newTable.Name];
+
+                // Remove tables that were changed from calculated to imported or vice versa:
+                if (orgTable.GetSourceType() != newTable.GetSourceType())
+                {
+                    GetNamedObj(tmslModel["tables"], newTable.Name).Remove();
+
+                    // Make sure we remove all metadata that points to this table as well
+                    // Note, we should be careful not to remove any objects that can hold
+                    // processed data:
+                    if (tmslModel["perspectives"] != null) foreach (JObject perspective in tmslModel["perspectives"])
+                        GetNamedObj(perspective["tables"], newTable.Name)?.Remove();
+                    if (tmslModel["cultures"] != null) foreach (JObject culture in tmslModel["cultures"])
+                        GetNamedObj(culture["translations"]["model"]["tables"], newTable.Name)?.Remove();
+                    if (tmslModel["relationships"] != null) foreach (JObject relationship in tmslModel["relationships"].Where(r => r.Value<string>("fromTable").EqualsI(newTable.Name)
+                    || r.Value<string>("toTable").EqualsI(newTable.Name)).ToList())
+                        relationship.Remove();
+                    if (tmslModel["roles"] != null) foreach (JObject modelRole in tmslModel["roles"])
+                        GetNamedObj(modelRole["tablePermissions"], newTable.Name)?.Remove();
+                    // Todo: Variants, Alternates, (other objects that can reference a table?)
+
+                    needsTwoStepCreateOrReplace = true;
+                    continue;
+                }
+
+                foreach (var newColumn in newTable.Columns)
+                {
+                    if (newColumn.Type == TOM.ColumnType.RowNumber 
+                        || newColumn.Type == TOM.ColumnType.CalculatedTableColumn
+                        || !orgTable.Columns.ContainsName(newColumn.Name)) continue;
+                    var orgColumn = orgTable.Columns[newColumn.Name];
+
+                    // Remove columns that were changed from calculated to data or vice versa:
+                    if(orgColumn.Type != newColumn.Type)
+                    {
+                        var table = GetNamedObj(tmslModel["tables"], newTable.Name);
+                        GetNamedObj(table["columns"], newColumn.Name).Remove();
+
+                        // Make sure we remove all references to this column as well:
+                        if (tmslModel["perspectives"] != null) foreach (JObject perspective in tmslModel["perspectives"])
+                        {
+                            var tablePerspective = GetNamedObj(perspective["tables"], newTable.Name);
+                            if (tablePerspective == null) continue;
+                            GetNamedObj(tablePerspective["columns"], newColumn.Name)?.Remove();
+                        }
+                        if(tmslModel["cultures"] != null) foreach (JObject culture in tmslModel["cultures"])
+                        {
+                            var tableTranslation = GetNamedObj(culture["translations"]["model"]["tables"], newTable.Name);
+                            if (tableTranslation == null) continue;
+                            GetNamedObj(tableTranslation["columns"], newColumn.Name)?.Remove();
+                        }
+                        if(table["columns"] != null) foreach (JObject column in table["columns"].Where(c => c.Value<string>("sortByColumn").EqualsI(newColumn.Name)))
+                        {
+                            column["sortByColumn"].Remove();
+                        }
+                        if (table["hierarchies"] != null) foreach (JObject hierarchy in table["hierarchies"].Where(h => h["levels"].Any(l => l.Value<string>("column").EqualsI(newColumn.Name))).ToList())
+                        {
+                            hierarchy.Remove();
+                        }
+                        if (tmslModel["relationships"] != null) foreach (JObject relationship in tmslModel["relationships"].Where(r => r.Value<string>("fromColumn").EqualsI(newColumn.Name)
+                        || r.Value<string>("toColumn").EqualsI(newColumn.Name)).ToList())
+                        {
+                            relationship.Remove();
+                        }
+                        if (tmslModel["roles"] != null) foreach (JObject modelRole in tmslModel["roles"])
+                            GetNamedObj(modelRole["tablePermissions"], newTable.Name)?.Remove();
+                        // Todo: Variants, Alternates, (other objects that can reference a column?)
+
+                        needsTwoStepCreateOrReplace = true;
+                        continue;
+                    }
+                }
+            }
+
+            if(needsTwoStepCreateOrReplace)
+            {
+                return new JObject(
+                    new JProperty("sequence",
+                        new JObject(
+                            new JProperty("operations",
+                                new JArray(tmsl, orgTmsl))))).ToString();
+            }
+
+            return tmsl.ToString();
         }
     }
 

@@ -39,6 +39,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.AnalysisServices.Core, Version=18.0.9.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.18.0.9\lib\net45\Microsoft.AnalysisServices.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AnalysisServices.Tabular, Version=18.0.9.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.18.0.9\lib\net45\Microsoft.AnalysisServices.Tabular.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AnalysisServices.Tabular.Json, Version=18.0.9.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.18.0.9\lib\net45\Microsoft.AnalysisServices.Tabular.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\MSTest.TestFramework.2.0.0\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
     </Reference>
@@ -72,6 +81,7 @@
     <Compile Include="RegressionTests\v2_8_1\DeleteObjectTests.cs" />
     <Compile Include="RegressionTests\v2_8_5\LockedTreeTests.cs" />
     <Compile Include="RegressionTests\v2_8_5\ErrorReportingTests.cs" />
+    <Compile Include="RegressionTests\v2_8_6\DeploymentTests.cs" />
     <Compile Include="TabularModelHandlerTests.cs" />
     <Compile Include="TestGenerator.cs">
       <DependentUpon>TestGenerator.tt</DependentUpon>
@@ -97,6 +107,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="AdventureWorks.bim">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="AdventureWorks2.bim">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />

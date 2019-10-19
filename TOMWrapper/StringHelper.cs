@@ -84,6 +84,7 @@ namespace TabularEditor
         /// <returns></returns>
         public static bool EqualsI(this string str, string other)
         {
+            if (str == null || other == null) return str == other;
             return str.Equals(other, StringComparison.InvariantCultureIgnoreCase);
         }
     }

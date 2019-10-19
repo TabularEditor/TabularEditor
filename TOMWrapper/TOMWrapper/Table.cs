@@ -497,5 +497,10 @@ namespace TabularEditor.TOMWrapper
         {
             return table.Partitions.FirstOrDefault()?.SourceType ?? TOM.PartitionSourceType.None;
         }
+        public static bool IsCalculatedOrCalculationGroup(this TOM.Table table)
+        {
+            var sourceType = GetSourceType(table);
+            return sourceType == TOM.PartitionSourceType.Calculated || sourceType == TOM.PartitionSourceType.CalculationGroup;
+        }
     }
 }
