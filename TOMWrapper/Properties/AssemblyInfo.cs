@@ -21,3 +21,4 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("19dde9a0-227f-4e8b-849d-c91c25322826")]
+[assembly: InternalsVisibleTo("TOMWrapperTest")]
