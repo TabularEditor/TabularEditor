@@ -295,7 +295,7 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// This method encapsulates the logic of how the tree representation of the tabular model should be structured
         /// </summary>
-        protected IEnumerable<ITabularNamedObject> GetChildren(ITabularObjectContainer tabularObject)
+        protected internal IEnumerable<ITabularNamedObject> GetChildren(ITabularObjectContainer tabularObject)
         {
             IEnumerable<ITabularNamedObject> result = Enumerable.Empty<ITabularNamedObject>();
 

@@ -135,9 +135,11 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         private void AttachCalculatedTableMetadata()
         {
+            //Model.MetadataObject.Database.Update();
             foreach (var ct in Model.Tables.OfType<CalculatedTable>())
             {
                 ct.Columns.CreateChildrenFromMetadata();
+                Tree.RebuildFolderCacheForTable(ct);
                 Tree.OnStructureChanged(ct);
             }
             /*if (CTCMetadataBackup == null) return;
