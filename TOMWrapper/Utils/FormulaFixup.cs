@@ -36,7 +36,7 @@ namespace TabularEditor.TOMWrapper.Utils
         public static DependsOnList GetDependencies(IDaxDependantObject expressionObj, string dax, DAXProperty prop)
         {
             var dependsOn = new DependsOnList(null);
-            ParseExpression(dax, expressionObj, prop, dependsOn);
+            ParseExpression(dax.Replace("\r", ""), expressionObj, prop, dependsOn);
             return dependsOn;
         }
 
@@ -153,8 +153,8 @@ namespace TabularEditor.TOMWrapper.Utils
 
             foreach (var prop in expressionObj.GetDAXProperties())
             {
-                var dax = expressionObj.GetDAX(prop) ?? "";
-                ParseExpression(dax, expressionObj, prop);
+                var dax = expressionObj.GetDAX(prop) ?? "";  
+                ParseExpression(dax.Replace("\r", ""), expressionObj, prop); // Carriage Returns are excluded in the Dependency Tree
             }
         }
 

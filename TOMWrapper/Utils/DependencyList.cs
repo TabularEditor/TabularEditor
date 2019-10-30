@@ -74,15 +74,32 @@ namespace TabularEditor.TOMWrapper.Utils
             depList.Add(dep);
         }
 
+        readonly int DaxPropertyCount = Enum.GetValues(typeof(DAXProperty)).Length;
+
         internal void UpdateRef(IDaxObject renamedObj)
         {
+            // This method is called on a DependsOnList, which belongs to a IDaxDependantObject. The argument is the IDaxObject which was typically renamed.
+            // For example: The DependsOnList could be attached to a Measure [MyMeasure] with an expression such as: "COUNTROWS('MyTable')". If the name of 
+            // 'MyTable' was changed, this method would be called with 'MyTable' as the renamedObj and [MyMeasure] as Parent. It is then up to this method
+            // to loop through all object references to 'MyTable' (see #1). As an IDaxDependantObject can have more than one DAX expression property, and an
+            // object reference to 'MyTable' could exist in any of them, we must make sure to loop all the properties (#2)
+
             List<ObjectReference> depList;
-            if (TryGetValue(renamedObj, out depList))
+            if (TryGetValue(renamedObj, out depList))   // #1 Get a list of object references for renamedObj
             {
-                var propertyCount = Enum.GetValues(typeof(DAXProperty)).Length;
-                var pos = new int[propertyCount];
-                var sbs = new StringBuilder[propertyCount];
-                for (var i = 0; i < propertyCount; i++) sbs[i] = new StringBuilder();
+                var orgDax = new string[DaxPropertyCount];
+                var pos = new int[DaxPropertyCount];
+                var sbs = new StringBuilder[DaxPropertyCount];
+
+                foreach(var prop in Parent.GetDAXProperties())  // #2 Initialize a string buider and the original DAX for every DAX property on Parent
+                {
+                    var dax = Parent.GetDAX(prop);
+                    if (dax != null)
+                    {
+                        sbs[(int)prop] = new StringBuilder();
+                        orgDax[(int)prop] = dax.Replace("\r", ""); // Carriage Returns are excluded when the dependency tree is built
+                    }
+                }
 
                 // Loop through all dependencies:
                 foreach (var dep in depList)
@@ -91,18 +108,20 @@ namespace TabularEditor.TOMWrapper.Utils
 
                     var sb = sbs[propIx];
 
-                    sb.Append(Parent.GetDAX(dep.property).Substring(pos[propIx], dep.from - pos[propIx]));
+                    sb.Append(orgDax[propIx].Substring(pos[propIx], dep.from - pos[propIx]));
                     sb.Append(dep.fullyQualified ? renamedObj.DaxObjectFullName : renamedObj.DaxObjectName);
                     pos[propIx] = dep.to + 1;
                 }
 
                 // Finalize:
-                for (var i = 0; i < propertyCount; i++)
+                foreach (var prop in Parent.GetDAXProperties())
                 {
-                    if (pos[i] > 0)
+                    var propIx = (int)prop;
+
+                    if (pos[propIx] > 0)
                     {
-                        sbs[i].Append(Parent.GetDAX((DAXProperty)i).Substring(pos[i]));
-                        Parent.SetDAX((DAXProperty)i, sbs[i].ToString());
+                        sbs[propIx].Append(orgDax[propIx].Substring(pos[propIx]));
+                        Parent.SetDAX(prop, sbs[propIx].ToString());
                     }
                 }
             }

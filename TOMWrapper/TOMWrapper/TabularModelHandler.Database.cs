@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.Utils;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
@@ -74,6 +75,9 @@ namespace TabularEditor.TOMWrapper
                 database.Model.SaveChanges();
 
                 AttachCalculatedTableMetadata();
+
+                // Rebuild dependency tree, as expressions may have changed server-side when saving:
+                //FormulaFixup.BuildDependencyTree();
 
                 // If reattaching Calculated Table metadata caused local changes, let's save the model again:
                 //if (database.Model.HasLocalChanges) database.Model.SaveChanges();
