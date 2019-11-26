@@ -30,11 +30,10 @@ namespace TabularEditor.UIServices
         {
             if (filePath != null)
             {
-                var attr = File.GetAttributes(filePath);
-                if (attr.HasFlag(FileAttributes.Directory))
+                if (Directory.Exists(filePath))
                     return filePath;
-                else
-                    return (new FileInfo(filePath)).DirectoryName;
+
+                return (new FileInfo(filePath)).DirectoryName;
             }
             return null;
         }
