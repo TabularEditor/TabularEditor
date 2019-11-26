@@ -138,6 +138,7 @@ namespace TabularEditor.TOMWrapper
                 // DataColumns and Partitions can only be deserialized onto a Table destination (not CalculatedTable):
                 foreach (var obj in objectContainer.Get<DataColumn>()) inserted.Add(Serializer.DeserializeDataColumn(obj, destTable));
                 foreach (var obj in objectContainer.Get<Partition>()) inserted.Add(Serializer.DeserializePartition(obj, destTable));
+                foreach (var obj in objectContainer.Get<MPartition>()) inserted.Add(Serializer.DeserializeMPartition(obj, destTable));
             }
 
             if (destTable is Table)

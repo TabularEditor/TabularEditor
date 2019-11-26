@@ -60,8 +60,9 @@ namespace TabularEditor.TOMWrapper
 		public static readonly Type[] Creatable = {
 <# foreach(var t in Rules.ObjectTypes.Keys.Where(obj => Rules.IsCreatable(obj))) { #>
             typeof(<#= t.Name #>),
-<# } #>	        typeof(CalculatedTable),
-				typeof(CalculationGroupTable)
+<# } #>	        typeof(MPartition),
+			typeof(CalculatedTable),
+			typeof(CalculationGroupTable)
         };
 	}
 <#
@@ -465,7 +466,7 @@ if(Rules.GetParent(t) == "Model") { #>
 		/// <summary>
 		/// Creates an exact copy of this <#= t.Name #> object.
 		/// </summary>
-		public <#= t.Name #> Clone(string newName = null<#= 
+		public <#= Rules.Sealed(t) ? "" : "virtual " #><#= t.Name #> Clone(string newName = null<#= 
 Rules.IsTranslatable(t, true) ? ", bool includeTranslations = true" : "" #><#=
 Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" : "" #>) {
 			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(<#= t.Name #>))) {

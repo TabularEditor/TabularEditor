@@ -48,7 +48,7 @@ namespace TabularEditor.TOMWrapper
             return t;
         }
 
-        [IntelliSense("Adds a new calculation group to the model."), Tests.GenerateTest()]
+        [IntelliSense("Adds a new calculation group to the model."), Tests.GenerateTest(), Tests.CompatibilityLevel(1500)]
         public CalculationGroupTable AddCalculationGroup(string name = null)
         {
             Handler.BeginUpdate("add calculation group");

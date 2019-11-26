@@ -1,6 +1,6 @@
 ﻿<#@ template debug="false" hostspecific="false" language="C#" #>
 <#@ assembly name="System.Core" #>
-<#@ assembly name="$(SolutionDir)TOMWrapper\bin\Debug-CL1400\TOMWrapper.dll" #>
+<#@ assembly name="$(SolutionDir)TOMWrapper\bin\Debug\TOMWrapper.dll" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Reflection" #>
@@ -9,7 +9,7 @@
 <#@ import namespace="TabularEditor.TOMWrapper.Tests" #>
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TabularEditor.TOMWrapper.Utils;
+using TabularEditor.TOMWrapper.Serialization;
 
 namespace TabularEditor.TOMWrapper.Tests
 {
@@ -39,7 +39,7 @@ namespace TabularEditor.TOMWrapper.Tests
 		{ typeof(Table), "Model.Tables[0]" },
 	};
 
-	foreach(var CL in new[]{1200,1400}) {
+	foreach(var CL in new[]{1200,1400,1500}) {
 
 		foreach(var bc in baseClasses) {
 

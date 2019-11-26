@@ -173,11 +173,11 @@ namespace TabularEditor.TOMWrapper
 
         public static ModeType GetMode(this Partition partition)
         {
-            return partition.Mode == ModeType.Default ? partition.Model.DefaultMode : partition.Mode;
+            return partition.Mode == ModeType.Default ? (partition.Model?.DefaultMode ?? ModeType.Import) : partition.Mode;
         }
         public static string GetMode(this Table table)
         {
-            var p1 = table.Partitions.First().GetMode();
+            var p1 = table.Partitions.FirstOrDefault()?.GetMode() ?? ModeType.Import;
             return table.Partitions.All(p => p.GetMode() == p1) ? p1.ToString() : "Mixed";
         }
 
