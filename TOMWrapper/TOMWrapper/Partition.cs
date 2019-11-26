@@ -198,6 +198,29 @@ namespace TabularEditor.TOMWrapper
 
     public class MPartition: Partition
     {
+        public override Partition Clone(string newName = null, Table newParent = null)
+        {
+            if (TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Partition)))
+            {
+                throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject, typeof(Partition).GetTypeName()));
+            }
+
+            Handler.BeginUpdate("Clone Partition");
+
+            // Create a clone of the underlying metadataobject:
+            var tom = MetadataObject.Clone() as TOM.Partition;
+
+
+            // Assign a new, unique name:
+            tom.Name = Parent.Partitions.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+
+            // Create the TOM Wrapper object, representing the metadataobject
+            MPartition obj = CreateFromMetadata(newParent ?? Parent, tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+        }
 
         protected override void Init()
         {

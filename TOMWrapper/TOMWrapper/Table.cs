@@ -70,6 +70,26 @@ namespace TabularEditor.TOMWrapper
             return measure;
         }
 
+        [IntelliSense("Adds a new (legacy) partition to the table."), Tests.GenerateTest()]
+        public Partition AddPartition(string name = null, string query = null)
+        {
+            Handler.BeginUpdate("add partition");
+            var partition = Partition.CreateNew(this, name);
+            if (!string.IsNullOrEmpty(query)) partition.Query = query;
+            Handler.EndUpdate();
+            return partition;
+        }
+
+        [IntelliSense("Adds a new M partition to the table."), Tests.GenerateTest(), Tests.CompatibilityLevel(1400)]
+        public MPartition AddMPartition(string name = null, string expression = null)
+        {
+            Handler.BeginUpdate("add partition");
+            var partition = MPartition.CreateNew(this, name);
+            if(!string.IsNullOrEmpty(expression)) partition.Expression = expression;
+            Handler.EndUpdate();
+            return partition;
+        }
+
         [IntelliSense("Adds a new calculated column to the table."),Tests.GenerateTest()]
         public CalculatedColumn AddCalculatedColumn(string name = null, string expression = null, string displayFolder = null)
         {

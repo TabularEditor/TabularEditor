@@ -225,8 +225,9 @@ namespace TabularEditor.TOMWrapper
             typeof(NamedExpression),
             typeof(CalculationItem),
             typeof(TablePermission),
-	        typeof(CalculatedTable),
-				typeof(CalculationGroupTable)
+	        typeof(MPartition),
+			typeof(CalculatedTable),
+			typeof(CalculationGroupTable)
         };
 	}
 	/// <summary>
@@ -8894,7 +8895,7 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this Partition object.
 		/// </summary>
-		public Partition Clone(string newName = null, Table newParent = null) {
+		public virtual Partition Clone(string newName = null, Table newParent = null) {
 			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Partition))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Partition).GetTypeName()));
 			}
@@ -11251,7 +11252,7 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this Table object.
 		/// </summary>
-		public Table Clone(string newName = null, bool includeTranslations = true) {
+		public virtual Table Clone(string newName = null, bool includeTranslations = true) {
 			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Table))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Table).GetTypeName()));
 			}

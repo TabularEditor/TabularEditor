@@ -277,6 +277,14 @@ namespace TabularEditor.TOMWrapper.Serialization
             return partition;
         }
 
+        public static MPartition DeserializeMPartition(JObject json, Table target)
+        {
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Partition>(json.ToString());
+            tom.Name = target.Partitions.GetNewName(tom.Name);
+            var partition = MPartition.CreateFromMetadata(target, tom);
+            return partition;
+        }
+
         public static CalculatedTable DeserializeCalculatedTable(JObject json, Model model)
         {
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.Table>(json.ToString());

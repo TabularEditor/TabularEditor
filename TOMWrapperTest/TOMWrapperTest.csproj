@@ -83,6 +83,7 @@
     <Compile Include="RegressionTests\v2_8_5\ErrorReportingTests.cs" />
     <Compile Include="RegressionTests\v2_8_6\FormulaFixupTests.cs" />
     <Compile Include="RegressionTests\v2_8_6\DeploymentTests.cs" />
+    <Compile Include="RegressionTests\v2_8_7\ClonePartitionsTests.cs" />
     <Compile Include="TabularModelHandlerTests.cs" />
     <Compile Include="TestGenerator.cs">
       <DependentUpon>TestGenerator.tt</DependentUpon>
