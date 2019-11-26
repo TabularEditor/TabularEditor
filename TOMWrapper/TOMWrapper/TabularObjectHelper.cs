@@ -164,9 +164,21 @@ namespace TabularEditor.TOMWrapper
             if (obj is CalculatedTableColumn) return "Calculated Table Column" + (plural ? "s" : "");
             if (obj is StructuredDataSource) return "Data Source (Power Query)";
             if (obj is ProviderDataSource) return "Data Source (Legacy)";
-            if (obj is MPartition) return "Partition (Power Query)";
-            if (obj is Partition) return "Partition (Legacy)";
+            if (obj is MPartition p1) return $"Partition (M - {p1.GetMode()})";
+            if (obj is Partition p2) return $"Partition (Legacy - {p2.GetMode()})";
+            if (obj is CalculationGroupTable) return $"Calculation Group" + (plural ? "s" : "");
+            if (obj is Table t) return $"Table ({t.GetMode()})";
             else return obj.ObjectType.GetTypeName(plural);
+        }
+
+        public static ModeType GetMode(this Partition partition)
+        {
+            return partition.Mode == ModeType.Default ? partition.Model.DefaultMode : partition.Mode;
+        }
+        public static string GetMode(this Table table)
+        {
+            var p1 = table.Partitions.First().GetMode();
+            return table.Partitions.All(p => p.GetMode() == p1) ? p1.ToString() : "Mixed";
         }
 
         public static string GetTypeName(this Type type, bool plural = false)

@@ -275,6 +275,10 @@ namespace TabularEditor.TOMWrapper
             {
                 if (Model.CalculationGroups.Any()) throw new ArgumentOutOfRangeException(Properties.DISCOURAGEIMPLICITMEASURES, "This property must be set 'True' when a model contains calculation groups.");
             }
+            if(propertyName == Properties.DEFAULTMODE && (ModeType)newValue != ModeType.Import && (ModeType)newValue != ModeType.DirectQuery)
+            {
+                throw new ArgumentOutOfRangeException(Properties.DEFAULTMODE, "This property must be set to either 'Import' or 'DirectQuery'.");
+            }
             base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
         }
 
