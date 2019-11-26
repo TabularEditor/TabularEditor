@@ -233,6 +233,10 @@ namespace TabularEditor.TOMWrapper
                     return Handler.CompatibilityLevel >= 1400;
                 case Properties.FORCEUNIQUENAMES:
                     return Handler.CompatibilityLevel >= 1465;
+                case Properties.DISCOURAGEIMPLICITMEASURES:
+                    return Handler.CompatibilityLevel >= 1470;
+                case Properties.DATASOURCEDEFAULTMAXCONNECTIONS:
+                    return Handler.CompatibilityLevel >= 1510;
                 default:
                     return base.IsBrowsable(propertyName);
             }

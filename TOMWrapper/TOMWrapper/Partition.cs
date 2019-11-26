@@ -127,20 +127,22 @@ namespace TabularEditor.TOMWrapper
         {
             switch(propertyName)
             {
+                case Properties.CUBENAME:
+                    return Handler.CompatibilityLevel >= 1510;
                 case "DataSource":
                 case "Query":
                     return SourceType == PartitionSourceType.Query;
-                case "Expression":
+                case Properties.EXPRESSION:
                     return SourceType == PartitionSourceType.Calculated || SourceType == PartitionSourceType.M;
-                case "Mode":
-                case "DataView":
-                case "Description":
-                case "Name":
-                case "RefreshedTime":
-                case "ObjectTypeName":
-                case "State":
-                case "SourceType":
-                case "Annotations":
+                case Properties.MODE:
+                case Properties.DATAVIEW:
+                case Properties.DESCRIPTION:
+                case Properties.NAME:
+                case Properties.REFRESHEDTIME:
+                case Properties.OBJECTTYPENAME:
+                case Properties.STATE:
+                case Properties.SOURCETYPE:
+                case Properties.ANNOTATIONS:
                     return true;
                 default:
                     return false;
