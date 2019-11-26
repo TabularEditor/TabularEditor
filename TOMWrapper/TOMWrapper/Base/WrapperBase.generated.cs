@@ -32,11 +32,13 @@ namespace TabularEditor.TOMWrapper
 	    public const string CONTEXTEXPRESSION = "ContextExpression";
 	    public const string CREDENTIAL = "Credential";
 	    public const string CROSSFILTERINGBEHAVIOR = "CrossFilteringBehavior";
+	    public const string CUBENAME = "CubeName";
 	    public const string CULTURE = "Culture";
 	    public const string CULTURES = "Cultures";
 	    public const string DATAACCESSOPTIONS = "DataAccessOptions";
 	    public const string DATABASE = "Database";
 	    public const string DATACATEGORY = "DataCategory";
+	    public const string DATASOURCEDEFAULTMAXCONNECTIONS = "DataSourceDefaultMaxConnections";
 	    public const string DATASOURCES = "DataSources";
 	    public const string DATASOURCEVARIABLESOVERRIDEBEHAVIOR = "DataSourceVariablesOverrideBehavior";
 	    public const string DATATYPE = "DataType";
@@ -7209,6 +7211,30 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeDiscourageImplicitMeasures() { return false; }
 /// <summary>
+///             DataSourceDefaultMaxConnections will be used for connections to a data source if MaxConnections is set to -1 on the data source object or if there is no corresponding data source object for the data source.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1510 or above.</remarks>
+		[DisplayName("Data Source Default Max Connections")]
+		[Category("Other"),Description(@"DataSourceDefaultMaxConnections will be used for connections to a data source if MaxConnections is set to -1 on the data source object or if there is no corresponding data source object for the data source."),IntelliSense(@"DataSourceDefaultMaxConnections will be used for connections to a data source if MaxConnections is set to -1 on the data source object or if there is no corresponding data source object for the data source.")]
+		public int DataSourceDefaultMaxConnections {
+			get {
+			    return MetadataObject.DataSourceDefaultMaxConnections;
+			}
+			set {
+				
+				var oldValue = DataSourceDefaultMaxConnections;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.DATASOURCEDEFAULTMAXCONNECTIONS, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.DataSourceDefaultMaxConnections = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DATASOURCEDEFAULTMAXCONNECTIONS, oldValue, newValue));
+				OnPropertyChanged(Properties.DATASOURCEDEFAULTMAXCONNECTIONS, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeDataSourceDefaultMaxConnections() { return false; }
+/// <summary>
 ///             A reference to a default measure.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("Default Measure")]
@@ -8794,6 +8820,30 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeErrorMessage() { return false; }
+/// <summary>
+///             Partition's cube name for v3 PartitionSourceType_Entity 
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1510 or above.</remarks>
+		[DisplayName("Cube Name")]
+		[Category("Other"),Description(@"Partition's cube name for v3 PartitionSourceType_Entity"),IntelliSense(@"Partition's cube name for v3 PartitionSourceType_Entity")]
+		public string CubeName {
+			get {
+			    return MetadataObject.CubeName;
+			}
+			set {
+				
+				var oldValue = CubeName;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.CUBENAME, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.CubeName = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.CUBENAME, oldValue, newValue));
+				OnPropertyChanged(Properties.CUBENAME, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeCubeName() { return false; }
 		///<summary>The parent table of the current Partition.</summary>
 		[Browsable(false)]
 		public Table Table
@@ -9012,6 +9062,18 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("DataView"));
 				this.ToList().ForEach(item => { item.DataView = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the CubeName property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the CubeName property of all objects in the collection at once.")]
+		public string CubeName {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("CubeName"));
+				this.ToList().ForEach(item => { item.CubeName = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}

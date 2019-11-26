@@ -55,3 +55,7 @@
 /TOMWrapperTest/bin/Release
 /packages/Microsoft.AnalysisServices.retail.amd64.CTP2019
 /bin/Debug
+/DevExpressUI/bin/Debug
+/DevExpressUI/obj/Debug
+/DevExpressUI/obj/Release
+/DevExpressUITests
