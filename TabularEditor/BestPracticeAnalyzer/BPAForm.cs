@@ -87,11 +87,23 @@ namespace TabularEditor.UI.Dialogs
 
         public void RefreshUI()
         {
+            toolStripStatusLabel1.Text = GetResultsString();
+        }
+
+        private string GetResultsString()
+        {
             var oC = AnalyzerResultsTreeModel.ObjectCount;
             var rC = AnalyzerResultsTreeModel.RuleCount;
             var iC = AnalyzerResultsTreeModel.IgnoredCount;
-            toolStripStatusLabel1.Text = string.Format("{0} object{1} in violation of {2} Best Practice rule{3}.{4}",
-                oC, oC == 1 ? "" : "s", rC, rC == 1 ? "" : "s", iC > 0 ? $" {iC} ignored." : "");
+            var dC = AnalyzerResultsTreeModel.DisabledRulesCount;
+            return string.Format("{0} object{1} in violation of {2} Best Practice rule{3}.{4}{5}",
+                oC,
+                oC == 1 ? "" : "s",
+                rC,
+                rC == 1 ? "" : "s",
+                iC > 1 ? $" {iC} objects ignored." : iC == 1 ? " 1 object ignored." : "",
+                dC > 1 ? $" {dC} rules disabled." : dC == 1 ? " 1 rule disabled." : ""
+                );
         }
 
         public void Analyze(IEnumerable<BestPracticeRule> rules)

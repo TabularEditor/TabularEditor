@@ -277,7 +277,7 @@ namespace TabularEditor.BestPracticeAnalyzer
                 yield return new AnalyzerResult
                 {
                     Rule = this,
-                    RuleIgnored = true
+                    RuleEnabled = false
                 };
                 yield break;
             }

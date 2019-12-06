@@ -66,6 +66,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         public int RuleCount { get; private set; } = 0;
         public int ObjectCount { get; private set; } = 0;
         public int IgnoredCount { get; private set; } = 0;
+        public int DisabledRulesCount { get; private set; } = 0;
         public int ObjectCountByRule(BestPracticeRule rule)
         {
             return ResultsByRule(rule).Count(r => !r.Ignored);
@@ -88,7 +89,7 @@ namespace TabularEditor.BestPracticeAnalyzer
             _allResults = results.Where(r => !r.InvalidCompatibilityLevel && !r.RuleHasError)
                 .GroupBy(r => r.Rule, r => r).ToDictionary(r => r.Key, r => r.ToList());
 
-            _results = results.Where(r => !r.InvalidCompatibilityLevel && !r.RuleHasError && !r.Ignored && !r.RuleIgnored)
+            _results = results.Where(r => !r.InvalidCompatibilityLevel && !r.RuleHasError && !r.Ignored && r.RuleEnabled)
                 .GroupBy(r => r.Rule, r => r).ToDictionary(r => r.Key, r => r.ToList());
 
             if (!results.SequenceEqual(_rawResults))
@@ -96,7 +97,8 @@ namespace TabularEditor.BestPracticeAnalyzer
                 _rawResults = results.ToList();
                 RuleCount = _results.Count;
                 ObjectCount = _results.Sum(r => r.Value.Count);
-                IgnoredCount = _allResults.Sum(r => r.Value.Count) - ObjectCount;
+                IgnoredCount = _allResults.Sum(r => r.Value.Count(res => res.Ignored));
+                DisabledRulesCount = _allResults.Sum(r => r.Value.Count(res => !res.RuleEnabled));
                 OnStructureChanged();
 
                 UpdateComplete?.Invoke(this, new EventArgs());
@@ -134,7 +136,7 @@ namespace TabularEditor.BestPracticeAnalyzer
             else
             {
                 if (ShowIgnored)
-                    return _allResults[treePath.LastNode as BestPracticeRule];
+                    return _allResults[treePath.LastNode as BestPracticeRule].Where(r => r.Object != null);
                 else
                     return _results[treePath.LastNode as BestPracticeRule];
             }
@@ -168,7 +170,7 @@ namespace TabularEditor.BestPracticeAnalyzer
 
     public class AnalyzerResult
     {
-        public bool RuleIgnored { get; set; }
+        public bool RuleEnabled { get; set; } = true;
         public bool RuleHasError { get { return !string.IsNullOrEmpty(RuleError); } }
         public bool InvalidCompatibilityLevel { get; set; }
         public string RuleError { get; set; }
@@ -189,6 +191,9 @@ namespace TabularEditor.BestPracticeAnalyzer
         public void Fix() {
             throw new NotImplementedException();
         }
+        /// <summary>
+        /// Indicates whether this rule should be ignored on this particular object
+        /// </summary>
         public bool Ignored
         {
             get
