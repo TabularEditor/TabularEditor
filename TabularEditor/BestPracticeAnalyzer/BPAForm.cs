@@ -89,8 +89,9 @@ namespace TabularEditor.UI.Dialogs
         {
             var oC = AnalyzerResultsTreeModel.ObjectCount;
             var rC = AnalyzerResultsTreeModel.RuleCount;
-            toolStripStatusLabel1.Text = string.Format("{0} object{1} in violation of {2} Best Practice rule{3}.",
-                oC, oC == 1 ? "" : "s", rC, rC == 1 ? "" : "s");
+            var iC = AnalyzerResultsTreeModel.IgnoredCount;
+            toolStripStatusLabel1.Text = string.Format("{0} object{1} in violation of {2} Best Practice rule{3}.{4}",
+                oC, oC == 1 ? "" : "s", rC, rC == 1 ? "" : "s", iC > 0 ? $" {iC} ignored." : "");
         }
 
         public void Analyze(IEnumerable<BestPracticeRule> rules)

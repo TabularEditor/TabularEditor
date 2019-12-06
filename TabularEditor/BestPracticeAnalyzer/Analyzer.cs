@@ -51,10 +51,21 @@ namespace TabularEditor.BestPracticeAnalyzer
         public event EventHandler<TreePathEventArgs> StructureChanged;
         public event EventHandler<EventArgs> UpdateComplete;
 
+        List<AnalyzerResult> _rawResults = new List<AnalyzerResult>();
+
+        /// <summary>
+        /// Results excluding ignored rules/items
+        /// </summary>
         Dictionary<BestPracticeRule, List<AnalyzerResult>> _results;
+
+        /// <summary>
+        /// Results including ignored rules/items
+        /// </summary>
+        Dictionary<BestPracticeRule, List<AnalyzerResult>> _allResults;
 
         public int RuleCount { get; private set; } = 0;
         public int ObjectCount { get; private set; } = 0;
+        public int IgnoredCount { get; private set; } = 0;
         public int ObjectCountByRule(BestPracticeRule rule)
         {
             return ResultsByRule(rule).Count(r => !r.Ignored);
@@ -74,18 +85,24 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         public void Update(IEnumerable<AnalyzerResult> results)
         {
-            var newResults = results.Where(r => !r.InvalidCompatibilityLevel && !r.RuleHasError)
-                .GroupBy(r => r.Rule, r => r).ToDictionary(r => r.Key, r => r.Where(res => !res.RuleIgnored).ToList());
+            _allResults = results.Where(r => !r.InvalidCompatibilityLevel && !r.RuleHasError)
+                .GroupBy(r => r.Rule, r => r).ToDictionary(r => r.Key, r => r.ToList());
 
-            if(!newResults.Any() || !newResults.SelectMany(r => r.Value).SequenceEqual(_results.SelectMany(r => r.Value)))
+            _results = results.Where(r => !r.InvalidCompatibilityLevel && !r.RuleHasError && !r.Ignored && !r.RuleIgnored)
+                .GroupBy(r => r.Rule, r => r).ToDictionary(r => r.Key, r => r.ToList());
+
+            if (!results.SequenceEqual(_rawResults))
             {
-                _results = newResults;
+                _rawResults = results.ToList();
                 RuleCount = _results.Count;
                 ObjectCount = _results.Sum(r => r.Value.Count);
+                IgnoredCount = _allResults.Sum(r => r.Value.Count) - ObjectCount;
                 OnStructureChanged();
 
                 UpdateComplete?.Invoke(this, new EventArgs());
             }
+            
+
         }
 
         private void OnStructureChanged()
@@ -113,13 +130,13 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         public IEnumerable GetChildren(TreePath treePath)
         {
-            if (treePath.IsEmpty()) return _results.Keys.Where(r => r.Enabled || ShowIgnored);
+            if (treePath.IsEmpty()) return ShowIgnored ? _allResults.Keys : _results.Keys;
             else
             {
                 if (ShowIgnored)
-                    return _results[treePath.LastNode as BestPracticeRule];
+                    return _allResults[treePath.LastNode as BestPracticeRule];
                 else
-                    return _results[treePath.LastNode as BestPracticeRule].Where(r => !r.Ignored);
+                    return _results[treePath.LastNode as BestPracticeRule];
             }
         }
 
