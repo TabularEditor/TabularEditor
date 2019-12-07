@@ -19,7 +19,7 @@ namespace TabularEditor.UI.Dialogs
 
         private void NewModelDialog_Shown(object sender, EventArgs e)
         {
-            comboBox1.SelectedIndex = 0;
+            comboBox1.SelectedIndex = 2;
         }
 
         public int CompatibilityLevel
