@@ -384,6 +384,7 @@ namespace TabularEditor.TOMWrapper.Serialization
         {
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.CalculationItem>(json.ToString());
             tom.Name = calculationGroupTable.CalculationItems.GetNewName(tom.Name);
+            tom.Ordinal = calculationGroupTable.CalculationItems.Any(i => i.Ordinal != -1) ? calculationGroupTable.CalculationItems.Max(i => i.Ordinal) + 1 : -1;
 
             var calculationItem = CalculationItem.CreateFromMetadata(calculationGroupTable.CalculationGroup, tom);
             return calculationItem;

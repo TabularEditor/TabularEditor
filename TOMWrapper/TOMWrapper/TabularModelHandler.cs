@@ -253,7 +253,7 @@ namespace TabularEditor.TOMWrapper
                 }
                 else if (errObj is CalculationItem ci)
                 {
-                    var parentTable = ci.CalculationGroup;
+                    var parentTable = ci.CalculationGroupTable;
                     parentTable.AddError(ci);
                 }
             }

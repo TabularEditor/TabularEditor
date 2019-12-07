@@ -48,9 +48,37 @@ namespace TabularEditor.TOMWrapper
             Handler.EndUpdate();
         }
 
+        public void ReorderCalculationItems(IEnumerable<CalculationItem> items, int firstOrdinal)
+        {
+            if (items.Count() == 0) return;
+            var calcGroup = items.First().CalculationGroupTable;
+            if (calcGroup == null || items.Select(l => l.CalculationGroupTable).Distinct().Count() != 1) throw new ArgumentException("When reordering calculation items, all items must belong to the same calculation group.");
+
+            if (firstOrdinal < 0) firstOrdinal = 0;
+            if (firstOrdinal > calcGroup.CalculationItems.Count) firstOrdinal = calcGroup.CalculationItems.Count;
+
+            Handler.BeginUpdate("level reorder");
+            calcGroup.Reordering = true;
+
+            var aboveMoved = calcGroup.CalculationItems.OrderBy(l => l.Ordinal).Take(firstOrdinal).Except(items);
+            var others = calcGroup.CalculationItems.OrderBy(l => l.Ordinal).Skip(firstOrdinal).Except(items);
+
+            var list = aboveMoved.Concat(items).Concat(others).ToList();
+
+            calcGroup.SetLevelOrder(list);
+
+            calcGroup.Reordering = false;
+            Handler.EndUpdate();
+        }
+
         public void AddColumnsToHierarchy(IEnumerable<Column> columns, Hierarchy hierarchy, int firstOrdinal = -1)
         {
             hierarchy.AddLevels(columns, firstOrdinal);
+        }
+
+        public void AddCalcItemsToCalcGroup(IEnumerable<CalculationItem> items, CalculationGroupTable destination, int firstOrdinal = -1)
+        {
+
         }
 
         public Level AddColumnToHierarchy(Column column, Hierarchy hierarchy, int ordinal = -1)
@@ -210,8 +238,11 @@ namespace TabularEditor.TOMWrapper
             if(Handler.CompatibilityLevel >= 1470)
             {
                 CalculationGroupTable destCalcGroup = destination is CalculationGroupTable cgt ? cgt : 
-                    (destination is CalculationItem ci ? ci.CalculationGroup : null);
-                if(destCalcGroup != null) foreach (var obj in objectContainer.Get<CalculationItem>()) inserted.Add(Serializer.DeserializeCalculationItem(obj, destCalcGroup));
+                    (destination is CalculationItem ci ? ci.CalculationGroupTable : null);
+                if (destCalcGroup != null)
+                {
+                    foreach (var obj in objectContainer.Get<CalculationItem>()) inserted.Add(Serializer.DeserializeCalculationItem(obj, destCalcGroup));
+                }
                 foreach (var obj in objectContainer.Get<CalculationGroupTable>()) inserted.Add(Serializer.DeserializeCalculationGroupTable(obj, Handler.Model));
             }
 
@@ -268,9 +299,17 @@ namespace TabularEditor.TOMWrapper
             return result;
         }
 
+        public void MoveCalculationItem(CalculationItem item, CalculationGroupTable newCgt)
+        {
+            var name = item.Name;
+            item.Delete();
+            item.RenewMetadataObject();
+            item.MetadataObject.Name = newCgt.CalculationItems.GetNewName(name);
+            newCgt.CalculationItems.Add(item);
+        }
+
         public void MoveObject(IFolderObject sourceObject, Table newDestinationTable, bool allowOverwrite)
         {
-            var name = sourceObject.Name;
             if (sourceObject is Measure m)
             {
                 var kpi = m.KPI;
@@ -281,8 +320,10 @@ namespace TabularEditor.TOMWrapper
             }
             if (sourceObject is CalculatedColumn c)
             {
+                var name = c.Name;
                 c.Delete();
                 c.RenewMetadataObject();
+                c.MetadataObject.Name = newDestinationTable.Columns.GetNewName(name);
                 newDestinationTable.Columns.Add(c);
             }
         }

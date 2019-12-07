@@ -112,6 +112,9 @@ namespace TabularEditor.TOMWrapper
                 case TOM.ObjectType.TablePermission:
                     var tp = obj as TOM.TablePermission;
                     return GetObjectPath(tp.Role) + "." + tp.Table.Name;
+                case TOM.ObjectType.CalculationItem:
+                    var ci = obj as TOM.CalculationItem;
+                    return GetObjectPath(ci.CalculationGroup) + ".CalculationGroup." + ci.Name;
                 default:
                     throw new NotSupportedException($"Cannot create reference for object of type {obj.ObjectType}.");
             }

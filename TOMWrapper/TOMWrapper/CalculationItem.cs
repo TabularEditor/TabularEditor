@@ -17,12 +17,12 @@ namespace TabularEditor.TOMWrapper
         protected override void Init()
         {
             if (!string.IsNullOrEmpty(ErrorMessage))
-                CalculationGroup.AddError(this);
+                CalculationGroupTable.AddError(this);
             base.Init();
         }
 
         [Browsable(false)]
-        public CalculationGroupTable CalculationGroup => Parent.Table as CalculationGroupTable;
+        public CalculationGroupTable CalculationGroupTable => Parent.Table as CalculationGroupTable;
         /// <summary>
         ///             A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError. It is applicable only to columns of the type Calculated or CalculatedTableColumn. It will be empty for other column objects.
         ///             </summary>
@@ -77,9 +77,16 @@ namespace TabularEditor.TOMWrapper
         }
         public bool ShouldSerializeFormatStringExpression() { return false; }
         
-
-        //[Browsable(false)]
-        //public CalculationGroupAttribute Field => CalculationGroup.NameField;
+        protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
+        {
+            if (propertyName == Properties.ORDINAL)
+            {
+                // No automatic handling of Ordinal changes. We will handle it manually in the calculation group's FixItemOrder() method.
+                cancel = true;
+                this.MetadataObject.Ordinal = (int)newValue;
+                CalculationGroupTable.FixItemOrder(this, (int)newValue);
+            }
+        }
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
@@ -134,6 +141,9 @@ namespace TabularEditor.TOMWrapper
         bool ITabularObject.IsRemoved => false;
 
         Table ITabularTableObject.Table => CalculationGroup.Table;
+
+        [Browsable(false)]
+        public CalculationGroupTable CalculationGroupTable => CalculationGroup.Table as CalculationGroupTable;
 
         [ReadOnly(true), Category("Basic"), DisplayName("Object Type")]
         public string ObjectTypeName => "Calculation Group";

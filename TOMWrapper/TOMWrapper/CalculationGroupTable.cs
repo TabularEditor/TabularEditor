@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TabularEditor.PropertyGridUI;
+using TabularEditor.TOMWrapper.Undo;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -20,6 +21,8 @@ namespace TabularEditor.TOMWrapper
         {
             var item = CalculationItem.CreateNew(CalculationGroup, string.IsNullOrEmpty(name) ? "New Calculation" : name);
             if (expression != null) item.Expression = expression;
+            if (CalculationItems.Any(i => i.Ordinal != -1))
+                item.Ordinal = CalculationItems.Max(i => i.Ordinal) + 1;
             return item;
         }
 
@@ -40,6 +43,90 @@ namespace TabularEditor.TOMWrapper
         {
             CalculationItemErrors = null;
             base.ClearError();
+        }
+
+        internal bool DisableReordering = false;
+        private bool _reordering = false;
+        /// <summary>
+        /// Set to true, when multiple calculation items are going to be re-ordered as one action.
+        /// </summary>
+        [Browsable(false)]
+        public bool Reordering
+        {
+            get
+            {
+                return _reordering;
+            }
+            set
+            {
+                if (value)
+                {
+                    if (_reordering) throw new InvalidOperationException("Re-ordering is already in progress.");
+                    originalOrder = CalculationItems.OrderBy(l => l.Ordinal).ToList();
+                }
+                else
+                {
+                    if (!_reordering) throw new InvalidOperationException("No re-ordering is currently happening.");
+                    CompactLevelOrdinals();
+                    var newOrder = CalculationItems.OrderBy(l => l.Ordinal).ToList();
+                    Handler.UndoManager.Add(new UndoCalculationItemsOrderAction(this, originalOrder, newOrder));
+                    Handler.Tree.OnStructureChanged(this);
+                }
+                _reordering = value;
+            }
+        }
+
+        private List<CalculationItem> originalOrder;
+
+        public void CompactLevelOrdinals()
+        {
+            var ordinal = 0;
+            foreach (var l in CalculationItems.OrderBy(l => l.Ordinal))
+            {
+                l.MetadataObject.Ordinal = ordinal;
+                ordinal++;
+            }
+        }
+
+        public void FixItemOrder(CalculationItem item, int newOrdinal)
+        {
+            if (_reordering) return;
+
+            var before = CalculationItems.OrderBy(l => l.Ordinal).ToList();
+
+            var ordinal = 0;
+            foreach (var l in CalculationItems.OrderBy(l => (l == item ? newOrdinal : l.Ordinal) * 2 - (l == item ? 1 : 0)))
+            {
+                l.MetadataObject.Ordinal = newOrdinal == -1 ? -1 : ordinal;
+                ordinal++;
+            }
+
+            var after = CalculationItems.OrderBy(l => l.Ordinal).ToList();
+
+            Handler.UndoManager.Add(new UndoCalculationItemsOrderAction(this, before, newOrdinal == -1 ? null : after));
+
+            _reordering = false;
+            Handler.Tree.OnStructureChanged(this);
+        }
+
+        public void SetLevelOrder(IList<CalculationItem> order)
+        {
+            if (order == null)
+            {
+                foreach (var item in CalculationItems) item.MetadataObject.Ordinal = -1;
+            }
+            else
+            {
+                if (order.Count != CalculationItems.Count) throw new ArgumentException("Cannot order a hierarchy by a list that does not contain exactly the same levels as the hierarchy iteself.");
+
+                for (var i = 0; i < CalculationItems.Count; i++)
+                {
+                    if (!CalculationItems.Contains(order[i])) throw new ArgumentException("Cannot order a hierarchy by levels in another hierarchy.");
+                    order[i].MetadataObject.Ordinal = i;
+                }
+            }
+
+            Handler.Tree.OnStructureChanged(this);
         }
 
         internal override void PropagateChildErrors()
