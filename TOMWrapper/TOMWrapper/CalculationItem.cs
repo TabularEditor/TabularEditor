@@ -120,7 +120,7 @@ namespace TabularEditor.TOMWrapper
         }
     }
 
-    public partial class CalculationItemCollection : ITabularNamedObject, ITabularObjectContainer, ITabularTableObject
+    public partial class CalculationItemCollection : ITabularNamedObject, ITabularObjectContainer, ITabularTableObject, IInternalAnnotationObject
     {
         [ReadOnly(true)]
         string ITabularNamedObject.Name { get { return "Calculation Items"; } set { } }
@@ -135,6 +135,9 @@ namespace TabularEditor.TOMWrapper
 
         Table ITabularTableObject.Table => CalculationGroup.Table;
 
+        [ReadOnly(true), Category("Basic"), DisplayName("Object Type")]
+        public string ObjectTypeName => "Calculation Group";
+
         event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
         {
             add { throw new NotImplementedException(); }
@@ -147,9 +150,13 @@ namespace TabularEditor.TOMWrapper
         /// clicked.
         /// </summary>
         [DisplayName("Calculation Items"), Description("The collection of Calculation Items on this Calculation Group.")]
-        [Category("Options"), IntelliSense("The collection of Calculation Items on this Calculation Group.")]
+        [Category("Basic"), IntelliSense("The collection of Calculation Items on this Calculation Group.")]
         [NoMultiselect(), Editor(typeof(CalculationItemCollectionEditor), typeof(UITypeEditor))]
         public CalculationItemCollection PropertyGridCalculationItems => this;
+
+        ///<summary>The collection of Annotations on the current Table.</summary>
+        [Browsable(true), NoMultiselect, Category("Options"), Description("The collection of Annotations on the current Calculation Group."), Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        public AnnotationCollection Annotations => CalculationGroup.Annotations;
 
         bool ITabularNamedObject.CanDelete()
         {
@@ -175,6 +182,66 @@ namespace TabularEditor.TOMWrapper
         IEnumerable<ITabularNamedObject> ITabularObjectContainer.GetChildren()
         {
             return this;
+        }
+
+        public void SetAnnotation(int index, string value, bool undoable = false)
+        {
+            ((IInternalAnnotationObject)CalculationGroup).SetAnnotation(index, value, undoable);
+        }
+
+        public void SetAnnotation(string name, string value, bool undoable = false)
+        {
+            ((IInternalAnnotationObject)CalculationGroup).SetAnnotation(name, value, undoable);
+        }
+
+        public void RemoveAnnotation(string name, bool undoable = false)
+        {
+            ((IInternalAnnotationObject)CalculationGroup).RemoveAnnotation(name, undoable);
+        }
+
+        public bool HasAnnotation(string name)
+        {
+            return CalculationGroup.HasAnnotation(name);
+        }
+
+        public string GetAnnotation(int index)
+        {
+            return CalculationGroup.GetAnnotation(index);
+        }
+
+        public string GetAnnotation(string name)
+        {
+            return CalculationGroup.GetAnnotation(name);
+        }
+
+        public string GetNewAnnotationName()
+        {
+            return CalculationGroup.GetNewAnnotationName();
+        }
+
+        public void SetAnnotation(int index, string value)
+        {
+            ((IInternalAnnotationObject)CalculationGroup).SetAnnotation(index, value);
+        }
+
+        public void SetAnnotation(string name, string value)
+        {
+            ((IInternalAnnotationObject)CalculationGroup).SetAnnotation(name, value);
+        }
+
+        public void RemoveAnnotation(string name)
+        {
+            ((IInternalAnnotationObject)CalculationGroup).RemoveAnnotation(name);
+        }
+
+        public int GetAnnotationsCount()
+        {
+            return CalculationGroup.GetAnnotationsCount();
+        }
+
+        public IEnumerable<string> GetAnnotations()
+        {
+            return CalculationGroup.GetAnnotations();
         }
     }
 }
