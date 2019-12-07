@@ -269,7 +269,7 @@ namespace TabularEditor.TOMWrapper
         {
             IEnumerable<ITabularNamedObject> items;
 
-            if (table.SourceType != PartitionSourceType.Calculated && table.ObjectType != ObjectType.CalculationGroup && Options.HasFlag(LogicalTreeOptions.Partitions))
+            if (table.SourceType != PartitionSourceType.Calculated && table.ObjectType != ObjectType.CalculationGroupTable && Options.HasFlag(LogicalTreeOptions.Partitions))
             {
                 yield return table.Partitions;
             }

@@ -231,7 +231,7 @@ namespace TabularEditor.UI
 
         Expression = 1 << 23,
 
-        CalculationGroup = 1 << 24,
+        CalculationGroupTable = 1 << 24,
         CalculationItem = 1 << 25,
         CalculationItemCollection = 1 << 26,
 
@@ -243,10 +243,10 @@ namespace TabularEditor.UI
 
         Everywhere = 0x7FFFFFFF,
         TableObject = Measure | Column | Hierarchy,
-        SingularObjects = Model | Table | TableObject | Level | Partition | Relationship | DataSource | Role | TablePermission | Perspective | Translation | KPI | Expression | CalculationGroup | CalculationItem,
+        SingularObjects = Model | Table | TableObject | Level | Partition | Relationship | DataSource | Role | TablePermission | Perspective | Translation | KPI | Expression | CalculationGroupTable | CalculationItem,
         Groups = Tables | Relationships | DataSources | Roles | Perspectives | Translations | Expressions,
-        DataObjects = CalculationGroup | Table | TableObject,
-        Scriptable = CalculationGroup | Table | Partition | DataSource | Role
+        DataObjects = CalculationGroupTable | Table | TableObject,
+        Scriptable = CalculationGroupTable | Table | Partition | DataSource | Role
     }
 
     /// <summary>
@@ -301,7 +301,7 @@ namespace TabularEditor.UI
                 case ObjectType.Role: return Context.Role;
                 case ObjectType.Relationship: return Context.Relationship;
                 case ObjectType.Table: return Context.Table;
-                case ObjectType.CalculationGroup: return Context.CalculationGroup;
+                case ObjectType.CalculationGroupTable: return Context.CalculationGroupTable;
                 case ObjectType.CalculationItem: return Context.CalculationItem;
                 case ObjectType.CalculationItemCollection: return Context.CalculationItemCollection;
                 case ObjectType.TablePermission: return Context.TablePermission;
