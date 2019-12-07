@@ -105,6 +105,7 @@ namespace TabularEditor.UIServices
                     "Tables/Hierarchies",
                     "Tables/Measures",
                     "Tables/Partitions",
+                    "Tables/Calculation Items",
                     "Translations"
                 };
 

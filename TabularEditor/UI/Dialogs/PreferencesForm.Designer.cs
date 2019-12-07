@@ -35,33 +35,37 @@
             System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Relationships");
             System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Roles");
             System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Annotations");
-            System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Columns");
-            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Hierarchies");
-            System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("Measures");
-            System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("Partitions");
-            System.Windows.Forms.TreeNode treeNode10 = new System.Windows.Forms.TreeNode("Tables", new System.Windows.Forms.TreeNode[] {
+            System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Calculation Items");
+            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Columns");
+            System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("Hierarchies");
+            System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("Measures");
+            System.Windows.Forms.TreeNode treeNode10 = new System.Windows.Forms.TreeNode("Partitions");
+            System.Windows.Forms.TreeNode treeNode11 = new System.Windows.Forms.TreeNode("Tables", new System.Windows.Forms.TreeNode[] {
             treeNode5,
             treeNode6,
             treeNode7,
             treeNode8,
-            treeNode9});
-            System.Windows.Forms.TreeNode treeNode11 = new System.Windows.Forms.TreeNode("Translations");
-            System.Windows.Forms.TreeNode treeNode12 = new System.Windows.Forms.TreeNode("Data Sources");
-            System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("Perspectives");
-            System.Windows.Forms.TreeNode treeNode14 = new System.Windows.Forms.TreeNode("Relationships");
-            System.Windows.Forms.TreeNode treeNode15 = new System.Windows.Forms.TreeNode("Roles");
-            System.Windows.Forms.TreeNode treeNode16 = new System.Windows.Forms.TreeNode("Annotations");
-            System.Windows.Forms.TreeNode treeNode17 = new System.Windows.Forms.TreeNode("Columns");
-            System.Windows.Forms.TreeNode treeNode18 = new System.Windows.Forms.TreeNode("Hierarchies");
-            System.Windows.Forms.TreeNode treeNode19 = new System.Windows.Forms.TreeNode("Measures");
-            System.Windows.Forms.TreeNode treeNode20 = new System.Windows.Forms.TreeNode("Partitions");
-            System.Windows.Forms.TreeNode treeNode21 = new System.Windows.Forms.TreeNode("Tables", new System.Windows.Forms.TreeNode[] {
-            treeNode16,
+            treeNode9,
+            treeNode10});
+            System.Windows.Forms.TreeNode treeNode12 = new System.Windows.Forms.TreeNode("Translations");
+            System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("Data Sources");
+            System.Windows.Forms.TreeNode treeNode14 = new System.Windows.Forms.TreeNode("Perspectives");
+            System.Windows.Forms.TreeNode treeNode15 = new System.Windows.Forms.TreeNode("Relationships");
+            System.Windows.Forms.TreeNode treeNode16 = new System.Windows.Forms.TreeNode("Roles");
+            System.Windows.Forms.TreeNode treeNode17 = new System.Windows.Forms.TreeNode("Annotations");
+            System.Windows.Forms.TreeNode treeNode18 = new System.Windows.Forms.TreeNode("Calculation Items");
+            System.Windows.Forms.TreeNode treeNode19 = new System.Windows.Forms.TreeNode("Columns");
+            System.Windows.Forms.TreeNode treeNode20 = new System.Windows.Forms.TreeNode("Hierarchies");
+            System.Windows.Forms.TreeNode treeNode21 = new System.Windows.Forms.TreeNode("Measures");
+            System.Windows.Forms.TreeNode treeNode22 = new System.Windows.Forms.TreeNode("Partitions");
+            System.Windows.Forms.TreeNode treeNode23 = new System.Windows.Forms.TreeNode("Tables", new System.Windows.Forms.TreeNode[] {
             treeNode17,
             treeNode18,
             treeNode19,
-            treeNode20});
-            System.Windows.Forms.TreeNode treeNode22 = new System.Windows.Forms.TreeNode("Translations");
+            treeNode20,
+            treeNode21,
+            treeNode22});
+            System.Windows.Forms.TreeNode treeNode24 = new System.Windows.Forms.TreeNode("Translations");
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
@@ -90,6 +94,7 @@
             this.chkIgnoreTimestampsCM = new System.Windows.Forms.CheckBox();
             this.cmbSeparators = new System.Windows.Forms.ComboBox();
             this.chkBackgroundBpa = new System.Windows.Forms.CheckBox();
+            this.chkAnnotateDeploymentMetadata = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabFeatures = new System.Windows.Forms.TabPage();
@@ -124,7 +129,6 @@
             this.treeView2 = new System.Windows.Forms.TreeView();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.chkAnnotateDeploymentMetadata = new System.Windows.Forms.CheckBox();
             this.groupBox3.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabFeatures.SuspendLayout();
@@ -477,6 +481,17 @@
         " a Power BI data model. USE ONLY FOR EXPERIMENTAL PURPOSES.");
             this.chkBackgroundBpa.UseVisualStyleBackColor = true;
             // 
+            // chkAnnotateDeploymentMetadata
+            // 
+            this.chkAnnotateDeploymentMetadata.AutoSize = true;
+            this.chkAnnotateDeploymentMetadata.Location = new System.Drawing.Point(7, 20);
+            this.chkAnnotateDeploymentMetadata.Name = "chkAnnotateDeploymentMetadata";
+            this.chkAnnotateDeploymentMetadata.Size = new System.Drawing.Size(229, 17);
+            this.chkAnnotateDeploymentMetadata.TabIndex = 9;
+            this.chkAnnotateDeploymentMetadata.Text = "Add metadata annotation upon deployment";
+            this.toolTip1.SetToolTip(this.chkAnnotateDeploymentMetadata, resources.GetString("chkAnnotateDeploymentMetadata.ToolTip"));
+            this.chkAnnotateDeploymentMetadata.UseVisualStyleBackColor = true;
+            // 
             // groupBox3
             // 
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -812,30 +827,33 @@
             treeNode5.Name = "Annotations";
             treeNode5.Text = "Annotations";
             treeNode6.Checked = true;
-            treeNode6.Name = "Columns";
-            treeNode6.Text = "Columns";
+            treeNode6.Name = "Calculation Items";
+            treeNode6.Text = "Calculation Items";
             treeNode7.Checked = true;
-            treeNode7.Name = "Hierarchies";
-            treeNode7.Text = "Hierarchies";
+            treeNode7.Name = "Columns";
+            treeNode7.Text = "Columns";
             treeNode8.Checked = true;
-            treeNode8.Name = "Measures";
-            treeNode8.Text = "Measures";
+            treeNode8.Name = "Hierarchies";
+            treeNode8.Text = "Hierarchies";
             treeNode9.Checked = true;
-            treeNode9.Name = "Partitions";
-            treeNode9.Text = "Partitions";
+            treeNode9.Name = "Measures";
+            treeNode9.Text = "Measures";
             treeNode10.Checked = true;
-            treeNode10.Name = "Tables";
-            treeNode10.Text = "Tables";
+            treeNode10.Name = "Partitions";
+            treeNode10.Text = "Partitions";
             treeNode11.Checked = true;
-            treeNode11.Name = "Translations";
-            treeNode11.Text = "Translations";
+            treeNode11.Name = "Tables";
+            treeNode11.Text = "Tables";
+            treeNode12.Checked = true;
+            treeNode12.Name = "Translations";
+            treeNode12.Text = "Translations";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode1,
             treeNode2,
             treeNode3,
             treeNode4,
-            treeNode10,
-            treeNode11});
+            treeNode11,
+            treeNode12});
             this.treeView1.PathSeparator = "/";
             this.treeView1.ShowLines = false;
             this.treeView1.Size = new System.Drawing.Size(345, 136);
@@ -906,45 +924,48 @@
             this.treeView2.CheckBoxes = true;
             this.treeView2.Location = new System.Drawing.Point(6, 73);
             this.treeView2.Name = "treeView2";
-            treeNode12.Checked = true;
-            treeNode12.Name = "Data Sources";
-            treeNode12.Text = "Data Sources";
             treeNode13.Checked = true;
-            treeNode13.Name = "Perspectives";
-            treeNode13.Text = "Perspectives";
+            treeNode13.Name = "Data Sources";
+            treeNode13.Text = "Data Sources";
             treeNode14.Checked = true;
-            treeNode14.Name = "Relationships";
-            treeNode14.Text = "Relationships";
+            treeNode14.Name = "Perspectives";
+            treeNode14.Text = "Perspectives";
             treeNode15.Checked = true;
-            treeNode15.Name = "Roles";
-            treeNode15.Text = "Roles";
-            treeNode16.Name = "Annotations";
-            treeNode16.Text = "Annotations";
-            treeNode17.Checked = true;
-            treeNode17.Name = "Columns";
-            treeNode17.Text = "Columns";
+            treeNode15.Name = "Relationships";
+            treeNode15.Text = "Relationships";
+            treeNode16.Checked = true;
+            treeNode16.Name = "Roles";
+            treeNode16.Text = "Roles";
+            treeNode17.Name = "Annotations";
+            treeNode17.Text = "Annotations";
             treeNode18.Checked = true;
-            treeNode18.Name = "Hierarchies";
-            treeNode18.Text = "Hierarchies";
+            treeNode18.Name = "Calculation Items";
+            treeNode18.Text = "Calculation Items";
             treeNode19.Checked = true;
-            treeNode19.Name = "Measures";
-            treeNode19.Text = "Measures";
+            treeNode19.Name = "Columns";
+            treeNode19.Text = "Columns";
             treeNode20.Checked = true;
-            treeNode20.Name = "Partitions";
-            treeNode20.Text = "Partitions";
+            treeNode20.Name = "Hierarchies";
+            treeNode20.Text = "Hierarchies";
             treeNode21.Checked = true;
-            treeNode21.Name = "Tables";
-            treeNode21.Text = "Tables";
+            treeNode21.Name = "Measures";
+            treeNode21.Text = "Measures";
             treeNode22.Checked = true;
-            treeNode22.Name = "Translations";
-            treeNode22.Text = "Translations";
+            treeNode22.Name = "Partitions";
+            treeNode22.Text = "Partitions";
+            treeNode23.Checked = true;
+            treeNode23.Name = "Tables";
+            treeNode23.Text = "Tables";
+            treeNode24.Checked = true;
+            treeNode24.Name = "Translations";
+            treeNode24.Text = "Translations";
             this.treeView2.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode12,
             treeNode13,
             treeNode14,
             treeNode15,
-            treeNode21,
-            treeNode22});
+            treeNode16,
+            treeNode23,
+            treeNode24});
             this.treeView2.PathSeparator = "/";
             this.treeView2.ShowLines = false;
             this.treeView2.Size = new System.Drawing.Size(345, 136);
@@ -976,17 +997,6 @@
             this.groupBox8.TabIndex = 5;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Current Model Serialization Settings";
-            // 
-            // chkAnnotateDeploymentMetadata
-            // 
-            this.chkAnnotateDeploymentMetadata.AutoSize = true;
-            this.chkAnnotateDeploymentMetadata.Location = new System.Drawing.Point(7, 20);
-            this.chkAnnotateDeploymentMetadata.Name = "chkAnnotateDeploymentMetadata";
-            this.chkAnnotateDeploymentMetadata.Size = new System.Drawing.Size(229, 17);
-            this.chkAnnotateDeploymentMetadata.TabIndex = 9;
-            this.chkAnnotateDeploymentMetadata.Text = "Add metadata annotation upon deployment";
-            this.toolTip1.SetToolTip(this.chkAnnotateDeploymentMetadata, resources.GetString("chkAnnotateDeploymentMetadata.ToolTip"));
-            this.chkAnnotateDeploymentMetadata.UseVisualStyleBackColor = true;
             // 
             // PreferencesForm
             // 
