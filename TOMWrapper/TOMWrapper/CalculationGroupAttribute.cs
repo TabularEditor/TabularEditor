@@ -7,6 +7,7 @@ using TabularEditor.TOMWrapper.Utils;
 
 namespace TabularEditor.TOMWrapper
 {
+    /*
     [DebuggerDisplay("{ObjectType} {Name}")]
     public class CalculationGroupAttribute: ITabularObjectContainer, IInternalTabularNamedObject, ITabularTableObject, IDaxObject, IFolderObject, IHideableObject, IAnnotationObject, ITranslatableObject, IErrorMessageObject, IInternalTabularPerspectiveObject
     {
@@ -174,4 +175,5 @@ namespace TabularEditor.TOMWrapper
             Column.SetAnnotation(name, value);
         }
     }
+    */
 }

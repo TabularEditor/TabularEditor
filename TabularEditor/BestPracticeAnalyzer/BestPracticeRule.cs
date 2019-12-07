@@ -94,6 +94,7 @@ namespace TabularEditor.BestPracticeAnalyzer
                 case RuleScope.NamedExpression: return typeof(NamedExpression);
                 case RuleScope.ModelRole: return typeof(ModelRole);
                 case RuleScope.CalculationGroup: return typeof(CalculationGroupTable);
+                //case RuleScope.CalculationGroupAttribute: return typeof(CalculationGroupAttribute);
                 case RuleScope.CalculationItem: return typeof(CalculationItem);
                 case RuleScope.TablePermission: return typeof(TablePermission);
                 default:

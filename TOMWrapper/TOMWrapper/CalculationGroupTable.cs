@@ -56,7 +56,7 @@ namespace TabularEditor.TOMWrapper
             parent.Tables.Add(obj);
 
             obj.Init();
-            obj.Field = new CalculationGroupAttribute(obj.DataColumns.First());
+            //obj.NameField = new CalculationGroupAttribute(obj.DataColumns.First());
 
             return obj;
         }
@@ -74,15 +74,23 @@ namespace TabularEditor.TOMWrapper
         {
             parent.DiscourageImplicitMeasures = true;
             var metadataObject = new TOM.Table() { CalculationGroup = new TOM.CalculationGroup() };
-            metadataObject.Columns.Add(new TOM.DataColumn { Name = "Attribute", DataType = TOM.DataType.String });
+            var nameCol = new TOM.DataColumn { Name = "Name", DataType = TOM.DataType.String, SourceColumn = "Name" };
+            var ordinalCol = new TOM.DataColumn { Name = "Ordinal", DataType = TOM.DataType.Int64, IsHidden = true, SourceColumn = "Ordinal" };
+            metadataObject.Columns.Add(nameCol);
+            metadataObject.Columns.Add(ordinalCol);
+            nameCol.SortByColumn = ordinalCol;
             metadataObject.Partitions.Add(new TOM.Partition { Source = new TOM.CalculationGroupSource() });
             metadataObject.Name = parent.Tables.GetNewName(string.IsNullOrWhiteSpace(name) ? "New Calculation Group" : name);
 
             return CreateFromMetadata(parent, metadataObject);
         }
 
+        /*
         [Browsable(false)]
-        public CalculationGroupAttribute Field { get; private set; }
+        public CalculationGroupAttribute NameField { get; private set; }
+        [Browsable(false)]
+        public CalculationGroupAttribute OrdinalField { get; private set; }
+        */
 
         CalculationGroupTable(TOM.Table table) : base(table)
         {
@@ -119,25 +127,12 @@ namespace TabularEditor.TOMWrapper
             base.Reinit();
             CalculationGroup.RenewMetadataObject();
             CalculationGroup.Reinit();
-            Field = new CalculationGroupAttribute(DataColumns.First());
+            //NameField = new CalculationGroupAttribute(DataColumns.First());
         }
 
         public override ObjectType ObjectType => ObjectType.CalculationGroup;
 
         public CalculationItemCollection CalculationItems => CalculationGroup.CalculationItems;
-
-        public override IEnumerable<ITabularNamedObject> GetChildren()
-        {
-            yield return Field;
-            foreach (var item in CalculatedColumns) yield return item;
-            foreach (var item in Measures) yield return item;
-            foreach (var item in Hierarchies) yield return item;
-        }
-
-        public override IEnumerable<IFolderObject> GetChildrenByFolders()
-        {
-            return base.GetChildrenByFolders();
-        }
 
         internal override bool IsBrowsable(string propertyName)
         {

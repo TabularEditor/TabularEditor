@@ -23,7 +23,7 @@ namespace TabularEditor
             t1.AddMeasure("Measure 1");
 
             var cg1 = model.AddCalculationGroup("Calc Group 1");
-            cg1.Field.Name = "Field";
+            cg1.NameField.Name = "Field";
             var ci1 = cg1.AddCalculationItem("Item 1");
 
             var cg1Path = tree.GetPath(cg1);
@@ -32,11 +32,11 @@ namespace TabularEditor
             Assert.AreEqual(5, ci1Path.FullPath.Length);
             Assert.IsTrue(
                 ci1Path.FullPath.SequenceEqual(
-                    new object[] { model, model.Groups.Tables, cg1, cg1.Field, ci1 }));
+                    new object[] { model, model.Groups.Tables, cg1, cg1.NameField, ci1 }));
 
             Assert.AreEqual(1, tree.GetChildren(cg1Path).Count());
 
-            cg1.Field.DisplayFolder = "Folder\\Subfolder";
+            cg1.NameField.DisplayFolder = "Folder\\Subfolder";
 
             Assert.AreEqual(7, tree.GetPath(ci1).FullPath.Length);
 
@@ -56,7 +56,7 @@ namespace TabularEditor
             t1.AddMeasure("Measure 1");
 
             var cg1 = model.AddCalculationGroup("Calc Group 1");
-            cg1.Field.Name = "Field";
+            cg1.NameField.Name = "Field";
             var ci1 = cg1.AddCalculationItem("Item 1");
 
             var cg1Path = tree.GetPath(cg1);
@@ -65,11 +65,11 @@ namespace TabularEditor
             Assert.AreEqual(5, ci1Path.FullPath.Length);
             Assert.IsTrue(
                 ci1Path.FullPath.SequenceEqual(
-                    new object[] { model, model.Groups.Tables, cg1, cg1.Field, ci1 }));
+                    new object[] { model, model.Groups.Tables, cg1, cg1.NameField, ci1 }));
 
             Assert.AreEqual(1, tree.GetChildren(cg1Path).Count());
 
-            cg1.Field.DisplayFolder = "Folder\\Subfolder";
+            cg1.NameField.DisplayFolder = "Folder\\Subfolder";
 
             Assert.AreEqual(5, tree.GetPath(ci1).FullPath.Length);
 

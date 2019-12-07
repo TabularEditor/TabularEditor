@@ -167,6 +167,7 @@ namespace TabularEditor.TOMWrapper
             if (obj is MPartition p1) return $"Partition (M - {p1.GetMode()})";
             if (obj is Partition p2) return $"Partition (Legacy - {p2.GetMode()})";
             if (obj is CalculationGroupTable) return $"Calculation Group" + (plural ? "s" : "");
+            if (obj is CalculationItem) return $"Calculation Item" + (plural ? "s" : "");
             if (obj is Table t) return $"Table ({t.GetMode()})";
             else return obj.ObjectType.GetTypeName(plural);
         }

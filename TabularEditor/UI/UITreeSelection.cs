@@ -232,8 +232,8 @@ namespace TabularEditor.UI
         Expression = 1 << 23,
 
         CalculationGroup = 1 << 24,
-        CalculationGroupAttribute = 1 << 25,
-        CalculationItem = 1 << 26,
+        CalculationItem = 1 << 25,
+        CalculationItemCollection = 1 << 26,
 
         /// <summary>
         /// Special context for actions that can be executed regardless of the current selection,
@@ -243,10 +243,10 @@ namespace TabularEditor.UI
 
         Everywhere = 0x7FFFFFFF,
         TableObject = Measure | Column | Hierarchy,
-        SingularObjects = Model | Table | TableObject | Level | Partition | Relationship | DataSource | Role | TablePermission | Perspective | Translation | KPI | Expression | CalculationGroup | CalculationGroupAttribute | CalculationItem,
+        SingularObjects = Model | Table | TableObject | Level | Partition | Relationship | DataSource | Role | TablePermission | Perspective | Translation | KPI | Expression | CalculationGroup | CalculationItem,
         Groups = Tables | Relationships | DataSources | Roles | Perspectives | Translations | Expressions,
-        DataObjects = Table | TableObject,
-        Scriptable = Table | Partition | DataSource | Role
+        DataObjects = CalculationGroup | Table | TableObject,
+        Scriptable = CalculationGroup | Table | Partition | DataSource | Role
     }
 
     /// <summary>
@@ -303,8 +303,8 @@ namespace TabularEditor.UI
                 case ObjectType.Table: return Context.Table;
                 case ObjectType.CalculationGroup: return Context.CalculationGroup;
                 case ObjectType.CalculationItem: return Context.CalculationItem;
+                case ObjectType.CalculationItemCollection: return Context.CalculationItemCollection;
                 case ObjectType.TablePermission: return Context.TablePermission;
-                case ObjectType.CalculationGroupAttribute: return Context.CalculationGroupAttribute;
                 case ObjectType.Level: return Context.Level;
                 case ObjectType.KPI: return Context.KPI;
                 case ObjectType.Column: return Context.Column;
@@ -320,7 +320,6 @@ namespace TabularEditor.UI
                         case LogicalGroups.TRANSLATIONS: return Context.Translations;
                         case LogicalGroups.RELATIONSHIPS: return Context.Relationships;
                         case LogicalGroups.EXPRESSIONS: return Context.Expressions;
-                        //case LogicalGroups.CALCULATIONGROUPS: return Context.CalculationGroups;
                     }
                     break;                   
             }
@@ -468,7 +467,14 @@ namespace TabularEditor.UI
         [IntelliSense("All currently selected table permissions.")]
         public UISelectionList<TablePermission> TablePermissions { get; private set; }
         [IntelliSense("The currently selected calculation group (if exactly one calculation group is selected in the explorer tree.)")]
-        public CalculationGroupTable CalculationGroup { get { return One<CalculationGroupTable>(); } }
+        public CalculationGroupTable CalculationGroup
+        {
+            get
+            {
+                if (this.FirstOrDefault() is ITabularTableObject t && t.Table is CalculationGroupTable cgt) return cgt;
+                return One<CalculationGroupTable>();
+            }
+        }
 
         [IntelliSense("All currently selected calculation groups.")]
         public UISelectionList<CalculationGroupTable> CalculationGroups { get; private set; }

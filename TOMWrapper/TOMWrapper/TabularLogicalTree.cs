@@ -140,9 +140,9 @@ namespace TabularEditor.TOMWrapper
             {
                 foreach (var m in table.Measures) BuildFolderForObject(m);
                 foreach (var h in table.Hierarchies) BuildFolderForObject(h);
-
-                if (table is CalculationGroupTable cgt) BuildFolderForObject(cgt.Field);
-                else foreach (var c in table.Columns) BuildFolderForObject(c);
+                /*if (table is CalculationGroupTable cgt) BuildFolderForObject(cgt.NameField);
+                else*/
+                foreach (var c in table.Columns) BuildFolderForObject(c);
             }
 
             table.PropagateChildErrors();
@@ -272,6 +272,10 @@ namespace TabularEditor.TOMWrapper
             if (table.SourceType != PartitionSourceType.Calculated && table.ObjectType != ObjectType.CalculationGroup && Options.HasFlag(LogicalTreeOptions.Partitions))
             {
                 yield return table.Partitions;
+            }
+            if (table is CalculationGroupTable cg)
+            {
+                yield return cg.CalculationItems;
             }
             
             if (Options.HasFlag(LogicalTreeOptions.DisplayFolders))

@@ -258,13 +258,13 @@ namespace TabularEditor.TOMWrapper
                 return this.Select(obj => obj.Name);
             }
         }
-        string IExpandableIndexer.Summary
+        string IExpandableIndexer.Summary => ToString();
+
+        public override string ToString()
         {
-            get
-            {
-                return string.Format("{0} {1}", Count, typeof(T).GetTypeName(Count != 1));
-            }
+            return string.Format("{0} {1}", Count, typeof(T).GetTypeName(Count != 1)).ToLower();
         }
+
         #endregion
         #region INotifyCollectionChanged members
         public event NotifyCollectionChangedEventHandler CollectionChanged;
