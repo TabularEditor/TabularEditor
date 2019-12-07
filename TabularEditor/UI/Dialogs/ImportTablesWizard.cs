@@ -52,8 +52,9 @@ namespace TabularEditor.UI.Dialogs
 
         private bool CanImport()
         {
-            if (CurrentPage != 2) return false;
-            return page2.SelectedSchemas.Any();
+            if (CurrentPage == 2) return page2.SelectedSchemas.Any();
+            if (CurrentPage == 3) return page3.CurrentSchema?.Any(cs => !string.IsNullOrWhiteSpace(cs.Name)) == true;
+            return false;
         }
 
         private Model Model;
@@ -98,7 +99,13 @@ namespace TabularEditor.UI.Dialogs
             dialog.CurrentPage = 1;
             var res = dialog.ShowDialog();
 
-            if (res == DialogResult.OK) DoImport(dialog.page1.Mode, model, dialog.page2.Source, dialog.page2.SelectedSchemas, dialog.page2.RowLimitClause, dialog.page2.IdentifierQuoting);
+            if (res == DialogResult.OK)
+            {
+                if (dialog.CurrentPage == 2)
+                    DoImport(dialog.page1.Mode, model, dialog.page2.Source, dialog.page2.SelectedSchemas, dialog.page2.RowLimitClause, dialog.page2.IdentifierQuoting);
+                else if (dialog.CurrentPage == 3)
+                    DoImport(model, dialog.page3.CurrentSchema);
+            }
 
             return res;
         }
@@ -120,7 +127,13 @@ namespace TabularEditor.UI.Dialogs
             dialog.CurrentPage = 2;
             var res = dialog.ShowDialog();
 
-            if (res == DialogResult.OK) DoImport(dialog.page1.Mode, model, dialog.page2.Source, dialog.page2.SelectedSchemas, dialog.page2.RowLimitClause, dialog.page2.IdentifierQuoting);
+            if (res == DialogResult.OK)
+            {
+                if (dialog.CurrentPage == 2)
+                    DoImport(dialog.page1.Mode, model, dialog.page2.Source, dialog.page2.SelectedSchemas, dialog.page2.RowLimitClause, dialog.page2.IdentifierQuoting);
+                else if (dialog.CurrentPage == 3)
+                    DoImport(model, dialog.page3.CurrentSchema);
+            }
 
             return res;
         }
@@ -159,8 +172,19 @@ namespace TabularEditor.UI.Dialogs
             }
         }
 
+        private static void DoImport(Model model, List<Pages.SchemaColumn> schema)
+        {
+            var table = model.AddTable();
+            foreach(var col in schema)
+            {
+                table.AddDataColumn(col.Name, col.Source, null, col.DataType);
+            }
+            table.Edit();
+        }
+
         private static void DoImport(Pages.ImportMode importMode, Model model, TypedDataSource source, IEnumerable<SchemaNode> schemaNodes, RowLimitClause rowLimitClause, IdentifierQuoting identifierQuoting)
         {
+            
             foreach (var tableSchema in schemaNodes)
             {
                 var newTable = model.AddTable(tableSchema.Name);
@@ -240,7 +264,10 @@ namespace TabularEditor.UI.Dialogs
                         return;
 
                     case Pages.ImportMode.UseClipboard:
-                        throw new NotImplementedException();
+                        page3.Visible = true;
+                        page3.BringToFront();
+                        CurrentPage = 3;
+                        break;
                 }
             }
         }
@@ -266,6 +293,11 @@ namespace TabularEditor.UI.Dialogs
             {
                 CurrentPage = 1; return;
             }
+            if(CurrentPage == 3)
+            {
+                page3.Visible = false;
+                CurrentPage = 1; return;
+            }
         }
 
         private void page1_Validated(object sender, EventArgs e)
@@ -279,6 +311,14 @@ namespace TabularEditor.UI.Dialogs
         private void page2_Validated(object sender, EventArgs e)
         {
             if (CurrentPage == 2)
+            {
+                btnImport.Enabled = CanImport();
+            }
+        }
+
+        private void page3_Validated(object sender, EventArgs e)
+        {
+            if (CurrentPage == 3)
             {
                 btnImport.Enabled = CanImport();
             }

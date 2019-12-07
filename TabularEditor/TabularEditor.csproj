@@ -147,9 +147,11 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Data.OracleClient" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
@@ -321,12 +323,6 @@
     <Compile Include="UI\Dialogs\DependencyForm.Designer.cs">
       <DependentUpon>DependencyForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\Dialogs\ImportTablesForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\ImportTablesForm.Designer.cs">
-      <DependentUpon>ImportTablesForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="UI\Dialogs\ImportTablesWizard.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -368,6 +364,12 @@
     </Compile>
     <Compile Include="UI\Dialogs\Pages\DatabasePage.Designer.cs">
       <DependentUpon>DatabasePage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Dialogs\Pages\ImportTableFromMetadataPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\Pages\ImportTableFromMetadataPage.Designer.cs">
+      <DependentUpon>ImportTableFromMetadataPage.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Dialogs\Pages\ImportTablesPage.cs">
       <SubType>UserControl</SubType>
@@ -654,9 +656,6 @@
     <EmbeddedResource Include="UI\Dialogs\DeployingForm.resx">
       <DependentUpon>DeployingForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\ImportTablesForm.resx">
-      <DependentUpon>ImportTablesForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\ImportTablesWizard.resx">
       <DependentUpon>ImportTablesWizard.cs</DependentUpon>
     </EmbeddedResource>
@@ -677,6 +676,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\Pages\DatabasePage.resx">
       <DependentUpon>DatabasePage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\Pages\ImportTableFromMetadataPage.resx">
+      <DependentUpon>ImportTableFromMetadataPage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\Pages\ImportTablesPage.resx">
       <DependentUpon>ImportTablesPage.cs</DependentUpon>
