@@ -249,7 +249,7 @@ namespace TabularEditor.UI
                         // If not connected to a database, change the current working file:
                         if (changeFilePointer)
                         {
-                            File_Current = dialog.FileName;
+                            File_Current = fileName;
                             File_Directory = FileSystemHelper.DirectoryFromPath(File_Current);
                             File_LastWrite = DateTime.Now;
                             File_SaveMode = dialog.FileType == "pbit" ? ModelSourceType.Pbit : ModelSourceType.File;
