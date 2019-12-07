@@ -31,7 +31,7 @@ namespace TabularEditor.UI.Tree
             { ObjectType.Partition, TabularIcons.ICON_PARTITION },
             { ObjectType.Expression, TabularIcons.ICON_EFFECTS },
             { ObjectType.PartitionCollection, TabularIcons.ICON_PARTITION },
-            { ObjectType.CalculationGroup, TabularIcons.ICON_TABLECALC },
+            { ObjectType.CalculationGroupTable, TabularIcons.ICON_TABLECALC },
             { ObjectType.CalculationItem, TabularIcons.ICON_CALCULATOR }
         };
 

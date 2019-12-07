@@ -35,6 +35,7 @@ namespace TabularEditor.TOMWrapper
     public enum ObjectType
     {
         // Special types needed by Tabular Editor (doesn't exist in the TOM):
+        CalculationGroupTable = -7,
         CalculationItemCollection = -6,
         CalculationGroupAttribute = -5,
         PartitionCollection = -4,

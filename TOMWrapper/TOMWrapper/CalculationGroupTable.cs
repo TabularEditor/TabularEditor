@@ -130,7 +130,7 @@ namespace TabularEditor.TOMWrapper
             //NameField = new CalculationGroupAttribute(DataColumns.First());
         }
 
-        public override ObjectType ObjectType => ObjectType.CalculationGroup;
+        public override ObjectType ObjectType => ObjectType.CalculationGroupTable;
 
         public CalculationItemCollection CalculationItems => CalculationGroup.CalculationItems;
 

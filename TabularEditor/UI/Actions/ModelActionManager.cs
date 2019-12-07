@@ -73,15 +73,15 @@ namespace TabularEditor.UI.Actions
                     s.ReplaceFolder(orgDF, newDF, Handler.Tree.Culture);
                 }, 
                 (s, m) => @"Create New\Display Folder", true, Context.TableObject));
-            Add(new Action((s, m) => s.Count == 1, (s, m) => s.CalculationGroup.AddCalculationItem().Edit(), (s, m) => @"Create New\Calculation Item", false, Context.CalculationGroup));
+            Add(new Action((s, m) => s.Count == 1, (s, m) => s.CalculationGroup.AddCalculationItem().Edit(), (s, m) => @"Create New\Calculation Item", false, Context.CalculationGroupTable));
 
             Add(new Separator(@"Create New"));
 
             // Add measure:
-            Add(new Action((s, m) => s.Count == 1 || s.Context.HasX(Context.TableObject), (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Measure", true, Context.CalculationGroup | Context.Table | Context.TableObject, Keys.Alt | Keys.D1));
+            Add(new Action((s, m) => s.Count == 1 || s.Context.HasX(Context.TableObject), (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Measure", true, Context.CalculationGroupTable | Context.Table | Context.TableObject, Keys.Alt | Keys.D1));
 
             // Add calc column:
-            Add(new Action((s, m) => s.Count == 1 || s.Context.HasX(Context.TableObject), (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Calculated Column", true, Context.CalculationGroup | Context.Table | Context.TableObject, Keys.Alt | Keys.D2));
+            Add(new Action((s, m) => s.Count == 1 || s.Context.HasX(Context.TableObject), (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Calculated Column", true, Context.CalculationGroupTable | Context.Table | Context.TableObject, Keys.Alt | Keys.D2));
 
             // Add calc table column:
             Add(new Action((s, m) => Handler.SourceType != ModelSourceType.Database
@@ -93,10 +93,10 @@ namespace TabularEditor.UI.Actions
             // Add hierarchy:
             Add(new Action((s, m) => s.Count == 1 || s.Context.HasX(Context.TableObject), 
                 (s, m) => s.Table.AddHierarchy(displayFolder: s.CurrentFolder, levels: s.Direct.OfType<Column>().ToArray()).Expand().Vis().Edit(), 
-                (s, m) => @"Create New\Hierarchy", true, Context.CalculationGroup | Context.Table | Context.TableObject, Keys.Alt | Keys.D3));
+                (s, m) => @"Create New\Hierarchy", true, Context.CalculationGroupTable | Context.Table | Context.TableObject, Keys.Alt | Keys.D3));
 
             // Add data column:
-            Add(new Action((s, m) => !Handler.UsePowerBIGovernance && (s.Count == 1 || s.Context.HasX(Context.TableObject)) && !(s.Table is CalculatedTable), (s, m) => s.Table.AddDataColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Data Column", true, Context.CalculationGroup | Context.Table | Context.TableObject, Keys.Alt | Keys.D4));
+            Add(new Action((s, m) => !Handler.UsePowerBIGovernance && (s.Count == 1 || s.Context.HasX(Context.TableObject)) && !(s.Table is CalculatedTable), (s, m) => s.Table.AddDataColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Data Column", true, Context.CalculationGroupTable | Context.Table | Context.TableObject, Keys.Alt | Keys.D4));
 
             // Add KPI:
             Add(new Action((s, m) => s.Count == 1 && !s.Folders.Any(), (s, m) => s.Measure.AddKPI().Edit(), (s, m) => @"Create New\KPI", true, Context.Measure));
@@ -201,11 +201,11 @@ namespace TabularEditor.UI.Actions
                     var obj = (i as IClonableObject).Clone(includeTranslations: i is ITranslatableObject);
                     if (s.Count == 1) obj.Edit(); // Focuses the cloned item in the tree, and lets the user edit its name
                 }),
-                (s, m) => "Duplicate " + s.Summary(), true, Context.TableObject | Context.Partition));
+                (s, m) => "Duplicate " + s.Summary(), true, Context.TableObject | Context.Partition | Context.CalculationItem));
 
             // "Duplicate Table";
             Add(new Action((s, m) => s.Count == 1 && !Handler.UsePowerBIGovernance, (s, m) => s.Table.Clone().Edit(), (s, m) => "Duplicate Table", true, Context.Table));
-            Add(new Action((s, m) => s.Count == 1 && !Handler.UsePowerBIGovernance, (s, m) => s.CalculationGroup.Clone().Edit(), (s, m) => "Duplicate Calculation Group", true, Context.CalculationGroup));
+            Add(new Action((s, m) => s.Count == 1 && !Handler.UsePowerBIGovernance, (s, m) => s.CalculationGroup.Clone().Edit(), (s, m) => "Duplicate Calculation Group", true, Context.CalculationGroupTable));
 
             // "Duplicate Translation";
             Add(new Action((s, m) => s.Count == 1,
@@ -228,7 +228,7 @@ namespace TabularEditor.UI.Actions
                 if (res == DialogResult.Cancel) return;
                 // TODO: Add options for match case and whole word only
                 s.Rename(form.Pattern, form.ReplaceWith, form.RegEx, form.IncludeTranslations);
-            }, (s, m) => "Batch Rename...", true, Context.DataObjects | Context.Level, Keys.F2) { ToolTip = "Opens a dialog that lets you rename all the selected objects at once. Folders are not renamed, but objects inside folders are."});
+            }, (s, m) => "Batch Rename...", true, Context.DataObjects | Context.Level | Context.CalculationItem, Keys.F2) { ToolTip = "Opens a dialog that lets you rename all the selected objects at once. Folders are not renamed, but objects inside folders are."});
 
             // Batch Rename Children
             Add(new Action((s, m) => s.Context == Context.Table || s.Direct.Any(i => i is Folder), (s, m) =>
@@ -236,7 +236,8 @@ namespace TabularEditor.UI.Actions
                 var form = Dialogs.ReplaceForm.Singleton;
                 var sel = new UISelectionList<ITabularNamedObject>(
                     s.Direct.OfType<ITabularObjectContainer>().SelectMany(t => t.GetChildren())
-                    .Concat(s.Hierarchies.SelectMany(t => t.Levels)).OfType<ITabularNamedObject>());
+                    .Concat(s.Hierarchies.SelectMany(t => t.Levels))
+                    .OfType<ITabularNamedObject>());
                 form.Text = "Batch Rename - (" + sel.Summary() + ")";
                 var res = form.ShowDialog();
                 if (res == DialogResult.Cancel) return;
