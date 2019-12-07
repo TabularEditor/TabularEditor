@@ -1080,10 +1080,6 @@ namespace TabularEditor.TOMWrapper
 				Handler.UndoManager.EndBatch();
 			}
 		}
-		///<summary>Get a string representation of the current Variation</summary>
-		public override string ToString() {
-			return string.Format("({0} {1})", Count, (Count == 1 ? "Variation" : "Variations").ToLower());
-		}
 	}
   
 	/// <summary>
@@ -2857,10 +2853,6 @@ namespace TabularEditor.TOMWrapper
 				Handler.UndoManager.EndBatch();
 			}
 		}
-		///<summary>Get a string representation of the current Column</summary>
-		public override string ToString() {
-			return string.Format("({0} {1})", Count, (Count == 1 ? "Column" : "Columns").ToLower());
-		}
 	}
   
 	/// <summary>
@@ -3311,10 +3303,6 @@ namespace TabularEditor.TOMWrapper
 		    }
 		}
 
-		///<summary>Get a string representation of the current Culture</summary>
-		public override string ToString() {
-			return string.Format("({0} {1})", Count, (Count == 1 ? "Culture" : "Cultures").ToLower());
-		}
 	}
   
 	/// <summary>
@@ -3935,10 +3923,6 @@ namespace TabularEditor.TOMWrapper
 				this.ToList().ForEach(item => { item.MaxConnections = value; });
 				Handler.UndoManager.EndBatch();
 			}
-		}
-		///<summary>Get a string representation of the current Data Source</summary>
-		public override string ToString() {
-			return string.Format("({0} {1})", Count, (Count == 1 ? "DataSource" : "DataSources").ToLower());
 		}
 	}
   
@@ -4802,10 +4786,6 @@ namespace TabularEditor.TOMWrapper
 				this.ToList().ForEach(item => { item.HideMembers = value; });
 				Handler.UndoManager.EndBatch();
 			}
-		}
-		///<summary>Get a string representation of the current Hierarchy</summary>
-		public override string ToString() {
-			return string.Format("({0} {1})", Count, (Count == 1 ? "Hierarchy" : "Hierarchies").ToLower());
 		}
 	}
   
@@ -5937,10 +5917,6 @@ namespace TabularEditor.TOMWrapper
 				Handler.UndoManager.EndBatch();
 			}
 		}
-		///<summary>Get a string representation of the current Level</summary>
-		public override string ToString() {
-			return string.Format("({0} {1})", Count, (Count == 1 ? "Level" : "Levels").ToLower());
-		}
 	}
   
 	/// <summary>
@@ -6729,10 +6705,6 @@ namespace TabularEditor.TOMWrapper
 				this.ToList().ForEach(item => { item.DataCategory = value; });
 				Handler.UndoManager.EndBatch();
 			}
-		}
-		///<summary>Get a string representation of the current Measure</summary>
-		public override string ToString() {
-			return string.Format("({0} {1})", Count, (Count == 1 ? "Measure" : "Measures").ToLower());
 		}
 	}
   
@@ -7969,10 +7941,6 @@ namespace TabularEditor.TOMWrapper
 				Handler.UndoManager.EndBatch();
 			}
 		}
-		///<summary>Get a string representation of the current Model Role</summary>
-		public override string ToString() {
-			return string.Format("({0} {1})", Count, (Count == 1 ? "ModelRole" : "Roles").ToLower());
-		}
 	}
   
 	/// <summary>
@@ -8435,10 +8403,6 @@ namespace TabularEditor.TOMWrapper
 				this.ToList().ForEach(item => { item.MemberID = value; });
 				Handler.UndoManager.EndBatch();
 			}
-		}
-		///<summary>Get a string representation of the current Model Role Member</summary>
-		public override string ToString() {
-			return string.Format("({0} {1})", Count, (Count == 1 ? "ModelRoleMember" : "Members").ToLower());
 		}
 	}
   
@@ -9078,10 +9042,6 @@ namespace TabularEditor.TOMWrapper
 				Handler.UndoManager.EndBatch();
 			}
 		}
-		///<summary>Get a string representation of the current Partition</summary>
-		public override string ToString() {
-			return string.Format("({0} {1})", Count, (Count == 1 ? "Partition" : "Partitions").ToLower());
-		}
 	}
   
 	/// <summary>
@@ -9592,10 +9552,6 @@ namespace TabularEditor.TOMWrapper
 				this.ToList().ForEach(item => { item.Description = value; });
 				Handler.UndoManager.EndBatch();
 			}
-		}
-		///<summary>Get a string representation of the current Perspective</summary>
-		public override string ToString() {
-			return string.Format("({0} {1})", Count, (Count == 1 ? "Perspective" : "Perspectives").ToLower());
 		}
 	}
   
@@ -10508,10 +10464,6 @@ namespace TabularEditor.TOMWrapper
 				this.ToList().ForEach(item => { item.SecurityFilteringBehavior = value; });
 				Handler.UndoManager.EndBatch();
 			}
-		}
-		///<summary>Get a string representation of the current Relationship</summary>
-		public override string ToString() {
-			return string.Format("({0} {1})", Count, (Count == 1 ? "Relationship" : "Relationships").ToLower());
 		}
 	}
   
@@ -11562,10 +11514,6 @@ namespace TabularEditor.TOMWrapper
 				Handler.UndoManager.EndBatch();
 			}
 		}
-		///<summary>Get a string representation of the current Table</summary>
-		public override string ToString() {
-			return string.Format("({0} {1})", Count, (Count == 1 ? "Table" : "Tables").ToLower());
-		}
 	}
   
 	/// <summary>
@@ -12251,10 +12199,6 @@ namespace TabularEditor.TOMWrapper
 				Handler.UndoManager.EndBatch();
 			}
 		}
-		///<summary>Get a string representation of the current Named Expression</summary>
-		public override string ToString() {
-			return string.Format("({0} {1})", Count, (Count == 1 ? "NamedExpression" : "Expressions").ToLower());
-		}
 	}
   
 	/// <summary>
@@ -12809,10 +12753,6 @@ namespace TabularEditor.TOMWrapper
 				this.ToList().ForEach(item => { item.Expression = value; });
 				Handler.UndoManager.EndBatch();
 			}
-		}
-		///<summary>Get a string representation of the current Calculation Item</summary>
-		public override string ToString() {
-			return string.Format("({0} {1})", Count, (Count == 1 ? "CalculationItem" : "CalculationItems").ToLower());
 		}
 	}
   
@@ -13377,10 +13317,6 @@ namespace TabularEditor.TOMWrapper
 				this.ToList().ForEach(item => { item.MetadataPermission = value; });
 				Handler.UndoManager.EndBatch();
 			}
-		}
-		///<summary>Get a string representation of the current Table Permission</summary>
-		public override string ToString() {
-			return string.Format("({0} {1})", Count, (Count == 1 ? "TablePermission" : "TablePermissions").ToLower());
 		}
 	}
 }

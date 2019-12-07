@@ -1,0 +1,4 @@
+TODO: 
+
+- Test the new handling of calculation groups
+- .bim is not added automatically when file is saved

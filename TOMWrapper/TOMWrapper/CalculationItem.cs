@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper.Undo;
 using TabularEditor.TOMWrapper.Utils;
 using TOM = Microsoft.AnalysisServices.Tabular;
@@ -76,8 +78,8 @@ namespace TabularEditor.TOMWrapper
         public bool ShouldSerializeFormatStringExpression() { return false; }
         
 
-        [Browsable(false)]
-        public CalculationGroupAttribute Field => CalculationGroup.Field;
+        //[Browsable(false)]
+        //public CalculationGroupAttribute Field => CalculationGroup.NameField;
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
@@ -115,6 +117,64 @@ namespace TabularEditor.TOMWrapper
                 default:
                     return true;
             }
+        }
+    }
+
+    public partial class CalculationItemCollection : ITabularNamedObject, ITabularObjectContainer, ITabularTableObject
+    {
+        [ReadOnly(true)]
+        string ITabularNamedObject.Name { get { return "Calculation Items"; } set { } }
+
+        int ITabularNamedObject.MetadataIndex => -1;
+
+        ObjectType ITabularObject.ObjectType => ObjectType.CalculationItemCollection;
+
+        Model ITabularObject.Model => CalculationGroup.Model;
+
+        bool ITabularObject.IsRemoved => false;
+
+        Table ITabularTableObject.Table => CalculationGroup.Table;
+
+        event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
+        {
+            add { throw new NotImplementedException(); }
+            remove { throw new NotImplementedException(); }
+        }
+
+        /// <summary>
+        /// This property points to the CalculationItemCollection itself. It is used only to display a clickable
+        /// "Calculation Items" property in the Property Grid, which will open the CalculationItemCollectionEditor when
+        /// clicked.
+        /// </summary>
+        [DisplayName("Calculation Items"), Description("The collection of Calculation Items on this Calculation Group.")]
+        [Category("Options"), IntelliSense("The collection of Calculation Items on this Calculation Group.")]
+        [NoMultiselect(), Editor(typeof(CalculationItemCollectionEditor), typeof(UITypeEditor))]
+        public CalculationItemCollection PropertyGridCalculationItems => this;
+
+        bool ITabularNamedObject.CanDelete()
+        {
+            return false;
+        }
+
+        bool ITabularNamedObject.CanDelete(out string message)
+        {
+            message = Messages.CannotDeleteObject;
+            return false;
+        }
+
+        bool ITabularNamedObject.CanEditName()
+        {
+            return false;
+        }
+
+        void ITabularNamedObject.Delete()
+        {
+            throw new NotSupportedException();
+        }
+
+        IEnumerable<ITabularNamedObject> ITabularObjectContainer.GetChildren()
+        {
+            return this;
         }
     }
 }

@@ -337,8 +337,6 @@ namespace TabularEditor.TOMWrapper
 
         Table ITabularTableObject.Table => Table;
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
         event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
         {
             add

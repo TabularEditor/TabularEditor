@@ -493,7 +493,7 @@ namespace TabularEditor.BestPracticeAnalyzer
                 case RuleScope.Relationship:
                     return model.Relationships.OfType<SingleColumnRelationship>().AsQueryable();
                 case RuleScope.Table:
-                    return model.Tables.Where(t => !(t is CalculatedTable)).AsQueryable();
+                    return model.Tables.Where(t => !(t is CalculatedTable) && !(t is CalculationGroupTable)).AsQueryable();
                 case RuleScope.ModelRole:
                     return model.Roles.AsQueryable();
                 case RuleScope.NamedExpression:
@@ -502,6 +502,10 @@ namespace TabularEditor.BestPracticeAnalyzer
                     return model.AllColumns.SelectMany(c => c.Variations).AsQueryable();
                 case RuleScope.TablePermission:
                     return model.Roles.SelectMany(r => r.TablePermissions).AsQueryable();
+                case RuleScope.CalculationGroup:
+                    return model.CalculationGroups.AsQueryable();
+                case RuleScope.CalculationItem:
+                    return model.CalculationGroups.SelectMany(cg => cg.CalculationItems).AsQueryable();
                 default:
                     return Enumerable.Empty<TabularNamedObject>().AsQueryable();
             }

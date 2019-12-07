@@ -22,8 +22,7 @@ namespace TabularEditor.TOMWrapper
             if (obj is Model) return null;
             if (obj is Partition p) return p.Table.Partitions;
             if (obj is KPI kpi) return kpi.Measure;
-            if (obj is CalculationItem ci) return ci.Field;
-            if (obj is CalculationGroupAttribute cga) return cga.CalculationGroup;
+            if (obj is CalculationItem ci) return ci.CalculationGroup.CalculationItems;
 
             if(tree.Options.HasFlag(LogicalTreeOptions.AllObjectTypes))
             {

@@ -76,6 +76,7 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="PropertyGridUI\CollectionEditors\CalculationItemCollectionEditor.cs" />
     <Compile Include="TOMWrapper\CalculationGroupAttribute.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\ExtendedPropertyCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\RoleMemberCollectionEditor.cs" />

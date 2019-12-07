@@ -742,10 +742,6 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 		}
 <#          }
         } #>
-		///<summary>Get a string representation of the current <#=Rules.SplitCamelCase(t.Name)#></summary>
-		public override string ToString() {
-			return string.Format("({0} {1})", Count, (Count == 1 ? "<#= t.Name #>" : "<#= t == typeof(Column) ? "Columns" : Rules.Collections[t]#>").ToLower());
-		}
 	}
 <#  } #>
 <#

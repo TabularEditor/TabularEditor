@@ -31,8 +31,8 @@ namespace TabularEditor.UI.Tree
             { ObjectType.Partition, TabularIcons.ICON_PARTITION },
             { ObjectType.Expression, TabularIcons.ICON_EFFECTS },
             { ObjectType.PartitionCollection, TabularIcons.ICON_PARTITION },
-            { ObjectType.CalculationGroup, TabularIcons.ICON_CALCULATOR },
-            { ObjectType.CalculationItem, TabularIcons.ICON_FIELD }
+            { ObjectType.CalculationGroup, TabularIcons.ICON_TABLECALC },
+            { ObjectType.CalculationItem, TabularIcons.ICON_CALCULATOR }
         };
 
 
@@ -69,6 +69,8 @@ namespace TabularEditor.UI.Tree
                 case ObjectType.Folder:
                 case ObjectType.Group:
                     return isExpanded ? TabularIcons.ICON_FOLDEROPEN : TabularIcons.ICON_FOLDER;
+                case ObjectType.CalculationItemCollection:
+                    return isExpanded ? TabularIcons.ICON_FOLDEROPENCALC : TabularIcons.ICON_FOLDERCALC;
 
                 case ObjectType.TablePermission:
                     return TabularIcons.ICON_EFFECTS;
@@ -153,6 +155,10 @@ namespace TabularEditor.UI.Tree
 
         public const int ICON_FIELDCOLUMN = 45;
         public const int ICON_FIELD = 46;
+
+        public const int ICON_FOLDERCALC = 47;
+        public const int ICON_FOLDEROPENCALC = 48;
+        public const int ICON_TABLECALC = 49;
     }
 
 }

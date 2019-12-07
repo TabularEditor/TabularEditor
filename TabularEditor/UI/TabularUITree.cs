@@ -446,7 +446,7 @@ namespace TabularEditor
                 stack.Add((item as ITabularTableObject).Table);
 
                 var calcItem = item as CalculationItem;
-                if (calcItem != null) item = calcItem.Field;
+                if (calcItem != null) item = calcItem.GetContainer();
                 
                 var level = item as Level;
                 if (level != null) item = level.Hierarchy;
