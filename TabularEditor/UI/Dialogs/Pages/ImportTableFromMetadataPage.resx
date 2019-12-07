@@ -117,7 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="label2.Text" xml:space="preserve">
-    <value>Tabular Editor can obtain schema metadata from any OLE DB data source in your model. Choose a data source below and then specify a valid SQL query against that source. Tabular Editor will attempt to establish connection to the data source, in order to get the schema (only) of the query.</value>
+  <data name="linkLabel1.Text" xml:space="preserve">
+    <value>Paste table schema metadata into the textbox below. Each line should represent one table column and hold information about the column name and data type.
+
+For example, you can use Power Query in Excel or Power BI as described in the Tabular Editor wiki, to extract the metadata.</value>
   </data>
 </root>

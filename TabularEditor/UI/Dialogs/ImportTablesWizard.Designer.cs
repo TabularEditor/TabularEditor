@@ -34,6 +34,7 @@
             this.btnBack = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnImport = new System.Windows.Forms.Button();
+            this.page3 = new TabularEditor.UI.Dialogs.Pages.ImportTableFromMetadataPage();
             this.page1 = new TabularEditor.UI.Dialogs.Pages.ChooseDataSourcePage();
             this.page2 = new TabularEditor.UI.Dialogs.Pages.ImportTablesPage();
             this.panel1.SuspendLayout();
@@ -97,6 +98,15 @@
             this.btnImport.Text = "Import";
             this.btnImport.UseVisualStyleBackColor = true;
             // 
+            // page3
+            // 
+            this.page3.Location = new System.Drawing.Point(12, 12);
+            this.page3.Name = "page3";
+            this.page3.Size = new System.Drawing.Size(812, 444);
+            this.page3.TabIndex = 3;
+            this.page3.Visible = false;
+            this.page3.Validated += new System.EventHandler(this.page3_Validated);
+            // 
             // page1
             // 
             this.page1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -133,6 +143,7 @@
             this.Controls.Add(this.page1);
             this.Controls.Add(this.page2);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.page3);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(550, 360);
@@ -155,5 +166,6 @@
         private Pages.ChooseDataSourcePage page1;
         private System.Windows.Forms.Button btnNext;
         private System.Windows.Forms.Button btnBack;
+        private Pages.ImportTableFromMetadataPage page3;
     }
 }
