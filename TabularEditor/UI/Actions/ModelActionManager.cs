@@ -127,7 +127,7 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => Handler.CompatibilityLevel >= 1470, (s, m) => m.AddCalculationGroup().Vis().Edit(), (s, m) => @"Create New\Calculation Group", false, Context.Tables | Context.Model, Keys.Alt | Keys.D7));
 
             Add(new Action((s, m) => s.Count == 1, (s, m) => s.CalculationGroup.AddCalculationItem().Edit(), (s, m) => @"New Calculation Item", false, Context.CalculationItemCollection));
-            Add(new Action((s, m) => true, (s, m) => s.CalculationItems.First().CalculationGroup.AddCalculationItem().Edit(), (s, m) => @"New Calculation Item", false, Context.CalculationItem));
+            Add(new Action((s, m) => true, (s, m) => s.CalculationItems.First().CalculationGroupTable.AddCalculationItem().Edit(), (s, m) => @"New Calculation Item", false, Context.CalculationItem));
 
             Add(new Action((s, m) => !Handler.UsePowerBIGovernance, (s, m) => m.AddDataSource().Edit(), (s, m) => @"Create New\Data Source (Legacy)", false, Context.DataSources | Context.Model));
             Add(new Action((s, m) => Handler.CompatibilityLevel >= 1400 && !Handler.UsePowerBIGovernance, (s, m) => m.AddStructuredDataSource().Edit(), (s, m) => @"Create New\Data Source (Power Query)", false, Context.DataSources | Context.Model));

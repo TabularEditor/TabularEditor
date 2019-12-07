@@ -342,7 +342,7 @@ namespace TabularEditor
                     // Dragging levels within a hierarchy or between hierarchies:
                     if (sourceNodes.All(n => n.Tag is Level))
                     {
-                        return SetDropMode(DragInfo.SameHierarchy ? DropMode.ReorderLevels : DropMode.LevelMove);
+                        return SetDropMode(DragInfo.SameHierarchy ? DropMode.ReorderLevels : DropMode.MoveLevels);
                     }
 
                     // Dragging columns into a hierarchy:
@@ -361,8 +361,19 @@ namespace TabularEditor
                 {
                     if (targetNode.Tag is Table && position == NodePosition.Inside) return SetDropMode(DropMode.MoveObject);
                 }
-
             }
+
+            // Dragging into a calculation group:
+            if (DragInfo.TargetCalculationGroup != null)
+            {
+                // Dragging calculation items within a calculation group or between calculation groups:
+                if (sourceNodes.All(n => n.Tag is CalculationItem ci))
+                {
+                    return SetDropMode(DragInfo.SameCalculationGroup ? DropMode.ReorderCalcItems : DropMode.MoveCalcItems);
+                }
+            }
+
+
 
             // All other cases not allowed:
             return false;
@@ -374,8 +385,19 @@ namespace TabularEditor
 
             switch(DragMode)
             {
+                case DropMode.ReorderCalcItems: Handler.Actions.ReorderCalculationItems(sourceNodes.Select(n => n.Tag as CalculationItem), DragInfo.TargetOrdinal); break;
                 case DropMode.ReorderLevels: Handler.Actions.ReorderLevels(sourceNodes.Select(n => n.Tag as Level), DragInfo.TargetOrdinal); break;
-                case DropMode.LevelMove: Handler.Actions.AddColumnsToHierarchy(sourceNodes.Select(n => (n.Tag as Level).Column), DragInfo.TargetHierarchy, DragInfo.TargetOrdinal); break;
+                case DropMode.MoveLevels: Handler.Actions.AddColumnsToHierarchy(sourceNodes.Select(n => (n.Tag as Level).Column), DragInfo.TargetHierarchy, DragInfo.TargetOrdinal); break;
+                case DropMode.MoveCalcItems:
+                    var sourceItems = sourceNodes.Select(n => n.Tag as CalculationItem).ToList();
+                    var destinationCalcGroup = DragInfo.TargetCalculationGroup;
+                    Handler.BeginUpdate("Move calculation items");
+                    for(int i= 0; i < sourceItems.Count; i++)
+                    {
+                        Handler.Actions.MoveCalculationItem(sourceItems[i], destinationCalcGroup);
+                    }
+                    Handler.EndUpdate();
+                    break;
                 case DropMode.AddColumns: Handler.Actions.AddColumnsToHierarchy(sourceNodes.Select(n => n.Tag as Column), DragInfo.TargetHierarchy, DragInfo.TargetOrdinal); break;
                 case DropMode.Folder: Handler.Actions.SetContainer(sourceNodes.Select(n => n.Tag as IFolderObject), targetNode.Tag as IFolder, Culture); break;
                 case DropMode.MoveObject:
@@ -592,7 +614,9 @@ namespace TabularEditor
     {
         Folder,
         ReorderLevels,
-        LevelMove,
+        ReorderCalcItems,
+        MoveLevels,
+        MoveCalcItems,
         AddColumns,
         MoveObject,
         None
@@ -610,6 +634,10 @@ namespace TabularEditor
             dragInfo.SourceHierarchy = (sourceNodes.First().Tag as Level)?.Hierarchy;
             dragInfo.TargetHierarchy = (targetNode.Tag as Level)?.Hierarchy ?? (position == NodePosition.Inside ? targetNode.Tag as Hierarchy : null);
 
+            dragInfo.SourceCalculationGroup = (sourceNodes.First().Tag as CalculationItem)?.CalculationGroupTable;
+            dragInfo.TargetCalculationGroup = (targetNode.Tag as CalculationItem)?.CalculationGroupTable ?? (position == NodePosition.Inside ? (targetNode.Tag as CalculationItemCollection)?.CalculationGroupTable ?? (targetNode.Tag as CalculationGroupTable) : null);
+            dragInfo.TargetCalculationItem = targetNode.Tag as CalculationItem;
+
             //dragInfo.TargetFolder = position == NodePosition.Inside ? targetNode.Tag as IDetailObjectContainer : (targetNode.Tag as IDetailObject)?.GetContainer();
             dragInfo.TargetLevel = targetNode.Tag as Level;
 
@@ -623,6 +651,16 @@ namespace TabularEditor
                 dragInfo.TargetOrdinal = dragInfo.TargetHierarchy.Levels.Count;
             }
 
+            if (dragInfo.TargetCalculationItem != null)
+            {
+                dragInfo.TargetOrdinal = dragInfo.TargetCalculationItem.Ordinal;
+                if (position == NodePosition.After) dragInfo.TargetOrdinal++;
+            }
+            else if (dragInfo.TargetCalculationGroup != null)
+            {
+                dragInfo.TargetOrdinal = dragInfo.TargetCalculationGroup.CalculationItems.Count;
+            }
+
             return dragInfo;
         }
         
@@ -631,6 +669,9 @@ namespace TabularEditor
         public Table TargetTable;
         public Hierarchy SourceHierarchy;
         public Hierarchy TargetHierarchy;
+        public CalculationGroupTable SourceCalculationGroup;
+        public CalculationGroupTable TargetCalculationGroup;
+        public CalculationItem TargetCalculationItem;
         public Level TargetLevel;
 
         public bool SameTable { get
@@ -642,6 +683,13 @@ namespace TabularEditor
         public bool SameHierarchy { get
             {
                 return TargetHierarchy != null && SourceHierarchy == TargetHierarchy;
+            }
+        }
+        public bool SameCalculationGroup
+        {
+            get
+            {
+                return TargetCalculationGroup != null && SourceCalculationGroup == TargetCalculationGroup;
             }
         }
     }

@@ -108,6 +108,7 @@
     <Compile Include="TOMWrapper\TabularModelHandler.FileHandling.cs" />
     <Compile Include="TOMWrapper\TabularObjectContainerHelper.cs" />
     <Compile Include="UndoFramework\UndoExtendedPropertyAction.cs" />
+    <Compile Include="UndoFramework\UndoCalculationItemsOrderAction.cs" />
     <Compile Include="Utils\DaxDependencyHelper.cs" />
     <Compile Include="TOMWrapper\Indexers\GenericIndexer.cs" />
     <Compile Include="TOMWrapper\Relationship.cs" />

@@ -318,25 +318,33 @@ namespace TabularEditor.TOMWrapper
                 // Otherwise, only show tables:
                 else result = Model.Tables.Where(t => VisibleInTree(t));
             }
-            else if(tabularObject is Table)
+            else if(tabularObject is Table table)
             {
                 // Handles sorting internally:
-                return GetChildrenForTable(tabularObject as Table);
+                return GetChildrenForTable(table);
             }
-            else if (tabularObject is Folder)
+            else if (tabularObject is Folder folder)
             {
                 // Handles sorting internally:
-                return (tabularObject as Folder).GetChildrenByFolders().Where(c => VisibleInTree(c));
+                return folder.GetChildrenByFolders().Where(c => VisibleInTree(c));
             }
-            else if (tabularObject is Hierarchy)
+            else if (tabularObject is Hierarchy hierarchy)
             {
-                // Never sort:
-                return (tabularObject as Hierarchy).Levels.OrderBy(l => l.Ordinal);
+                // Always show in Ordinal order:
+                return hierarchy.Levels.OrderBy(l => l.Ordinal);
             }
-            else if(tabularObject is ITabularObjectContainer)
+            else if (tabularObject is CalculationItemCollection calcItems)
+            {
+                // Always show in Ordinal order before name/metadata order (otherwise, drag/drop will be funky):
+                if(Options.HasFlag(LogicalTreeOptions.OrderByName))
+                    return calcItems.OrderBy(i => i.Ordinal).ThenBy(i => i.Name);
+                else
+                    return calcItems.OrderBy(i => i.Ordinal).ThenBy(i => i.MetadataIndex);
+            }
+            else if(tabularObject is ITabularObjectContainer objContainer)
             {
                 // All other types:
-                result = (tabularObject as ITabularObjectContainer).GetChildren();
+                result = objContainer.GetChildren();
             }
 
             return Options.HasFlag(LogicalTreeOptions.OrderByName) ? result.OrderBy(o => o.Name) : result;
