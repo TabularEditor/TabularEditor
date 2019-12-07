@@ -1113,15 +1113,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Tabular Editor"
-        "ProductCode" = "8:{176DACD1-5E7B-48EB-B978-380ADE09BA46}"
-        "PackageCode" = "8:{C360E9B9-0EAF-4AAC-B4CA-E6C2CAC423EF}"
+        "ProductCode" = "8:{1EB2BD4E-5151-48C8-8E93-A143012938E0}"
+        "PackageCode" = "8:{71541CE4-3EBF-4F4A-B0A6-8B1321DB0105}"
         "UpgradeCode" = "8:{E20734F5-CD2A-4A76-AB20-014819FCDE35}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:2.8.7"
+        "ProductVersion" = "8:2.9.0"
         "Manufacturer" = "8:Daniel Otykier"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:https://github.com/otykier/TabularEditor/issues"
@@ -2013,7 +2013,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_FC544BBFC4AE4FBCBA61AA486C697C6C"
             {
-            "SourcePath" = "8:..\\TabularEditor\\obj\\Debug\\TabularEditor.exe"
+            "SourcePath" = "8:..\\TabularEditor\\obj\\Release\\TabularEditor.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_86B6DEA1587144389D74191CBF86D6D0"
