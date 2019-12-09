@@ -46,7 +46,7 @@ namespace TabularEditor.UI.Dialogs.Pages
         }
         private bool IsTypeProperty(string text)
         {
-            return text.EndsWith("type", StringComparison.OrdinalIgnoreCase);
+            return text.IndexOf("type", StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         enum LexerMode
