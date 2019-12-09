@@ -33,10 +33,17 @@ namespace TabularEditor.UI.Dialogs
                     case 1:
                         page1.Visible = true;
                         page2.Visible = false;
+                        page3.Visible = false;
                         break;
                     case 2:
-                        page2.Visible = true;
                         page1.Visible = false;
+                        page2.Visible = true;
+                        page3.Visible = false;
+                        break;
+                    case 3:
+                        page1.Visible = false;
+                        page2.Visible = false;
+                        page3.Visible = true;
                         break;
                 }
 
