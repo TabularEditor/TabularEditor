@@ -100,6 +100,9 @@
             // 
             // page3
             // 
+            this.page3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.page3.Location = new System.Drawing.Point(12, 12);
             this.page3.Name = "page3";
             this.page3.Size = new System.Drawing.Size(812, 444);
