@@ -45,6 +45,8 @@ View the article on www.kapacity.dk/tabular-editor for a general presentation of
 * **2019-07-30** [Version 2.8.4](https://github.com/otykier/TabularEditor/releases/tag/2.8.4) released
 * **2019-08-14** [Version 2.8.5](https://github.com/otykier/TabularEditor/releases/tag/2.8.5) released
 * **2019-10-16** [Version 2.8.6](https://github.com/otykier/TabularEditor/releases/tag/2.8.6) released
+* **2019-12-07** [Version 2.9.0](https://github.com/otykier/TabularEditor/releases/tag/2.9.0) released
+* **2019-12-09** [Version 2.9.1](https://github.com/otykier/TabularEditor/releases/tag/2.9.1) released
 
 ## Roadmap
 
