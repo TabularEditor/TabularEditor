@@ -166,7 +166,7 @@ namespace TabularEditor.TOMWrapper
         public IEnumerable<Level> AllLevels { get { return Tables.SelectMany(t => t.Hierarchies).SelectMany(h => h.Levels); } }
         #endregion
 
-        [IntelliSense("Metadata related to the latest deployment performed on this model using Tabular Editor.")]
+        [IntelliSense("Metadata related to the latest deployment performed on this model using Tabular Editor."),Category("Basic")]
         public DeploymentMetadata DeploymentMetadata { get; set; }
         const string DM = "TabularEditor_DeploymentMetadata";
         private void InitDeploymentMetadata()
@@ -282,6 +282,7 @@ namespace TabularEditor.TOMWrapper
             base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
         }
 
+        [Browsable(false)]
         public IEnumerable<CalculationGroupTable> CalculationGroups => Tables.OfType<CalculationGroupTable>();
     }
 
