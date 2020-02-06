@@ -53,6 +53,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string DESCRIPTION = "Description";
 	    public const string DETAILROWSDEFINITION = "DetailRowsDefinition";
 	    public const string DISCOURAGEIMPLICITMEASURES = "DiscourageImplicitMeasures";
+	    public const string DISCOURAGEREPORTMEASURES = "DiscourageReportMeasures";
 	    public const string DISPLAYFOLDER = "DisplayFolder";
 	    public const string DISPLAYORDINAL = "DisplayOrdinal";
 	    public const string ENCODINGHINT = "EncodingHint";
@@ -122,6 +123,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string QUERYGROUPS = "QueryGroups";
 	    public const string REFRESHEDTIME = "RefreshedTime";
 	    public const string REFRESHPOLICY = "RefreshPolicy";
+	    public const string RELATEDCOLUMNDETAILS = "RelatedColumnDetails";
 	    public const string RELATIONSHIP = "Relationship";
 	    public const string RELATIONSHIPS = "Relationships";
 	    public const string RELYONREFERENTIALINTEGRITY = "RelyOnReferentialIntegrity";
@@ -130,11 +132,13 @@ namespace TabularEditor.TOMWrapper
 	    public const string ROLES = "Roles";
 	    public const string SECURITYFILTERINGBEHAVIOR = "SecurityFilteringBehavior";
 	    public const string SERVER = "Server";
+	    public const string SETS = "Sets";
 	    public const string SHOWASVARIATIONSONLY = "ShowAsVariationsOnly";
 	    public const string SORTBYCOLUMN = "SortByColumn";
 	    public const string SOURCE = "Source";
 	    public const string SOURCECOLUMN = "SourceColumn";
 	    public const string SOURCEPROVIDERTYPE = "SourceProviderType";
+	    public const string SOURCEQUERYCULTURE = "SourceQueryCulture";
 	    public const string SOURCETYPE = "SourceType";
 	    public const string STATE = "State";
 	    public const string STATUSDESCRIPTION = "StatusDescription";
@@ -281,6 +285,7 @@ namespace TabularEditor.TOMWrapper
         EvaluationError = 6,
         DependencyError = 7,
         Incomplete = 8,
+        ForceCalculationNeeded = 10,
 	}
 	/// <summary>
 ///             An enumeration of possible values for aligning data in a cell. 
@@ -328,6 +333,7 @@ namespace TabularEditor.TOMWrapper
         Import = 0,
         DirectQuery = 1,
         Default = 2,
+        Push = 3,
         Dual = 4,
 	}
 	/// <summary>
@@ -447,7 +453,7 @@ namespace TabularEditor.TOMWrapper
   
 	/// <summary>
 ///             Variation object.
-///             </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+///             </summary><remarks>This metadata object is only supported for Pbi server, at database compatibility level of 1400 or above for Box server, at database compatibility level of 1400 or above for Excel server.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Variation: TabularNamedObject
 			, IDescriptionObject
@@ -7184,6 +7190,30 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeDiscourageImplicitMeasures() { return false; }
 /// <summary>
+///             Determines whether to discourage the report measures.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at Internal or above.</remarks>
+		[DisplayName("Discourage Report Measures")]
+		[Category("Other"),Description(@"Determines whether to discourage the report measures."),IntelliSense(@"Determines whether to discourage the report measures.")]
+		public bool DiscourageReportMeasures {
+			get {
+			    return MetadataObject.DiscourageReportMeasures;
+			}
+			set {
+				
+				var oldValue = DiscourageReportMeasures;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.DISCOURAGEREPORTMEASURES, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.DiscourageReportMeasures = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISCOURAGEREPORTMEASURES, oldValue, newValue));
+				OnPropertyChanged(Properties.DISCOURAGEREPORTMEASURES, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeDiscourageReportMeasures() { return false; }
+/// <summary>
 ///             DataSourceDefaultMaxConnections will be used for connections to a data source if MaxConnections is set to -1 on the data source object or if there is no corresponding data source object for the data source.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1510 or above.</remarks>
 		[DisplayName("Data Source Default Max Connections")]
@@ -7207,6 +7237,30 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDataSourceDefaultMaxConnections() { return false; }
+/// <summary>
+///             The name of the Culture used for formatting during refresh through Mashup.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1520 or above.</remarks>
+		[DisplayName("Source Query Culture")]
+		[Category("Other"),Description(@"The name of the Culture used for formatting during refresh through Mashup."),IntelliSense(@"The name of the Culture used for formatting during refresh through Mashup.")]
+		public string SourceQueryCulture {
+			get {
+			    return MetadataObject.SourceQueryCulture;
+			}
+			set {
+				
+				var oldValue = SourceQueryCulture;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.SOURCEQUERYCULTURE, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.SourceQueryCulture = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SOURCEQUERYCULTURE, oldValue, newValue));
+				OnPropertyChanged(Properties.SOURCEQUERYCULTURE, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeSourceQueryCulture() { return false; }
 /// <summary>
 ///             A reference to a default measure.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
@@ -11048,7 +11102,7 @@ namespace TabularEditor.TOMWrapper
 		private bool ShouldSerializeIsHidden() { return false; }
 /// <summary>
 ///             A boolean value that indicates a difference between a local and server version. If True, the Table is only shown when referenced as Variation.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+///             </summary><remarks>This property is only supported for Pbi server, at database compatibility level of 1400 or above for Box server, at database compatibility level of 1400 or above for Excel server.</remarks>
 		[DisplayName("Show As Variations Only")]
 		[Category("Options"),Description(@"A boolean value that indicates a difference between a local and server version. If True, the Table is only shown when referenced as Variation."),IntelliSense(@"A boolean value that indicates a difference between a local and server version. If True, the Table is only shown when referenced as Variation.")]
 		public bool ShowAsVariationsOnly {
@@ -11072,7 +11126,7 @@ namespace TabularEditor.TOMWrapper
 		private bool ShouldSerializeShowAsVariationsOnly() { return false; }
 /// <summary>
 ///             A boolean value that specifies whether to hide a table from the client. True hides the tables.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+///             </summary><remarks>This property is only supported for Pbi server, at database compatibility level of 1400 or above for Box server, at database compatibility level of 1400 or above for Excel server.</remarks>
 		[DisplayName("Private")]
 		[Category("Options"),Description(@"A boolean value that specifies whether to hide a table from the client. True hides the tables."),IntelliSense(@"A boolean value that specifies whether to hide a table from the client. True hides the tables.")]
 		public bool IsPrivate {
