@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\do\source\repos\TabularEditor\AntlrGrammars\DAXLexer.g4 by ANTLR 4.6.4
+// Generated from C:\Users\do\source\repos\TabularEditorOrg\AntlrGrammars\DAXLexer.g4 by ANTLR 4.6.4
 
 // Unreachable code detected
 #pragma warning disable 0162

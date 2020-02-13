@@ -228,10 +228,10 @@ namespace TabularEditor.UI.Actions
                 if (res == DialogResult.Cancel) return;
                 // TODO: Add options for match case and whole word only
                 s.Rename(form.Pattern, form.ReplaceWith, form.RegEx, form.IncludeTranslations);
-            }, (s, m) => "Batch Rename...", true, Context.DataObjects | Context.Level | Context.CalculationItem, Keys.F2) { ToolTip = "Opens a dialog that lets you rename all the selected objects at once. Folders are not renamed, but objects inside folders are."});
+            }, (s, m) => "Batch Rename...", true, Context.DataObjects | Context.Level | Context.CalculationItem | Context.Partition, Keys.F2) { ToolTip = "Opens a dialog that lets you rename all the selected objects at once. Folders are not renamed, but objects inside folders are."});
 
             // Batch Rename Children
-            Add(new Action((s, m) => s.Context == Context.Table || s.Direct.Any(i => i is Folder), (s, m) =>
+            Add(new Action((s, m) => s.Context == Context.Table || s.Direct.Any(i => i is Folder) || s.Context == Context.PartitionCollection, (s, m) =>
             {
                 var form = Dialogs.ReplaceForm.Singleton;
                 var sel = new UISelectionList<ITabularNamedObject>(
@@ -243,7 +243,7 @@ namespace TabularEditor.UI.Actions
                 if (res == DialogResult.Cancel) return;
                 // TODO: Add options for match case and whole word only
                 sel.Rename(form.Pattern, form.ReplaceWith, form.RegEx, form.IncludeTranslations);
-            }, (s, m) => "Batch Rename Children...", true, Context.DataObjects, Keys.Shift | Keys.F2)
+            }, (s, m) => "Batch Rename Children...", true, Context.DataObjects | Context.PartitionCollection, Keys.Shift | Keys.F2)
             { ToolTip = "Opens a dialog that lets you rename all children of the selected objects at once. Folders are not renamed, but objects inside folders are." });
 
             // Delete Action

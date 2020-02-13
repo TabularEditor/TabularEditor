@@ -429,8 +429,60 @@ namespace TabularEditor.BestPracticeAnalyzer
             return rule.Analyze(Model);
         }
 
+        public IEnumerable<AnalyzerResult> AnalyzeWithNUnit(IEnumerable<BestPracticeRule> rules)
+        {
+            if (Model != null)
+            {
+                Program.nUnit.StartSuite("Best Practice Analysis");
+
+                var results = new List<AnalyzerResult>();
+                foreach (var rule in rules)
+                {
+                    var ruleResults = rule.Analyze(Model).Where(r => !r.Ignored).ToList();
+
+                    if (ruleResults.Count == 0)
+                        Program.nUnit.Pass("Best Practice Analysis", rule.Name, GetNUnitRuleProps(rule));
+                    else if (ruleResults.Count == 1 && !ruleResults[0].RuleEnabled)
+                        Program.nUnit.Skip("Best Practice Analysis", rule.Name, GetNUnitRuleProps(rule));
+                    else if (ruleResults.Count == 1 && ruleResults[0].RuleHasError)
+                        Program.nUnit.Inconclude("Best Practice Analysis", rule.Name, GetNUnitRuleProps(rule, ruleResults[0].RuleError));
+                    else
+                        Program.nUnit.Fail("Best Practice Analysis", rule.Name, $"{ruleResults.Count} object(s) in violation of rule",
+                            "Objects in violation:\r\n  " + string.Join("\r\n  ", ruleResults.Select(r => $"{r.ObjectName} ({r.ObjectType})").ToArray()), GetNUnitRuleProps(rule));
+
+                    results.AddRange(ruleResults);
+                }
+
+                return results;
+            }
+            return Enumerable.Empty<AnalyzerResult>();
+        }
+
+        private IReadOnlyDictionary<string, string> GetNUnitRuleProps(BestPracticeRule rule)
+        {
+            return new Dictionary<string, string> {
+                { "Description", rule.Description },
+                { "Severity", rule.Severity.ToString() },
+                { "Category", rule.Category },
+                { "RuleID", rule.ID }
+            };
+        }
+
+        private IReadOnlyDictionary<string, string> GetNUnitRuleProps(BestPracticeRule rule, string ruleError)
+        {
+            return new Dictionary<string, string> {
+                { "Description", rule.Description },
+                { "Severity", rule.Severity.ToString() },
+                { "Category", rule.Category },
+                { "RuleID", rule.ID },
+                { "RuleError", ruleError }
+            };
+        }
+
         public IEnumerable<AnalyzerResult> Analyze(IEnumerable<BestPracticeRule> rules)
         {
+            if (Program.nUnit != null) return AnalyzeWithNUnit(rules);
+
             if (Model != null)
             {
                 return rules.SelectMany(r => r.Analyze(Model));
