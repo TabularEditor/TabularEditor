@@ -433,7 +433,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         {
             if (Model != null)
             {
-                Program.nUnit.StartSuite("Best Practice Analysis");
+                Program.testRun.StartSuite("Best Practice Analysis");
 
                 var results = new List<AnalyzerResult>();
                 foreach (var rule in rules)
@@ -441,13 +441,13 @@ namespace TabularEditor.BestPracticeAnalyzer
                     var ruleResults = rule.Analyze(Model).Where(r => !r.Ignored).ToList();
 
                     if (ruleResults.Count == 0)
-                        Program.nUnit.Pass("Best Practice Analysis", rule.Name, GetNUnitRuleProps(rule));
+                        Program.testRun.Pass("Best Practice Analysis", rule.Name, GetNUnitRuleProps(rule));
                     else if (ruleResults.Count == 1 && !ruleResults[0].RuleEnabled)
-                        Program.nUnit.Skip("Best Practice Analysis", rule.Name, GetNUnitRuleProps(rule));
+                        Program.testRun.Skip("Best Practice Analysis", rule.Name, GetNUnitRuleProps(rule));
                     else if (ruleResults.Count == 1 && ruleResults[0].RuleHasError)
-                        Program.nUnit.Inconclude("Best Practice Analysis", rule.Name, GetNUnitRuleProps(rule, ruleResults[0].RuleError));
+                        Program.testRun.Inconclude("Best Practice Analysis", rule.Name, GetNUnitRuleProps(rule, ruleResults[0].RuleError));
                     else
-                        Program.nUnit.Fail("Best Practice Analysis", rule.Name, $"{ruleResults.Count} object(s) in violation of rule",
+                        Program.testRun.Fail("Best Practice Analysis", rule.Name, $"{ruleResults.Count} object(s) in violation of rule",
                             "Objects in violation:\r\n  " + string.Join("\r\n  ", ruleResults.Select(r => $"{r.ObjectName} ({r.ObjectType})").ToArray()), GetNUnitRuleProps(rule));
 
                     results.AddRange(ruleResults);
@@ -481,7 +481,7 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         public IEnumerable<AnalyzerResult> Analyze(IEnumerable<BestPracticeRule> rules)
         {
-            if (Program.nUnit != null) return AnalyzeWithNUnit(rules);
+            if (Program.testRun != null) return AnalyzeWithNUnit(rules);
 
             if (Model != null)
             {

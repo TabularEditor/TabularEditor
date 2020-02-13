@@ -139,7 +139,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
         }
 
         public static List<ITabularEditorPlugin> Plugins = new List<ITabularEditorPlugin>();
-        public static NUnit nUnit;
+        public static TestRun testRun;
         static bool enableVSTS;
         static int errorCount = 0;
         static int warningCount = 0;
@@ -249,19 +249,19 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             string script = null;
             string scriptFile = null;
 
-            var doNUnit = upperArgList.IndexOf("-N");
-            string nUnitFile = null;
-            if (doNUnit == -1) doNUnit = upperArgList.IndexOf("-NUNIT");
-            if (doNUnit > -1)
+            var doTestRun = upperArgList.IndexOf("-T");
+            string testRunFile = null;
+            if (doTestRun == -1) doTestRun = upperArgList.IndexOf("-TRX");
+            if (doTestRun > -1)
             {
-                if (upperArgList.Count <= doNUnit || upperArgList[doNUnit + 1].StartsWith("-"))
+                if (upperArgList.Count <= doTestRun || upperArgList[doTestRun + 1].StartsWith("-"))
                 {
                     Error("Invalid argument syntax.\n");
                     OutputUsage();
                     return true;
                 }
-                nUnit = new NUnit();
-                nUnitFile = argList[doNUnit + 1];
+                testRun = new TestRun(h.Database?.Name ?? h.Source);
+                testRunFile = argList[doTestRun + 1];
             }
 
             var doScript = upperArgList.IndexOf("-SCRIPT");
@@ -606,10 +606,10 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 }
 
             }
-            if (nUnit != null)
+            if (testRun != null)
             {
-                nUnit.Serialize(nUnitFile);
-                Console.WriteLine("Saving NUnit XML file saved.");
+                testRun.SerializeAsVSTest(testRunFile);
+                Console.WriteLine("VSTest XML file saved: " + testRunFile);
             }
 
             return true;
@@ -677,7 +677,7 @@ database            Database ID of the model to load
                         after deployment.
     -X / -XMLA        No deployment. Generate XMLA/TMSL script for later deployment instead. 
       xmla_script       File name of the new XMLA/TMSL script output.
-  -N / -NUNIT       Produces an NUnit 3.0 XML file with details on the execution.
+  -T / -TRX         Produces a VSTEST (trx) file with details on the execution.
     resultsfile       File name of the NUnit 3.0 XML file.");
         }
     }
