@@ -20,21 +20,21 @@ namespace TabularEditor.Scripting
         public static void SchemaCheck(Partition partition)
         {
             var changes = TableMetadata.GetChanges(partition);
-            ReportSchemaCheckChanges(changes);
+            ReportSchemaCheckChanges(changes, partition.Model);
         }
 
         [ScriptMethod]
         public static void SchemaCheck(Table table)
         {
             var changes = TableMetadata.GetChanges(table.Partitions[0]);
-            ReportSchemaCheckChanges(changes);
+            ReportSchemaCheckChanges(changes, table.Model);
         }
 
         [ScriptMethod]
         public static void SchemaCheck(ProviderDataSource source)
         {
             var changes = TableMetadata.GetChanges(source);
-            ReportSchemaCheckChanges(changes);
+            ReportSchemaCheckChanges(changes, source.Model);
         }
 
         [ScriptMethod]
@@ -45,13 +45,66 @@ namespace TabularEditor.Scripting
             {
                 changes.AddRange(TableMetadata.GetChanges(source));
             }
-            ReportSchemaCheckChanges(changes);
+            ReportSchemaCheckChanges(changes, model);
         }
 
-        private static void ReportSchemaCheckChanges(List<MetadataChange> changes)
+        private static void ReportSchemaCheckChangesToNUnit(List<MetadataChange> changes, Model model, NUnit nUnit)
+        {
+            Program.nUnit.StartSuite("Schema Checks");
+            foreach (var table in model.Tables)
+            {
+                var changesForTable = changes.Where(c => c.ModelTable == table).ToList();
+
+                if (changesForTable.Any(c => c.ChangeType == MetadataChangeType.SourceQueryError))
+                {
+                    var change = changesForTable.First(c => c.ChangeType == MetadataChangeType.SourceQueryError);
+                    Program.nUnit.Fail("Schema Checks", $"Table '{table.Name}' source query is valid", change.ToString(), change.SourceQuery);
+                    Program.nUnit.Inconclude("Schema Checks", $"Table '{table.Name}' imports all columns");
+                    Program.nUnit.Inconclude("Schema Checks", $"Table '{table.Name}' does not import nonexisting columns");
+                    Program.nUnit.Inconclude("Schema Checks", $"Table '{table.Name}' maps data types correctly");
+                    continue;
+                }
+
+                Program.nUnit.Pass("Schema Checks", $"Table '{table.Name}' source query is valid");
+
+                var notImported = changesForTable.Where(c => c.ChangeType == MetadataChangeType.SourceColumnAdded).ToList();
+                if (notImported.Count > 0)
+                {
+                    Program.nUnit.Fail("Schema Checks", $"Table '{table.Name}' imports all columns", 
+                        "Table does not import all columns", 
+                        "Columns not imported:\r\n  " + string.Join("\r\n  ", notImported.Select(c => $"[{c.SourceColumn}]").ToArray()));
+                }
+                else
+                    Program.nUnit.Pass("Schema Checks", $"Table '{table.Name}' imports all columns");
+
+                var notFound = changesForTable.Where(c => c.ChangeType == MetadataChangeType.SourceColumnNotFound).ToList();
+                if (notFound.Count > 0)
+                {
+                    Program.nUnit.Fail("Schema Checks", $"Table '{table.Name}' does not import nonexisting columns",
+                        "Table imports columns that do not exist in source query",
+                        "Columns without corresponding source column:\r\n  " + string.Join("\r\n  ", notFound.Select(c => $"[{c.ModelColumn.Name}] (source column: {c.SourceColumn})").ToArray()));
+                }
+                else
+                    Program.nUnit.Pass("Schema Checks", $"Table '{table.Name}' does not import nonexisting columns");
+
+                var dtChange = changesForTable.Where(c => c.ChangeType == MetadataChangeType.DataTypeChange).ToList();
+                if (dtChange.Count > 0)
+                {
+                    Program.nUnit.Fail("Schema Checks", $"Table '{table.Name}' maps data types correctly",
+                        "One or more imported columns do not have a matching data type in the source",
+                        "Columns with non-matching data type:\r\n  " + string.Join("\r\n  ", dtChange.Select(c => $"[{c.ModelColumn.Name}] {c.ModelColumn.DataType} (source column: {c.SourceColumn} {c.SourceProviderType})").ToArray()));
+                }
+                else
+                    Program.nUnit.Pass("Schema Checks", $"Table '{table.Name}' maps data types correctly");
+            }
+        }
+
+        private static void ReportSchemaCheckChanges(List<MetadataChange> changes, Model model)
         {
             if (Program.CommandLineMode)
             {
+                if (Program.nUnit != null) ReportSchemaCheckChangesToNUnit(changes, model, Program.nUnit);
+
                 foreach (var change in changes)
                 {
                     var msg = change.ToString();

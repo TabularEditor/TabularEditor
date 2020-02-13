@@ -139,7 +139,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
         }
 
         public static List<ITabularEditorPlugin> Plugins = new List<ITabularEditorPlugin>();
-
+        public static NUnit nUnit;
         static bool enableVSTS;
         static int errorCount = 0;
         static int warningCount = 0;
@@ -249,6 +249,21 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             string script = null;
             string scriptFile = null;
 
+            var doNUnit = upperArgList.IndexOf("-N");
+            string nUnitFile = null;
+            if (doNUnit == -1) doNUnit = upperArgList.IndexOf("-NUNIT");
+            if (doNUnit > -1)
+            {
+                if (upperArgList.Count <= doNUnit || upperArgList[doNUnit + 1].StartsWith("-"))
+                {
+                    Error("Invalid argument syntax.\n");
+                    OutputUsage();
+                    return true;
+                }
+                nUnit = new NUnit();
+                nUnitFile = argList[doNUnit + 1];
+            }
+
             var doScript = upperArgList.IndexOf("-SCRIPT");
             if (doScript == -1) doScript = upperArgList.IndexOf("-S");
             if (doScript > -1)
@@ -328,12 +343,16 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 System.CodeDom.Compiler.CompilerResults result;
                 Scripting.ScriptOutputForm.Reset(false);
                 var dyn = ScriptEngine.CompileScript(script, out result);
+                //nUnit.StartSuite("Script Compilation");
                 if (result.Errors.Count > 0)
                 {
                     Error("Script compilation errors:");
+                    var errIndex = 0;
                     foreach (System.CodeDom.Compiler.CompilerError err in result.Errors)
                     {
+                        errIndex++;
                         ErrorX(err.ErrorText, scriptFile, err.Line, err.Column, err.ErrorNumber);
+                        //nUnit.Failure("Script Compilation", $"Compilation Error #{errIndex}", err.ErrorText, $"{scriptFile} line {err.Line}, column {err.Column}");
                     }
                     return true;
                 }
@@ -529,7 +548,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 if (xmla_scripting_only)
                 {
                     var switchPos = upperArgList.IndexOf("-XMLA"); if (switchPos == -1) switchPos = upperArgList.IndexOf("-X");
-                    xmla_script_file = argList.Skip(switchPos + 1).FirstOrDefault(); if (String.IsNullOrWhiteSpace(xmla_script_file) && xmla_script_file.StartsWith("-")) xmla_script_file = null;
+                    xmla_script_file = argList.Skip(switchPos + 1).FirstOrDefault(); if (String.IsNullOrWhiteSpace(xmla_script_file) || xmla_script_file.StartsWith("-")) xmla_script_file = null;
                     if (string.IsNullOrEmpty(xmla_script_file))
                     {
                         Error("Missing xmla_script_file.\n");
@@ -585,7 +604,12 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 {
                     Error($"{(xmla_scripting_only ? "Script generation" : "Deployment")} failed! {ex.Message}");
                 }
-                return true;
+
+            }
+            if (nUnit != null)
+            {
+                nUnit.Serialize(nUnitFile);
+                Console.WriteLine("Saving NUnit XML file saved.");
             }
 
             return true;
@@ -611,7 +635,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
 
 TABULAREDITOR ( file | server database ) [-S script] [-SC] [(-B | -F) output [id]] [-A [rulefile]] [-V]
     [-D server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]] [-P] [-R [-M]]]
-        [-W] [-E] [-X xmla_script]]
+        [-W] [-E] [-X xmla_script]] [-N resultsfile]
 
 file                Full path of the Model.bim file or database.json model folder to load.
 server              Server\instance name or connection string from which to load the model
@@ -648,11 +672,13 @@ database            Database ID of the model to load
     -P / -PARTITIONS    Deploy (overwrite) existing table partitions in the model.
     -R / -ROLES         Deploy roles.
       -M / -MEMBERS       Deploy role members.
-  -W / -WARN          Outputs information about unprocessed objects as warnings.
-  -E / -ERR           Returns a non-zero exit code if Analysis Services returns any error messages
-                      after deployment.
-  -X / -XMLA          No deployment. Generate XMLA/TMSL script for later deployment instead. 
-    xmla_script         File name of the new XMLA/TMSL script output.");
+    -W / -WARN        Outputs information about unprocessed objects as warnings.
+    -E / -ERR         Returns a non-zero exit code if Analysis Services returns any error messages
+                        after deployment.
+    -X / -XMLA        No deployment. Generate XMLA/TMSL script for later deployment instead. 
+      xmla_script       File name of the new XMLA/TMSL script output.
+  -N / -NUNIT       Produces an NUnit 3.0 XML file with details on the execution.
+    resultsfile       File name of the NUnit 3.0 XML file.");
         }
     }
 }

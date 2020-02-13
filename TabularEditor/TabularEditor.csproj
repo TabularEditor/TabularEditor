@@ -209,6 +209,7 @@
     </Compile>
     <Compile Include="CustomCombobox\OldNewEvent.cs" />
     <Compile Include="CustomCombobox\PopupControl.cs" />
+    <Compile Include="NUnit.cs" />
     <Compile Include="Scripting\ScriptMethodAttribute.cs" />
     <Compile Include="Scripting\PropertySerializer.cs" />
     <Compile Include="Strings.Designer.cs">

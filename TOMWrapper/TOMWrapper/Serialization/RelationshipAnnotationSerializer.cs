@@ -32,7 +32,7 @@ namespace TabularEditor.TOMWrapper.Serialization
         {
             JArray rels = new JArray();
             foreach (var rel in table.Model.Relationships.Where(r => r.FromTable == table)
-                .OrderBy(r => r.FromColumn.Name).ThenBy(r => r.ToColumn.DaxObjectFullName))
+                .OrderBy(r => r.ToColumn.DaxObjectFullName))
             {
                 var json = TOM.JsonSerializer.SerializeObject(rel.MetadataObject, new TOM.SerializeOptions() { IgnoreInferredObjects = true, IgnoreInferredProperties = true, IgnoreTimestamps = true });
                 var jObj = JObject.Parse(json);
