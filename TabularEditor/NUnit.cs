@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,13 +9,13 @@ using System.Xml;
 namespace TabularEditor
 {
     /// <summary>
-    /// Represents an NUnit test run
+    /// Represents a test run
     /// </summary>
-    public class NUnit
+    public class TestRun
     {
         private int id = 1;
 
-        public Dictionary<string, NUnitSuite> TestSuites { get; } = new Dictionary<string, NUnitSuite>();
+        public Dictionary<string, TestSuite> TestSuites { get; } = new Dictionary<string, TestSuite>();
 
         public void StartSuite(string testSuite)
         {
@@ -64,17 +65,24 @@ namespace TabularEditor
             Inconclude(testSuite, testCase, null);
         }
 
-        private NUnitSuite GetSuite(string suiteName)
+        private TestSuite GetSuite(string suiteName)
         {
-            if (!TestSuites.TryGetValue(suiteName, out NUnitSuite suite))
+            if (!TestSuites.TryGetValue(suiteName, out TestSuite suite))
             {
-                suite = new NUnitSuite { Name = suiteName, Id = id++ };
+                suite = new TestSuite { Name = suiteName, Id = id++ };
                 TestSuites.Add(suiteName, suite);
             }
             return suite;
         }
 
-        public DateTime StartTime { get; private set; } = DateTime.Now;
+        public TestRun(string runName)
+        {
+            this.RunName = runName;
+            this.StartTime = DateTime.Now;
+        }
+        public string RunName { get; private set; }
+
+        public DateTime StartTime { get; private set; }
 
         public int Passed => TestSuites.Values.Sum(s => s.Passed);
         public int Failed => TestSuites.Values.Sum(s => s.Failed);
@@ -83,47 +91,51 @@ namespace TabularEditor
         public int Total => TestSuites.Values.Sum(s => s.Total);
         public int TestCaseCount => TestSuites.Values.Sum(s => s.TestCaseCount);
 
-        public NUnitTestResult Result => Failed == 0 ? NUnitTestResult.Passed : NUnitTestResult.Failed;
+        public TestResult Result => Failed == 0 ? TestResult.Passed : TestResult.Failed;
 
-        public void Serialize(string xmlFile)
+        public void SerializeAsNUnit(string xmlFile)
         {
             var doc = new XmlDocument();
-            var declaration = doc.CreateXmlDeclaration("1.0", "UTF-8", null);
+            var declaration = doc.CreateXmlDeclaration("1.0", "utf-8", "no");
             var root = doc.DocumentElement;
             doc.InsertBefore(declaration, root);
             var run = doc.CreateElement(string.Empty, "test-run", string.Empty);
             run.SetAttribute("id", "2"); // Hardcoded for NUnit tests
+            run.SetAttribute("name", RunName);
             run.SetAttribute("testcasecount", TestCaseCount.ToString());
             run.SetAttribute("result", Result.ToString());
+            run.SetAttribute("time", ((double)((DateTime.Now - StartTime).TotalMilliseconds) / 1000.0).ToString("0.000"));
             run.SetAttribute("total", Total.ToString());
             run.SetAttribute("passed", Passed.ToString());
             run.SetAttribute("failed", Failed.ToString());
-            run.SetAttribute("skipped", Skipped.ToString());
             run.SetAttribute("inconclusive", Inconclusive.ToString());
+            run.SetAttribute("skipped", Skipped.ToString());
+            run.SetAttribute("asserts", "0");
             run.SetAttribute("run-date", StartTime.ToString("yyyy-MM-dd"));
             run.SetAttribute("start-time", StartTime.ToString("hh:mm:ss"));
-            run.SetAttribute("end-time", DateTime.Now.ToString("hh:mm:ss"));
-            run.SetAttribute("duration", ((double)((DateTime.Now - StartTime).TotalMilliseconds) / 1000.0).ToString("0.000"));
 
             doc.AppendChild(run);
+
+
+            var env = doc.CreateElement(string.Empty, "environment", string.Empty);
+            env.SetAttribute("nunit-version", "1.0.0.0");
+            run.AppendChild(env);
 
             foreach(var testSuite in TestSuites.Values)
             {
                 var suite = doc.CreateElement(string.Empty, "test-suite", string.Empty);
-                suite.SetAttribute("type", "TestFixture");
+                suite.SetAttribute("type", "TestSuite");
                 suite.SetAttribute("id", testSuite.Id.ToString());
                 suite.SetAttribute("name", testSuite.Name);
                 suite.SetAttribute("testcasecount", testSuite.TestCaseCount.ToString());
                 suite.SetAttribute("total", testSuite.Total.ToString());
                 suite.SetAttribute("result", testSuite.Result.ToString());
+                suite.SetAttribute("time", ((double)((testSuite.EndTime - testSuite.StartTime).TotalMilliseconds) / 1000.0).ToString("0.000"));
                 suite.SetAttribute("passed", testSuite.Passed.ToString());
                 suite.SetAttribute("failed", testSuite.Failed.ToString());
-                suite.SetAttribute("skipped", testSuite.Skipped.ToString());
                 suite.SetAttribute("inconclusive", testSuite.Inconclusive.ToString());
-                suite.SetAttribute("run-date", testSuite.StartTime.ToString("yyyy-MM-dd"));
-                suite.SetAttribute("start-time", testSuite.StartTime.ToString("hh:mm:ss"));
-                suite.SetAttribute("end-time", testSuite.EndTime.ToString("hh:mm:ss"));
-                suite.SetAttribute("duration", ((double)((testSuite.EndTime - testSuite.StartTime).TotalMilliseconds) / 1000.0).ToString("0.000"));
+                suite.SetAttribute("skipped", testSuite.Skipped.ToString());
+                suite.SetAttribute("asserts", "0");
 
                 run.AppendChild(suite);
 
@@ -133,6 +145,8 @@ namespace TabularEditor
                     tc.SetAttribute("id", testCase.Id.ToString());
                     tc.SetAttribute("name", testCase.Name);
                     tc.SetAttribute("result", testCase.Result.ToString());
+                    tc.SetAttribute("time", "0.000");
+                    tc.SetAttribute("asserts", "0");
 
                     suite.AppendChild(tc);
 
@@ -173,27 +187,147 @@ namespace TabularEditor
 
             doc.Save(xmlFile);
         }
+        public void SerializeAsVSTest(string xmlFile)
+        {
+            var doc = new XmlDocument();
+            var declaration = doc.CreateXmlDeclaration("1.0", "utf-8", null);
+            var root = doc.DocumentElement;
+            doc.InsertBefore(declaration, root);
+            var run = doc.CreateElement(string.Empty, "TestRun", string.Empty);
+            run.SetAttribute("id", Guid.NewGuid().ToString("D"));
+            run.SetAttribute("name", RunName);
+            run.SetAttribute("runUser", Environment.UserDomainName);
+            run.SetAttribute("xmlns", "http://microsoft.com/schemas/VisualStudio/TeamTest/2010");
+            doc.AppendChild(run);
+
+            var times = doc.CreateElement(string.Empty, "Times", string.Empty);
+            times.SetAttribute("creation", Process.GetCurrentProcess().StartTime.ToString("o"));
+            times.SetAttribute("queuing", Process.GetCurrentProcess().StartTime.ToString("o"));
+            times.SetAttribute("start", this.StartTime.ToString("o"));
+            times.SetAttribute("finish", DateTime.Now.ToString("o"));
+            run.AppendChild(times);
+
+            var summary = doc.CreateElement(string.Empty, "ResultSummary", string.Empty);
+            summary.SetAttribute("outcome", Failed > 0 ? "Failed" : Inconclusive > 0 ? "Inconclusive" : "Passed");
+            run.AppendChild(summary);
+
+            var counters = doc.CreateElement(string.Empty, "Counters", string.Empty);
+            counters.SetAttribute("total", this.TestCaseCount.ToString());
+            counters.SetAttribute("executed", this.Total.ToString());
+            counters.SetAttribute("passed", this.Passed.ToString());
+            counters.SetAttribute("failed", this.Failed.ToString());
+            counters.SetAttribute("inconclusive", this.Inconclusive.ToString());
+            counters.SetAttribute("notExecuted", this.Skipped.ToString());
+            summary.AppendChild(counters);
+            
+            var defs = doc.CreateElement(string.Empty, "TestDefinitions", string.Empty);
+            run.AppendChild(defs);
+
+            var lists = doc.CreateElement(string.Empty, "TestLists", string.Empty);
+            run.AppendChild(lists);
+
+            var entries = doc.CreateElement(string.Empty, "TestEntries", string.Empty);
+            run.AppendChild(entries);
+
+            var results = doc.CreateElement(string.Empty, "Results", string.Empty);
+            run.AppendChild(results);
+
+            foreach (var s in TestSuites.Values)
+            {
+                var listId = s.Id.ToString();
+                var list = doc.CreateElement(string.Empty, "TestList", string.Empty);
+                list.SetAttribute("name", s.Name);
+                list.SetAttribute("id", listId);
+                lists.AppendChild(list);
+
+                foreach (var t in s.TestCases)
+                {
+                    var testId = t.Id.ToString();
+                    var executionId = Guid.NewGuid().ToString("D");
+
+                    var def = doc.CreateElement(string.Empty, "UnitTest", string.Empty);
+                    def.SetAttribute("name", t.Name);
+                    def.SetAttribute("id", testId);
+                    if (t.Properties != null && t.Properties.Count > 0)
+                    {
+                        var props = doc.CreateElement(string.Empty, "Properties", string.Empty);
+                        def.AppendChild(props);
+                        foreach (var property in t.Properties)
+                        {
+                            var prop = doc.CreateElement(string.Empty, "Property", string.Empty);
+                            props.AppendChild(prop);
+                            var key = doc.CreateElement(string.Empty, "Key", string.Empty);
+                            key.InnerText = property.Key;
+                            prop.AppendChild(key);
+                            var value = doc.CreateElement(string.Empty, "Value", string.Empty);
+                            value.InnerText = property.Value;
+                            prop.AppendChild(value);
+                        }
+                    }
+                    defs.AppendChild(def);
+
+                    var entry = doc.CreateElement(string.Empty, "TestEntry", string.Empty);
+                    entry.SetAttribute("testId", testId);
+                    entry.SetAttribute("executionId", executionId);
+                    entry.SetAttribute("testListId", listId);
+                    entries.AppendChild(entry);
+
+                    var result = doc.CreateElement(string.Empty, "UnitTestResult", string.Empty);
+                    result.SetAttribute("executionId", executionId);
+                    result.SetAttribute("testId", testId);
+                    result.SetAttribute("testName", t.Name);
+                    result.SetAttribute("testType", "unitTest");
+                    result.SetAttribute("testListId", listId);
+                    result.SetAttribute("outcome", t.Result.ToString());
+                    results.AppendChild(result);
+
+                    var output = doc.CreateElement(string.Empty, "Output", string.Empty);
+                    result.AppendChild(output);
+
+                    if (t.Failure != null)
+                    {
+                        var errInfo = doc.CreateElement(string.Empty, "ErrorInfo", string.Empty);
+                        output.AppendChild(errInfo);
+
+                        if (t.Failure.Message != null)
+                        {
+                            var msg = doc.CreateElement(string.Empty, "Message", string.Empty);
+                            msg.InnerText = t.Failure.Message;
+                            errInfo.AppendChild(msg);
+                        }
+                        if (t.Failure.StackTrace != null)
+                        {
+                            var st = doc.CreateElement(string.Empty, "StackTrace", string.Empty);
+                            st.InnerText = t.Failure.StackTrace;
+                            errInfo.AppendChild(st);
+                        }
+                    }
+                }
+            }
+
+            doc.Save(xmlFile);
+        }
     }
 
-    public class NUnitSuite
+    public class TestSuite
     {
         public DateTime StartTime { get; } = DateTime.Now;
         public DateTime EndTime { get; private set; } = DateTime.Now;
         public int Id { get; set; }
-        public int Passed => TestCases.Count(c => c.Result == NUnitTestResult.Passed);
-        public int Failed => TestCases.Count(c => c.Result == NUnitTestResult.Failed);
-        public int Inconclusive => TestCases.Count(c => c.Result == NUnitTestResult.Inconclusive);
-        public int Skipped => TestCases.Count(c => c.Result == NUnitTestResult.Skipped);
+        public int Passed => TestCases.Count(c => c.Result == TestResult.Passed);
+        public int Failed => TestCases.Count(c => c.Result == TestResult.Failed);
+        public int Inconclusive => TestCases.Count(c => c.Result == TestResult.Inconclusive);
+        public int Skipped => TestCases.Count(c => c.Result == TestResult.Skipped);
         public int TestCaseCount => TestCases.Count;
-        public int Total => TestCases.Count(c => c.Result != NUnitTestResult.Skipped);
-        public NUnitTestResult Result => Failed == 0 ? NUnitTestResult.Passed : NUnitTestResult.Failed;
+        public int Total => TestCases.Count(c => c.Result != TestResult.Skipped);
+        public TestResult Result => Failed == 0 ? TestResult.Passed : TestResult.Failed;
 
         public string Name { get; set; }
-        public List<NUnitTestCase> TestCases { get; } = new List<NUnitTestCase>();
+        public List<TestCase> TestCases { get; } = new List<TestCase>();
 
         public void Pass(int id, string caseName, IReadOnlyDictionary<string, string> properties)
         {
-            var testCase = new NUnitTestCase { Id = id.ToString(), Name = caseName, Result = NUnitTestResult.Passed };
+            var testCase = new TestCase { Id = id.ToString(), Name = caseName, Result = TestResult.Passed };
             if (properties != null) foreach (var prop in properties) testCase.Properties.Add(prop.Key, prop.Value);
             this.TestCases.Add(testCase);
             EndTime = DateTime.Now;
@@ -201,7 +335,7 @@ namespace TabularEditor
 
         public void Skip(int id, string caseName, IReadOnlyDictionary<string, string> properties)
         {
-            var testCase = new NUnitTestCase { Id = id.ToString(), Name = caseName, Result = NUnitTestResult.Skipped };
+            var testCase = new TestCase { Id = id.ToString(), Name = caseName, Result = TestResult.Skipped };
             if (properties != null) foreach (var prop in properties) testCase.Properties.Add(prop.Key, prop.Value);
             this.TestCases.Add(testCase);
             EndTime = DateTime.Now;
@@ -209,7 +343,7 @@ namespace TabularEditor
 
         public void Inconclusion(int id, string caseName, IReadOnlyDictionary<string, string> properties)
         {
-            var testCase = new NUnitTestCase { Id = id.ToString(), Name = caseName, Result = NUnitTestResult.Inconclusive };
+            var testCase = new TestCase { Id = id.ToString(), Name = caseName, Result = TestResult.Inconclusive };
             if (properties != null) foreach (var prop in properties) testCase.Properties.Add(prop.Key, prop.Value);
             this.TestCases.Add(testCase);
             EndTime = DateTime.Now;
@@ -217,24 +351,24 @@ namespace TabularEditor
 
         public void Fail(int id, string caseName, string message, string stackTrace, IReadOnlyDictionary<string, string> properties)
         {
-            var testCase = new NUnitTestCase { Id = id.ToString(), Name = caseName, Result = NUnitTestResult.Failed };
-            testCase.Failure = new NUnitFailure { Message = message, StackTrace = stackTrace };
+            var testCase = new TestCase { Id = id.ToString(), Name = caseName, Result = TestResult.Failed };
+            testCase.Failure = new TestFailure { Message = message, StackTrace = stackTrace };
             if (properties != null) foreach (var prop in properties) testCase.Properties.Add(prop.Key, prop.Value);
             this.TestCases.Add(testCase);
             EndTime = DateTime.Now;
         }
     }
 
-    public class NUnitTestCase
+    public class TestCase
     {
-        public NUnitTestResult Result { get; set; }
+        public TestResult Result { get; set; }
         public string Id { get; set; }
         public string Name { get; set; }
         public Dictionary<string, string> Properties { get; } = new Dictionary<string, string>();
-        public NUnitFailure Failure { get; set; }
+        public TestFailure Failure { get; set; }
     }
 
-    public enum NUnitTestResult
+    public enum TestResult
     {
         Passed,
         Failed,
@@ -242,7 +376,7 @@ namespace TabularEditor
         Skipped
     }
 
-    public class NUnitFailure
+    public class TestFailure
     {
         public string Message { get; set; }
         public string StackTrace { get; set; }
