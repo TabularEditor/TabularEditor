@@ -437,6 +437,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         public static string GetUrl(string url)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            request.Proxy = ProxyCache.GetProxy(url);
             request.Timeout = 10000;
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
