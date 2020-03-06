@@ -26,7 +26,7 @@ namespace TabularEditor.Scripting
         [ScriptMethod]
         public static void SchemaCheck(Table table)
         {
-            var changes = TableMetadata.GetChanges(table.Partitions[0]);
+            var changes = TableMetadata.GetChanges(table);
             ReportSchemaCheckChanges(changes, table.Model);
         }
 
