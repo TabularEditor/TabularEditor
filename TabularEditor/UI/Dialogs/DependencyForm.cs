@@ -180,6 +180,12 @@ namespace TabularEditor
 
         public void RefreshTree()
         {
+            if (RootObject.IsRemoved)
+            {
+                Close();
+                _rootObject = null;
+                return;
+            }
             treeObjects.Nodes.Clear();
 
             currentDepth = 0;
