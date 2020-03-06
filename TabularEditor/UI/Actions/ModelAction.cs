@@ -167,7 +167,7 @@ namespace TabularEditor.UI.Actions
         {
             get
             {
-                return _name(ui.Selection, ui.Handler.Model);
+                return _name(ui.Selection, ui.Handler?.Model);
             }
         }
 
