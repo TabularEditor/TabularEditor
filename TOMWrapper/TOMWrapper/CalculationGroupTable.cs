@@ -263,7 +263,7 @@ namespace TabularEditor.TOMWrapper
         }
     }
 
-    internal partial class Properties
+    internal static partial class Properties
     {
         public const string CALCULATIONGROUPDESCRIPTION = "CalculationGroupDescription";
         public const string CALCULATIONGROUPANNOTATIONS = "CalculationGroupAnnotations";

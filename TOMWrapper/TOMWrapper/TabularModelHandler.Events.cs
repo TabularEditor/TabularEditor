@@ -8,12 +8,12 @@ namespace TabularEditor.TOMWrapper
 {
     public class ObjectChangedEventArgs
     {
-        public TabularObject TabularObject { get; private set; }
+        public ITabularObject TabularObject { get; private set; }
         public string PropertyName { get; private set; }
         public object OldValue { get; private set; }
         public object NewValue { get; private set; }
 
-        public ObjectChangedEventArgs(TabularObject tabularObject, string propertyName, object oldValue, object newValue)
+        public ObjectChangedEventArgs(ITabularObject tabularObject, string propertyName, object oldValue, object newValue)
         {
             TabularObject = tabularObject;
             PropertyName = propertyName;
@@ -25,11 +25,11 @@ namespace TabularEditor.TOMWrapper
     public class ObjectChangingEventArgs
     {
         public bool Cancel { get; set; } = false;
-        public TabularObject TabularObject { get; private set; }
+        public ITabularObject TabularObject { get; private set; }
         public string PropertyName { get; private set; }
         public object NewValue { get; private set; }
 
-        public ObjectChangingEventArgs(TabularObject tabularObject, string propertyName, object newValue)
+        public ObjectChangingEventArgs(ITabularObject tabularObject, string propertyName, object newValue)
         {
             TabularObject = tabularObject;
             PropertyName = propertyName;
@@ -41,8 +41,8 @@ namespace TabularEditor.TOMWrapper
     public class ObjectDeletingEventArgs
     {
         public bool Cancel { get; set; } = false;
-        public TabularObject TabularObject { get; private set; }
-        public ObjectDeletingEventArgs(TabularObject tabularObject)
+        public ITabularObject TabularObject { get; private set; }
+        public ObjectDeletingEventArgs(ITabularObject tabularObject)
         {
             TabularObject = tabularObject;
         }
@@ -50,8 +50,8 @@ namespace TabularEditor.TOMWrapper
 
     public class ObjectDeletedEventArgs
     {
-        public TabularObject TabularObject { get; private set; }
-        public ObjectDeletedEventArgs(TabularObject tabularObject)
+        public ITabularObject TabularObject { get; private set; }
+        public ObjectDeletedEventArgs(ITabularObject tabularObject)
         {
             TabularObject = tabularObject;
         }
@@ -70,13 +70,13 @@ namespace TabularEditor.TOMWrapper
         public event ObjectDeletingEventHandler ObjectDeleting;
         public event ObjectDeletedEventHandler ObjectDeleted;
 
-        internal void DoObjectDeleting(TabularObject obj, ref bool cancel)
+        internal void DoObjectDeleting(ITabularObject obj, ref bool cancel)
         {
             var e = new ObjectDeletingEventArgs(obj);
             ObjectDeleting?.Invoke(this, e);
             cancel = e.Cancel;
         }
-        internal void DoObjectDeleted(TabularObject obj, ITabularNamedObject parentBeforeDeletion)
+        internal void DoObjectDeleted(ITabularObject obj, ITabularNamedObject parentBeforeDeletion)
         {
             if (obj is IFolderObject) Tree.RebuildFolderCacheForTable(parentBeforeDeletion as Table);
 
@@ -84,7 +84,7 @@ namespace TabularEditor.TOMWrapper
             ObjectDeleted?.Invoke(this, e);
         }
 
-        internal void DoObjectChanging(TabularObject obj, string propertyName, object newValue, ref bool cancel)
+        internal void DoObjectChanging(ITabularObject obj, string propertyName, object newValue, ref bool cancel)
         {
             if (_disableUpdates) return;
 
@@ -92,7 +92,7 @@ namespace TabularEditor.TOMWrapper
             ObjectChanging?.Invoke(this, e);
             cancel = e.Cancel;
         }
-        internal void DoObjectChanged(TabularObject obj, string propertyName, object oldValue, object newValue)
+        internal void DoObjectChanged(ITabularObject obj, string propertyName, object oldValue, object newValue)
         {
             if (_disableUpdates) return;
 
