@@ -14,11 +14,13 @@ namespace TabularEditor.UIServices
         SourceColumnAdded = 1,
         SourceColumnNotFound = 2,
         DataTypeChange = 3,
-        SourceQueryError = 4
+        SourceQueryError = 4,
+        PartitionInconsistency = 5
     }
 
     public class MetadataChange
     {
+        public Partition Partition;
         public Table ModelTable;
         public string SourceColumn;
         public DataType SourceType;
@@ -39,6 +41,8 @@ namespace TabularEditor.UIServices
                     return $"Column {ModelColumn.DaxObjectFullName} refers to source column {ModelColumn.SourceColumn} which does not seem to exist in the source query.";
                 case MetadataChangeType.SourceQueryError:
                     return $"Unable to retrieve column metadata for table '{ModelTable.Name}'. Check partition query.";
+                case MetadataChangeType.PartitionInconsistency:
+                    return $"Source query on Partition \"{Partition.Name}\" returns metadata which differs from other partitions on table '{ModelTable.Name}'. This may cause errors during processing.";
                 default:
                     throw new NotSupportedException();
             }
@@ -47,15 +51,62 @@ namespace TabularEditor.UIServices
 
     public static class TableMetadata
     {
-        public static List<MetadataChange> GetChanges(Partition partition)
+        class DataTypeMapping
+        {
+            public readonly DataType MappedType;
+            public readonly string ProviderType;
+
+            public DataTypeMapping(string providerType, DataType mappedType)
+            {
+                this.MappedType = mappedType;
+                this.ProviderType = providerType;
+            }
+        }
+
+        public static List<MetadataChange> CheckPartitionsIdentical(Table table)
+        {
+            var primary = GetSourceSchema(table.Partitions[0]);
+            var result = new List<MetadataChange>();
+            for(int i = 1; i < table.Partitions.Count; i++)
+            {
+                var p = table.Partitions[i];
+                var other = GetSourceSchema(p);
+
+                if(other.Count != primary.Count)
+                {
+                    result.Add(new MetadataChange { ChangeType = MetadataChangeType.PartitionInconsistency, Partition = p, ModelTable = table, SourceQuery = p.Query });
+                }
+                else
+                {
+                    foreach(var c in other)
+                    {
+                        if(primary.TryGetValue(c.Key, out DataTypeMapping mapping))
+                        {
+                            if(mapping.MappedType != c.Value.MappedType)
+                            {
+                                result.Add(new MetadataChange { ChangeType = MetadataChangeType.PartitionInconsistency, Partition = p, ModelTable = table, SourceQuery = p.Query });
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            result.Add(new MetadataChange { ChangeType = MetadataChangeType.PartitionInconsistency, Partition = p, ModelTable = table, SourceQuery = p.Query });
+                            break;
+                        }
+
+                    }
+                }
+            }
+            return result;
+        }
+
+        private static Dictionary<string, DataTypeMapping> GetSourceSchema(Partition partition)
         {
             var result = new List<MetadataChange>();
-            var table = partition.Table;
 
             if (!(partition.DataSource is ProviderDataSource))
             {
-                result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.SourceQueryError, SourceQuery = partition.Query });
-                return result;
+                return null;
             }
 
             var tds = TypedDataSource.GetFromTabularDs(partition.DataSource as ProviderDataSource);
@@ -63,10 +114,9 @@ namespace TabularEditor.UIServices
             var schemaTable = tds.GetSchemaTable(partition.Query);
             if (schemaTable == null)
             {
-                result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.SourceQueryError, SourceQuery = table.Partitions[0].Query });
-                return result;
+                return null;
             }
-            HashSet<Column> matchedColumns = new HashSet<Column>();
+            var sourceSchema = new Dictionary<string, DataTypeMapping>(StringComparer.InvariantCultureIgnoreCase);
             foreach (DataRow row in schemaTable.Rows)
             {
                 var colName = row["ColumnName"].ToString();
@@ -75,17 +125,41 @@ namespace TabularEditor.UIServices
                         row["DataTypeName"].ToString() :
                         (row["DataType"] as Type).Name;
                 var mappedType = DataTypeMap(dataType);
+
+                sourceSchema.Add(colName, new DataTypeMapping(dataType, mappedType));
+            }
+
+            return sourceSchema;
+        }
+
+        public static List<MetadataChange> GetChanges(Partition partition)
+        {
+            var result = new List<MetadataChange>();
+            var table = partition.Table;
+
+            var sourceSchema = GetSourceSchema(partition);
+            if(sourceSchema == null)
+            {
+                result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.SourceQueryError, SourceQuery = partition.Query });
+                return result;
+            }
+            HashSet<Column> matchedColumns = new HashSet<Column>();
+            foreach(var kvp in sourceSchema)
+            {
+                var colName = kvp.Key;
+                var typeMapping = kvp.Value;
+
                 var tCols = table.DataColumns.Where(col => col.SourceColumn.EqualsI(colName) || col.SourceColumn.EqualsI("[" + colName + "]"));
                 if (tCols.Count() == 0)
                 {
-                    result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.SourceColumnAdded, SourceColumn = colName, SourceType = mappedType, SourceProviderType = dataType });
+                    result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.SourceColumnAdded, SourceColumn = colName, SourceType = typeMapping.MappedType, SourceProviderType = typeMapping.ProviderType });
                 }
                 foreach (var tCol in tCols)
                 {
                     matchedColumns.Add(tCol);
-                    if (tCol.DataType != mappedType)
+                    if (tCol.DataType != typeMapping.MappedType)
                     {
-                        result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.DataTypeChange, ModelColumn = tCol, SourceColumn = colName, SourceType = mappedType, SourceProviderType = dataType });
+                        result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.DataTypeChange, ModelColumn = tCol, SourceColumn = colName, SourceType = typeMapping.MappedType, SourceProviderType = typeMapping.ProviderType });
                     }
                 }
             }
@@ -97,14 +171,23 @@ namespace TabularEditor.UIServices
             return result;
         }
 
+        public static List<MetadataChange> GetChanges(Table table)
+        {
+            var changes = GetChanges(table.Partitions[0]);
+
+            if (changes.Count == 0 && table.Partitions.Count > 1)
+                changes.AddRange(CheckPartitionsIdentical(table));
+
+            return changes;
+        }
+
         public static List<MetadataChange> GetChanges(ProviderDataSource dataSource)
         {
             var result = new List<MetadataChange>();
             var tds = TypedDataSource.GetFromTabularDs(dataSource);
             foreach (var table in dataSource.Model.Tables.Where(t => t.Partitions[0].DataSource == dataSource))
             {
-                var changes = GetChanges(table.Partitions[0]);
-                result.AddRange(changes);
+                result.AddRange(GetChanges(table));
             }
 
             return result;

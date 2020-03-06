@@ -253,7 +253,7 @@ namespace TabularEditor.UI
         public MetadataChangeModel(IEnumerable<MetadataChange> metadataChanges)
         {
             TableChanges = metadataChanges.GroupBy(c => c.ModelTable).ToDictionary(
-                g => new Change(g.Key.Name, g.FirstOrDefault(c => c.ChangeType == MetadataChangeType.SourceQueryError)),
+                g => new Change(g.Key.Name, g.FirstOrDefault(c => c.ChangeType == MetadataChangeType.SourceQueryError || c.ChangeType == MetadataChangeType.PartitionInconsistency)),
                 g => g.Select(c => new Change(c)).ToList()
                 );
         }
@@ -319,7 +319,8 @@ namespace TabularEditor.UI
             {
                 IsTableError = true;
                 _changeInclude = CheckState.Unchecked;
-                ObjectName += " (Unable to validate source query)";
+                ObjectName += tableError.ChangeType == MetadataChangeType.SourceQueryError ? " (Unable to validate source query)"
+                    : " (Metadata for partition \"" + tableError.Partition.Name + "\" differs from other partitions on the table)";
                 IsLeaf = true;
             }
             else
