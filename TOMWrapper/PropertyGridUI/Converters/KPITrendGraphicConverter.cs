@@ -16,8 +16,8 @@ namespace TabularEditor.PropertyGridUI
             "Five Bars Colored",
             "Five Boxes Colored",
             "Gauge",
-            "Gauge – Ascending",
-            "Gauge – Descending",
+            "Gauge - Ascending",
+            "Gauge - Descending",
             "Reversed Gauge",
             "Reversed status arrow",
             "Road Signs",
@@ -33,10 +33,10 @@ namespace TabularEditor.PropertyGridUI
             "Three Stars Colored",
             "Three Symbols Uncircled Colored",
             "Traffic Light",
-            "Traffic Light – Single",
+            "Traffic Light - Single",
             "Variance Arrow",
-            "Status Arrow – Ascending",
-            "Status Arrow – Descending"
+            "Status Arrow - Ascending",
+            "Status Arrow - Descending"
         };
 
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
