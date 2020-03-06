@@ -364,7 +364,7 @@ namespace TabularEditor.UI
                             if (mr == DialogResult.OK)
                             {
                                 Handler.Save(File_Current, SaveFormat.TabularEditorFolder, null, true, true);
-                                File_LastWrite = DateTime.Now;
+                                File_LastWrite = File.GetLastWriteTime(File_Current);
                             }
                         }
                         else
@@ -380,7 +380,7 @@ namespace TabularEditor.UI
                                     Handler.Save(File_Current, SaveFormat.PowerBiTemplate, SerializeOptions.PowerBi, false, true);
                                 else
                                     Handler.Save(File_Current, SaveFormat.ModelSchemaOnly, null, true, true);
-                                File_LastWrite = DateTime.Now;
+                                File_LastWrite = File.GetLastWriteTime(File_Current);
                             }
                         }
                     }
