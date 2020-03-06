@@ -207,6 +207,7 @@
     <Compile Include="TOMWrapper\TabularObjectComparer.cs" />
     <Compile Include="TOMWrapper\TabularObjectHelper.cs" />
     <Compile Include="TOMWrapper\Indexers\TranslationIndexer.cs" />
+    <Compile Include="Utils\DetailRowsDefinitionHack.cs" />
     <Compile Include="Utils\FormulaFixup.cs" />
     <Compile Include="Utils\Scripter.cs" />
     <Compile Include="TOMWrapper\Serialization\SerializeOptions.cs" />
