@@ -208,9 +208,14 @@ namespace TabularEditor.TOMWrapper
             foreach (var t in database.Model.Tables)
             {
                 result.AddRange(t.Measures.Where(m => !string.IsNullOrEmpty(m.ErrorMessage)).Select(m => new Tuple<TOM.NamedMetadataObject, string>(m, m.ErrorMessage)));
-                if(database.CompatibilityLevel >= 1400) result.AddRange(t.Measures.Where(m => !string.IsNullOrEmpty(m.DetailRowsDefinition?.ErrorMessage)).Select(m => new Tuple<TOM.NamedMetadataObject, string>(m, "Detail rows expression: " + m.DetailRowsDefinition.ErrorMessage)));
+                if (database.CompatibilityLevel >= 1400) result.AddRange(t.Measures.Where(m => !string.IsNullOrEmpty(m.DetailRowsDefinition?.ErrorMessage)).Select(m => new Tuple<TOM.NamedMetadataObject, string>(m, "Detail rows expression: " + m.DetailRowsDefinition.ErrorMessage)));
                 result.AddRange(t.Columns.Where(c => !string.IsNullOrEmpty(c.ErrorMessage)).Select(c => new Tuple<TOM.NamedMetadataObject, string>(c, c.ErrorMessage)));
                 result.AddRange(t.Partitions.Where(p => !string.IsNullOrEmpty(p.ErrorMessage)).Select(p => new Tuple<TOM.NamedMetadataObject, string>(p, p.ErrorMessage)));
+                if(database.CompatibilityLevel >= 1470 && t.CalculationGroup != null)
+                {
+                    result.AddRange(t.CalculationGroup.CalculationItems.Where(ci => !string.IsNullOrEmpty(ci.ErrorMessage)).Select(ci => new Tuple<TOM.NamedMetadataObject, string>(ci, ci.ErrorMessage)));
+                    result.AddRange(t.CalculationGroup.CalculationItems.Where(ci => !string.IsNullOrEmpty(ci.FormatStringDefinition?.ErrorMessage)).Select(ci => new Tuple<TOM.NamedMetadataObject, string>(ci, "Format string expression: " + ci.FormatStringDefinition.ErrorMessage)));
+                }
             }
             foreach(var r in database.Model.Roles)
             {
