@@ -678,7 +678,7 @@ database            Database ID of the model to load
     -X / -XMLA        No deployment. Generate XMLA/TMSL script for later deployment instead. 
       xmla_script       File name of the new XMLA/TMSL script output.
   -T / -TRX         Produces a VSTEST (trx) file with details on the execution.
-    resultsfile       File name of the NUnit 3.0 XML file.");
+    resultsfile       File name of the VSTEST XML file.");
         }
     }
 }
