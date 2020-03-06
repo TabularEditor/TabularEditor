@@ -189,18 +189,6 @@
     <Compile Include="BestPracticeAnalyzer\MoveToCollectionDialog.Designer.cs">
       <DependentUpon>MoveToCollectionDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="BestPracticeAnalyzer\NodePanels\BaseNodePanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="BestPracticeAnalyzer\CriteriaTreeBuilder.cs" />
-    <Compile Include="BestPracticeAnalyzer\MultiModeComboBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="BestPracticeAnalyzer\NodePanels\CriteriaNodePanel.cs" />
-    <Compile Include="BestPracticeAnalyzer\NodePanels\MultiNodePanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="BestPracticeAnalyzer\Operator.cs" />
     <Compile Include="BindingHelper.cs" />
     <Compile Include="CommandLine.cs" />
     <Compile Include="ConsoleHandler.cs" />

@@ -442,7 +442,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                     if (res.RuleHasError)
                     {
                         none = false;
-                        Warning("Error on rule '{0}': {1}", res.RuleName, res.RuleError);
+                        Error("Error on rule '{0}': {1}", res.RuleName, res.RuleError);
                     }
                     else
                     {

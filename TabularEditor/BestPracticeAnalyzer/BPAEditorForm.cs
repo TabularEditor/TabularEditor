@@ -28,6 +28,8 @@ namespace TabularEditor.UI.Dialogs
 
         public bool EditRule(BestPracticeRule rule)
         {
+            initializing = true;
+
             Expression = rule.Expression;
             Scope = rule.Scope;
             nameBefore = rule.Name;
@@ -38,7 +40,9 @@ namespace TabularEditor.UI.Dialogs
             cmbCompatibility.SelectedIndex = rule.CompatibilityLevel == 1400 ? 1 : (rule.CompatibilityLevel == 1470 ? 2 : 0);
             cmbCategory.Text = rule.Category?.Trim();
 
-            btnOK.Enabled = ValidateRuleData();
+            initializing = false;
+            btnOK.Enabled = ValidateRule();
+            txtExpression.Focus();
 
             if(ShowDialog() == DialogResult.OK)
             {
@@ -62,6 +66,8 @@ namespace TabularEditor.UI.Dialogs
 
         public BestPracticeRule NewRule(string name)
         {
+            initializing = true;
+
             Expression = "";
             Scope = RuleScope.Model;
             nameBefore = name;
@@ -71,7 +77,8 @@ namespace TabularEditor.UI.Dialogs
             numSeverity.Value = 1;
             cmbCompatibility.SelectedIndex = 0;
 
-            btnOK.Enabled = ValidateRuleData();
+            initializing = false;
+            btnOK.Enabled = ValidateRule();
 
             if (ShowDialog() == DialogResult.OK)
             {
@@ -95,6 +102,8 @@ namespace TabularEditor.UI.Dialogs
         {
             InitializeComponent();
 
+            this.FormClosing += BPAEditorForm_FormClosing;
+
             lb = new CheckedListBox();
             lb.CheckOnClick = true;
             lb.FormattingEnabled = true;
@@ -110,6 +119,18 @@ namespace TabularEditor.UI.Dialogs
                 _scope = selection.Select(scope => RuleScopeHelper.GetScope(scope)).Combine();
             };
             customComboBox1.DropDownControl = lb;
+        }
+
+        private void BPAEditorForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if((e.CloseReason == CloseReason.UserClosing || e.CloseReason == CloseReason.None) && this.DialogResult == DialogResult.OK)
+            {
+                if (!ValidateRule())
+                {
+                    var dr = MessageBox.Show("The rule expression contains errors. Are you sure you want to close the Rule Editor?", "Rule contains errors", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                    if (dr == DialogResult.Cancel) e.Cancel = true;
+                }
+            }
         }
 
         private CheckedListBox lb;
@@ -146,29 +167,45 @@ namespace TabularEditor.UI.Dialogs
             controlList.ForEach(c => c.Dispose());
         }
 
-        private bool ValidateRuleData()
+        private bool ValidateRuleData(out string errorMessage)
         {
+            errorMessage = null;
+
             if (string.IsNullOrWhiteSpace(txtID.Text))
             {
-                pnlInfo.Visible = true;
-                lblInfo.Text = "ID cannot be blank";
+                errorMessage = "ID cannot be blank";
                 return false;
             }
             if (string.IsNullOrWhiteSpace(txtName.Text))
             {
-                pnlInfo.Visible = true;
-                lblInfo.Text = "Name cannot be blank";
+                errorMessage = "Name cannot be blank";
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(Expression))
-            {
-                Root = new MultiNode();
-                Root.AddNode(new CriteriaNode());
-                pnlInfo.Visible = false;
-            }
-            pnlInfo.Visible = false;
             return true;
+        }
+        
+        private bool ValidateRuleInternal(out string errorMessage)
+        {
+            errorMessage = null;
+            var result = ValidateRuleData(out errorMessage);
+            if (!result) return result;
+
+            try
+            {
+                // Attempt to parse the expression of the assigned rule:
+                foreach (var t in Scope.Enumerate().Select(s => s.GetScopeType()))
+                {
+                    var expr = DynamicExpression.ParseLambda(t, typeof(bool), Expression);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                return false;
+            }
         }
 
         /// <summary>
@@ -182,182 +219,23 @@ namespace TabularEditor.UI.Dialogs
         /// <returns></returns>
         private bool ValidateRule()
         {
-            var result = ValidateRuleData();
-            if (!result) return result;
-
-            try
+            if(!ValidateRuleInternal(out string errorMessage))
             {
-                // Attempt to parse the expression of the assigned rule:
-                foreach (var t in Scope.Enumerate().Select(s => s.GetScopeType()))
-                {
-                    var expr = DynamicExpression.ParseLambda(t, typeof(bool), Expression);
-                }
-
-                // TODO: Uncomment below code to re-enable visual tree builder
-                //var rootNode = CriteriaTreeBuilder.BuildFromExpression(expr.Body);
-                //if (!(rootNode is MultiNode)) Root = rootNode.PromoteToMulti();
-                //else Root = rootNode as MultiNode;
-
-                pnlInfo.Visible = false;
-            }
-            catch (Exception ex)
-            {
-                lblInfo.Text = "Error: " + ex.Message;
+                lblInfo.Text = "Error: " + errorMessage;
                 pnlInfo.Visible = true;
-                result = false;
-            }
-
-            RefreshPanels();
-
-            return result;
-        }
-
-        private void RefreshPanels()
-        {
-            // TODO: To re-enable the visual tree builder, add a panel somewhere on the form and change
-            // the name to "pnlTree". Then, remove the comment on the below code:
-
-            // TODO: Uncomment below code to re-enable visual tree builder
-            //pnlTree.SuspendDrawing();
-            //RecursivelyDispose(pnlTree.Controls.Cast<Control>());
-
-            //if (Root.HasUnparsedChilds)
-            //{
-            //    lblInfo.Text = "This expression cannot be represented visually. Switch back to the expression editor to continue editing.";
-            //    pnlInfo.Visible = true;
-            //    persistExpression = true;
-
-            //}
-            //else
-            //{
-            //    BaseNodePanel.RightClickMenu = menuConditions;
-            //    RootPanel = BaseNodePanel.GetPanelForNode(Scope.GetScopeType(), Root, pnlTree);
-            //    (RootPanel as MultiNodePanel)?.UpdateLabels(true);
-            //}
-
-            //pnlTree.ResumeDrawing();
-        }
-
-        MultiNode Root;
-        //BaseNodePanel RootPanel;
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            //var cond = new ConditionPanel(pnlTree, menuConditions);
-        }
-
-        private void multipleConditionsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            // Try to cast the sender to a ToolStripItem
-            ToolStripItem menuItem = sender as ToolStripItem;
-            if (menuItem != null)
-            {
-                // Retrieve the ContextMenuStrip that owns this ToolStripItem
-                ContextMenuStrip owner = menuItem.Owner as ContextMenuStrip;
-                if (owner != null)
-                {
-                    // Get the control that is displaying this context menu
-                    var sourcePanel = owner.SourceControl as BaseNodePanel;
-                    //if (sourcePanel != null) sourcePanel.MakeConditional();
-                }
-            }
-        }
-
-        
-
-        private void menuConditions_Opening(object sender, CancelEventArgs e)
-        {
-            // Retrieve the ContextMenuStrip that owns this ToolStripItem
-            ContextMenuStrip owner = sender as ContextMenuStrip;
-            if (owner != null)
-            {
-                // Get the control that is displaying this context menu
-                var sourcePanel = owner.SourceControl as BaseNodePanel ?? owner.SourceControl.Parent as BaseNodePanel;
-                sourcePanel.Highlight = true;
-            }
-        }
-
-        private void menuConditions_Closing(object sender, ToolStripDropDownClosingEventArgs e)
-        {
-            // Retrieve the ContextMenuStrip that owns this ToolStripItem
-            ContextMenuStrip owner = sender as ContextMenuStrip;
-            if (owner != null)
-            {
-                // Get the control that is displaying this context menu
-                var sourcePanel = owner.SourceControl as BaseNodePanel ?? owner.SourceControl.Parent as BaseNodePanel;
-                sourcePanel.Highlight = false;
-            }
-        }
-
-        private void deleteCriteriaToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var menu = sender as ToolStripMenuItem;
-            if (menu != null)
-            {
-                // Retrieve the ContextMenuStrip that owns this ToolStripItem
-                ContextMenuStrip owner = menu.Owner as ContextMenuStrip;
-                if (owner != null)
-                {
-                    // Get the control that is displaying this context menu
-                    var sourcePanel = owner.SourceControl as BaseNodePanel ?? owner.SourceControl.Parent as BaseNodePanel;
-
-                    sourcePanel.Delete();
-                }
-            }
-        }
-
-        private void addCriteriaToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var menu = sender as ToolStripMenuItem;
-            if (menu != null)
-            {
-                // Retrieve the ContextMenuStrip that owns this ToolStripItem
-                ContextMenuStrip owner = menu.Owner as ContextMenuStrip;
-                if (owner != null)
-                {
-                    // Get the control that is displaying this context menu
-                    var sourcePanel = owner.SourceControl as BaseNodePanel ?? owner.SourceControl.Parent as BaseNodePanel;
-
-                    if (sourcePanel is MultiNodePanel)
-                    {
-                        var c = new CriteriaNodePanel(Scope.GetScopeType(), sourcePanel, new CriteriaNode());
-                        (sourcePanel as MultiNodePanel).UpdateLabels();
-                        c.Focus();
-                    }
-                }
-            }
-        }
-
-        //bool persistExpression;
-
-        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            /*if(tabControl1.SelectedIndex == 0)
-            {
-                // Switched to visual mode:
-                Expression = txtExpression.Text;
-                ValidateRule();
+                return false;
             }
             else
             {
-                // Switched to expression editor mode:
-                if (persistExpression)
-                {
-                    pnlInfo.Visible = false;
-                }
-                else
-                {
-                    var code = RootPanel.Node.ToString();
-                    if (code.StartsWith("(") && code.EndsWith(")")) code = code.Substring(1, code.Length - 2);
-                    txtExpression.Text = code;
-                }
-
-                persistExpression = false;
-            }*/
+                pnlInfo.Visible = false;
+                return true;
+            }
         }
 
         private void txtExpression_TextChanged(object sender, EventArgs e)
         {
+            if (initializing) return;
+
             if (!btnOK.Enabled)
             {
                 btnOK.Enabled = true;
@@ -372,29 +250,24 @@ namespace TabularEditor.UI.Dialogs
 
         private void txtName_TextChanged(object sender, EventArgs e)
         {
+            if (initializing) return;
+
             if (txtID.Text == GetStandardIdFromName(nameBefore))
             {
                 txtID.Text = GetStandardIdFromName(txtName.Text);
                 nameBefore = txtName.Text;
             }
-            else btnOK.Enabled = ValidateRuleData();
+            else btnOK.Enabled = ValidateRule();
         }
 
         private string nameBefore = "";
+        private bool initializing;
 
         private void txtID_TextChanged(object sender, EventArgs e)
         {
-           btnOK.Enabled = ValidateRuleData();
-        }
+            if (initializing) return;
 
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void numSeverity_ValueChanged(object sender, EventArgs e)
-        {
-
+           btnOK.Enabled = ValidateRule();
         }
     }
 }

@@ -132,6 +132,12 @@ namespace TabularEditor.UI.Dialogs
                 e.Cancel = true;
                 return;
             }
+
+            if (tvResults.SelectedNodes.Any(n => n.Tag is AnalyzerResult r && r.RuleHasError))
+            {
+                e.Cancel = true;
+                return;
+            }
         }
 
         private void BPAForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -205,7 +211,7 @@ namespace TabularEditor.UI.Dialogs
             if (e.Node.Tag is BestPracticeRule rule)
             {
                 var objCount = AnalyzerResultsTreeModel.ObjectCountByRule(rule);
-                e.Value = rule.Name + " (" + objCount + " object" + (objCount == 1 ? "" : "s") + ")";
+                e.Value = rule.Name + (rule.HasError ? "" : " (" + objCount + " object" + (objCount == 1 ? "" : "s") + ")");
             }
             else if (e.Node.Tag is AnalyzerResult result)
             {
@@ -225,12 +231,19 @@ namespace TabularEditor.UI.Dialogs
             if (e.Node.Tag is BestPracticeRule rule)
             {
                 e.Font = new Font(e.Font, FontStyle.Bold);
-                if (!rule.Enabled) e.TextColor = e.Context.DrawSelection == DrawSelectionMode.None ? SystemColors.GrayText : Color.Silver;
+
+                if (!rule.Enabled)
+                    e.TextColor = e.Context.DrawSelection == DrawSelectionMode.None ? SystemColors.GrayText : Color.Silver;
+                else if (rule.HasError)
+                    e.TextColor = e.Context.DrawSelection == DrawSelectionMode.None ? Color.Red : Color.Pink;
+
                 if (e.Control == txtObjectName)
                     e.FullRowDraw = true;
                 else if (e.Control == txtObjectType)
                     e.SkipDraw = true;
-            } else if (e.Node.Tag is AnalyzerResult result)
+
+            }
+            else if (e.Node.Tag is AnalyzerResult result)
             {
                 if(result.Ignored) e.TextColor = e.Context.DrawSelection == DrawSelectionMode.None ? SystemColors.GrayText : Color.Silver;
             }
@@ -316,18 +329,18 @@ namespace TabularEditor.UI.Dialogs
 
         private List<AnalyzerResult> Selection = new List<AnalyzerResult>();
 
-        private bool CanGotoSelection => Selection.Count == 1;
+        private bool CanGotoSelection => Selection.Count == 1 && !Selection.Any(r => r.RuleHasError);
         private bool CanFixSelection => Selection.Count >= 1 && Selection.All(r => r.CanFix) && Selection.Any(r => !r.Ignored);
         private bool CanIgnoreSelection =>
             tvResults.SelectedNodes.Count > 0 &&
             RuleSelection ?
                 tvResults.SelectedNodes.Any(n => (n.Tag as BestPracticeRule).Enabled) :
-                tvResults.SelectedNodes.Any(n => !(n.Tag as AnalyzerResult).Ignored);
+                tvResults.SelectedNodes.Any(n => (n.Tag is AnalyzerResult ar && !ar.Ignored && !ar.RuleHasError));
         private bool CanUnignoreSelection =>
             tvResults.SelectedNodes.Count > 0 &&
             RuleSelection ?
                 tvResults.SelectedNodes.Any(n => !(n.Tag as BestPracticeRule).Enabled) :
-                tvResults.SelectedNodes.Any(n => (n.Tag as AnalyzerResult).Ignored);
+                tvResults.SelectedNodes.Any(n => (n.Tag is AnalyzerResult ar && ar.Ignored && !ar.RuleHasError));
 
         private bool RuleSelection => tvResults.SelectedNodes.Count > 0 && tvResults.SelectedNodes[0].Tag is BestPracticeRule;
 
@@ -346,8 +359,8 @@ namespace TabularEditor.UI.Dialogs
             // Ignore-button requires at least a single selection:
             btnIgnore.Enabled = CanIgnoreSelection || CanUnignoreSelection;
             btnIgnore.CheckState = CanIgnoreSelection ?
-                (CanUnignoreSelection ? CheckState.Indeterminate : CheckState.Unchecked) :
-                (CanUnignoreSelection ? CheckState.Checked : CheckState.Indeterminate);
+                (CanUnignoreSelection ? CheckState.Unchecked : CheckState.Unchecked) :
+                (CanUnignoreSelection ? CheckState.Checked : CheckState.Unchecked);
             bpaResultIgnore.Visible = CanIgnoreSelection;
             bpaResultUnignore.Visible = CanUnignoreSelection;
 

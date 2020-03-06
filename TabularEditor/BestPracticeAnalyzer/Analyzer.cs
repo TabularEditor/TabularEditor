@@ -86,10 +86,10 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         public void Update(IEnumerable<AnalyzerResult> results)
         {
-            _allResults = results.Where(r => !r.InvalidCompatibilityLevel && !r.RuleHasError)
+            _allResults = results.Where(r => !r.InvalidCompatibilityLevel)
                 .GroupBy(r => r.Rule, r => r).ToDictionary(r => r.Key, r => r.ToList());
 
-            _results = results.Where(r => !r.InvalidCompatibilityLevel && !r.RuleHasError && !r.Ignored && r.RuleEnabled)
+            _results = results.Where(r => !r.InvalidCompatibilityLevel && !r.Ignored && r.RuleEnabled)
                 .GroupBy(r => r.Rule, r => r).ToDictionary(r => r.Key, r => r.ToList());
 
             if (!results.SequenceEqual(_rawResults))
@@ -136,7 +136,7 @@ namespace TabularEditor.BestPracticeAnalyzer
             else
             {
                 if (ShowIgnored)
-                    return _allResults[treePath.LastNode as BestPracticeRule].Where(r => r.Object != null);
+                    return _allResults[treePath.LastNode as BestPracticeRule];
                 else
                     return _results[treePath.LastNode as BestPracticeRule];
             }
@@ -145,7 +145,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         public bool IsLeaf(TreePath treePath)
         {
             if (treePath.IsEmpty()) return false;
-            if (treePath.LastNode is BestPracticeRule) return false;
+            if (treePath.LastNode is BestPracticeRule bpr) return false;
             else return true;
         }
     }
@@ -175,11 +175,13 @@ namespace TabularEditor.BestPracticeAnalyzer
         public bool InvalidCompatibilityLevel { get; set; }
         public string RuleError { get; set; }
         public RuleScope RuleErrorScope { get; set; }
-        public string ObjectType => Object.GetTypeName();
+        public string ObjectType => RuleHasError ? "Error" : Object.GetTypeName();
         public string ObjectName
         {
             get
             {
+                if (RuleHasError) return RuleError;
+
                 if (Object is KPI) return (Object as KPI).Measure.DaxObjectFullName + ".KPI";
                 return (Object as IDaxObject)?.DaxObjectFullName ?? Object.Name;
             }
