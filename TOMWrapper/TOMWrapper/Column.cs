@@ -215,7 +215,8 @@ namespace TabularEditor.TOMWrapper
         {
             switch (propertyName)
             {
-                case "ObjectLevelSecurity":
+                case Properties.FORMATSTRING: return DataType != DataType.String;
+                case Properties.OBJECTLEVELSECURITY:
                     return Handler.CompatibilityLevel >= 1400 && Model.Roles.Any();
                 case Properties.VARIATIONS:
                 case Properties.ENCODINGHINT:
