@@ -36,9 +36,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.txtName = new System.Windows.Forms.TextBox();
-            this.menuConditions = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.addCriteriaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.deleteCriteriaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.txtExpression = new System.Windows.Forms.RichTextBox();
@@ -57,7 +54,6 @@
             this.btnOK = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.numSeverity)).BeginInit();
-            this.menuConditions.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.pnlInfo.SuspendLayout();
@@ -98,7 +94,6 @@
             0,
             0,
             0});
-            this.numSeverity.ValueChanged += new System.EventHandler(this.numSeverity_ValueChanged);
             // 
             // label3
             // 
@@ -109,7 +104,6 @@
             this.label3.Size = new System.Drawing.Size(45, 13);
             this.label3.TabIndex = 19;
             this.label3.Text = "Severity";
-            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // txtDescription
             // 
@@ -149,30 +143,6 @@
             this.txtName.TabIndex = 15;
             this.txtName.TextChanged += new System.EventHandler(this.txtName_TextChanged);
             // 
-            // menuConditions
-            // 
-            this.menuConditions.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addCriteriaToolStripMenuItem,
-            this.deleteCriteriaToolStripMenuItem});
-            this.menuConditions.Name = "menuConditions";
-            this.menuConditions.Size = new System.Drawing.Size(147, 48);
-            this.menuConditions.Closing += new System.Windows.Forms.ToolStripDropDownClosingEventHandler(this.menuConditions_Closing);
-            this.menuConditions.Opening += new System.ComponentModel.CancelEventHandler(this.menuConditions_Opening);
-            // 
-            // addCriteriaToolStripMenuItem
-            // 
-            this.addCriteriaToolStripMenuItem.Name = "addCriteriaToolStripMenuItem";
-            this.addCriteriaToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.addCriteriaToolStripMenuItem.Text = "Add criteria";
-            this.addCriteriaToolStripMenuItem.Click += new System.EventHandler(this.addCriteriaToolStripMenuItem_Click);
-            // 
-            // deleteCriteriaToolStripMenuItem
-            // 
-            this.deleteCriteriaToolStripMenuItem.Name = "deleteCriteriaToolStripMenuItem";
-            this.deleteCriteriaToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.deleteCriteriaToolStripMenuItem.Text = "Delete criteria";
-            this.deleteCriteriaToolStripMenuItem.Click += new System.EventHandler(this.deleteCriteriaToolStripMenuItem_Click);
-            // 
             // tabControl1
             // 
             this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -184,7 +154,6 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(644, 205);
             this.tabControl1.TabIndex = 27;
-            this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
             // tabPage2
             // 
@@ -382,7 +351,6 @@
             this.ShowInTaskbar = false;
             this.Text = "Edit Best Practice Rule";
             ((System.ComponentModel.ISupportInitialize)(this.numSeverity)).EndInit();
-            this.menuConditions.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.pnlInfo.ResumeLayout(false);
@@ -401,9 +369,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtName;
-        private System.Windows.Forms.ContextMenuStrip menuConditions;
-        private System.Windows.Forms.ToolStripMenuItem addCriteriaToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem deleteCriteriaToolStripMenuItem;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.RichTextBox txtExpression;

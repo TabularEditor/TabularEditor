@@ -305,7 +305,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         }
 
         public int ObjectCount { get; private set; }
-
+        internal bool HasError => !string.IsNullOrEmpty(ErrorMessage);
         public string ErrorMessage { get; private set; }
 
         public BestPracticeRule Clone()
