@@ -34,7 +34,7 @@ namespace TabularEditor.PropertyGridUI
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
             return new StandardValuesCollection(
-                DateTimeFormatInfo.CurrentInfo.GetAllDateTimePatterns().Select(p => p.Replace("tt", "AMPM")).ToArray()
+                DateTimeFormatInfo.CurrentInfo.GetAllDateTimePatterns().Select(p => p.Replace("tt", "AM/PM")).ToArray()
                 );
         }
 
