@@ -1,20 +1,26 @@
-﻿using System;
+﻿extern alias json;
+
+using json::Newtonsoft.Json.Linq;
+using Microsoft.AnalysisServices.Tabular;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TabularEditor.TOMWrapper.Undo;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public sealed class Database: ITabularObject
+    public sealed class Database : ITabularObject, INotifyPropertyChanged, INotifyPropertyChanging
     {
         [Browsable(false)]
         public TOM.Database TOMDatabase { get; private set; }
 
         private Model _model;
+        private TabularModelHandler Handler => _model.Handler;
 
         internal Database(Model model, Microsoft.AnalysisServices.Core.Database tomDatabase)
         {
@@ -23,7 +29,12 @@ namespace TabularEditor.TOMWrapper
             _model = model;
             _name = tomDatabase.Name;
             _id = tomDatabase.ID;
+            _compatibilityLevel = tomDatabase.CompatibilityLevel;
         }
+
+        public bool NameModified => _name != TOMDatabase.Name;
+        public bool IdModified => _id != TOMDatabase.ID;
+        public bool CompatibilityLevelModified => _compatibilityLevel != TOMDatabase.CompatibilityLevel;
 
         public override string ToString()
         {
@@ -34,10 +45,33 @@ namespace TabularEditor.TOMWrapper
         private string _id;
 
         public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangingEventHandler PropertyChanging;
 
-        internal void DoPropertyChanged(string propertyName)
+        void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            Handler.DoObjectChanged(this, propertyName, oldValue, newValue);
+        }
+
+        /// <summary>
+        /// Called before a property is changed on an object. Derived classes can control how the change is handled.
+        /// Throw ArgumentException within this method, to display an error message in the UI.
+        /// </summary>
+        /// <param name="propertyName">Name of the changed property.</param>
+        /// <param name="newValue">New value assigned to the property.</param>
+        /// <param name="undoable">Return false if automatic undo of the property change is not needed.</param>
+        /// <param name="cancel">Return true if the property change should not apply.</param>
+        void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
+        {
+            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowProperty(ObjectType, propertyName))
+            {
+                cancel = true;
+                return;
+            }
+
+            PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
+            if (cancel) return;
+            Handler.DoObjectChanging(this, propertyName, newValue, ref cancel);
         }
 
         [Description("The name of the deployed database. Changing this has no effect on an already deployed database.")]
@@ -46,9 +80,15 @@ namespace TabularEditor.TOMWrapper
             get { return _name; }
             set
             {
-                if (_id == _name) _id = value;
+                var oldValue = Name;
+                if (oldValue == value) return;
+                bool undoable = true;
+                bool cancel = false;
+                OnPropertyChanging(Properties.NAME, value, ref undoable, ref cancel);
+                if (cancel) return;
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedNonMetadataObjectAction(this, Properties.NAME, oldValue, value));
                 _name = value;
-                DoPropertyChanged("Name");
+                OnPropertyChanged(Properties.NAME, oldValue, value);
             }
         }
         [Description("The ID of the deployed database. Changing this has no effect on an already deployed database.")]
@@ -60,16 +100,31 @@ namespace TabularEditor.TOMWrapper
             }
             set
             {
+                var oldValue = ID;
+                if (oldValue == value) return;
+                bool undoable = true;
+                bool cancel = false;
+                OnPropertyChanging(Properties.ID, value, ref undoable, ref cancel);
+                if (cancel) return;
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedNonMetadataObjectAction(this, Properties.ID, oldValue, value));
                 _id = value;
-                DoPropertyChanged("ID");
+                OnPropertyChanged(Properties.ID, oldValue, value);
             }
         }
+
+        private readonly int[] validCompatibilityLevels = new[] { 1200, 1400, 1450, 1455, 1465, 1470, 1500 };
+        private bool IsValidCompatibilityLevel(int compatibilityLevel)
+        {
+            return validCompatibilityLevels.Contains(compatibilityLevel);
+        }
+        private int _compatibilityLevel;
+
         [DisplayName("Compatibility Level")]
-        public int? CompatibilityLevel
+        public int CompatibilityLevel
         {
             get
             {
-                return TOMDatabase?.CompatibilityLevel;
+                return _compatibilityLevel;
             }
         }
 
@@ -144,5 +199,11 @@ namespace TabularEditor.TOMWrapper
 
         [Browsable(false)]
         public bool IsRemoved => false;
+    }
+
+    internal static partial class Properties
+    {
+        public const string COMPATIBILITYLEVEL = "CompatibilityLevel";
+        public const string ID = "Id";
     }
 }
