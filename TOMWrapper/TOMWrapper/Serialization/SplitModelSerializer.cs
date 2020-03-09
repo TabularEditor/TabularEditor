@@ -333,10 +333,21 @@ namespace TabularEditor.TOMWrapper.Serialization
 
         private static void ApplyTranslations(string annotatedTranslationJson, string translatedProperty, Func<string, JObject> translation)
         {
-            var jTran = JObject.Parse(annotatedTranslationJson);
-            foreach(var prop in jTran.Properties())
+            if (annotatedTranslationJson[0] == '[')
             {
-                translation(prop.Name)[translatedProperty] = (string)prop.Value;
+                var jTranArr = JArray.Parse(annotatedTranslationJson);
+                foreach (var item in jTranArr)
+                {
+                    translation((string)item["Key"])[translatedProperty] = (string)item["Value"];
+                }
+            }
+            else
+            {
+                var jTran = JObject.Parse(annotatedTranslationJson);
+                foreach (var prop in jTran.Properties())
+                {
+                    translation(prop.Name)[translatedProperty] = (string)prop.Value;
+                }
             }
         }
         private static void ApplyAllTranslations(JObject translatableObject, Func<string, JObject> translation)
