@@ -22,9 +22,12 @@ namespace TabularEditor.UI
 
             var f = new DeployForm();
             f.PreselectDb = LastDeploymentDb;
+            if (LastDeployOptions != null) f.DeployOptions = LastDeployOptions;
+
             var res = f.ShowDialog();
             if (res == DialogResult.Cancel) return;
 
+            LastDeployOptions = f.DeployOptions.Clone();
             LastDeploymentDb = f.PreselectDb;
 
             // Backup database metadata
