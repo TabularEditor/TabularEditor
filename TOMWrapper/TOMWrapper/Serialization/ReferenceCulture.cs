@@ -8,7 +8,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper.Serialization
 {
-    public class ReferenceCulture
+    internal class ReferenceCulture
     {
         public string Name { get; set; }
         public string Id { get; set; }
@@ -25,7 +25,7 @@ namespace TabularEditor.TOMWrapper.Serialization
         }
     }
 
-    public class ReferenceModel
+    internal class ReferenceModel
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -51,7 +51,7 @@ namespace TabularEditor.TOMWrapper.Serialization
         }
     }
 
-    public class ReferenceTable
+    internal class ReferenceTable
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -76,7 +76,7 @@ namespace TabularEditor.TOMWrapper.Serialization
         }
     }
 
-    public class ReferenceColumn
+    internal class ReferenceColumn
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -95,7 +95,7 @@ namespace TabularEditor.TOMWrapper.Serialization
         }
     }
 
-    public class ReferenceMeasure
+    internal class ReferenceMeasure
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -114,7 +114,7 @@ namespace TabularEditor.TOMWrapper.Serialization
         }
     }
 
-    public class ReferenceHierarchy
+    internal class ReferenceHierarchy
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -136,7 +136,7 @@ namespace TabularEditor.TOMWrapper.Serialization
         }
     }
 
-    public class ReferenceLevel
+    internal class ReferenceLevel
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -152,7 +152,7 @@ namespace TabularEditor.TOMWrapper.Serialization
         }
     }
 
-    public class ReferencePerspective
+    internal class ReferencePerspective
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -168,7 +168,7 @@ namespace TabularEditor.TOMWrapper.Serialization
         }
     }
 
-    public class ReferenceRole
+    internal class ReferenceRole
     {
         public string Name { get; set; }
         public string Description { get; set; }

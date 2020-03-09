@@ -17,17 +17,6 @@ namespace TabularEditor.TOMWrapper.Serialization
                     .Concat(model.AllHierarchies);
         }
 
-        public static void RestorePerspectivesFromAnnotations(this Model model)
-        {
-            var perspectivesJson = model.GetAnnotation(AnnotationHelper.ANN_PERSPECTIVES);
-            if (perspectivesJson != null)
-            {
-                model.Perspectives.FromJson(perspectivesJson);
-                foreach (var table in model.Tables) table.LoadPerspectives(true);
-                model.RemoveAnnotation(AnnotationHelper.ANN_PERSPECTIVES, false);
-            }
-        }
-
         public static void StorePerspectivesToAnnotations(this Model model)
         {
             // Loop through all perspective objects and provide the perspective membership in the annotation:
@@ -35,7 +24,6 @@ namespace TabularEditor.TOMWrapper.Serialization
 
             // Store the perspectives (without members) as an annotation on the model:
             model.SetAnnotation(AnnotationHelper.ANN_PERSPECTIVES, model.Perspectives.ToJson(), false);
-
         }
     }
 }

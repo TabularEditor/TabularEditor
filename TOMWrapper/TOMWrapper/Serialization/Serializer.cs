@@ -22,7 +22,7 @@ namespace TabularEditor.TOMWrapper.Serialization
             return type.Name.Pluralize().ToLower();
         }
 
-        public static string SerializeCultures(Model model, IEnumerable<Culture> cultures)
+        internal static string SerializeCultures(Model model, IEnumerable<Culture> cultures)
         {
             var referenceCulture = ReferenceCulture.Create(model.Handler.Database);
             string json;
