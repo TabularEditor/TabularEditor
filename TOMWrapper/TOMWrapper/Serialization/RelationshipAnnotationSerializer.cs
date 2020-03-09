@@ -17,12 +17,6 @@ namespace TabularEditor.TOMWrapper.Serialization
             foreach (var table in model.Tables) StoreRelationshipsAsAnnotations(table);
         }
 
-        public static void RestoreRelationshipsFromAnnotations(this Model model)
-        {
-            // Restore relationships from annotations:
-            foreach (var table in model.Tables) table.RestoreRelationshipsFromAnnotations();
-        }
-
         public static void StoreRelationshipsAsAnnotations(Table table)
         {
             table.SetAnnotation(AnnotationHelper.ANN_RELATIONSHIPS, table.GetRelationshipsJson(json.Newtonsoft.Json.Formatting.Indented), false);
@@ -40,21 +34,6 @@ namespace TabularEditor.TOMWrapper.Serialization
                 rels.Add(jObj);
             }
             return rels.ToString(format);
-        }
-
-        public static void RestoreRelationshipsFromAnnotations(this Table table)
-        {
-            var relationshipsJson = table.GetAnnotation(AnnotationHelper.ANN_RELATIONSHIPS);
-            if (relationshipsJson == null) return;
-            JArray rels = JArray.Parse(relationshipsJson);
-            foreach (var rel in rels)
-            {
-                var relationship = TOM.JsonSerializer.DeserializeObject<TOM.SingleColumnRelationship>(rel.ToString());
-                SingleColumnRelationship.CreateFromMetadata(table.Model, relationship);
-            }
-            table.RemoveAnnotation(AnnotationHelper.ANN_RELATIONSHIPS, false);
-        }
-
-        
+        }        
     }
 }

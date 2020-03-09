@@ -31,17 +31,6 @@ namespace TabularEditor.TOMWrapper.Serialization
             model.SetAnnotation(AnnotationHelper.ANN_CULTURES, model.Cultures.ToJson(), false);
         }
 
-        public static void RestoreTranslationsFromAnnotations(this Model model)
-        {
-            var translationsJson = model.GetAnnotation(AnnotationHelper.ANN_CULTURES);
-            if (translationsJson != null)
-            {
-                model.Cultures.FromJson(translationsJson);
-                foreach (var item in model.GetAllTranslatableObjects()) item.LoadTranslations();
-                model.RemoveAnnotation(AnnotationHelper.ANN_CULTURES, false);
-            }
-        }
-
         /// <summary>
         /// Stores all translations on the current instance of an ITranslatableObject as annotations on the object.
         /// Translations can later be retrieved using the LoadTranslations() extension method.
