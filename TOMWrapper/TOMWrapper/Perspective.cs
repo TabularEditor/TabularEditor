@@ -25,6 +25,8 @@ namespace TabularEditor.TOMWrapper
 
         public string ToJson()
         {
+            // TODO: We should really use the TOM JsonSerializer here instead...
+
             return JsonConvert.SerializeObject(this.Select(p => 
             new SerializedPerspective {
                 Name = p.Name,

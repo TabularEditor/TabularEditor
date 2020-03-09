@@ -57,9 +57,9 @@ namespace TabularEditor.TOMWrapper
             InitModelFromJson(json);
 
             // After model initialization, let's make sure we restore translations/relationships/perspectives, in case they were serialized as annotations:
-            if (SerializeOptions.LocalTranslations) Model.RestoreTranslationsFromAnnotations();
-            if (SerializeOptions.LocalRelationships) Model.RestoreRelationshipsFromAnnotations();
-            if (SerializeOptions.LocalPerspectives) Model.RestorePerspectivesFromAnnotations();
+           // if (SerializeOptions.LocalTranslations) Model.RestoreTranslationsFromAnnotations();
+            //if (SerializeOptions.LocalRelationships) Model.RestoreRelationshipsFromAnnotations();
+            //if (SerializeOptions.LocalPerspectives) Model.RestorePerspectivesFromAnnotations();
 
         }
 
