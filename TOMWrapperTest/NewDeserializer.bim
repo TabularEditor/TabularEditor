@@ -1,0 +1,220 @@
+{
+  "name": "SemanticModel",
+  "compatibilityLevel": 1500,
+  "model": {
+    "discourageImplicitMeasures": true,
+    "dataSources": [
+      {
+        "name": "Data Source",
+        "impersonationMode": "impersonateServiceAccount"
+      }
+    ],
+    "tables": [
+      {
+        "name": "CalcGroup",
+        "calculationGroup": {
+          "calculationItems": [
+            {
+              "name": "MTD"
+            }
+          ]
+        },
+        "columns": [
+          {
+            "name": "Name",
+            "dataType": "string",
+            "sourceColumn": "Name",
+            "sortByColumn": "Ordinal"
+          },
+          {
+            "name": "Ordinal",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "Ordinal"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "source": {
+              "type": "calculationGroup"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Table",
+        "columns": [
+          {
+            "name": "Column",
+            "dataType": "string"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "New Table",
+            "source": {
+              "type": "query",
+              "dataSource": "Data Source"
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Measure"
+          }
+        ],
+        "hierarchies": [
+          {
+            "name": "Hierarchy",
+            "levels": [
+              {
+                "name": "Level",
+                "ordinal": 0,
+                "column": "Column"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "cultures": [
+      {
+        "name": "da-DK",
+        "translations": {
+          "model": {
+            "name": "Model",
+            "translatedCaption": "ModelDK",
+            "tables": [
+              {
+                "name": "CalcGroup",
+                "translatedCaption": "CalcGroup"
+              },
+              {
+                "name": "Table",
+                "translatedCaption": "Table",
+                "columns": [
+                  {
+                    "name": "Column",
+                    "translatedCaption": "Column"
+                  }
+                ],
+                "measures": [
+                  {
+                    "name": "Measure",
+                    "translatedCaption": "Measure"
+                  }
+                ],
+                "hierarchies": [
+                  {
+                    "name": "Hierarchy",
+                    "translatedCaption": "HierarchyDK",
+                    "translatedDisplayFolder": "Hierarchies",
+                    "levels": [
+                      {
+                        "name": "Level",
+                        "translatedCaption": "LevelDK",
+                        "translatedDescription": "This is a level"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "perspectives": [
+              {
+                "name": "Perspective 1",
+                "translatedCaption": "Perspective 1 DK"
+              },
+              {
+                "name": "Perspective 2",
+                "translatedCaption": "Perspective 2 DK",
+                "translatedDescription": "This is a perspective"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "de-DE",
+        "translations": {
+          "model": {
+            "name": "Model",
+            "tables": [
+              {
+                "name": "Table",
+                "hierarchies": [
+                  {
+                    "name": "Hierarchy",
+                    "levels": [
+                      {
+                        "name": "Level",
+                        "translatedCaption": "LevelDE"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "perspectives": [
+              {
+                "name": "Perspective 2",
+                "translatedCaption": "Perspective 2 DE"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "perspectives": [
+      {
+        "name": "Perspective 1",
+        "description": "This is a description DK",
+        "tables": [
+          {
+            "name": "Table",
+            "columns": [
+              {
+                "name": "Column"
+              }
+            ],
+            "hierarchies": [
+              {
+                "name": "Hierarchy"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Perspective 2",
+        "tables": [
+          {
+            "name": "Table",
+            "columns": [
+              {
+                "name": "Column"
+              }
+            ],
+            "hierarchies": [
+              {
+                "name": "Hierarchy"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "roles": [
+      {
+        "name": "Role"
+      }
+    ],
+    "annotations": [
+      {
+        "name": "TabularEditor_SerializeOptions",
+        "value": "{\"IgnoreInferredObjects\":true,\"IgnoreInferredProperties\":true,\"IgnoreTimestamps\":true,\"SplitMultilineStrings\":true,\"PrefixFilenames\":false,\"LocalTranslations\":true,\"LocalPerspectives\":true,\"LocalRelationships\":true,\"Levels\":[\"Data Sources\",\"Roles\",\"Tables\",\"Tables/Calculation Items\",\"Tables/Columns\",\"Tables/Hierarchies\",\"Tables/Measures\",\"Tables/Partitions\"]}"
+      }
+    ]
+  }
+}
