@@ -112,6 +112,16 @@ namespace TabularEditor.UI.Dialogs
                     chkDeployConnections.Checked = true;
                     chkDeployPartitions.Checked = true;
                 }
+                else if (DeployOptions.DeployMode == DeploymentMode.CreateOrAlter)
+                {
+                    DeployOptions = page2.DatabaseID == PreselectDb ? (DeployOptions ?? new DeploymentOptions()) : new DeploymentOptions();
+                    
+                    chkDeployConnections.Checked = DeployOptions.DeployConnections;
+                    chkDeployPartitions.Checked = DeployOptions.DeployPartitions;
+                    chkDeployRoles.Checked = DeployOptions.DeployRoles;
+                    chkDeployRoleMembers.Checked = DeployOptions.DeployRoleMembers;
+                    
+                }
                 chkDeployPartitions.Enabled = chkDeployConnections.Enabled = DeployOptions.DeployMode == DeploymentMode.CreateOrAlter;
             }
 
@@ -168,7 +178,7 @@ namespace TabularEditor.UI.Dialogs
             btnNext.Enabled = chkDeployStructure.Checked;
         }
 
-        public DeploymentOptions DeployOptions { get; private set; } = new DeploymentOptions();
+        public DeploymentOptions DeployOptions { get; set; } = new DeploymentOptions();
 
         private void btnDeploy_Click(object sender, EventArgs e)
         {

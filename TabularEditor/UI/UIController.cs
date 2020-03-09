@@ -148,6 +148,7 @@ namespace TabularEditor.UI
         public ModelActionManager Actions { get; private set; }
 
         public string LastDeploymentDb;
+        public DeploymentOptions LastDeployOptions;
 
         public void LoadTabularModelToUI()
         {

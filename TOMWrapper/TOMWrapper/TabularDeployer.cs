@@ -378,6 +378,11 @@ namespace TabularEditor.TOMWrapper.Utils
         /// StructureOnly deployment. Does not overwrite roles or role members.
         /// </summary>
         public static DeploymentOptions StructureOnly = new DeploymentOptions() { DeployRoles = false };
+
+        public DeploymentOptions Clone()
+        {
+            return new DeploymentOptions { DeployMode = this.DeployMode, DeployConnections = this.DeployConnections, DeployPartitions = this.DeployPartitions, DeployRoleMembers = this.DeployRoleMembers, DeployRoles = this.DeployRoles };
+        }
     }
 
     public enum DeploymentMode
