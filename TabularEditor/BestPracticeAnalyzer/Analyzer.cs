@@ -154,15 +154,15 @@ namespace TabularEditor.BestPracticeAnalyzer
     {
         public string GetToolTip(TreeNodeAdv node, NodeControl nodeControl)
         {
-            if (node.Tag is AnalyzerResult result)
+            if (node.Tag is AnalyzerResult result && result.Rule != null)
             {
                 if (string.IsNullOrWhiteSpace(result.Rule.Description))
                     return result.Rule.Name;
                 else
                     return result.Rule.Description
                         .Replace("%object%", result.ObjectName)
-                        .Replace("%objectname%", result.Object.Name)
-                        .Replace("%objecttype%", result.Object.GetTypeName());
+                        .Replace("%objectname%", result.Object?.Name ?? string.Empty)
+                        .Replace("%objecttype%", result.Object?.GetTypeName() ?? string.Empty);
             }
             return null;
         }
@@ -180,9 +180,10 @@ namespace TabularEditor.BestPracticeAnalyzer
         {
             get
             {
+                if (Object == null) return string.Empty;
                 if (RuleHasError) return RuleError;
 
-                if (Object is KPI) return (Object as KPI).Measure.DaxObjectFullName + ".KPI";
+                if (Object is KPI kpi) return kpi.Measure.DaxObjectFullName + ".KPI";
                 return (Object as IDaxObject)?.DaxObjectFullName ?? Object.Name;
             }
         }
