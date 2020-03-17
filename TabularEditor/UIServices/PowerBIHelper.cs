@@ -76,6 +76,8 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Management;
 using System.Linq;
+using System.Net.NetworkInformation;
+using System.Net;
 
 namespace TabularEditor.UIServices
 {
@@ -122,10 +124,10 @@ namespace TabularEditor.UIServices
 
         public static void Refresh()
         {
-
             _instances.Clear();
 
-            var dict = ManagedIpHelper.GetExtendedTcpDictionary();
+            var tcpTable = ManagedIpHelper.GetExtendedTcpTable();
+
             foreach (var proc in Process.GetProcessesByName("msmdsrv"))
             {
                 int _port = 0;
@@ -149,8 +151,7 @@ namespace TabularEditor.UIServices
                 // try and get the tcp port from the Win32 TcpTable API
                 try
                 {
-                    TcpRow tcpRow = null;
-                    dict.TryGetValue(proc.Id, out tcpRow);
+                    var tcpRow = tcpTable.SingleOrDefault((r) => r.ProcessId == proc.Id && r.State == TcpState.Listen && IPAddress.IsLoopback(r.LocalEndPoint.Address));
                     if (tcpRow != null)
                     {
                         _port = tcpRow.LocalEndPoint.Port;

@@ -113,12 +113,9 @@ namespace TabularEditor.UIServices
 
     public static class ManagedIpHelper
     {
-        #region Public Methods
-
-        public static TcpTable GetExtendedTcpTable(bool sorted)
+        public static TcpTable GetExtendedTcpTable(bool sorted = false)
         {
             List<TcpRow> tcpRows = new List<TcpRow>();
-
             IntPtr tcpTable = IntPtr.Zero;
             int tcpTableLength = 0;
 
@@ -150,48 +147,6 @@ namespace TabularEditor.UIServices
 
             return new TcpTable(tcpRows);
         }
-
-        public static Dictionary<int, TcpRow> GetExtendedTcpDictionary()
-        {
-            Dictionary<int, TcpRow> tcpRows = new Dictionary<int, TcpRow>();
-
-            IntPtr tcpTable = IntPtr.Zero;
-            int tcpTableLength = 0;
-
-            if (IpHelper.GetExtendedTcpTable(tcpTable, ref tcpTableLength, false, IpHelper.AfInet, IpHelper.TcpTableType.OwnerPidAll, 0) != 0)
-            {
-                try
-                {
-                    tcpTable = Marshal.AllocHGlobal(tcpTableLength);
-                    if (IpHelper.GetExtendedTcpTable(tcpTable, ref tcpTableLength, true, IpHelper.AfInet, IpHelper.TcpTableType.OwnerPidAll, 0) == 0)
-                    {
-                        IpHelper.TcpTable table = (IpHelper.TcpTable)Marshal.PtrToStructure(tcpTable, typeof(IpHelper.TcpTable));
-
-                        IntPtr rowPtr = (IntPtr)((long)tcpTable + Marshal.SizeOf(table.length));
-                        for (int i = 0; i < table.length; ++i)
-                        {
-                            TcpRow row = new TcpRow((IpHelper.TcpRow)Marshal.PtrToStructure(rowPtr, typeof(IpHelper.TcpRow)));
-                            // HACK: only add first row
-                            if (!tcpRows.Keys.Contains(row.ProcessId))
-                                tcpRows.Add(row.ProcessId, row);
-                            rowPtr = (IntPtr)((long)rowPtr + Marshal.SizeOf(typeof(IpHelper.TcpRow)));
-                        }
-                    }
-                }
-                finally
-                {
-                    if (tcpTable != IntPtr.Zero)
-                    {
-                        Marshal.FreeHGlobal(tcpTable);
-                    }
-                }
-            }
-
-            return tcpRows;
-        }
-
-
-        #endregion
     }
 
     #endregion
