@@ -14,6 +14,11 @@ namespace TabularEditor.TOMWrapper.Serialization
     {
         public static void StoreRelationshipsAsAnnotations(this Model model)
         {
+            if(model.Relationships.OfType<SingleColumnRelationship>().Any(r => r.FromColumn == null || r.ToColumn == null))
+            {
+                throw new SerializationException("One or more relationships are incomplete (FromColumn or ToColumn not set).");
+            }
+            
             foreach (var table in model.Tables) StoreRelationshipsAsAnnotations(table);
         }
 
@@ -35,5 +40,13 @@ namespace TabularEditor.TOMWrapper.Serialization
             }
             return rels.ToString(format);
         }        
+    }
+
+    public class SerializationException: Exception
+    {
+        public SerializationException(string message): base(message)
+        {
+
+        }
     }
 }

@@ -235,24 +235,31 @@ namespace TabularEditor.UI
                         if (dialog.FileType == "pbit" && !fileName.EndsWith(".pbit")) fileName += ".pbit";
                         else if (dialog.FileType == "bim" && !fileName.EndsWith(".bim")) fileName += ".bim";
 
-                        Handler.Save(fileName,
-                            saveFormat,
-                            serializationOptions,
-                            dialog.UseSerializationFromAnnotations,
-                            resetCheckPoint,
-                            restoreSerializationOptions);
-
-                        RecentFiles.Add(dialog.FileName);
-                        RecentFiles.Save();
-                        UI.FormMain.PopulateRecentFilesList();
-
-                        // If not connected to a database, change the current working file:
-                        if (changeFilePointer)
+                        try
                         {
-                            File_Current = fileName;
-                            File_Directory = FileSystemHelper.DirectoryFromPath(File_Current);
-                            File_LastWrite = DateTime.Now;
-                            File_SaveMode = dialog.FileType == "pbit" ? ModelSourceType.Pbit : ModelSourceType.File;
+                            Handler.Save(fileName,
+                                saveFormat,
+                                serializationOptions,
+                                dialog.UseSerializationFromAnnotations,
+                                resetCheckPoint,
+                                restoreSerializationOptions);
+
+                            RecentFiles.Add(dialog.FileName);
+                            RecentFiles.Save();
+                            UI.FormMain.PopulateRecentFilesList();
+
+                            // If not connected to a database, change the current working file:
+                            if (changeFilePointer)
+                            {
+                                File_Current = fileName;
+                                File_Directory = FileSystemHelper.DirectoryFromPath(File_Current);
+                                File_LastWrite = DateTime.Now;
+                                File_SaveMode = dialog.FileType == "pbit" ? ModelSourceType.Pbit : ModelSourceType.File;
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            HandleError("Could not save metadata to file", e);
                         }
 
                         UpdateUIText();
@@ -305,29 +312,43 @@ namespace TabularEditor.UI
                     {
                         UI.StatusLabel.Text = "Saving...";
 
-                        Handler.Save(dialog.FileName,
-                            saveFormat,
-                            serializationOptions,
-                            dialog.UseSerializationFromAnnotations,
-                            resetCheckPoint,
-                            restoreSerializationOptions);
-
-                        RecentFiles.Add(dialog.FileName);
-                        RecentFiles.Save();
-                        UI.FormMain.PopulateRecentFilesList();
-
-                        // If working with a file, change the current file pointer:
-                        if (changeFilePointer)
+                        try
                         {
-                            File_SaveMode = ModelSourceType.Folder;
-                            File_Current = dialog.FileName;
-                            File_Directory = FileSystemHelper.DirectoryFromPath(File_Current);
-                        }
+                            Handler.Save(dialog.FileName,
+                                saveFormat,
+                                serializationOptions,
+                                dialog.UseSerializationFromAnnotations,
+                                resetCheckPoint,
+                                restoreSerializationOptions);
 
+                            RecentFiles.Add(dialog.FileName);
+                            RecentFiles.Save();
+                            UI.FormMain.PopulateRecentFilesList();
+
+                            // If working with a file, change the current file pointer:
+                            if (changeFilePointer)
+                            {
+                                File_SaveMode = ModelSourceType.Folder;
+                                File_Current = dialog.FileName;
+                                File_Directory = FileSystemHelper.DirectoryFromPath(File_Current);
+                            }
+                        }
+                        catch  (Exception e)
+                        {
+                            HandleError("Could not save metadata to folder", e);
+                        }
                         UpdateUIText();
                     }
                 }
             }
+        }
+
+        public void HandleError(string operationTitle, Exception e)
+        {
+            if (e is SerializationException)
+                MessageBox.Show("Tabular Editor was unable to serialize the model to disk.\n\n" + e.Message, operationTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            else
+                throw e;
         }
 
         public void Save()
@@ -351,8 +372,6 @@ namespace TabularEditor.UI
                 }
                 else
                 {
-                    try
-                    {
                         DialogResult mr = DialogResult.OK;
                         if (File_SaveMode == ModelSourceType.Folder)
                         {
@@ -361,10 +380,16 @@ namespace TabularEditor.UI
                                 mr = MessageBox.Show(
                                     "Changes were made to the currently loaded folder structure after the model was loaded in Tabular Editor. Overwrite these changes?", "Overwriting folder structure changes", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
                             }
-                            if (mr == DialogResult.OK)
+                        if (mr == DialogResult.OK)
+                        {
+                            try
                             {
                                 Handler.Save(File_Current, SaveFormat.TabularEditorFolder, null, true, true);
                                 File_LastWrite = File.GetLastWriteTime(File_Current);
+                            }
+                            catch (Exception e)
+                            {
+                                HandleError("Could not save metadata to folder", e);
                             }
                         }
                         else
@@ -376,17 +401,20 @@ namespace TabularEditor.UI
                             }
                             if (mr == DialogResult.OK)
                             {
-                                if (File_SaveMode == ModelSourceType.Pbit)
-                                    Handler.Save(File_Current, SaveFormat.PowerBiTemplate, SerializeOptions.PowerBi, false, true);
-                                else
-                                    Handler.Save(File_Current, SaveFormat.ModelSchemaOnly, null, true, true);
-                                File_LastWrite = File.GetLastWriteTime(File_Current);
+                                try
+                                {
+                                    if (File_SaveMode == ModelSourceType.Pbit)
+                                        Handler.Save(File_Current, SaveFormat.PowerBiTemplate, SerializeOptions.PowerBi, false, true);
+                                    else
+                                        Handler.Save(File_Current, SaveFormat.ModelSchemaOnly, null, true, true);
+                                    File_LastWrite = File.GetLastWriteTime(File_Current);
+                                }
+                                catch (Exception e)
+                                {
+                                    HandleError("Could not save metadata to file", e);
+                                }
                             }
                         }
-                    }
-                    catch (Exception e)
-                    {
-                        MessageBox.Show(e.Message, "Could not save metadata to file", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
 
                 }

@@ -175,6 +175,17 @@ namespace TabularEditor.TOMWrapper.Serialization
         public static string SerializeDB(SerializeOptions options)
         {
             var db = TabularModelHandler.Singleton.Database;
+
+            // Remove object translations with no objects assigned:
+            var nullTrans = db.Model.Cultures.SelectMany(c => c.ObjectTranslations).Where(ot => ot.Object == null).ToList();
+            if(nullTrans.Count > 0)
+            {
+                foreach(var ot in nullTrans)
+                {
+                    ot.Culture.ObjectTranslations.Remove(ot);
+                }
+            }
+
             var serializedDB =
                 TOM.JsonSerializer.SerializeDatabase(db,
                 new TOM.SerializeOptions()
