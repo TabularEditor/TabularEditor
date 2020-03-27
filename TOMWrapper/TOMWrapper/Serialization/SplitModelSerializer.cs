@@ -542,7 +542,10 @@ namespace TabularEditor.TOMWrapper.Serialization
                     baseObject = baseObject[objPath[i]] as JObject;
                 }
 
-                baseObject.Add(arrayName, array);
+                if (baseObject[arrayName] is JArray existingArray)
+                    existingArray.Merge(array);
+                else
+                    baseObject.Add(arrayName, array);
             }
         }
 
