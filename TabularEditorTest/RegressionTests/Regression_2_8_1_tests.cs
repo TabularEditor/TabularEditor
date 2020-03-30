@@ -34,7 +34,7 @@ namespace TabularEditor.RegressionTests
             ui.Database_Open("localhost", "AdventureWorks");
             var model = ui.Handler.Model;
 
-            ui.Goto(model.Tables[0].Columns[0]);
+            ui.Goto(model.Tables["Currency"].Columns["CurrencyName"]);
             Application.DoEvents();
 
             PostMessage(ui.Elements.TreeView.Handle, WM_KEYDOWN, VK_DELETE, 0);

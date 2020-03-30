@@ -87,6 +87,8 @@ namespace TabularEditor.TOMWrapper.PowerBI
                     case Properties.TRANSLATEDDISPLAYFOLDERS:
                     case Properties.TRANSLATEDNAMES:
                     case Properties.ISHIDDEN:
+                    case Properties.DESCRIPTION:
+                    case Properties.DISPLAYFOLDER:
                     case Properties.KPI:
                         return true;
                 }

@@ -28,7 +28,7 @@ namespace TabularEditor.TOMWrapper
         }
         public bool IsRemoved => false;
 
-        bool ITabularNamedObject.CanEditName() { return true; }
+        bool ITabularNamedObject.CanEditName() { return Handler.PowerBIGovernance.AllowEditProperty(ObjectType.Measure, Properties.DISPLAYFOLDER); }
 
         public override int GetHashCode()
         {
