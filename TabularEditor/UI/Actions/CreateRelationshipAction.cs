@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TabularEditor.TOMWrapper;
+using TabularEditor.TOMWrapper.PowerBI;
 using TabularEditor.UI.Actions;
 
 namespace TabularEditor.UI.Actions
@@ -113,7 +114,7 @@ namespace TabularEditor.UI.Actions
 
         public bool Enabled(object arg)
         {
-            return UI.Selection.Context == Context.Column && UI.Selection.Count == 1;
+            return UIController.Current.Handler.PowerBIGovernance.AllowCreate(typeof(SingleColumnRelationship)) && UI.Selection.Context == Context.Column && UI.Selection.Count == 1;
         }
 
         public void Execute(object arg)

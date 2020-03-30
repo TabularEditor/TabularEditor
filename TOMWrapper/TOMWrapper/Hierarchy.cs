@@ -187,10 +187,5 @@ namespace TabularEditor.TOMWrapper
                 default: return true;
             }
         }
-
-        internal override bool Editable(string propertyName)
-        {
-            return true;
-        }
     }
 }

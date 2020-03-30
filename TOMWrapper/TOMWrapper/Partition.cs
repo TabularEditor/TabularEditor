@@ -8,6 +8,7 @@ using System.ComponentModel;
 using TabularEditor.TOMWrapper.Undo;
 using System.ComponentModel.Design;
 using System.Drawing.Design;
+using TabularEditor.TOMWrapper.PowerBI;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -177,7 +178,7 @@ namespace TabularEditor.TOMWrapper
             return base.AllowDelete(out message);
         }
 
-        internal override bool Editable(string propertyName)
+        internal override bool IsEditable(string propertyName)
         {
             switch(propertyName)
             {
@@ -200,7 +201,7 @@ namespace TabularEditor.TOMWrapper
     {
         public override Partition Clone(string newName = null, Table newParent = null)
         {
-            if (TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Partition)))
+            if (!Handler.PowerBIGovernance.AllowCreate(typeof(Partition)))
             {
                 throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject, typeof(Partition).GetTypeName()));
             }
@@ -238,7 +239,7 @@ namespace TabularEditor.TOMWrapper
 
         public new static MPartition CreateNew(Table parent, string name = null)
         {
-            if (TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(MPartition)))
+            if (!parent.Handler.PowerBIGovernance.AllowCreate(typeof(MPartition)))
             {
                 throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject, typeof(MPartition).GetTypeName()));
             }

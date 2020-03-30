@@ -7,6 +7,7 @@ using System.ComponentModel;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper.Undo;
 using TabularEditor.TOMWrapper.Utils;
+using TabularEditor.TOMWrapper.PowerBI;
 using System.Drawing.Design;
 using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
@@ -873,7 +874,7 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static Variation CreateNew(Column parent, string name = null)
 		{
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Variation))) {
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(Variation))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Variation).GetTypeName()));
 			}
 
@@ -893,7 +894,7 @@ namespace TabularEditor.TOMWrapper
 		/// Creates an exact copy of this Variation object.
 		/// </summary>
 		public Variation Clone(string newName = null, Column newParent = null) {
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Variation))) {
+			if(!Handler.PowerBIGovernance.AllowCreate(typeof(Variation))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Variation).GetTypeName()));
 			}
 
@@ -956,7 +957,8 @@ namespace TabularEditor.TOMWrapper
 			Reinit();
 			ReapplyReferences();
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
  
 				case Properties.EXTENDEDPROPERTIES:
@@ -965,7 +967,7 @@ namespace TabularEditor.TOMWrapper
 					return false;
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -1148,7 +1150,7 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static StructuredDataSource CreateNew(Model parent, string name = null)
 		{
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(StructuredDataSource))) {
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(StructuredDataSource))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(StructuredDataSource).GetTypeName()));
 			}
 
@@ -1177,7 +1179,7 @@ namespace TabularEditor.TOMWrapper
 		/// Creates an exact copy of this StructuredDataSource object.
 		/// </summary>
 		public StructuredDataSource Clone(string newName = null) {
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(StructuredDataSource))) {
+			if(!Handler.PowerBIGovernance.AllowCreate(typeof(StructuredDataSource))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(StructuredDataSource).GetTypeName()));
 			}
 
@@ -1235,13 +1237,14 @@ namespace TabularEditor.TOMWrapper
 			Reinit();
 			ReapplyReferences();
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
 				case Properties.PARENT:
 					return false;
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -1333,7 +1336,7 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static CalculatedColumn CreateNew(Table parent, string name = null)
 		{
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(CalculatedColumn))) {
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(CalculatedColumn))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(CalculatedColumn).GetTypeName()));
 			}
 
@@ -1353,7 +1356,7 @@ namespace TabularEditor.TOMWrapper
 		/// Creates an exact copy of this CalculatedColumn object.
 		/// </summary>
 		public CalculatedColumn Clone(string newName = null, bool includeTranslations = true, Table newParent = null) {
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(CalculatedColumn))) {
+			if(!Handler.PowerBIGovernance.AllowCreate(typeof(CalculatedColumn))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(CalculatedColumn).GetTypeName()));
 			}
 
@@ -1420,13 +1423,14 @@ namespace TabularEditor.TOMWrapper
 			Reinit();
 			ReapplyReferences();
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
 				case Properties.PARENT:
 					return false;
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -1554,7 +1558,7 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static CalculatedTableColumn CreateNew(Table parent, string name = null)
 		{
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(CalculatedTableColumn))) {
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(CalculatedTableColumn))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(CalculatedTableColumn).GetTypeName()));
 			}
 
@@ -1574,7 +1578,7 @@ namespace TabularEditor.TOMWrapper
 		/// Creates an exact copy of this CalculatedTableColumn object.
 		/// </summary>
 		public CalculatedTableColumn Clone(string newName = null, bool includeTranslations = true, Table newParent = null) {
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(CalculatedTableColumn))) {
+			if(!Handler.PowerBIGovernance.AllowCreate(typeof(CalculatedTableColumn))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(CalculatedTableColumn).GetTypeName()));
 			}
 
@@ -1639,13 +1643,14 @@ namespace TabularEditor.TOMWrapper
 			Reinit();
 			ReapplyReferences();
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
 				case Properties.PARENT:
 					return false;
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -2545,6 +2550,7 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
  
 				case Properties.EXTENDEDPROPERTIES:
@@ -2561,7 +2567,7 @@ namespace TabularEditor.TOMWrapper
 					return Model.Perspectives.Any();
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -3146,7 +3152,7 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static Culture CreateNew(Model parent, string name = null)
 		{
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Culture))) {
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(Culture))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Culture).GetTypeName()));
 			}
 
@@ -3175,7 +3181,7 @@ namespace TabularEditor.TOMWrapper
 		/// Creates an exact copy of this Culture object.
 		/// </summary>
 		public Culture Clone(string newName = null) {
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Culture))) {
+			if(!Handler.PowerBIGovernance.AllowCreate(typeof(Culture))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Culture).GetTypeName()));
 			}
 
@@ -3239,7 +3245,8 @@ namespace TabularEditor.TOMWrapper
 			Reinit();
 			ReapplyReferences();
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
  
 				case Properties.EXTENDEDPROPERTIES:
@@ -3248,7 +3255,7 @@ namespace TabularEditor.TOMWrapper
 					return false;
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -3371,7 +3378,7 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static DataColumn CreateNew(Table parent, string name = null)
 		{
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(DataColumn))) {
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(DataColumn))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(DataColumn).GetTypeName()));
 			}
 
@@ -3391,7 +3398,7 @@ namespace TabularEditor.TOMWrapper
 		/// Creates an exact copy of this DataColumn object.
 		/// </summary>
 		public DataColumn Clone(string newName = null, bool includeTranslations = true, Table newParent = null) {
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(DataColumn))) {
+			if(!Handler.PowerBIGovernance.AllowCreate(typeof(DataColumn))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(DataColumn).GetTypeName()));
 			}
 
@@ -3456,13 +3463,14 @@ namespace TabularEditor.TOMWrapper
 			Reinit();
 			ReapplyReferences();
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
 				case Properties.PARENT:
 					return false;
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -3836,6 +3844,7 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
  
 				case Properties.EXTENDEDPROPERTIES:
@@ -3844,7 +3853,7 @@ namespace TabularEditor.TOMWrapper
 					return false;
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -4016,7 +4025,7 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static ExternalModelRoleMember CreateNew(ModelRole parent, string name = null)
 		{
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(ExternalModelRoleMember))) {
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(ExternalModelRoleMember))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(ExternalModelRoleMember).GetTypeName()));
 			}
 
@@ -4036,7 +4045,7 @@ namespace TabularEditor.TOMWrapper
 		/// Creates an exact copy of this ExternalModelRoleMember object.
 		/// </summary>
 		public ExternalModelRoleMember Clone(string newName = null, ModelRole newParent = null) {
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(ExternalModelRoleMember))) {
+			if(!Handler.PowerBIGovernance.AllowCreate(typeof(ExternalModelRoleMember))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(ExternalModelRoleMember).GetTypeName()));
 			}
 
@@ -4093,13 +4102,14 @@ namespace TabularEditor.TOMWrapper
 			Reinit();
 			ReapplyReferences();
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
 				case Properties.PARENT:
 					return false;
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -4543,7 +4553,7 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static Hierarchy CreateNew(Table parent, string name = null)
 		{
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Hierarchy))) {
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(Hierarchy))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Hierarchy).GetTypeName()));
 			}
 
@@ -4563,7 +4573,7 @@ namespace TabularEditor.TOMWrapper
 		/// Creates an exact copy of this Hierarchy object.
 		/// </summary>
 		public Hierarchy Clone(string newName = null, bool includeTranslations = true, Table newParent = null) {
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Hierarchy))) {
+			if(!Handler.PowerBIGovernance.AllowCreate(typeof(Hierarchy))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Hierarchy).GetTypeName()));
 			}
 
@@ -4665,7 +4675,8 @@ namespace TabularEditor.TOMWrapper
 			Reinit();
 			ReapplyReferences();
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
  
 				case Properties.EXTENDEDPROPERTIES:
@@ -4684,7 +4695,7 @@ namespace TabularEditor.TOMWrapper
 					return Model.Perspectives.Any();
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -5348,14 +5359,15 @@ namespace TabularEditor.TOMWrapper
 			Reinit();
 			ReapplyReferences();
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
  
 				case Properties.EXTENDEDPROPERTIES:
 					return Handler.CompatibilityLevel >= 1400;
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -5746,7 +5758,7 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static Level CreateNew(Hierarchy parent, string name = null)
 		{
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Level))) {
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(Level))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Level).GetTypeName()));
 			}
 
@@ -5766,7 +5778,7 @@ namespace TabularEditor.TOMWrapper
 		/// Creates an exact copy of this Level object.
 		/// </summary>
 		public Level Clone(string newName = null, bool includeTranslations = true, Hierarchy newParent = null) {
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Level))) {
+			if(!Handler.PowerBIGovernance.AllowCreate(typeof(Level))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Level).GetTypeName()));
 			}
 
@@ -5836,7 +5848,8 @@ namespace TabularEditor.TOMWrapper
 			Reinit();
 			ReapplyReferences();
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
  
 				case Properties.EXTENDEDPROPERTIES:
@@ -5850,7 +5863,7 @@ namespace TabularEditor.TOMWrapper
 					return Model.Cultures.Any();
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -6449,7 +6462,7 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static Measure CreateNew(Table parent, string name = null)
 		{
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Measure))) {
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(Measure))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Measure).GetTypeName()));
 			}
 
@@ -6469,7 +6482,7 @@ namespace TabularEditor.TOMWrapper
 		/// Creates an exact copy of this Measure object.
 		/// </summary>
 		public Measure Clone(string newName = null, bool includeTranslations = true, Table newParent = null) {
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Measure))) {
+			if(!Handler.PowerBIGovernance.AllowCreate(typeof(Measure))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Measure).GetTypeName()));
 			}
 
@@ -6549,7 +6562,8 @@ namespace TabularEditor.TOMWrapper
 			Reinit();
 			ReapplyReferences();
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
  
 				case Properties.EXTENDEDPROPERTIES:
@@ -6568,7 +6582,7 @@ namespace TabularEditor.TOMWrapper
 					return Model.Perspectives.Any();
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -7421,7 +7435,8 @@ namespace TabularEditor.TOMWrapper
 			Reinit();
 			ReapplyReferences();
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
  
 				case Properties.EXTENDEDPROPERTIES:
@@ -7433,7 +7448,7 @@ namespace TabularEditor.TOMWrapper
 					return Model.Cultures.Any();
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -7774,7 +7789,7 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static ModelRole CreateNew(Model parent, string name = null)
 		{
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(ModelRole))) {
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(ModelRole))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(ModelRole).GetTypeName()));
 			}
 
@@ -7803,7 +7818,7 @@ namespace TabularEditor.TOMWrapper
 		/// Creates an exact copy of this ModelRole object.
 		/// </summary>
 		public ModelRole Clone(string newName = null) {
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(ModelRole))) {
+			if(!Handler.PowerBIGovernance.AllowCreate(typeof(ModelRole))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(ModelRole).GetTypeName()));
 			}
 
@@ -7901,7 +7916,8 @@ namespace TabularEditor.TOMWrapper
 			Reinit();
 			ReapplyReferences();
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
  
 				case Properties.EXTENDEDPROPERTIES:
@@ -7910,7 +7926,7 @@ namespace TabularEditor.TOMWrapper
 					return false;
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -8364,6 +8380,7 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
  
 				case Properties.EXTENDEDPROPERTIES:
@@ -8372,7 +8389,7 @@ namespace TabularEditor.TOMWrapper
 					return false;
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -8894,7 +8911,7 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static Partition CreateNew(Table parent, string name = null)
 		{
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Partition))) {
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(Partition))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Partition).GetTypeName()));
 			}
 
@@ -8914,7 +8931,7 @@ namespace TabularEditor.TOMWrapper
 		/// Creates an exact copy of this Partition object.
 		/// </summary>
 		public virtual Partition Clone(string newName = null, Table newParent = null) {
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Partition))) {
+			if(!Handler.PowerBIGovernance.AllowCreate(typeof(Partition))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Partition).GetTypeName()));
 			}
 
@@ -8977,7 +8994,8 @@ namespace TabularEditor.TOMWrapper
 			Reinit();
 			ReapplyReferences();
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
  
 				case Properties.EXTENDEDPROPERTIES:
@@ -8986,7 +9004,7 @@ namespace TabularEditor.TOMWrapper
 					return false;
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -9420,7 +9438,7 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static Perspective CreateNew(Model parent, string name = null)
 		{
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Perspective))) {
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(Perspective))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Perspective).GetTypeName()));
 			}
 
@@ -9449,7 +9467,7 @@ namespace TabularEditor.TOMWrapper
 		/// Creates an exact copy of this Perspective object.
 		/// </summary>
 		public Perspective Clone(string newName = null, bool includeTranslations = true) {
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Perspective))) {
+			if(!Handler.PowerBIGovernance.AllowCreate(typeof(Perspective))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Perspective).GetTypeName()));
 			}
 
@@ -9520,7 +9538,8 @@ namespace TabularEditor.TOMWrapper
 			Reinit();
 			ReapplyReferences();
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
  
 				case Properties.EXTENDEDPROPERTIES:
@@ -9534,7 +9553,7 @@ namespace TabularEditor.TOMWrapper
 					return Model.Cultures.Any();
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -9813,7 +9832,7 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static ProviderDataSource CreateNew(Model parent, string name = null)
 		{
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(ProviderDataSource))) {
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(ProviderDataSource))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(ProviderDataSource).GetTypeName()));
 			}
 
@@ -9842,7 +9861,7 @@ namespace TabularEditor.TOMWrapper
 		/// Creates an exact copy of this ProviderDataSource object.
 		/// </summary>
 		public ProviderDataSource Clone(string newName = null) {
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(ProviderDataSource))) {
+			if(!Handler.PowerBIGovernance.AllowCreate(typeof(ProviderDataSource))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(ProviderDataSource).GetTypeName()));
 			}
 
@@ -9900,13 +9919,14 @@ namespace TabularEditor.TOMWrapper
 			Reinit();
 			ReapplyReferences();
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
 				case Properties.PARENT:
 					return false;
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -10389,6 +10409,7 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
  
 				case Properties.EXTENDEDPROPERTIES:
@@ -10397,7 +10418,7 @@ namespace TabularEditor.TOMWrapper
 					return false;
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -10655,7 +10676,7 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static SingleColumnRelationship CreateNew(Model parent, string name = null)
 		{
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(SingleColumnRelationship))) {
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(SingleColumnRelationship))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(SingleColumnRelationship).GetTypeName()));
 			}
 
@@ -10684,7 +10705,7 @@ namespace TabularEditor.TOMWrapper
 		/// Creates an exact copy of this SingleColumnRelationship object.
 		/// </summary>
 		public SingleColumnRelationship Clone(string newName = null) {
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(SingleColumnRelationship))) {
+			if(!Handler.PowerBIGovernance.AllowCreate(typeof(SingleColumnRelationship))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(SingleColumnRelationship).GetTypeName()));
 			}
 
@@ -10742,13 +10763,14 @@ namespace TabularEditor.TOMWrapper
 			Reinit();
 			ReapplyReferences();
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
 				case Properties.PARENT:
 					return false;
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -11230,7 +11252,7 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static Table CreateNew(Model parent, string name = null)
 		{
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Table))) {
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(Table))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Table).GetTypeName()));
 			}
 
@@ -11259,7 +11281,7 @@ namespace TabularEditor.TOMWrapper
 		/// Creates an exact copy of this Table object.
 		/// </summary>
 		public virtual Table Clone(string newName = null, bool includeTranslations = true) {
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Table))) {
+			if(!Handler.PowerBIGovernance.AllowCreate(typeof(Table))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Table).GetTypeName()));
 			}
 
@@ -11403,7 +11425,8 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 			Handler.Tree.RebuildFolderCacheForTable(this);
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
  
 				case Properties.EXTENDEDPROPERTIES:
@@ -11421,7 +11444,7 @@ namespace TabularEditor.TOMWrapper
 					return Model.Perspectives.Any();
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -11606,7 +11629,7 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static WindowsModelRoleMember CreateNew(ModelRole parent, string name = null)
 		{
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(WindowsModelRoleMember))) {
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(WindowsModelRoleMember))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(WindowsModelRoleMember).GetTypeName()));
 			}
 
@@ -11626,7 +11649,7 @@ namespace TabularEditor.TOMWrapper
 		/// Creates an exact copy of this WindowsModelRoleMember object.
 		/// </summary>
 		public WindowsModelRoleMember Clone(string newName = null, ModelRole newParent = null) {
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(WindowsModelRoleMember))) {
+			if(!Handler.PowerBIGovernance.AllowCreate(typeof(WindowsModelRoleMember))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(WindowsModelRoleMember).GetTypeName()));
 			}
 
@@ -11683,13 +11706,14 @@ namespace TabularEditor.TOMWrapper
 			Reinit();
 			ReapplyReferences();
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
 				case Properties.PARENT:
 					return false;
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -12054,7 +12078,7 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static NamedExpression CreateNew(Model parent, string name = null)
 		{
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(NamedExpression))) {
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(NamedExpression))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(NamedExpression).GetTypeName()));
 			}
 
@@ -12083,7 +12107,7 @@ namespace TabularEditor.TOMWrapper
 		/// Creates an exact copy of this NamedExpression object.
 		/// </summary>
 		public NamedExpression Clone(string newName = null) {
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(NamedExpression))) {
+			if(!Handler.PowerBIGovernance.AllowCreate(typeof(NamedExpression))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(NamedExpression).GetTypeName()));
 			}
 
@@ -12147,7 +12171,8 @@ namespace TabularEditor.TOMWrapper
 			Reinit();
 			ReapplyReferences();
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
  
 				case Properties.EXTENDEDPROPERTIES:
@@ -12156,7 +12181,7 @@ namespace TabularEditor.TOMWrapper
 					return false;
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -12506,11 +12531,12 @@ namespace TabularEditor.TOMWrapper
 			Reinit();
 			ReapplyReferences();
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -12640,7 +12666,7 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static CalculationItem CreateNew(CalculationGroup parent, string name = null)
 		{
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(CalculationItem))) {
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(CalculationItem))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(CalculationItem).GetTypeName()));
 			}
 
@@ -12660,7 +12686,7 @@ namespace TabularEditor.TOMWrapper
 		/// Creates an exact copy of this CalculationItem object.
 		/// </summary>
 		public CalculationItem Clone(string newName = null, CalculationGroup newParent = null) {
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(CalculationItem))) {
+			if(!Handler.PowerBIGovernance.AllowCreate(typeof(CalculationItem))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(CalculationItem).GetTypeName()));
 			}
 
@@ -12717,13 +12743,14 @@ namespace TabularEditor.TOMWrapper
 			Reinit();
 			ReapplyReferences();
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
 				case Properties.PARENT:
 					return false;
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 
@@ -13195,7 +13222,7 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static TablePermission CreateNew(ModelRole parent, string name = null)
 		{
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(TablePermission))) {
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(TablePermission))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(TablePermission).GetTypeName()));
 			}
 
@@ -13215,7 +13242,7 @@ namespace TabularEditor.TOMWrapper
 		/// Creates an exact copy of this TablePermission object.
 		/// </summary>
 		public TablePermission Clone(string newName = null, ModelRole newParent = null) {
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(TablePermission))) {
+			if(!Handler.PowerBIGovernance.AllowCreate(typeof(TablePermission))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(TablePermission).GetTypeName()));
 			}
 
@@ -13278,7 +13305,8 @@ namespace TabularEditor.TOMWrapper
 			Reinit();
 			ReapplyReferences();
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override sealed bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
  
 				case Properties.EXTENDEDPROPERTIES:
@@ -13287,7 +13315,7 @@ namespace TabularEditor.TOMWrapper
 					return false;
 				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 

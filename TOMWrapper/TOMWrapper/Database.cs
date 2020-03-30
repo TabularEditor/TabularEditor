@@ -8,13 +8,15 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TabularEditor.PropertyGridUI;
+using TabularEditor.TOMWrapper.PowerBI;
 using TabularEditor.TOMWrapper.Undo;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public sealed class Database : ITabularObject, INotifyPropertyChanged, INotifyPropertyChanging
+    public sealed class Database : ITabularObject, INotifyPropertyChanged, INotifyPropertyChanging, IDynamicPropertyObject
     {
         [Browsable(false)]
         public TOM.Database TOMDatabase { get; private set; }
@@ -63,7 +65,7 @@ namespace TabularEditor.TOMWrapper
         /// <param name="cancel">Return true if the property change should not apply.</param>
         void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
         {
-            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowProperty(ObjectType, propertyName))
+            if (!Handler.PowerBIGovernance.AllowEditProperty(ObjectType, propertyName))
             {
                 cancel = true;
                 return;
@@ -117,6 +119,19 @@ namespace TabularEditor.TOMWrapper
         {
             return validCompatibilityLevels.Contains(compatibilityLevel);
         }
+
+        public bool Browsable(string propertyName)
+        {
+            if (!Handler.PowerBIGovernance.VisibleProperty(ObjectType.Database, propertyName)) return false;
+            return true;
+        }
+
+        public bool Editable(string propertyName)
+        {
+            if (!Handler.PowerBIGovernance.AllowEditProperty(ObjectType.Database, propertyName)) return false;
+            return true;
+        }
+
         private int _compatibilityLevel;
 
         [DisplayName("Compatibility Level")]

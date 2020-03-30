@@ -70,6 +70,7 @@
     <Compile Include="FixUpTests.cs" />
     <Compile Include="ObjectCreationTests.cs" />
     <Compile Include="ObjectHandlingTests.cs" />
+    <Compile Include="PowerBITests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegressionTests\v2_7_4\CopyTableNoColumnsTests.cs" />
     <Compile Include="RegressionTests\v2_7_4\PerspectiveMembershipTests.cs" />
@@ -113,17 +114,25 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="AdventureWorks.bim">
+    <None Include="TestData\AdventureWorks.bim">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="AdventureWorks2.bim">
+    <None Include="TestData\AdventureWorks2.bim">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="NewDeserializer.bim">
+    <None Include="TestData\NewDeserializer.bim">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
-    <None Include="DemoRenameIssue.zip">
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="TestData\DemoRenameIssue.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\AdvWorks1465.pbit">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\AdvWorks1520v3.pbit">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

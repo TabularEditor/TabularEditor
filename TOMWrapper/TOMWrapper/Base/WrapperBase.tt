@@ -21,6 +21,7 @@ using System.ComponentModel;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper.Undo;
 using TabularEditor.TOMWrapper.Utils;
+using TabularEditor.TOMWrapper.PowerBI;
 using System.Drawing.Design;
 using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
@@ -435,7 +436,7 @@ namespace TabularEditor.TOMWrapper
 		/// </summary>
 		public static <#= t.Name #> CreateNew(<#= Rules.GetParent(t) #> parent, string name = null)
 		{
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(<#= t.Name #>))) {
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(<#= t.Name #>))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(<#= t.Name #>).GetTypeName()));
 			}
 
@@ -469,7 +470,7 @@ if(Rules.GetParent(t) == "Model") { #>
 		public <#= Rules.Sealed(t) ? "" : "virtual " #><#= t.Name #> Clone(string newName = null<#= 
 Rules.IsTranslatable(t, true) ? ", bool includeTranslations = true" : "" #><#=
 Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" : "" #>) {
-			if(TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(<#= t.Name #>))) {
+			if(!Handler.PowerBIGovernance.AllowCreate(typeof(<#= t.Name #>))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(<#= t.Name #>).GetTypeName()));
 			}
 
@@ -620,7 +621,8 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 			Handler.Tree.RebuildFolderCacheForTable(this);
 <# } #>
 		}
-		internal override bool Browsable(string propertyName) {
+		internal override <#= Rules.Seal(t) ? "sealed " : "" #>bool Browsable(string propertyName) {
+			if(!base.Browsable(propertyName)) return false;
 			switch (propertyName) {
 <# if(props.Any(p => p.Name == "ExtendedProperties")) { #> 
 				case Properties.EXTENDEDPROPERTIES:
@@ -644,7 +646,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 					return Model.Perspectives.Any();
 <# } #>				
 				default:
-					return base.Browsable(propertyName);
+					return true;
 			}
 		}
 

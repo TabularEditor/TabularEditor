@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TabularEditor.TOMWrapper.PowerBI;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -20,7 +21,8 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Adds a new perspective to the model."), Tests.GenerateTest()]
         public Perspective AddPerspective(string name = null)
         {
-            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Perspective))) return null;
+            if (!Handler.PowerBIGovernance.AllowCreate(typeof(Perspective)))
+                throw new PowerBIGovernanceException("Adding perspectives to this Power BI model is not supported.");
 
             Handler.BeginUpdate("add perspective");
             var perspective = Perspective.CreateNew(this, name);
@@ -28,10 +30,11 @@ namespace TabularEditor.TOMWrapper
             return perspective;
         }
 
-        [IntelliSense("Adds a new Named Expression to the model."), Tests.GenerateTest(), Tests.CompatibilityLevel(1400)]
+        [IntelliSense("Adds a new Shared Expression to the model."), Tests.GenerateTest(), Tests.CompatibilityLevel(1400)]
         public NamedExpression AddExpression(string name = null, string expression = null)
         {
-            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(NamedExpression))) return null;
+            if (!Handler.PowerBIGovernance.AllowCreate(typeof(NamedExpression)))
+                throw new PowerBIGovernanceException("Adding Shared Expressions to this Power BI model is not supported.");
 
             Handler.BeginUpdate("add shared expression");
             var expr = NamedExpression.CreateNew(this, name);
@@ -70,7 +73,8 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Adds a new table to the model."), Tests.GenerateTest()]
         public Table AddTable(string name = null)
         {
-            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Table))) return null;
+            if (!Handler.PowerBIGovernance.AllowCreate(typeof(Table)))
+                throw new PowerBIGovernanceException("Adding tables to this Power BI model is not supported.");
 
             Handler.BeginUpdate("add table");
             var t = Table.CreateNew(this, name);
@@ -91,7 +95,8 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Adds a new translation to the model."), Tests.GenerateTest("da-DK")]
         public Culture AddTranslation(string cultureId)
         {
-            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(Culture))) return null;
+            if (!Handler.PowerBIGovernance.AllowCreate(typeof(Culture)))
+                throw new PowerBIGovernanceException("Adding metadata translations to this Power BI Model is not supported.");
 
             Handler.BeginUpdate("add translation");
             var culture = TOMWrapper.Culture.CreateNew(cultureId);
@@ -113,7 +118,8 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Adds a new data source to the model."), Tests.GenerateTest()]
         public ProviderDataSource AddDataSource(string name = null)
         {
-            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(ProviderDataSource))) return null;
+            if (!Handler.PowerBIGovernance.AllowCreate(typeof(ProviderDataSource)))
+                throw new PowerBIGovernanceException("Adding Data Sources to this Power BI Model is not supported.");
 
             Handler.BeginUpdate("add data source");
 
@@ -126,7 +132,8 @@ namespace TabularEditor.TOMWrapper
         public StructuredDataSource AddStructuredDataSource(string name = null)
         {
             if (Handler.CompatibilityLevel < 1400) throw new InvalidOperationException(Messages.CompatibilityError_StructuredDataSource);
-            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(StructuredDataSource))) return null;
+            if (!Handler.PowerBIGovernance.AllowCreate(typeof(StructuredDataSource)))
+                throw new PowerBIGovernanceException("Adding Data Sources to this Power BI Model is not supported.");
 
             Handler.BeginUpdate("add data source");
             var ds = StructuredDataSource.CreateNew(this, name);

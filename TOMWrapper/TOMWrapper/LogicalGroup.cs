@@ -45,9 +45,6 @@ namespace TabularEditor.TOMWrapper
 
         public IEnumerator<LogicalGroup> GetEnumerator()
         {
-            if (TabularModelHandler.Singleton.UsePowerBIGovernance)
-                return Groups().Where(grp => PowerBI.PowerBIGovernance.AllowGroup(grp.Name)).GetEnumerator();
-
             return Groups().GetEnumerator();
         }
 

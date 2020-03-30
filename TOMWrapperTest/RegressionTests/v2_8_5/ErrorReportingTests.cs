@@ -15,7 +15,7 @@ namespace TOMWrapperTest.RegressionTests.v2_8_5
         [TestMethod]
         public void DeploymentErrorMessages()
         {
-            var handler = new TabularModelHandler("AdventureWorks.bim");
+            var handler = new TabularModelHandler("TestData\\AdventureWorks.bim");
             var options = new DeploymentOptions { DeployMode = DeploymentMode.CreateOrAlter };
             var result = TabularDeployer.Deploy(handler, "localhost", "AdventureWorks_RegTest_2_8_5", options);
 

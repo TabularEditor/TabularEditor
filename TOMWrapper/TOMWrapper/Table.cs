@@ -11,6 +11,8 @@ using TabularEditor.TextServices;
 using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.TOMWrapper.Undo;
 using TOM = Microsoft.AnalysisServices.Tabular;
+using TabularEditor.TOMWrapper.PowerBI;
+using TabularEditor.Utils;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -104,7 +106,8 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Adds a new Data column to the table."), Tests.GenerateTest()]
         public DataColumn AddDataColumn(string name = null, string sourceColumn = null, string displayFolder = null, DataType dataType = DataType.String)
         {
-            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(DataColumn))) return null;
+            if (!Handler.PowerBIGovernance.AllowCreate(typeof(DataColumn)))
+                throw new PowerBIGovernanceException("Adding columns to a table in this Power BI Model is not supported.");
 
             Handler.BeginUpdate("add Data column");
             var column = DataColumn.CreateNew(this, name);
@@ -473,16 +476,27 @@ namespace TabularEditor.TOMWrapper
             {
                 var oldValue = DefaultDetailRowsExpression;
 
-                if (oldValue == value) return;
+                if (oldValue == value || (oldValue == null && value == string.Empty)) return;
 
                 bool undoable = true;
                 bool cancel = false;
                 OnPropertyChanging(Properties.DEFAULTDETAILROWSEXPRESSION, value, ref undoable, ref cancel);
                 if (cancel) return;
 
-                if (MetadataObject.DefaultDetailRowsDefinition == null) MetadataObject.DefaultDetailRowsDefinition = new TOM.DetailRowsDefinition();
-                MetadataObject.DefaultDetailRowsDefinition.Expression = value;
-                if (string.IsNullOrWhiteSpace(value)) MetadataObject.DefaultDetailRowsDefinition = null;
+                if (MetadataObject.DefaultDetailRowsDefinition == null && !string.IsNullOrEmpty(value))
+                    MetadataObject.DefaultDetailRowsDefinition = new TOM.DetailRowsDefinition();
+                if (!string.IsNullOrEmpty(value))
+                    MetadataObject.DefaultDetailRowsDefinition.Expression = value;
+                if (string.IsNullOrWhiteSpace(value) && MetadataObject.DefaultDetailRowsDefinition != null)
+                {
+                    /* THIS CRASHES IN AMO 18.4.0.5 (see https://github.com/otykier/TabularEditor/issues/400), *
+                     * so we use a reflection hack (see below) to remove the object from the tree instead.     */
+
+                    // MetadataObject.DefaultDetailRowsDefinition = null;
+
+                    /* Reflection hack: */
+                    DetailRowsDefinitionHack.SetToNull(this.MetadataObject);
+                }
 
                 if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DEFAULTDETAILROWSEXPRESSION, oldValue, value));
                 OnPropertyChanged(Properties.DEFAULTDETAILROWSEXPRESSION, oldValue, value);
