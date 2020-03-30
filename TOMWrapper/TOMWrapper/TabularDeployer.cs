@@ -128,109 +128,16 @@ namespace TabularEditor.TOMWrapper.Utils
             else return string.Format("{0} '{1}'", ((ObjectType)obj.ObjectType).GetTypeName(), obj.Name);
         }
 
-        /// <summary>
-        /// This method transforms a JObject representing a Create TMSL script, so that the database is deployed
-        /// using the proper ID and Name values. In addition, of the DeploymentOptions specify that roles should
-        /// not be deployed, they are stripped from the TMSL script.
-        /// </summary>
-        private static JObject TransformCreateTmsl(JObject tmslJObj, string newDbId, DeploymentOptions options)
-        {
-            tmslJObj["create"]["database"]["id"] = newDbId;
-            tmslJObj["create"]["database"]["name"] = newDbId;
-
-            if (!options.DeployRoles)
-            {
-                // Remove roles if present
-                var roles = tmslJObj.SelectToken("create.database.model.roles") as JArray;
-                if (roles != null) roles.Clear();
-            }
-
-            return tmslJObj;
-        }
-
-        private static string DeployNewTMSL(TOM.Database db, string newDbId, DeploymentOptions options, bool includeRestricted)
+        internal static string DeployNewTMSL(TOM.Database db, string newDbId, DeploymentOptions options, bool includeRestricted)
         {
             var rawTmsl = TOM.JsonScripter.ScriptCreate(db, includeRestricted);
 
             var jTmsl = JObject.Parse(rawTmsl);
 
-            return TransformCreateTmsl(jTmsl, newDbId, options).ToString();
+            return jTmsl.TransformCreateTmsl(newDbId, options).FixCalcGroupMetadata(db).ToString();
         }
 
-        /// <summary>
-        /// This method transforms a JObject representing a CreateOrReplace TMSL script, so that the script points
-        /// to the correct database to be overwritten, and that the correct ID and Name properties are set. In
-        /// addition, the method will replace any Roles, RoleMembers, Data Sources and Partitions in the TMSL with
-        /// the corresponding TMSL from the specified orgDb, depending on the provided DeploymentOptions.
-        /// </summary>
-        private static JObject TransformCreateOrReplaceTmsl(JObject tmslJObj, TOM.Database db, TOM.Database orgDb, DeploymentOptions options)
-        {
-            // Deployment target / existing database (note that TMSL uses the NAME of an existing database, not the ID, to identify the object)
-            tmslJObj["createOrReplace"]["object"]["database"] = orgDb.Name;
-            tmslJObj["createOrReplace"]["database"]["id"] = orgDb.ID;
-            tmslJObj["createOrReplace"]["database"]["name"] = orgDb.Name;
-
-            var model = tmslJObj.SelectToken("createOrReplace.database.model");
-
-            var roles = model["roles"] as JArray;
-            if (!options.DeployRoles)
-            {
-                // Remove roles if present and add original:
-                roles = new JArray();
-                model["roles"] = roles;
-                foreach (var role in orgDb.Model.Roles) roles.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(role)));
-            }
-            else if (roles != null && !options.DeployRoleMembers)
-            {
-                foreach (var role in roles)
-                {
-                    var members = new JArray();
-                    role["members"] = members;
-
-                    // Remove members if present and add original:
-                    var roleName = role["name"].Value<string>();
-                    if (orgDb.Model.Roles.Contains(roleName))
-                    {
-                        foreach (var member in orgDb.Model.Roles[roleName].Members)
-                            members.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(member)));
-                    }
-                }
-            }
-
-            if (!options.DeployConnections)
-            {
-                // Replace existing data sources with those in the target DB:
-                // TODO: Can we do anything to retain credentials on PowerQuery data sources?
-                var dataSources = model["dataSources"] as JArray;
-                foreach (var orgDataSource in orgDb.Model.DataSources)
-                {
-                    dataSources.FirstOrDefault(d => d.Value<string>("name").EqualsI(orgDataSource.Name))?.Remove();
-                    dataSources.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(orgDataSource)));
-                }
-            }
-
-            if (!options.DeployPartitions)
-            {
-                var tables = tmslJObj.SelectToken("createOrReplace.database.model.tables") as JArray;
-                foreach (var table in tables)
-                {
-                    var tableName = table["name"].Value<string>();
-                    if (db.Model.Tables[tableName].IsCalculatedOrCalculationGroup()) continue;
-
-                    if (orgDb.Model.Tables.Contains(tableName))
-                    {
-                        var t = orgDb.Model.Tables[tableName];
-                        if (t.IsCalculatedOrCalculationGroup()) continue;
-
-                        var partitions = new JArray();
-                        table["partitions"] = partitions;
-                        foreach (var pt in t.Partitions) partitions.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(pt)));
-                    }
-                }
-            }
-
-            return tmslJObj;
-        }
+        
 
         private static JToken GetNamedObj(JToken collection, string objectName)
         {
@@ -238,7 +145,7 @@ namespace TabularEditor.TOMWrapper.Utils
             return (collection as JArray).FirstOrDefault(t => t.Value<string>("name").EqualsI(objectName));
         }
 
-        private static string DeployExistingTMSL(TOM.Database db, TOM.Server server, string dbId, DeploymentOptions options, bool includeRestricted)
+        internal static string DeployExistingTMSL(TOM.Database db, TOM.Server server, string dbId, DeploymentOptions options, bool includeRestricted)
         {
             var orgDb = server.Databases[dbId];
             orgDb.Refresh(true);
@@ -247,7 +154,7 @@ namespace TabularEditor.TOMWrapper.Utils
             var newTables = db.Model.Tables;
 
             var tmslJson = TOM.JsonScripter.ScriptCreateOrReplace(db, includeRestricted);
-            var tmsl = TransformCreateOrReplaceTmsl(JObject.Parse(tmslJson), db, orgDb, options);
+            var tmsl = JObject.Parse(tmslJson).TransformCreateOrReplaceTmsl(db, orgDb, options).FixCalcGroupMetadata(db);
             var orgTmsl = tmsl.DeepClone();
 
             var tmslModel = tmsl["createOrReplace"]["database"]["model"] as JObject;
@@ -382,6 +289,151 @@ namespace TabularEditor.TOMWrapper.Utils
         public DeploymentOptions Clone()
         {
             return new DeploymentOptions { DeployMode = this.DeployMode, DeployConnections = this.DeployConnections, DeployPartitions = this.DeployPartitions, DeployRoleMembers = this.DeployRoleMembers, DeployRoles = this.DeployRoles };
+        }
+    }
+
+    static class TabularDeployerHelpers
+    {
+        /// <summary>
+        /// This takes care of an issue in AS where calc group columns need to appear in a specific order
+        /// See issue: https://github.com/otykier/TabularEditor/issues/411
+        /// </summary>
+        /// <param name="tmslJObj"></param>
+        /// <param name="db"></param>
+        /// <returns></returns>
+        public static JObject FixCalcGroupMetadata(this JObject tmslJObj, TOM.Database db)
+        {
+            if (db.CompatibilityLevel < 1470) return tmslJObj;
+
+            var tables = (tmslJObj.First as JProperty).Value["database"]["model"]["tables"];
+
+            foreach (var cg in db.Model.Tables.Where(t => t.CalculationGroup != null))
+            {
+                var cgJson = tables.First(t => t.Value<string>("name") == cg.Name);
+                var cgJsonColumns = cgJson["columns"] as JArray;
+                if (cgJsonColumns != null && cgJsonColumns.Count >= 2)
+                {
+                    var ordinalCol = cgJsonColumns.FirstOrDefault(c => c.PropEquals("sourceColumn", "ordinal"));
+                    if (ordinalCol != null)
+                    {
+                        ordinalCol.Remove();
+                        cgJsonColumns.Insert(0, ordinalCol);
+                    }
+                    var nameCol = cgJsonColumns.FirstOrDefault(c => c.PropEquals("sourceColumn", "name"));
+                    if (nameCol != null)
+                    {
+                        nameCol.Remove();
+                        cgJsonColumns.Insert(0, nameCol);
+                    }
+                }
+            }
+
+            return tmslJObj;
+        }
+
+        /// <summary>
+        /// Returns true if the given JObject contains a string property with the specified name and value.
+        /// </summary>
+        private static bool PropEquals(this JToken token, string propertyName, string propertyValue)
+        {
+            var property = token.Value<string>(propertyName);
+            if (property == null) return false;
+            return property.Equals(propertyValue, StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// This method transforms a JObject representing a CreateOrReplace TMSL script, so that the script points
+        /// to the correct database to be overwritten, and that the correct ID and Name properties are set. In
+        /// addition, the method will replace any Roles, RoleMembers, Data Sources and Partitions in the TMSL with
+        /// the corresponding TMSL from the specified orgDb, depending on the provided DeploymentOptions.
+        /// </summary>
+        public static JObject TransformCreateOrReplaceTmsl(this JObject tmslJObj, TOM.Database db, TOM.Database orgDb, DeploymentOptions options)
+        {
+            // Deployment target / existing database (note that TMSL uses the NAME of an existing database, not the ID, to identify the object)
+            tmslJObj["createOrReplace"]["object"]["database"] = orgDb.Name;
+            tmslJObj["createOrReplace"]["database"]["id"] = orgDb.ID;
+            tmslJObj["createOrReplace"]["database"]["name"] = orgDb.Name;
+
+            var model = tmslJObj.SelectToken("createOrReplace.database.model");
+
+            var roles = model["roles"] as JArray;
+            if (!options.DeployRoles)
+            {
+                // Remove roles if present and add original:
+                roles = new JArray();
+                model["roles"] = roles;
+                foreach (var role in orgDb.Model.Roles) roles.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(role)));
+            }
+            else if (roles != null && !options.DeployRoleMembers)
+            {
+                foreach (var role in roles)
+                {
+                    var members = new JArray();
+                    role["members"] = members;
+
+                    // Remove members if present and add original:
+                    var roleName = role["name"].Value<string>();
+                    if (orgDb.Model.Roles.Contains(roleName))
+                    {
+                        foreach (var member in orgDb.Model.Roles[roleName].Members)
+                            members.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(member)));
+                    }
+                }
+            }
+
+            if (!options.DeployConnections)
+            {
+                // Replace existing data sources with those in the target DB:
+                // TODO: Can we do anything to retain credentials on PowerQuery data sources?
+                var dataSources = model["dataSources"] as JArray;
+                foreach (var orgDataSource in orgDb.Model.DataSources)
+                {
+                    dataSources.FirstOrDefault(d => d.Value<string>("name").EqualsI(orgDataSource.Name))?.Remove();
+                    dataSources.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(orgDataSource)));
+                }
+            }
+
+            if (!options.DeployPartitions)
+            {
+                var tables = tmslJObj.SelectToken("createOrReplace.database.model.tables") as JArray;
+                foreach (var table in tables)
+                {
+                    var tableName = table["name"].Value<string>();
+                    if (db.Model.Tables[tableName].IsCalculatedOrCalculationGroup()) continue;
+
+                    if (orgDb.Model.Tables.Contains(tableName))
+                    {
+                        var t = orgDb.Model.Tables[tableName];
+                        if (t.IsCalculatedOrCalculationGroup()) continue;
+
+                        var partitions = new JArray();
+                        table["partitions"] = partitions;
+                        foreach (var pt in t.Partitions) partitions.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(pt)));
+                    }
+                }
+            }
+
+            return tmslJObj;
+        }
+
+        /// <summary>
+        /// This method transforms a JObject representing a Create TMSL script, so that the database is deployed
+        /// using the proper ID and Name values. In addition, of the DeploymentOptions specify that roles should
+        /// not be deployed, they are stripped from the TMSL script.
+        /// </summary>
+        public static JObject TransformCreateTmsl(this JObject tmslJObj, string newDbId, DeploymentOptions options)
+        {
+            tmslJObj["create"]["database"]["id"] = newDbId;
+            tmslJObj["create"]["database"]["name"] = newDbId;
+
+            if (!options.DeployRoles)
+            {
+                // Remove roles if present
+                var roles = tmslJObj.SelectToken("create.database.model.roles") as JArray;
+                if (roles != null) roles.Clear();
+            }
+
+            return tmslJObj;
         }
     }
 
