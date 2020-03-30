@@ -62,3 +62,5 @@
 /TabularEditor.3
 /TabularEditor.Shared
 /TabularEditor.UI
+/AntlrGrammars/obj/Debug
+/AntlrGrammars/obj/Release
