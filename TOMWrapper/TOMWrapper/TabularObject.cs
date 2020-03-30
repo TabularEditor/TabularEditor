@@ -169,7 +169,7 @@ namespace TabularEditor.TOMWrapper
         /// <param name="cancel">Return true if the property change should not apply.</param>
         protected virtual void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
         {
-            if(!Handler.PowerBIGovernance.AllowEditProperty(ObjectType, propertyName))
+            if(!Editable(propertyName))
             {
                 cancel = true;
                 return;

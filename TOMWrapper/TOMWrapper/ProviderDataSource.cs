@@ -94,14 +94,5 @@ namespace TabularEditor.TOMWrapper
                 default: return true;
             }
         }
-
-        internal override bool IsEditable(string propertyName)
-        {
-            switch(propertyName)
-            {
-                case "Name": return !IsPowerBIMashup;
-                default: return true;
-            }
-        }
     }
 }
