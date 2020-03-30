@@ -253,7 +253,7 @@ namespace TabularEditor.UI
                             {
                                 File_Current = fileName;
                                 File_Directory = FileSystemHelper.DirectoryFromPath(File_Current);
-                                File_LastWrite = DateTime.Now;
+                                File_LastWrite = File.GetLastWriteTime(File_Current);
                                 File_SaveMode = dialog.FileType == "pbit" ? ModelSourceType.Pbit : ModelSourceType.File;
                             }
                         }
@@ -331,6 +331,7 @@ namespace TabularEditor.UI
                                 File_SaveMode = ModelSourceType.Folder;
                                 File_Current = dialog.FileName;
                                 File_Directory = FileSystemHelper.DirectoryFromPath(File_Current);
+                                File_LastWrite = GetLastDirChange(File_Current);
                             }
                         }
                         catch  (Exception e)
@@ -358,66 +359,57 @@ namespace TabularEditor.UI
             if (File_Current == null && File_SaveMode == ModelSourceType.File)
             {
                 File_SaveAs();
-                File_LastWrite = DateTime.Now;
                 return;
             }
 
             UI.StatusLabel.Text = "Saving...";
             using (new Hourglass())
             {
-
-                if (File_SaveMode == ModelSourceType.Database)
+                switch (File_SaveMode)
                 {
-                    Database_Save();
-                }
-                else
-                {
-                        DialogResult mr = DialogResult.OK;
-                        if (File_SaveMode == ModelSourceType.Folder)
-                        {
-                            if (GetLastDirChange(File_Current, File_LastWrite) > File_LastWrite)
-                            {
-                                mr = MessageBox.Show(
-                                    "Changes were made to the currently loaded folder structure after the model was loaded in Tabular Editor. Overwrite these changes?", "Overwriting folder structure changes", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
-                            }
-                        if (mr == DialogResult.OK)
-                        {
-                            try
-                            {
-                                Handler.Save(File_Current, SaveFormat.TabularEditorFolder, null, true, true);
-                                File_LastWrite = File.GetLastWriteTime(File_Current);
-                            }
-                            catch (Exception e)
-                            {
-                                HandleError("Could not save metadata to folder", e);
-                            }
-                        }
-                        else
-                        {
-                            if (File.GetLastWriteTime(File_Current) > File_LastWrite)
-                            {
-                                mr = MessageBox.Show(
-                                    "Changes were made to the currently loaded file after the model was loaded in Tabular Editor. Overwrite these changes?", "Overwriting file changes", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
-                            }
-                            if (mr == DialogResult.OK)
-                            {
-                                try
-                                {
-                                    if (File_SaveMode == ModelSourceType.Pbit)
-                                        Handler.Save(File_Current, SaveFormat.PowerBiTemplate, SerializeOptions.PowerBi, false, true);
-                                    else
-                                        Handler.Save(File_Current, SaveFormat.ModelSchemaOnly, null, true, true);
-                                    File_LastWrite = File.GetLastWriteTime(File_Current);
-                                }
-                                catch (Exception e)
-                                {
-                                    HandleError("Could not save metadata to file", e);
-                                }
-                            }
-                        }
-                    }
+                    case ModelSourceType.Database:
+                        Database_Save();
+                        break;
 
+                    case ModelSourceType.Folder:
+                        if (GetLastDirChange(File_Current, File_LastWrite) > File_LastWrite)
+                        {
+                            var mr = MessageBox.Show("Changes were made to the currently loaded folder structure after the model was loaded in Tabular Editor. Overwrite these changes?", "Overwriting folder structure changes", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                            if (mr == DialogResult.Cancel) break;
+                        }
+                        try
+                        {
+                            Handler.Save(File_Current, SaveFormat.TabularEditorFolder, null, true, true);
+                            File_LastWrite = GetLastDirChange(File_Current);
+                        }
+                        catch (Exception e)
+                        {
+                            HandleError("Could not save metadata to folder", e);
+                        }
+                        break;
+
+                    case ModelSourceType.File:
+                    case ModelSourceType.Pbit:
+                        if (File.GetLastWriteTime(File_Current) > File_LastWrite)
+                        {
+                            var mr = MessageBox.Show("Changes were made to the currently loaded file after the model was loaded in Tabular Editor. Overwrite these changes?", "Overwriting file changes", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                            if (mr == DialogResult.Cancel) break;
+                        }
+                        try
+                        {
+                            if (File_SaveMode == ModelSourceType.Pbit)
+                                Handler.Save(File_Current, SaveFormat.PowerBiTemplate, SerializeOptions.PowerBi, false, true);
+                            else
+                                Handler.Save(File_Current, SaveFormat.ModelSchemaOnly, null, true, true);
+                            File_LastWrite = File.GetLastWriteTime(File_Current);
+                        }
+                        catch (Exception e)
+                        {
+                            HandleError("Could not save metadata to file", e);
+                        }
+                        break;
                 }
+                
                 UpdateUIText();
             }
         }
@@ -429,7 +421,7 @@ namespace TabularEditor.UI
 
         private DateTime GetLastDirChange(string path, DateTime anyAfter)
         {
-            var dirs = Directory.EnumerateFiles(path, "*.json", SearchOption.AllDirectories);
+            var dirs = Directory.EnumerateFiles(FileSystemHelper.DirectoryFromPath(path), "*.json", SearchOption.AllDirectories);
             var maxSoFar = DateTime.MinValue;
             foreach(var dir in dirs)
             {
