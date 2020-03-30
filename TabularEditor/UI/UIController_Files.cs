@@ -35,14 +35,17 @@ namespace TabularEditor.UI
 
                     if(Handler.SourceType == ModelSourceType.Pbit)
                     {
-                        var msg = Preferences.Current.AllowUnsupportedPBIFeatures ?
-                            "You have selected a Power BI Template (.pbit) file.\n\nEditing the Data Model of a .pbit file inside Tabular Editor may cause issues when subsequently loading the file in Power BI Desktop.\n\nMake sure to keep a backup of the file, and proceed at your own risk." :
-                            "You have selected a Power BI Template (.pbit) file.\n\nEditing the Data Model of a .pbit file inside Tabular Editor may cause issues when subsequently loading the file in Power BI Desktop. Properties that are known to be unsupported (such as Display Folders) have been disabled, but there is still a risk that certain changes made with Tabular Editor can corrupt the file.\n\nMake sure to keep a backup of the file, and proceed at your own risk.";
-                        var mr = MessageBox.Show(msg,
-                            "Opening Power BI Template", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
-                        if(mr == DialogResult.Cancel)
+                        switch(Handler.PowerBIGovernance.GovernanceMode)
                         {
-                            cancel = true;
+                            case TOMWrapper.PowerBI.PowerBIGovernanceMode.ReadOnly:
+                                MessageBox.Show("Editing a Power BI Template (.pbit) file that does not use the Enhanced Model Metadata (V3) format is not allowed, unless you enable Experimental Power BI Features under File > Preferences.\n\nTabular Editor will still load the file in read-only mode.", "Power BI Template Read-only", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                break;
+                            case TOMWrapper.PowerBI.PowerBIGovernanceMode.V3Restricted:
+                                break;
+                            case TOMWrapper.PowerBI.PowerBIGovernanceMode.Unrestricted:
+                                if (MessageBox.Show("Experimental Power BI features is enabled. You can edit any object and property of this Power BI Template file but be aware that many types of changes ARE NOT CURRENTLY SUPPORTED by Microsoft.\n\nKeep a backup of your .pbit file and proceed at your own risk.", "Power BI Template Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.Cancel)
+                                    cancel = true;
+                                break;
                         }
                     }
 
