@@ -12,6 +12,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 using System.Collections;
 using TabularEditor.TOMWrapper;
 using json::Newtonsoft.Json.Serialization;
+using TabularEditor.TOMWrapper.PowerBI;
 
 namespace TabularEditor.TOMWrapper.Serialization
 {
@@ -231,8 +232,6 @@ namespace TabularEditor.TOMWrapper.Serialization
 
         public static DataColumn DeserializeDataColumn(JObject json, Table target)
         {
-            if (TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(DataColumn))) return null;
-
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.DataColumn>(json.ToString());
             tom.Name = target.Columns.GetNewName(tom.Name);
 
@@ -449,6 +448,11 @@ namespace TabularEditor.TOMWrapper.Serialization
             {
                 return Dict.Count;
             }
+        }
+
+        public bool CanPaste(TabularModelHandler handler)
+        {
+            return Dict != null && Dict.Count > 0 && Dict.Keys.All(type => handler.PowerBIGovernance.AllowCreate(type));
         }
 
         public IEnumerable<Type> Keys

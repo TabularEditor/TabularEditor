@@ -14,9 +14,9 @@ namespace TOMWrapperTest.RegressionTests.v2_9_3
         [TestMethod]
         public void RenameTableTestWorks()
         {
-            if(Directory.Exists("DemoRenameIssue")) Directory.Delete("DemoRenameIssue", true);
-            ZipFile.ExtractToDirectory("DemoRenameIssue.zip", ".");
-            var handler = new TabularModelHandler("DemoRenameIssue");
+            if(Directory.Exists("TestData\\DemoRenameIssue")) Directory.Delete("TestData\\DemoRenameIssue", true);
+            ZipFile.ExtractToDirectory("TestData\\DemoRenameIssue.zip", ".");
+            var handler = new TabularModelHandler("TestData\\DemoRenameIssue");
             var model = handler.Model;
 
             var t1 = model.Tables["Blah"];
@@ -37,9 +37,9 @@ namespace TOMWrapperTest.RegressionTests.v2_9_3
         [TestMethod]
         public void RenameTableTestFails()
         {
-            if (Directory.Exists("DemoRenameIssue")) Directory.Delete("DemoRenameIssue", true);
-            ZipFile.ExtractToDirectory("DemoRenameIssue.zip", ".");
-            var handler = new TabularModelHandler("DemoRenameIssue");
+            if (Directory.Exists("TestData\\DemoRenameIssue")) Directory.Delete("TestData\\DemoRenameIssue", true);
+            ZipFile.ExtractToDirectory("TestData\\DemoRenameIssue.zip", ".");
+            var handler = new TabularModelHandler("TestData\\DemoRenameIssue");
             var model = handler.Model;
 
             var t1 = model.Tables["Blah"];

@@ -18,7 +18,7 @@ namespace TOMWrapperTest.RegressionTests.v2_8_6
             server.Connect("localhost");
             if(server.Databases.ContainsName(newDbName)) server.Databases[newDbName].Drop();
 
-            var handler = new TabularModelHandler("AdventureWorks.bim");
+            var handler = new TabularModelHandler("TestData\\AdventureWorks.bim");
 
             var results = TabularDeployer.Deploy(handler, "localhost", newDbName);
 
@@ -38,7 +38,7 @@ namespace TOMWrapperTest.RegressionTests.v2_8_6
             server.Connect("localhost");
             if (server.Databases.ContainsName(newDbName)) server.Databases[newDbName].Drop();
 
-            var handler = new TabularModelHandler("AdventureWorks.bim");
+            var handler = new TabularModelHandler("TestData\\AdventureWorks.bim");
             handler.Model.Tables["Employee"].AddMeasure("ErrorTest", "xxx");
 
             var results = TabularDeployer.Deploy(handler, "localhost", newDbName);
@@ -59,7 +59,7 @@ namespace TOMWrapperTest.RegressionTests.v2_8_6
             server.Connect("localhost");
             if (server.Databases.ContainsName(newDbName)) server.Databases[newDbName].Drop();
 
-            var handler = new TabularModelHandler("AdventureWorks.bim");
+            var handler = new TabularModelHandler("TestData\\AdventureWorks.bim");
             handler.Model.Tables["Employee"].AddCalculatedColumn("ErrorTest", "xxx");
 
             var results = TabularDeployer.Deploy(handler, "localhost", newDbName);
@@ -83,11 +83,11 @@ namespace TOMWrapperTest.RegressionTests.v2_8_6
             }
             s.Disconnect();
 
-            var orgModel = new TabularModelHandler("AdventureWorks2.bim");
+            var orgModel = new TabularModelHandler("TestData\\AdventureWorks2.bim");
             TabularDeployer.Deploy(orgModel, "localhost", "AdventureWorks_X");
             
 
-            var modifiedModel = new TabularModelHandler("AdventureWorks.bim");
+            var modifiedModel = new TabularModelHandler("TestData\\AdventureWorks.bim");
             foreach (var p in modifiedModel.Model.Perspectives.ToList()) p.Delete();
             modifiedModel.Model.Tables["Product"].Delete();
 

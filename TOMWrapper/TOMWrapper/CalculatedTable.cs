@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.TOMWrapper.Undo;
 using TOM = Microsoft.AnalysisServices.Tabular;
+using TabularEditor.TOMWrapper.PowerBI;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -17,7 +18,8 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Adds a new Calculated Table column to the table."), Tests.GenerateTest()]
         public CalculatedTableColumn AddCalculatedTableColumn(string name = null, string sourceColumn = null, string displayFolder = null, DataType dataType = DataType.String)
         {
-            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(CalculatedTableColumn))) return null;
+            if (!Handler.PowerBIGovernance.AllowCreate(typeof(CalculatedTableColumn)))
+                throw new PowerBIGovernanceException("Adding columns to a table in a Power BI model is not supported.");
 
             Handler.BeginUpdate("add Calculated Table column");
             var column = CalculatedTableColumn.CreateNew(this, name);
@@ -147,11 +149,6 @@ namespace TabularEditor.TOMWrapper
                 Partitions[0].Expression = value;
                 OnPropertyChanged(Properties.EXPRESSION, oldValue, value);
             }
-        }
-
-        internal override bool Editable(string propertyName)
-        {
-            return base.Editable(propertyName);
         }
 
         [Browsable(false)]

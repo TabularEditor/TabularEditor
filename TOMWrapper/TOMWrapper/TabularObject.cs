@@ -11,6 +11,7 @@ using json.Newtonsoft.Json.Linq;
 using TabularEditor.TOMWrapper;
 using System.Collections.Specialized;
 using System.Linq;
+using TabularEditor.TOMWrapper.PowerBI;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -168,7 +169,7 @@ namespace TabularEditor.TOMWrapper
         /// <param name="cancel">Return true if the property change should not apply.</param>
         protected virtual void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
         {
-            if(Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowProperty(ObjectType, propertyName))
+            if(!Handler.PowerBIGovernance.AllowEditProperty(ObjectType, propertyName))
             {
                 cancel = true;
                 return;
@@ -220,13 +221,20 @@ namespace TabularEditor.TOMWrapper
         bool IDynamicPropertyObject.Browsable(string propertyName) { return Browsable(propertyName); }
         internal virtual bool Browsable(string propertyName)
         {
-            if (Handler.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowProperty(ObjectType, propertyName)) return false;
+            if (!Handler.PowerBIGovernance.VisibleProperty(ObjectType, propertyName)) return false;
 
             return IsBrowsable(propertyName);
         }
         bool IDynamicPropertyObject.Editable(string propertyName) { return Editable(propertyName); }
-        internal virtual bool Editable(string propertyName)
+        internal bool Editable(string propertyName)
         {
+            if (propertyName == Properties.NAME && (this is TabularNamedObject namedObj))
+            {
+                if (!Handler.PowerBIGovernance.AllowEditName(namedObj)) return false;
+            }
+            else 
+                if (!Handler.PowerBIGovernance.AllowEditProperty(ObjectType, propertyName)) return false;
+
             return IsEditable(propertyName);
         }
 

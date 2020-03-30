@@ -17,7 +17,7 @@ namespace TOMWrapperTest.RegressionTests.v2_9_3
         [TestMethod]
         public void DeserializeAllTest()
         {
-            var handler = new TabularModelHandler("NewDeserializer.bim");
+            var handler = new TabularModelHandler("TestData\\NewDeserializer.bim");
             var model = handler.Model;
 
             handler.Save("NewDeserializerFolderTest", SaveFormat.TabularEditorFolder, SerializeOptions.DefaultFolder, true);
@@ -25,7 +25,7 @@ namespace TOMWrapperTest.RegressionTests.v2_9_3
             handler = new TabularModelHandler("NewDeserializerFolderTest");
             handler.Save("NewDeserializerAfterLoad.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default, true);
 
-            var file1 = File.ReadAllText("NewDeserializer.bim");
+            var file1 = File.ReadAllText("TestData\\NewDeserializer.bim");
             var file2 = File.ReadAllText("NewDeserializerAfterLoad.bim");
 
             Assert.AreEqual(file1, file2);

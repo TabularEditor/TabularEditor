@@ -6,6 +6,7 @@ using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.TOMWrapper.Undo;
 using TOM = Microsoft.AnalysisServices.Tabular;
+using TabularEditor.Utils;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -231,16 +232,27 @@ namespace TabularEditor.TOMWrapper
             {
                 var oldValue = DetailRowsExpression;
 
-                if (oldValue == value || oldValue == null && string.IsNullOrEmpty(value)) return;
+                if (oldValue == value || (oldValue == null && value == string.Empty)) return;
 
                 bool undoable = true;
                 bool cancel = false;
                 OnPropertyChanging(Properties.DETAILROWSEXPRESSION, value, ref undoable, ref cancel);
                 if (cancel) return;
 
-                if (MetadataObject.DetailRowsDefinition == null) MetadataObject.DetailRowsDefinition = new TOM.DetailRowsDefinition();
-                MetadataObject.DetailRowsDefinition.Expression = value;
-                if (string.IsNullOrWhiteSpace(value)) MetadataObject.DetailRowsDefinition = null;
+                if (MetadataObject.DetailRowsDefinition == null && !string.IsNullOrEmpty(value))
+                    MetadataObject.DetailRowsDefinition = new TOM.DetailRowsDefinition();
+                if (!string.IsNullOrEmpty(value))
+                    MetadataObject.DetailRowsDefinition.Expression = value;
+                if (string.IsNullOrWhiteSpace(value) && MetadataObject.DetailRowsDefinition != null)
+                {
+                    /* THIS CRASHES IN AMO 18.4.0.5 (see https://github.com/otykier/TabularEditor/issues/400), *
+                     * so we use a reflection hack (see below) to remove the object from the tree instead.     */
+
+                    // MetadataObject.DetailRowsDefinition = null;
+
+                    /* Reflection hack: */
+                    DetailRowsDefinitionHack.SetToNull(this.MetadataObject);
+                }
 
                 if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DETAILROWSEXPRESSION, oldValue, value));
                 OnPropertyChanged(Properties.DETAILROWSEXPRESSION, oldValue, value);

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TabularEditor.PropertyGridUI;
+using TabularEditor.TOMWrapper.PowerBI;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -34,7 +35,7 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         public static ExternalModelRoleMember CreateNew(ModelRole parent, string name, string identityProvider)
         {
-            if (TabularModelHandler.Singleton.UsePowerBIGovernance && !PowerBI.PowerBIGovernance.AllowCreate(typeof(ExternalModelRoleMember)))
+            if (!parent.Handler.PowerBIGovernance.AllowCreate(typeof(ExternalModelRoleMember)))
             {
                 throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject, typeof(ExternalModelRoleMember).GetTypeName()));
             }

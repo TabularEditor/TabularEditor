@@ -31,6 +31,7 @@ namespace TabularEditor.TOMWrapper
             set
             {
                 _settings = value;
+                PowerBIGovernance.UpdateGovernanceMode(this);
                 _tree?.OnStructureChanged();
             }
         }
@@ -103,25 +104,12 @@ namespace TabularEditor.TOMWrapper
             Init();
 
             UndoManager.Enabled = true;
+            PowerBIGovernance.UpdateGovernanceMode(this);
         }
-
-        /// <summary>
-        /// Gets a value that indicates whether Power BI feature restriction is enforced for the
-        /// currently loaded model. When this is TRUE, some properties are read-only and certain
-        /// object types cannot be created/deleted.
-        /// </summary>
-        public bool UsePowerBIGovernance
-        {
-            get
-            {
-                return (SourceType == ModelSourceType.Pbit || Database?.Server?.ServerMode == Microsoft.AnalysisServices.ServerMode.SharePoint) && Settings.PBIFeaturesOnly;
-            }
-        }
+        internal PowerBIGovernance PowerBIGovernance { get; } = new PowerBIGovernance();
 
         private PowerBiTemplate pbit;
-
         
-
         /// <summary>
         /// Connects to a SQL Server 2016 Analysis Services instance and loads a tabular model
         /// from one of the deployed databases on the instance.
@@ -162,6 +150,7 @@ namespace TabularEditor.TOMWrapper
 
             _disableUpdates = false;
             UndoManager.Enabled = true;
+            PowerBIGovernance.UpdateGovernanceMode(this);
         }
 
         internal static TabularModelHandler Singleton { get; private set; }

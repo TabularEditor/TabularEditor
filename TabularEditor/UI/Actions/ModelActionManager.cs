@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.Scripting;
 using TabularEditor.TOMWrapper;
+using TabularEditor.TOMWrapper.PowerBI;
 using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.UI.Dialogs;
 using TOM = Microsoft.AnalysisServices.Tabular;
@@ -48,24 +49,26 @@ namespace TabularEditor.UI.Actions
 
         public TabularModelHandler Handler { get { return UI.UIController.Current.Handler; } }
 
+        private PowerBIGovernance Governance => Handler.PowerBIGovernance;
+
         public void CreateStandardActions()
         {
             var csDialog = new CultureSelectDialog();
 
             // Import Table Wizard...:
-            Add(new Action((s, m) => true, (s, m) => ImportTablesWizard.ShowWizard(m), (s, m) => "Import Tables...", true, Context.Model | Context.Tables));
-            Add(new Action((s, m) => m.DataSources.Any(ds => ds.Type == DataSourceType.Provider), (s, m) => ScriptHelper.SchemaCheck(m), (s, m) => "Refresh Table Metadata...", true, Context.Model | Context.Tables));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(Table)), (s, m) => ImportTablesWizard.ShowWizard(m), (s, m) => "Import Tables...", true, Context.Model | Context.Tables));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(DataColumn)) && m.DataSources.Any(ds => ds.Type == DataSourceType.Provider), (s, m) => ScriptHelper.SchemaCheck(m), (s, m) => "Refresh Table Metadata...", true, Context.Model | Context.Tables));
             // Import Table Wizard...:
-            Add(new Action((s, m) => s.DirectCount == 1 && s.DataSource is ProviderDataSource, (s, m) => ImportTablesWizard.ShowWizard(m, s.DataSource as ProviderDataSource), (s, m) => "Import Tables...", true, Context.DataSource));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(DataColumn)) && s.DirectCount == 1 && s.DataSource is ProviderDataSource, (s, m) => ImportTablesWizard.ShowWizard(m, s.DataSource as ProviderDataSource), (s, m) => "Import Tables...", true, Context.DataSource));
 
             // Schema check:
-            Add(new Action((s, m) => s.DirectCount == 1 && m.DataSources.Any(ds => ds.Type == DataSourceType.Provider) && s.DataSource is ProviderDataSource, (s, m) => ScriptHelper.SchemaCheck(s.DataSource as ProviderDataSource), (s, m) => "Refresh Table Metadata...", true, Context.DataSource));
-            Add(new Action((s, m) => s.DirectCount == 1 && m.DataSources.Any(ds => ds.Type == DataSourceType.Provider) && s.Partition.DataSource is ProviderDataSource, (s, m) => ScriptHelper.SchemaCheck(s.Partition), (s, m) => "Refresh Table Metadata...", true, Context.Partition));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(DataColumn)) && s.DirectCount == 1 && m.DataSources.Any(ds => ds.Type == DataSourceType.Provider) && s.DataSource is ProviderDataSource, (s, m) => ScriptHelper.SchemaCheck(s.DataSource as ProviderDataSource), (s, m) => "Refresh Table Metadata...", true, Context.DataSource));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(DataColumn)) && s.DirectCount == 1 && m.DataSources.Any(ds => ds.Type == DataSourceType.Provider) && s.Partition.DataSource is ProviderDataSource, (s, m) => ScriptHelper.SchemaCheck(s.Partition), (s, m) => "Refresh Table Metadata...", true, Context.Partition));
 
             Add(new Separator());
 
             // "Create New Display Folder"
-            Add(new Action((s, m) => s.Count >= 1 && !Handler.UsePowerBIGovernance, 
+            Add(new Action((s, m) => Governance.AllowEditProperty(s, TOMWrapper.Properties.DISPLAYFOLDER) && s.Count >= 1, 
                 (s, m) => {
                     var orgDF = (s.Direct.FirstOrDefault() as IFolderObject)?.GetDisplayFolder(Handler.Tree.Culture);
                     var newDF = string.IsNullOrWhiteSpace(orgDF) ? "New folder" : (orgDF + @"\New folder"); ;
@@ -73,71 +76,71 @@ namespace TabularEditor.UI.Actions
                     s.ReplaceFolder(orgDF, newDF, Handler.Tree.Culture);
                 }, 
                 (s, m) => @"Create New\Display Folder", true, Context.TableObject));
-            Add(new Action((s, m) => s.Count == 1, (s, m) => s.CalculationGroup.AddCalculationItem().Edit(), (s, m) => @"Create New\Calculation Item", false, Context.CalculationGroupTable));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(CalculationItem)) && s.Count == 1, (s, m) => s.CalculationGroup.AddCalculationItem().Edit(), (s, m) => @"Create New\Calculation Item", false, Context.CalculationGroupTable));
 
             Add(new Separator(@"Create New"));
 
             // Add measure:
-            Add(new Action((s, m) => s.Count == 1 || s.Context.HasX(Context.TableObject), (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Measure", true, Context.CalculationGroupTable | Context.Table | Context.TableObject, Keys.Alt | Keys.D1));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(Measure)) && (s.Count == 1 || s.Context.HasX(Context.TableObject)), (s, m) => s.Table.AddMeasure(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Measure", true, Context.CalculationGroupTable | Context.Table | Context.TableObject, Keys.Alt | Keys.D1));
 
             // Add calc column:
-            Add(new Action((s, m) => s.Count == 1 || s.Context.HasX(Context.TableObject), (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Calculated Column", true, Context.CalculationGroupTable | Context.Table | Context.TableObject, Keys.Alt | Keys.D2));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(CalculatedColumn)) && (s.Count == 1 || s.Context.HasX(Context.TableObject)), (s, m) => s.Table.AddCalculatedColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Calculated Column", true, Context.CalculationGroupTable | Context.Table | Context.TableObject, Keys.Alt | Keys.D2));
 
             // Add calc table column:
-            Add(new Action((s, m) => Handler.SourceType != ModelSourceType.Database
-                && !Handler.UsePowerBIGovernance
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(CalculatedTableColumn))
+                && Handler.SourceType != ModelSourceType.Database
                 && (s.Count == 1 || s.Context.HasX(Context.TableObject))
                 && (s.Table is CalculatedTable),
                 (s, m) => (s.Table as CalculatedTable).AddCalculatedTableColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Calculated Table Column", true, Context.Table | Context.TableObject));
 
             // Add hierarchy:
-            Add(new Action((s, m) => s.Count == 1 || s.Context.HasX(Context.TableObject), 
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(Hierarchy)) && (s.Count == 1 || s.Context.HasX(Context.TableObject)), 
                 (s, m) => s.Table.AddHierarchy(displayFolder: s.CurrentFolder, levels: s.Direct.OfType<Column>().ToArray()).Expand().Vis().Edit(), 
                 (s, m) => @"Create New\Hierarchy", true, Context.CalculationGroupTable | Context.Table | Context.TableObject, Keys.Alt | Keys.D3));
 
             // Add data column:
-            Add(new Action((s, m) => !Handler.UsePowerBIGovernance && (s.Count == 1 || s.Context.HasX(Context.TableObject)) && !(s.Table is CalculatedTable), (s, m) => s.Table.AddDataColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Data Column", true, Context.CalculationGroupTable | Context.Table | Context.TableObject, Keys.Alt | Keys.D4));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(DataColumn)) && (s.Count == 1 || s.Context.HasX(Context.TableObject)) && !(s.Table is CalculatedTable), (s, m) => s.Table.AddDataColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Data Column", true, Context.CalculationGroupTable | Context.Table | Context.TableObject, Keys.Alt | Keys.D4));
 
             // Add KPI:
-            Add(new Action((s, m) => s.Count == 1 && !s.Folders.Any(), (s, m) => s.Measure.AddKPI().Edit(), (s, m) => @"Create New\KPI", true, Context.Measure));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(KPI)) && s.Count == 1 && !s.Folders.Any(), (s, m) => s.Measure.AddKPI().Edit(), (s, m) => @"Create New\KPI", true, Context.Measure));
 
             Add(new Separator(@"Create New"));
 
             Add(new Action(
-                (s, m) => s.Count == 1 && !Handler.UsePowerBIGovernance, 
+                (s, m) => Governance.AllowCreate(typeof(Partition)) && s.Count == 1, 
                 (s, m) => Partition.CreateNew(s.Table).Edit(), 
                 (s, m) => @"Create New\Partition" + (Handler.CompatibilityLevel >= 1400 ? " (Legacy)" : ""), true, Context.Table));
             Add(new Action(
-                (s, m) => s.Count == 1 && !Handler.UsePowerBIGovernance && Handler.CompatibilityLevel >= 1400,
+                (s, m) => Governance.AllowCreate(typeof(MPartition)) && s.Count == 1 && Handler.CompatibilityLevel >= 1400,
                 (s, m) => MPartition.CreateNew(s.Table).Edit(),
                 (s, m) => @"Create New\Partition (Power Query)", true, Context.Table));
 
             Add(new Action(
-                (s, m) => !Handler.UsePowerBIGovernance,
+                (s, m) => Governance.AllowCreate(typeof(Partition)),
                 (s, m) => Partition.CreateNew(s.Table).Edit(),
                 (s, m) => @"New Partition" + (Handler.CompatibilityLevel >= 1400 ? " (Legacy)" : ""), true, Context.PartitionCollection | Context.Partition));
             Add(new Action(
-                (s, m) => !Handler.UsePowerBIGovernance && Handler.CompatibilityLevel >= 1400,
+                (s, m) => Governance.AllowCreate(typeof(MPartition)) && Handler.CompatibilityLevel >= 1400,
                 (s, m) => MPartition.CreateNew(s.Table).Edit(),
                 (s, m) => @"New Partition (Power Query)", true, Context.PartitionCollection | Context.Partition));
 
-            Add(new Action((s, m) => m.DataSources.Any() && !Handler.UsePowerBIGovernance, (s, m) => m.AddTable().Vis().Edit(), (s, m) => @"Create New\Table", false, Context.Tables | Context.Model, Keys.Alt | Keys.D5));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(Table)) && m.DataSources.Any(), (s, m) => m.AddTable().Vis().Edit(), (s, m) => @"Create New\Table", false, Context.Tables | Context.Model, Keys.Alt | Keys.D5));
 
-            Add(new Action((s, m) => true, (s, m) => m.AddCalculatedTable().Vis().Edit(), (s, m) => @"Create New\Calculated Table", false, Context.Tables | Context.Model, Keys.Alt | Keys.D6));
-            Add(new Action((s, m) => Handler.CompatibilityLevel >= 1470, (s, m) => m.AddCalculationGroup().Vis().Edit(), (s, m) => @"Create New\Calculation Group", false, Context.Tables | Context.Model, Keys.Alt | Keys.D7));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(CalculatedTable)), (s, m) => m.AddCalculatedTable().Vis().Edit(), (s, m) => @"Create New\Calculated Table", false, Context.Tables | Context.Model, Keys.Alt | Keys.D6));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(CalculationGroupTable)) && Handler.CompatibilityLevel >= 1470, (s, m) => m.AddCalculationGroup().Vis().Edit(), (s, m) => @"Create New\Calculation Group", false, Context.Tables | Context.Model, Keys.Alt | Keys.D7));
 
-            Add(new Action((s, m) => s.Count == 1, (s, m) => s.CalculationGroup.AddCalculationItem().Edit(), (s, m) => @"New Calculation Item", false, Context.CalculationItemCollection));
-            Add(new Action((s, m) => true, (s, m) => s.CalculationItems.First().CalculationGroupTable.AddCalculationItem().Edit(), (s, m) => @"New Calculation Item", false, Context.CalculationItem));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(CalculationItem)) && s.Count == 1, (s, m) => s.CalculationGroup.AddCalculationItem().Edit(), (s, m) => @"New Calculation Item", false, Context.CalculationItemCollection));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(CalculationItem)), (s, m) => s.CalculationItems.First().CalculationGroupTable.AddCalculationItem().Edit(), (s, m) => @"New Calculation Item", false, Context.CalculationItem));
 
-            Add(new Action((s, m) => !Handler.UsePowerBIGovernance, (s, m) => m.AddDataSource().Edit(), (s, m) => @"Create New\Data Source (Legacy)", false, Context.DataSources | Context.Model));
-            Add(new Action((s, m) => Handler.CompatibilityLevel >= 1400 && !Handler.UsePowerBIGovernance, (s, m) => m.AddStructuredDataSource().Edit(), (s, m) => @"Create New\Data Source (Power Query)", false, Context.DataSources | Context.Model));
-            Add(new Action((s, m) => !Handler.UsePowerBIGovernance, (s, m) => m.AddPerspective().Edit(), (s, m) => @"Create New\Perspective", false, Context.Model | Context.Perspectives | Context.Perspective));
-            Add(new Action((s, m) => !Handler.UsePowerBIGovernance, (s, m) => m.AddExpression().Edit(), (s, m) => @"Create New\Shared Expression", false, Context.Model | Context.Expressions | Context.Expression));
-            Add(new Action((s, m) => m.Tables.Count(t => t.Columns.Any()) >= 2, (s, m) => m.AddRelationship().Edit(), (s, m) => @"Create New\Relationship", false, Context.Relationship | Context.Relationships | Context.Model));
-            Add(new Action((s, m) => true, (s, m) => m.AddRole().Edit(), (s, m) => @"Create New\Role", false, Context.Model | Context.Roles | Context.Role));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(ProviderDataSource)), (s, m) => m.AddDataSource().Edit(), (s, m) => @"Create New\Data Source (Legacy)", false, Context.DataSources | Context.Model));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(StructuredDataSource)) && Handler.CompatibilityLevel >= 1400, (s, m) => m.AddStructuredDataSource().Edit(), (s, m) => @"Create New\Data Source (Power Query)", false, Context.DataSources | Context.Model));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(Perspective)), (s, m) => m.AddPerspective().Edit(), (s, m) => @"Create New\Perspective", false, Context.Model | Context.Perspectives | Context.Perspective));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(NamedExpression)), (s, m) => m.AddExpression().Edit(), (s, m) => @"Create New\Shared Expression", false, Context.Model | Context.Expressions | Context.Expression));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(SingleColumnRelationship)) && m.Tables.Count(t => t.Columns.Any()) >= 2, (s, m) => m.AddRelationship().Edit(), (s, m) => @"Create New\Relationship", false, Context.Relationship | Context.Relationships | Context.Model));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(ModelRole)), (s, m) => m.AddRole().Edit(), (s, m) => @"Create New\Role", false, Context.Model | Context.Roles | Context.Role));
 
 
-            Add(new Action((s, m) => !Handler.UsePowerBIGovernance, (s, m) => {
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(Culture)), (s, m) => {
                 var res = csDialog.ShowDialog();
                 if (res == DialogResult.OK)
                 {
@@ -149,11 +152,11 @@ namespace TabularEditor.UI.Actions
             Add(new CreateRelationshipAction(CreateRelationshipDirection.From));
 
             // "Add to Hierarchy..."
-            Add(new MultiAction((s, m, p) =>
+            Add(new MultiAction((s, m, p) => Governance.AllowEditProperty(ObjectType.Hierarchy, TOMWrapper.Properties.LEVELS) && (
                 // Action enabled only when table contains at least one hierarchy:
                 ((p == null) && s.Table.Hierarchies.Any()) ||
                 // ...and none of the selected columns are already present as levels in the hierarchy:
-                ((p != null) && !(p as Hierarchy).Levels.Select(l => l.Column).Intersect(s.Columns).Any()),
+                ((p != null) && !(p as Hierarchy).Levels.Select(l => l.Column).Intersect(s.Columns).Any())),
 
                 (s, m, p) => (p as Hierarchy).AddLevels(s.Columns),
                 (s, m, p) => (p as Hierarchy).Name,
@@ -162,10 +165,10 @@ namespace TabularEditor.UI.Actions
             Add(new Separator());
 
             // Relationship actions:
-            Add(new Action((s, m) => s.SingleColumnRelationships.Any(o => !o.IsActive), (s, m) => s.SingleColumnRelationships.IsActive = true, (s, m) => "Activate", true, Context.Relationship));
-            Add(new Action((s, m) => s.SingleColumnRelationships.Any(o => o.IsActive), (s, m) => s.SingleColumnRelationships.IsActive = false, (s, m) => "Deactivate", true, Context.Relationship));
+            Add(new Action((s, m) => Governance.AllowEditProperty(ObjectType.Relationship, TOMWrapper.Properties.ISACTIVE) && s.SingleColumnRelationships.Any(o => !o.IsActive), (s, m) => s.SingleColumnRelationships.IsActive = true, (s, m) => "Activate", true, Context.Relationship));
+            Add(new Action((s, m) => Governance.AllowEditProperty(ObjectType.Relationship, TOMWrapper.Properties.ISACTIVE) && s.SingleColumnRelationships.Any(o => o.IsActive), (s, m) => s.SingleColumnRelationships.IsActive = false, (s, m) => "Deactivate", true, Context.Relationship));
             // Reverse relationship:
-            Add(new Action((s, m) => true, (s, m) => s.SingleColumnRelationships.ForEach(r => {
+            Add(new Action((s, m) => Governance.AllowEditProperty(ObjectType.Relationship, TOMWrapper.Properties.FROMCOLUMN), (s, m) => s.SingleColumnRelationships.ForEach(r => {
                 var fc = r.FromColumn; r.FromColumn = null;
                 var tc = r.ToColumn; r.ToColumn = null;
                 r.FromColumn = tc;
@@ -173,20 +176,20 @@ namespace TabularEditor.UI.Actions
             }), (s, m) => "Reverse direction", false, Context.Relationship));
 
             // Visibility and perspectives
-            Add(new Action((s, m) => s.OfType<IHideableObject>().Any(o => o.IsHidden), (s, m) => s.IsHidden = false, (s, m) => "Make visible", true, Context.DataObjects, Keys.Control | Keys.U));
-            Add(new Action((s, m) => s.OfType<IHideableObject>().Any(o => !o.IsHidden), (s, m) => s.IsHidden = true, (s, m) => "Make invisible", true, Context.DataObjects, Keys.Control | Keys.I));
-            Add(new Action((s, m) => s.OfType<ITabularPerspectiveObject>().Any() && !Handler.UsePowerBIGovernance, (s, m) => s.ShowInAllPerspectives(), (s, m) => @"Show in Perspectives\All Perspectives", true, Context.DataObjects));
-            Add(new Action((s, m) => s.OfType<ITabularPerspectiveObject>().Any() && !Handler.UsePowerBIGovernance, (s, m) => s.HideInAllPerspectives(), (s, m) => @"Hide in Perspectives\All Perspectives", true, Context.DataObjects));
+            Add(new Action((s, m) => Governance.AllowEditProperty(s, TOMWrapper.Properties.ISHIDDEN) && s.OfType<IHideableObject>().Any(o => o.IsHidden), (s, m) => s.IsHidden = false, (s, m) => "Make visible", true, Context.DataObjects, Keys.Control | Keys.U));
+            Add(new Action((s, m) => Governance.AllowEditProperty(s, TOMWrapper.Properties.ISHIDDEN) && s.OfType<IHideableObject>().Any(o => !o.IsHidden), (s, m) => s.IsHidden = true, (s, m) => "Make invisible", true, Context.DataObjects, Keys.Control | Keys.I));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(Perspective)) && s.OfType<ITabularPerspectiveObject>().Any(), (s, m) => s.ShowInAllPerspectives(), (s, m) => @"Show in Perspectives\All Perspectives", true, Context.DataObjects));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(Perspective)) && s.OfType<ITabularPerspectiveObject>().Any(), (s, m) => s.HideInAllPerspectives(), (s, m) => @"Hide in Perspectives\All Perspectives", true, Context.DataObjects));
 
             Add(new Separator(@"Show in Perspectives"));
             Add(new Separator(@"Hide in Perspectives"));
 
-            Add(new MultiAction((s, m, p) => s.OfType<ITabularPerspectiveObject>().Any(obj => p == null || !obj.InPerspective[p as Perspective]) && !Handler.UsePowerBIGovernance,
+            Add(new MultiAction((s, m, p) => Governance.AllowCreate(typeof(Perspective)) && s.OfType<ITabularPerspectiveObject>().Any(obj => p == null || !obj.InPerspective[p as Perspective]),
                 (s, m, p) => s.ShowInPerspective(p as Perspective),
                 (s, m, p) => (p as Perspective).Name,
                 (s, m) => m.Perspectives, "Show in Perspectives", true, Context.DataObjects));
 
-            Add(new MultiAction((s, m, p) => s.OfType<ITabularPerspectiveObject>().Any(obj => p == null || obj.InPerspective[p as Perspective]) && !Handler.UsePowerBIGovernance,
+            Add(new MultiAction((s, m, p) => Governance.AllowCreate(typeof(Perspective)) && s.OfType<ITabularPerspectiveObject>().Any(obj => p == null || obj.InPerspective[p as Perspective]),
                 (s, m, p) => s.HideInPerspective(p as Perspective),
                 (s, m, p) => (p as Perspective).Name,
                 (s, m) => m.Perspectives, "Hide in Perspectives", true, Context.DataObjects));
@@ -195,7 +198,7 @@ namespace TabularEditor.UI.Actions
             Add(new Separator());
 
             // "Duplicate Table Object";
-            Add(new Action((s, m) => true,
+            Add(new Action((s, m) => Governance.AllowCreate(s),
                 (s, m) => s.ForEach(i =>
                 {
                     var obj = (i as IClonableObject).Clone(includeTranslations: i is ITranslatableObject);
@@ -204,11 +207,11 @@ namespace TabularEditor.UI.Actions
                 (s, m) => "Duplicate " + s.Summary(), true, Context.TableObject | Context.Partition | Context.CalculationItem));
 
             // "Duplicate Table";
-            Add(new Action((s, m) => s.Count == 1 && !Handler.UsePowerBIGovernance, (s, m) => s.Table.Clone().Edit(), (s, m) => "Duplicate Table", true, Context.Table));
-            Add(new Action((s, m) => s.Count == 1 && !Handler.UsePowerBIGovernance, (s, m) => s.CalculationGroup.Clone().Edit(), (s, m) => "Duplicate Calculation Group", true, Context.CalculationGroupTable));
+            Add(new Action((s, m) => Governance.AllowCreate(s) && s.Count == 1, (s, m) => s.Table.Clone().Edit(), (s, m) => "Duplicate Table", true, Context.Table));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(CalculationGroupTable)) && s.Count == 1, (s, m) => s.CalculationGroup.Clone().Edit(), (s, m) => "Duplicate Calculation Group", true, Context.CalculationGroupTable));
 
             // "Duplicate Translation";
-            Add(new Action((s, m) => s.Count == 1,
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(Culture)) && s.Count == 1,
                 (s, m) => s.ForEach(i =>
                 {
                     var res = csDialog.ShowDialog();
@@ -217,10 +220,11 @@ namespace TabularEditor.UI.Actions
                 (s, m) => "Duplicate " + s.Summary(), true, Context.Translation));
 
             // "Duplicate Role / Perspective":
-            Add(new Action((s, m) => s.Count == 1, (s, m) => s.ForEach(i => (i as IClonableObject).Clone(null, true).Edit()), (s, m) => "Duplicate " + s.Summary(), true, Context.Role | Context.Perspective));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(Perspective)) && s.Count == 1, (s, m) => s.ForEach(i => (i as IClonableObject).Clone(null, true).Edit()), (s, m) => "Duplicate Perspective", true, Context.Perspective));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(ModelRole)) && s.Count == 1, (s, m) => s.ForEach(i => (i as IClonableObject).Clone(null, true).Edit()), (s, m) => "Duplicate Role", true, Context.Role));
 
             // Batch Rename
-            Add(new Action((s, m) => s.DirectCount > 1, (s, m) =>
+            Add(new Action((s, m) => Governance.AllowEditProperty(s, TOMWrapper.Properties.NAME) && s.DirectCount > 1, (s, m) =>
             {
                 var form = Dialogs.ReplaceForm.Singleton;
                 form.Text = "Batch Rename - (" + s.Summary() + " selected)";
@@ -231,7 +235,8 @@ namespace TabularEditor.UI.Actions
             }, (s, m) => "Batch Rename...", true, Context.DataObjects | Context.Level | Context.CalculationItem | Context.Partition, Keys.F2) { ToolTip = "Opens a dialog that lets you rename all the selected objects at once. Folders are not renamed, but objects inside folders are."});
 
             // Batch Rename Children
-            Add(new Action((s, m) => s.Context == Context.Table || s.Direct.Any(i => i is Folder) || s.Context == Context.PartitionCollection, (s, m) =>
+            Add(new Action((s, m) => Governance.AllowEditProperty(new[] { ObjectType.Measure, ObjectType.Column, ObjectType.Hierarchy, ObjectType.Level }, TOMWrapper.Properties.NAME) 
+                && (s.Context == Context.Table || s.Direct.Any(i => i is Folder) || s.Context == Context.PartitionCollection), (s, m) =>
             {
                 var form = Dialogs.ReplaceForm.Singleton;
                 var sel = new UISelectionList<ITabularNamedObject>(
@@ -247,7 +252,7 @@ namespace TabularEditor.UI.Actions
             { ToolTip = "Opens a dialog that lets you rename all children of the selected objects at once. Folders are not renamed, but objects inside folders are." });
 
             // Delete Action
-            Delete = new Action((s, m) => s.Count >= 1, 
+            Delete = new Action((s, m) => Governance.AllowDelete(s) && s.Count >= 1, 
                 (s, m) => {
                     if (s.Count == 1)
                     {
@@ -287,16 +292,16 @@ namespace TabularEditor.UI.Actions
             Add(new Separator());
 
             // Select Columns (aka. Import Table Wizard) and Refresh Table Metadata:
-            Add(new Action((s, m) => s.DirectCount == 1 && s.Table.Partitions[0].DataSource is ProviderDataSource, (s, m) => ImportTablesWizard.ShowWizard(s.Table), (s, m) => "Select Columns...", true, Context.Table));
-            Add(new Action((s, m) => s.DirectCount == 1 && m.DataSources.Any(ds => ds.Type == DataSourceType.Provider) && s.Table.Partitions.Count > 0 && s.Table.Partitions[0].DataSource is ProviderDataSource, (s, m) => ScriptHelper.SchemaCheck(s.Table), (s, m) => "Refresh Table Metadata...", true, Context.Table));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(DataColumn)) && s.DirectCount == 1 && s.Table.Partitions[0].DataSource is ProviderDataSource, (s, m) => ImportTablesWizard.ShowWizard(s.Table), (s, m) => "Select Columns...", true, Context.Table));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(DataColumn)) && s.DirectCount == 1 && m.DataSources.Any(ds => ds.Type == DataSourceType.Provider) && s.Table.Partitions.Count > 0 && s.Table.Partitions[0].DataSource is ProviderDataSource, (s, m) => ScriptHelper.SchemaCheck(s.Table), (s, m) => "Refresh Table Metadata...", true, Context.Table));
 
             Add(new Separator());
             Add(new Action((s, m) => m.Cultures.Count > 0, (s, m) => UIController.Current.Translations_ExportAll(), (s, m) => "Export translations...", false, Context.Translations | Context.Tool));
-            Add(new Action((s, m) => true, (s, m) => UIController.Current.Translations_Import(), (s, m) => "Import translations...", true, Context.Translations | Context.Tool));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(Culture)) && true, (s, m) => UIController.Current.Translations_Import(), (s, m) => "Import translations...", true, Context.Translations | Context.Tool));
             Add(new Action((s, m) => true, (s, m) => UIController.Current.Translations_ExportSelected(), (s, m) => string.Format("Export {0} translation{1}...", s.Count, s.Count == 1 ? "" : "s"), true, Context.Translation));
 
             // Table actions:
-            Add(new Action((s, m) => s.DirectCount == 1 && s.Table.Columns.Any(c => c.DataType == DataType.DateTime), (s, m) => UIController.Current.MarkAsDateTableDialog.Go(s.Table), (s, m) => "Mark as Date Table...", true, Context.Table));
+            Add(new Action((s, m) => Governance.AllowEditProperty(ObjectType.Column, TOMWrapper.Properties.ISKEY) && Governance.AllowEditProperty(ObjectType.Column, TOMWrapper.Properties.DATACATEGORY) && s.DirectCount == 1 && s.Table.Columns.Any(c => c.DataType == DataType.DateTime), (s, m) => UIController.Current.MarkAsDateTableDialog.Go(s.Table), (s, m) => "Mark as Date Table...", true, Context.Table));
 
             // Show dependencies...
             Add(new Action((s, m) => s.DirectCount == 1 && s.Direct.First() is IDaxObject, (s, m) =>

@@ -474,6 +474,7 @@ partial class Rules {
 	   { "CalculationItem", "TabularNamedObject" },
 	   { "TablePermission", "TabularNamedObject" }
    };
+   public static bool Seal(Type type) { return !_objectTypes.Values.Any(t => t == type.Name); }
    public static Dictionary<Type, string> ObjectTypes = Convert(_objectTypes).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
    
    public static bool Sealed(Type t) 

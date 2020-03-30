@@ -76,6 +76,48 @@ namespace TabularEditor.TOMWrapper.Utils
             else return DAXProperty.Expression;
         }
 
+        public static string GetDAXProperty(this IDaxDependantObject obj, DAXProperty property)
+        {
+            if (obj is TablePermission tp && property == DAXProperty.Expression)
+            {
+                return Properties.FILTEREXPRESSION;
+            }
+            if (obj is KPI)
+            {
+                if (property == DAXProperty.StatusExpression) return Properties.STATUSEXPRESSION;
+                if (property == DAXProperty.TargetExpression) return Properties.TARGETEXPRESSION;
+                if (property == DAXProperty.TrendExpression) return Properties.TRENDEXPRESSION;
+            }
+
+            if (obj is IExpressionObject && property == DAXProperty.Expression)
+            {
+                return Properties.EXPRESSION;
+            }
+
+            if (obj is CalculationItem ci)
+            {
+                if (property == DAXProperty.Expression) return Properties.EXPRESSION;
+                if (property == DAXProperty.FormatStringExpression) return Properties.FORMATSTRINGEXPRESSION;
+            }
+
+            if (TabularModelHandler.Singleton.CompatibilityLevel >= 1400)
+            {
+                if (obj is Measure && property == DAXProperty.DetailRowsExpression)
+                {
+                    return Properties.DETAILROWSEXPRESSION;
+                }
+                if (obj is Table && property == DAXProperty.DefaultDetailRowsExpression)
+                {
+                    return Properties.DEFAULTDETAILROWSEXPRESSION;
+                }
+            }
+
+            /*if (obj is Measure m && property == DAXProperty.FormatStringExpression)
+                return m.FormatStringExpression;*/
+
+            throw new ArgumentException(string.Format(Messages.InvalidExpressionProperty, obj.GetTypeName(), property), "property");
+        }
+
         public static string GetDAX(this IDaxDependantObject obj, DAXProperty property)
         {
             if (obj is TablePermission tp && property == DAXProperty.Expression)

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.TextServices;
 using TabularEditor.TOMWrapper;
+using TabularEditor.TOMWrapper.PowerBI;
 using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.UIServices;
 
@@ -248,13 +249,18 @@ namespace TabularEditor.UI
             }
         }
 
+        private string GetProperty()
+        {
+            return (ExpressionEditor_Current as IDaxDependantObject)?.GetDAXProperty(CurrentDaxProperty) ?? TOMWrapper.Properties.EXPRESSION;
+        }
+
         private string GetText()
         {
             string value;
 
-            if(ExpressionEditor_Current is IDaxDependantObject)
+            if(ExpressionEditor_Current is IDaxDependantObject daxObject)
             {
-                value = (ExpressionEditor_Current as IDaxDependantObject).GetDAX(CurrentDaxProperty) ?? "";
+                value = daxObject.GetDAX(CurrentDaxProperty) ?? "";
             }
             else if (ExpressionEditor_Current != null)
             {
@@ -309,6 +315,7 @@ namespace TabularEditor.UI
 
             var i = UI.ExpressionEditor.SelectionStart;
             UI.ExpressionEditor.Text = GetText();
+            UI.ExpressionEditor.ReadOnly = ExpressionEditor_Current == null || !Handler.PowerBIGovernance.AllowEditProperty(ExpressionEditor_Current.ObjectType, GetProperty());
             if (!string.IsNullOrEmpty(UI.ExpressionEditor.Text))
             {
                 if (syntaxHighlightTimer.Enabled) syntaxHighlightTimer.Enabled = false;

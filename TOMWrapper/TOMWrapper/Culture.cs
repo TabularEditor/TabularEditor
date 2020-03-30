@@ -143,7 +143,7 @@ namespace TabularEditor.TOMWrapper
             
         }
 
-        internal override bool Editable(string propertyName)
+        internal override bool IsEditable(string propertyName)
         {
             return propertyName == Properties.NAME;
         }
