@@ -45,6 +45,7 @@ namespace TabularEditor.TOMWrapper
                 cancel = true;
                 this.MetadataObject.Ordinal = (int)newValue;
                 Hierarchy.FixLevelOrder(this, (int)newValue);
+                return;
             }
             if (propertyName == Properties.COLUMN)
             {

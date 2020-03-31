@@ -85,7 +85,10 @@ namespace TabularEditor.TOMWrapper
                 cancel = true;
                 this.MetadataObject.Ordinal = (int)newValue;
                 CalculationGroupTable.FixItemOrder(this, (int)newValue);
+                return;
             }
+
+            base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
         }
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
