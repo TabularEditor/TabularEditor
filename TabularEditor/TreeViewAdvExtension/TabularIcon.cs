@@ -56,11 +56,11 @@ namespace TabularEditor.UI.Tree
                         return obj is CalculatedTable ? TabularIcons.ICON_CALCTIMETABLE : TabularIcons.ICON_TIMETABLE;
                     return obj is CalculatedTable ? TabularIcons.ICON_CALCTABLE : TabularIcons.ICON_TABLE;
 
-                case ObjectType.CalculationGroupAttribute:
-                    return TabularIcons.ICON_FIELDCOLUMN;
-
                 case ObjectType.Column:
-                    return obj is CalculatedColumn ? TabularIcons.ICON_CALCCOLUMN : TabularIcons.ICON_COLUMN;
+                    if (obj is DataColumn dc && dc.Table is CalculationGroupTable && dc.SourceColumn.EqualsI("name"))
+                        return TabularIcons.ICON_FIELDCOLUMN;
+                    else
+                        return obj is CalculatedColumn ? TabularIcons.ICON_CALCCOLUMN : TabularIcons.ICON_COLUMN;
 
                 case ObjectType.Level:
                     iconIndex = TabularIcons.ICON_LEVEL1 + (obj as Level).Ordinal;

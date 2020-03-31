@@ -116,6 +116,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
                     // Only allow column renames when parent table is a calc group table in restricted mode:
                     case ObjectType.Column: return (obj as Column).Table is CalculationGroupTable;
                     case ObjectType.CalculationGroupTable:
+                    case ObjectType.CalculationItem:
                     case ObjectType.Measure:
                     case ObjectType.Perspective:
                     case ObjectType.Culture:

@@ -100,9 +100,11 @@ namespace TabularEditor.TOMWrapper
         {
             switch (propertyName)
             {
-                case "ToColumn": if (newValue == FromColumn && newValue != null) cancel = true; break;
-                case "FromColumn": if (newValue == ToColumn && newValue != null) cancel = true; break;
+                case "ToColumn": if (newValue == FromColumn && newValue != null) cancel = true; return;
+                case "FromColumn": if (newValue == ToColumn && newValue != null) cancel = true; return;
             }
+
+            base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
         }
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
@@ -118,6 +120,8 @@ namespace TabularEditor.TOMWrapper
                     UpdateName();
                     break;
             }
+
+            base.OnPropertyChanged(propertyName, oldValue, newValue);
         }
     }
 }

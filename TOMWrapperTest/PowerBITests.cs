@@ -69,6 +69,12 @@ namespace TOMWrapperTest
             column.Description = "New desc"; Assert.AreEqual("New desc", column.Description);
             column.DisplayFolder = "New DF"; Assert.AreEqual("New DF", column.DisplayFolder);
             column.IsHidden = true; Assert.IsTrue(column.IsHidden);
+
+            var calcGroup = model.CalculationGroups.First();
+            var newCi = calcGroup.AddCalculationItem("Test");
+            //Assert.IsTrue(handler.PowerBIGovernance.AllowEditName(newCi));
+            newCi.Name = "Renamed CI"; Assert.AreEqual("Renamed CI", newCi.Name);
+            calcGroup.Name = "Renamed CG"; Assert.AreEqual("Renamed CG", calcGroup.Name);
         }
 
         [TestMethod]
