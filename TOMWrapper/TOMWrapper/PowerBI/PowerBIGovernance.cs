@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper.PowerBI
 {
@@ -31,8 +32,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
         {
             if (handler.Database == null) return;
 
-            if (handler.Settings.PBIFeaturesOnly && (handler.SourceType == ModelSourceType.Pbit ||
-                handler.Database.Server?.CompatibilityMode == Microsoft.AnalysisServices.CompatibilityMode.PowerBI))
+            if (handler.Settings.PBIFeaturesOnly && (handler.SourceType == ModelSourceType.Pbit || IsPBIDesktop(handler.Database)))
             {
                 if (handler.Database.Model.DefaultPowerBIDataSourceVersion == Microsoft.AnalysisServices.Tabular.PowerBIDataSourceVersion.PowerBI_V3)
                     GovernanceMode = PowerBIGovernanceMode.V3Restricted;
@@ -41,6 +41,18 @@ namespace TabularEditor.TOMWrapper.PowerBI
             }
             else
                 GovernanceMode = PowerBIGovernanceMode.Unrestricted;
+        }
+
+        private bool IsPBIDesktop(TOM.Database database)
+        {
+            var server = database.Server;
+            if (server == null) return false;
+
+            if (server.CompatibilityMode == Microsoft.AnalysisServices.CompatibilityMode.PowerBI &&
+                server.ServerLocation == Microsoft.AnalysisServices.ServerLocation.OnPremise)
+                return true;
+
+            return false; // throw new NotImplementedException();
         }
 
         public PowerBIGovernanceMode GovernanceMode { get; private set; } = PowerBIGovernanceMode.Unrestricted;
