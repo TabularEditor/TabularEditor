@@ -143,6 +143,7 @@ namespace TabularEditor.UI
             UI.TreeView.ItemDrag += TreeView_ItemDrag;
             UI.TreeView.DragOver += TreeView_DragOver;
             UI.TreeView.DragEnter += TreeView_DragEnter;
+            UI.TreeView.Expanded += TreeView_Expanded;
             UI.TreeView.Leave += TreeView_Leave;
             UI.TreeView.NodeMouseDoubleClick += TreeView_NodeMouseDoubleClick;
             UI.TreeView.KeyDown += TreeView_KeyDown;
@@ -158,6 +159,14 @@ namespace TabularEditor.UI
             UI.ToolsMenu.DropDown.Opening += ToolsMenu_Opening;
             UI.ModelMenu.DropDown.Opening += ModelMenu_Opening;
             UI.DynamicMenu.DropDown.Opening += DynamicMenu_Opening;
+        }
+
+        private void TreeView_Expanded(object sender, TreeViewAdvEventArgs e)
+        {
+            if(e.Node.Tag is CalculationGroupTable)
+            {
+                e.Node.ExpandAll();
+            }
         }
 
         private void TvName_EditorShowing(object sender, CancelEventArgs e)
