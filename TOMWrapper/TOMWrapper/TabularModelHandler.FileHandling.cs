@@ -87,6 +87,7 @@ namespace TabularEditor.TOMWrapper
             try
             {
                 database = TOM.JsonSerializer.DeserializeDatabase(json);
+                database.RemoveTabularEditorTag();
                 CompatibilityLevel = database.CompatibilityLevel;
                 Status = "Model loaded succesfully.";
                 Init();

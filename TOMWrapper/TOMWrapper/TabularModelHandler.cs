@@ -135,6 +135,7 @@ namespace TabularEditor.TOMWrapper
             {
                 database = server.Databases[databaseId];
             }
+            database.RemoveTabularEditorTag();
             CompatibilityLevel = database.CompatibilityLevel;
 
             if (CompatibilityLevel < 1200) throw new InvalidOperationException("Only databases with Compatibility Level 1200 or higher can be loaded in Tabular Editor.");

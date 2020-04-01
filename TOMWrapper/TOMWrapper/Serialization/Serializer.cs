@@ -176,6 +176,7 @@ namespace TabularEditor.TOMWrapper.Serialization
         public static string SerializeDB(SerializeOptions options)
         {
             var db = TabularModelHandler.Singleton.Database;
+            db.RemoveTabularEditorTag();
 
             // Remove object translations with no objects assigned:
             var nullTrans = db.Model.Cultures.SelectMany(c => c.ObjectTranslations).Where(ot => ot.Object == null).ToList();
