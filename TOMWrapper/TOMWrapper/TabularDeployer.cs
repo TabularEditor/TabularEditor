@@ -24,11 +24,14 @@ namespace TabularEditor.TOMWrapper.Utils
 
             if (server.Databases.Contains(targetDatabaseID) && options.DeployMode == DeploymentMode.CreateDatabase) throw new ArgumentException("The specified database already exists.");
 
-            if (!server.Databases.Contains(targetDatabaseID)) return DeployNewTMSL(db, targetDatabaseID, options, includeRestricted);
-            else return DeployExistingTMSL(db, server, targetDatabaseID, options, includeRestricted);
+            string tmsl;
 
-            // TODO: Check if invalid CalculatedTableColumn perspectives/translations can give us any issues here
-            // Should likely be handled similar to what we do in TabularModelHandler.SaveDB()
+            db.AddTabularEditorTag();
+            if (!server.Databases.Contains(targetDatabaseID)) tmsl = DeployNewTMSL(db, targetDatabaseID, options, includeRestricted);
+            else tmsl = DeployExistingTMSL(db, server, targetDatabaseID, options, includeRestricted);
+            db.RemoveTabularEditorTag();
+
+            return tmsl;
         }
 
         public static DeploymentResult Deploy(TabularModelHandler handler, string targetConnectionString, string targetDatabaseName)
