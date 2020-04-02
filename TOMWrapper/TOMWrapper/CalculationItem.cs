@@ -1,4 +1,8 @@
-﻿using System;
+﻿extern alias json;
+
+using json::Newtonsoft.Json.Linq;
+using Microsoft.AnalysisServices.Tabular;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
@@ -8,6 +12,7 @@ using System.Threading.Tasks;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper.Undo;
 using TabularEditor.TOMWrapper.Utils;
+using TabularEditor.Utils;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -60,16 +65,32 @@ namespace TabularEditor.TOMWrapper
             {
                 var oldValue = FormatStringExpression;
 
-                if (oldValue == value || oldValue == null && string.IsNullOrEmpty(value)) return;
+                if (oldValue == value || (oldValue == null && value == string.Empty)) return;
 
                 bool undoable = true;
                 bool cancel = false;
                 OnPropertyChanging(Properties.FORMATSTRINGEXPRESSION, value, ref undoable, ref cancel);
                 if (cancel) return;
 
-                if (MetadataObject.FormatStringDefinition == null) MetadataObject.FormatStringDefinition = new TOM.FormatStringDefinition();
-                MetadataObject.FormatStringDefinition.Expression = value;
-                if (string.IsNullOrWhiteSpace(value)) MetadataObject.FormatStringDefinition = null;
+                if (MetadataObject.FormatStringDefinition == null && !string.IsNullOrEmpty(value))
+                    MetadataObject.FormatStringDefinition = new TOM.FormatStringDefinition();
+                if (!string.IsNullOrEmpty(value))
+                    MetadataObject.FormatStringDefinition.Expression = value;
+                if (string.IsNullOrWhiteSpace(value) && MetadataObject.FormatStringDefinition != null)
+                {
+                    /* THIS CRASHES IN AMO 18.4.0.5 (see https://github.com/otykier/TabularEditor/issues/421), *
+                     * so we use a hack where we recreate the calc item in the TOM: */
+                    var calcItems = this.MetadataObject.CalculationGroup.CalculationItems;
+                    calcItems.Remove(this.MetadataObject);
+                    var calcItemJson = JsonSerializer.SerializeObject(this.MetadataObject);
+                    var calcItemJObject = JObject.Parse(calcItemJson);
+                    calcItemJObject.Remove("formatStringDefinition");
+                    Handler.WrapperLookup.Remove(this.MetadataObject);
+
+                    this.MetadataObject = JsonSerializer.DeserializeObject<TOM.CalculationItem>(calcItemJObject.ToString());
+                    calcItems.Add(this.MetadataObject);
+                    Handler.WrapperLookup.Add(this.MetadataObject, this);
+                }
 
                 if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FORMATSTRINGEXPRESSION, oldValue, value));
                 OnPropertyChanged(Properties.FORMATSTRINGEXPRESSION, oldValue, value);
