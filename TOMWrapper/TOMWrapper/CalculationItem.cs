@@ -151,7 +151,8 @@ namespace TabularEditor.TOMWrapper
         }
     }
 
-    public partial class CalculationItemCollection : ITabularNamedObject, ITabularObjectContainer, ITabularTableObject, IInternalAnnotationObject
+    [TypeConverter(typeof(DynamicPropertyNonExpandableConverter))]
+    public partial class CalculationItemCollection : ITabularNamedObject, ITabularObjectContainer, ITabularTableObject, IInternalAnnotationObject, IDynamicPropertyObject
     {
         [ReadOnly(true)]
         string ITabularNamedObject.Name { get { return "Calculation Items"; } set { } }
@@ -170,7 +171,7 @@ namespace TabularEditor.TOMWrapper
         public CalculationGroupTable CalculationGroupTable => CalculationGroup.Table as CalculationGroupTable;
 
         [ReadOnly(true), Category("Basic"), DisplayName("Object Type")]
-        public string ObjectTypeName => "Calculation Group";
+        public string ObjectTypeName => "Calculation Item Collection";
 
         event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
         {
@@ -188,7 +189,7 @@ namespace TabularEditor.TOMWrapper
         [NoMultiselect(), Editor(typeof(CalculationItemCollectionEditor), typeof(UITypeEditor))]
         public CalculationItemCollection PropertyGridCalculationItems => this;
 
-        ///<summary>The collection of Annotations on the current Table.</summary>
+        ///<summary>The collection of Annotations on the current Calculation Group.</summary>
         [Browsable(true), NoMultiselect, Category("Options"), Description("The collection of Annotations on the current Calculation Group."), Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
         public AnnotationCollection Annotations => CalculationGroup.Annotations;
 
@@ -276,6 +277,16 @@ namespace TabularEditor.TOMWrapper
         public IEnumerable<string> GetAnnotations()
         {
             return CalculationGroup.GetAnnotations();
+        }
+
+        public bool Browsable(string propertyName)
+        {
+            return Handler.PowerBIGovernance.VisibleProperty(ObjectType.CalculationItemCollection, propertyName);
+        }
+
+        public bool Editable(string propertyName)
+        {
+            return Handler.PowerBIGovernance.AllowEditProperty(ObjectType.CalculationItemCollection, propertyName);
         }
     }
 }
