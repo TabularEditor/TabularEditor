@@ -47,7 +47,7 @@ namespace TabularEditor.TOMWrapper.Serialization
                 if (options.LocalPerspectives) model.StorePerspectivesToAnnotations();
                 if (options.LocalRelationships) model.StoreRelationshipsAsAnnotations();
 
-                var json = Serializer.SerializeDB(options);
+                var json = Serializer.SerializeDB(options, false);
                 var jobj = JObject.Parse(json);
 
                 jobj["name"] = model.Database?.Name ?? "SemanticModel";
