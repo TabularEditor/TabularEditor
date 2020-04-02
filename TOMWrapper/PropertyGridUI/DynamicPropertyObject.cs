@@ -58,6 +58,34 @@ namespace TabularEditor.PropertyGridUI
         }
     }
 
+    internal class DynamicPropertyNonExpandableConverter: TypeConverter
+    {
+        public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes)
+        {
+            var original = base.GetProperties(context, value, attributes).Cast<PropertyDescriptor>();
+            var multi = context.Instance.GetType().IsArray;
+
+            IEnumerable<DynamicPropertyDescriptor> pds;
+
+            if (value is IDynamicPropertyObject)
+            {
+                var obj = value as IDynamicPropertyObject;
+                pds = original.Select(pd => new DynamicPropertyDescriptor(pd, multi, obj.Browsable(pd.Name), obj.Editable(pd.Name)));
+            }
+            else
+            {
+                pds = original.Select(pd => new DynamicPropertyDescriptor(pd, multi));
+            }
+            return new PropertyDescriptorCollection(pds.Where(pd => pd.IsBrowsable).ToArray());
+        }
+
+        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+        {
+            if (value is TabularObject) return (value as TabularObject).GetTypeName();
+            return base.ConvertTo(context, culture, value, destinationType);
+        }
+    }
+
     internal class DynamicPropertyDescriptor : PropertyDescriptor
     {
         private PropertyDescriptor _descriptor;
