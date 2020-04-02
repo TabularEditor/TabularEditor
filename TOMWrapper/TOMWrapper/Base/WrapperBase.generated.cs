@@ -893,6 +893,7 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this Variation object.
 		/// </summary>
+		[IntelliSense("Creates an exact copy of this Variation object.")]
 		public Variation Clone(string newName = null, Column newParent = null) {
 			if(!Handler.PowerBIGovernance.AllowCreate(typeof(Variation))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Variation).GetTypeName()));
@@ -1178,6 +1179,7 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this StructuredDataSource object.
 		/// </summary>
+		[IntelliSense("Creates an exact copy of this StructuredDataSource object.")]
 		public StructuredDataSource Clone(string newName = null) {
 			if(!Handler.PowerBIGovernance.AllowCreate(typeof(StructuredDataSource))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(StructuredDataSource).GetTypeName()));
@@ -1355,6 +1357,7 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this CalculatedColumn object.
 		/// </summary>
+		[IntelliSense("Creates an exact copy of this CalculatedColumn object.")]
 		public CalculatedColumn Clone(string newName = null, bool includeTranslations = true, Table newParent = null) {
 			if(!Handler.PowerBIGovernance.AllowCreate(typeof(CalculatedColumn))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(CalculatedColumn).GetTypeName()));
@@ -1577,6 +1580,7 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this CalculatedTableColumn object.
 		/// </summary>
+		[IntelliSense("Creates an exact copy of this CalculatedTableColumn object.")]
 		public CalculatedTableColumn Clone(string newName = null, bool includeTranslations = true, Table newParent = null) {
 			if(!Handler.PowerBIGovernance.AllowCreate(typeof(CalculatedTableColumn))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(CalculatedTableColumn).GetTypeName()));
@@ -3180,6 +3184,7 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this Culture object.
 		/// </summary>
+		[IntelliSense("Creates an exact copy of this Culture object.")]
 		public Culture Clone(string newName = null) {
 			if(!Handler.PowerBIGovernance.AllowCreate(typeof(Culture))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Culture).GetTypeName()));
@@ -3397,6 +3402,7 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this DataColumn object.
 		/// </summary>
+		[IntelliSense("Creates an exact copy of this DataColumn object.")]
 		public DataColumn Clone(string newName = null, bool includeTranslations = true, Table newParent = null) {
 			if(!Handler.PowerBIGovernance.AllowCreate(typeof(DataColumn))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(DataColumn).GetTypeName()));
@@ -4044,6 +4050,7 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this ExternalModelRoleMember object.
 		/// </summary>
+		[IntelliSense("Creates an exact copy of this ExternalModelRoleMember object.")]
 		public ExternalModelRoleMember Clone(string newName = null, ModelRole newParent = null) {
 			if(!Handler.PowerBIGovernance.AllowCreate(typeof(ExternalModelRoleMember))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(ExternalModelRoleMember).GetTypeName()));
@@ -4572,6 +4579,7 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this Hierarchy object.
 		/// </summary>
+		[IntelliSense("Creates an exact copy of this Hierarchy object.")]
 		public Hierarchy Clone(string newName = null, bool includeTranslations = true, Table newParent = null) {
 			if(!Handler.PowerBIGovernance.AllowCreate(typeof(Hierarchy))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Hierarchy).GetTypeName()));
@@ -5777,6 +5785,7 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this Level object.
 		/// </summary>
+		[IntelliSense("Creates an exact copy of this Level object.")]
 		public Level Clone(string newName = null, bool includeTranslations = true, Hierarchy newParent = null) {
 			if(!Handler.PowerBIGovernance.AllowCreate(typeof(Level))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Level).GetTypeName()));
@@ -6481,6 +6490,7 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this Measure object.
 		/// </summary>
+		[IntelliSense("Creates an exact copy of this Measure object.")]
 		public Measure Clone(string newName = null, bool includeTranslations = true, Table newParent = null) {
 			if(!Handler.PowerBIGovernance.AllowCreate(typeof(Measure))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Measure).GetTypeName()));
@@ -7817,6 +7827,7 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this ModelRole object.
 		/// </summary>
+		[IntelliSense("Creates an exact copy of this ModelRole object.")]
 		public ModelRole Clone(string newName = null) {
 			if(!Handler.PowerBIGovernance.AllowCreate(typeof(ModelRole))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(ModelRole).GetTypeName()));
@@ -8930,6 +8941,7 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this Partition object.
 		/// </summary>
+		[IntelliSense("Creates an exact copy of this Partition object.")]
 		public virtual Partition Clone(string newName = null, Table newParent = null) {
 			if(!Handler.PowerBIGovernance.AllowCreate(typeof(Partition))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Partition).GetTypeName()));
@@ -9466,6 +9478,7 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this Perspective object.
 		/// </summary>
+		[IntelliSense("Creates an exact copy of this Perspective object.")]
 		public Perspective Clone(string newName = null, bool includeTranslations = true) {
 			if(!Handler.PowerBIGovernance.AllowCreate(typeof(Perspective))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Perspective).GetTypeName()));
@@ -9860,6 +9873,7 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this ProviderDataSource object.
 		/// </summary>
+		[IntelliSense("Creates an exact copy of this ProviderDataSource object.")]
 		public ProviderDataSource Clone(string newName = null) {
 			if(!Handler.PowerBIGovernance.AllowCreate(typeof(ProviderDataSource))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(ProviderDataSource).GetTypeName()));
@@ -10704,6 +10718,7 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this SingleColumnRelationship object.
 		/// </summary>
+		[IntelliSense("Creates an exact copy of this SingleColumnRelationship object.")]
 		public SingleColumnRelationship Clone(string newName = null) {
 			if(!Handler.PowerBIGovernance.AllowCreate(typeof(SingleColumnRelationship))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(SingleColumnRelationship).GetTypeName()));
@@ -11280,6 +11295,7 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this Table object.
 		/// </summary>
+		[IntelliSense("Creates an exact copy of this Table object.")]
 		public virtual Table Clone(string newName = null, bool includeTranslations = true) {
 			if(!Handler.PowerBIGovernance.AllowCreate(typeof(Table))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Table).GetTypeName()));
@@ -11649,6 +11665,7 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this WindowsModelRoleMember object.
 		/// </summary>
+		[IntelliSense("Creates an exact copy of this WindowsModelRoleMember object.")]
 		public WindowsModelRoleMember Clone(string newName = null, ModelRole newParent = null) {
 			if(!Handler.PowerBIGovernance.AllowCreate(typeof(WindowsModelRoleMember))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(WindowsModelRoleMember).GetTypeName()));
@@ -12107,6 +12124,7 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this NamedExpression object.
 		/// </summary>
+		[IntelliSense("Creates an exact copy of this NamedExpression object.")]
 		public NamedExpression Clone(string newName = null) {
 			if(!Handler.PowerBIGovernance.AllowCreate(typeof(NamedExpression))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(NamedExpression).GetTypeName()));
@@ -12686,6 +12704,7 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this CalculationItem object.
 		/// </summary>
+		[IntelliSense("Creates an exact copy of this CalculationItem object.")]
 		public CalculationItem Clone(string newName = null, CalculationGroup newParent = null) {
 			if(!Handler.PowerBIGovernance.AllowCreate(typeof(CalculationItem))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(CalculationItem).GetTypeName()));
@@ -13242,6 +13261,7 @@ namespace TabularEditor.TOMWrapper
 		/// <summary>
 		/// Creates an exact copy of this TablePermission object.
 		/// </summary>
+		[IntelliSense("Creates an exact copy of this TablePermission object.")]
 		public TablePermission Clone(string newName = null, ModelRole newParent = null) {
 			if(!Handler.PowerBIGovernance.AllowCreate(typeof(TablePermission))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(TablePermission).GetTypeName()));

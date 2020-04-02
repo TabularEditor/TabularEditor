@@ -16,14 +16,14 @@ using TabularEditor.Utils;
 
 namespace TabularEditor.TOMWrapper
 {
-    partial class Table: IFolder, ITabularPerspectiveObject, IDaxObject,
+    public partial class Table: IFolder, ITabularPerspectiveObject, IDaxObject,
         IErrorMessageObject, IDaxDependantObject, IExpressionObject
     {
         /// <summary>
-        /// Gets the visibility of the Table. Shorthand for !<see cref="IsHidden"/>.
+        /// Indicates whether the table is currently visible to end users. This is the case if the table contains visible measures.
         /// </summary>
-        [Browsable(false)]
-        public bool IsVisible => !IsHidden;
+        [Browsable(false), IntelliSense("Indicates whether the table is currently visible to end users. This is the case if the table contains visible measures.")]
+        public bool IsVisible => !IsHidden || Measures.Any(m => !m.IsHidden);
 
         internal Dictionary<string, Folder> FolderCache = new Dictionary<string, Folder>();
 
@@ -32,7 +32,10 @@ namespace TabularEditor.TOMWrapper
 
         string IExpressionObject.Expression { get { return ""; } set { } }
 
-        [Browsable(false)]
+        /// <summary>
+        /// Gets the list of objects that this table depends on.
+        /// </summary>
+        [Browsable(false), IntelliSense("Gets the list of objects that this table depends on.")]
         public DependsOnList DependsOn
         {
             get
@@ -43,7 +46,10 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        [Browsable(false)]
+        /// <summary>
+        /// Gets the list of objects that reference this table.
+        /// </summary>
+        [Browsable(false), IntelliSense("Gets the list of objects that reference this table.")]
         public ReferencedByList ReferencedBy { get; } = new ReferencedByList();
 
         protected override bool AllowDelete(out string message)
@@ -61,7 +67,14 @@ namespace TabularEditor.TOMWrapper
         }
 
         #region Convenient methods
-        [IntelliSense("Adds a new measure to the table."), Tests.GenerateTest()]
+        /// <summary>
+        /// Adds a new measure to the table and returns a reference to the measure.
+        /// </summary>
+        /// <param name="name">Name of the measure</param>
+        /// <param name="expression">DAX expression to assign to the measure</param>
+        /// <param name="displayFolder">Display Folder to assign to the measure</param>
+        /// <returns>A reference to the newly added measure.</returns>
+        [IntelliSense("Adds a new measure to the table and returns a reference to the measure."), Tests.GenerateTest()]
         public Measure AddMeasure(string name = null, string expression = null, string displayFolder = null)
         {
             Handler.BeginUpdate("add measure");
@@ -72,7 +85,13 @@ namespace TabularEditor.TOMWrapper
             return measure;
         }
 
-        [IntelliSense("Adds a new (legacy) partition to the table."), Tests.GenerateTest()]
+        /// <summary>
+        /// Adds a new (legacy) partition to the table and returns a reference to the partition.
+        /// </summary>
+        /// <param name="name">The name of the partition</param>
+        /// <param name="query">The query expression to assign to the partition.</param>
+        /// <returns>A reference to the newly added partition.</returns>
+        [IntelliSense("Adds a new (legacy) partition to the table and returns a reference to the partition."), Tests.GenerateTest()]
         public Partition AddPartition(string name = null, string query = null)
         {
             Handler.BeginUpdate("add partition");
@@ -82,7 +101,13 @@ namespace TabularEditor.TOMWrapper
             return partition;
         }
 
-        [IntelliSense("Adds a new M partition to the table."), Tests.GenerateTest(), Tests.CompatibilityLevel(1400)]
+        /// <summary>
+        /// Adds a new M partition to the table and returns a reference to the partition.
+        /// </summary>
+        /// <param name="name">The name of the partition</param>
+        /// <param name="expression">The M expression to assign to the partition.</param>
+        /// <returns>A reference to the newly added partition.</returns>
+        [IntelliSense("Adds a new M partition to the table and returns a reference to the partition."), Tests.GenerateTest(), Tests.CompatibilityLevel(1400)]
         public MPartition AddMPartition(string name = null, string expression = null)
         {
             Handler.BeginUpdate("add partition");
@@ -92,7 +117,14 @@ namespace TabularEditor.TOMWrapper
             return partition;
         }
 
-        [IntelliSense("Adds a new calculated column to the table."),Tests.GenerateTest()]
+        /// <summary>
+        /// Adds a new calculated column to the table and returns a reference to the column.
+        /// </summary>
+        /// <param name="name">The name of the column</param>
+        /// <param name="expression">DAX expression to assign to the column</param>
+        /// <param name="displayFolder">Display Folder to assign to the column</param>
+        /// <returns>A reference to the newly added column</returns>
+        [IntelliSense("Adds a new calculated column to the table and returns a reference to the column."),Tests.GenerateTest()]
         public CalculatedColumn AddCalculatedColumn(string name = null, string expression = null, string displayFolder = null)
         {
             Handler.BeginUpdate("add calculated column");
@@ -103,7 +135,15 @@ namespace TabularEditor.TOMWrapper
             return column;
         }
 
-        [IntelliSense("Adds a new Data column to the table."), Tests.GenerateTest()]
+        /// <summary>
+        /// Adds a new data column to the table and returns a reference to the column.
+        /// </summary>
+        /// <param name="name">The name of the column</param>
+        /// <param name="sourceColumn">The name of the column in the source query</param>
+        /// <param name="displayFolder">Display Folder to assign to the column</param>
+        /// <param name="dataType">Data Type to assign to the column</param>
+        /// <returns>A reference to the newly added column</returns>
+        [IntelliSense("Adds a new data column to the table and returns a reference to the column."), Tests.GenerateTest()]
         public DataColumn AddDataColumn(string name = null, string sourceColumn = null, string displayFolder = null, DataType dataType = DataType.String)
         {
             if (!Handler.PowerBIGovernance.AllowCreate(typeof(DataColumn)))
@@ -118,8 +158,14 @@ namespace TabularEditor.TOMWrapper
             return column;
         }
 
-
-        [IntelliSense("Adds a new hierarchy to the table."), Tests.GenerateTest()]
+        /// <summary>
+        /// Adds a new hierarchy to the table and returns a reference to the hierarchy.
+        /// </summary>
+        /// <param name="name">Name of the hierarchy.</param>
+        /// <param name="displayFolder">Display folder of the hierarchy.</param>
+        /// <param name="levels">A list of columns to add as levels of the hierarchy</param>
+        /// <returns></returns>
+        [IntelliSense("Adds a new hierarchy to the table and returns a reference to the hierarchy."), Tests.GenerateTest()]
         public Hierarchy AddHierarchy(string name = null, string displayFolder = null, params Column[] levels)
         {
             Handler.BeginUpdate("add hierarchy");
@@ -132,8 +178,15 @@ namespace TabularEditor.TOMWrapper
             Handler.EndUpdate();
             return hierarchy;
         }
-        
-        [IntelliSense("Adds a new hierarchy to the table.")]
+
+        /// <summary>
+        /// Adds a new hierarchy to the table and returns a reference to the hierarchy.
+        /// </summary>
+        /// <param name="name">Name of the hierarchy.</param>
+        /// <param name="displayFolder">Display folder of the hierarchy.</param>
+        /// <param name="levels">A list of column names to add as levels of the hierarchy</param>
+        /// <returns></returns>
+        [IntelliSense("Adds a new hierarchy to the table and returns a reference to the hierarchy.")]
         public Hierarchy AddHierarchy(string name, string displayFolder = null, params string[] levels)
         {
             return AddHierarchy(name, displayFolder, levels.Select(s => Columns[s]).ToArray());
@@ -186,10 +239,12 @@ namespace TabularEditor.TOMWrapper
             base.DeleteLinkedObjects(isChildOfDeleted);
         }
 
-        [Browsable(false)]
-        public Table ParentTable { get { return this; } }
+        Table IFolder.ParentTable { get { return this; } }
 
-        [Category("Data Source")]
+        /// <summary>
+        /// Gets the name of the data source used by the table.
+        /// </summary>
+        [Category("Data Source"), IntelliSense("Gets the name of the data source used by the table.")]
         public string Source {
             get
             {
@@ -199,7 +254,11 @@ namespace TabularEditor.TOMWrapper
                 return sourceName ?? ds?.Name;
             }
         }
-        [Category("Data Source"), DisplayName("Source Type")]
+
+        /// <summary>
+        /// Gets the type of the data source used by the table.
+        /// </summary>
+        [Category("Data Source"), DisplayName("Source Type"), IntelliSense("Gets the type of the data source used by the table.")]
         public PartitionSourceType SourceType
         {
             get
@@ -231,10 +290,16 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        [Browsable(true), DisplayName("Row Level Security"), Category("Security")]
+        /// <summary>
+        /// Provides a convenient way to access the Row Level Filters assigned to this table across different roles.
+        /// </summary>
+        [Browsable(true), DisplayName("Row Level Security"), Category("Security"), IntelliSense("Provides a convenient way to access the Row Level Filters assigned to this table across different roles.")]
         public TableRLSIndexer RowLevelSecurity { get; private set; }
 
-        [Browsable(false)]
+        /// <summary>
+        /// Gets a string that may be used for referencing the table in a DAX expression.
+        /// </summary>
+        [Browsable(false), IntelliSense("Gets a string that may be used for referencing the table in a DAX expression.")]
         public string DaxObjectName
         {
             get
@@ -243,6 +308,9 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        /// <summary>
+        /// Gets a string that may be used for referencing the table in a DAX expression.
+        /// </summary>
         [Browsable(true), Category("Metadata"), DisplayName("DAX identifier")]
         public string DaxObjectFullName
         {
@@ -252,6 +320,9 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        /// <summary>
+        /// Gets a string that may be used for referencing the table in a DAX expression.
+        /// </summary>
         [Browsable(false)]
         public string DaxTableName
         {
@@ -265,6 +336,7 @@ namespace TabularEditor.TOMWrapper
         /// Returns all columns, measures and hierarchies inside this table.
         /// </summary>
         /// <returns></returns>
+        [IntelliSense("Returns all columns, measures and hierarchies inside this table.")]
         public virtual IEnumerable<ITabularNamedObject> GetChildren()
         {
             foreach (var m in Measures) yield return m;
@@ -273,6 +345,10 @@ namespace TabularEditor.TOMWrapper
             yield break;
         }
 
+        /// <summary>
+        /// Returns all columns, measures and hierarchies at the root of the table (i.e. those that have an empty DisplayFolder string).
+        /// </summary>
+        /// <returns></returns>
         public virtual IEnumerable<IFolderObject> GetChildrenByFolders()
         {
             return FolderCache[""].GetChildrenByFolders();
@@ -304,7 +380,11 @@ namespace TabularEditor.TOMWrapper
         }
 
         private TableOLSIndexer _objectLevelSecurtiy;
-        [DisplayName("Object Level Security"), Category("Security")]
+
+        /// <summary>
+        /// Provides a convenient way to get or set the Object-Level permissions assigned to this table across different roles.
+        /// </summary>
+        [DisplayName("Object Level Security"), Category("Security"), IntelliSense("Provides a convenient way to get or set the Object-Level permissions assigned to this table across different roles.")]
         public TableOLSIndexer ObjectLevelSecurity
         {
             get
@@ -320,7 +400,7 @@ namespace TabularEditor.TOMWrapper
         }
         private bool ShouldSerializeObjectLevelSecurity() { return false; }
 
-        public static readonly Dictionary<Type, DataType> DataTypeMapping =
+        private static readonly Dictionary<Type, DataType> DataTypeMapping =
             new Dictionary<Type, DataType>() {
                 { typeof(string), DataType.String },
                 { typeof(char), DataType.String },
@@ -341,7 +421,8 @@ namespace TabularEditor.TOMWrapper
                 { typeof(object), DataType.Variant }
             };
 
-        [IntelliSense("Creates a Data Column of suitable type for each column in the source query. Only works for OLE DB partition sources.")]
+        [Obsolete]
+        [IntelliSense("DEPRECATED: Use SchemaCheck(table) instead.")]
         public void RefreshDataColumns()
         {
             if (Partitions.Count == 0 || !(Partitions[0].DataSource is ProviderDataSource) || string.IsNullOrEmpty(Partitions[0].Query))
@@ -389,7 +470,10 @@ namespace TabularEditor.TOMWrapper
 
         private string em;
 
-        [Category("Metadata"),DisplayName("Error Message")]
+        /// <summary>
+        /// Gets the error message currently reported on this table.
+        /// </summary>
+        [Category("Metadata"),DisplayName("Error Message"), IntelliSense("Gets the error message currently reported on this table.")]
         public virtual string ErrorMessage {
             get { return em; }
             protected set { em = value; }
@@ -463,6 +547,9 @@ namespace TabularEditor.TOMWrapper
             base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
         }
 
+        /// <summary>
+        /// A DAX expression specifying default detail rows for this table (drill-through in client tools).
+        /// </summary>
         [DisplayName("Default Detail Rows Expression")]
         [Category("Options"), IntelliSense("A DAX expression specifying default detail rows for this table (drill-through in client tools).")]
         [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
