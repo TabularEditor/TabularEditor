@@ -467,6 +467,7 @@ if(Rules.GetParent(t) == "Model") { #>
 		/// <summary>
 		/// Creates an exact copy of this <#= t.Name #> object.
 		/// </summary>
+		[IntelliSense("Creates an exact copy of this <#= t.Name #> object.")]
 		public <#= Rules.Sealed(t) ? "" : "virtual " #><#= t.Name #> Clone(string newName = null<#= 
 Rules.IsTranslatable(t, true) ? ", bool includeTranslations = true" : "" #><#=
 Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" : "" #>) {
