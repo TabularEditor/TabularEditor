@@ -72,9 +72,11 @@ namespace TOMWrapperTest
 
             var calcGroup = model.CalculationGroups.First();
             var newCi = calcGroup.AddCalculationItem("Test");
-            //Assert.IsTrue(handler.PowerBIGovernance.AllowEditName(newCi));
+            Assert.IsTrue(handler.PowerBIGovernance.AllowEditName(newCi));
             newCi.Name = "Renamed CI"; Assert.AreEqual("Renamed CI", newCi.Name);
             calcGroup.Name = "Renamed CG"; Assert.AreEqual("Renamed CG", calcGroup.Name);
+
+            Assert.IsTrue(handler.PowerBIGovernance.VisibleProperty(ObjectType.Model, Properties.DISCOURAGEIMPLICITMEASURES));
         }
 
         [TestMethod]
