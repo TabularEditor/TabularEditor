@@ -173,10 +173,13 @@ namespace TabularEditor.TOMWrapper.Serialization
 
         private const string ANN_SAVESENSITIVE = "TabularEditor_SaveSensitive";
 
-        public static string SerializeDB(SerializeOptions options)
+        public static string SerializeDB(SerializeOptions options, bool includeTabularEditorTag)
         {
             var db = TabularModelHandler.Singleton.Database;
-            db.RemoveTabularEditorTag();
+            if (includeTabularEditorTag)
+                db.AddTabularEditorTag();
+            else
+                db.RemoveTabularEditorTag();
 
             // Remove object translations with no objects assigned:
             var nullTrans = db.Model.Cultures.SelectMany(c => c.ObjectTranslations).Where(ot => ot.Object == null).ToList();
@@ -198,6 +201,8 @@ namespace TabularEditor.TOMWrapper.Serialization
                     SplitMultilineStrings = options.SplitMultilineStrings,
                     IncludeRestrictedInformation = db.Model.Annotations.Contains(ANN_SAVESENSITIVE) && db.Model.Annotations[ANN_SAVESENSITIVE].Value == "1"
                 });
+
+            db.RemoveTabularEditorTag();
 
             // Hack: Remove \r characters from multiline strings in the BIM:
             // "1 + 2\r", -> "1 + 2",

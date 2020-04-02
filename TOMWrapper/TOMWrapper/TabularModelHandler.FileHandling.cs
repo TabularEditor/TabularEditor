@@ -206,7 +206,7 @@ namespace TabularEditor.TOMWrapper
                 throw new InvalidOperationException("Tabular Editor cannot currently convert an Analysis Services Tabular model to a Power BI Template. Please choose a different save format.");
             }
 
-            var dbcontent = Serializer.SerializeDB(SerializeOptions.PowerBi);
+            var dbcontent = Serializer.SerializeDB(SerializeOptions.PowerBi, true);
 
             // Save to .pbit file:
             pbit.ModelJson = dbcontent;
@@ -215,7 +215,7 @@ namespace TabularEditor.TOMWrapper
 
         private void SaveFile(string fileName, SerializeOptions options)
         {
-            var dbcontent = Serializer.SerializeDB(options);
+            var dbcontent = Serializer.SerializeDB(options, false);
             var jObject = JObject.Parse(dbcontent);
 
             jObject["name"] = Model.Database?.Name ?? "SemanticModel";
