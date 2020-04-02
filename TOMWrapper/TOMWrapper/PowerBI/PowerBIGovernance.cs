@@ -102,6 +102,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
                     case Properties.DESCRIPTION:
                     case Properties.DISPLAYFOLDER:
                     case Properties.KPI:
+                    case Properties.DISCOURAGEIMPLICITMEASURES:
                         return true;
                 }
 
@@ -236,6 +237,8 @@ namespace TabularEditor.TOMWrapper.PowerBI
                 case Properties.MEMBERNAME:
                 case Properties.MEMBERTYPE:
                 case Properties.IDENTITYPROVIDER:
+                case Properties.DISCOURAGEIMPLICITMEASURES:
+                case Properties.DATABASE:
                     return true;
             }
             return false;
