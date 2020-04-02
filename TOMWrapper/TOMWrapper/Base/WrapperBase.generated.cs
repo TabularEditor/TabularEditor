@@ -11314,6 +11314,7 @@ namespace TabularEditor.TOMWrapper
 
 			// TODO: Make sure that dependency trees are properly rebuilt when IDaxDependantObjects are cloned
 			// FormulaFixup.BuildDependencyTree(this);
+			Handler.UpdateFolders(obj);
             Handler.EndUpdate();
 
             return obj;
