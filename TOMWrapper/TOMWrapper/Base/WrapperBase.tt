@@ -509,6 +509,9 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 			// TODO: Make sure that dependency trees are properly rebuilt when IDaxDependantObjects are cloned
 			// FormulaFixup.BuildDependencyTree(this);
 <# } #>
+<# if(t.Name == "Table") { #>
+			Handler.UpdateFolders(obj);
+<# } #>
             Handler.EndUpdate();
 
             return obj;
