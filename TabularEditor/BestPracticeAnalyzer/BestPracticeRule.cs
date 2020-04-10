@@ -128,11 +128,20 @@ namespace TabularEditor.BestPracticeAnalyzer
         public string ID { get; set; } = "";
         public string Name { get; set; }
         public string Category { get; set; }
+        public bool ShouldSerializeCategory()
+        {
+            return !string.IsNullOrEmpty(Category);
+        }
 
         [JsonIgnore]
         public bool Enabled { get; set; } = true;
 
         public string Description { get; set; }
+
+        public bool ShouldSerializeDescription()
+        {
+            return !string.IsNullOrEmpty(Description);
+        }
         public int Severity { get; set; } = 1;
 
         [JsonConverter(typeof(RuleScopeConverter))]
@@ -177,6 +186,10 @@ namespace TabularEditor.BestPracticeAnalyzer
         }
         private bool _needsRecompile = true;
         public string FixExpression { get; set; }
+        public bool ShouldSerializeFixExpression()
+        {
+            return !string.IsNullOrEmpty(FixExpression);
+        }
         public int CompatibilityLevel { get; set; }
 
         [JsonIgnore]
@@ -304,8 +317,10 @@ namespace TabularEditor.BestPracticeAnalyzer
             }
         }
 
+        [JsonIgnore]
         public int ObjectCount { get; private set; }
         internal bool HasError => !string.IsNullOrEmpty(ErrorMessage);
+        [JsonIgnore]
         public string ErrorMessage { get; private set; }
 
         public BestPracticeRule Clone()
@@ -327,7 +342,15 @@ namespace TabularEditor.BestPracticeAnalyzer
             ObjectCount = other.ObjectCount;
             Scope = other.Scope;
             Severity = other.Severity;
+            Remarks = other.Remarks;
         }
+
+        public string Remarks { get; set; }
+        public bool ShouldSerializeRemarks()
+        {
+            return !string.IsNullOrEmpty(Remarks);
+        }
+
     }
 
     public class RuleScopeConverter: StringEnumConverter
