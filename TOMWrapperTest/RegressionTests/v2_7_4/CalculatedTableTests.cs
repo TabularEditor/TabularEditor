@@ -11,7 +11,7 @@ namespace TOMWrapperTest.RegressionTests.v2_7_4
         [TestMethod]
         public void ColumnsAndDataTypeNotVisibleInTreeTest()
         {
-            var handler = new TabularModelHandler("localhost", "TestModel");
+            var handler = new TabularModelHandler(Constants.ServerName, "TestModel");
             handler.Tree.Options = 0; // Hide everything
             var model = handler.Model;
 
@@ -36,7 +36,7 @@ namespace TOMWrapperTest.RegressionTests.v2_7_4
         [TestMethod]
         public void ColumnsAndDataTypeVisibleInTreeTest()
         {
-            var handler = new TabularModelHandler("localhost", "TestModel");
+            var handler = new TabularModelHandler(Constants.ServerName, "TestModel");
             handler.Tree.Options = LogicalTreeOptions.Columns;
             var model = handler.Model;
 
@@ -61,7 +61,7 @@ namespace TOMWrapperTest.RegressionTests.v2_7_4
         [TestMethod]
         public void ColumnsAndDataTypeVisibleInTreeWithDisplayFoldersTest()
         {
-            var handler = new TabularModelHandler("localhost", "TestModel");
+            var handler = new TabularModelHandler(Constants.ServerName, "TestModel");
             handler.Tree.Options = LogicalTreeOptions.Columns | LogicalTreeOptions.DisplayFolders;
             var model = handler.Model;
 
@@ -86,7 +86,7 @@ namespace TOMWrapperTest.RegressionTests.v2_7_4
         [TestMethod]
         public void ColumnsAndDataTypeVisibleInTreeAlphabeticalTest()
         {
-            var handler = new TabularModelHandler("localhost", "TestModel");
+            var handler = new TabularModelHandler(Constants.ServerName, "TestModel");
             handler.Tree.Options = LogicalTreeOptions.Columns | LogicalTreeOptions.DisplayFolders | LogicalTreeOptions.OrderByName;
             var model = handler.Model;
 

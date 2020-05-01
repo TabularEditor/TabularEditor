@@ -15,7 +15,7 @@ namespace TOMWrapperTest.RegressionTests.v2_8_5
         [TestMethod]
         public void LockedAfterTryingToProvideDuplicateName()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
             var model = handler.Model;
             var m1 = model.Tables["Employee"].AddMeasure("Hello1");
             var m2 = model.Tables["Employee"].AddMeasure("Hello2");
