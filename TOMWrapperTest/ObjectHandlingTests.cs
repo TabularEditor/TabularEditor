@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.TOMWrapper.Serialization;
+using TOMWrapperTest;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -10,7 +11,6 @@ namespace TabularEditor.TOMWrapper
     public class ObjectHandlingTests
     {
         const int CompatibilityLevel = 1200;
-        const string ServerName = @"localhost";
         const string TestFileName = "testmodel1200.bim";
         const string TestDBName = "TestModel";
         /// <summary>
@@ -112,9 +112,9 @@ namespace TabularEditor.TOMWrapper
         {
             CreateTestModel(TestFileName);
             var tm = new TabularModelHandler(TestFileName);
-            TabularDeployer.Deploy(tm, ServerName, TestDBName, DeploymentOptions.Full);
+            TabularDeployer.Deploy(tm, Constants.ServerName, TestDBName, DeploymentOptions.Full);
 
-            return new TabularModelHandler(ServerName, TestDBName);
+            return new TabularModelHandler(Constants.ServerName, TestDBName);
         }
 
         [TestMethod]

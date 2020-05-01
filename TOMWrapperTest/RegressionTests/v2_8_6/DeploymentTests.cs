@@ -15,12 +15,12 @@ namespace TOMWrapperTest.RegressionTests.v2_8_6
         {
             var newDbName = "AdventureWorks_UT_New1";
             var server = new TOM.Server();
-            server.Connect("localhost");
+            server.Connect(Constants.ServerName);
             if(server.Databases.ContainsName(newDbName)) server.Databases[newDbName].Drop();
 
             var handler = new TabularModelHandler("TestData\\AdventureWorks.bim");
 
-            var results = TabularDeployer.Deploy(handler, "localhost", newDbName);
+            var results = TabularDeployer.Deploy(handler, Constants.ServerName, newDbName);
 
             Assert.AreEqual(0, results.Issues.Count);
             Assert.AreNotEqual(0, results.Unprocessed.Count);
@@ -35,13 +35,13 @@ namespace TOMWrapperTest.RegressionTests.v2_8_6
         {
             var newDbName = "AdventureWorks_UT_New2";
             var server = new TOM.Server();
-            server.Connect("localhost");
+            server.Connect(Constants.ServerName);
             if (server.Databases.ContainsName(newDbName)) server.Databases[newDbName].Drop();
 
             var handler = new TabularModelHandler("TestData\\AdventureWorks.bim");
             handler.Model.Tables["Employee"].AddMeasure("ErrorTest", "xxx");
 
-            var results = TabularDeployer.Deploy(handler, "localhost", newDbName);
+            var results = TabularDeployer.Deploy(handler, Constants.ServerName, newDbName);
 
             Assert.AreNotEqual(0, results.Issues.Count);
             Assert.AreNotEqual(0, results.Unprocessed.Count);
@@ -56,13 +56,13 @@ namespace TOMWrapperTest.RegressionTests.v2_8_6
         {
             var newDbName = "AdventureWorks_UT_New3";
             var server = new TOM.Server();
-            server.Connect("localhost");
+            server.Connect(Constants.ServerName);
             if (server.Databases.ContainsName(newDbName)) server.Databases[newDbName].Drop();
 
             var handler = new TabularModelHandler("TestData\\AdventureWorks.bim");
             handler.Model.Tables["Employee"].AddCalculatedColumn("ErrorTest", "xxx");
 
-            var results = TabularDeployer.Deploy(handler, "localhost", newDbName);
+            var results = TabularDeployer.Deploy(handler, Constants.ServerName, newDbName);
 
             Assert.AreNotEqual(0, results.Issues.Count);
             Assert.AreNotEqual(0, results.Unprocessed.Count);
@@ -76,7 +76,7 @@ namespace TOMWrapperTest.RegressionTests.v2_8_6
         public void TestExistingDeployment()
         {
             var s = new Server();
-            s.Connect("localhost");
+            s.Connect(Constants.ServerName);
             if(s.Databases.ContainsName("AdventureWorks_X"))
             {
                 s.Databases["AdventureWorks_X"].Drop();
@@ -84,16 +84,16 @@ namespace TOMWrapperTest.RegressionTests.v2_8_6
             s.Disconnect();
 
             var orgModel = new TabularModelHandler("TestData\\AdventureWorks2.bim");
-            TabularDeployer.Deploy(orgModel, "localhost", "AdventureWorks_X");
+            TabularDeployer.Deploy(orgModel, Constants.ServerName, "AdventureWorks_X");
             
 
             var modifiedModel = new TabularModelHandler("TestData\\AdventureWorks.bim");
             foreach (var p in modifiedModel.Model.Perspectives.ToList()) p.Delete();
             modifiedModel.Model.Tables["Product"].Delete();
 
-            TabularDeployer.Deploy(modifiedModel, "localhost", "AdventureWorks_X");
+            TabularDeployer.Deploy(modifiedModel, Constants.ServerName, "AdventureWorks_X");
 
-            TabularDeployer.Deploy(orgModel, "localhost", "AdventureWorks_X");
+            TabularDeployer.Deploy(orgModel, Constants.ServerName, "AdventureWorks_X");
         }
     }
 }
