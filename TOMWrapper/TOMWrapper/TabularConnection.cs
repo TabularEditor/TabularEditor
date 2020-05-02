@@ -15,10 +15,10 @@ namespace TabularEditor.TOMWrapper
 
         public static string GetConnectionString(string serverName, string userName, string password)
         {
-            return string.Format("Provider=MSOLAP;DataSource={0};User ID={1};Password={2};Persist Security Info=True;Impersonation Level=Impersonate;",
+            return string.Format(@"Provider=MSOLAP;DataSource={0};User ID={1};Password=""{2}"";Persist Security Info=True;Impersonation Level=Impersonate;",
                 serverName,
                 userName,
-                password);
+                password.Replace(@"""", @""""""));
         }
     }
 }
