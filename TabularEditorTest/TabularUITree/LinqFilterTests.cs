@@ -14,7 +14,7 @@ namespace TabularEditor
         [TestMethod]
         public void BasicLinqFilterTest()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
             var uiTree = new TabularUITree(handler);
 
             uiTree.FilterMode = FilterMode.Flat;
@@ -23,14 +23,14 @@ namespace TabularEditor
             uiTree.Filter = ":ObjectType=\"Table\"";
             var items = uiTree.GetChildrenInternal(TreePath.Empty).ToList();
 
-            Assert.AreEqual(14, items.Count);
+            Assert.AreEqual(15, items.Count);
 
         }
 
         [TestMethod]
         public void NullSafetyTest()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
             var uiTree = new TabularUITree(handler);
             handler.Model.Tables["Currency"].SetAnnotation("NotNull", "This is a test");
 
@@ -46,7 +46,7 @@ namespace TabularEditor
         [TestMethod]
         public void PerformanceTest()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
             var uiTree = new TabularUITree(handler);
             handler.Model.Tables["Currency"].SetAnnotation("NotNull", "This is a test");
 

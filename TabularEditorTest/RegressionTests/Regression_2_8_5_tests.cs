@@ -20,7 +20,7 @@ namespace TabularEditor.RegressionTests
                 var ui = fm.UI;
                 fm.Show();
 
-                ui.Database_Open("localhost", "AdventureWorks");
+                ui.Database_Open(Constants.ServerName, "TomWrapperTest");
                 var model = ui.Handler.Model;
 
                 ui.Goto(model.Tables["Employee"]);
@@ -55,7 +55,7 @@ namespace TabularEditor.RegressionTests
                 var ui = fm.UI;
                 fm.Show();
 
-                ui.Database_Open("localhost", "AdventureWorks");
+                ui.Database_Open(Constants.ServerName, "TomWrapperTest");
                 var model = ui.Handler.Model;
 
                 ui.Goto(model.Tables["Employee"]);
@@ -90,7 +90,7 @@ namespace TabularEditor.RegressionTests
                 fm.Show();
                 var ui = fm.UI;
 
-                ui.Database_Open("localhost", "AdventureWorks");
+                ui.Database_Open(Constants.ServerName, "TomWrapperTest");
                 var model = ui.Handler.Model;
 
                 ui.Goto(model.Tables["Employee"]);
@@ -127,7 +127,7 @@ namespace TabularEditor.RegressionTests
                 fm.Show();
                 var ui = fm.UI;
 
-                ui.Database_Open("localhost", "AdventureWorks");
+                ui.Database_Open(Constants.ServerName, "TomWrapperTest");
                 var model = ui.Handler.Model;
 
                 ui.Goto(model.Tables["Employee"]);
