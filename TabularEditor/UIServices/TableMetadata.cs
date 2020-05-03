@@ -152,12 +152,13 @@ namespace TabularEditor.UIServices
                 var tCols = table.DataColumns.Where(col => col.SourceColumn.EqualsI(colName) || col.SourceColumn.EqualsI("[" + colName + "]"));
                 if (tCols.Count() == 0)
                 {
-                    result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.SourceColumnAdded, SourceColumn = colName, SourceType = typeMapping.MappedType, SourceProviderType = typeMapping.ProviderType });
+                    if(!table.CheckFlag("TabularEditor_IgnoreSourceColumnAdded"))
+                        result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.SourceColumnAdded, SourceColumn = colName, SourceType = typeMapping.MappedType, SourceProviderType = typeMapping.ProviderType });
                 }
                 foreach (var tCol in tCols)
                 {
                     matchedColumns.Add(tCol);
-                    if (tCol.DataType != typeMapping.MappedType)
+                    if (tCol.DataType != typeMapping.MappedType && !tCol.CheckFlag("TabularEditor_IgnoreDataTypeChange"))
                     {
                         result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.DataTypeChange, ModelColumn = tCol, SourceColumn = colName, SourceType = typeMapping.MappedType, SourceProviderType = typeMapping.ProviderType });
                     }
@@ -165,7 +166,8 @@ namespace TabularEditor.UIServices
             }
             foreach (var col in table.DataColumns.Where(c => !matchedColumns.Contains(c)))
             {
-                result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.SourceColumnNotFound, ModelColumn = col });
+                if(!col.CheckFlag("TabularEditor_IgnoreMissingSourceColumn"))
+                    result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.SourceColumnNotFound, ModelColumn = col });
             }
 
             return result;
