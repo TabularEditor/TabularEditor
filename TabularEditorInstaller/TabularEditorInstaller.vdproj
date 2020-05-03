@@ -46,7 +46,7 @@
         "Entry"
         {
         "MsmKey" = "8:_2856991F7952BAD7B009859598DAFB17"
-        "OwnerKey" = "8:_CE28F9A0B2916DB17B0C51E000795538"
+        "OwnerKey" = "8:_BC986EDA930A0B0DCCF9827BFC10D9B7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -70,7 +70,7 @@
         "Entry"
         {
         "MsmKey" = "8:_53A288DB3B8AD4825E34EC980FA28DDD"
-        "OwnerKey" = "8:_CE28F9A0B2916DB17B0C51E000795538"
+        "OwnerKey" = "8:_BC986EDA930A0B0DCCF9827BFC10D9B7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -124,7 +124,7 @@
         "Entry"
         {
         "MsmKey" = "8:_987150E1259639B0B3BD334CF6F285C5"
-        "OwnerKey" = "8:_CE28F9A0B2916DB17B0C51E000795538"
+        "OwnerKey" = "8:_BC986EDA930A0B0DCCF9827BFC10D9B7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -154,12 +154,12 @@
         "Entry"
         {
         "MsmKey" = "8:_B37266071E89FEB5B22A5B416B33062C"
-        "OwnerKey" = "8:_CE28F9A0B2916DB17B0C51E000795538"
+        "OwnerKey" = "8:_BC986EDA930A0B0DCCF9827BFC10D9B7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_CE28F9A0B2916DB17B0C51E000795538"
+        "MsmKey" = "8:_BC986EDA930A0B0DCCF9827BFC10D9B7"
         "OwnerKey" = "8:_FC544BBFC4AE4FBCBA61AA486C697C6C"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -196,7 +196,7 @@
         "Entry"
         {
         "MsmKey" = "8:_E1196A10BF8A7B83886FAB26159C7DC6"
-        "OwnerKey" = "8:_CE28F9A0B2916DB17B0C51E000795538"
+        "OwnerKey" = "8:_BC986EDA930A0B0DCCF9827BFC10D9B7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -220,7 +220,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_CE28F9A0B2916DB17B0C51E000795538"
+        "OwnerKey" = "8:_BC986EDA930A0B0DCCF9827BFC10D9B7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -928,14 +928,14 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_CE28F9A0B2916DB17B0C51E000795538"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_BC986EDA930A0B0DCCF9827BFC10D9B7"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:TOMWrapper, Version=2.9.7428.30417, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:TOMWrapper, Version=2.9.7428.30972, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_CE28F9A0B2916DB17B0C51E000795538"
+                    "_BC986EDA930A0B0DCCF9827BFC10D9B7"
                     {
                     "Name" = "8:TOMWrapper.dll"
                     "Attributes" = "3:512"
@@ -1184,7 +1184,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Tabular Editor"
         "ProductCode" = "8:{06211400-B412-4D30-82FB-7CAEDDE8477D}"
-        "PackageCode" = "8:{FA612677-5F91-48C1-B83B-96B4AAC6FB86}"
+        "PackageCode" = "8:{4EBAEF40-1081-41D2-BDA8-A28FC71B8C3C}"
         "UpgradeCode" = "8:{E20734F5-CD2A-4A76-AB20-014819FCDE35}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -1192,20 +1192,20 @@
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
         "ProductVersion" = "8:2.9.8"
-        "Manufacturer" = "8:Daniel Otykier"
+        "Manufacturer" = "8:Kapacity A/S"
         "ARPHELPTELEPHONE" = "8:"
-        "ARPHELPLINK" = "8:https://github.com/otykier/TabularEditor/issues"
+        "ARPHELPLINK" = "8:https://tabulareditor.com"
         "Title" = "8:Tabular Editor Installer"
         "Subject" = "8:"
         "ARPCONTACT" = "8:Daniel Otykier"
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:"
-        "ARPURLINFOABOUT" = "8:"
+        "ARPURLINFOABOUT" = "8:www.kapacity.dk"
         "ARPPRODUCTICON" = "8:"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
-        "TargetPlatform" = "3:1"
+        "TargetPlatform" = "3:0"
         "PreBuildEvent" = "8:"
         "PostBuildEvent" = "8:"
         "RunPostBuildEvent" = "3:0"
@@ -2083,7 +2083,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_FC544BBFC4AE4FBCBA61AA486C697C6C"
             {
-            "SourcePath" = "8:..\\TabularEditor\\obj\\Debug\\TabularEditor.exe"
+            "SourcePath" = "8:..\\TabularEditor\\obj\\Release\\TabularEditor.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_86B6DEA1587144389D74191CBF86D6D0"
