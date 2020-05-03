@@ -78,6 +78,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegressionTests\Regression_2_8_5_tests.cs" />
     <Compile Include="RegressionTests\Regression_2_8_1_tests.cs" />
+    <Compile Include="ReportedIssues\Issue_0460.cs" />
     <Compile Include="ScriptParser\ScriptParserTests.cs" />
     <Compile Include="ScriptEngineTests.cs" />
     <Compile Include="TabularUITree\LinqFilterTests.cs" />

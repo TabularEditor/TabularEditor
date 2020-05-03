@@ -148,10 +148,16 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
         {
             if (enableVSTS)
             {
-                Console.WriteLine("##vso[task.logissue type=error;]" + errorMessage, args);
+                if(args.Length == 0)
+                    Console.WriteLine("##vso[task.logissue type=error;]" + errorMessage);
+                else
+                    Console.WriteLine("##vso[task.logissue type=error;]" + errorMessage, args);
             }
             else
-                Console.WriteLine(errorMessage, args);
+                if(args.Length == 0)
+                    Console.WriteLine(errorMessage);
+                else
+                    Console.WriteLine(errorMessage, args);
 
             errorCount++;
         }
@@ -159,8 +165,14 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
         {
             if (enableVSTS)
             {
-                Console.WriteLine("##vso[task.logissue type=warning;]" + errorMessage, args);
+                if (args.Length == 0)
+                    Console.WriteLine("##vso[task.logissue type=warning;]" + errorMessage);
+                else
+                    Console.WriteLine("##vso[task.logissue type=warning;]" + errorMessage, args);
             }
+            else
+                if (args.Length == 0)
+                Console.WriteLine(errorMessage);
             else
                 Console.WriteLine(errorMessage, args);
 
