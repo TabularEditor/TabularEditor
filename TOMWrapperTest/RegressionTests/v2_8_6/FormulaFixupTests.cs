@@ -15,7 +15,7 @@ namespace TOMWrapperTest.RegressionTests.v2_8_6
         [TestMethod]
         public void TestNewDeploymentNoErrors()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
             var model = handler.Model;
             var table = model.Tables["Reseller Sales"];
 

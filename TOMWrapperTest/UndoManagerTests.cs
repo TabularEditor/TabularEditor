@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TabularEditor.TOMWrapper;
+using TOMWrapperTest;
 
 namespace TabularEditor.TOMWrapper.Tests
 {
@@ -14,7 +15,7 @@ namespace TabularEditor.TOMWrapper.Tests
         [TestMethod()]
         public void BatchActionTest()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
 
             Assert.AreEqual(0, handler.UndoManager.BatchDepth);
             Assert.AreEqual(0, handler.UndoManager.UndoSize);

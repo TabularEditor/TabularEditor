@@ -77,20 +77,7 @@ namespace TabularEditor.TOMWrapper
                 if (!string.IsNullOrEmpty(value))
                     MetadataObject.FormatStringDefinition.Expression = value;
                 if (string.IsNullOrWhiteSpace(value) && MetadataObject.FormatStringDefinition != null)
-                {
-                    /* THIS CRASHES IN AMO 18.4.0.5 (see https://github.com/otykier/TabularEditor/issues/421), *
-                     * so we use a hack where we recreate the calc item in the TOM: */
-                    var calcItems = this.MetadataObject.CalculationGroup.CalculationItems;
-                    calcItems.Remove(this.MetadataObject);
-                    var calcItemJson = JsonSerializer.SerializeObject(this.MetadataObject);
-                    var calcItemJObject = JObject.Parse(calcItemJson);
-                    calcItemJObject.Remove("formatStringDefinition");
-                    Handler.WrapperLookup.Remove(this.MetadataObject);
-
-                    this.MetadataObject = JsonSerializer.DeserializeObject<TOM.CalculationItem>(calcItemJObject.ToString());
-                    calcItems.Add(this.MetadataObject);
-                    Handler.WrapperLookup.Add(this.MetadataObject, this);
-                }
+                    MetadataObject.FormatStringDefinition = null;
 
                 if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FORMATSTRINGEXPRESSION, oldValue, value));
                 OnPropertyChanged(Properties.FORMATSTRINGEXPRESSION, oldValue, value);
