@@ -174,6 +174,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
                 case Properties.FORMATSTRINGEXPRESSION:
                 case Properties.ISHIDDEN:
                 case Properties.CALCULATIONGROUPPRECEDENCE:
+                case Properties.PRECEDENCE:
                     return true;
                 default:
                     return false;
