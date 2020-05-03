@@ -134,8 +134,15 @@ namespace TabularEditor.UIServices
 
         public static List<MetadataChange> GetChanges(Partition partition)
         {
+            const string TE_SKIPCHECK = "TabularEditor_SkipSkemaCheck";
+            const string TE_IGNOREADDED = "TabularEditor_IgnoreSourceColumnAdded";
+            const string TE_IGNORETYPES = "TabularEditor_IgnoreDataTypeChange";
+            const string TE_IGNOREREMOVED = "TabularEditor_IgnoreMissingSourceColumn";
+
             var result = new List<MetadataChange>();
             var table = partition.Table;
+
+            if (table.CheckFlag(TE_SKIPCHECK)) return result;
 
             var sourceSchema = GetSourceSchema(partition);
             if(sourceSchema == null)
@@ -152,22 +159,30 @@ namespace TabularEditor.UIServices
                 var tCols = table.DataColumns.Where(col => col.SourceColumn.EqualsI(colName) || col.SourceColumn.EqualsI("[" + colName + "]"));
                 if (tCols.Count() == 0)
                 {
-                    if(!table.CheckFlag("TabularEditor_IgnoreSourceColumnAdded"))
+                    if (!table.CheckFlag(TE_IGNOREADDED))
                         result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.SourceColumnAdded, SourceColumn = colName, SourceType = typeMapping.MappedType, SourceProviderType = typeMapping.ProviderType });
                 }
-                foreach (var tCol in tCols)
+
+                if (!table.CheckFlag(TE_IGNORETYPES))
                 {
-                    matchedColumns.Add(tCol);
-                    if (tCol.DataType != typeMapping.MappedType && !tCol.CheckFlag("TabularEditor_IgnoreDataTypeChange"))
+                    foreach (var tCol in tCols)
                     {
-                        result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.DataTypeChange, ModelColumn = tCol, SourceColumn = colName, SourceType = typeMapping.MappedType, SourceProviderType = typeMapping.ProviderType });
+                        matchedColumns.Add(tCol);
+                        if (tCol.DataType != typeMapping.MappedType && !tCol.CheckFlag(TE_IGNORETYPES))
+                        {
+                            result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.DataTypeChange, ModelColumn = tCol, SourceColumn = colName, SourceType = typeMapping.MappedType, SourceProviderType = typeMapping.ProviderType });
+                        }
                     }
                 }
             }
-            foreach (var col in table.DataColumns.Where(c => !matchedColumns.Contains(c)))
+
+            if (!table.CheckFlag(TE_IGNOREREMOVED))
             {
-                if(!col.CheckFlag("TabularEditor_IgnoreMissingSourceColumn"))
-                    result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.SourceColumnNotFound, ModelColumn = col });
+                foreach (var col in table.DataColumns.Where(c => !matchedColumns.Contains(c)))
+                {
+                    if (!col.CheckFlag(TE_IGNOREREMOVED))
+                        result.Add(new MetadataChange { ModelTable = table, ChangeType = MetadataChangeType.SourceColumnNotFound, ModelColumn = col });
+                }
             }
 
             return result;
