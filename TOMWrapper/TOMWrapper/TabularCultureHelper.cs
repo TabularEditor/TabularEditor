@@ -57,7 +57,9 @@ namespace TabularEditor.TOMWrapper
                 }
 
                 var trans = cult["translations"];
+                if (trans == null) continue;
                 var model = trans["model"];
+                if (model == null) continue;
 
                 foreach (var t in model.A("tables"))
                 {

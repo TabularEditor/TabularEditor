@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
 using System.Collections.Generic;
 using TabularEditor.TOMWrapper.Utils;
+using TOMWrapperTest;
 
 namespace TabularEditor.TOMWrapper.Tests
 {
@@ -104,7 +105,7 @@ namespace TabularEditor.TOMWrapper.Tests
         [TestMethod]
         public void FixupVariousColumnTest()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
             handler.Settings.AutoFixup = true;
 
             var sw = new Stopwatch();

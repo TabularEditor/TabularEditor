@@ -20,9 +20,9 @@ namespace TabularEditor.TOMWrapper
 
         public ConflictInfo CheckConflicts()
         {
-            if (database == null || database?.Server == null) return new ConflictInfo { DatabaseVersion = -1 };
+            if (string.IsNullOrEmpty(this.serverName)) return new ConflictInfo { DatabaseVersion = -1 };
             var s = new TOM.Server();
-            s.Connect(database?.Server.ConnectionString);
+            s.Connect(this.serverName);
             var db = s.Databases[database?.ID];
             return new ConflictInfo
             {

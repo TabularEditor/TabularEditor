@@ -244,15 +244,7 @@ namespace TabularEditor.TOMWrapper
                 if (!string.IsNullOrEmpty(value))
                     MetadataObject.DetailRowsDefinition.Expression = value;
                 if (string.IsNullOrWhiteSpace(value) && MetadataObject.DetailRowsDefinition != null)
-                {
-                    /* THIS CRASHES IN AMO 18.4.0.5 (see https://github.com/otykier/TabularEditor/issues/400), *
-                     * so we use a reflection hack (see below) to remove the object from the tree instead.     */
-
-                    // MetadataObject.DetailRowsDefinition = null;
-
-                    /* Reflection hack: */
-                    DetailRowsDefinitionHack.SetToNull(this.MetadataObject);
-                }
+                    MetadataObject.DetailRowsDefinition = null;
 
                 if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DETAILROWSEXPRESSION, oldValue, value));
                 OnPropertyChanged(Properties.DETAILROWSEXPRESSION, oldValue, value);

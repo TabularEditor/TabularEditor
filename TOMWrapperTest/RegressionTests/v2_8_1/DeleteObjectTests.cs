@@ -10,7 +10,7 @@ namespace TOMWrapperTest.RegressionTests.v2_8_1
         [TestMethod]
         public void DeleteTableTest()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
 
             Assert.IsFalse(handler.UpdateInProgress);
 

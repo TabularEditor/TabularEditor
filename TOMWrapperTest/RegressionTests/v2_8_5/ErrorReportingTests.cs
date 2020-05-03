@@ -17,18 +17,18 @@ namespace TOMWrapperTest.RegressionTests.v2_8_5
         {
             var handler = new TabularModelHandler("TestData\\AdventureWorks.bim");
             var options = new DeploymentOptions { DeployMode = DeploymentMode.CreateOrAlter };
-            var result = TabularDeployer.Deploy(handler, "localhost", "AdventureWorks_RegTest_2_8_5", options);
+            var result = TabularDeployer.Deploy(handler, Constants.ServerName, "AdventureWorks_RegTest_2_8_5", options);
 
             Assert.AreEqual(0, result.Issues.Count);
 
             var errorMeasure = handler.Model.Tables[0].AddMeasure("ErrorMeasure", "SYNTAX ERROR");
 
-            result = TabularDeployer.Deploy(handler, "localhost", "AdventureWorks_RegTest_2_8_5", options);
+            result = TabularDeployer.Deploy(handler, Constants.ServerName, "AdventureWorks_RegTest_2_8_5", options);
 
             Assert.AreEqual(1, result.Issues.Count);
 
             errorMeasure.Delete();
-            result = TabularDeployer.Deploy(handler, "localhost", "AdventureWorks_RegTest_2_8_5", options);
+            result = TabularDeployer.Deploy(handler, Constants.ServerName, "AdventureWorks_RegTest_2_8_5", options);
             Assert.AreEqual(0, result.Issues.Count);
         }
     }

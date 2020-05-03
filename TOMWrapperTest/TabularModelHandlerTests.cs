@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TOMWrapperTest;
 
 namespace TabularEditor.TOMWrapper.Tests
 {
@@ -14,15 +15,15 @@ namespace TabularEditor.TOMWrapper.Tests
         [TestMethod()]
         public void ConnectTest()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
 
-            Assert.AreEqual("AdventureWorks", handler.Model.Database.Name);
+            Assert.AreEqual("TomWrapperTest", handler.Model.Database.Name);
         }
 
         [TestMethod()]
         public void DuplicateTest()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
 
             var c = handler.Model.Tables["Date"].AddCalculatedColumn();
             c.Clone("Cloned Column");
@@ -41,7 +42,7 @@ namespace TabularEditor.TOMWrapper.Tests
         [TestMethod()]
         public void AddMeasureTest()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
             handler.Model.Tables["Internet Sales"].AddMeasure("TestMeasure", "SUM('Internet Sales'[Sales Amount])", "Test folder");
             handler.SaveDB();
 
@@ -56,7 +57,7 @@ namespace TabularEditor.TOMWrapper.Tests
         [TestMethod()]
         public void DeleteTableTest()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
             handler.Model.Tables["Currency"].Delete();
             handler.SaveDB();
 
@@ -69,7 +70,7 @@ namespace TabularEditor.TOMWrapper.Tests
         [TestMethod()]
         public void DeleteLevelTest()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
             handler.Model.Tables["Date"].Hierarchies["Calendar"].Levels["Quarter"].Delete();
             handler.SaveDB();
 
@@ -92,7 +93,7 @@ namespace TabularEditor.TOMWrapper.Tests
         [TestMethod()]
         public void DeleteMeasureTest()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
             handler.Model.Tables["Internet Sales"].Measures["Internet Total Sales"].Delete();
             handler.SaveDB();
 
@@ -107,7 +108,7 @@ namespace TabularEditor.TOMWrapper.Tests
         [TestMethod()]
         public void RenameHierarchyTest()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
             handler.Model.Tables["Date"].Hierarchies["Calendar"].Name = "Calendar Renamed";
             handler.SaveDB();
 
@@ -121,7 +122,7 @@ namespace TabularEditor.TOMWrapper.Tests
         [TestMethod()]
         public void DeleteHierarchyTest()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
             handler.Model.Tables["Date"].Hierarchies["Calendar"].Delete();
             handler.SaveDB();
 
@@ -135,7 +136,7 @@ namespace TabularEditor.TOMWrapper.Tests
         [TestMethod()]
         public void DeleteHierarchyAndLevelTest()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
             var hierarchy = handler.Model.Tables["Date"].Hierarchies["Calendar"];
             hierarchy.Delete();
             handler.SaveDB();
@@ -168,7 +169,7 @@ namespace TabularEditor.TOMWrapper.Tests
         [TestMethod()]
         public void CreateHierarchyTest()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
             var table = handler.Model.Tables["Employee"];
             table.AddHierarchy("Test Hierarchy", null, "Base Rate", "Birth Date", "Department Name");
             handler.SaveDB();
@@ -182,7 +183,7 @@ namespace TabularEditor.TOMWrapper.Tests
 
         public void DeleteTestPerspectives()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
             foreach (var p in handler.Model.Perspectives.ToList())
             {
                 if (p.Name.Contains("Test")) p.Delete();
@@ -196,7 +197,7 @@ namespace TabularEditor.TOMWrapper.Tests
         {
             DeleteTestPerspectives();
 
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
 
             var m = handler.Model;
 
@@ -236,7 +237,7 @@ namespace TabularEditor.TOMWrapper.Tests
         {
             DeleteTestPerspectives();
 
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
 
             var m = handler.Model;
 
@@ -300,7 +301,7 @@ namespace TabularEditor.TOMWrapper.Tests
         [TestMethod()]
         public void CultureTest()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
             var model = handler.Model;
 
             var measure = model.Tables["Reseller Sales"].Measures["Reseller Total Sales"];

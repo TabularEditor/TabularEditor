@@ -109,6 +109,8 @@ namespace TabularEditor.TOMWrapper
         internal PowerBIGovernance PowerBIGovernance { get; } = new PowerBIGovernance();
 
         private PowerBiTemplate pbit;
+
+        private string serverName;
         
         /// <summary>
         /// Connects to a SQL Server 2016 Analysis Services instance and loads a tabular model
@@ -118,6 +120,7 @@ namespace TabularEditor.TOMWrapper
         /// <param name="databaseId"></param>
         public TabularModelHandler(string serverName, string databaseId, TabularModelHandlerSettings settings = null)
         {
+            this.serverName = serverName;
             _disableUpdates = true;
 
             Settings = settings ?? TabularModelHandlerSettings.Default;
