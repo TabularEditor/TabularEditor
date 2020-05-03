@@ -108,7 +108,8 @@ namespace TabularEditor.UI.Dialogs
 
         public void Analyze(IEnumerable<BestPracticeRule> rules)
         {
-            AnalyzerResultsTreeModel.Update(Analyzer.Analyze(rules));
+            var analyzedResults = Analyzer.Analyze(rules).ToList();
+            AnalyzerResultsTreeModel.Update(analyzedResults);
             RefreshUI();
         }
 
@@ -123,7 +124,8 @@ namespace TabularEditor.UI.Dialogs
         /// <param name="token"></param>
         public void AnalyzeAll(CancellationToken token)
         {
-            AnalyzerResultsTreeModel.Update(Analyzer.AnalyzeAll(token));
+            var analyzedResults = Analyzer.AnalyzeAll(token).ToList();
+            AnalyzerResultsTreeModel.Update(analyzedResults);
         }
 
         private void menContext_Opening(object sender, CancelEventArgs e)
@@ -215,7 +217,10 @@ namespace TabularEditor.UI.Dialogs
             }
             else if (e.Node.Tag is AnalyzerResult result)
             {
-                e.Value = result.ObjectName;
+                if (!string.IsNullOrEmpty(result.RuleError))
+                    e.Value = result.RuleError.Replace("\r", "").Replace("\n", " ");
+                else
+                    e.Value = result.ObjectName;
             }
         }
 
