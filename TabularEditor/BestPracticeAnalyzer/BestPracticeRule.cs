@@ -127,7 +127,7 @@ namespace TabularEditor.BestPracticeAnalyzer
     {
         public string ID { get; set; } = "";
         public string Name { get; set; }
-        public string Category { get; set; }
+        public string Category { get; set; } = "";
         public bool ShouldSerializeCategory()
         {
             return !string.IsNullOrEmpty(Category);
@@ -195,8 +195,8 @@ namespace TabularEditor.BestPracticeAnalyzer
         [JsonIgnore]
         public bool IsValid { get; private set; }
 
-        private List<IQueryable> _queries;
-        public List<IQueryable> GetQueries(Model model)
+        private Dictionary<RuleScope, IQueryable> _queries;
+        public Dictionary<RuleScope, IQueryable> GetQueries(Model model)
         {
             if(_needsRecompile)
             {
@@ -221,7 +221,7 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         private void CompileQueries(Model model)
         {
-            _queries = new List<IQueryable>();
+            _queries = new Dictionary<RuleScope, IQueryable>();
             ErrorMessage = null;
 
             if (CompatibilityLevel > model.Database.CompatibilityLevel)
@@ -237,7 +237,7 @@ namespace TabularEditor.BestPracticeAnalyzer
                 {
                     errorScope = scope;
                     var collection = Analyzer.GetCollection(model, scope);
-                    _queries.Add(CompileQuery(collection));
+                    _queries.Add(scope, CompileQuery(collection));
                 }
                 IsValid = true;
             }
@@ -245,35 +245,6 @@ namespace TabularEditor.BestPracticeAnalyzer
             {
                 IsValid = false;
                 ErrorMessage = ex.Message;
-            }
-        }
-
-        internal IEnumerable<AnalyzerResult> Analyze(Model model, CancellationToken ct)
-        {
-            ObjectCount = 0;
-            var queries = GetQueries(model);
-            if (!IsValid)
-            {
-                yield return new AnalyzerResult
-                {
-                    Rule = this,
-                    InvalidCompatibilityLevel = invalidCompatibilityLevel,
-                    RuleError = ErrorMessage,
-                    RuleErrorScope = errorScope
-                };
-                yield break;
-            }
-
-            foreach (var query in queries)
-            {
-                if (ct.IsCancellationRequested) yield break;
-                var results = query.OfType<ITabularNamedObject>().ToList();
-                ObjectCount += results.Count;
-                foreach (var obj in results)
-                {
-                    if (ct.IsCancellationRequested) yield break;
-                    yield return new AnalyzerResult { Rule = this, Object = obj };
-                }
             }
         }
 
@@ -298,6 +269,7 @@ namespace TabularEditor.BestPracticeAnalyzer
 
             ObjectCount = 0;
             var queries = GetQueries(model);
+
             if (!IsValid) {
                 yield return new AnalyzerResult
                 {
@@ -309,12 +281,39 @@ namespace TabularEditor.BestPracticeAnalyzer
                 yield break;
             }
 
-            foreach(var query in queries)
+            var results = new List<ITabularNamedObject>();
+            RuleScope currentScope = RuleScope.Model;
+            try
             {
-                var results = query.OfType<ITabularNamedObject>().ToList();
-                ObjectCount += results.Count;
-                foreach(var obj in results) yield return new AnalyzerResult { Rule = this, Object = obj };
+                foreach (var query in queries)
+                {
+                    currentScope = query.Key;
+                    results.AddRange(query.Value.OfType<ITabularNamedObject>());
+                    ObjectCount += results.Count;
+                }
+                IsValid = true;
             }
+            catch (Exception ex)
+            {
+                ErrorMessage = "Error while evaluating expression on " + currentScope.GetTypeName() + ": " + ex.Message;
+                errorScope = currentScope;
+                IsValid = false;
+            }
+
+            if (!IsValid)
+            {
+                yield return new AnalyzerResult
+                {
+                    Rule = this,
+                    InvalidCompatibilityLevel = invalidCompatibilityLevel,
+                    RuleError = ErrorMessage,
+                    RuleErrorScope = errorScope
+                };
+                yield break;
+            }
+            else
+                foreach (var obj in results) yield return new AnalyzerResult { Rule = this, Object = obj };
+
         }
 
         [JsonIgnore]
