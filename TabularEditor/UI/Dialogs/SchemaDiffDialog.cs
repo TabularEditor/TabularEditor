@@ -44,7 +44,9 @@ namespace TabularEditor.UI
                         case ChangeType.AddColumn:
                             change.MetadataChange.ModelTable.AddDataColumn(change.SourceColumn, change.SourceColumn, null, change.MetadataChange.SourceType); break;
                         case ChangeType.EditDataType:
-                            change.MetadataChange.ModelColumn.DataType = change.MetadataChange.SourceType; break;
+                            change.MetadataChange.ModelColumn.DataType = change.MetadataChange.SourceType;
+                            change.MetadataChange.ModelColumn.SourceProviderType = change.MetadataChange.SourceProviderType;
+                            break;
                     }
                 }
             }
