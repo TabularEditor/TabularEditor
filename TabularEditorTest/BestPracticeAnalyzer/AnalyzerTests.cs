@@ -14,7 +14,7 @@ namespace TabularEditor
         [TestMethod]
         public void BasicTest()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
             var model = handler.Model;
             var analyzer = new Analyzer();
             analyzer.SetModel(model);
@@ -35,7 +35,7 @@ namespace TabularEditor
         [TestMethod]
         public void NullExpressionTest()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
             var model = handler.Model;
             var analyzer = new Analyzer();
             analyzer.SetModel(model);
@@ -55,7 +55,7 @@ namespace TabularEditor
         [TestMethod]
         public void PerformanceTest()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
             var model = handler.Model;
             var analyzer = new Analyzer();
             analyzer.SetModel(model);
@@ -90,7 +90,7 @@ namespace TabularEditor
         [TestMethod]
         public void TokenizeTest()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
             var model = handler.Model;
             var analyzer = new Analyzer();
             analyzer.SetModel(model);
@@ -110,7 +110,7 @@ namespace TabularEditor
         [TestMethod]
         public void ComplexTest1()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
             var model = handler.Model;
             var analyzer = new Analyzer();
             analyzer.SetModel(model);
@@ -131,7 +131,7 @@ namespace TabularEditor
         [TestMethod]
         public void ComplexTest2()
         {
-            var handler = new TabularModelHandler("localhost", "AdventureWorks");
+            var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
             var model = handler.Model;
             var analyzer = new Analyzer();
             analyzer.SetModel(model);

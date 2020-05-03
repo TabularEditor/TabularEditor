@@ -31,7 +31,7 @@ namespace TabularEditor.RegressionTests
             var ui = UI.UIController.Current;
             //fm.Show();
 
-            ui.Database_Open("localhost", "AdventureWorks");
+            ui.Database_Open(Constants.ServerName, "TomWrapperTest");
             var model = ui.Handler.Model;
 
             ui.Goto(model.Tables["Currency"].Columns["CurrencyName"]);
