@@ -196,7 +196,8 @@ namespace TabularEditor.UIServices
         public static DataType DataTypeMap(string dataTypeName)
         {
             DataType result;
-            switch (dataTypeName.ToLower())
+            var srcType = dataTypeName.ToLower();
+            switch (srcType)
             {
                 case "binary.type":
                 case "binary":
@@ -268,7 +269,13 @@ namespace TabularEditor.UIServices
                     result = DataType.Boolean; break;
 
                 default:
-                    result = DataType.String; break;
+                    if (srcType.Contains("int"))
+                        result = DataType.Int64;
+                    if (srcType.Contains("date"))
+                        result = DataType.DateTime;
+                    else
+                        result = DataType.String;
+                    break;
             }
             return result;
         }
