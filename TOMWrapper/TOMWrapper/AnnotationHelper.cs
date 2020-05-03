@@ -22,6 +22,19 @@ namespace TabularEditor.TOMWrapper
         public const string ANN_CULTURES = "TabularEditor_Cultures";
         public const string ANN_PERSPECTIVES = "TabularEditor_Perspectives";
 
+        public static bool CheckFlag(this IAnnotationObject obj, string annotationName)
+        {
+            if (!obj.HasAnnotation(annotationName))
+                return false;
+
+            var value = obj.GetAnnotation(annotationName);
+
+            if (value == "0" || value.EqualsI("false") || value.EqualsI("no"))
+                return false;
+
+            return true;
+        }
+
         /// <summary>
         /// Removes all annotations from the model, that are used by Tabular Editor to serialize metadata in a way different from the TOM. For example,
         /// to store object translations as annotations on the object instead of elsewhere in the TOM tree. All these annotations can be recreated from
