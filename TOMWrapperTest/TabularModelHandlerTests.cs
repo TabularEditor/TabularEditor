@@ -6,12 +6,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TOMWrapperTest;
+using TabularEditor.TOMWrapper.Utils;
 
 namespace TabularEditor.TOMWrapper.Tests
 {
     [TestClass()]
     public class TabularModelHandlerTests
     {
+        [TestInitialize()]
+        public void SetupTomwrapperTest()
+        {
+            var handler = new TabularModelHandler(@"TestData\AdventureWorks.bim");
+            TabularDeployer.Deploy(handler, Constants.ServerName, "TomWrapperTest");
+        }
+
         [TestMethod()]
         public void ConnectTest()
         {
