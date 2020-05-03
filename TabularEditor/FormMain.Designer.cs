@@ -2578,12 +2578,13 @@
             // 
             // ofdScript
             // 
-            this.ofdScript.FileName = "Script.cs";
-            this.ofdScript.Filter = "C# files|*.cs|All files|*.*";
+            this.ofdScript.FileName = "Script.csx";
+            this.ofdScript.Filter = "C# files|*.cs;*.csx|All files|*.*";
             // 
             // sfdScript
             // 
-            this.sfdScript.Filter = "C# files|*.cs|All files|*.*";
+            this.sfdScript.DefaultExt = "csx";
+            this.sfdScript.Filter = "C# files|*.cs;*.csx|All files|*.*";
             // 
             // FormMain
             // 
