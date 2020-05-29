@@ -96,8 +96,9 @@ namespace TabularEditor.TOMWrapper
             database = new TOM.Database("SemanticModel") { CompatibilityLevel = compatibilityLevel };
             CompatibilityLevel = compatibilityLevel;
             database.Model = new TOM.Model();
+            if (compatibilityLevel >= 1520) database.Model.DefaultPowerBIDataSourceVersion = TOM.PowerBIDataSourceVersion.PowerBI_V3;
 
-            SourceType = ModelSourceType.File;
+             SourceType = ModelSourceType.File;
             Source = "Model.bim";
 
             Status = "Succesfully created new model.";
@@ -155,6 +156,7 @@ namespace TabularEditor.TOMWrapper
             _disableUpdates = false;
             UndoManager.Enabled = true;
             PowerBIGovernance.UpdateGovernanceMode(this);
+            CheckErrors();
         }
 
         internal static TabularModelHandler Singleton { get; private set; }

@@ -109,7 +109,7 @@ namespace TabularEditor.TOMWrapper.Utils
             s.Refresh();
 
             // Fully refresh the deployed database object, to make sure we get updated error messages for the full object tree:
-            var deployedDB = s.Databases[targetDatabaseID];
+            var deployedDB = s.Databases.FindByName(targetDatabaseID);
             deployedDB.Refresh(true);
             return
                 new DeploymentResult(
