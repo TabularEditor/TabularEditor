@@ -223,7 +223,7 @@ namespace TabularEditor.Scripting
         [ScriptMethod, IntelliSense("Invoke the custom action with the given name.")]
         public static void CustomAction(string actionName)
         {
-            var act = UI.UIController.Current.Actions.OfType<CustomAction>().FirstOrDefault(a => a.BaseName == actionName);
+            var act = GetCustomActions().FirstOrDefault(a => a.BaseName == actionName);
             if (act != null)
             {
                 act.ExecuteInScript(null);
@@ -234,7 +234,7 @@ namespace TabularEditor.Scripting
         [ScriptMethod, IntelliSense("Invoke the custom action on the given set of objects with the given name.")]
         public static void CustomAction(this IEnumerable<ITabularNamedObject> selection, string actionName)
         {
-            var act = UI.UIController.Current.Actions.OfType<CustomAction>().FirstOrDefault(a => a.BaseName == actionName);
+            var act = GetCustomActions().FirstOrDefault(a => a.BaseName == actionName);
             if (act != null)
             {
                 act.ExecuteWithSelection(null, selection);
@@ -245,12 +245,27 @@ namespace TabularEditor.Scripting
         [ScriptMethod, IntelliSense("Invoke the custom action on the given object with the given name.")]
         public static void CustomAction(this ITabularNamedObject selection, string actionName)
         {
-            var act = UI.UIController.Current.Actions.OfType<CustomAction>().FirstOrDefault(a => a.BaseName == actionName);
+            var act = GetCustomActions().FirstOrDefault(a => a.BaseName == actionName);
             if (act != null)
             {
                 act.ExecuteWithSelection(null, Enumerable.Repeat(selection, 1));
             }
             else throw new InvalidOperationException(string.Format("There is no Custom Action with the name '{0}'.", actionName));
+        }
+
+        private static List<IBaseAction> commandLineCustomActions;
+
+        private static IEnumerable<CustomAction> GetCustomActions()
+        {
+            if (UI.UIController.Current != null)
+                return UI.UIController.Current.Actions.OfType<CustomAction>();
+
+            if (commandLineCustomActions == null)
+            {
+                commandLineCustomActions = new List<IBaseAction>();
+                ScriptEngine.AddCustomActions(commandLineCustomActions);
+            }
+            return commandLineCustomActions.OfType<CustomAction>();
         }
     }
 }

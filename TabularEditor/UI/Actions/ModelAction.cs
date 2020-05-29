@@ -118,19 +118,31 @@ namespace TabularEditor.UI.Actions
         
         private void InternalExecute(object arg, IEnumerable<ITabularNamedObject> alternateSelection = null)
         {
-            ui.Actions.SelectObjects.Clear();
-            ui.Actions.LastActionExecuted = this;
+            TabularModelHandler handler;
+            if (ui != null)
+            {
+                ui.Actions.SelectObjects.Clear();
+                ui.Actions.LastActionExecuted = this;
+                handler = ui.Handler;
+            }
+            else
+                handler = TabularModelHandler.Singleton;
+
             EditObjectName = null;
             ExpandObject = null;
-            var selection = alternateSelection == null ? ui.Selection : new UITreeSelection(alternateSelection);
+            var selection = alternateSelection == null ? (ui == null ? UITreeSelection.Empty : ui.Selection) : new UITreeSelection(alternateSelection);
 
-            // Check if the context is valid before executing the actino:
+            // Check if the context is valid before executing the action:
             if (!ValidContexts.HasX(selection.Context | Context.Model | Context.Tool)) return;
 
-            ui.Handler.BeginUpdate(Name);
-            _execute(selection, ui.Handler.Model);
-            ui.Handler.EndUpdate();
+            handler.BeginUpdate(Name);
+            _execute(selection, handler.Model);
+            handler.EndUpdate();
 
+
+            if (ui == null) return;
+
+            // Actions can trigger certain UI actions after execution (for example, tree expansion, name editing, tree selection):
             if (ExpandObject != null)
             {
                 ui.ExpandItem(ExpandObject);
@@ -167,7 +179,7 @@ namespace TabularEditor.UI.Actions
         {
             get
             {
-                return _name(ui.Selection, ui.Handler?.Model);
+                return _name(ui == null ? UITreeSelection.Empty : ui.Selection, TabularModelHandler.Singleton.Model);
             }
         }
 
