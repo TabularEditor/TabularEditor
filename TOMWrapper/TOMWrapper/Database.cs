@@ -34,8 +34,11 @@ namespace TabularEditor.TOMWrapper
             _compatibilityLevel = tomDatabase.CompatibilityLevel;
         }
 
+        [Browsable(false)]
         public bool NameModified => _name != TOMDatabase.Name;
+        [Browsable(false)]
         public bool IdModified => _id != TOMDatabase.ID;
+        [Browsable(false)]
         public bool CompatibilityLevelModified => _compatibilityLevel != TOMDatabase.CompatibilityLevel;
 
         public override string ToString()
@@ -140,6 +143,14 @@ namespace TabularEditor.TOMWrapper
             get
             {
                 return _compatibilityLevel;
+            }
+        }
+        [DisplayName("Compatibility Mode")]
+        public string CompatibilityMode
+        {
+            get
+            {
+                return TOMDatabase?.CompatibilityMode.ToString();
             }
         }
 

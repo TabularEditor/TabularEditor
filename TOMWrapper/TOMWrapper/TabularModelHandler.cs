@@ -86,17 +86,18 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Creates a new blank Tabular Model
         /// </summary>
-        public TabularModelHandler(int compatibilityLevel = 1200, TabularModelHandlerSettings settings = null)
+        public TabularModelHandler(int compatibilityLevel = 1200, TabularModelHandlerSettings settings = null, bool pbiDatasetModel = false)
         {
             Settings = settings ?? TabularModelHandlerSettings.Default;
 
             Singleton = this;
             server = null;
 
-            database = new TOM.Database("SemanticModel") { CompatibilityLevel = compatibilityLevel };
+            database = new TOM.Database("SemanticModel") { CompatibilityLevel = compatibilityLevel,
+                CompatibilityMode = pbiDatasetModel ? Microsoft.AnalysisServices.CompatibilityMode.PowerBI : Microsoft.AnalysisServices.CompatibilityMode.AnalysisServices };
             CompatibilityLevel = compatibilityLevel;
             database.Model = new TOM.Model();
-            if (compatibilityLevel >= 1520) database.Model.DefaultPowerBIDataSourceVersion = TOM.PowerBIDataSourceVersion.PowerBI_V3;
+            if (pbiDatasetModel) database.Model.DefaultPowerBIDataSourceVersion = TOM.PowerBIDataSourceVersion.PowerBI_V3;
 
              SourceType = ModelSourceType.File;
             Source = "Model.bim";

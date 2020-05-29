@@ -32,5 +32,6 @@ namespace TabularEditor.UI.Dialogs
                     : 1520;
             }
         }
+        public bool PbiDatasetModel => comboBox1.SelectedIndex == 3;
     }
 }

@@ -2452,7 +2452,8 @@ namespace TabularEditor.TOMWrapper
 				TabularObject t = null;
 				if(MetadataObject == null || MetadataObject.Table == null) return null;
 				if(!Handler.WrapperLookup.TryGetValue(MetadataObject.Table, out t)) {
-				    t = Model.Tables[MetadataObject.Table.Name];
+				    if(!MetadataObject.Table.IsRemoved)
+						t = Model.Tables[MetadataObject.Table.Name];
 				}
 				return t as Table;
 			} 
@@ -4529,7 +4530,8 @@ namespace TabularEditor.TOMWrapper
 				TabularObject t = null;
 				if(MetadataObject == null || MetadataObject.Table == null) return null;
 				if(!Handler.WrapperLookup.TryGetValue(MetadataObject.Table, out t)) {
-				    t = Model.Tables[MetadataObject.Table.Name];
+				    if(!MetadataObject.Table.IsRemoved)
+						t = Model.Tables[MetadataObject.Table.Name];
 				}
 				return t as Table;
 			} 
@@ -6440,7 +6442,8 @@ namespace TabularEditor.TOMWrapper
 				TabularObject t = null;
 				if(MetadataObject == null || MetadataObject.Table == null) return null;
 				if(!Handler.WrapperLookup.TryGetValue(MetadataObject.Table, out t)) {
-				    t = Model.Tables[MetadataObject.Table.Name];
+				    if(!MetadataObject.Table.IsRemoved)
+						t = Model.Tables[MetadataObject.Table.Name];
 				}
 				return t as Table;
 			} 
@@ -8932,7 +8935,8 @@ namespace TabularEditor.TOMWrapper
 				TabularObject t = null;
 				if(MetadataObject == null || MetadataObject.Table == null) return null;
 				if(!Handler.WrapperLookup.TryGetValue(MetadataObject.Table, out t)) {
-				    t = Model.Tables[MetadataObject.Table.Name];
+				    if(!MetadataObject.Table.IsRemoved)
+						t = Model.Tables[MetadataObject.Table.Name];
 				}
 				return t as Table;
 			} 
@@ -12525,7 +12529,8 @@ namespace TabularEditor.TOMWrapper
 				TabularObject t = null;
 				if(MetadataObject == null || MetadataObject.Table == null) return null;
 				if(!Handler.WrapperLookup.TryGetValue(MetadataObject.Table, out t)) {
-				    t = Model.Tables[MetadataObject.Table.Name];
+				    if(!MetadataObject.Table.IsRemoved)
+						t = Model.Tables[MetadataObject.Table.Name];
 				}
 				return t as Table;
 			} 
@@ -13252,7 +13257,8 @@ namespace TabularEditor.TOMWrapper
 				TabularObject t = null;
 				if(MetadataObject == null || MetadataObject.Table == null) return null;
 				if(!Handler.WrapperLookup.TryGetValue(MetadataObject.Table, out t)) {
-				    t = Model.Tables[MetadataObject.Table.Name];
+				    if(!MetadataObject.Table.IsRemoved)
+						t = Model.Tables[MetadataObject.Table.Name];
 				}
 				return t as Table;
 			} 
