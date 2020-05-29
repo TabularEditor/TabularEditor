@@ -451,6 +451,14 @@ namespace TabularEditor.TOMWrapper
         None = 1,
         Read = 2,
 	}
+	/// <summary>
+///             DataSource format version in Power BI Service.
+///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1450 or above.</remarks>
+	public enum PowerBIDataSourceVersion {    
+        PowerBI_V1 = 0,
+        PowerBI_V2 = 1,
+        PowerBI_V3 = 2,
+	}
   
 	/// <summary>
 ///             Variation object.
@@ -7165,6 +7173,30 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeCollation() { return false; }
+/// <summary>
+///             Used by PBIX data source format conversion.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1450 or above.</remarks>
+		[DisplayName("Default Power BI Data Source Version")]
+		[Category("Other"),Description(@"Used by PBIX data source format conversion."),IntelliSense(@"Used by PBIX data source format conversion.")]
+		public PowerBIDataSourceVersion DefaultPowerBIDataSourceVersion {
+			get {
+			    return (PowerBIDataSourceVersion)MetadataObject.DefaultPowerBIDataSourceVersion;
+			}
+			set {
+				
+				var oldValue = DefaultPowerBIDataSourceVersion;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.DEFAULTPOWERBIDATASOURCEVERSION, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.DefaultPowerBIDataSourceVersion = (TOM.PowerBIDataSourceVersion)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DEFAULTPOWERBIDATASOURCEVERSION, oldValue, newValue));
+				OnPropertyChanged(Properties.DEFAULTPOWERBIDATASOURCEVERSION, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeDefaultPowerBIDataSourceVersion() { return false; }
 /// <summary>
 ///             Determines whether measures can have the same names as any column in the model.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1465 or above.</remarks>

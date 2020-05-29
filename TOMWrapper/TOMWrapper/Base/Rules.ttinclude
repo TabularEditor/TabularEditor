@@ -139,7 +139,6 @@ partial class Rules {
 		if(p.Name == "RangeGranularity") return false;
 		if(p.Name == "RetainDataTillForceCalculate") return false;
 		if(p.Name == "RefreshBookmark") return false;
-		if(p.Name == "DefaultPowerBIDataSourceVersion") return false;
 		return p.Name != "Name" && (
 				Aliases.ContainsKey(p.PropertyType) ||
 				(p.Name != "Table" && p.PropertyType.IsClass && ObjectTypes.ContainsKey(p.PropertyType)) ||
@@ -408,7 +407,8 @@ partial class Rules {
 		"EncodingHintType",
 		"RefreshType",
 		"ExtendedPropertyType",
-		"MetadataPermission"
+		"MetadataPermission",
+		"PowerBIDataSourceVersion"
 	};
 	public static readonly Type[] EnumTypes = _enumTypes.Select(t => ASType(t)).Where(t => t != null).ToArray();
 

@@ -244,6 +244,8 @@ namespace TabularEditor.TOMWrapper
                     return Handler.CompatibilityLevel >= 1470;
                 case Properties.DATASOURCEDEFAULTMAXCONNECTIONS:
                     return Handler.CompatibilityLevel >= 1510;
+                case Properties.DEFAULTPOWERBIDATASOURCEVERSION:
+                    return Handler.CompatibilityLevel >= 1450;
                 default:
                     return base.IsBrowsable(propertyName);
             }
