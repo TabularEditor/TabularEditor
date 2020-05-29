@@ -1,12 +1,13 @@
 # Tabular Editor
-Tabular Editor is a tool that lets you easily manipulate and manage measures, calculated columns, display folders, perspectives and translations in SQL Server Analysis Services Tabular Models (from Compatibility Level 1200 and onwards). The tool is written entirely in .NET WinForms (C#).
+Tabular Editor is a tool that lets you easily manipulate and manage measures, calculated columns, display folders, perspectives and translations in Analysis Services Tabular and Power BI XMLA Models (from Compatibility Level 1200 and onwards). The tool is written entirely in .NET WinForms (C#).
 
 ![](https://raw.githubusercontent.com/otykier/TabularEditor/master/Documentation/Main%20UI%202_1.png)
 
-* [Download Tabular Editor v. 2.9.7 for SQL Server 2016, 2017, 2019 or Azure Analysis Services](https://github.com/otykier/TabularEditor/releases/latest)
+* [Download Tabular Editor v. 2.9.8 for SQL Server 2016, 2017, 2019 or Azure Analysis Services](https://github.com/otykier/TabularEditor/releases/latest)
 
-### Prerequisites
-Tabular Editor uses the [Tabular Object Model](https://docs.microsoft.com/en-us/bi-reference/tom/introduction-to-the-tabular-object-model-tom-in-analysis-services-amo) to load and save metadata to and from Model.bim files or existing databases. If you download the standalone (.zip) version of Tabular Editor, make sure you have the latest AMO libraries available. They can be downloaded from the [Azure Analysis Services Client Libraries](https://docs.microsoft.com/en-us/azure/analysis-services/analysis-services-data-providers) page (Click "AMO" version 16.1.0 or newer). If you choose to download the Tabular Editor .MSI installer, these libraries will be included.
+Tabular Editor, when downloaded from GitHub, is digitally signed. The certificate is kindly funded by [Kapacity A/S](https://www.kapacity.dk).
+
+[![image](https://user-images.githubusercontent.com/8976200/80921541-5383e980-8d77-11ea-90cd-7d32a2de5dca.png)](https://www.kapacity.dk)
 
 ## Introduction
 View the article on www.kapacity.dk/tabular-editor for a general presentation of the tool and the motivations behind it.
@@ -53,6 +54,7 @@ View the article on www.kapacity.dk/tabular-editor for a general presentation of
 * **2020-03-12** [Version 2.9.5](https://github.com/otykier/TabularEditor/releases/tag/2.9.5) released
 * **2020-03-30** [Version 2.9.6](https://github.com/otykier/TabularEditor/releases/tag/2.9.6) released
 * **2020-04-02** [Version 2.9.7](https://github.com/otykier/TabularEditor/releases/tag/2.9.7) released
+* **2020-05-03** [Version 2.9.8](https://github.com/otykier/TabularEditor/releases/tag/2.9.8) released (digitally signed)
 
 ## Roadmap
 
