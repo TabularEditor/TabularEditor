@@ -88,7 +88,7 @@ namespace TabularEditor.UI
             var newModelDialog = new NewModelDialog();
             if (newModelDialog.ShowDialog() == DialogResult.Cancel) return;
             
-            Handler = new TabularModelHandler(newModelDialog.CompatibilityLevel, Preferences.Current.GetSettings());
+            Handler = new TabularModelHandler(newModelDialog.CompatibilityLevel, Preferences.Current.GetSettings(), newModelDialog.PbiDatasetModel);
             File_Current = null;
             File_Directory = null;
             File_SaveMode = Handler.SourceType;
