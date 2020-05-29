@@ -392,17 +392,6 @@ namespace TabularEditor.BestPracticeAnalyzer
             ignoreRules.Save(obj);
         }
 
-        /*
-        public void SaveLocalRulesToModel()
-        {
-            if (_model == null) return;
-            _model.RemoveAnnotation("BestPractizeAnalyzer"); // Stupid typo in earlier version
-            var previousAnnotation = _model.GetAnnotation(BPAAnnotation);
-            var newAnnotation = ModelRules.SerializeToJson();
-            _model.SetAnnotation(BPAAnnotation, newAnnotation);
-            if (previousAnnotation != newAnnotation) UI.UIController.Current.Handler.UndoManager.FlagChange();
-        }*/
-
         public Analyzer()
         {
             Model = null;

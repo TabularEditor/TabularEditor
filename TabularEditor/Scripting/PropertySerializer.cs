@@ -160,8 +160,8 @@ namespace TabularEditor.Scripting
                 }
             }
             parts = partsFixed.ToArray();
-
-            var model = UI.UIController.Current.Handler?.Model;
+            
+            var model = TabularModelHandler.Singleton.Model;
             if (model == null || parts.Length == 0) return null;
             if (parts.Length == 1 && parts[0] == "model") return model;
             switch(parts[0])

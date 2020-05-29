@@ -263,6 +263,8 @@ namespace TabularEditor.UI
     /// </summary>
     public class UITreeSelection: UISelectionList<ITabularNamedObject>
     {
+        public static UITreeSelection Empty { get; } = new UITreeSelection(Enumerable.Empty<ITabularNamedObject>());
+
         IReadOnlyCollection<TreeNodeAdv> _selectedNodes;
 
         [IntelliSense("Indicates where in the Explorer Tree the current selection has been made.")]

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.UI.Actions
 {
@@ -34,14 +35,14 @@ namespace TabularEditor.UI.Actions
         {
             try
             {
-                UIController.Current.Handler.BeginUpdate(Name.Split('\\').Last());
+                TabularModelHandler.Singleton.BeginUpdate(Name.Split('\\').Last());
                 base.Execute(arg);
-                UIController.Current.Handler.EndUpdateAll();
+                TabularModelHandler.Singleton.EndUpdateAll();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error executing custom action", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                UIController.Current.Handler.EndUpdateAll(true);
+                TabularModelHandler.Singleton.EndUpdateAll(true);
             }
         }
 

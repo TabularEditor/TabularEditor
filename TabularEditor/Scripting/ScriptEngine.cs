@@ -212,7 +212,7 @@ namespace TabularEditor.Scripting
 {
     public static class CustomActions 
     {
-        public static void CreateCustomActions(TabularEditor.UI.Actions.ModelActionManager am)
+        public static void CreateCustomActions(IList<TabularEditor.UI.Actions.IBaseAction> am)
         {"
 );
             for (var ix = 0; ix < actions.Actions.Length; ix++)
@@ -301,7 +301,7 @@ namespace TabularEditor.Scripting
                 var assembly = result.CompiledAssembly;
                 var type = assembly.GetType("TabularEditor.Scripting.CustomActions");
                 var method = type.GetMethod("CreateCustomActions");
-                AddCustomActions = (Action<ModelActionManager>)Delegate.CreateDelegate(typeof(Action<ModelActionManager>), method);
+                AddCustomActions = (Action<IList<IBaseAction>>)Delegate.CreateDelegate(typeof(Action<IList<IBaseAction>>), method);
             }
 
             sw.Stop();
@@ -331,7 +331,7 @@ namespace TabularEditor.Scripting
         public static int CustomActionCount { get; private set; } = 0;
         public static bool CustomActionError { get; private set; } = false;
 
-        public static Action<ModelActionManager> AddCustomActions { get; private set; } = null;
+        public static Action<IList<IBaseAction>> AddCustomActions { get; private set; } = null;
 
         private static readonly string[] defaultUsings = new string[]
         {
