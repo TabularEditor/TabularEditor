@@ -16,19 +16,19 @@ namespace TabularEditor.TOMWrapper.Utils
 {
     public class TabularDeployer
     {
-        public static string GetTMSL(TOM.Database db, TOM.Server server, string targetDatabaseID, DeploymentOptions options, bool includeRestricted = false)
+        public static string GetTMSL(TOM.Database db, TOM.Server server, string targetDatabaseName, DeploymentOptions options, bool includeRestricted = false)
         {
             if (db == null) throw new ArgumentNullException("db");
-            if (string.IsNullOrWhiteSpace(targetDatabaseID)) throw new ArgumentNullException("targetDatabaseID");
+            if (string.IsNullOrWhiteSpace(targetDatabaseName)) throw new ArgumentNullException("targetDatabaseName");
             if (options.DeployRoleMembers && !options.DeployRoles) throw new ArgumentException("Cannot deploy Role Members when Role deployment is disabled.");
 
-            if (server.Databases.Contains(targetDatabaseID) && options.DeployMode == DeploymentMode.CreateDatabase) throw new ArgumentException("The specified database already exists.");
+            if (server.Databases.ContainsName(targetDatabaseName) && options.DeployMode == DeploymentMode.CreateDatabase) throw new ArgumentException("The specified database already exists.");
 
             string tmsl;
 
             db.AddTabularEditorTag();
-            if (!server.Databases.Contains(targetDatabaseID)) tmsl = DeployNewTMSL(db, targetDatabaseID, options, includeRestricted);
-            else tmsl = DeployExistingTMSL(db, server, targetDatabaseID, options, includeRestricted);
+            if (!server.Databases.ContainsName(targetDatabaseName)) tmsl = DeployNewTMSL(db, targetDatabaseName, options, includeRestricted);
+            else tmsl = DeployExistingTMSL(db, server, targetDatabaseName, options, includeRestricted);
             db.RemoveTabularEditorTag();
 
             return tmsl;
@@ -48,14 +48,14 @@ namespace TabularEditor.TOMWrapper.Utils
             return Deploy(db, targetConnectionString, targetDatabaseName, DeploymentOptions.Default, CancellationToken.None);
         }
 
-        public static void SaveModelMetadataBackup(string connectionString, string targetDatabaseID, string backupFilePath)
+        public static void SaveModelMetadataBackup(string connectionString, string targetDatabaseName, string backupFilePath)
         {
             using (var s = new TOM.Server())
             {
                 s.Connect(connectionString);
-                if (s.Databases.Contains(targetDatabaseID))
+                if (s.Databases.ContainsName(targetDatabaseName))
                 {
-                    var db = s.Databases[targetDatabaseID];
+                    var db = s.Databases.GetByName(targetDatabaseName);
 
                     var dbcontent = TOM.JsonSerializer.SerializeDatabase(db);
                     WriteZip(backupFilePath, dbcontent);
@@ -87,16 +87,16 @@ namespace TabularEditor.TOMWrapper.Utils
         /// </summary>
         /// <param name="db"></param>
         /// <param name="targetConnectionString"></param>
-        /// <param name="targetDatabaseID"></param>
+        /// <param name="targetDatabaseName"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        internal static DeploymentResult Deploy(TOM.Database db, string targetConnectionString, string targetDatabaseID, DeploymentOptions options, CancellationToken cancellationToken)
+        internal static DeploymentResult Deploy(TOM.Database db, string targetConnectionString, string targetDatabaseName, DeploymentOptions options, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(targetConnectionString)) throw new ArgumentNullException("targetConnectionString");
             var s = new TOM.Server();
             s.Connect(targetConnectionString);
 
-            var tmsl = GetTMSL(db, s, targetDatabaseID, options, true);
+            var tmsl = GetTMSL(db, s, targetDatabaseName, options, true);
             cancellationToken.Register(s.CancelCommand);
             var result = s.Execute(tmsl);
 
@@ -109,7 +109,7 @@ namespace TabularEditor.TOMWrapper.Utils
             s.Refresh();
 
             // Fully refresh the deployed database object, to make sure we get updated error messages for the full object tree:
-            var deployedDB = s.Databases.FindByName(targetDatabaseID);
+            var deployedDB = s.Databases.GetByName(targetDatabaseName);
             deployedDB.Refresh(true);
             return
                 new DeploymentResult(
@@ -131,13 +131,13 @@ namespace TabularEditor.TOMWrapper.Utils
             else return string.Format("{0} '{1}'", ((ObjectType)obj.ObjectType).GetTypeName(), obj.Name);
         }
 
-        internal static string DeployNewTMSL(TOM.Database db, string newDbId, DeploymentOptions options, bool includeRestricted)
+        internal static string DeployNewTMSL(TOM.Database db, string targetDatabaseName, DeploymentOptions options, bool includeRestricted)
         {
             var rawTmsl = TOM.JsonScripter.ScriptCreate(db, includeRestricted);
 
             var jTmsl = JObject.Parse(rawTmsl);
 
-            return jTmsl.TransformCreateTmsl(newDbId, options).FixCalcGroupMetadata(db).ToString();
+            return jTmsl.TransformCreateTmsl(targetDatabaseName, options).FixCalcGroupMetadata(db).ToString();
         }
 
         
@@ -148,9 +148,9 @@ namespace TabularEditor.TOMWrapper.Utils
             return (collection as JArray).FirstOrDefault(t => t.Value<string>("name").EqualsI(objectName));
         }
 
-        internal static string DeployExistingTMSL(TOM.Database db, TOM.Server server, string dbId, DeploymentOptions options, bool includeRestricted)
+        internal static string DeployExistingTMSL(TOM.Database db, TOM.Server server, string destinationName, DeploymentOptions options, bool includeRestricted)
         {
-            var orgDb = server.Databases[dbId];
+            var orgDb = server.Databases.GetByName(destinationName);
             orgDb.Refresh(true);
 
             var orgTables = orgDb.Model.Tables;
@@ -424,10 +424,10 @@ namespace TabularEditor.TOMWrapper.Utils
         /// using the proper ID and Name values. In addition, of the DeploymentOptions specify that roles should
         /// not be deployed, they are stripped from the TMSL script.
         /// </summary>
-        public static JObject TransformCreateTmsl(this JObject tmslJObj, string newDbId, DeploymentOptions options)
+        public static JObject TransformCreateTmsl(this JObject tmslJObj, string targetDatabaseName, DeploymentOptions options)
         {
-            tmslJObj["create"]["database"]["id"] = newDbId;
-            tmslJObj["create"]["database"]["name"] = newDbId;
+            tmslJObj["create"]["database"]["id"] = targetDatabaseName;
+            tmslJObj["create"]["database"]["name"] = targetDatabaseName;
 
             if (!options.DeployRoles)
             {
