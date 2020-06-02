@@ -193,6 +193,7 @@ partial class Rules {
 					// TODO: Fix this, so we can properly resolve below properties in case of deletions
 				case "FromColumn":
 				case "ToColumn":
+				case "ParameterValuesColumn":
 				case "KPI":
 					resolveObject = "value?.MetadataObject";
 					break;
@@ -337,6 +338,7 @@ partial class Rules {
     {
 	    if(className == "Variation" && propertyName == "Column") return "[TypeConverter(typeof(TableColumnConverter)),ReadOnly(true)]";
 		if(propertyName == "SortByColumn") return "[TypeConverter(typeof(TableColumnConverter))]";
+		if(propertyName == "ParameterValuesColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
 		if(propertyName == "DefaultColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
 		if(propertyName == "DefaultHierarchy") return "[TypeConverter(typeof(AllHierarchyConverter))]";
 		if(propertyName == "Relationship") return "[TypeConverter(typeof(AllRelationshipConverter))]";
