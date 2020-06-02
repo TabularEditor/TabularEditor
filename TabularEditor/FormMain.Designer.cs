@@ -182,7 +182,7 @@
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.txtExpression = new FastColoredTextBoxNS.FastColoredTextBox();
+            this.txtExpression = new UI.Extensions.FCTB.FastColoredTextBox();
             this.lblCurrentMeasure = new System.Windows.Forms.Label();
             this.toolStrip3 = new System.Windows.Forms.ToolStrip();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
@@ -193,7 +193,7 @@
             this.toolStripLabel4 = new System.Windows.Forms.ToolStripLabel();
             this.cmbExpressionSelector = new System.Windows.Forms.ToolStripComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.txtAdvanced = new FastColoredTextBoxNS.FastColoredTextBox();
+            this.txtAdvanced = new UI.Extensions.FCTB.FastColoredTextBox();
             this.toolStrip4 = new System.Windows.Forms.ToolStrip();
             this.toolStripSeparator18 = new System.Windows.Forms.ToolStripSeparator();
             this.btnUndoErrors = new System.Windows.Forms.ToolStripButton();
@@ -2714,7 +2714,7 @@
         private TabularEditor.UI.Actions.UIUndoRedoAction actUndo;
         private TabularEditor.UI.Actions.UIUndoRedoAction actRedo;
         private System.Windows.Forms.ToolStripButton btnUndoErrors;
-        private FastColoredTextBoxNS.FastColoredTextBox txtAdvanced;
+        private UI.Extensions.FCTB.FastColoredTextBox txtAdvanced;
         private Aga.Controls.Tree.TreeViewAdv tvModel;
         private Aga.Controls.Tree.TreeColumn _colName;
         private Aga.Controls.Tree.TreeColumn _colType;
@@ -2734,7 +2734,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripButton toolStripButton6;
-        private FastColoredTextBoxNS.FastColoredTextBox txtExpression;
+        private UI.Extensions.FCTB.FastColoredTextBox txtExpression;
         private System.Windows.Forms.Label lblCurrentMeasure;
         private System.Windows.Forms.ToolStrip toolStrip3;
         private System.Windows.Forms.ToolStripButton toolStripButton9;
