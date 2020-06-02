@@ -33,7 +33,6 @@ namespace TabularEditor.TOMWrapper
 	    public const string CONTEXTEXPRESSION = "ContextExpression";
 	    public const string CREDENTIAL = "Credential";
 	    public const string CROSSFILTERINGBEHAVIOR = "CrossFilteringBehavior";
-	    public const string CUBENAME = "CubeName";
 	    public const string CULTURE = "Culture";
 	    public const string CULTURES = "Cultures";
 	    public const string DATAACCESSOPTIONS = "DataAccessOptions";
@@ -97,6 +96,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string KPI = "KPI";
 	    public const string LEVELS = "Levels";
 	    public const string LINGUISTICMETADATA = "LinguisticMetadata";
+	    public const string MATTRIBUTES = "MAttributes";
 	    public const string MAXCONNECTIONS = "MaxConnections";
 	    public const string MEASURE = "Measure";
 	    public const string MEASURES = "Measures";
@@ -113,6 +113,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string OBJECTTYPE = "ObjectType";
 	    public const string OPTIONS = "Options";
 	    public const string ORDINAL = "Ordinal";
+	    public const string PARAMETERVALUESCOLUMN = "ParameterValuesColumn";
 	    public const string PARENT = "Parent";
 	    public const string PARTITIONS = "Partitions";
 	    public const string PASSWORD = "Password";
@@ -128,7 +129,6 @@ namespace TabularEditor.TOMWrapper
 	    public const string RELATIONSHIP = "Relationship";
 	    public const string RELATIONSHIPS = "Relationships";
 	    public const string RELYONREFERENTIALINTEGRITY = "RelyOnReferentialIntegrity";
-	    public const string RETAINDATATILLFORCECALCULATE = "RetainDataTillForceCalculate";
 	    public const string ROLE = "Role";
 	    public const string ROLES = "Roles";
 	    public const string SECURITYFILTERINGBEHAVIOR = "SecurityFilteringBehavior";
@@ -7321,6 +7321,30 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeSourceQueryCulture() { return false; }
 /// <summary>
+///             The string that has M attributes.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1535 or above.</remarks>
+		[DisplayName("M Attributes")]
+		[Category("Other"),Description(@"The string that has M attributes."),IntelliSense(@"The string that has M attributes.")]
+		public string MAttributes {
+			get {
+			    return MetadataObject.MAttributes;
+			}
+			set {
+				
+				var oldValue = MAttributes;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.MATTRIBUTES, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.MAttributes = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MATTRIBUTES, oldValue, newValue));
+				OnPropertyChanged(Properties.MATTRIBUTES, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeMAttributes() { return false; }
+/// <summary>
 ///             A reference to a default measure.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("Default Measure")]
@@ -8902,30 +8926,6 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeErrorMessage() { return false; }
-/// <summary>
-///             Partition's cube name for v3 PartitionSourceType_Entity 
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1510 or above.</remarks>
-		[DisplayName("Cube Name")]
-		[Category("Other"),Description(@"Partition's cube name for v3 PartitionSourceType_Entity"),IntelliSense(@"Partition's cube name for v3 PartitionSourceType_Entity")]
-		public string CubeName {
-			get {
-			    return MetadataObject.CubeName;
-			}
-			set {
-				
-				var oldValue = CubeName;
-				var newValue = value?.Replace("\r", "");
-				if (oldValue == newValue) return;
-				bool undoable = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.CUBENAME, newValue, ref undoable, ref cancel);
-				if (cancel) return;
-				if (!MetadataObject.IsRemoved) MetadataObject.CubeName = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.CUBENAME, oldValue, newValue));
-				OnPropertyChanged(Properties.CUBENAME, oldValue, newValue);
-			}
-		}
-		private bool ShouldSerializeCubeName() { return false; }
 		///<summary>The parent table of the current Partition.</summary>
 		[Browsable(false)]
 		public Table Table
@@ -9147,18 +9147,6 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("DataView"));
 				this.ToList().ForEach(item => { item.DataView = value; });
-				Handler.UndoManager.EndBatch();
-			}
-		}
-		/// <summary>
-		/// Sets the CubeName property of all objects in the collection at once.
-		/// </summary>
-		[Description("Sets the CubeName property of all objects in the collection at once.")]
-		public string CubeName {
-			set {
-				if(Handler == null) return;
-				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("CubeName"));
-				this.ToList().ForEach(item => { item.CubeName = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}
@@ -12115,6 +12103,55 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeExpression() { return false; }
+/// <summary>
+///             The string that has M attributes.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1535 or above.</remarks>
+		[DisplayName("M Attributes")]
+		[Category("Other"),Description(@"The string that has M attributes."),IntelliSense(@"The string that has M attributes.")]
+		public string MAttributes {
+			get {
+			    return MetadataObject.MAttributes;
+			}
+			set {
+				
+				var oldValue = MAttributes;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.MATTRIBUTES, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.MAttributes = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MATTRIBUTES, oldValue, newValue));
+				OnPropertyChanged(Properties.MATTRIBUTES, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeMAttributes() { return false; }
+/// <summary>
+///             Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter..
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at Preview or above.</remarks>
+		[DisplayName("Parameter Values Column")]
+		[Category("Other"),Description(@"Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter.."),IntelliSense(@"Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter..")][TypeConverter(typeof(AllColumnConverter))]
+		public Column ParameterValuesColumn {
+			get {
+				if (MetadataObject.ParameterValuesColumn == null) return null;
+			    return Handler.WrapperLookup[MetadataObject.ParameterValuesColumn] as Column;
+            }
+			set {
+				
+				var oldValue = ParameterValuesColumn;
+				var newValue = value;
+				if (oldValue?.MetadataObject == newValue?.MetadataObject) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.PARAMETERVALUESCOLUMN, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.ParameterValuesColumn = value?.MetadataObject;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.PARAMETERVALUESCOLUMN, oldValue, newValue));
+				OnPropertyChanged(Properties.PARAMETERVALUESCOLUMN, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeParameterValuesColumn() { return false; }
 
 		internal static NamedExpression CreateFromMetadata(Model parent, TOM.NamedExpression metadataObject) {
 			var obj = new NamedExpression(metadataObject);
@@ -12330,6 +12367,30 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("Expression"));
 				this.ToList().ForEach(item => { item.Expression = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the MAttributes property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the MAttributes property of all objects in the collection at once.")]
+		public string MAttributes {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("MAttributes"));
+				this.ToList().ForEach(item => { item.MAttributes = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the ParameterValuesColumn property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the ParameterValuesColumn property of all objects in the collection at once.")]
+		public Column ParameterValuesColumn {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("ParameterValuesColumn"));
+				this.ToList().ForEach(item => { item.ParameterValuesColumn = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}

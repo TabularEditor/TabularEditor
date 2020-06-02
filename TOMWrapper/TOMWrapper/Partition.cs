@@ -128,8 +128,6 @@ namespace TabularEditor.TOMWrapper
         {
             switch(propertyName)
             {
-                case Properties.CUBENAME:
-                    return Handler.CompatibilityLevel >= 1510;
                 case "DataSource":
                 case "Query":
                     return SourceType == PartitionSourceType.Query;
