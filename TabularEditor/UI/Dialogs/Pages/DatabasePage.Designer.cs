@@ -33,7 +33,7 @@
             this.databaseBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.pnlDatabaseID = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
-            this.txtDatabaseID = new System.Windows.Forms.TextBox();
+            this.txtDatabaseName = new System.Windows.Forms.TextBox();
             this.DatabaseIcon = new System.Windows.Forms.DataGridViewImageColumn();
             this.colID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colName = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -89,7 +89,7 @@
             // pnlDatabaseID
             // 
             this.pnlDatabaseID.Controls.Add(this.label1);
-            this.pnlDatabaseID.Controls.Add(this.txtDatabaseID);
+            this.pnlDatabaseID.Controls.Add(this.txtDatabaseName);
             this.pnlDatabaseID.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pnlDatabaseID.Location = new System.Drawing.Point(0, 214);
             this.pnlDatabaseID.Name = "pnlDatabaseID";
@@ -104,17 +104,17 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(67, 13);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Database ID";
+            this.label1.Text = "Database Name";
             // 
-            // txtDatabaseID
+            // txtDatabaseName
             // 
-            this.txtDatabaseID.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtDatabaseName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtDatabaseID.Location = new System.Drawing.Point(79, 6);
-            this.txtDatabaseID.Name = "txtDatabaseID";
-            this.txtDatabaseID.Size = new System.Drawing.Size(428, 20);
-            this.txtDatabaseID.TabIndex = 0;
-            this.txtDatabaseID.TextChanged += new System.EventHandler(this.txtDatabaseID_TextChanged);
+            this.txtDatabaseName.Location = new System.Drawing.Point(89, 6);
+            this.txtDatabaseName.Name = "txtDatabaseID";
+            this.txtDatabaseName.Size = new System.Drawing.Size(418, 20);
+            this.txtDatabaseName.TabIndex = 0;
+            this.txtDatabaseName.TextChanged += new System.EventHandler(this.txtDatabaseID_TextChanged);
             // 
             // DatabaseIcon
             // 
@@ -192,7 +192,7 @@
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.Panel pnlDatabaseID;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txtDatabaseID;
+        private System.Windows.Forms.TextBox txtDatabaseName;
         private System.Windows.Forms.BindingSource databaseBindingSource;
         private System.Windows.Forms.DataGridViewImageColumn DatabaseIcon;
         private System.Windows.Forms.DataGridViewTextBoxColumn colID;

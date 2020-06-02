@@ -119,8 +119,8 @@ namespace TabularEditor.TOMWrapper
         /// from one of the deployed databases on the instance.
         /// </summary>
         /// <param name="serverName"></param>
-        /// <param name="databaseId"></param>
-        public TabularModelHandler(string serverName, string databaseId, TabularModelHandlerSettings settings = null)
+        /// <param name="databaseName"></param>
+        public TabularModelHandler(string serverName, string databaseName, TabularModelHandlerSettings settings = null)
         {
             this.serverName = serverName;
             _disableUpdates = true;
@@ -131,14 +131,14 @@ namespace TabularEditor.TOMWrapper
             server = new TOM.Server();
             server.Connect(serverName);
 
-            if (databaseId == null)
+            if (databaseName == null)
             {
                 if (server.Databases.Count >= 1) database = server.Databases[0];
                 else throw new InvalidOperationException("This instance does not contain any databases, or the user does not have access.");
             }
             else
             {
-                database = server.Databases[databaseId];
+                database = server.Databases.GetByName(databaseName);
             }
             database.RemoveTabularEditorTag();
             CompatibilityLevel = database.CompatibilityLevel;
