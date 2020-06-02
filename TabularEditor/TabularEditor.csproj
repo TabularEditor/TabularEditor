@@ -111,15 +111,14 @@
       <HintPath>..\packages\ActionListWinForms.1.3.0.0\lib\net40\Crad.Windows.Forms.Actions.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="FastColoredTextBox">
-      <HintPath>..\packages\FCTB.2.16.11.0\lib\FastColoredTextBox.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Antlr4.Runtime">
       <HintPath>..\packages\Antlr4.Runtime.4.5.3\lib\net45\Antlr4.Runtime.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="FastColoredTextBox, Version=2.16.24.0, Culture=neutral, PublicKeyToken=fb8aa12b994ef61b, processorArchitecture=MSIL">
+      <HintPath>..\packages\FCTB.2.16.24\lib\FastColoredTextBox.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AnalysisServices.Core, Version=18.7.0.1, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.18.7.0.1\lib\net45\Microsoft.AnalysisServices.Core.dll</HintPath>
     </Reference>
@@ -403,6 +402,15 @@
       <DependentUpon>SelectDatabaseForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Dialogs\ValidationEventArgs.cs" />
+    <Compile Include="UI\Extensions\FCTB\FastColoredTextBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Extensions\FCTB\ReplaceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Extensions\FCTB\ReplaceForm.Designer.cs">
+      <DependentUpon>ReplaceForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Extensions\WatermarkTextBox.cs" />
     <Compile Include="UI\Hourglass.cs" />
     <Compile Include="UI\SaveAsDialog.cs" />
@@ -692,6 +700,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\SelectDatabaseForm.resx">
       <DependentUpon>SelectDatabaseForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Extensions\FCTB\ReplaceForm.resx">
+      <DependentUpon>ReplaceForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config">
       <SubType>Designer</SubType>
