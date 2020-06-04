@@ -34,7 +34,7 @@ namespace TabularEditor.UI
             if (Preferences.Current.BackupOnSave)
             {
                 var backupFilename = string.Format("{0}\\Backup_{1}_{2}.zip", Preferences.Current.BackupLocation, Handler.Database.Name, DateTime.Now.ToString("yyyyMMddhhmmssfff"));
-                TabularDeployer.SaveModelMetadataBackup(f.DeployTargetServer.ConnectionString, f.DeployTargetDatabaseID, backupFilename);
+                TabularDeployer.SaveModelMetadataBackup(f.DeployTargetServer.ConnectionString, f.DeployTargetDatabaseName, backupFilename);
             }
 
 
@@ -53,7 +53,7 @@ namespace TabularEditor.UI
                         try
                         {
                             Program.UpdateDeploymentMetadata(Handler.Model, DeploymentModeMetadata.WizardUI);
-                            TabularDeployer.Deploy(Handler, f.DeployTargetServer.ConnectionString, f.DeployTargetDatabaseID, f.DeployOptions, df.CancelToken);
+                            TabularDeployer.Deploy(Handler, f.DeployTargetServer.ConnectionString, f.DeployTargetDatabaseName, f.DeployOptions, df.CancelToken);
                         }
                         catch (Exception ex)
                         {
@@ -103,12 +103,12 @@ namespace TabularEditor.UI
             UpdateUIText();
 
             Database_Open(ConnectForm.ConnectionString,
-                string.IsNullOrEmpty(ConnectForm.LocalInstanceName) ? SelectDatabaseForm.DatabaseID : null);
+                string.IsNullOrEmpty(ConnectForm.LocalInstanceName) ? SelectDatabaseForm.DatabaseName : null);
         }
 
         private System.Windows.Forms.Timer KeepAliveTimer;
 
-        public void Database_Open(string connectionString, string databaseId)
+        public void Database_Open(string connectionString, string databaseName)
         {
             using (new Hourglass())
             {
@@ -117,7 +117,7 @@ namespace TabularEditor.UI
 
                 try
                 {
-                    Handler = new TabularModelHandler(connectionString, databaseId);
+                    Handler = new TabularModelHandler(connectionString, databaseName);
                     if (Handler.PowerBIGovernance.GovernanceMode == TOMWrapper.PowerBI.PowerBIGovernanceMode.ReadOnly)
                         MessageBox.Show("Editing a Power BI Desktop model that does not use the Enhanced Model Metadata (V3) format is not allowed, unless you enable Experimental Power BI Features under File > Preferences.\n\nTabular Editor will still load the model in read-only mode.", "Power BI Desktop Model Read-only", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     File_Current = null;

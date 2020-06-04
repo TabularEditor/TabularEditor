@@ -79,7 +79,7 @@ namespace TabularEditor.UI.Dialogs.Pages
         {
             suspendEvent = true;
             dataGridView1.ClearSelection();
-            txtDatabaseID.Text = "";
+            txtDatabaseName.Text = "";
             suspendEvent = false;
             OnValidation();
         }
@@ -90,7 +90,7 @@ namespace TabularEditor.UI.Dialogs.Pages
             {
                 suspendEvent = true;
 
-                txtDatabaseID.Text = (dataGridView1.SelectedRows[0].DataBoundItem as Database).ID;
+                txtDatabaseName.Text = (dataGridView1.SelectedRows[0].DataBoundItem as Database).Name;
                 OnValidation();
 
                 suspendEvent = false;
@@ -110,16 +110,16 @@ namespace TabularEditor.UI.Dialogs.Pages
             }
         }
 
-        public string DatabaseID { get; private set; }
+        public string DatabaseName { get; private set; }
 
         bool valid = false;
         public bool IsValid => valid;
 
         private void OnValidation()
         {
-            DatabaseID = string.IsNullOrWhiteSpace(txtDatabaseID.Text) ? null : txtDatabaseID.Text;
+            DatabaseName = string.IsNullOrWhiteSpace(txtDatabaseName.Text) ? null : txtDatabaseName.Text;
 
-            var newValid = !string.IsNullOrEmpty(DatabaseID);
+            var newValid = !string.IsNullOrEmpty(DatabaseName);
             if (valid != newValid)
             {
                 valid = newValid;
