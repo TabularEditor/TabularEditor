@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing.Design;
 using System.Globalization;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
@@ -141,6 +142,7 @@ namespace TabularEditor.TOMWrapper
             {
                 Variations = new VariationCollection("Variations", MetadataObject.Variations, this);
                 ObjectLevelSecurity = new ColumnOLSIndexer(this);
+                GroupByColumns = new GroupingColumnCollection(this);
             }
 
             base.Init();
@@ -158,40 +160,10 @@ namespace TabularEditor.TOMWrapper
 
         private List<CalculatedTableColumn> _originForCalculatedTableColumnsCache;
 
-        public string GroupByColumns
-        {
-            get
-            {
-                if (MetadataObject.RelatedColumnDetails == null) return "";
-                return string.Join(",", MetadataObject.RelatedColumnDetails.GroupByColumns.Select(c => "[" + c.GroupingColumn.Name + "]"));
-            }
-            set
-            {
-                var oldValue = GroupByColumns;
-                if (oldValue == value) return;
-                bool undoable = true;
-                bool cancel = false;
-                OnPropertyChanging(Properties.GROUPBYCOLUMNS, value, ref undoable, ref cancel);
-                if (cancel) return;
+        private List<Column> _groupByColumns = new List<Column>();
 
-                if (string.IsNullOrWhiteSpace(value))
-                    MetadataObject.RelatedColumnDetails = null;
-                else
-                {
-                    if (MetadataObject.RelatedColumnDetails == null)
-                        MetadataObject.RelatedColumnDetails = new TOM.RelatedColumnDetails();
-                    MetadataObject.RelatedColumnDetails.GroupByColumns.Clear();
-                    foreach(var c in value.Substring(1,value.Length-2).Split(new[] { "],[" }, StringSplitOptions.None))
-                    {
-                        if (MetadataObject.Table.Columns.ContainsName(c))
-                            MetadataObject.RelatedColumnDetails.GroupByColumns.Add(new TOM.GroupByColumn { GroupingColumn = MetadataObject.Table.Columns[c] });
-                    }
-                }
-
-                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISPLAYFOLDER, oldValue, value));
-                OnPropertyChanged(Properties.GROUPBYCOLUMNS, oldValue, value);
-            }
-        }
+        [NoMultiselect(), Editor(typeof(ColumnSetCollectionEditor), typeof(UITypeEditor))]
+        public GroupingColumnCollection GroupByColumns { get; private set; }
 
         protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
         {

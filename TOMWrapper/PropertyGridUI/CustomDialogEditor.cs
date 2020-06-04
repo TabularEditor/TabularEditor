@@ -60,6 +60,8 @@ namespace TabularEditor.PropertyGridUI
     {
         public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
         {
+            if (context == null)
+                return UITypeEditorEditStyle.Modal;
             return CustomEditors.HasEditorFor(context.PropertyDescriptor.Name) ? UITypeEditorEditStyle.Modal : UITypeEditorEditStyle.None;
         }
 

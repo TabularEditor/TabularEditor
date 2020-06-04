@@ -26,7 +26,7 @@ namespace TabularEditor.UI.Dialogs
             cultureNames = cultures.Select(c => c.Name).ToArray();
 
             listView1.VirtualListSize = cultures.Length;
-            listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.Head‌​erSize);
+            listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
         }
 
         private void listView1_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)

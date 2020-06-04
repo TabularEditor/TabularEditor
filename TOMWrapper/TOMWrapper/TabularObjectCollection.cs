@@ -49,7 +49,12 @@ namespace TabularEditor.TOMWrapper
         internal TabularObject Parent { get { return _parent; } }
         internal TabularModelHandler Handler { get { return _handler; } }
 
-        internal virtual void Add(T item)
+        internal void Add(T item)
+        {
+            InternalAdd(item);
+        }
+
+        protected virtual void InternalAdd(T item)
         {
             if (item.MetadataObject.Parent != null)
             {
@@ -64,10 +69,20 @@ namespace TabularEditor.TOMWrapper
             item.Collection = this;
 
             Handler.UndoManager.Add(new UndoAddRemoveAction(this, item, UndoAddRemoveActionType.Add));
-            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
+            DoCollectionChanged(NotifyCollectionChangedAction.Add, item);
         }
 
-        internal virtual bool Remove(T item)
+        protected virtual void DoCollectionChanged(NotifyCollectionChangedAction action, T item)
+        {
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action, item));
+        }
+
+        internal bool Remove(T item)
+        {
+            return InternalRemove(item);
+        }
+
+        protected virtual bool InternalRemove(T item)
         {
             if (!TOM_Contains(item.MetadataObject)) throw new InvalidOperationException();
 
@@ -75,7 +90,7 @@ namespace TabularEditor.TOMWrapper
             item.Collection = null;
 
             Handler.UndoManager.Add(new UndoAddRemoveAction(this, item, UndoAddRemoveActionType.Remove));
-            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
+            DoCollectionChanged(NotifyCollectionChangedAction.Remove, item);
             return true;
         }
 
@@ -83,6 +98,7 @@ namespace TabularEditor.TOMWrapper
         {
             Handler.UndoManager.Add(new UndoClearAction(this, this.ToArray()));
             TOM_Clear();
+            DoCollectionChanged(NotifyCollectionChangedAction.Reset, null);
         }
 
         internal void CopyTo(T[] array, int arrayIndex)

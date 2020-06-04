@@ -247,7 +247,7 @@ namespace TabularEditor.UI
                                 resetCheckPoint,
                                 restoreSerializationOptions);
 
-                            RecentFiles.Add(dialog.FileName);
+                            RecentFiles.Add(fileName);
                             RecentFiles.Save();
                             UI.FormMain.PopulateRecentFilesList();
 
@@ -349,7 +349,8 @@ namespace TabularEditor.UI
 
         public void HandleError(string operationTitle, Exception e)
         {
-            if (e is SerializationException)
+            if (e is SerializationException || 
+                e is Microsoft.AnalysisServices.Tabular.TomInternalException)
                 MessageBox.Show("Tabular Editor was unable to serialize the model to disk.\n\n" + e.Message, operationTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
             else
                 throw e;

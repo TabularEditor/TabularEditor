@@ -68,14 +68,14 @@ namespace TabularEditor.TOMWrapper
 
     public partial class LevelCollection
     {
-        internal override bool Remove(Level item)
+        protected override bool InternalRemove(Level item)
         {
             var result = base.Remove(item);
             Handler.UpdateLevels(Hierarchy);
             return result;
         }
 
-        internal override void Add(Level item)
+        protected override void InternalAdd(Level item)
         {
             base.Add(item);
             Handler.UpdateLevels(Hierarchy);
