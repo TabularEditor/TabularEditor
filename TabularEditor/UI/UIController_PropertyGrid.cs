@@ -16,6 +16,8 @@ namespace TabularEditor.UI
         {
             CustomEditors.RegisterEditor("Display Folder", new FormDisplayFolderSelect());
             CustomEditors.RegisterEditor("Connection String", new ConnectSqlForm());
+            CustomEditors.RegisterEditor("Sort By Column", new ColumnSelectDialog());
+            CustomEditors.RegisterEditor(TOMWrapper.Properties.GROUPBYCOLUMNS, new ColumnSelectDialog());
         }
 
         public void PropertyGrid_UpdateFromSelection()

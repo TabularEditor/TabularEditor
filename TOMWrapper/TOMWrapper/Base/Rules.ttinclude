@@ -336,7 +336,7 @@ partial class Rules {
 	public static string GetOtherAttributes(string propertyName, string className)
     {
 	    if(className == "Variation" && propertyName == "Column") return "[TypeConverter(typeof(TableColumnConverter)),ReadOnly(true)]";
-		if(propertyName == "SortByColumn") return "[TypeConverter(typeof(TableColumnConverter))]";
+		if(propertyName == "SortByColumn") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(ColumnConverter))]";
 		if(propertyName == "DefaultColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
 		if(propertyName == "DefaultHierarchy") return "[TypeConverter(typeof(AllHierarchyConverter))]";
 		if(propertyName == "Relationship") return "[TypeConverter(typeof(AllRelationshipConverter))]";

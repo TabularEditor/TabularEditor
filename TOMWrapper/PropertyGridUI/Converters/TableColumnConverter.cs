@@ -9,7 +9,7 @@ using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.PropertyGridUI
 {
-    internal class TableColumnConverter : TypeConverter
+    internal class TableColumnConverter : ColumnConverter
     {
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
         {
@@ -28,8 +28,11 @@ namespace TabularEditor.PropertyGridUI
                 return new StandardValuesCollection(Table(context).Columns.Where(c => c != col).OrderBy(c => c.Name).ToList());
             }
         }
+    }
 
-        private Table Table(ITypeDescriptorContext context)
+    internal class ColumnConverter: TypeConverter
+    {
+        protected Table Table(ITypeDescriptorContext context)
         {
             if (context.Instance is ITabularTableObject) return (context.Instance as ITabularTableObject).Table;
             if (context.Instance is ITabularNamedObject[]) return ((context.Instance as ITabularNamedObject[]).First() as Column)?.Table;

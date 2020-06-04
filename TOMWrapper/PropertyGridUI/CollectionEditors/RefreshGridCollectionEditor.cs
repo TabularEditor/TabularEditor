@@ -20,8 +20,8 @@ namespace TabularEditor.PropertyGridUI
     internal class RefreshGridCollectionEditor : CollectionEditor
     {
         TabularModelHandler handler;
-        bool canceled = false;
-        protected bool Cancelled => canceled;
+        bool cancelled = false;
+        protected bool Cancelled => cancelled;
         Type itemType = null;
 
 
@@ -58,20 +58,20 @@ namespace TabularEditor.PropertyGridUI
 
         private void Form_Load(object sender, EventArgs e)
         {
-            canceled = false;
+            cancelled = false;
             handler?.BeginUpdate(CollectionItemType.Name.ToLower() + " change");
         }
 
         protected override void CancelChanges()
         {
-            canceled = true;
+            cancelled = true;
             base.CancelChanges();
             handler?.EndUpdate(rollback: true);
         }
 
         protected override object SetItems(object editValue, object[] value)
         {
-            if (canceled) return editValue;
+            if (cancelled) return editValue;
 
             //return base.SetItems(editValue, value);
 
@@ -114,7 +114,7 @@ namespace TabularEditor.PropertyGridUI
 
             OnFormClosed(e);
 
-            if (!canceled)
+            if (!cancelled)
             {
                 handler?.EndUpdate();
             }
