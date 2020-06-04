@@ -23,12 +23,12 @@ namespace TabularEditor.UI.Dialogs
             var form = new SelectDatabaseForm();
             form.databasePage1.Server = server;
             var result = form.ShowDialog();
-            DatabaseID = form.databasePage1.DatabaseID;
+            DatabaseName = form.databasePage1.DatabaseName;
 
             return result;
         }
         
-        public static string DatabaseID;
+        public static string DatabaseName;
 
         private void SelectDatabaseForm_Shown(object sender, EventArgs e)
         {

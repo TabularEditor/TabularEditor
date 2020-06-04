@@ -79,7 +79,7 @@ namespace TabularEditor.UI.Dialogs
         }
 
         public TOM.Server DeployTargetServer { get { return page2.Server; } set { page2.Server = value; } }
-        public string DeployTargetDatabaseID => page2.DatabaseID;
+        public string DeployTargetDatabaseName => page2.DatabaseName;
 
         private void DeployForm_KeyDown(object sender, KeyEventArgs e)
         {
@@ -106,7 +106,7 @@ namespace TabularEditor.UI.Dialogs
 
             if (_currentPage == 2)
             {
-                DeployOptions.DeployMode = DeployTargetServer.Databases.Contains(DeployTargetDatabaseID) ? DeploymentMode.CreateOrAlter : DeploymentMode.CreateDatabase;
+                DeployOptions.DeployMode = DeployTargetServer.Databases.ContainsName(DeployTargetDatabaseName) ? DeploymentMode.CreateOrAlter : DeploymentMode.CreateDatabase;
                 if (DeployOptions.DeployMode == DeploymentMode.CreateDatabase)
                 {
                     chkDeployConnections.Checked = true;
@@ -114,7 +114,7 @@ namespace TabularEditor.UI.Dialogs
                 }
                 else if (DeployOptions.DeployMode == DeploymentMode.CreateOrAlter)
                 {
-                    DeployOptions = page2.DatabaseID == PreselectDb ? (DeployOptions ?? new DeploymentOptions()) : new DeploymentOptions();
+                    DeployOptions = page2.DatabaseName == PreselectDb ? (DeployOptions ?? new DeploymentOptions()) : new DeploymentOptions();
                     
                     chkDeployConnections.Checked = DeployOptions.DeployConnections;
                     chkDeployPartitions.Checked = DeployOptions.DeployPartitions;
@@ -137,7 +137,7 @@ namespace TabularEditor.UI.Dialogs
                 var n1 = n.Nodes.Add("Destination");
                 n1.Nodes.Add(string.Format("Type: {0} ({1})", DeployTargetServer.ProductName, DeployTargetServer.Version));
                 n1.Nodes.Add(string.Format("Server Name: {0}", DeployTargetServer.Name, DeployTargetServer.Version));
-                n1.Nodes.Add(string.Format("Database: {0}", DeployTargetDatabaseID));
+                n1.Nodes.Add(string.Format("Database: {0}", DeployTargetDatabaseName));
                 n1.Nodes.Add(string.Format("Mode: {0}", DeployOptions.DeployMode == DeploymentMode.CreateDatabase ? "Create new database" : "Deploy to existing database"));
                 var n2 = n.Nodes.Add("Options");
                 if (chkDeployStructure.Checked) n2.Nodes.Add("Deploy Model Structure");
@@ -183,7 +183,7 @@ namespace TabularEditor.UI.Dialogs
         private void btnDeploy_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
-            PreselectDb = page2.DatabaseID;
+            PreselectDb = page2.DatabaseName;
             Close();
         }
 
@@ -194,7 +194,7 @@ namespace TabularEditor.UI.Dialogs
             using (new Hourglass())
             {
                 tmslForm.txtCode.Text = TabularDeployer.GetTMSL(Handler.Database,
-                    DeployTargetServer, DeployTargetDatabaseID, DeployOptions);
+                    DeployTargetServer, DeployTargetDatabaseName, DeployOptions);
             }
             tmslForm.ShowDialog();
         }
@@ -280,7 +280,7 @@ namespace TabularEditor.UI.Dialogs
         {
             var targets =
                 string.Format(Strings.ExportBuildDeploymentTargets
-                    , DeployTargetDatabaseID
+                    , DeployTargetDatabaseName
                     , DeployTargetServer.Name);
 
             File.WriteAllText(targetsFile, targets);

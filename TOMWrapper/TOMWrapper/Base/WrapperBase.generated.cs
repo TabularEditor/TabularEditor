@@ -129,7 +129,6 @@ namespace TabularEditor.TOMWrapper
 	    public const string RELATIONSHIP = "Relationship";
 	    public const string RELATIONSHIPS = "Relationships";
 	    public const string RELYONREFERENTIALINTEGRITY = "RelyOnReferentialIntegrity";
-	    public const string RETAINDATATILLFORCECALCULATE = "RetainDataTillForceCalculate";
 	    public const string ROLE = "Role";
 	    public const string ROLES = "Roles";
 	    public const string SECURITYFILTERINGBEHAVIOR = "SecurityFilteringBehavior";
@@ -2463,7 +2462,7 @@ namespace TabularEditor.TOMWrapper
 ///             Indicates that the column defining this property will be sorted by the values of the column referenced by this property.
 ///             </summary>
 		[DisplayName("Sort By Column")]
-		[Category("Options"),Description(@"Indicates that the column defining this property will be sorted by the values of the column referenced by this property."),IntelliSense(@"Indicates that the column defining this property will be sorted by the values of the column referenced by this property.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(ColumnConverter))]
+		[Category("Options"),Description(@"Indicates that the column defining this property will be sorted by the values of the column referenced by this property."),IntelliSense(@"Indicates that the column defining this property will be sorted by the values of the column referenced by this property.")][TypeConverter(typeof(TableColumnConverter))]
 		public Column SortByColumn {
 			get {
 				if (MetadataObject.SortByColumn == null) return null;
@@ -12132,7 +12131,7 @@ namespace TabularEditor.TOMWrapper
 ///             Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter..
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at Preview or above.</remarks>
 		[DisplayName("Parameter Values Column")]
-		[Category("Other"),Description(@"Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter.."),IntelliSense(@"Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter..")]
+		[Category("Other"),Description(@"Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter.."),IntelliSense(@"Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter..")][TypeConverter(typeof(AllColumnConverter))]
 		public Column ParameterValuesColumn {
 			get {
 				if (MetadataObject.ParameterValuesColumn == null) return null;
@@ -12147,7 +12146,7 @@ namespace TabularEditor.TOMWrapper
 				bool cancel = false;
 				OnPropertyChanging(Properties.PARAMETERVALUESCOLUMN, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				if (!MetadataObject.IsRemoved) MetadataObject.ParameterValuesColumn = newValue;
+				if (!MetadataObject.IsRemoved) MetadataObject.ParameterValuesColumn = value?.MetadataObject;
 				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.PARAMETERVALUESCOLUMN, oldValue, newValue));
 				OnPropertyChanged(Properties.PARAMETERVALUESCOLUMN, oldValue, newValue);
 			}
