@@ -31,5 +31,11 @@ namespace TabularEditor.UI.Extensions.FCTB
         {
             this.ShowReplaceDialog(null);
         }
+
+        public override void Cut()
+        {
+            base.Cut();
+            OnTextChanged();
+        }
     }
 }
