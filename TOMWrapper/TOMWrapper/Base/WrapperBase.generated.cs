@@ -129,6 +129,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string RELATIONSHIP = "Relationship";
 	    public const string RELATIONSHIPS = "Relationships";
 	    public const string RELYONREFERENTIALINTEGRITY = "RelyOnReferentialIntegrity";
+	    public const string RETAINDATATILLFORCECALCULATE = "RetainDataTillForceCalculate";
 	    public const string ROLE = "Role";
 	    public const string ROLES = "Roles";
 	    public const string SECURITYFILTERINGBEHAVIOR = "SecurityFilteringBehavior";
@@ -483,7 +484,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		///<summary>The collection of Annotations on the current Variation.</summary>
-        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on the current Variation."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Variation."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -600,7 +601,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 				///<summary>The collection of Extended Properties on the current Variation.</summary>
-        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on the current Variation."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Variation."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -757,7 +758,7 @@ namespace TabularEditor.TOMWrapper
 ///             If true, the Variation is the Default one for the Column.
 ///             </summary>
 		[DisplayName("Default")]
-		[Category("Variation Options"),Description(@"If true, the Variation is the Default one for the Column."),IntelliSense(@"If true, the Variation is the Default one for the Column.")]
+		[Category("Options"),Description(@"If true, the Variation is the Default one for the Column."),IntelliSense(@"If true, the Variation is the Default one for the Column.")]
 		public bool IsDefault {
 			get {
 			    return MetadataObject.IsDefault;
@@ -794,7 +795,7 @@ namespace TabularEditor.TOMWrapper
 ///             Missing comment
 ///             </summary>
 		[DisplayName("Relationship")]
-		[Category("Variation Options"),Description(@"The Relationship of this Variation"),IntelliSense(@"The Relationship of this Variation")][TypeConverter(typeof(AllRelationshipConverter))]
+		[Category("Options"),Description(@"The Relationship of this Variation"),IntelliSense(@"The Relationship of this Variation")][TypeConverter(typeof(AllRelationshipConverter))]
 		public Relationship Relationship {
 			get {
 				if (MetadataObject.Relationship == null) return null;
@@ -819,7 +820,7 @@ namespace TabularEditor.TOMWrapper
 ///             Missing comment
 ///             </summary>
 		[DisplayName("Default Hierarchy")]
-		[Category("Variation Options"),Description(@"The DefaultHierarchy of this Variation"),IntelliSense(@"The DefaultHierarchy of this Variation")][TypeConverter(typeof(AllHierarchyConverter))]
+		[Category("Options"),Description(@"The DefaultHierarchy of this Variation"),IntelliSense(@"The DefaultHierarchy of this Variation")][TypeConverter(typeof(AllHierarchyConverter))]
 		public Hierarchy DefaultHierarchy {
 			get {
 				if (MetadataObject.DefaultHierarchy == null) return null;
@@ -844,7 +845,7 @@ namespace TabularEditor.TOMWrapper
 ///             Missing comment
 ///             </summary>
 		[DisplayName("Default Column")]
-		[Category("Variation Options"),Description(@"The DefaultColumn of this Variation"),IntelliSense(@"The DefaultColumn of this Variation")][TypeConverter(typeof(AllColumnConverter))]
+		[Category("Options"),Description(@"The DefaultColumn of this Variation"),IntelliSense(@"The DefaultColumn of this Variation")][TypeConverter(typeof(AllColumnConverter))]
 		public Column DefaultColumn {
 			get {
 				if (MetadataObject.DefaultColumn == null) return null;
@@ -967,11 +968,14 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
- 
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.EXTENDEDPROPERTIES:
-					return Handler.CompatibilityLevel >= 1400;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -1122,7 +1126,7 @@ namespace TabularEditor.TOMWrapper
 ///             For internal use only.
 ///             </summary>
 		[DisplayName("Context Expression")]
-		[Category("Other"),Description(@"For internal use only."),IntelliSense(@"For internal use only.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Options"),Description(@"For internal use only."),IntelliSense(@"For internal use only.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string ContextExpression {
 			get {
 			    return MetadataObject.ContextExpression;
@@ -1248,8 +1252,12 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.PARENT:
 					return false;
 				
@@ -1285,7 +1293,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value indicating whether the data type is inferred.
 ///             </summary>
 		[DisplayName("Data Type Inferred")]
-		[Category("Other"),Description(@"A boolean value indicating whether the data type is inferred."),IntelliSense(@"A boolean value indicating whether the data type is inferred.")]
+		[Category("Options"),Description(@"A boolean value indicating whether the data type is inferred."),IntelliSense(@"A boolean value indicating whether the data type is inferred.")]
 		public bool IsDataTypeInferred {
 			get {
 			    return MetadataObject.IsDataTypeInferred;
@@ -1435,8 +1443,12 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.PARENT:
 					return false;
 				
@@ -1471,7 +1483,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value indicating whether name of the column is inferred by the server.
 ///             </summary>
 		[DisplayName("Name Inferred")]
-		[Category("Other"),Description(@"A boolean value indicating whether name of the column is inferred by the server."),IntelliSense(@"A boolean value indicating whether name of the column is inferred by the server.")]
+		[Category("Options"),Description(@"A boolean value indicating whether name of the column is inferred by the server."),IntelliSense(@"A boolean value indicating whether name of the column is inferred by the server.")]
 		public bool IsNameInferred {
 			get {
 			    return MetadataObject.IsNameInferred;
@@ -1495,7 +1507,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value indicating whether the data type is inferred.
 ///             </summary>
 		[DisplayName("Data Type Inferred")]
-		[Category("Other"),Description(@"A boolean value indicating whether the data type is inferred."),IntelliSense(@"A boolean value indicating whether the data type is inferred.")]
+		[Category("Options"),Description(@"A boolean value indicating whether the data type is inferred."),IntelliSense(@"A boolean value indicating whether the data type is inferred.")]
 		public bool IsDataTypeInferred {
 			get {
 			    return MetadataObject.IsDataTypeInferred;
@@ -1519,7 +1531,7 @@ namespace TabularEditor.TOMWrapper
 ///             Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is an expression (as the Expression of a CalculatedPartitionSource).
 ///             </summary>
 		[DisplayName("Source Column")]
-		[Category("Options"),Description(@"Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is an expression (as the Expression of a CalculatedPartitionSource)."),IntelliSense(@"Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is an expression (as the Expression of a CalculatedPartitionSource).")]
+		[Category("Basic"),Description(@"Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is an expression (as the Expression of a CalculatedPartitionSource)."),IntelliSense(@"Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is an expression (as the Expression of a CalculatedPartitionSource).")]
 		public string SourceColumn {
 			get {
 			    return MetadataObject.SourceColumn;
@@ -1543,7 +1555,7 @@ namespace TabularEditor.TOMWrapper
 ///             Returns a ColumnOrigin object. Applicable only to non-calculated columns of a calculated table. ColumnOrigin points to another column which is the source of this column' metadata and data.
 ///             </summary>
 		[DisplayName("Column Origin")]
-		[Category("Other"),Description(@"Returns a ColumnOrigin object. Applicable only to non-calculated columns of a calculated table. ColumnOrigin points to another column which is the source of this column' metadata and data."),IntelliSense(@"Returns a ColumnOrigin object. Applicable only to non-calculated columns of a calculated table. ColumnOrigin points to another column which is the source of this column' metadata and data.")][Browsable(false)]
+		[Category("Options"),Description(@"Returns a ColumnOrigin object. Applicable only to non-calculated columns of a calculated table. ColumnOrigin points to another column which is the source of this column' metadata and data."),IntelliSense(@"Returns a ColumnOrigin object. Applicable only to non-calculated columns of a calculated table. ColumnOrigin points to another column which is the source of this column' metadata and data.")][Browsable(false)]
 		public Column ColumnOrigin {
 			get {
 				if (MetadataObject.ColumnOrigin == null) return null;
@@ -1656,8 +1668,12 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.PARENT:
 					return false;
 				
@@ -1701,7 +1717,7 @@ namespace TabularEditor.TOMWrapper
 ///             For a DataColumn, specifies the data type. See <see href="https://msdn.microsoft.com/library/gg492146.aspx" /> for a list of supported data types.  
 ///             </summary>
 		[DisplayName("Data Type")]
-		[Category("Metadata"),Description(@"For a DataColumn, specifies the data type. See <see href=""https://msdn.microsoft.com/library/gg492146.aspx for a list of supported data types."),IntelliSense(@"For a DataColumn, specifies the data type. See <see href=""https://msdn.microsoft.com/library/gg492146.aspx for a list of supported data types.")][TypeConverter(typeof(DataTypeEnumConverter))]
+		[Category("Basic"),Description(@"For a DataColumn, specifies the data type. See <see href=""https://msdn.microsoft.com/library/gg492146.aspx for a list of supported data types."),IntelliSense(@"For a DataColumn, specifies the data type. See <see href=""https://msdn.microsoft.com/library/gg492146.aspx for a list of supported data types.")][TypeConverter(typeof(DataTypeEnumConverter))]
 		public DataType DataType {
 			get {
 			    return (DataType)MetadataObject.DataType;
@@ -1722,7 +1738,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeDataType() { return false; }
 		///<summary>The collection of Annotations on the current Column.</summary>
-        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on the current Column."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Column."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -1839,7 +1855,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 				///<summary>The collection of Extended Properties on the current Column.</summary>
-        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on the current Column."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Column."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -1972,7 +1988,7 @@ namespace TabularEditor.TOMWrapper
 ///             Specifies the type of data contained in the column so that you can add custom behaviors based on column type. There are 248 possible values. The first ten are Invalid (-1), All (1), Regular (2), Image (3), ImageBMP (4), ImageGIF (5), ImageJPG (6), ImagePNG (7), ImageTIFF (8), ImageURL (9), Id (10). For the rest, please refer to the MS-SSAS-T SQL Server Analysis Services Tabular Protocol documentation on MSDN.
 ///             </summary>
 		[DisplayName("Data Category")]
-		[Category("Metadata"),Description(@"Specifies the type of data contained in the column so that you can add custom behaviors based on column type. There are 248 possible values. The first ten are Invalid (-1), All (1), Regular (2), Image (3), ImageBMP (4), ImageGIF (5), ImageJPG (6), ImagePNG (7), ImageTIFF (8), ImageURL (9), Id (10). For the rest, please refer to the MS-SSAS-T SQL Server Analysis Services Tabular Protocol documentation on MSDN."),IntelliSense(@"Specifies the type of data contained in the column so that you can add custom behaviors based on column type. There are 248 possible values. The first ten are Invalid (-1), All (1), Regular (2), Image (3), ImageBMP (4), ImageGIF (5), ImageJPG (6), ImagePNG (7), ImageTIFF (8), ImageURL (9), Id (10). For the rest, please refer to the MS-SSAS-T SQL Server Analysis Services Tabular Protocol documentation on MSDN.")]
+		[Category("Options"),Description(@"Specifies the type of data contained in the column so that you can add custom behaviors based on column type. There are 248 possible values. The first ten are Invalid (-1), All (1), Regular (2), Image (3), ImageBMP (4), ImageGIF (5), ImageJPG (6), ImagePNG (7), ImageTIFF (8), ImageURL (9), Id (10). For the rest, please refer to the MS-SSAS-T SQL Server Analysis Services Tabular Protocol documentation on MSDN."),IntelliSense(@"Specifies the type of data contained in the column so that you can add custom behaviors based on column type. There are 248 possible values. The first ten are Invalid (-1), All (1), Regular (2), Image (3), ImageBMP (4), ImageGIF (5), ImageJPG (6), ImagePNG (7), ImageTIFF (8), ImageURL (9), Id (10). For the rest, please refer to the MS-SSAS-T SQL Server Analysis Services Tabular Protocol documentation on MSDN.")]
 		public string DataCategory {
 			get {
 			    return MetadataObject.DataCategory;
@@ -2057,7 +2073,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value that indicates whether the column contains only unique values. True if the values are unique; otherwise false.
 ///             </summary>
 		[DisplayName("Unique")]
-		[Category("Other"),Description(@"A boolean value that indicates whether the column contains only unique values. True if the values are unique; otherwise false."),IntelliSense(@"A boolean value that indicates whether the column contains only unique values. True if the values are unique; otherwise false.")]
+		[Category("Options"),Description(@"A boolean value that indicates whether the column contains only unique values. True if the values are unique; otherwise false."),IntelliSense(@"A boolean value that indicates whether the column contains only unique values. True if the values are unique; otherwise false.")]
 		public bool IsUnique {
 			get {
 			    return MetadataObject.IsUnique;
@@ -2081,7 +2097,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value that indicates whether the column is a key of the table. True if the column is a key of the table; otherwise false.
 ///             </summary>
 		[DisplayName("Key")]
-		[Category("Other"),Description(@"A boolean value that indicates whether the column is a key of the table. True if the column is a key of the table; otherwise false."),IntelliSense(@"A boolean value that indicates whether the column is a key of the table. True if the column is a key of the table; otherwise false.")]
+		[Category("Options"),Description(@"A boolean value that indicates whether the column is a key of the table. True if the column is a key of the table; otherwise false."),IntelliSense(@"A boolean value that indicates whether the column is a key of the table. True if the column is a key of the table; otherwise false.")]
 		public bool IsKey {
 			get {
 			    return MetadataObject.IsKey;
@@ -2105,7 +2121,7 @@ namespace TabularEditor.TOMWrapper
 ///             If <b>false</b>, the column cannot contain nulls. Even if <b>true</b>, it may still not allow nulls if it's a key column.
 ///             </summary>
 		[DisplayName("Nullable")]
-		[Category("Other"),Description(@"If <b>false</b>, the column cannot contain nulls. Even if <b>true</b>, it may still not allow nulls if it's a key column."),IntelliSense(@"If <b>false</b>, the column cannot contain nulls. Even if <b>true</b>, it may still not allow nulls if it's a key column.")]
+		[Category("Options"),Description(@"If <b>false</b>, the column cannot contain nulls. Even if <b>true</b>, it may still not allow nulls if it's a key column."),IntelliSense(@"If <b>false</b>, the column cannot contain nulls. Even if <b>true</b>, it may still not allow nulls if it's a key column.")]
 		public bool IsNullable {
 			get {
 			    return MetadataObject.IsNullable;
@@ -2129,7 +2145,7 @@ namespace TabularEditor.TOMWrapper
 ///             Specifies the text alignment of the column in report visualizations. The possible values are Default (1), Left (2), Right (3), Center (4).
 ///             </summary>
 		[DisplayName("Alignment")]
-		[Category("Other"),Description(@"Specifies the text alignment of the column in report visualizations. The possible values are Default (1), Left (2), Right (3), Center (4)."),IntelliSense(@"Specifies the text alignment of the column in report visualizations. The possible values are Default (1), Left (2), Right (3), Center (4).")]
+		[Category("Options"),Description(@"Specifies the text alignment of the column in report visualizations. The possible values are Default (1), Left (2), Right (3), Center (4)."),IntelliSense(@"Specifies the text alignment of the column in report visualizations. The possible values are Default (1), Left (2), Right (3), Center (4).")]
 		public Alignment Alignment {
 			get {
 			    return (Alignment)MetadataObject.Alignment;
@@ -2153,7 +2169,7 @@ namespace TabularEditor.TOMWrapper
 ///             Determines whether you can place this column in the DefaultDetails collection of the Table. This collection is an ordered set of Column types. A positive value indicates participation in the collection. The collection is sorted in ascending order of this element. The DefaultDetails collection is returned as part of the CSDL metadata returned by the DISCOVER_CSDL_METADATA operation.
 ///             </summary>
 		[DisplayName("Table Detail Position")]
-		[Category("Other"),Description(@"Determines whether you can place this column in the DefaultDetails collection of the Table. This collection is an ordered set of Column types. A positive value indicates participation in the collection. The collection is sorted in ascending order of this element. The DefaultDetails collection is returned as part of the CSDL metadata returned by the DISCOVER_CSDL_METADATA operation."),IntelliSense(@"Determines whether you can place this column in the DefaultDetails collection of the Table. This collection is an ordered set of Column types. A positive value indicates participation in the collection. The collection is sorted in ascending order of this element. The DefaultDetails collection is returned as part of the CSDL metadata returned by the DISCOVER_CSDL_METADATA operation.")]
+		[Category("Options"),Description(@"Determines whether you can place this column in the DefaultDetails collection of the Table. This collection is an ordered set of Column types. A positive value indicates participation in the collection. The collection is sorted in ascending order of this element. The DefaultDetails collection is returned as part of the CSDL metadata returned by the DISCOVER_CSDL_METADATA operation."),IntelliSense(@"Determines whether you can place this column in the DefaultDetails collection of the Table. This collection is an ordered set of Column types. A positive value indicates participation in the collection. The collection is sorted in ascending order of this element. The DefaultDetails collection is returned as part of the CSDL metadata returned by the DISCOVER_CSDL_METADATA operation.")]
 		public int TableDetailPosition {
 			get {
 			    return MetadataObject.TableDetailPosition;
@@ -2177,7 +2193,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value that indicates whether this column is included in the DisplayKey element in CSDL.
 ///             </summary>
 		[DisplayName("Default Label")]
-		[Category("Other"),Description(@"A boolean value that indicates whether this column is included in the DisplayKey element in CSDL."),IntelliSense(@"A boolean value that indicates whether this column is included in the DisplayKey element in CSDL.")]
+		[Category("Options"),Description(@"A boolean value that indicates whether this column is included in the DisplayKey element in CSDL."),IntelliSense(@"A boolean value that indicates whether this column is included in the DisplayKey element in CSDL.")]
 		public bool IsDefaultLabel {
 			get {
 			    return MetadataObject.IsDefaultLabel;
@@ -2201,7 +2217,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value that indicates whether this column is returned as the DefaultImage property in CSDL.
 ///             </summary>
 		[DisplayName("Default Image")]
-		[Category("Other"),Description(@"A boolean value that indicates whether this column is returned as the DefaultImage property in CSDL."),IntelliSense(@"A boolean value that indicates whether this column is returned as the DefaultImage property in CSDL.")]
+		[Category("Options"),Description(@"A boolean value that indicates whether this column is returned as the DefaultImage property in CSDL."),IntelliSense(@"A boolean value that indicates whether this column is returned as the DefaultImage property in CSDL.")]
 		public bool IsDefaultImage {
 			get {
 			    return MetadataObject.IsDefaultImage;
@@ -2225,7 +2241,7 @@ namespace TabularEditor.TOMWrapper
 ///             A value indicating the default function, if any, used to aggregate this field. The possible values are Default (1), None (2), Sum (3), Min (4), Max (5), Count (6), Average (7), DistinctCount (8). If unspecified, Default is assumed for numeric fields, None for all other fields.
 ///             </summary>
 		[DisplayName("Summarize By")]
-		[Category("Other"),Description(@"A value indicating the default function, if any, used to aggregate this field. The possible values are Default (1), None (2), Sum (3), Min (4), Max (5), Count (6), Average (7), DistinctCount (8). If unspecified, Default is assumed for numeric fields, None for all other fields."),IntelliSense(@"A value indicating the default function, if any, used to aggregate this field. The possible values are Default (1), None (2), Sum (3), Min (4), Max (5), Count (6), Average (7), DistinctCount (8). If unspecified, Default is assumed for numeric fields, None for all other fields.")]
+		[Category("Basic"),Description(@"A value indicating the default function, if any, used to aggregate this field. The possible values are Default (1), None (2), Sum (3), Min (4), Max (5), Count (6), Average (7), DistinctCount (8). If unspecified, Default is assumed for numeric fields, None for all other fields."),IntelliSense(@"A value indicating the default function, if any, used to aggregate this field. The possible values are Default (1), None (2), Sum (3), Min (4), Max (5), Count (6), Average (7), DistinctCount (8). If unspecified, Default is assumed for numeric fields, None for all other fields.")]
 		public AggregateFunction SummarizeBy {
 			get {
 			    return (AggregateFunction)MetadataObject.SummarizeBy;
@@ -2249,7 +2265,7 @@ namespace TabularEditor.TOMWrapper
 ///             Specifies the data binding. Values include Data (1) where the contents of this column come from a DataSource, Calculated (2) where the contents are computed from an expression after the Data columns have been populated, RowNumber (3) where the column is an internal column representing the row number, or CalculatedTableColumn (4) where tables that are based on a calculated expression will automatically infer and generate the columns in the table.
 ///             </summary>
 		[DisplayName("Type")]
-		[Category("Other"),Description(@"Specifies the data binding. Values include Data (1) where the contents of this column come from a DataSource, Calculated (2) where the contents are computed from an expression after the Data columns have been populated, RowNumber (3) where the column is an internal column representing the row number, or CalculatedTableColumn (4) where tables that are based on a calculated expression will automatically infer and generate the columns in the table."),IntelliSense(@"Specifies the data binding. Values include Data (1) where the contents of this column come from a DataSource, Calculated (2) where the contents are computed from an expression after the Data columns have been populated, RowNumber (3) where the column is an internal column representing the row number, or CalculatedTableColumn (4) where tables that are based on a calculated expression will automatically infer and generate the columns in the table.")][Browsable(false)]
+		[Category("Options"),Description(@"Specifies the data binding. Values include Data (1) where the contents of this column come from a DataSource, Calculated (2) where the contents are computed from an expression after the Data columns have been populated, RowNumber (3) where the column is an internal column representing the row number, or CalculatedTableColumn (4) where tables that are based on a calculated expression will automatically infer and generate the columns in the table."),IntelliSense(@"Specifies the data binding. Values include Data (1) where the contents of this column come from a DataSource, Calculated (2) where the contents are computed from an expression after the Data columns have been populated, RowNumber (3) where the column is an internal column representing the row number, or CalculatedTableColumn (4) where tables that are based on a calculated expression will automatically infer and generate the columns in the table.")][Browsable(false)]
 		public ColumnType Type {
 			get {
 			    return (ColumnType)MetadataObject.Type;
@@ -2261,7 +2277,7 @@ namespace TabularEditor.TOMWrapper
 ///             A string that specifies the format of the column contents. 
 ///             </summary>
 		[DisplayName("Format String")]
-		[Category("Options"),Description(@"A string that specifies the format of the column contents."),IntelliSense(@"A string that specifies the format of the column contents.")][TypeConverter(typeof(FormatStringConverter))]
+		[Category("Basic"),Description(@"A string that specifies the format of the column contents."),IntelliSense(@"A string that specifies the format of the column contents.")][TypeConverter(typeof(FormatStringConverter))]
 		public string FormatString {
 			get {
 			    return MetadataObject.FormatString;
@@ -2285,7 +2301,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value that indicates whether the column can be excluded from usage in MDX query tools. False if the column can be excluded from usage in MDX query tools; otherwise true.
 ///             </summary>
 		[DisplayName("Available In MDX")]
-		[Category("Other"),Description(@"A boolean value that indicates whether the column can be excluded from usage in MDX query tools. False if the column can be excluded from usage in MDX query tools; otherwise true."),IntelliSense(@"A boolean value that indicates whether the column can be excluded from usage in MDX query tools. False if the column can be excluded from usage in MDX query tools; otherwise true.")]
+		[Category("Options"),Description(@"A boolean value that indicates whether the column can be excluded from usage in MDX query tools. False if the column can be excluded from usage in MDX query tools; otherwise true."),IntelliSense(@"A boolean value that indicates whether the column can be excluded from usage in MDX query tools. False if the column can be excluded from usage in MDX query tools; otherwise true.")]
 		public bool IsAvailableInMDX {
 			get {
 			    return MetadataObject.IsAvailableInMDX;
@@ -2309,7 +2325,7 @@ namespace TabularEditor.TOMWrapper
 ///             Specifies the grouping behavior used for building a hierarchy. True groups by entity key. False groups by value.
 ///             </summary>
 		[DisplayName("Keep Unique Rows")]
-		[Category("Other"),Description(@"Specifies the grouping behavior used for building a hierarchy. True groups by entity key. False groups by value."),IntelliSense(@"Specifies the grouping behavior used for building a hierarchy. True groups by entity key. False groups by value.")]
+		[Category("Options"),Description(@"Specifies the grouping behavior used for building a hierarchy. True groups by entity key. False groups by value."),IntelliSense(@"Specifies the grouping behavior used for building a hierarchy. True groups by entity key. False groups by value.")]
 		public bool KeepUniqueRows {
 			get {
 			    return MetadataObject.KeepUniqueRows;
@@ -2333,7 +2349,7 @@ namespace TabularEditor.TOMWrapper
 ///             Indicates the visual position of the column, defined as a relative ordering rather than a strict ordering (example: 10, 20, 40, 50). It allows client applications to maintain a consistent column position.
 ///             </summary>
 		[DisplayName("Display Ordinal")]
-		[Category("Other"),Description(@"Indicates the visual position of the column, defined as a relative ordering rather than a strict ordering (example: 10, 20, 40, 50). It allows client applications to maintain a consistent column position."),IntelliSense(@"Indicates the visual position of the column, defined as a relative ordering rather than a strict ordering (example: 10, 20, 40, 50). It allows client applications to maintain a consistent column position.")]
+		[Category("Options"),Description(@"Indicates the visual position of the column, defined as a relative ordering rather than a strict ordering (example: 10, 20, 40, 50). It allows client applications to maintain a consistent column position."),IntelliSense(@"Indicates the visual position of the column, defined as a relative ordering rather than a strict ordering (example: 10, 20, 40, 50). It allows client applications to maintain a consistent column position.")]
 		public int DisplayOrdinal {
 			get {
 			    return MetadataObject.DisplayOrdinal;
@@ -2369,7 +2385,7 @@ namespace TabularEditor.TOMWrapper
 ///             The original data type of the column as defined in the language of the data source. This data type is used to generate queries directly against the data source, for example in DirectQuery mode.
 ///             </summary>
 		[DisplayName("Source Provider Type")]
-		[Category("Other"),Description(@"The original data type of the column as defined in the language of the data source. This data type is used to generate queries directly against the data source, for example in DirectQuery mode."),IntelliSense(@"The original data type of the column as defined in the language of the data source. This data type is used to generate queries directly against the data source, for example in DirectQuery mode.")]
+		[Category("Options"),Description(@"The original data type of the column as defined in the language of the data source. This data type is used to generate queries directly against the data source, for example in DirectQuery mode."),IntelliSense(@"The original data type of the column as defined in the language of the data source. This data type is used to generate queries directly against the data source, for example in DirectQuery mode.")]
 		public string SourceProviderType {
 			get {
 			    return MetadataObject.SourceProviderType;
@@ -2417,13 +2433,13 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Collection of localized Display Folders for the current Column.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Display Folders"),Description("Shows all translated Display Folders of the current Column."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Display Folders"),Description("Shows all translated Display Folders of the current Column."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedDisplayFolders { private set; get; }
 /// <summary>
 ///             This property allows an encoding hint to be specified for the column. A numeric column may use either value-based encoding or hash-based encoding. Usually the server will automatically attempt detect which encoding to use, but re-encoding may occur later. This property allows hinting to the server that it should start with a different encoding type.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("Encoding Hint")]
-		[Category("Other"),Description(@"This property allows an encoding hint to be specified for the column. A numeric column may use either value-based encoding or hash-based encoding. Usually the server will automatically attempt detect which encoding to use, but re-encoding may occur later. This property allows hinting to the server that it should start with a different encoding type."),IntelliSense(@"This property allows an encoding hint to be specified for the column. A numeric column may use either value-based encoding or hash-based encoding. Usually the server will automatically attempt detect which encoding to use, but re-encoding may occur later. This property allows hinting to the server that it should start with a different encoding type.")]
+		[Category("Options"),Description(@"This property allows an encoding hint to be specified for the column. A numeric column may use either value-based encoding or hash-based encoding. Usually the server will automatically attempt detect which encoding to use, but re-encoding may occur later. This property allows hinting to the server that it should start with a different encoding type."),IntelliSense(@"This property allows an encoding hint to be specified for the column. A numeric column may use either value-based encoding or hash-based encoding. Usually the server will automatically attempt detect which encoding to use, but re-encoding may occur later. This property allows hinting to the server that it should start with a different encoding type.")]
 		public EncodingHintType EncodingHint {
 			get {
 			    return (EncodingHintType)MetadataObject.EncodingHint;
@@ -2462,7 +2478,7 @@ namespace TabularEditor.TOMWrapper
 ///             Indicates that the column defining this property will be sorted by the values of the column referenced by this property.
 ///             </summary>
 		[DisplayName("Sort By Column")]
-		[Category("Options"),Description(@"Indicates that the column defining this property will be sorted by the values of the column referenced by this property."),IntelliSense(@"Indicates that the column defining this property will be sorted by the values of the column referenced by this property.")][TypeConverter(typeof(TableColumnConverter))]
+		[Category("Basic"),Description(@"Indicates that the column defining this property will be sorted by the values of the column referenced by this property."),IntelliSense(@"Indicates that the column defining this property will be sorted by the values of the column referenced by this property.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(ColumnConverter))]
 		public Column SortByColumn {
 			get {
 				if (MetadataObject.SortByColumn == null) return null;
@@ -2487,18 +2503,18 @@ namespace TabularEditor.TOMWrapper
         /// <Summary>
 		/// Collection of perspectives in which this Column is visible.
 		/// </Summary>
-		[Browsable(true),DisplayName("Shown in Perspective"), Description("Provides an easy way to include or exclude the current Column from the perspectives of the model."), Category("Translations and Perspectives")]
+		[Browsable(true),DisplayName("Shown in Perspective"), Description("Provides an easy way to include or exclude the current Column from the perspectives of the model."), Category("Translations, Perspectives, Security")]
         public PerspectiveColumnIndexer InPerspective { get; private set; }
 		PerspectiveIndexer ITabularPerspectiveObject.InPerspective { get { return this.InPerspective; } }
         /// <summary>
         /// Collection of localized descriptions for this Column.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Descriptions"),Description("Shows all translated descriptions of the current Column."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Descriptions"),Description("Shows all translated descriptions of the current Column."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedDescriptions { private set; get; }
         /// <summary>
         /// Collection of localized names for this Column.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current Column."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current Column."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
 	
@@ -2520,7 +2536,7 @@ namespace TabularEditor.TOMWrapper
         /// The collection of Variation objects on this Column.
         /// </summary>
 		[DisplayName("Variations")]
-		[Category("Other"),IntelliSense("The collection of Variation objects on the current Column.")][NoMultiselect(),Editor(typeof(VariationCollectionEditor),typeof(UITypeEditor))]
+		[Category("Options"),IntelliSense("The collection of Variation objects on the current Column.")][NoMultiselect(),Editor(typeof(VariationCollectionEditor),typeof(UITypeEditor))]
 		public VariationCollection Variations { get; protected set; }
 
 		/// <summary>
@@ -2563,11 +2579,22 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
- 
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.ALTERNATEOF:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1460 : Handler.CompatibilityLevel >= 1460;
+				case Properties.ENCODINGHINT:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.EXTENDEDPROPERTIES:
-					return Handler.CompatibilityLevel >= 1400;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
+				case Properties.RELATEDCOLUMNDETAILS:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : false;
+				case Properties.VARIATIONS:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1200 : Handler.CompatibilityLevel >= 1400;
 				
 				// Hides translation properties in the grid, unless the model actually contains translations:
 				case Properties.TRANSLATEDNAMES:
@@ -2902,7 +2929,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		///<summary>The collection of Annotations on the current Culture.</summary>
-        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on the current Culture."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Culture."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -3019,7 +3046,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 				///<summary>The collection of Extended Properties on the current Culture.</summary>
-        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on the current Culture."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Culture."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -3260,11 +3287,14 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
- 
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.EXTENDEDPROPERTIES:
-					return Handler.CompatibilityLevel >= 1400;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -3355,7 +3385,7 @@ namespace TabularEditor.TOMWrapper
 ///             Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is a query (as the Query of a CalculatedPartitionSource).
 ///             </summary>
 		[DisplayName("Source Column")]
-		[Category("Options"),Description(@"Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is a query (as the Query of a CalculatedPartitionSource)."),IntelliSense(@"Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is a query (as the Query of a CalculatedPartitionSource).")]
+		[Category("Basic"),Description(@"Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is a query (as the Query of a CalculatedPartitionSource)."),IntelliSense(@"Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is a query (as the Query of a CalculatedPartitionSource).")]
 		public string SourceColumn {
 			get {
 			    return MetadataObject.SourceColumn;
@@ -3479,8 +3509,12 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.PARENT:
 					return false;
 				
@@ -3514,7 +3548,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		///<summary>The collection of Annotations on the current Data Source.</summary>
-        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on the current Data Source."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Data Source."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -3631,7 +3665,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 				///<summary>The collection of Extended Properties on the current Data Source.</summary>
-        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on the current Data Source."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Data Source."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -3788,7 +3822,7 @@ namespace TabularEditor.TOMWrapper
 ///             The type of DataSource. At present, the only possible value is Provider, which refers to a data source that accepts a connection string.
 ///             </summary>
 		[DisplayName("Type")]
-		[Category("Other"),Description(@"The type of DataSource. At present, the only possible value is Provider, which refers to a data source that accepts a connection string."),IntelliSense(@"The type of DataSource. At present, the only possible value is Provider, which refers to a data source that accepts a connection string.")]
+		[Category("Options"),Description(@"The type of DataSource. At present, the only possible value is Provider, which refers to a data source that accepts a connection string."),IntelliSense(@"The type of DataSource. At present, the only possible value is Provider, which refers to a data source that accepts a connection string.")]
 		public DataSourceType Type {
 			get {
 			    return (DataSourceType)MetadataObject.Type;
@@ -3800,7 +3834,7 @@ namespace TabularEditor.TOMWrapper
 ///             The maximum number of connections to be opened concurrently to the data source.
 ///             </summary>
 		[DisplayName("Max Connections")]
-		[Category("Other"),Description(@"The maximum number of connections to be opened concurrently to the data source."),IntelliSense(@"The maximum number of connections to be opened concurrently to the data source.")]
+		[Category("Options"),Description(@"The maximum number of connections to be opened concurrently to the data source."),IntelliSense(@"The maximum number of connections to be opened concurrently to the data source.")]
 		public int MaxConnections {
 			get {
 			    return MetadataObject.MaxConnections;
@@ -3859,11 +3893,14 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
- 
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.EXTENDEDPROPERTIES:
-					return Handler.CompatibilityLevel >= 1400;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -3979,7 +4016,7 @@ namespace TabularEditor.TOMWrapper
 ///             A string that defines the identity provider used for authentication.
 ///             </summary>
 		[DisplayName("Identity Provider")]
-		[Category("Other"),Description(@"A string that defines the identity provider used for authentication."),IntelliSense(@"A string that defines the identity provider used for authentication.")]
+		[Category("Options"),Description(@"A string that defines the identity provider used for authentication."),IntelliSense(@"A string that defines the identity provider used for authentication.")]
 		public string IdentityProvider {
 			get {
 			    return MetadataObject.IdentityProvider;
@@ -4003,7 +4040,7 @@ namespace TabularEditor.TOMWrapper
 ///             Indicates whether the particular member of a security role is an individual user or a group of users, or automatically detected. Possible values are as follows. Auto (1): Member is automatically detected. User (2): Member is an individual user. Group (3): Member is a security group.
 ///             </summary>
 		[DisplayName("Member Type")]
-		[Category("Other"),Description(@"Indicates whether the particular member of a security role is an individual user or a group of users, or automatically detected. Possible values are as follows. Auto (1): Member is automatically detected. User (2): Member is an individual user. Group (3): Member is a security group."),IntelliSense(@"Indicates whether the particular member of a security role is an individual user or a group of users, or automatically detected. Possible values are as follows. Auto (1): Member is automatically detected. User (2): Member is an individual user. Group (3): Member is a security group.")]
+		[Category("Options"),Description(@"Indicates whether the particular member of a security role is an individual user or a group of users, or automatically detected. Possible values are as follows. Auto (1): Member is automatically detected. User (2): Member is an individual user. Group (3): Member is a security group."),IntelliSense(@"Indicates whether the particular member of a security role is an individual user or a group of users, or automatically detected. Possible values are as follows. Auto (1): Member is automatically detected. User (2): Member is an individual user. Group (3): Member is a security group.")]
 		public RoleMemberType MemberType {
 			get {
 			    return (RoleMemberType)MetadataObject.MemberType;
@@ -4119,8 +4156,12 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.PARENT:
 					return false;
 				
@@ -4160,7 +4201,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		///<summary>The collection of Annotations on the current Hierarchy.</summary>
-        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on the current Hierarchy."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Hierarchy."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -4277,7 +4318,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 				///<summary>The collection of Extended Properties on the current Hierarchy.</summary>
-        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on the current Hierarchy."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Hierarchy."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -4495,13 +4536,13 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Collection of localized Display Folders for the current Hierarchy.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Display Folders"),Description("Shows all translated Display Folders of the current Hierarchy."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Display Folders"),Description("Shows all translated Display Folders of the current Hierarchy."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedDisplayFolders { private set; get; }
 /// <summary>
 ///             Ragged/unbalanced hierarchies can be enabled by hiding members using this property.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("Hide Members")]
-		[Category("Other"),Description(@"Ragged/unbalanced hierarchies can be enabled by hiding members using this property."),IntelliSense(@"Ragged/unbalanced hierarchies can be enabled by hiding members using this property.")]
+		[Category("Options"),Description(@"Ragged/unbalanced hierarchies can be enabled by hiding members using this property."),IntelliSense(@"Ragged/unbalanced hierarchies can be enabled by hiding members using this property.")]
 		public HierarchyHideMembersType HideMembers {
 			get {
 			    return (HierarchyHideMembersType)MetadataObject.HideMembers;
@@ -4540,18 +4581,18 @@ namespace TabularEditor.TOMWrapper
         /// <Summary>
 		/// Collection of perspectives in which this Hierarchy is visible.
 		/// </Summary>
-		[Browsable(true),DisplayName("Shown in Perspective"), Description("Provides an easy way to include or exclude the current Hierarchy from the perspectives of the model."), Category("Translations and Perspectives")]
+		[Browsable(true),DisplayName("Shown in Perspective"), Description("Provides an easy way to include or exclude the current Hierarchy from the perspectives of the model."), Category("Translations, Perspectives, Security")]
         public PerspectiveHierarchyIndexer InPerspective { get; private set; }
 		PerspectiveIndexer ITabularPerspectiveObject.InPerspective { get { return this.InPerspective; } }
         /// <summary>
         /// Collection of localized descriptions for this Hierarchy.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Descriptions"),Description("Shows all translated descriptions of the current Hierarchy."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Descriptions"),Description("Shows all translated descriptions of the current Hierarchy."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedDescriptions { private set; get; }
         /// <summary>
         /// Collection of localized names for this Hierarchy.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current Hierarchy."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current Hierarchy."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
 		internal static Hierarchy CreateFromMetadata(Table parent, TOM.Hierarchy metadataObject) {
@@ -4651,7 +4692,7 @@ namespace TabularEditor.TOMWrapper
         /// The collection of Level objects on this Hierarchy.
         /// </summary>
 		[DisplayName("Levels")]
-		[Category("Other"),IntelliSense("The collection of Level objects on the current Hierarchy.")][Browsable(false)]
+		[Category("Options"),IntelliSense("The collection of Level objects on the current Hierarchy.")][Browsable(false)]
 		public LevelCollection Levels { get; private set; }
 
 		/// <summary>
@@ -4694,11 +4735,16 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
- 
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.EXTENDEDPROPERTIES:
-					return Handler.CompatibilityLevel >= 1400;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
+				case Properties.HIDEMEMBERS:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -4846,7 +4892,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		///<summary>The collection of Annotations on the current KPI.</summary>
-        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on the current KPI."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current KPI."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -4963,7 +5009,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 				///<summary>The collection of Extended Properties on the current KPI.</summary>
-        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on the current KPI."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current KPI."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -5120,7 +5166,7 @@ namespace TabularEditor.TOMWrapper
 ///             The description of the target value of the KPI.
 ///             </summary>
 		[DisplayName("Target Description")]
-		[Category("Other"),Description(@"The description of the target value of the KPI."),IntelliSense(@"The description of the target value of the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Options"),Description(@"The description of the target value of the KPI."),IntelliSense(@"The description of the target value of the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string TargetDescription {
 			get {
 			    return MetadataObject.TargetDescription;
@@ -5144,7 +5190,7 @@ namespace TabularEditor.TOMWrapper
 ///             An expression that evaluates to a number and indicates the goal for the KPI.
 ///             </summary>
 		[DisplayName("Target Expression")]
-		[Category("Other"),Description(@"An expression that evaluates to a number and indicates the goal for the KPI."),IntelliSense(@"An expression that evaluates to a number and indicates the goal for the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Options"),Description(@"An expression that evaluates to a number and indicates the goal for the KPI."),IntelliSense(@"An expression that evaluates to a number and indicates the goal for the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string TargetExpression {
 			get {
 			    return MetadataObject.TargetExpression;
@@ -5168,7 +5214,7 @@ namespace TabularEditor.TOMWrapper
 ///             The format string to be used when presenting the target value for the KPI.
 ///             </summary>
 		[DisplayName("Target Format String")]
-		[Category("Other"),Description(@"The format string to be used when presenting the target value for the KPI."),IntelliSense(@"The format string to be used when presenting the target value for the KPI.")][TypeConverter(typeof(FormatStringConverter))]
+		[Category("Options"),Description(@"The format string to be used when presenting the target value for the KPI."),IntelliSense(@"The format string to be used when presenting the target value for the KPI.")][TypeConverter(typeof(FormatStringConverter))]
 		public string TargetFormatString {
 			get {
 			    return MetadataObject.TargetFormatString;
@@ -5192,7 +5238,7 @@ namespace TabularEditor.TOMWrapper
 ///             The recommended graphic to represent the status of this KPI.
 ///             </summary>
 		[DisplayName("Status Graphic")]
-		[Category("Other"),Description(@"The recommended graphic to represent the status of this KPI."),IntelliSense(@"The recommended graphic to represent the status of this KPI.")][TypeConverter(typeof(KPIStatusGraphicConverter))]
+		[Category("Options"),Description(@"The recommended graphic to represent the status of this KPI."),IntelliSense(@"The recommended graphic to represent the status of this KPI.")][TypeConverter(typeof(KPIStatusGraphicConverter))]
 		public string StatusGraphic {
 			get {
 			    return MetadataObject.StatusGraphic;
@@ -5216,7 +5262,7 @@ namespace TabularEditor.TOMWrapper
 ///             A description of the Status value for the KPI.
 ///             </summary>
 		[DisplayName("Status Description")]
-		[Category("Other"),Description(@"A description of the Status value for the KPI."),IntelliSense(@"A description of the Status value for the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Options"),Description(@"A description of the Status value for the KPI."),IntelliSense(@"A description of the Status value for the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string StatusDescription {
 			get {
 			    return MetadataObject.StatusDescription;
@@ -5240,7 +5286,7 @@ namespace TabularEditor.TOMWrapper
 ///             An expression that is used to calculate the status of the KPI.
 ///             </summary>
 		[DisplayName("Status Expression")]
-		[Category("Other"),Description(@"An expression that is used to calculate the status of the KPI."),IntelliSense(@"An expression that is used to calculate the status of the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Options"),Description(@"An expression that is used to calculate the status of the KPI."),IntelliSense(@"An expression that is used to calculate the status of the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string StatusExpression {
 			get {
 			    return MetadataObject.StatusExpression;
@@ -5264,7 +5310,7 @@ namespace TabularEditor.TOMWrapper
 ///             A string that identifies the graphic to show for the trend of the KPI.
 ///             </summary>
 		[DisplayName("Trend Graphic")]
-		[Category("Other"),Description(@"A string that identifies the graphic to show for the trend of the KPI."),IntelliSense(@"A string that identifies the graphic to show for the trend of the KPI.")][TypeConverter(typeof(KPITrendGraphicConverter))]
+		[Category("Options"),Description(@"A string that identifies the graphic to show for the trend of the KPI."),IntelliSense(@"A string that identifies the graphic to show for the trend of the KPI.")][TypeConverter(typeof(KPITrendGraphicConverter))]
 		public string TrendGraphic {
 			get {
 			    return MetadataObject.TrendGraphic;
@@ -5288,7 +5334,7 @@ namespace TabularEditor.TOMWrapper
 ///             A description of the trend value of the KPI.
 ///             </summary>
 		[DisplayName("Trend Description")]
-		[Category("Other"),Description(@"A description of the trend value of the KPI."),IntelliSense(@"A description of the trend value of the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Options"),Description(@"A description of the trend value of the KPI."),IntelliSense(@"A description of the trend value of the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string TrendDescription {
 			get {
 			    return MetadataObject.TrendDescription;
@@ -5312,7 +5358,7 @@ namespace TabularEditor.TOMWrapper
 ///             An expression representing the trend of the KPI.
 ///             </summary>
 		[DisplayName("Trend Expression")]
-		[Category("Other"),Description(@"An expression representing the trend of the KPI."),IntelliSense(@"An expression representing the trend of the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Options"),Description(@"An expression representing the trend of the KPI."),IntelliSense(@"An expression representing the trend of the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string TrendExpression {
 			get {
 			    return MetadataObject.TrendExpression;
@@ -5336,7 +5382,7 @@ namespace TabularEditor.TOMWrapper
 ///             A reference to a Measure object that owns this KPI.
 ///             </summary>
 		[DisplayName("Measure")]
-		[Category("Other"),Description(@"A reference to a Measure object that owns this KPI."),IntelliSense(@"A reference to a Measure object that owns this KPI.")]
+		[Category("Options"),Description(@"A reference to a Measure object that owns this KPI."),IntelliSense(@"A reference to a Measure object that owns this KPI.")]
 		public Measure Measure {
 			get {
 				if (MetadataObject.Measure == null) return null;
@@ -5378,11 +5424,14 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
- 
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.EXTENDEDPROPERTIES:
-					return Handler.CompatibilityLevel >= 1400;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				
 				default:
 					return true;
@@ -5416,7 +5465,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		///<summary>The collection of Annotations on the current Level.</summary>
-        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on the current Level."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Level."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -5533,7 +5582,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 				///<summary>The collection of Extended Properties on the current Level.</summary>
-        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on the current Level."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Level."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -5666,7 +5715,7 @@ namespace TabularEditor.TOMWrapper
 ///             The position of the level within the hierarchy. The levels in the hierarchy must be properly ordered, starting with 1 and increasing monotonically.
 ///             </summary>
 		[DisplayName("Ordinal")]
-		[Category("Options"),Description(@"The position of the level within the hierarchy. The levels in the hierarchy must be properly ordered, starting with 1 and increasing monotonically."),IntelliSense(@"The position of the level within the hierarchy. The levels in the hierarchy must be properly ordered, starting with 1 and increasing monotonically.")][NoMultiselect()]
+		[Category("Basic"),Description(@"The position of the level within the hierarchy. The levels in the hierarchy must be properly ordered, starting with 1 and increasing monotonically."),IntelliSense(@"The position of the level within the hierarchy. The levels in the hierarchy must be properly ordered, starting with 1 and increasing monotonically.")][NoMultiselect()]
 		public int Ordinal {
 			get {
 			    return MetadataObject.Ordinal;
@@ -5714,7 +5763,7 @@ namespace TabularEditor.TOMWrapper
 ///             A reference to a Hierarchy object that owns this level.
 ///             </summary>
 		[DisplayName("Hierarchy")]
-		[Category("Other"),Description(@"A reference to a Hierarchy object that owns this level."),IntelliSense(@"A reference to a Hierarchy object that owns this level.")][Browsable(false)]
+		[Category("Options"),Description(@"A reference to a Hierarchy object that owns this level."),IntelliSense(@"A reference to a Hierarchy object that owns this level.")][Browsable(false)]
 		public Hierarchy Hierarchy {
 			get {
 				if (MetadataObject.Hierarchy == null) return null;
@@ -5727,7 +5776,7 @@ namespace TabularEditor.TOMWrapper
 ///             A reference to a Column object associated with this Level.
 ///             </summary>
 		[DisplayName("Column")]
-		[Category("Options"),Description(@"A reference to a Column object associated with this Level."),IntelliSense(@"A reference to a Column object associated with this Level.")][TypeConverter(typeof(HierarchyColumnConverter)),NoMultiselect()]
+		[Category("Basic"),Description(@"A reference to a Column object associated with this Level."),IntelliSense(@"A reference to a Column object associated with this Level.")][TypeConverter(typeof(HierarchyColumnConverter)),NoMultiselect()]
 		public Column Column {
 			get {
 				if (MetadataObject.Column == null) return null;
@@ -5752,12 +5801,12 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Collection of localized descriptions for this Level.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Descriptions"),Description("Shows all translated descriptions of the current Level."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Descriptions"),Description("Shows all translated descriptions of the current Level."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedDescriptions { private set; get; }
         /// <summary>
         /// Collection of localized names for this Level.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current Level."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current Level."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
 		internal static Level CreateFromMetadata(Hierarchy parent, TOM.Level metadataObject) {
@@ -5868,11 +5917,14 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
- 
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.EXTENDEDPROPERTIES:
-					return Handler.CompatibilityLevel >= 1400;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -5988,7 +6040,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		///<summary>The collection of Annotations on the current Measure.</summary>
-        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on the current Measure."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Measure."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -6105,7 +6157,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 				///<summary>The collection of Extended Properties on the current Measure.</summary>
-        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on the current Measure."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Measure."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -6298,7 +6350,7 @@ namespace TabularEditor.TOMWrapper
 ///             A string that specifies the format of the measure contents. For 
 ///             </summary>
 		[DisplayName("Format String")]
-		[Category("Options"),Description(@"A string that specifies the format of the measure contents. For"),IntelliSense(@"A string that specifies the format of the measure contents. For")][TypeConverter(typeof(FormatStringConverter))]
+		[Category("Basic"),Description(@"A string that specifies the format of the measure contents. For"),IntelliSense(@"A string that specifies the format of the measure contents. For")][TypeConverter(typeof(FormatStringConverter))]
 		public string FormatString {
 			get {
 			    return MetadataObject.FormatString;
@@ -6359,7 +6411,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value that indicates whether the measure is an implicit measure that is automatically created by client tools to aggregate a field. Client applications can hide measures that have this flag set.
 ///             </summary>
 		[DisplayName("Simple Measure")]
-		[Category("Other"),Description(@"A boolean value that indicates whether the measure is an implicit measure that is automatically created by client tools to aggregate a field. Client applications can hide measures that have this flag set."),IntelliSense(@"A boolean value that indicates whether the measure is an implicit measure that is automatically created by client tools to aggregate a field. Client applications can hide measures that have this flag set.")][Browsable(false)]
+		[Category("Options"),Description(@"A boolean value that indicates whether the measure is an implicit measure that is automatically created by client tools to aggregate a field. Client applications can hide measures that have this flag set."),IntelliSense(@"A boolean value that indicates whether the measure is an implicit measure that is automatically created by client tools to aggregate a field. Client applications can hide measures that have this flag set.")][Browsable(false)]
 		public bool IsSimpleMeasure {
 			get {
 			    return MetadataObject.IsSimpleMeasure;
@@ -6407,13 +6459,13 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Collection of localized Display Folders for the current Measure.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Display Folders"),Description("Shows all translated Display Folders of the current Measure."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Display Folders"),Description("Shows all translated Display Folders of the current Measure."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedDisplayFolders { private set; get; }
 /// <summary>
 ///             Specifies the type of data contained in the measure so that you can add custom behaviors based on measure type.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1455 or above.</remarks>
 		[DisplayName("Data Category")]
-		[Category("Metadata"),Description(@"Specifies the type of data contained in the measure so that you can add custom behaviors based on measure type."),IntelliSense(@"Specifies the type of data contained in the measure so that you can add custom behaviors based on measure type.")]
+		[Category("Options"),Description(@"Specifies the type of data contained in the measure so that you can add custom behaviors based on measure type."),IntelliSense(@"Specifies the type of data contained in the measure so that you can add custom behaviors based on measure type.")]
 		public string DataCategory {
 			get {
 			    return MetadataObject.DataCategory;
@@ -6452,18 +6504,18 @@ namespace TabularEditor.TOMWrapper
         /// <Summary>
 		/// Collection of perspectives in which this Measure is visible.
 		/// </Summary>
-		[Browsable(true),DisplayName("Shown in Perspective"), Description("Provides an easy way to include or exclude the current Measure from the perspectives of the model."), Category("Translations and Perspectives")]
+		[Browsable(true),DisplayName("Shown in Perspective"), Description("Provides an easy way to include or exclude the current Measure from the perspectives of the model."), Category("Translations, Perspectives, Security")]
         public PerspectiveMeasureIndexer InPerspective { get; private set; }
 		PerspectiveIndexer ITabularPerspectiveObject.InPerspective { get { return this.InPerspective; } }
         /// <summary>
         /// Collection of localized descriptions for this Measure.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Descriptions"),Description("Shows all translated descriptions of the current Measure."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Descriptions"),Description("Shows all translated descriptions of the current Measure."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedDescriptions { private set; get; }
         /// <summary>
         /// Collection of localized names for this Measure.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current Measure."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current Measure."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
 		internal static Measure CreateFromMetadata(Table parent, TOM.Measure metadataObject) {
@@ -6584,11 +6636,20 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
- 
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.DATACATEGORY:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1455 : Handler.CompatibilityLevel >= 1455;
+				case Properties.DETAILROWSDEFINITION:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.EXTENDEDPROPERTIES:
-					return Handler.CompatibilityLevel >= 1400;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
+				case Properties.FORMATSTRINGDEFINITION:
+					return false;
 				case Properties.PARENT:
 					return false;
 				
@@ -6775,7 +6836,7 @@ namespace TabularEditor.TOMWrapper
 ///             Returns the status of local changes made to the model, which haven't been saved to the server.  
 ///             <para>If the model is not connected, this value is always <b>False</b>.</para></summary>
 		[DisplayName("Has Local Changes")]
-		[Category("Other"),Description(@"Returns the status of local changes made to the model, which haven't been saved to the server.  
+		[Category("Options"),Description(@"Returns the status of local changes made to the model, which haven't been saved to the server.  
             <para>If the model is not connected, this value is always <b>False</b>.</para>"),IntelliSense(@"Returns the status of local changes made to the model, which haven't been saved to the server.  
             <para>If the model is not connected, this value is always <b>False</b>.</para>")]
 		public bool HasLocalChanges {
@@ -6786,7 +6847,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeHasLocalChanges() { return false; }
 		///<summary>The collection of Annotations on the current Model.</summary>
-        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on the current Model."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Model."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -6903,7 +6964,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 				///<summary>The collection of Extended Properties on the current Model.</summary>
-        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on the current Model."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Model."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -7060,7 +7121,7 @@ namespace TabularEditor.TOMWrapper
 ///             The location on disk to place the model.
 ///             </summary>
 		[DisplayName("Storage Location")]
-		[Category("Other"),Description(@"The location on disk to place the model."),IntelliSense(@"The location on disk to place the model.")]
+		[Category("Options"),Description(@"The location on disk to place the model."),IntelliSense(@"The location on disk to place the model.")]
 		public string StorageLocation {
 			get {
 			    return MetadataObject.StorageLocation;
@@ -7084,7 +7145,7 @@ namespace TabularEditor.TOMWrapper
 ///             The default method for making data available in the partition.
 ///             </summary>
 		[DisplayName("Default Mode")]
-		[Category("Other"),Description(@"The default method for making data available in the partition."),IntelliSense(@"The default method for making data available in the partition.")]
+		[Category("Options"),Description(@"The default method for making data available in the partition."),IntelliSense(@"The default method for making data available in the partition.")]
 		public ModeType DefaultMode {
 			get {
 			    return (ModeType)MetadataObject.DefaultMode;
@@ -7108,7 +7169,7 @@ namespace TabularEditor.TOMWrapper
 ///             Used by partitions in the model to determine the type of query that retrieves data. A Full dataview retrieves an unfiltered rowset, used for in-memory models and deployed DirectQuery models. A Sample data view is a subset of data used during DirectQuery model design.
 ///             </summary>
 		[DisplayName("Default Data View")]
-		[Category("Other"),Description(@"Used by partitions in the model to determine the type of query that retrieves data. A Full dataview retrieves an unfiltered rowset, used for in-memory models and deployed DirectQuery models. A Sample data view is a subset of data used during DirectQuery model design."),IntelliSense(@"Used by partitions in the model to determine the type of query that retrieves data. A Full dataview retrieves an unfiltered rowset, used for in-memory models and deployed DirectQuery models. A Sample data view is a subset of data used during DirectQuery model design.")]
+		[Category("Options"),Description(@"Used by partitions in the model to determine the type of query that retrieves data. A Full dataview retrieves an unfiltered rowset, used for in-memory models and deployed DirectQuery models. A Sample data view is a subset of data used during DirectQuery model design."),IntelliSense(@"Used by partitions in the model to determine the type of query that retrieves data. A Full dataview retrieves an unfiltered rowset, used for in-memory models and deployed DirectQuery models. A Sample data view is a subset of data used during DirectQuery model design.")]
 		public DataViewType DefaultDataView {
 			get {
 			    return (DataViewType)MetadataObject.DefaultDataView;
@@ -7132,7 +7193,7 @@ namespace TabularEditor.TOMWrapper
 ///             The name of the Culture used for formatting. Once it's used by a child object, this value can't be changed.
 ///             </summary>
 		[DisplayName("Culture")]
-		[Category("Other"),Description(@"The name of the Culture used for formatting. Once it's used by a child object, this value can't be changed."),IntelliSense(@"The name of the Culture used for formatting. Once it's used by a child object, this value can't be changed.")][TypeConverter(typeof(CultureConverter))]
+		[Category("Options"),Description(@"The name of the Culture used for formatting. Once it's used by a child object, this value can't be changed."),IntelliSense(@"The name of the Culture used for formatting. Once it's used by a child object, this value can't be changed.")][TypeConverter(typeof(CultureConverter))]
 		public string Culture {
 			get {
 			    return MetadataObject.Culture;
@@ -7156,7 +7217,7 @@ namespace TabularEditor.TOMWrapper
 ///             The collation sequence. Analysis Services uses Windows collations.
 ///             </summary>
 		[DisplayName("Collation")]
-		[Category("Other"),Description(@"The collation sequence. Analysis Services uses Windows collations."),IntelliSense(@"The collation sequence. Analysis Services uses Windows collations.")]
+		[Category("Options"),Description(@"The collation sequence. Analysis Services uses Windows collations."),IntelliSense(@"The collation sequence. Analysis Services uses Windows collations.")]
 		public string Collation {
 			get {
 			    return MetadataObject.Collation;
@@ -7180,7 +7241,7 @@ namespace TabularEditor.TOMWrapper
 ///             Used by PBIX data source format conversion.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1450 or above.</remarks>
 		[DisplayName("Default Power BI Data Source Version")]
-		[Category("Other"),Description(@"Used by PBIX data source format conversion."),IntelliSense(@"Used by PBIX data source format conversion.")]
+		[Category("Options"),Description(@"Used by PBIX data source format conversion."),IntelliSense(@"Used by PBIX data source format conversion.")]
 		public PowerBIDataSourceVersion DefaultPowerBIDataSourceVersion {
 			get {
 			    return (PowerBIDataSourceVersion)MetadataObject.DefaultPowerBIDataSourceVersion;
@@ -7204,7 +7265,7 @@ namespace TabularEditor.TOMWrapper
 ///             Determines whether measures can have the same names as any column in the model.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1465 or above.</remarks>
 		[DisplayName("Force Unique Names")]
-		[Category("Other"),Description(@"Determines whether measures can have the same names as any column in the model."),IntelliSense(@"Determines whether measures can have the same names as any column in the model.")]
+		[Category("Options"),Description(@"Determines whether measures can have the same names as any column in the model."),IntelliSense(@"Determines whether measures can have the same names as any column in the model.")]
 		public bool ForceUniqueNames {
 			get {
 			    return MetadataObject.ForceUniqueNames;
@@ -7228,7 +7289,7 @@ namespace TabularEditor.TOMWrapper
 ///             Determines whether to discourage the implicit measures.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1470 or above.</remarks>
 		[DisplayName("Discourage Implicit Measures")]
-		[Category("Other"),Description(@"Determines whether to discourage the implicit measures."),IntelliSense(@"Determines whether to discourage the implicit measures.")]
+		[Category("Options"),Description(@"Determines whether to discourage the implicit measures."),IntelliSense(@"Determines whether to discourage the implicit measures.")]
 		public bool DiscourageImplicitMeasures {
 			get {
 			    return MetadataObject.DiscourageImplicitMeasures;
@@ -7252,7 +7313,7 @@ namespace TabularEditor.TOMWrapper
 ///             Determines whether to discourage the report measures.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at Internal or above.</remarks>
 		[DisplayName("Discourage Report Measures")]
-		[Category("Other"),Description(@"Determines whether to discourage the report measures."),IntelliSense(@"Determines whether to discourage the report measures.")]
+		[Category("Options"),Description(@"Determines whether to discourage the report measures."),IntelliSense(@"Determines whether to discourage the report measures.")]
 		public bool DiscourageReportMeasures {
 			get {
 			    return MetadataObject.DiscourageReportMeasures;
@@ -7276,7 +7337,7 @@ namespace TabularEditor.TOMWrapper
 ///             DataSourceDefaultMaxConnections will be used for connections to a data source if MaxConnections is set to -1 on the data source object or if there is no corresponding data source object for the data source.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1510 or above.</remarks>
 		[DisplayName("Data Source Default Max Connections")]
-		[Category("Other"),Description(@"DataSourceDefaultMaxConnections will be used for connections to a data source if MaxConnections is set to -1 on the data source object or if there is no corresponding data source object for the data source."),IntelliSense(@"DataSourceDefaultMaxConnections will be used for connections to a data source if MaxConnections is set to -1 on the data source object or if there is no corresponding data source object for the data source.")]
+		[Category("Options"),Description(@"DataSourceDefaultMaxConnections will be used for connections to a data source if MaxConnections is set to -1 on the data source object or if there is no corresponding data source object for the data source."),IntelliSense(@"DataSourceDefaultMaxConnections will be used for connections to a data source if MaxConnections is set to -1 on the data source object or if there is no corresponding data source object for the data source.")]
 		public int DataSourceDefaultMaxConnections {
 			get {
 			    return MetadataObject.DataSourceDefaultMaxConnections;
@@ -7300,7 +7361,7 @@ namespace TabularEditor.TOMWrapper
 ///             The name of the Culture used for formatting during refresh through Mashup.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1520 or above.</remarks>
 		[DisplayName("Source Query Culture")]
-		[Category("Other"),Description(@"The name of the Culture used for formatting during refresh through Mashup."),IntelliSense(@"The name of the Culture used for formatting during refresh through Mashup.")]
+		[Category("Options"),Description(@"The name of the Culture used for formatting during refresh through Mashup."),IntelliSense(@"The name of the Culture used for formatting during refresh through Mashup.")]
 		public string SourceQueryCulture {
 			get {
 			    return MetadataObject.SourceQueryCulture;
@@ -7324,7 +7385,7 @@ namespace TabularEditor.TOMWrapper
 ///             The string that has M attributes.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1535 or above.</remarks>
 		[DisplayName("M Attributes")]
-		[Category("Other"),Description(@"The string that has M attributes."),IntelliSense(@"The string that has M attributes.")]
+		[Category("Options"),Description(@"The string that has M attributes."),IntelliSense(@"The string that has M attributes.")]
 		public string MAttributes {
 			get {
 			    return MetadataObject.MAttributes;
@@ -7348,7 +7409,7 @@ namespace TabularEditor.TOMWrapper
 ///             A reference to a default measure.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("Default Measure")]
-		[Category("Other"),Description(@"A reference to a default measure."),IntelliSense(@"A reference to a default measure.")]
+		[Category("Options"),Description(@"A reference to a default measure."),IntelliSense(@"A reference to a default measure.")]
 		public Measure DefaultMeasure {
 			get {
 				if (MetadataObject.DefaultMeasure == null) return null;
@@ -7373,12 +7434,12 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Collection of localized descriptions for this Model.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Descriptions"),Description("Shows all translated descriptions of the current Model."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Descriptions"),Description("Shows all translated descriptions of the current Model."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedDescriptions { private set; get; }
         /// <summary>
         /// Collection of localized names for this Model.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current Model."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current Model."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
 	
@@ -7406,43 +7467,43 @@ namespace TabularEditor.TOMWrapper
         /// The collection of Perspective objects on this Model.
         /// </summary>
 		[DisplayName("Perspectives")]
-		[Category("Translations and Perspectives"),IntelliSense("The collection of Perspective objects on the current Model.")][Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<Perspective>),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]
+		[Category("Translations, Perspectives, Security"),IntelliSense("The collection of Perspective objects on the current Model.")][Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<Perspective>),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]
 		public PerspectiveCollection Perspectives { get; private set; }
         /// <summary>
         /// The collection of Culture objects on this Model.
         /// </summary>
 		[DisplayName("Cultures")]
-		[Category("Translations and Perspectives"),IntelliSense("The collection of Culture objects on the current Model.")][Editor(typeof(TabularEditor.PropertyGridUI.CultureCollectionEditor),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]
+		[Category("Translations, Perspectives, Security"),IntelliSense("The collection of Culture objects on the current Model.")][Editor(typeof(TabularEditor.PropertyGridUI.CultureCollectionEditor),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]
 		public CultureCollection Cultures { get; private set; }
         /// <summary>
         /// The collection of DataSource objects on this Model.
         /// </summary>
 		[DisplayName("Data Sources")]
-		[Category("Other"),IntelliSense("The collection of Data Source objects on the current Model.")][Browsable(false)]
+		[Category("Options"),IntelliSense("The collection of Data Source objects on the current Model.")][Browsable(false)]
 		public DataSourceCollection DataSources { get; private set; }
         /// <summary>
         /// The collection of ModelRole objects on this Model.
         /// </summary>
 		[DisplayName("Roles")]
-		[Category("Security"),IntelliSense("The collection of Model Role objects on the current Model.")][Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<ModelRole>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]
+		[Category("Translations, Perspectives, Security"),IntelliSense("The collection of Model Role objects on the current Model.")][Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<ModelRole>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]
 		public ModelRoleCollection Roles { get; private set; }
         /// <summary>
         /// The collection of Table objects on this Model.
         /// </summary>
 		[DisplayName("Tables")]
-		[Category("Other"),IntelliSense("The collection of Table objects on the current Model.")][Browsable(false)]
+		[Category("Options"),IntelliSense("The collection of Table objects on the current Model.")][Browsable(false)]
 		public TableCollection Tables { get; private set; }
         /// <summary>
         /// The collection of Relationship objects on this Model.
         /// </summary>
 		[DisplayName("Relationships")]
-		[Category("Other"),IntelliSense("The collection of Relationship objects on the current Model.")][Browsable(false)]
+		[Category("Options"),IntelliSense("The collection of Relationship objects on the current Model.")][Browsable(false)]
 		public RelationshipCollection Relationships { get; private set; }
         /// <summary>
         /// The collection of NamedExpression objects on this Model.
         /// </summary>
 		[DisplayName("Expressions")]
-		[Category("Other"),IntelliSense("The collection of Named Expression objects on the current Model.")][Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<NamedExpression>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]
+		[Category("Options"),IntelliSense("The collection of Named Expression objects on the current Model.")][Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<NamedExpression>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]
 		public NamedExpressionCollection Expressions { get; private set; }
 
 		/// <summary>
@@ -7505,11 +7566,40 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
- 
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.ANALYTICSAIMETADATA:
+					return false;
+				case Properties.DATAACCESSOPTIONS:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
+				case Properties.DATASOURCEDEFAULTMAXCONNECTIONS:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1510 : Handler.CompatibilityLevel >= 1510;
+				case Properties.DATASOURCEVARIABLESOVERRIDEBEHAVIOR:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1475 : Handler.CompatibilityLevel >= 1475;
+				case Properties.DEFAULTMEASURE:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
+				case Properties.DEFAULTPOWERBIDATASOURCEVERSION:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1450 : Handler.CompatibilityLevel >= 1450;
+				case Properties.DISCOURAGEIMPLICITMEASURES:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1470 : Handler.CompatibilityLevel >= 1470;
+				case Properties.DISCOURAGEREPORTMEASURES:
+					return false;
+				case Properties.EXPRESSIONS:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.EXTENDEDPROPERTIES:
-					return Handler.CompatibilityLevel >= 1400;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
+				case Properties.FORCEUNIQUENAMES:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1465 : Handler.CompatibilityLevel >= 1465;
+				case Properties.MATTRIBUTES:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1535 : Handler.CompatibilityLevel >= 1535;
+				case Properties.QUERYGROUPS:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1480 : Handler.CompatibilityLevel >= 1480;
+				case Properties.SOURCEQUERYCULTURE:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1520 : Handler.CompatibilityLevel >= 1520;
 				
 				// Hides translation properties in the grid, unless the model actually contains translations:
 				case Properties.TRANSLATEDNAMES:
@@ -7547,7 +7637,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		///<summary>The collection of Annotations on the current Model Role.</summary>
-        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on the current Model Role."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Model Role."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -7664,7 +7754,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 				///<summary>The collection of Extended Properties on the current Model Role.</summary>
-        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on the current Model Role."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Model Role."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -7821,7 +7911,7 @@ namespace TabularEditor.TOMWrapper
 ///             The level of access for this role. Possible values are as follows. None (1): The role has no access to the model. Read (2): The role can read metadata and data of the model. ReadRefresh (3): The role has read and refresh permission. Refresh (4): The role can refresh the data and calculations in the model. Administrator (5): The role can administer the model.
 ///             </summary>
 		[DisplayName("Model Permission")]
-		[Category("Security"),Description(@"The level of access for this role. Possible values are as follows. None (1): The role has no access to the model. Read (2): The role can read metadata and data of the model. ReadRefresh (3): The role has read and refresh permission. Refresh (4): The role can refresh the data and calculations in the model. Administrator (5): The role can administer the model."),IntelliSense(@"The level of access for this role. Possible values are as follows. None (1): The role has no access to the model. Read (2): The role can read metadata and data of the model. ReadRefresh (3): The role has read and refresh permission. Refresh (4): The role can refresh the data and calculations in the model. Administrator (5): The role can administer the model.")]
+		[Category("Translations, Perspectives, Security"),Description(@"The level of access for this role. Possible values are as follows. None (1): The role has no access to the model. Read (2): The role can read metadata and data of the model. ReadRefresh (3): The role has read and refresh permission. Refresh (4): The role can refresh the data and calculations in the model. Administrator (5): The role can administer the model."),IntelliSense(@"The level of access for this role. Possible values are as follows. None (1): The role has no access to the model. Read (2): The role can read metadata and data of the model. ReadRefresh (3): The role has read and refresh permission. Refresh (4): The role can refresh the data and calculations in the model. Administrator (5): The role can administer the model.")]
 		public ModelPermission ModelPermission {
 			get {
 			    return (ModelPermission)MetadataObject.ModelPermission;
@@ -7941,13 +8031,13 @@ namespace TabularEditor.TOMWrapper
         /// The collection of ModelRoleMember objects on this ModelRole.
         /// </summary>
 		[DisplayName("Members")]
-		[Category("Security"),IntelliSense("The collection of Model Role Member objects on the current Model Role.")][Editor(typeof(TabularEditor.PropertyGridUI.RoleMemberCollectionEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Translations, Perspectives, Security"),IntelliSense("The collection of Model Role Member objects on the current Model Role.")][Editor(typeof(TabularEditor.PropertyGridUI.RoleMemberCollectionEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public ModelRoleMemberCollection Members { get; private set; }
         /// <summary>
         /// The collection of TablePermission objects on this ModelRole.
         /// </summary>
 		[DisplayName("Table Permissions")]
-		[Category("Security"),IntelliSense("The collection of Table Permission objects on the current Model Role.")]
+		[Category("Translations, Perspectives, Security"),IntelliSense("The collection of Table Permission objects on the current Model Role.")]
 		public TablePermissionCollection TablePermissions { get; private set; }
 
 		/// <summary>
@@ -7987,11 +8077,14 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
- 
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.EXTENDEDPROPERTIES:
-					return Handler.CompatibilityLevel >= 1400;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -8104,7 +8197,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		///<summary>The collection of Annotations on the current Model Role Member.</summary>
-        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on the current Model Role Member."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Model Role Member."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -8221,7 +8314,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 				///<summary>The collection of Extended Properties on the current Model Role Member.</summary>
-        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on the current Model Role Member."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Model Role Member."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -8354,7 +8447,7 @@ namespace TabularEditor.TOMWrapper
 ///             The security name that identifies the user or group of the member.
 ///             </summary>
 		[DisplayName("Member Name")]
-		[Category("Other"),Description(@"The security name that identifies the user or group of the member."),IntelliSense(@"The security name that identifies the user or group of the member.")]
+		[Category("Options"),Description(@"The security name that identifies the user or group of the member."),IntelliSense(@"The security name that identifies the user or group of the member.")]
 		public string MemberName {
 			get {
 			    return MetadataObject.MemberName;
@@ -8378,7 +8471,7 @@ namespace TabularEditor.TOMWrapper
 ///             A reference to a Member object associated with this RoleMembership.
 ///             </summary>
 		[DisplayName("Member ID")]
-		[Category("Other"),Description(@"A reference to a Member object associated with this RoleMembership."),IntelliSense(@"A reference to a Member object associated with this RoleMembership.")]
+		[Category("Options"),Description(@"A reference to a Member object associated with this RoleMembership."),IntelliSense(@"A reference to a Member object associated with this RoleMembership.")]
 		public string MemberID {
 			get {
 			    return MetadataObject.MemberID;
@@ -8402,7 +8495,7 @@ namespace TabularEditor.TOMWrapper
 ///             A reference to a Role object that owns this RoleMembeship.
 ///             </summary>
 		[DisplayName("Role")]
-		[Category("Other"),Description(@"A reference to a Role object that owns this RoleMembeship."),IntelliSense(@"A reference to a Role object that owns this RoleMembeship.")]
+		[Category("Options"),Description(@"A reference to a Role object that owns this RoleMembeship."),IntelliSense(@"A reference to a Role object that owns this RoleMembeship.")]
 		public ModelRole Role {
 			get {
 				if (MetadataObject.Role == null) return null;
@@ -8450,11 +8543,14 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
- 
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.EXTENDEDPROPERTIES:
-					return Handler.CompatibilityLevel >= 1400;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -8575,7 +8671,7 @@ namespace TabularEditor.TOMWrapper
 ///             The type of source used by the Partition. This is either a query against a DataSource, or for calculated tables, an expression.
 ///             </summary>
 		[DisplayName("Source Type")]
-		[Category("Other"),Description(@"The type of source used by the Partition. This is either a query against a DataSource, or for calculated tables, an expression."),IntelliSense(@"The type of source used by the Partition. This is either a query against a DataSource, or for calculated tables, an expression.")]
+		[Category("Options"),Description(@"The type of source used by the Partition. This is either a query against a DataSource, or for calculated tables, an expression."),IntelliSense(@"The type of source used by the Partition. This is either a query against a DataSource, or for calculated tables, an expression.")]
 		public PartitionSourceType SourceType {
 			get {
 			    return (PartitionSourceType)MetadataObject.SourceType;
@@ -8584,7 +8680,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeSourceType() { return false; }
 		///<summary>The collection of Annotations on the current Partition.</summary>
-        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on the current Partition."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Partition."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -8701,7 +8797,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 				///<summary>The collection of Extended Properties on the current Partition.</summary>
-        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on the current Partition."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Partition."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -8870,7 +8966,7 @@ namespace TabularEditor.TOMWrapper
 ///             Defines the method for making data available in the partition. Possible values are as follows. Import (0) Data will be imported from a data source. DirectQuery (1) Data will be queried dynamically from a data source. Default (2): Only partitions can use this value. When set, the partition will inherit the DefaultMode of the Model. Push (3): Data will be pushed into the partition. The Mode of a Partition can be set to Default (2), in which case it will inherit its Mode from the DefaultMode of the Model
 ///             </summary>
 		[DisplayName("Mode")]
-		[Category("Other"),Description(@"Defines the method for making data available in the partition. Possible values are as follows. Import (0) Data will be imported from a data source. DirectQuery (1) Data will be queried dynamically from a data source. Default (2): Only partitions can use this value. When set, the partition will inherit the DefaultMode of the Model. Push (3): Data will be pushed into the partition. The Mode of a Partition can be set to Default (2), in which case it will inherit its Mode from the DefaultMode of the Model"),IntelliSense(@"Defines the method for making data available in the partition. Possible values are as follows. Import (0) Data will be imported from a data source. DirectQuery (1) Data will be queried dynamically from a data source. Default (2): Only partitions can use this value. When set, the partition will inherit the DefaultMode of the Model. Push (3): Data will be pushed into the partition. The Mode of a Partition can be set to Default (2), in which case it will inherit its Mode from the DefaultMode of the Model")]
+		[Category("Options"),Description(@"Defines the method for making data available in the partition. Possible values are as follows. Import (0) Data will be imported from a data source. DirectQuery (1) Data will be queried dynamically from a data source. Default (2): Only partitions can use this value. When set, the partition will inherit the DefaultMode of the Model. Push (3): Data will be pushed into the partition. The Mode of a Partition can be set to Default (2), in which case it will inherit its Mode from the DefaultMode of the Model"),IntelliSense(@"Defines the method for making data available in the partition. Possible values are as follows. Import (0) Data will be imported from a data source. DirectQuery (1) Data will be queried dynamically from a data source. Default (2): Only partitions can use this value. When set, the partition will inherit the DefaultMode of the Model. Push (3): Data will be pushed into the partition. The Mode of a Partition can be set to Default (2), in which case it will inherit its Mode from the DefaultMode of the Model")]
 		public ModeType Mode {
 			get {
 			    return (ModeType)MetadataObject.Mode;
@@ -8894,7 +8990,7 @@ namespace TabularEditor.TOMWrapper
 ///             Determines which partitions should be selected to run queries against the model. The possible values are as follows. Full (0) - Partitions with DataView set to Default or Full are selected. Sample (1): Partitions with DataView set to Default or Sample are selected. SampleAndFull (2): All partitions are selected. Default (3) - Inherits from the default DataView of the Model object.
 ///             </summary>
 		[DisplayName("Data View")]
-		[Category("Other"),Description(@"Determines which partitions should be selected to run queries against the model. The possible values are as follows. Full (0) - Partitions with DataView set to Default or Full are selected. Sample (1): Partitions with DataView set to Default or Sample are selected. SampleAndFull (2): All partitions are selected. Default (3) - Inherits from the default DataView of the Model object."),IntelliSense(@"Determines which partitions should be selected to run queries against the model. The possible values are as follows. Full (0) - Partitions with DataView set to Default or Full are selected. Sample (1): Partitions with DataView set to Default or Sample are selected. SampleAndFull (2): All partitions are selected. Default (3) - Inherits from the default DataView of the Model object.")]
+		[Category("Options"),Description(@"Determines which partitions should be selected to run queries against the model. The possible values are as follows. Full (0) - Partitions with DataView set to Default or Full are selected. Sample (1): Partitions with DataView set to Default or Sample are selected. SampleAndFull (2): All partitions are selected. Default (3) - Inherits from the default DataView of the Model object."),IntelliSense(@"Determines which partitions should be selected to run queries against the model. The possible values are as follows. Full (0) - Partitions with DataView set to Default or Full are selected. Sample (1): Partitions with DataView set to Default or Sample are selected. SampleAndFull (2): All partitions are selected. Default (3) - Inherits from the default DataView of the Model object.")]
 		public DataViewType DataView {
 			get {
 			    return (DataViewType)MetadataObject.DataView;
@@ -9043,11 +9139,18 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
- 
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.EXTENDEDPROPERTIES:
-					return Handler.CompatibilityLevel >= 1400;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
+				case Properties.QUERYGROUP:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1480 : Handler.CompatibilityLevel >= 1480;
+				case Properties.RETAINDATATILLFORCECALCULATE:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -9176,7 +9279,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		///<summary>The collection of Annotations on the current Perspective.</summary>
-        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on the current Perspective."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Perspective."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -9293,7 +9396,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 				///<summary>The collection of Extended Properties on the current Perspective.</summary>
-        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on the current Perspective."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Perspective."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -9450,12 +9553,12 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Collection of localized descriptions for this Perspective.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Descriptions"),Description("Shows all translated descriptions of the current Perspective."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Descriptions"),Description("Shows all translated descriptions of the current Perspective."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedDescriptions { private set; get; }
         /// <summary>
         /// Collection of localized names for this Perspective.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current Perspective."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current Perspective."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
 		internal static Perspective CreateFromMetadata(Model parent, TOM.Perspective metadataObject) {
@@ -9576,11 +9679,14 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
- 
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.EXTENDEDPROPERTIES:
-					return Handler.CompatibilityLevel >= 1400;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -9958,8 +10064,12 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.PARENT:
 					return false;
 				
@@ -9995,7 +10105,7 @@ namespace TabularEditor.TOMWrapper
 ///             Gets the destination table in a directional table relationship.
 ///             </summary>
 		[DisplayName("To Table")]
-		[Category("Other"),Description(@"Gets the destination table in a directional table relationship."),IntelliSense(@"Gets the destination table in a directional table relationship.")]
+		[Category("Options"),Description(@"Gets the destination table in a directional table relationship."),IntelliSense(@"Gets the destination table in a directional table relationship.")]
 		public Table ToTable {
 			get {
 				if (MetadataObject.ToTable == null) return null;
@@ -10008,7 +10118,7 @@ namespace TabularEditor.TOMWrapper
 ///             Gets the starting table in a directional table relationship.
 ///             </summary>
 		[DisplayName("From Table")]
-		[Category("Other"),Description(@"Gets the starting table in a directional table relationship."),IntelliSense(@"Gets the starting table in a directional table relationship.")]
+		[Category("Options"),Description(@"Gets the starting table in a directional table relationship."),IntelliSense(@"Gets the starting table in a directional table relationship.")]
 		public Table FromTable {
 			get {
 				if (MetadataObject.FromTable == null) return null;
@@ -10018,7 +10128,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeFromTable() { return false; }
 		///<summary>The collection of Annotations on the current Relationship.</summary>
-        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on the current Relationship."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Relationship."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -10135,7 +10245,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 				///<summary>The collection of Extended Properties on the current Relationship.</summary>
-        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on the current Relationship."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Relationship."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -10268,7 +10378,7 @@ namespace TabularEditor.TOMWrapper
 ///             A boolean value that indicates whether the relationship is marked as Active or Inactive. An Active relationship is automatically used for filtering across tables. An Inactive relationship can be used explicitly by DAX calculations with the USERELATIONSHIP function.
 ///             </summary>
 		[DisplayName("Active")]
-		[Category("Relationship"),Description(@"A boolean value that indicates whether the relationship is marked as Active or Inactive. An Active relationship is automatically used for filtering across tables. An Inactive relationship can be used explicitly by DAX calculations with the USERELATIONSHIP function."),IntelliSense(@"A boolean value that indicates whether the relationship is marked as Active or Inactive. An Active relationship is automatically used for filtering across tables. An Inactive relationship can be used explicitly by DAX calculations with the USERELATIONSHIP function.")]
+		[Category("Basic"),Description(@"A boolean value that indicates whether the relationship is marked as Active or Inactive. An Active relationship is automatically used for filtering across tables. An Inactive relationship can be used explicitly by DAX calculations with the USERELATIONSHIP function."),IntelliSense(@"A boolean value that indicates whether the relationship is marked as Active or Inactive. An Active relationship is automatically used for filtering across tables. An Inactive relationship can be used explicitly by DAX calculations with the USERELATIONSHIP function.")]
 		public bool IsActive {
 			get {
 			    return MetadataObject.IsActive;
@@ -10292,7 +10402,7 @@ namespace TabularEditor.TOMWrapper
 ///             The type of Relationship. At present, the only possible value is SingleColumn (1) or a normal column-column relationship.
 ///             </summary>
 		[DisplayName("Type")]
-		[Category("Other"),Description(@"The type of Relationship. At present, the only possible value is SingleColumn (1) or a normal column-column relationship."),IntelliSense(@"The type of Relationship. At present, the only possible value is SingleColumn (1) or a normal column-column relationship.")]
+		[Category("Options"),Description(@"The type of Relationship. At present, the only possible value is SingleColumn (1) or a normal column-column relationship."),IntelliSense(@"The type of Relationship. At present, the only possible value is SingleColumn (1) or a normal column-column relationship.")]
 		public RelationshipType Type {
 			get {
 			    return (RelationshipType)MetadataObject.Type;
@@ -10304,7 +10414,7 @@ namespace TabularEditor.TOMWrapper
 ///             Indicates how relationships influence filtering of data. The enumeration defines the possible behaviors. Possible values are as follows. OneDirection (1) The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2) Filters on either end of the relationship will automatically filter the other table. Automatic (3) The engine will analyze the relationships and choose one of the behaviors by using heuristics.
 ///             </summary>
 		[DisplayName("Cross Filtering Behavior")]
-		[Category("Relationship Behavior"),Description(@"Indicates how relationships influence filtering of data. The enumeration defines the possible behaviors. Possible values are as follows. OneDirection (1) The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2) Filters on either end of the relationship will automatically filter the other table. Automatic (3) The engine will analyze the relationships and choose one of the behaviors by using heuristics."),IntelliSense(@"Indicates how relationships influence filtering of data. The enumeration defines the possible behaviors. Possible values are as follows. OneDirection (1) The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2) Filters on either end of the relationship will automatically filter the other table. Automatic (3) The engine will analyze the relationships and choose one of the behaviors by using heuristics.")]
+		[Category("Options"),Description(@"Indicates how relationships influence filtering of data. The enumeration defines the possible behaviors. Possible values are as follows. OneDirection (1) The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2) Filters on either end of the relationship will automatically filter the other table. Automatic (3) The engine will analyze the relationships and choose one of the behaviors by using heuristics."),IntelliSense(@"Indicates how relationships influence filtering of data. The enumeration defines the possible behaviors. Possible values are as follows. OneDirection (1) The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2) Filters on either end of the relationship will automatically filter the other table. Automatic (3) The engine will analyze the relationships and choose one of the behaviors by using heuristics.")]
 		public CrossFilteringBehavior CrossFilteringBehavior {
 			get {
 			    return (CrossFilteringBehavior)MetadataObject.CrossFilteringBehavior;
@@ -10328,7 +10438,7 @@ namespace TabularEditor.TOMWrapper
 ///             When joining two date time columns, indicates whether to join on date and time parts, or on date part only. DateAndTime (1) When joining two date time columns, join on date and time parts. DatePartOnly (2) When joining two date time columns, join on date part only.
 ///             </summary>
 		[DisplayName("Join On Date Behavior")]
-		[Category("Relationship Behavior"),Description(@"When joining two date time columns, indicates whether to join on date and time parts, or on date part only. DateAndTime (1) When joining two date time columns, join on date and time parts. DatePartOnly (2) When joining two date time columns, join on date part only."),IntelliSense(@"When joining two date time columns, indicates whether to join on date and time parts, or on date part only. DateAndTime (1) When joining two date time columns, join on date and time parts. DatePartOnly (2) When joining two date time columns, join on date part only.")]
+		[Category("Options"),Description(@"When joining two date time columns, indicates whether to join on date and time parts, or on date part only. DateAndTime (1) When joining two date time columns, join on date and time parts. DatePartOnly (2) When joining two date time columns, join on date part only."),IntelliSense(@"When joining two date time columns, indicates whether to join on date and time parts, or on date part only. DateAndTime (1) When joining two date time columns, join on date and time parts. DatePartOnly (2) When joining two date time columns, join on date part only.")]
 		public DateTimeRelationshipBehavior JoinOnDateBehavior {
 			get {
 			    return (DateTimeRelationshipBehavior)MetadataObject.JoinOnDateBehavior;
@@ -10352,7 +10462,7 @@ namespace TabularEditor.TOMWrapper
 ///             Unused; reserved for future use.
 ///             </summary>
 		[DisplayName("Rely On Referential Integrity")]
-		[Category("Relationship Behavior"),Description(@"If set to 'True', queries generated in DirectQuery mode will use INNER JOIN rather than OUTER JOIN."),IntelliSense(@"If set to 'True', queries generated in DirectQuery mode will use INNER JOIN rather than OUTER JOIN.")]
+		[Category("Options"),Description(@"If set to 'True', queries generated in DirectQuery mode will use INNER JOIN rather than OUTER JOIN."),IntelliSense(@"If set to 'True', queries generated in DirectQuery mode will use INNER JOIN rather than OUTER JOIN.")]
 		public bool RelyOnReferentialIntegrity {
 			get {
 			    return MetadataObject.RelyOnReferentialIntegrity;
@@ -10388,7 +10498,7 @@ namespace TabularEditor.TOMWrapper
 ///             Indicates how relationships influence filtering of data when evaluating row-level security expressions. Possible values are as follows. OneDirection (1): The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2): Filters on either end of the relationship will automatically filter the other table.
 ///             </summary>
 		[DisplayName("Security Filtering Behavior")]
-		[Category("Relationship Behavior"),Description(@"Indicates how relationships influence filtering of data when evaluating row-level security expressions. Possible values are as follows. OneDirection (1): The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2): Filters on either end of the relationship will automatically filter the other table."),IntelliSense(@"Indicates how relationships influence filtering of data when evaluating row-level security expressions. Possible values are as follows. OneDirection (1): The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2): Filters on either end of the relationship will automatically filter the other table.")]
+		[Category("Options"),Description(@"Indicates how relationships influence filtering of data when evaluating row-level security expressions. Possible values are as follows. OneDirection (1): The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2): Filters on either end of the relationship will automatically filter the other table."),IntelliSense(@"Indicates how relationships influence filtering of data when evaluating row-level security expressions. Possible values are as follows. OneDirection (1): The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2): Filters on either end of the relationship will automatically filter the other table.")]
 		public SecurityFilteringBehavior SecurityFilteringBehavior {
 			get {
 			    return (SecurityFilteringBehavior)MetadataObject.SecurityFilteringBehavior;
@@ -10447,11 +10557,14 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
- 
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.EXTENDEDPROPERTIES:
-					return Handler.CompatibilityLevel >= 1400;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -10603,7 +10716,7 @@ namespace TabularEditor.TOMWrapper
 ///             Gets or sets the starting column in a single column relationship.
 ///             </summary>
 		[DisplayName("From Column")]
-		[Category("Relationship"),Description(@"Gets or sets the starting column in a single column relationship."),IntelliSense(@"Gets or sets the starting column in a single column relationship.")][TypeConverter(typeof(AllColumnConverter))]
+		[Category("Basic"),Description(@"Gets or sets the starting column in a single column relationship."),IntelliSense(@"Gets or sets the starting column in a single column relationship.")][TypeConverter(typeof(AllColumnConverter))]
 		public Column FromColumn {
 			get {
 				if (MetadataObject.FromColumn == null) return null;
@@ -10628,7 +10741,7 @@ namespace TabularEditor.TOMWrapper
 ///             Gets or sets the destination column in a single column relationship.
 ///             </summary>
 		[DisplayName("To Column")]
-		[Category("Relationship"),Description(@"Gets or sets the destination column in a single column relationship."),IntelliSense(@"Gets or sets the destination column in a single column relationship.")][TypeConverter(typeof(AllColumnConverter))]
+		[Category("Basic"),Description(@"Gets or sets the destination column in a single column relationship."),IntelliSense(@"Gets or sets the destination column in a single column relationship.")][TypeConverter(typeof(AllColumnConverter))]
 		public Column ToColumn {
 			get {
 				if (MetadataObject.ToColumn == null) return null;
@@ -10653,7 +10766,7 @@ namespace TabularEditor.TOMWrapper
 ///             Indicates whether the "From" end of the relationship has a cardinality of One (1) or Many (2).
 ///             </summary>
 		[DisplayName("From Cardinality")]
-		[Category("Relationship"),Description(@"Indicates whether the ""From"" end of the relationship has a cardinality of One (1) or Many (2)."),IntelliSense(@"Indicates whether the ""From"" end of the relationship has a cardinality of One (1) or Many (2).")]
+		[Category("Basic"),Description(@"Indicates whether the ""From"" end of the relationship has a cardinality of One (1) or Many (2)."),IntelliSense(@"Indicates whether the ""From"" end of the relationship has a cardinality of One (1) or Many (2).")]
 		public RelationshipEndCardinality FromCardinality {
 			get {
 			    return (RelationshipEndCardinality)MetadataObject.FromCardinality;
@@ -10677,7 +10790,7 @@ namespace TabularEditor.TOMWrapper
 ///             Indicates whether the "To" end of the relationship has a cardinality of One (1) or Many (2).
 ///             </summary>
 		[DisplayName("To Cardinality")]
-		[Category("Relationship"),Description(@"Indicates whether the ""To"" end of the relationship has a cardinality of One (1) or Many (2)."),IntelliSense(@"Indicates whether the ""To"" end of the relationship has a cardinality of One (1) or Many (2).")]
+		[Category("Basic"),Description(@"Indicates whether the ""To"" end of the relationship has a cardinality of One (1) or Many (2)."),IntelliSense(@"Indicates whether the ""To"" end of the relationship has a cardinality of One (1) or Many (2).")]
 		public RelationshipEndCardinality ToCardinality {
 			get {
 			    return (RelationshipEndCardinality)MetadataObject.ToCardinality;
@@ -10803,8 +10916,12 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.PARENT:
 					return false;
 				
@@ -10842,7 +10959,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		///<summary>The collection of Annotations on the current Table.</summary>
-        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on the current Table."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Table."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -10959,7 +11076,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 				///<summary>The collection of Extended Properties on the current Table.</summary>
-        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on the current Table."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Table."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -11092,7 +11209,7 @@ namespace TabularEditor.TOMWrapper
 ///             Specifies the type of Table so that you can customize application behavior based on the type of data in the table. Allowed values are identical to those of dimension type properties for Multidimensional models. Regular is the default. Other values include Time (2), Geography (3), Organization (4), BillOfMaterials (5), Accounts (6), Customers (7), Products (8), Scenario (9), Quantitativ1e (10), Utility (11), Currency (12), Rates (13), Channel (14) - channel dimension, Promotion (15).
 ///             </summary>
 		[DisplayName("Data Category")]
-		[Category("Metadata"),Description(@"Specifies the type of Table so that you can customize application behavior based on the type of data in the table. Allowed values are identical to those of dimension type properties for Multidimensional models. Regular is the default. Other values include Time (2), Geography (3), Organization (4), BillOfMaterials (5), Accounts (6), Customers (7), Products (8), Scenario (9), Quantitativ1e (10), Utility (11), Currency (12), Rates (13), Channel (14) - channel dimension, Promotion (15)."),IntelliSense(@"Specifies the type of Table so that you can customize application behavior based on the type of data in the table. Allowed values are identical to those of dimension type properties for Multidimensional models. Regular is the default. Other values include Time (2), Geography (3), Organization (4), BillOfMaterials (5), Accounts (6), Customers (7), Products (8), Scenario (9), Quantitativ1e (10), Utility (11), Currency (12), Rates (13), Channel (14) - channel dimension, Promotion (15).")]
+		[Category("Options"),Description(@"Specifies the type of Table so that you can customize application behavior based on the type of data in the table. Allowed values are identical to those of dimension type properties for Multidimensional models. Regular is the default. Other values include Time (2), Geography (3), Organization (4), BillOfMaterials (5), Accounts (6), Customers (7), Products (8), Scenario (9), Quantitativ1e (10), Utility (11), Currency (12), Rates (13), Channel (14) - channel dimension, Promotion (15)."),IntelliSense(@"Specifies the type of Table so that you can customize application behavior based on the type of data in the table. Allowed values are identical to those of dimension type properties for Multidimensional models. Regular is the default. Other values include Time (2), Geography (3), Organization (4), BillOfMaterials (5), Accounts (6), Customers (7), Products (8), Scenario (9), Quantitativ1e (10), Utility (11), Currency (12), Rates (13), Channel (14) - channel dimension, Promotion (15).")]
 		public string DataCategory {
 			get {
 			    return MetadataObject.DataCategory;
@@ -11213,7 +11330,7 @@ namespace TabularEditor.TOMWrapper
 ///             The ranking or precedence used to select the alternate source table in case more than one match is found.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1460 or above.</remarks>
 		[DisplayName("Alternate Source Precedence")]
-		[Category("Other"),Description(@"The ranking or precedence used to select the alternate source table in case more than one match is found."),IntelliSense(@"The ranking or precedence used to select the alternate source table in case more than one match is found.")]
+		[Category("Options"),Description(@"The ranking or precedence used to select the alternate source table in case more than one match is found."),IntelliSense(@"The ranking or precedence used to select the alternate source table in case more than one match is found.")]
 		public int AlternateSourcePrecedence {
 			get {
 			    return MetadataObject.AlternateSourcePrecedence;
@@ -11261,18 +11378,18 @@ namespace TabularEditor.TOMWrapper
         /// <Summary>
 		/// Collection of perspectives in which this Table is visible.
 		/// </Summary>
-		[Browsable(true),DisplayName("Shown in Perspective"), Description("Provides an easy way to include or exclude the current Table from the perspectives of the model."), Category("Translations and Perspectives")]
+		[Browsable(true),DisplayName("Shown in Perspective"), Description("Provides an easy way to include or exclude the current Table from the perspectives of the model."), Category("Translations, Perspectives, Security")]
         public PerspectiveTableIndexer InPerspective { get; private set; }
 		PerspectiveIndexer ITabularPerspectiveObject.InPerspective { get { return this.InPerspective; } }
         /// <summary>
         /// Collection of localized descriptions for this Table.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Descriptions"),Description("Shows all translated descriptions of the current Table."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Descriptions"),Description("Shows all translated descriptions of the current Table."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedDescriptions { private set; get; }
         /// <summary>
         /// Collection of localized names for this Table.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current Table."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current Table."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
 		internal static Table CreateFromMetadata(Model parent, TOM.Table metadataObject) {
@@ -11394,25 +11511,25 @@ namespace TabularEditor.TOMWrapper
         /// The collection of Partition objects on this Table.
         /// </summary>
 		[DisplayName("Partitions")]
-		[Category("Data Source"),IntelliSense("The collection of Partition objects on the current Table.")][NoMultiselect(),Editor(typeof(PartitionCollectionEditor),typeof(UITypeEditor))]
+		[Category("Options"),IntelliSense("The collection of Partition objects on the current Table.")][NoMultiselect(),Editor(typeof(PartitionCollectionEditor),typeof(UITypeEditor))]
 		public PartitionCollection Partitions { get; protected set; }
         /// <summary>
         /// The collection of Column objects on this Table.
         /// </summary>
 		[DisplayName("Columns")]
-		[Category("Other"),IntelliSense("The collection of Column objects on the current Table.")][Browsable(false)]
+		[Category("Options"),IntelliSense("The collection of Column objects on the current Table.")][Browsable(false)]
 		public ColumnCollection Columns { get; protected set; }
         /// <summary>
         /// The collection of Hierarchy objects on this Table.
         /// </summary>
 		[DisplayName("Hierarchies")]
-		[Category("Other"),IntelliSense("The collection of Hierarchy objects on the current Table.")][Browsable(false)]
+		[Category("Options"),IntelliSense("The collection of Hierarchy objects on the current Table.")][Browsable(false)]
 		public HierarchyCollection Hierarchies { get; protected set; }
         /// <summary>
         /// The collection of Measure objects on this Table.
         /// </summary>
 		[DisplayName("Measures")]
-		[Category("Other"),IntelliSense("The collection of Measure objects on the current Table.")][Browsable(false)]
+		[Category("Options"),IntelliSense("The collection of Measure objects on the current Table.")][Browsable(false)]
 		public MeasureCollection Measures { get; protected set; }
 
 		/// <summary>
@@ -11467,11 +11584,30 @@ namespace TabularEditor.TOMWrapper
 			Handler.Tree.RebuildFolderCacheForTable(this);
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
- 
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.ALTERNATESOURCEPRECEDENCE:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1460 : Handler.CompatibilityLevel >= 1460;
+				case Properties.CALCULATIONGROUP:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1470 : Handler.CompatibilityLevel >= 1470;
+				case Properties.DEFAULTDETAILROWSDEFINITION:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
+				case Properties.EXCLUDEFROMMODELREFRESH:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1480 : Handler.CompatibilityLevel >= 1480;
 				case Properties.EXTENDEDPROPERTIES:
-					return Handler.CompatibilityLevel >= 1400;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
+				case Properties.ISPRIVATE:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1200 : Handler.CompatibilityLevel >= 1400;
+				case Properties.REFRESHPOLICY:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1450 : Handler.CompatibilityLevel >= 1450;
+				case Properties.SETS:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : false;
+				case Properties.SHOWASVARIATIONSONLY:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1200 : Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				
@@ -11749,8 +11885,12 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.PARENT:
 					return false;
 				
@@ -11785,7 +11925,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		///<summary>The collection of Annotations on the current Named Expression.</summary>
-        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on the current Named Expression."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Named Expression."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -11902,7 +12042,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 				///<summary>The collection of Extended Properties on the current Named Expression.</summary>
-        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on the current Named Expression."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Named Expression."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -12107,7 +12247,7 @@ namespace TabularEditor.TOMWrapper
 ///             The string that has M attributes.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1535 or above.</remarks>
 		[DisplayName("M Attributes")]
-		[Category("Other"),Description(@"The string that has M attributes."),IntelliSense(@"The string that has M attributes.")]
+		[Category("Options"),Description(@"The string that has M attributes."),IntelliSense(@"The string that has M attributes.")]
 		public string MAttributes {
 			get {
 			    return MetadataObject.MAttributes;
@@ -12131,7 +12271,7 @@ namespace TabularEditor.TOMWrapper
 ///             Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter..
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at Preview or above.</remarks>
 		[DisplayName("Parameter Values Column")]
-		[Category("Other"),Description(@"Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter.."),IntelliSense(@"Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter..")][TypeConverter(typeof(AllColumnConverter))]
+		[Category("Options"),Description(@"Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter.."),IntelliSense(@"Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter..")][TypeConverter(typeof(AllColumnConverter))]
 		public Column ParameterValuesColumn {
 			get {
 				if (MetadataObject.ParameterValuesColumn == null) return null;
@@ -12264,11 +12404,18 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
- 
-				case Properties.EXTENDEDPROPERTIES:
-					return Handler.CompatibilityLevel >= 1400;
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.MATTRIBUTES:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1535 : Handler.CompatibilityLevel >= 1535;
+				case Properties.PARAMETERVALUESCOLUMN:
+					return false;
+				case Properties.QUERYGROUP:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1480 : Handler.CompatibilityLevel >= 1480;
 				case Properties.PARENT:
 					return false;
 				
@@ -12417,7 +12564,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		///<summary>The collection of Annotations on the current Calculation Group.</summary>
-        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on the current Calculation Group."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Calculation Group."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -12561,7 +12708,7 @@ namespace TabularEditor.TOMWrapper
 ///             Defines an evaluation order of CalculationGroup objects.
 ///             </summary>
 		[DisplayName("Precedence")]
-		[Category("Other"),Description(@"Defines an evaluation order of CalculationGroup objects."),IntelliSense(@"Defines an evaluation order of CalculationGroup objects.")]
+		[Category("Options"),Description(@"Defines an evaluation order of CalculationGroup objects."),IntelliSense(@"Defines an evaluation order of CalculationGroup objects.")]
 		public int Precedence {
 			get {
 			    return MetadataObject.Precedence;
@@ -12616,7 +12763,7 @@ namespace TabularEditor.TOMWrapper
         /// The collection of CalculationItem objects on this CalculationGroup.
         /// </summary>
 		[DisplayName("Calculation Items")]
-		[Category("Other"),IntelliSense("The collection of Calculation Item objects on the current Calculation Group.")][Browsable(false)]
+		[Category("Options"),IntelliSense("The collection of Calculation Item objects on the current Calculation Group.")][Browsable(false)]
 		public CalculationItemCollection CalculationItems { get; private set; }
 
 		/// <summary>
@@ -12649,8 +12796,12 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
 				
 				default:
 					return true;
@@ -12746,7 +12897,7 @@ namespace TabularEditor.TOMWrapper
 ///             The zero-based ordinal value associated with a Calculation Item.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1500 or above.</remarks>
 		[DisplayName("Ordinal")]
-		[Category("Options"),Description(@"The zero-based ordinal value associated with a Calculation Item."),IntelliSense(@"The zero-based ordinal value associated with a Calculation Item.")][NoMultiselect()]
+		[Category("Basic"),Description(@"The zero-based ordinal value associated with a Calculation Item."),IntelliSense(@"The zero-based ordinal value associated with a Calculation Item.")][NoMultiselect()]
 		public int Ordinal {
 			get {
 			    return MetadataObject.Ordinal;
@@ -12862,8 +13013,14 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.ORDINAL:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1500 : Handler.CompatibilityLevel >= 1500;
 				case Properties.PARENT:
 					return false;
 				
@@ -12978,7 +13135,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		///<summary>The collection of Annotations on the current Table Permission.</summary>
-        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on the current Table Permission."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Table Permission."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -13095,7 +13252,7 @@ namespace TabularEditor.TOMWrapper
 		}
 
 				///<summary>The collection of Extended Properties on the current Table Permission.</summary>
-        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on the current Table Permission."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Table Permission."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -13228,7 +13385,7 @@ namespace TabularEditor.TOMWrapper
 ///             The DAX expression that filters the rows in the table when this security role is in effect.
 ///             </summary>
 		[DisplayName("Filter Expression")]
-		[Category("Security"),Description(@"The DAX expression that filters the rows in the table when this security role is in effect."),IntelliSense(@"The DAX expression that filters the rows in the table when this security role is in effect.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Translations, Perspectives, Security"),Description(@"The DAX expression that filters the rows in the table when this security role is in effect."),IntelliSense(@"The DAX expression that filters the rows in the table when this security role is in effect.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string FilterExpression {
 			get {
 			    return MetadataObject.FilterExpression;
@@ -13276,7 +13433,7 @@ namespace TabularEditor.TOMWrapper
 ///             Defines whether the metadata of this table should be secured from users belonging to this role.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("OLS Table Permission")]
-		[Category("Security"),Description(@"Defines whether the metadata of this table should be secured from users belonging to this role."),IntelliSense(@"Defines whether the metadata of this table should be secured from users belonging to this role.")]
+		[Category("Translations, Perspectives, Security"),Description(@"Defines whether the metadata of this table should be secured from users belonging to this role."),IntelliSense(@"Defines whether the metadata of this table should be secured from users belonging to this role.")]
 		public MetadataPermission MetadataPermission {
 			get {
 			    return (MetadataPermission)MetadataObject.MetadataPermission;
@@ -13300,7 +13457,7 @@ namespace TabularEditor.TOMWrapper
 ///             A reference to a Role object that owns this TablePermission.
 ///             </summary>
 		[DisplayName("Role")]
-		[Category("Other"),Description(@"A reference to a Role object that owns this TablePermission."),IntelliSense(@"A reference to a Role object that owns this TablePermission.")]
+		[Category("Options"),Description(@"A reference to a Role object that owns this TablePermission."),IntelliSense(@"A reference to a Role object that owns this TablePermission.")]
 		public ModelRole Role {
 			get {
 				if (MetadataObject.Role == null) return null;
@@ -13426,11 +13583,18 @@ namespace TabularEditor.TOMWrapper
 			ReapplyReferences();
 		}
 		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
- 
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.COLUMNPERMISSIONS:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.EXTENDEDPROPERTIES:
-					return Handler.CompatibilityLevel >= 1400;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
+				case Properties.METADATAPERMISSION:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
 					return false;
 				

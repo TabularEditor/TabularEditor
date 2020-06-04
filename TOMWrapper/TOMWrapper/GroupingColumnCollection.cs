@@ -19,6 +19,11 @@ namespace TabularEditor.TOMWrapper
             this.valueColumn = valueColumn.MetadataObject;
         }
 
+        /// <summary>
+        /// Adds the specified column as a composite key column
+        /// </summary>
+        /// <param name="item"></param>
+        [IntelliSense("Adds the specified column as a composite key column")]
         public new void Add(Column item)
         {
             base.Add(item);
@@ -31,6 +36,11 @@ namespace TabularEditor.TOMWrapper
             DoCollectionChanged(NotifyCollectionChangedAction.Add, item);
         }
 
+        /// <summary>
+        /// Removes the specified column from the collection of composite key columns
+        /// </summary>
+        /// <param name="item"></param>
+        [IntelliSense("Adds the specified column as a composite key column")]
         public new bool Remove(Column item)
         {
             return base.Remove(item);
@@ -48,6 +58,10 @@ namespace TabularEditor.TOMWrapper
             return true;
         }
 
+        /// <summary>
+        /// Removes all columns from the collectino of composite key columns
+        /// </summary>
+        [IntelliSense("Removes all columns from the collectino of composite key columns")]
         public new void Clear()
         {
             base.Clear();

@@ -29,7 +29,6 @@ namespace TabularEditor.TOMWrapper.Utils
             db.AddTabularEditorTag();
             if (!server.Databases.ContainsName(targetDatabaseName)) tmsl = DeployNewTMSL(db, targetDatabaseName, options, includeRestricted);
             else tmsl = DeployExistingTMSL(db, server, targetDatabaseName, options, includeRestricted);
-            db.RemoveTabularEditorTag();
 
             return tmsl;
         }

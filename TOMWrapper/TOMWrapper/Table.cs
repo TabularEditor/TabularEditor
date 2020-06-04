@@ -244,7 +244,7 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Gets the name of the data source used by the table.
         /// </summary>
-        [Category("Data Source"), IntelliSense("Gets the name of the data source used by the table.")]
+        [Category("Metadata"), IntelliSense("Gets the name of the data source used by the table.")]
         public string Source {
             get
             {
@@ -258,7 +258,7 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Gets the type of the data source used by the table.
         /// </summary>
-        [Category("Data Source"), DisplayName("Source Type"), IntelliSense("Gets the type of the data source used by the table.")]
+        [Category("Metadata"), DisplayName("Source Type"), IntelliSense("Gets the type of the data source used by the table.")]
         public PartitionSourceType SourceType
         {
             get
@@ -274,18 +274,11 @@ namespace TabularEditor.TOMWrapper
                 case Properties.SOURCE:
                 case Properties.PARTITIONS:
                     return SourceType == PartitionSourceType.Query || SourceType == PartitionSourceType.M;
-                case Properties.DEFAULTDETAILROWSEXPRESSION:
-                case Properties.SHOWASVARIATIONSONLY:
-                case Properties.ISPRIVATE:
-                    return Handler.CompatibilityLevel >= 1400;
+                case Properties.DEFAULTDETAILROWSEXPRESSION: return Browsable(Properties.DEFAULTDETAILROWSDEFINITION);
                 case Properties.OBJECTLEVELSECURITY:
                     return Handler.CompatibilityLevel >= 1400 && Model.Roles.Any();
                 case Properties.ROWLEVELSECURITY:
                     return Model.Roles.Any();
-                case Properties.ALTERNATESOURCEPRECEDENCE:
-                    return Handler.CompatibilityLevel >= 1460 && Handler.CompatibilityLevel < 1470;
-                case Properties.EXCLUDEFROMMODELREFRESH:
-                    return Handler.CompatibilityLevel >= 1480;
                 default: return true;
             }
         }
@@ -293,7 +286,7 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Provides a convenient way to access the Row Level Filters assigned to this table across different roles.
         /// </summary>
-        [Browsable(true), DisplayName("Row Level Security"), Category("Security"), IntelliSense("Provides a convenient way to access the Row Level Filters assigned to this table across different roles.")]
+        [Browsable(true), DisplayName("Row Level Security"), Category("Translations, Perspectives, Security"), IntelliSense("Provides a convenient way to access the Row Level Filters assigned to this table across different roles.")]
         public TableRLSIndexer RowLevelSecurity { get; private set; }
 
         /// <summary>
@@ -384,7 +377,7 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Provides a convenient way to get or set the Object-Level permissions assigned to this table across different roles.
         /// </summary>
-        [DisplayName("Object Level Security"), Category("Security"), IntelliSense("Provides a convenient way to get or set the Object-Level permissions assigned to this table across different roles.")]
+        [DisplayName("Object Level Security"), Category("Translations, Perspectives, Security"), IntelliSense("Provides a convenient way to get or set the Object-Level permissions assigned to this table across different roles.")]
         public TableOLSIndexer ObjectLevelSecurity
         {
             get

@@ -15,7 +15,7 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public Table Table => Measure.Table;
 
-        [DisplayName("Parent Measure"), Category("Basic")]
+        [DisplayName("Parent Measure"), Category("Metadata")]
         public string MeasureName => Measure?.DaxObjectName;
 
         bool ITabularNamedObject.CanEditName() { return false; }

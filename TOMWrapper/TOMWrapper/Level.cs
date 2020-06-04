@@ -70,14 +70,14 @@ namespace TabularEditor.TOMWrapper
     {
         protected override bool InternalRemove(Level item)
         {
-            var result = base.Remove(item);
+            var result = base.InternalRemove(item);
             Handler.UpdateLevels(Hierarchy);
             return result;
         }
 
         protected override void InternalAdd(Level item)
         {
-            base.Add(item);
+            base.InternalAdd(item);
             Handler.UpdateLevels(Hierarchy);
         }
     }

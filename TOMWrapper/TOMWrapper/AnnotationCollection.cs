@@ -49,7 +49,7 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                return Parent.GetAnnotations();
+                return Parent.GetAnnotations().Where(key => key != DatabaseHelper.TabularEditorTag);
             }
         }
 
@@ -57,7 +57,7 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                var n = Parent.GetAnnotationsCount();
+                var n = Parent.GetAnnotationsCount() - (Parent.HasAnnotation(DatabaseHelper.TabularEditorTag) ? 1 : 0);
                 return string.Format("{0} annotation{1}", n, n == 1 ? "" : "s");
             }
         }

@@ -45,7 +45,7 @@ namespace TabularEditor.TOMWrapper
         [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor)), IntelliSense("Gets or sets the query which is executed on the Data Source to populate the partition with data.")]
         public string Query { get { return Expression; } set { Expression = value; } }
 
-        [Category("Expression"), Description("The expression which is used to populate this partition with data.")]
+        [Category("Basic"), Description("The expression which is used to populate this partition with data.")]
         [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
         public string Expression
         {
@@ -94,7 +94,7 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public StructuredDataSource StructuredDataSource => DataSource as StructuredDataSource;
 
-        [Category("Other"),DisplayName("Data Source"),Description("The Data Source used by this partition."),TypeConverter(typeof(DataSourceConverter))]
+        [Category("Basic"),DisplayName("Data Source"),Description("The Data Source used by this partition."),TypeConverter(typeof(DataSourceConverter))]
         public DataSource DataSource
         {
             get
@@ -309,7 +309,7 @@ namespace TabularEditor.TOMWrapper
         /// clicked.
         /// </summary>
         [DisplayName("Partitions"),Description("The collection of Partition objects on this Table.")]
-        [Category("Data Source"), IntelliSense("The collection of Partition objects on this Table.")]
+        [Category("Basic"), IntelliSense("The collection of Partition objects on this Table.")]
         [NoMultiselect(), Editor(typeof(PartitionCollectionEditor), typeof(UITypeEditor))]
         public PartitionCollection PropertyGridPartitions => this;
 

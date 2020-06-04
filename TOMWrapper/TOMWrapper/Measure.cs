@@ -202,13 +202,7 @@ namespace TabularEditor.TOMWrapper
             switch (propertyName)
             {
                 case Properties.FORMATSTRING: return DataType != DataType.String;
-                case Properties.DETAILROWSEXPRESSION:
-                    return Handler.CompatibilityLevel >= 1400;
-                case Properties.FORMATSTRINGEXPRESSION:
-                    return Handler.CompatibilityLevel >= 1470;
-
-                case Properties.DATACATEGORY:
-                    return Handler.CompatibilityLevel >= 1455;
+                case Properties.DETAILROWSEXPRESSION: return Browsable(Properties.DETAILROWSDEFINITION);
                 default: return true;
             }
         }

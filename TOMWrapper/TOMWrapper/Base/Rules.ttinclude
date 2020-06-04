@@ -20,6 +20,82 @@ partial class Rules {
 		return "";
     }
 
+	public class CompatRequirement
+	{
+		public int Box { get; private set; }
+		public int Pbi { get; private set; }
+
+		private CompatRequirement(int box, int pbi)
+		{
+			this.Box = box;
+			this.Pbi = pbi;
+		}
+
+		private CompatRequirement(Object attribute) 
+		{
+			if(attribute != null)
+			{
+				var attrType = attribute.GetType();
+				var boxProp = attrType.GetProperty("Box");
+				var box = (string)boxProp.GetValue(attribute);
+				var pbiProp = attrType.GetProperty("Pbi");
+				var pbi = (string)pbiProp.GetValue(attribute);
+
+				this.Box = int.TryParse(box, out int boxValue) ? boxValue : int.MaxValue;
+				this.Pbi = int.TryParse(pbi, out int pbiValue) ? pbiValue : int.MaxValue;
+			}
+			else 
+			{
+				this.Box = 1200;
+				this.Pbi = 1200;
+			}
+		}
+
+		public static CompatRequirement GetCompatRequirement(Type t, string propertyName) 
+		{
+			var prop = t.GetProperty(propertyName);
+			try {
+				var propAttr = prop.GetCustomAttributes(true).FirstOrDefault(a => a.GetType().Name == "CompatibilityRequirementAttribute");
+				var propReq = new CompatRequirement(propAttr);
+				
+				var typeAttr = t.GetCustomAttributes(true).FirstOrDefault(a => a.GetType().Name == "CompatibilityRequirementAttribute");
+				var typeReq = new CompatRequirement(typeAttr);
+
+				var propTypeAttr = prop.PropertyType.GetCustomAttributes(true).FirstOrDefault(a => a.GetType().Name == "CompatibilityRequirementAttribute");
+				var propTypeReq = new CompatRequirement(propTypeAttr);
+
+				var result = new CompatRequirement(Math.Max(propTypeReq.Box, propReq.Box), Math.Max(propTypeReq.Pbi, propReq.Pbi));
+				// If the CL requirement of the property is the same as the CR requirement for the parent class, then we return a 1200/1200
+				// object, since no properties will be visible anyway, if there are no instances of the parent class:
+				if(result.Pbi == typeReq.Pbi && result.Box == typeReq.Box)
+					return new CompatRequirement(1200, 1200);
+				else
+					return result;
+			} 
+			catch 
+			{
+				return new CompatRequirement(int.MaxValue, int.MaxValue);
+			}
+		}
+
+		private static CompatRequirement GetCompatRequirement(Type t) 
+		{
+			try {
+				var attr = t.GetCustomAttributes(true).FirstOrDefault(a => a.GetType().Name == "CompatibilityRequirementAttribute");
+				return new CompatRequirement(attr);
+			} 
+			catch 
+			{
+				return new CompatRequirement(int.MaxValue, int.MaxValue);
+			}
+		}
+	}
+
+	public static CompatRequirement GetCompatRequirement(Type t, string propertyName)
+	{
+		return CompatRequirement.GetCompatRequirement(t, propertyName);
+	}
+
 	public static IEnumerable<Type> GetDerivedTypes(Type t) {
 		var assembly = System.Reflection.Assembly.GetAssembly(t);
 		var types = assembly.GetTypes().Where(dt => dt != t && t.IsAssignableFrom(dt) && dt.Name != "RowNumberColumn");
@@ -279,58 +355,43 @@ partial class Rules {
         {
 			case "MetadataPermission": 
 			case "FilterExpression":
-				return "Security";
 		    case "Perspectives":
 			case "Cultures":
-				return "Translations and Perspectives";
 			case "Roles":
-				return "Security";
-			case "Partitions":
-				return "Data Source";
+				return "Translations, Perspectives, Security";
+
 			case "DisplayFolder":
 			case "Name":
 			case "IsHidden":
 			case "Description":
-				return "Basic";
-			case "Kind":
-			case "Expression":
-			case "SortByColumn":
 			case "FormatString":
+			case "SummarizeBy":
+			case "SortByColumn":
 			case "SourceColumn":
-			case "IsPrivate":
-			case "ShowAsVariationsOnly":
-			case "AlternateSourcePredence":
-			case "ExcludeFromModelRefresh":
-			case "Ordinal":
-				return "Options";
-			case "Column":
-				if(typeName == "Variation") return "Basic";
-				return "Options";
-			case "IsDefault":
-			case "DefaultColumn":
-			case "DefaultHierarchy":
-			case "Relationship":
-				return "Variation Options";
-			case "DataCategory":
-			case "ErrorMessage":
-			case "DataType":
-			case "State":
-				return "Metadata";
 			case "FromCardinality":
 			case "FromColumn":
 		    case "ToCardinality":
 			case "ToColumn":
 			case "IsActive":
-				return "Relationship";
-			case "SecurityFilteringBehavior":
-			case "CrossFilteringBehavior":
-			case "JoinOnDateBehavior":
-			case "RelyOnReferentialIntegrity":
-				return "Relationship Behavior";
+			case "Ordinal":
+				return "Basic";
+
+			case "Column":
+				if(typeName == "Variation" || typeName == "Level") return "Basic";
+				return "Options";
+
+			case "ErrorMessage":
+			case "State":
+				return "Metadata";
+
+			case "DataType":
+				if(typeName == "Column") return "Basic";
+				return "Metadata";
+
 			default:
 				if(typeName == "ProviderDataSource") return "Connection Details";
-				if(typeName == "ModelRole") return "Security";
-				return "Other";
+				if(typeName == "ModelRole") return "Translations, Perspectives, Security";
+				return "Options";
         }
     }
 
