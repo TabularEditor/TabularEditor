@@ -173,7 +173,7 @@ namespace TabularEditor.TOMWrapper
         public IEnumerable<Level> AllLevels { get { return Tables.SelectMany(t => t.Hierarchies).SelectMany(h => h.Levels); } }
         #endregion
 
-        [IntelliSense("Metadata related to the latest deployment performed on this model using Tabular Editor."),Category("Basic")]
+        [IntelliSense("Metadata related to the latest deployment performed on this model using Tabular Editor."),Category("Metadata")]
         public DeploymentMetadata DeploymentMetadata { get; set; }
         const string DM = "TabularEditor_DeploymentMetadata";
         private void InitDeploymentMetadata()
@@ -231,26 +231,17 @@ namespace TabularEditor.TOMWrapper
         {
             switch (propertyName)
             {
-                // Compatibility Level 1400 (or newer) features:
-                case Properties.EXPRESSIONS:
+                // DataAccessOptions properties:
                 case Properties.FASTCOMBINE:
                 case Properties.RETURNERRORVALUESASNULL:
                 case Properties.LEGACYREDIRECTS:
-                case Properties.DEFAULTMEASURE:
                     return Handler.CompatibilityLevel >= 1400;
-                case Properties.FORCEUNIQUENAMES:
-                    return Handler.CompatibilityLevel >= 1465;
-                case Properties.DISCOURAGEIMPLICITMEASURES:
-                    return Handler.CompatibilityLevel >= 1470;
-                case Properties.DATASOURCEDEFAULTMAXCONNECTIONS:
-                    return Handler.CompatibilityLevel >= 1510;
-                case Properties.DEFAULTPOWERBIDATASOURCEVERSION:
-                    return Handler.CompatibilityLevel >= 1450;
+                case Properties.HASLOCALCHANGES:
+                    return false;
                 default:
                     return base.IsBrowsable(propertyName);
             }
         }
-
         [Browsable(false)]
         public LogicalGroups Groups { get { return LogicalGroups.Singleton; } }
 

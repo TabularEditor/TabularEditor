@@ -120,6 +120,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        [Category("Metadata"),DisplayName("Error Message")]
         public string ErrorMessage
         {
             get

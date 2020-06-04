@@ -74,7 +74,6 @@ namespace TabularEditor.TOMWrapper
                 // TODO: Deleting a column with IsKey = true, then undoing, then saving causes an error... Check if this is still the case.
                 database.AddTabularEditorTag();
                 database.Model.SaveChanges();
-                database.RemoveTabularEditorTag();
 
                 AttachCalculatedTableMetadata();
 
@@ -156,23 +155,23 @@ namespace TabularEditor.TOMWrapper
         }
     }
 
-    static class DatabaseHelper
+    internal static class DatabaseHelper
     {
+        public const string TabularEditorTag = "__TEdtr";
+
         public static void AddTabularEditorTag(this TOM.Database database)
         {
-            const string annotationName = "__TEdtr";
-            if (!database.Model.Annotations.Contains(annotationName))
+            if (!database.Model.Annotations.Contains(TabularEditorTag))
             {
-                var annotation = new TOM.Annotation() { Name = annotationName, Value = "1" };
+                var annotation = new TOM.Annotation() { Name = TabularEditorTag, Value = "1" };
                 database.Model.Annotations.Add(annotation);
             }
         }
         public static void RemoveTabularEditorTag(this TOM.Database database)
         {
-            const string annotationName = "__TEdtr";
-            if (database.Model.Annotations.Contains(annotationName))
+            if (database.Model.Annotations.Contains(TabularEditorTag))
             {
-                database.Model.Annotations.Remove(annotationName);
+                database.Model.Annotations.Remove(TabularEditorTag);
             }
         }
     }

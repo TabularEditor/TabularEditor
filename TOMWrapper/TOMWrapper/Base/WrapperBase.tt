@@ -113,7 +113,7 @@ namespace TabularEditor.TOMWrapper
 	{   
 	    if (p.Name == "ExtendedProperties") { #>
 		///<summary>The collection of Extended Properties on the current <#=Rules.SplitCamelCase(t.Name)#>.</summary>
-        [DisplayName("Extended Properties"),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Extended Properties on the current <#=Rules.SplitCamelCase(t.Name)#>."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current <#=Rules.SplitCamelCase(t.Name)#>."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -246,7 +246,7 @@ namespace TabularEditor.TOMWrapper
 
 		if (p.Name == "Annotations") { #>
 		///<summary>The collection of Annotations on the current <#=Rules.SplitCamelCase(t.Name)#>.</summary>
-        [Browsable(true),NoMultiselect,Category("Translations and Perspectives"),Description("The collection of Annotations on the current <#=Rules.SplitCamelCase(t.Name)#>."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current <#=Rules.SplitCamelCase(t.Name)#>."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -378,7 +378,7 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Collection of localized Display Folders for the current <#=Rules.SplitCamelCase(t.Name)#>.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Display Folders"),Description("Shows all translated Display Folders of the current <#=Rules.SplitCamelCase(t.Name)#>."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Display Folders"),Description("Shows all translated Display Folders of the current <#=Rules.SplitCamelCase(t.Name)#>."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedDisplayFolders { private set; get; }
 <#		}
 		if (p.Name == "Table") { #>
@@ -404,19 +404,19 @@ namespace TabularEditor.TOMWrapper
         /// <Summary>
 		/// Collection of perspectives in which this <#= t.Name #> is visible.
 		/// </Summary>
-		[Browsable(true),DisplayName("Shown in Perspective"), Description("Provides an easy way to include or exclude the current <#=Rules.SplitCamelCase(t.Name)#> from the perspectives of the model."), Category("Translations and Perspectives")]
+		[Browsable(true),DisplayName("Shown in Perspective"), Description("Provides an easy way to include or exclude the current <#=Rules.SplitCamelCase(t.Name)#> from the perspectives of the model."), Category("Translations, Perspectives, Security")]
         public Perspective<#= t.Name #>Indexer InPerspective { get; private set; }
 		PerspectiveIndexer ITabularPerspectiveObject.InPerspective { get { return this.InPerspective; } }
 <# } if (Rules.IsTranslatable(t)) { #>
         /// <summary>
         /// Collection of localized descriptions for this <#= t.Name #>.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Descriptions"),Description("Shows all translated descriptions of the current <#=Rules.SplitCamelCase(t.Name)#>."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Descriptions"),Description("Shows all translated descriptions of the current <#=Rules.SplitCamelCase(t.Name)#>."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedDescriptions { private set; get; }
         /// <summary>
         /// Collection of localized names for this <#= t.Name #>.
         /// </summary>
-        [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current <#=Rules.SplitCamelCase(t.Name)#>."),Category("Translations and Perspectives")]
+        [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current <#=Rules.SplitCamelCase(t.Name)#>."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
 <# } if (!t.IsAbstract && Rules.InCollection(t)) { #>
@@ -627,11 +627,16 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 <# } #>
 		}
 		internal override <#= Rules.Seal(t) ? "sealed " : "" #>bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
 			if(!base.Browsable(propertyName)) return false;
+
 			switch (propertyName) {
-<# if(props.Any(p => p.Name == "ExtendedProperties")) { #> 
-				case Properties.EXTENDEDPROPERTIES:
-					return Handler.CompatibilityLevel >= 1400;
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
+<# foreach(var prop in props.Where(p => p.Name != "Parent").OrderBy(p => p.Name)) { var cr = Rules.GetCompatRequirement(t, prop.Name); if(cr.Pbi == 1200 && cr.Box == 1200) continue; #>
+				case Properties.<#= prop.Name.ToUpper() #>:
+					return <# if(cr.Pbi == int.MaxValue && cr.Box == int.MaxValue) { #>false;<# } else {#>Handler.PbiMode ? <#= cr.Pbi == int.MaxValue ? "false" : "Handler.CompatibilityLevel >= " + cr.Pbi #> : <#= cr.Box == int.MaxValue ? "false" : "Handler.CompatibilityLevel >= " + cr.Box #>;<# } #>
+
 <# } if(Rules.InCollection(t)) { #>
 				case Properties.PARENT:
 					return false;

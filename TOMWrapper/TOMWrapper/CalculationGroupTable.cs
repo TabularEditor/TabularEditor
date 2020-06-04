@@ -193,13 +193,13 @@ namespace TabularEditor.TOMWrapper
         
         public CalculationGroup CalculationGroup { get; private set; }
 
-        [Category("Calculation Group"),DisplayName("Precedence"),Description("When multiple Calculation Groups are used as a filter condition, this property determines the order of evaluation.")]
+        [Category("Basic"),DisplayName("Calculation Group Precedence"),Description("When multiple Calculation Groups are used as a filter condition, this property determines the order of evaluation.")]
         public int CalculationGroupPrecedence { get { return CalculationGroup.Precedence; } set { CalculationGroup.Precedence = value; } }
 
-        [Category("Calculation Group"),DisplayName("Description"),Description("The description of the Calculation Group object.")]
+        [Category("Basic"),DisplayName("Calculation Group Description"),Description("The description of the Calculation Group object.")]
         public string CalculationGroupDescription { get { return CalculationGroup.Description; } set { CalculationGroup.Description = value; } }
 
-        [Category("Calculation Group"),DisplayName("Annotations"),Description("Annotations on the Calculation Group object."),NoMultiselect,Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [Category("Metadata"),DisplayName("Calculation Group Annotations"),Description("Annotations on the Calculation Group object."),NoMultiselect,Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
         public AnnotationCollection CalculationGroupAnnotations { get { return CalculationGroup.Annotations; } }
 
         protected override void Init()

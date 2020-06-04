@@ -126,20 +126,10 @@ namespace TabularEditor.TOMWrapper
         }
 
         Table ITabularTableObject.Table => Parent.Table;
-
-        internal override bool IsBrowsable(string propertyName)
-        {
-            switch(propertyName)
-            {
-                case Properties.ORDINAL: return Handler.CompatibilityLevel >= 1500;
-                default:
-                    return true;
-            }
-        }
     }
 
     [TypeConverter(typeof(DynamicPropertyNonExpandableConverter))]
-    public partial class CalculationItemCollection : ITabularNamedObject, ITabularObjectContainer, ITabularTableObject, IInternalAnnotationObject, IDynamicPropertyObject
+    public partial class CalculationItemCollection : ITabularNamedObject, ITabularObjectContainer, ITabularTableObject, IDynamicPropertyObject
     {
         [ReadOnly(true)]
         string ITabularNamedObject.Name { get { return "Calculation Items"; } set { } }
@@ -157,7 +147,7 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public CalculationGroupTable CalculationGroupTable => CalculationGroup.Table as CalculationGroupTable;
 
-        [ReadOnly(true), Category("Basic"), DisplayName("Object Type")]
+        [ReadOnly(true), Category("Metadata"), DisplayName("Object Type")]
         public string ObjectTypeName => "Calculation Item Collection";
 
         event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
@@ -175,10 +165,6 @@ namespace TabularEditor.TOMWrapper
         [Category("Basic"), IntelliSense("The collection of Calculation Items on this Calculation Group.")]
         [NoMultiselect(), Editor(typeof(CalculationItemCollectionEditor), typeof(UITypeEditor))]
         public CalculationItemCollection PropertyGridCalculationItems => this;
-
-        ///<summary>The collection of Annotations on the current Calculation Group.</summary>
-        [Browsable(true), NoMultiselect, Category("Options"), Description("The collection of Annotations on the current Calculation Group."), Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
-        public AnnotationCollection Annotations => CalculationGroup.Annotations;
 
         bool ITabularNamedObject.CanDelete()
         {

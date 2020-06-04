@@ -129,10 +129,12 @@ namespace TabularEditor.TOMWrapper
             if (Handler.CompatibilityLevel >= 1400)
                 UsedInVariations.ToList().ForEach(v => v.Delete());
 
+            if (GroupByColumns != null) GroupByColumns.Clear();
+
             base.DeleteLinkedObjects(isChildOfDeleted);
         }
 
-        [DisplayName("Object Level Security"), Category("Security")]
+        [DisplayName("Object Level Security"), Category("Translations, Perspectives, Security")]
         public ColumnOLSIndexer ObjectLevelSecurity { get; private set; }
         
 
@@ -142,7 +144,7 @@ namespace TabularEditor.TOMWrapper
             {
                 Variations = new VariationCollection("Variations", MetadataObject.Variations, this);
                 ObjectLevelSecurity = new ColumnOLSIndexer(this);
-                GroupByColumns = new GroupingColumnCollection(this);
+                if(Handler.PbiMode) GroupByColumns = new GroupingColumnCollection(this);
             }
 
             base.Init();
@@ -160,9 +162,12 @@ namespace TabularEditor.TOMWrapper
 
         private List<CalculatedTableColumn> _originForCalculatedTableColumnsCache;
 
-        private List<Column> _groupByColumns = new List<Column>();
-
-        [NoMultiselect(), Editor(typeof(ColumnSetCollectionEditor), typeof(UITypeEditor))]
+        /// <summary>
+        /// A collection of columns that make up a composite key for the current column.
+        /// </summary>
+        [NoMultiselect(), Editor(typeof(ColumnSetCollectionEditor), typeof(UITypeEditor)), Category("Options"), DisplayName("Group By Columns")]
+        [IntelliSense("A collection of columns that make up a composite key for the current column.")]
+        [Description("A collection of columns that make up a composite key for the current column.")]
         public GroupingColumnCollection GroupByColumns { get; private set; }
 
         protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
@@ -223,12 +228,12 @@ namespace TabularEditor.TOMWrapper
         {
             switch (propertyName)
             {
-                case Properties.FORMATSTRING: return DataType != DataType.String;
+                case Properties.FORMATSTRING:
+                    return DataType != DataType.String;
                 case Properties.OBJECTLEVELSECURITY:
                     return Handler.CompatibilityLevel >= 1400 && Model.Roles.Any();
-                case Properties.VARIATIONS:
-                case Properties.ENCODINGHINT:
-                    return Handler.CompatibilityLevel >= 1400;
+                case Properties.GROUPBYCOLUMNS:
+                    return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : false;
                 default:
                     return base.IsBrowsable(propertyName);
             }

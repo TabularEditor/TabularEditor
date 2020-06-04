@@ -90,12 +90,11 @@ namespace TabularEditor.TOMWrapper
                 case Properties.EXTENDEDPROPERTIES:
                 case Properties.ERRORMESSAGE:
                 case Properties.STATE:
+                case Properties.METADATAPERMISSION:
+                case Properties.COLUMNPERMISSIONS:
                 case "TableName":
                 case "RoleName":
                     return true;
-                case Properties.METADATAPERMISSION:
-                case Properties.COLUMNPERMISSIONS:
-                    return Handler.CompatibilityLevel >= 1400;
                 default:
                     return false;
             }

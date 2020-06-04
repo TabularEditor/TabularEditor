@@ -189,7 +189,7 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false),IntelliSense("The type of this object (Folder, Measure, Table, etc.).")]
         public virtual ObjectType ObjectType { get { return (ObjectType)MetadataObject.ObjectType; } }
 
-        [Category("Basic")]
+        [Category("Metadata")]
         [DisplayName("Object Type"),IntelliSense("The type name of this object (\"Folder\", \"Measure\", \"Table\", etc.).")]
         public string ObjectTypeName { get { return this.GetTypeName(); } }
 

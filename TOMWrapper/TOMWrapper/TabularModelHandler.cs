@@ -46,6 +46,7 @@ namespace TabularEditor.TOMWrapper
         public TOM.Database Database { get { return database; } }
 
         public int CompatibilityLevel { get; private set; }
+        public bool PbiMode => Database?.CompatibilityMode == Microsoft.AnalysisServices.CompatibilityMode.PowerBI;
 
         /// <summary>
         /// Applys translation from a JSON string.
@@ -140,7 +141,6 @@ namespace TabularEditor.TOMWrapper
             {
                 database = server.Databases.GetByName(databaseName);
             }
-            database.RemoveTabularEditorTag();
             CompatibilityLevel = database.CompatibilityLevel;
 
             if (CompatibilityLevel < 1200) throw new InvalidOperationException("Only databases with Compatibility Level 1200 or higher can be loaded in Tabular Editor.");

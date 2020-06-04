@@ -86,8 +86,9 @@ namespace TabularEditor.TOMWrapper
         {
             try
             {
-                database = TOM.JsonSerializer.DeserializeDatabase(json);
-                database.RemoveTabularEditorTag();
+                var mode = IsPbiCompatibilityMode(json) ? Microsoft.AnalysisServices.CompatibilityMode.PowerBI : Microsoft.AnalysisServices.CompatibilityMode.AnalysisServices;
+                database = TOM.JsonSerializer.DeserializeDatabase(json, mode: mode);
+                database.CompatibilityMode = mode;
                 CompatibilityLevel = database.CompatibilityLevel;
                 Status = "Model loaded succesfully.";
                 Init();
@@ -98,6 +99,22 @@ namespace TabularEditor.TOMWrapper
             {
                 throw new Exception($"Unable to load Tabular Model (Compatibility Level 1200+) from {Source}. Error: " + ex.Message);
             }
+        }
+
+        private static readonly int[] analysisServicesStandardCompatLevels = new[]
+        {
+            1200,
+            1400,
+            1500
+        };
+
+        private bool IsPbiCompatibilityMode(string tomJson)
+        {
+            // Use PBI CompatibilityMode when model is one of the non-standard CL's, or if V3 metadata is enabled:
+            var model = JObject.Parse(tomJson);
+            if (model.SelectToken("compatibilityLevel") is JToken compatLevel && !analysisServicesStandardCompatLevels.Contains((int)compatLevel)) return true;
+            if (model.SelectToken("model.defaultPowerBIDataSourceVersion") is JToken dataSourceVersion && (string)dataSourceVersion == "powerBI_V3") return true;
+            return false;
         }
 
         private const string ANN_SERIALIZEOPTIONS = "TabularEditor_SerializeOptions";

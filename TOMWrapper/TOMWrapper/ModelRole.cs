@@ -83,7 +83,7 @@ namespace TabularEditor.TOMWrapper
             return ExternalModelRoleMember.CreateNew(this, memberName, "AzureAD");
         }
 
-        [Category("Basic")]
+        [Category("Metadata")]
         public string ErrorMessage
         {
             get
