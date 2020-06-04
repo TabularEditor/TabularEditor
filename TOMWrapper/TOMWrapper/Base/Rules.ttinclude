@@ -423,6 +423,7 @@ partial class Rules {
 		if(propertyName == "Cultures") return "[Editor(typeof(TabularEditor.PropertyGridUI.CultureCollectionEditor),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Roles") return "[Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<ModelRole>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Expressions") return "[Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<NamedExpression>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]";
+		if(propertyName == "Sets") return "[NoMultiselect(),Editor(typeof(SetCollectionEditor),typeof(UITypeEditor))]";
 		if(propertyName == "Partitions") return "[NoMultiselect(),Editor(typeof(PartitionCollectionEditor),typeof(UITypeEditor))]";
 		if(propertyName == "Variations") return "[NoMultiselect(),Editor(typeof(VariationCollectionEditor),typeof(UITypeEditor))]";
 		
@@ -526,6 +527,7 @@ partial class Rules {
        { "ModelRole", "TabularNamedObject" },
        { "ModelRoleMember", "TabularNamedObject" },
        { "Partition", "TabularNamedObject" },
+       { "Set", "TabularNamedObject" },
        { "Perspective", "TabularNamedObject" },
        { "ProviderDataSource", "DataSource" },
        { "Relationship", "TabularNamedObject" },
@@ -563,6 +565,7 @@ partial class Rules {
        { "Hierarchy", "Hierarchies" },
        { "Measure", "Measures" },
        { "Partition", "Partitions" },
+	   { "Set", "Sets" },
        { "Perspective", "Perspectives" },
        { "Culture", "Cultures" },
 	   { "Relationship", "Relationships" },
@@ -596,6 +599,7 @@ partial class Rules {
 	   { new KeyValuePair<string, string>("NamedExpression", "Model") },
 
 	   // Collections owned by a Table (order of items matters, as this is the order in which child objects will be initialized):
+       { new KeyValuePair<string, string>("Set", "Table") },
        { new KeyValuePair<string, string>("Partition", "Table") },
        { new KeyValuePair<string, string>("Column", "Table") },
        { new KeyValuePair<string, string>("Hierarchy", "Table") },

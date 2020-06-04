@@ -76,6 +76,7 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="PropertyGridUI\CollectionEditors\SetCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\CalculationItemCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\ColumnSetCollectionEditor.cs" />
     <Compile Include="TOMWrapper\CalculationGroupAttribute.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="TOMWrapper\Serialization\TranslationAnnotationSerializer.cs" />
     <Compile Include="TOMWrapper\Serialization\RelationshipAnnotationSerializer.cs" />
     <Compile Include="TOMWrapper\CalculatedTableColumn.cs" />
+    <Compile Include="TOMWrapper\Set.cs" />
     <Compile Include="TOMWrapper\TablePermission.cs" />
     <Compile Include="TOMWrapper\StructuredDataSource.cs" />
     <Compile Include="TOMWrapper\TabularModelHandler.Database.cs" />
