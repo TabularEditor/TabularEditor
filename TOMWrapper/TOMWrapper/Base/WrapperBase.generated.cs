@@ -82,6 +82,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string ISDEFAULT = "IsDefault";
 	    public const string ISDEFAULTIMAGE = "IsDefaultImage";
 	    public const string ISDEFAULTLABEL = "IsDefaultLabel";
+	    public const string ISDYNAMIC = "IsDynamic";
 	    public const string ISHIDDEN = "IsHidden";
 	    public const string ISKEY = "IsKey";
 	    public const string ISNAMEINFERRED = "IsNameInferred";
@@ -190,6 +191,7 @@ namespace TabularEditor.TOMWrapper
             { typeof(ModelRole) , typeof(TOM.ModelRole) },
             { typeof(ModelRoleMember) , typeof(TOM.ModelRoleMember) },
             { typeof(Partition) , typeof(TOM.Partition) },
+            { typeof(Set) , typeof(TOM.Set) },
             { typeof(Perspective) , typeof(TOM.Perspective) },
             { typeof(ProviderDataSource) , typeof(TOM.ProviderDataSource) },
             { typeof(Relationship) , typeof(TOM.Relationship) },
@@ -223,6 +225,7 @@ namespace TabularEditor.TOMWrapper
             typeof(Measure),
             typeof(ModelRole),
             typeof(Partition),
+            typeof(Set),
             typeof(Perspective),
             typeof(ProviderDataSource),
             typeof(SingleColumnRelationship),
@@ -9256,6 +9259,682 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
+///             Set object.
+///             </summary><remarks>This metadata object is only supported at database compatibility level of 1400 or above for Pbi server.</remarks>
+	[TypeConverter(typeof(DynamicPropertyConverter))]
+	public sealed partial class Set: TabularNamedObject
+			, IFolderObject
+			, IHideableObject
+			, IErrorMessageObject
+			, ITabularTableObject
+			, IDescriptionObject
+			, IExpressionObject
+			, IInternalAnnotationObject
+			, IInternalExtendedPropertyObject
+			, IClonableObject
+	{
+	    internal new TOM.Set MetadataObject 
+		{ 
+			get 
+			{ 
+				return base.MetadataObject as TOM.Set; 
+		    } 
+			set 
+			{ 
+				base.MetadataObject = value; 
+			}
+		}
+
+		///<summary>The collection of Annotations on the current Set.</summary>
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Set."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+		public AnnotationCollection Annotations { get; private set; }
+		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
+		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
+		public string GetAnnotation(int index) {
+			return MetadataObject.Annotations[index].Value;
+		}
+		///<summary>Returns true if an annotation with the given name exists. Otherwise false.</summary>
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		///<summary>Gets the value of the annotation with the given name. Returns null if no such annotation exists.</summary>
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
+		public string GetAnnotation(string name) {
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
+		}
+		///<summary>Sets the value of the annotation with the given index, assuming it exists.</summary>
+		[IntelliSense("Sets the value of the annotation with the given index, assuming it exists.")]
+		public void SetAnnotation(int index, string value) {
+		    SetAnnotation(index, value, true);
+		}
+		internal void SetAnnotation(int index, string value, bool undoable) {
+		    var name = MetadataObject.Annotations[index].Name;
+			SetAnnotation(name, value, undoable);
+		}
+		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+			SetAnnotation(index, value, undoable);
+		}
+		///<summary>Returns a unique name for a new annotation.</summary>
+		public string GetNewAnnotationName() {
+			return MetadataObject.Annotations.GetNewName("New Annotation");
+		}
+		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		internal void SetAnnotation(string name, string value, bool undoable) {
+			if(name == null) name = GetNewAnnotationName();
+
+			if(value == null) {
+				// Remove annotation if set to null:
+				RemoveAnnotation(name, undoable);
+				return;
+			}
+
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
+
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Change existing annotation:
+
+				var oldValue = GetAnnotation(name);
+				MetadataObject.Annotations[name].Value = value;
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
+			} else {
+				// Add new annotation:
+
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
+			}
+		}
+		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+			this.SetAnnotation(name, value, undoable);
+		}
+		///<summary>Remove an annotation by the given name.</summary>
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		internal void RemoveAnnotation(string name, bool undoable) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
+
+			    var oldValue = MetadataObject.Annotations[name].Value;
+				MetadataObject.Annotations.Remove(name);
+
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
+			}
+		}
+		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+			this.RemoveAnnotation(name, undoable);
+		}
+		///<summary>Gets the number of annotations on the current Set.</summary>
+		[IntelliSense("Gets the number of annotations on the current Set.")]
+		public int GetAnnotationsCount() {
+			return MetadataObject.Annotations.Count;
+		}
+		///<summary>Gets a collection of all annotation names on the current Set.</summary>
+		[IntelliSense("Gets a collection of all annotation names on the current Set.")]
+		public IEnumerable<string> GetAnnotations() {
+			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+				///<summary>The collection of Extended Properties on the current Set.</summary>
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Set."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
+
+		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
+		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
+		public bool HasExtendedProperty(string name) {
+		    return MetadataObject.ExtendedProperties.ContainsName(name);
+		}
+		///<summary>Gets the type of the ExtendedProperty with the given index, assuming it exists.</summary>
+		public ExtendedPropertyType GetExtendedPropertyType(int index) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
+		}
+		///<summary>Gets the type of the ExtendedProperty with the given name, assuming it exists.</summary>
+		public ExtendedPropertyType GetExtendedPropertyType(string name) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
+		}
+		///<summary>Gets the value of the ExtendedProperty with the given index, assuming it exists.</summary>
+		public string GetExtendedProperty(int index) {
+			var ep = MetadataObject.ExtendedProperties[index];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		///<summary>Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.</summary>
+		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
+		public string GetExtendedProperty(string name) {
+		    if(!HasExtendedProperty(name)) return null;
+			var ep = MetadataObject.ExtendedProperties[name];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		///<summary>Sets the value of the ExtendedProperty with the given index, optionally specifiying the type (string or JSON) of the ExtendedProperty.</summary>
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
+			SetExtendedProperty(index, value, type, true);
+		}
+		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+			SetExtendedProperty(index, value, type, undoable);
+		}
+		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+			var name = MetadataObject.ExtendedProperties[index].Name;
+			SetExtendedProperty(name, value, type, undoable);
+		}
+		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
+		public string GetNewExtendedPropertyName() {
+			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+		}
+		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
+		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type) {
+			SetExtendedProperty(name, value, type, true);
+		}
+		internal void SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+			if(name == null) name = GetNewExtendedPropertyName();
+
+			if(value == null) {
+				// Remove ExtendedProperty if set to null:
+				RemoveExtendedProperty(name);
+				return;
+			}
+
+			if(GetExtendedProperty(name) == value) return;
+			if(undoable) {
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+				if (cancel) return;
+			}
+
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Change existing ExtendedProperty:
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				var ep = MetadataObject.ExtendedProperties[name];
+				if (ep is TOM.JsonExtendedProperty)
+					(ep as TOM.JsonExtendedProperty).Value = value;
+				else 
+					(ep as TOM.StringExtendedProperty).Value = value;
+					
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new ExtendedProperty:
+				if (type == ExtendedPropertyType.Json)
+					MetadataObject.ExtendedProperties.Add(new TOM.JsonExtendedProperty{ Name = name, Value = value });
+				else
+					MetadataObject.ExtendedProperties.Add(new TOM.StringExtendedProperty{ Name = name, Value = value });
+
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
+			}
+		}
+		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+			this.SetExtendedProperty(name, value, type, undoable);
+		}
+
+		///<summary>Remove an ExtendedProperty by the given name.</summary>
+		[IntelliSense("Remove an ExtendedProperty by the given name.")]
+		public void RemoveExtendedProperty(string name) {
+			RemoveExtendedProperty(name, true);
+		}
+
+		internal void RemoveExtendedProperty(string name, bool undoable) {
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Get current value:
+				if(undoable) {
+					bool cancel = false;
+					OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+					if (cancel) return;
+				}
+
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				MetadataObject.ExtendedProperties.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
+			}
+		}
+		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+			this.RemoveExtendedProperty(name, undoable);
+		}
+		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
+		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
+		public int GetExtendedPropertyCount() {
+			return MetadataObject.ExtendedProperties.Count;
+		}
+		///<summary>Gets a collection of all ExtendedProperty names on the current object.</summary>
+		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
+		public IEnumerable<string> GetExtendedProperties() {
+			return MetadataObject.ExtendedProperties.Select(a => a.Name);
+		}
+
+		/// <summary>
+///             The description of the set
+///             </summary>
+		[DisplayName("Description")]
+		[Category("Basic"),Description(@"The description of the set"),IntelliSense(@"The description of the set")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		public string Description {
+			get {
+			    return MetadataObject.Description;
+			}
+			set {
+				
+				var oldValue = Description;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
+				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeDescription() { return false; }
+/// <summary>
+///             The DAX expression that is evaluated for the calculated set.
+///             </summary>
+		[DisplayName("Expression")]
+		[Category("Options"),Description(@"The DAX expression that is evaluated for the calculated set."),IntelliSense(@"The DAX expression that is evaluated for the calculated set.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		public string Expression {
+			get {
+			    return MetadataObject.Expression;
+			}
+			set {
+				
+				var oldValue = Expression;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXPRESSION, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.Expression = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EXPRESSION, oldValue, newValue));
+				OnPropertyChanged(Properties.EXPRESSION, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeExpression() { return false; }
+/// <summary>
+///             Indicates whether the set is static or dynamic
+///             </summary>
+		[DisplayName("Dynamic")]
+		[Category("Options"),Description(@"Indicates whether the set is static or dynamic"),IntelliSense(@"Indicates whether the set is static or dynamic")]
+		public bool IsDynamic {
+			get {
+			    return MetadataObject.IsDynamic;
+			}
+			set {
+				
+				var oldValue = IsDynamic;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ISDYNAMIC, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.IsDynamic = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISDYNAMIC, oldValue, newValue));
+				OnPropertyChanged(Properties.ISDYNAMIC, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeIsDynamic() { return false; }
+/// <summary>
+///             A boolean value that indicates whether the set is treated as hidden by client visualization tools. True if the set is treated as hidden by client visualization tools; otherwise false.
+///             </summary>
+		[DisplayName("Hidden")]
+		[Category("Basic"),Description(@"A boolean value that indicates whether the set is treated as hidden by client visualization tools. True if the set is treated as hidden by client visualization tools; otherwise false."),IntelliSense(@"A boolean value that indicates whether the set is treated as hidden by client visualization tools. True if the set is treated as hidden by client visualization tools; otherwise false.")]
+		public bool IsHidden {
+			get {
+			    return MetadataObject.IsHidden;
+			}
+			set {
+				
+				var oldValue = IsHidden;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ISHIDDEN, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.IsHidden = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISHIDDEN, oldValue, newValue));
+				OnPropertyChanged(Properties.ISHIDDEN, oldValue, newValue);
+				Handler.UpdateObject(this);
+			}
+		}
+		private bool ShouldSerializeIsHidden() { return false; }
+/// <summary>
+///             Provides information on the state of the set. Possible values and their interpretation are as follows. Ready (1) The set is queryable and has up-to-date data. NoData (3) Not applicable to Set. CalculationNeeded (4) Not applicable to Set. SemanticError (5) The set expression has a semantic error. EvaluationError (6) Not applicable to Set. DependencyError (7) A dependency associated with this set is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Set. SyntaxError (9) The measure has a syntax error in its expression.
+///             </summary>
+		[DisplayName("State")]
+		[Category("Metadata"),Description(@"Provides information on the state of the set. Possible values and their interpretation are as follows. Ready (1) The set is queryable and has up-to-date data. NoData (3) Not applicable to Set. CalculationNeeded (4) Not applicable to Set. SemanticError (5) The set expression has a semantic error. EvaluationError (6) Not applicable to Set. DependencyError (7) A dependency associated with this set is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Set. SyntaxError (9) The measure has a syntax error in its expression."),IntelliSense(@"Provides information on the state of the set. Possible values and their interpretation are as follows. Ready (1) The set is queryable and has up-to-date data. NoData (3) Not applicable to Set. CalculationNeeded (4) Not applicable to Set. SemanticError (5) The set expression has a semantic error. EvaluationError (6) Not applicable to Set. DependencyError (7) A dependency associated with this set is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Set. SyntaxError (9) The measure has a syntax error in its expression.")]
+		public ObjectState State {
+			get {
+			    return (ObjectState)MetadataObject.State;
+			}
+			
+		}
+		private bool ShouldSerializeState() { return false; }
+/// <summary>
+///             The string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError or EvaluationError.
+///             </summary>
+		[DisplayName("Error Message")]
+		[Category("Metadata"),Description(@"The string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError or EvaluationError."),IntelliSense(@"The string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError or EvaluationError.")]
+		public string ErrorMessage {
+			get {
+			    return MetadataObject.ErrorMessage;
+			}
+			
+		}
+		private bool ShouldSerializeErrorMessage() { return false; }
+/// <summary>
+///             Defines the display folder for the Measure, for use by clients.
+///             </summary>
+		[DisplayName("Display Folder")]
+		[Category("Basic"),Description(@"Defines the display folder for the Measure, for use by clients."),IntelliSense(@"Defines the display folder for the Measure, for use by clients.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		public string DisplayFolder {
+			get {
+			    return MetadataObject.DisplayFolder;
+			}
+			set {
+				if(value.Contains(@"\\")) throw new Exception("Display Folder names cannot be blank.");
+				var oldValue = DisplayFolder;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.DISPLAYFOLDER, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.DisplayFolder = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISPLAYFOLDER, oldValue, newValue));
+				OnPropertyChanged(Properties.DISPLAYFOLDER, oldValue, newValue);
+				Handler.UpdateFolders(Table);
+			}
+		}
+		private bool ShouldSerializeDisplayFolder() { return false; }
+        /// <summary>
+        /// Collection of localized Display Folders for the current Set.
+        /// </summary>
+        [Browsable(true),DisplayName("Translated Display Folders"),Description("Shows all translated Display Folders of the current Set."),Category("Translations, Perspectives, Security")]
+	    public TranslationIndexer TranslatedDisplayFolders { private set; get; }
+		///<summary>The parent table of the current Set.</summary>
+		[Browsable(false)]
+		public Table Table
+		{ 
+			get 
+			{ 
+				TabularObject t = null;
+				if(MetadataObject == null || MetadataObject.Table == null) return null;
+				if(!Handler.WrapperLookup.TryGetValue(MetadataObject.Table, out t)) {
+				    if(!MetadataObject.Table.IsRemoved)
+						t = Model.Tables[MetadataObject.Table.Name];
+				}
+				return t as Table;
+			} 
+		}
+
+		internal static Set CreateFromMetadata(Table parent, TOM.Set metadataObject) {
+			var obj = new Set(metadataObject);
+			parent.Sets.Add(obj);
+			
+			obj.Init();
+
+			return obj;
+		}
+
+
+		/// <summary>
+		/// Creates a new Set and adds it to the parent Table.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
+		/// </summary>
+		public static Set CreateNew(Table parent, string name = null)
+		{
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(Set))) {
+				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Set).GetTypeName()));
+			}
+
+			var metadataObject = new TOM.Set();
+			metadataObject.Name = parent.Sets.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Set).GetTypeName() : name);
+			var obj = new Set(metadataObject);
+
+			parent.Sets.Add(obj);
+			
+			obj.Init();
+
+			return obj;
+		}
+
+
+		/// <summary>
+		/// Creates an exact copy of this Set object.
+		/// </summary>
+		[IntelliSense("Creates an exact copy of this Set object.")]
+		public Set Clone(string newName = null, Table newParent = null) {
+			if(!Handler.PowerBIGovernance.AllowCreate(typeof(Set))) {
+				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Set).GetTypeName()));
+			}
+
+		    Handler.BeginUpdate("Clone Set");
+
+			// Create a clone of the underlying metadataobject:
+			var tom = MetadataObject.Clone() as TOM.Set;
+
+
+			// Assign a new, unique name:
+			tom.Name = Parent.Sets.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				
+			// Create the TOM Wrapper object, representing the metadataobject
+			Set obj = CreateFromMetadata(newParent ?? Parent, tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
+			return Clone(newName);
+		}
+
+	
+        internal override void RenewMetadataObject()
+        {
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject = MetadataObject.Clone() as TOM.Set;
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+		///<summary>The parent Table of the current Set.</summary>
+		public Table Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Table;
+			}
+		}
+
+
+
+		/// <summary>
+		/// CTOR - only called from static factory methods on the class
+		/// </summary>
+		Set(TOM.Set metadataObject) : base(metadataObject)
+		{
+			TranslatedDisplayFolders = new TranslationIndexer(this, TOM.TranslatedProperty.DisplayFolder);
+			
+			// Create indexer for annotations:
+			Annotations = new AnnotationCollection(this);
+			
+			// Create indexer for extended properties:
+			ExtendedProperties = new ExtendedPropertyCollection(this);
+		}
+
+
+
+		internal override void Undelete(ITabularObjectCollection collection) {
+			base.Undelete(collection);
+			Reinit();
+			ReapplyReferences();
+		}
+		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
+			if(!base.Browsable(propertyName)) return false;
+
+			switch (propertyName) {
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.PARENT:
+					return false;
+				
+				default:
+					return true;
+			}
+		}
+
+    }
+
+
+	/// <summary>
+	/// Collection class for Set. Provides convenient properties for setting a property on multiple objects at once.
+	/// </summary>
+	public sealed partial class SetCollection: TabularObjectCollection<Set>
+	{
+		internal Table Table { get { return Parent as Table; } }
+		TOM.SetCollection TOM_Collection;
+		internal SetCollection(string collectionName, TOM.SetCollection metadataObjectCollection, Table parent) : base(collectionName, parent)
+		{
+			TOM_Collection = metadataObjectCollection;
+		}
+		internal override Type GetItemType() { return typeof(Set); }
+        internal override void TOM_Add(TOM.MetadataObject obj) { TOM_Collection.Add(obj as TOM.Set); }
+        internal override bool TOM_Contains(TOM.MetadataObject obj) { return TOM_Collection.Contains(obj as TOM.Set); }
+        internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.Set); }
+        internal override void TOM_Clear() { TOM_Collection.Clear(); }
+        internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
+        internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+        internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
+        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Set); }
+        /// <summary>The number of items in this collection.</summary>
+		public override int Count { get { return TOM_Collection.Count; } }
+		/// <summary>Returns an enumerator that iterates through the collection.</summary>
+        public override IEnumerator<Set> GetEnumerator() { return TOM_Collection.Select(h => Handler.WrapperLookup[h]).OfType<Set>().GetEnumerator(); }
+		internal override void Reinit() {
+			var ixOffset = 0;
+			for(int i = 0; i < Count; i++) {
+				var item = this[i];
+				Handler.WrapperLookup.Remove(item.MetadataObject);
+				item.MetadataObject = Table.MetadataObject.Sets[i + ixOffset] as TOM.Set;
+				Handler.WrapperLookup.Add(item.MetadataObject, item);
+				item.Collection = this;
+			}
+			TOM_Collection = Table.MetadataObject.Sets;
+			foreach(var item in this) item.Reinit();
+		}
+
+		internal override void ReapplyReferences() {
+			foreach(var item in this) item.ReapplyReferences();
+		}
+
+		/// <summary>
+		/// Calling this method will populate the SetCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
+		/// </summary>
+		internal override void CreateChildrenFromMetadata()
+		{
+			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
+			foreach(var obj in TOM_Collection) {
+				if(obj is TOM.Set) Set.CreateFromMetadata(Table, obj as TOM.Set);
+		    }
+		}
+
+		/// <summary>
+		/// Sets the Description property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the Description property of all objects in the collection at once.")]
+		public string Description {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("Description"));
+				this.ToList().ForEach(item => { item.Description = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the Expression property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the Expression property of all objects in the collection at once.")]
+		public string Expression {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("Expression"));
+				this.ToList().ForEach(item => { item.Expression = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the IsDynamic property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the IsDynamic property of all objects in the collection at once.")]
+		public bool IsDynamic {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("IsDynamic"));
+				this.ToList().ForEach(item => { item.IsDynamic = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the IsHidden property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the IsHidden property of all objects in the collection at once.")]
+		public bool IsHidden {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("IsHidden"));
+				this.ToList().ForEach(item => { item.IsHidden = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the DisplayFolder property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the DisplayFolder property of all objects in the collection at once.")]
+		public string DisplayFolder {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("DisplayFolder"));
+				this.ToList().ForEach(item => { item.DisplayFolder = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+	}
+  
+	/// <summary>
 ///             Defines a logical view over the Model and is a child of a Model object. It allows hiding Tables, Columns, Measures, and Hierarchies so that end users can look at a smaller subset of the large data model. 
 ///             </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
@@ -11500,6 +12179,7 @@ namespace TabularEditor.TOMWrapper
 
         internal override ITabularObjectCollection GetCollectionForChild(TabularObject child)
         {
+			if (child is Set) return Sets;
 			if (child is Partition) return Partitions;
 			if (child is Column) return Columns;
 			if (child is Hierarchy) return Hierarchies;
@@ -11507,6 +12187,12 @@ namespace TabularEditor.TOMWrapper
             return base.GetCollectionForChild(child);
         }
 
+        /// <summary>
+        /// The collection of Set objects on this Table.
+        /// </summary>
+		[DisplayName("Sets")]
+		[Category("Options"),IntelliSense("The collection of Set objects on the current Table.")][NoMultiselect(),Editor(typeof(SetCollectionEditor),typeof(UITypeEditor))]
+		public SetCollection Sets { get; protected set; }
         /// <summary>
         /// The collection of Partition objects on this Table.
         /// </summary>
@@ -11551,18 +12237,21 @@ namespace TabularEditor.TOMWrapper
 			ExtendedProperties = new ExtendedPropertyCollection(this);
 			
 			// Instantiate child collections:
+			Sets = new SetCollection(this.GetObjectPath() + ".Sets", MetadataObject.Sets, this);
 			Partitions = new PartitionCollection(this.GetObjectPath() + ".Partitions", MetadataObject.Partitions, this);
 			Columns = new ColumnCollection(this.GetObjectPath() + ".Columns", MetadataObject.Columns, this);
 			Hierarchies = new HierarchyCollection(this.GetObjectPath() + ".Hierarchies", MetadataObject.Hierarchies, this);
 			Measures = new MeasureCollection(this.GetObjectPath() + ".Measures", MetadataObject.Measures, this);
 
 			// Populate child collections:
+			Sets.CreateChildrenFromMetadata();
 			Partitions.CreateChildrenFromMetadata();
 			Columns.CreateChildrenFromMetadata();
 			Hierarchies.CreateChildrenFromMetadata();
 			Measures.CreateChildrenFromMetadata();
 
 			// Hook up event handlers on child collections:
+			Sets.CollectionChanged += Children_CollectionChanged;
 			Partitions.CollectionChanged += Children_CollectionChanged;
 			Columns.CollectionChanged += Children_CollectionChanged;
 			Hierarchies.CollectionChanged += Children_CollectionChanged;
@@ -11571,6 +12260,7 @@ namespace TabularEditor.TOMWrapper
 
 
 		internal override void Reinit() {
+			Sets.Reinit();
 			Partitions.Reinit();
 			Columns.Reinit();
 			Hierarchies.Reinit();
