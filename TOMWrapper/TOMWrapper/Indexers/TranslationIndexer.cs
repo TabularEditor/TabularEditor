@@ -11,6 +11,7 @@ using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper.Undo;
 using System.Text;
 using System.IO;
+using json::Newtonsoft.Json.Linq;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -33,6 +34,14 @@ namespace TabularEditor.TOMWrapper
                 writer.WriteEndObject();
             }
             return sb.ToString();
+        }
+
+        public void FromJson(string json)
+        {
+            var translations = JObject.Parse(json);
+
+            foreach (var translation in translations.Properties())
+                this[translation.Name] = translation.Value.ToString();
         }
 
         bool IExpandableIndexer.EnableMultiLine => false;

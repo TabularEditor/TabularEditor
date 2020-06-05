@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TabularEditor.TOMWrapper;
 
@@ -9,15 +10,47 @@ namespace TabularEditor.Scripting
 {
     public static class PropertySerializer
     {
-        private static string GetTsvForObject(TabularObject obj, string properties)
+        private class TsvProperty
         {
-            var props = properties.Split(',');
+            public TsvProperty(string name, string index, bool isIndexer)
+            {
+                Name = name;
+                Index = index;
+                IsIndexer = isIndexer;
+            }
+
+            public string Name { get; }
+            public string Index { get; }
+            public bool IsIndexer { get; }
+        }
+
+        private static TsvProperty[] ParseTsvProperties(string properties)
+        {
+            var regex = new Regex("(.*)\\[([^()]*)\\]$", RegexOptions.IgnoreCase);
+
+            var tsvProperties = properties.Split(',').Select((p) =>
+            {
+                var match = regex.Match(p.Trim());
+
+                return new TsvProperty
+                (
+                    name: match.Success ? match.Groups[1].Value : p,
+                    index: match.Success ? match.Groups[2].Value : null,
+                    isIndexer: match.Success
+                );
+            });
+            
+            return tsvProperties.ToArray();
+        }
+
+        private static string GetTsvForObject(TabularObject obj, TsvProperty[] properties)
+        {
             var sb = new StringBuilder();
             sb.Append(obj.GetObjectPath());
-            foreach (var prop in props)
+            foreach (var prop in properties)
             {
                 sb.Append('\t');
-                var pInfo = obj.GetType().GetProperty(prop);
+                var pInfo = obj.GetType().GetProperty(prop.Name);
                 if (pInfo != null)
                 {
                     var pValue = pInfo.GetValue(obj);
@@ -26,6 +59,8 @@ namespace TabularEditor.Scripting
                     else if (pValue is TabularObject)
                         // Improve GetObjectPath to always provide unique path, and create corresponding method to resolve a path
                         sb.Append((pValue as TabularObject).GetObjectPath());
+                    else if (pValue is TranslationIndexer translation)
+                        sb.Append(prop.IsIndexer ? translation[prop.Index] : translation.ToJson());
                     else
                         sb.Append(pValue.ToString().Replace("\n", "\\n").Replace("\t", "\\t"));
                 }
@@ -37,6 +72,7 @@ namespace TabularEditor.Scripting
         // TODO: Provide more formatting options
         public static string ExportProperties(this IEnumerable<ITabularNamedObject> objects, string properties = "Name,Description,SourceColumn,Expression,FormatString,DataType")
         {
+            var tsvProperties = ParseTsvProperties(properties);
             var sb = new StringBuilder();
             sb.Append("Object\t");
             sb.Append(properties.Replace(",", "\t"));
@@ -65,7 +101,7 @@ namespace TabularEditor.Scripting
                 }
 
                 sb.Append("\n");
-                sb.Append(GetTsvForObject(obj, properties));
+                sb.Append(GetTsvForObject(obj, tsvProperties));
             }
             return sb.ToString();
         }
@@ -74,28 +110,39 @@ namespace TabularEditor.Scripting
         public static void ImportProperties(string tsvData)
         {
             var rows = tsvData.Split('\n');
-            var properties = string.Join(",", rows[0].Replace("\r","").Split('\t').Skip(1).ToArray());
+            var properties = string.Join(",", rows[0].Replace("\r", "").Split('\t').Skip(1).ToArray());
+            var tsvProperties = ParseTsvProperties(properties);
             foreach (var row in rows.Skip(1))
             {
                 if (!string.IsNullOrWhiteSpace(row))
-                    AssignTsvToObject(row, properties);
+                    AssignTsvToObject(row, tsvProperties);
             }
         }
 
-        private static void AssignTsvToObject(string propertyValues, string properties)
+        private static void AssignTsvToObject(string propertyValues, TsvProperty[] properties)
         {
-            var props = properties.Split(',');
             var values = propertyValues.Replace("\r","").Split('\t').Select(v => v.Replace("\\n", "\n").Replace("\\t", "\t")).ToArray();
             var obj = ResolveObjectPath(values[0]);
             if (obj == null) return;
 
-            for (int i = 0; i < props.Length; i++) {
-                var pInfo = obj.GetType().GetProperty(props[i]);
+            for (int i = 0; i < properties.Length; i++)
+            {
+                var pInfo = obj.GetType().GetProperty(properties[i].Name);
+                var pValue = values[i + 1]; // This is shifted by 1 since the first column is the Object path
+
+                if (typeof(TranslationIndexer).IsAssignableFrom(pInfo.PropertyType))
+                {
+                    var translation = (TranslationIndexer)pInfo.GetValue(obj);                    
+                    if (properties[i].IsIndexer)
+                        translation[properties[i].Index] = pValue;
+                    else
+                        translation.FromJson(pValue);
+                    continue;
+                }
 
                 // Consider only properties that exist, and have a public setter:
                 if (pInfo == null || !pInfo.CanWrite || !pInfo.GetSetMethod(true).IsPublic) continue;
 
-                var pValue = values[i + 1]; // This is shifted by 1 since the first column is the Object path
                 if (typeof(TabularObject).IsAssignableFrom(pInfo.PropertyType))
                 {
                     // Object references need to be resolved:
@@ -200,5 +247,7 @@ namespace TabularEditor.Scripting
                     return null;
             }
         }
+
+
     }
 }
