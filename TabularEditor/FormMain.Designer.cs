@@ -79,6 +79,7 @@
             this.actSearchParent = new TabularEditor.UI.UIModelAction();
             this.actSearchChild = new TabularEditor.UI.UIModelAction();
             this.actOpenBPA = new TabularEditor.UI.UIModelAction();
+            this.actDeleteCustomAction = new Crad.Windows.Forms.Actions.Action();
             this.toolStripButton8 = new System.Windows.Forms.ToolStripButton();
             this.fileToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.fromDBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -149,6 +150,7 @@
             this.longFormatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.shortFormatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.formatShortLineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnDeleteCustomAction = new System.Windows.Forms.ToolStripButton();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -322,6 +324,7 @@
             actionsMain.Actions.Add(this.actSearchParent);
             actionsMain.Actions.Add(this.actSearchChild);
             actionsMain.Actions.Add(this.actOpenBPA);
+            actionsMain.Actions.Add(this.actDeleteCustomAction);
             actionsMain.ContainerControl = this;
             // 
             // actToggleDisplayFolders
@@ -722,6 +725,13 @@
             this.actOpenBPA.ShortcutKeys = System.Windows.Forms.Keys.F10;
             this.actOpenBPA.Text = "&Best Practice Analyzer...";
             this.actOpenBPA.Execute += new System.EventHandler(this.actOpenBPA_Execute);
+            // 
+            // actDeleteCustomAction
+            // 
+            this.actDeleteCustomAction.Image = global::TabularEditor.Resources.Delete;
+            this.actDeleteCustomAction.Text = "Delete current Custom Action";
+            this.actDeleteCustomAction.Execute += new System.EventHandler(this.actDeleteCustomAction_Execute);
+            this.actDeleteCustomAction.Update += new System.EventHandler(this.actDeleteCustomAction_Update);
             // 
             // toolStripButton8
             // 
@@ -1137,7 +1147,7 @@
             // btnSaveCustomAction
             // 
             actionsMain.SetAction(this.btnSaveCustomAction, this.actSaveCustomAction);
-            this.btnSaveCustomAction.AutoToolTip = false;
+            this.btnSaveCustomAction.AutoToolTip = true;
             this.btnSaveCustomAction.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnSaveCustomAction.Image = global::TabularEditor.Resources.add;
             this.btnSaveCustomAction.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -1566,6 +1576,18 @@
             this.formatShortLineToolStripMenuItem.Size = new System.Drawing.Size(245, 22);
             this.formatShortLineToolStripMenuItem.Text = "Short line";
             this.formatShortLineToolStripMenuItem.ToolTipText = "Format (short line) using www.daxformatter.com (Ctrl+F6)";
+            // 
+            // btnDeleteCustomAction
+            // 
+            actionsMain.SetAction(this.btnDeleteCustomAction, this.actDeleteCustomAction);
+            this.btnDeleteCustomAction.AutoToolTip = true;
+            this.btnDeleteCustomAction.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnDeleteCustomAction.Image = global::TabularEditor.Resources.Delete;
+            this.btnDeleteCustomAction.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnDeleteCustomAction.Name = "btnDeleteCustomAction";
+            this.btnDeleteCustomAction.Size = new System.Drawing.Size(23, 22);
+            this.btnDeleteCustomAction.Text = "Delete current Custom Action";
+            this.btnDeleteCustomAction.ToolTipText = "Delete current Custom Action";
             // 
             // preferencesToolStripMenuItem
             // 
@@ -2075,6 +2097,7 @@
             this.toolStripSeparator11,
             this.samplesMenu,
             this.btnSaveCustomAction,
+            this.btnDeleteCustomAction,
             this.toolStripSeparator10,
             this.toolStripButton11,
             this.toolStripButton12,
@@ -2856,6 +2879,8 @@
         private System.Windows.Forms.ToolStripMenuItem shortFormatToolStripMenuItem;
         private UI.UIModelAction actExpressionFormatDAXShort;
         private System.Windows.Forms.ToolStripMenuItem formatShortLineToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton btnDeleteCustomAction;
+        private Crad.Windows.Forms.Actions.Action actDeleteCustomAction;
     }
 }
 
