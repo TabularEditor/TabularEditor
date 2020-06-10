@@ -62,19 +62,24 @@ namespace TabularEditor.Scripting
                     else if (prop.IsIndexer)
                     {
                         if (pValue is TranslationIndexer translations)
-                            sb.Append(translations.Keys.Contains(prop.Index) ? translations[prop.Index] : string.Empty);
+                            sb.Append(translations.Keys.Contains(prop.Index) ? ToString(translations[prop.Index]) : string.Empty);
                         else if (pValue is PerspectiveIndexer perspectives)
-                            sb.Append(perspectives.Keys.Contains(prop.Index) ? Convert.ToString(perspectives[prop.Index]) : string.Empty);
+                            sb.Append(perspectives.Keys.Contains(prop.Index) ? ToString(perspectives[prop.Index]) : string.Empty);
                         if (pValue is ExtendedPropertyCollection extendedProperties)
-                            sb.Append(extendedProperties.Keys.Contains(prop.Index) ? extendedProperties[prop.Index] : string.Empty);
+                            sb.Append(extendedProperties.Keys.Contains(prop.Index) ? ToString(extendedProperties[prop.Index]) : string.Empty);
                         else if (pValue is AnnotationCollection annotations)
-                            sb.Append(annotations.Keys.Contains(prop.Index) ? annotations[prop.Index] : string.Empty);
+                            sb.Append(annotations.Keys.Contains(prop.Index) ? ToString(annotations[prop.Index]) : string.Empty);
                     }
                     else
-                        sb.Append(pValue.ToString().Replace("\n", "\\n").Replace("\t", "\\t"));
+                        sb.Append(ToString(pValue));
                 }
             }
             return sb.ToString();
+
+            string ToString(object value)
+            {
+                return Convert.ToString(value).Replace("\n", "\\n").Replace("\t", "\\t");
+            }
         }
 
         [ScriptMethod]
