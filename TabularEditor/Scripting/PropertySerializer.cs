@@ -78,7 +78,7 @@ namespace TabularEditor.Scripting
 
             string ToString(object value)
             {
-                return Convert.ToString(value).Replace("\n", "\\n").Replace("\t", "\\t");
+                return Convert.ToString(value).Replace("\n", "\\n").Replace("\r", "\\r").Replace("\t", "\\t");
             }
         }
 
@@ -135,7 +135,7 @@ namespace TabularEditor.Scripting
 
         private static void AssignTsvToObject(string propertyValues, TsvProperty[] properties)
         {
-            var values = propertyValues.Replace("\r","").Split('\t').Select(v => v.Replace("\\n", "\n").Replace("\\t", "\t")).ToArray();
+            var values = propertyValues.Replace("\r", "").Split('\t').Select(v => v.Replace("\\n", "\n").Replace("\\r", "\r").Replace("\\t", "\t")).ToArray();
             var obj = ResolveObjectPath(values[0]);
             if (obj == null) return;
 
