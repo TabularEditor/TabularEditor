@@ -59,8 +59,17 @@ namespace TabularEditor.Scripting
                     else if (pValue is TabularObject)
                         // Improve GetObjectPath to always provide unique path, and create corresponding method to resolve a path
                         sb.Append((pValue as TabularObject).GetObjectPath());
-                    else if (pValue is TranslationIndexer translation)
-                        sb.Append(prop.IsIndexer ? translation[prop.Index] : translation.ToJson());
+                    else if (prop.IsIndexer)
+                    {
+                        if (pValue is TranslationIndexer translations)
+                            sb.Append(translations.Keys.Contains(prop.Index) ? translations[prop.Index] : string.Empty);
+                        else if (pValue is PerspectiveIndexer perspectives)
+                            sb.Append(perspectives.Keys.Contains(prop.Index) ? Convert.ToString(perspectives[prop.Index]) : string.Empty);
+                        if (pValue is ExtendedPropertyCollection extendedProperties)
+                            sb.Append(extendedProperties.Keys.Contains(prop.Index) ? extendedProperties[prop.Index] : string.Empty);
+                        else if (pValue is AnnotationCollection annotations)
+                            sb.Append(annotations.Keys.Contains(prop.Index) ? annotations[prop.Index] : string.Empty);
+                    }
                     else
                         sb.Append(pValue.ToString().Replace("\n", "\\n").Replace("\t", "\\t"));
                 }
@@ -130,13 +139,31 @@ namespace TabularEditor.Scripting
                 var pInfo = obj.GetType().GetProperty(properties[i].Name);
                 var pValue = values[i + 1]; // This is shifted by 1 since the first column is the Object path
 
-                if (typeof(TranslationIndexer).IsAssignableFrom(pInfo.PropertyType))
+                if (properties[i].IsIndexer)
                 {
-                    var translation = (TranslationIndexer)pInfo.GetValue(obj);                    
-                    if (properties[i].IsIndexer)
-                        translation[properties[i].Index] = pValue;
-                    else
-                        translation.FromJson(pValue);
+                    if (typeof(TranslationIndexer).IsAssignableFrom(pInfo.PropertyType))
+                    {
+                        var translations = (TranslationIndexer)pInfo.GetValue(obj);
+                        if (translations.Keys.Contains(properties[i].Index))
+                            translations[properties[i].Index] = pValue;
+                    }
+                    else if (typeof(PerspectiveIndexer).IsAssignableFrom(pInfo.PropertyType))
+                    {
+                        var perspectives = (PerspectiveIndexer)pInfo.GetValue(obj);
+                        if (perspectives.Keys.Contains(properties[i].Index))
+                            perspectives[properties[i].Index] = Convert.ToBoolean(pValue);
+                    }
+                    else if (typeof(ExtendedPropertyCollection).IsAssignableFrom(pInfo.PropertyType))
+                    {
+                        var extendedProperties = (ExtendedPropertyCollection)pInfo.GetValue(obj);
+                        extendedProperties[properties[i].Index] = pValue;
+                    }
+                    else if (typeof(AnnotationCollection).IsAssignableFrom(pInfo.PropertyType))
+                    {
+                        var annotations = (AnnotationCollection)pInfo.GetValue(obj);
+                        annotations[properties[i].Index] = pValue;
+                    }
+
                     continue;
                 }
 
