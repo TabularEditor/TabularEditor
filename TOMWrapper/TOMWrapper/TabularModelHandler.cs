@@ -44,7 +44,7 @@ namespace TabularEditor.TOMWrapper
 
         public Model Model { get; private set; }
         public TOM.Database Database { get { return database; } }
-
+        public string ConnectionInfo => IsConnected && database?.Server != null ? database.Server.Name : "(No connection)";
         public int CompatibilityLevel { get; private set; }
         public bool PbiMode => Database?.CompatibilityMode == Microsoft.AnalysisServices.CompatibilityMode.PowerBI;
 

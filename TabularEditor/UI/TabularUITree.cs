@@ -500,7 +500,7 @@ namespace TabularEditor
         }
 
         private HashSet<ITabularObject> structureChangedItems = new HashSet<ITabularObject>();
-        private int nodeChangedItemsCount = 0;
+        private HashSet<ITabularObject> changedNodes = new HashSet<ITabularObject>();
 
         public override void OnStructureChanged(ITabularNamedObject obj = null)
         {
@@ -558,7 +558,7 @@ namespace TabularEditor
         {
             if (UpdateLocks > 0)
             {
-                nodeChangedItemsCount++;
+                changedNodes.Add(nodeItem);
                 return;
             }
             else
@@ -602,10 +602,10 @@ namespace TabularEditor
                 structureChangedItems.Clear();
             }
 
-            if (nodeChangedItemsCount > 0)
+            if (changedNodes.Count > 0)
             {
-                OnNodesChanged();
-                nodeChangedItemsCount = 0;
+                OnNodesChanged(changedNodes);
+                changedNodes.Clear();
             }
         }
     }

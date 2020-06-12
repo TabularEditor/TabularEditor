@@ -49,7 +49,9 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Power BI Template file (.pbit)
         /// </summary>
-        Pbit
+        Pbit,
+
+        UnsavedFile
     }
 
     public class TabularModelHandlerSettings

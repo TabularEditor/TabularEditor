@@ -10,6 +10,16 @@ namespace TabularEditor.TOMWrapper
 {
     public static class TabularObjectHelper
     {
+        public static TOM.MetadataObject GetMetadataObject(this ITabularObject obj)
+        {
+            return (obj as TabularObject)?.MetadataObject;
+        }
+
+        public static TOM.Model GetMetadataObject(this Model model)
+        {
+            return model.MetadataObject;
+        }
+
         public static string GetName(this ITabularObject obj)
         {
             if ((obj is ITabularNamedObject)) return (obj as ITabularNamedObject)?.Name;
@@ -156,6 +166,13 @@ namespace TabularEditor.TOMWrapper
             if (objType == ObjectType.Culture) return "Translation" + (plural ? "s" : "");
 
             var result = SplitCamelCase(objType.ToString());
+            return plural ? result.Pluralize() : result;
+        }
+
+        public static string GetTypeName<T>(bool plural = false) where T : TabularObject
+        {
+            var result = SplitCamelCase(typeof(T).Name.ToString());
+            if (result == "Culture") result = "Translation";
             return plural ? result.Pluralize() : result;
         }
 
