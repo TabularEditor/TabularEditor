@@ -86,7 +86,7 @@ namespace TabularEditor.TOMWrapper
             catch (Exception ex)
             {
                 Status = "Save to DB error!";
-                throw ex;
+                throw new SaveDatabaseException(ex.Message, ex);
             }
             finally
             {
@@ -152,6 +152,14 @@ namespace TabularEditor.TOMWrapper
             {
                 ctcbackup.Restore(Model);
             }*/
+        }
+    }
+
+    public class SaveDatabaseException : Exception
+    {
+        public SaveDatabaseException(string message, Exception innerException) : base(message, innerException)
+        {
+
         }
     }
 

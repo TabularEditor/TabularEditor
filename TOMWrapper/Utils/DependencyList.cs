@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -44,7 +45,7 @@ namespace TabularEditor.TOMWrapper.Utils
 
         public IDaxObject GetObjectAt(DAXProperty property, int charIndex)
         {
-            foreach(var kvp in InternalDictionary)
+            foreach (var kvp in InternalDictionary)
             {
                 if (kvp.Value.Any(r => r.property == property && charIndex >= r.from && charIndex <= r.to))
                     return kvp.Key;
@@ -91,7 +92,7 @@ namespace TabularEditor.TOMWrapper.Utils
                 var pos = new int[DaxPropertyCount];
                 var sbs = new StringBuilder[DaxPropertyCount];
 
-                foreach(var prop in Parent.GetDAXProperties())  // #2 Initialize a string buider and the original DAX for every DAX property on Parent
+                foreach (var prop in Parent.GetDAXProperties())  // #2 Initialize a string buider and the original DAX for every DAX property on Parent
                 {
                     var dax = Parent.GetDAX(prop);
                     if (dax != null)
@@ -197,7 +198,7 @@ namespace TabularEditor.TOMWrapper.Utils
         {
             return InternalList.GetEnumerator();
         }
-        
+
         public IEnumerator<KeyValuePair<IDaxObject, List<ObjectReference>>> GetEnumerator()
         {
             return ((IReadOnlyDictionary<IDaxObject, List<ObjectReference>>)InternalDictionary).GetEnumerator();
@@ -242,7 +243,7 @@ namespace TabularEditor.TOMWrapper.Utils
         {
             get
             {
-                foreach(var obj in Deep())
+                foreach (var obj in Deep())
                 {
                     if ((obj as IHideableObject)?.IsHidden == false && (obj as ITabularTableObject)?.Table?.IsHidden == false) return true;
                     if ((obj as KPI)?.Measure?.IsHidden == false && (obj as KPI)?.Measure?.Table?.IsHidden == false) return true;
@@ -273,6 +274,23 @@ namespace TabularEditor.TOMWrapper.Utils
         FormatStringExpression = 6
     }
 
+    public static class DAXPropertyHelper
+    {
+        public static string GetDescription(this DAXProperty property)
+        {
+            switch (property)
+            {
+                case DAXProperty.DetailRowsExpression: return "Detail Rows Expression";
+                case DAXProperty.DefaultDetailRowsExpression: return "Default Detail Rows Expression";
+                case DAXProperty.TargetExpression: return "KPI Target Expression";
+                case DAXProperty.StatusExpression: return "KPI Status Expression";
+                case DAXProperty.TrendExpression: return "KPI Trend Expression";
+                case DAXProperty.FormatStringExpression: return "Format String Expression";
+                default: return "Expression";
+            }
+        }
+    }
+
     public struct ObjectReference
     {
         public DAXProperty property;
@@ -290,6 +308,4 @@ namespace TabularEditor.TOMWrapper.Utils
             if (!dependsOn.ReferencedBy.Contains(target)) dependsOn.ReferencedBy.Add(target);
         }
     }
-
-
 }

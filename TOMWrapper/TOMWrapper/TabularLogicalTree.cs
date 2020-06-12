@@ -28,7 +28,7 @@ namespace TabularEditor.TOMWrapper
     {
         public static int GetDisplayOrder(this ITabularNamedObject item)
         {
-            switch(item.ObjectType)
+            switch (item.ObjectType)
             {
                 case ObjectType.PartitionCollection: return 0;
                 case ObjectType.Folder: return 1;
@@ -47,7 +47,7 @@ namespace TabularEditor.TOMWrapper
     /// about their physical relations which are inherited from the Tabular Object Model directly (i.e.,
     /// a measure belongs to a table, etc.).
     /// </summary>
-    public abstract class TabularTree: INotifyPropertyChanged
+    public abstract class TabularTree : INotifyPropertyChanged
     {
         #region Properties
         public LogicalTreeOptions Options
@@ -120,10 +120,10 @@ namespace TabularEditor.TOMWrapper
             {
                 RebuildFolderCacheForTable(table);
             }
-            
+
         }
 
-        private HashSet<Table> folderCachesToBeRebuilt = new HashSet<Table>();
+        protected HashSet<Table> folderCachesToBeRebuilt { get; private set; } = new HashSet<Table>();
 
         public void RebuildFolderCacheForTable(Table table)
         {
@@ -140,8 +140,6 @@ namespace TabularEditor.TOMWrapper
             {
                 foreach (var m in table.Measures) BuildFolderForObject(m);
                 foreach (var h in table.Hierarchies) BuildFolderForObject(h);
-                /*if (table is CalculationGroupTable cgt) BuildFolderForObject(cgt.NameField);
-                else*/
                 foreach (var c in table.Columns) BuildFolderForObject(c);
             }
 
@@ -184,10 +182,9 @@ namespace TabularEditor.TOMWrapper
         }
 
         #endregion        
-
         public event EventHandler UpdateComplete;
 
-        protected Model Model => Handler.Model;
+        public Model Model => Handler.Model;
         protected TabularModelHandler Handler { get; private set; }
 
         public TabularTree(TabularModelHandler handler)
@@ -212,18 +209,18 @@ namespace TabularEditor.TOMWrapper
             if (UpdateLocks == 0)
             {
                 // Rebuilt folder caches if necessary:
-                if(folderCachesToBeRebuilt.Count > 0 && Options.HasFlag(LogicalTreeOptions.DisplayFolders))
+                if (folderCachesToBeRebuilt.Count > 0 && Options.HasFlag(LogicalTreeOptions.DisplayFolders))
                 {
                     foreach (var table in folderCachesToBeRebuilt) RebuildFolderCacheForTable(table);
                     folderCachesToBeRebuilt.Clear();
                 }
 
-                if(Handler != null && Handler.UndoManager.BatchSize > 0) UpdateComplete?.Invoke(this, new EventArgs());
+                if (Handler != null && Handler.UndoManager.BatchSize > 0) UpdateComplete?.Invoke(this, new EventArgs());
             }
-        }        
+        }
 
         #region Handling Display Folders
-            
+
         /// <summary>
         /// Updates the DisplayFolder property of all tabular objects within one table. Objects residing
         /// in subfolders to the updated path, will also be updated.
@@ -235,7 +232,7 @@ namespace TabularEditor.TOMWrapper
         public void ModifyDisplayFolder(Table table, string oldPath, string newPath, Culture culture)
         {
             var tab = table;
-            foreach(var c in tab.GetChildren().OfType<IFolderObject>())
+            foreach (var c in tab.GetChildren().OfType<IFolderObject>())
             {
                 var currentPath = c.GetDisplayFolder(culture) + "\\";
                 if (currentPath.StartsWith(oldPath + "\\", StringComparison.InvariantCultureIgnoreCase))
@@ -260,11 +257,11 @@ namespace TabularEditor.TOMWrapper
             });
         }*/
 
-        
+
         #endregion
 
         #region ITreeModel implementation
-        
+
         private IEnumerable<ITabularNamedObject> GetChildrenForTable(Table table)
         {
             IEnumerable<ITabularNamedObject> items;
@@ -277,7 +274,7 @@ namespace TabularEditor.TOMWrapper
             {
                 yield return cg.CalculationItems;
             }
-            
+
             if (Options.HasFlag(LogicalTreeOptions.DisplayFolders))
             {
                 var rootFolder = Folder.CreateFolder(table, "");
@@ -303,11 +300,11 @@ namespace TabularEditor.TOMWrapper
         {
             IEnumerable<ITabularNamedObject> result = Enumerable.Empty<ITabularNamedObject>();
 
-            if(tabularObject is LogicalGroup group)
+            if (tabularObject is LogicalGroup group)
             {
                 result = group.GetChildren().Where(o => VisibleInTree(o));
             }
-            else if(tabularObject is Model)
+            else if (tabularObject is Model)
             {
                 // If all object types should be shown, simply let the Model.GetChildren() method
                 // return the objects needed:
@@ -318,7 +315,7 @@ namespace TabularEditor.TOMWrapper
                 // Otherwise, only show tables:
                 else result = Model.Tables.Where(t => VisibleInTree(t));
             }
-            else if(tabularObject is Table table)
+            else if (tabularObject is Table table)
             {
                 // Handles sorting internally:
                 return GetChildrenForTable(table);
@@ -336,12 +333,12 @@ namespace TabularEditor.TOMWrapper
             else if (tabularObject is CalculationItemCollection calcItems)
             {
                 // Always show in Ordinal order before name/metadata order (otherwise, drag/drop will be funky):
-                if(Options.HasFlag(LogicalTreeOptions.OrderByName))
+                if (Options.HasFlag(LogicalTreeOptions.OrderByName))
                     return calcItems.OrderBy(i => i.Ordinal).ThenBy(i => i.Name);
                 else
                     return calcItems.OrderBy(i => i.Ordinal).ThenBy(i => i.MetadataIndex);
             }
-            else if(tabularObject is ITabularObjectContainer objContainer)
+            else if (tabularObject is ITabularObjectContainer objContainer)
             {
                 // All other types:
                 result = objContainer.GetChildren();
@@ -360,7 +357,8 @@ namespace TabularEditor.TOMWrapper
             if ((tabularObject is IHideableObject) && (tabularObject as IHideableObject).IsHidden && !Options.HasFlag(LogicalTreeOptions.ShowHidden)) return false;
 
             // Empty folders are never shown:
-            if (tabularObject is Folder) {
+            if (tabularObject is Folder)
+            {
                 if ((tabularObject as Folder).GetChildren().All(c => !VisibleInTree(c))) return false;
             }
 
@@ -393,7 +391,7 @@ namespace TabularEditor.TOMWrapper
             }*/
 
             // Type dependent display:
-            switch(tabularObject.ObjectType)
+            switch (tabularObject.ObjectType)
             {
                 case ObjectType.Column:
                     return (Options.HasFlag(LogicalTreeOptions.Columns));
@@ -432,7 +430,8 @@ namespace TabularEditor.TOMWrapper
         internal void ClearFolderErrors()
         {
             if (Model == null) return;
-            foreach (var t in Model.Tables) {
+            foreach (var t in Model.Tables)
+            {
                 foreach (var f in t.FolderCache.Values) f.ClearError();
             }
         }
@@ -441,7 +440,7 @@ namespace TabularEditor.TOMWrapper
             var cache = folder.Table.FolderCache;
             if (!string.IsNullOrEmpty(oldPath)) cache.Remove(oldPath);
 
-            if(cache.ContainsKey(folder.Path))
+            if (cache.ContainsKey(folder.Path))
             {
                 cache[folder.Path] = folder;
             }
@@ -465,7 +464,7 @@ namespace TabularEditor.TOMWrapper
         public void OnNodesInserted(ITabularObject parent, IEnumerable<ITabularObject> children)
         {
             var table = parent as Table;
-            if(table != null && Options.HasFlag(LogicalTreeOptions.DisplayFolders))
+            if (table != null && Options.HasFlag(LogicalTreeOptions.DisplayFolders))
             {
                 foreach (var child in children.OfType<IFolderObject>())
                     Folder.CreateFolder(table, child.DisplayFolder).Children.Add(child);
@@ -473,7 +472,7 @@ namespace TabularEditor.TOMWrapper
             OnNodesInserted(parent, children.ToArray());
         }
 
-        public virtual void OnNodesChanged() { }
+        public virtual void OnNodesChanged(IEnumerable<ITabularObject> changedItems) { }
 
         /// <summary>
         /// Call this method to signal to the TreeView that a node needs repaint, typically
