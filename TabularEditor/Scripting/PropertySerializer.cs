@@ -10,40 +10,98 @@ namespace TabularEditor.Scripting
 {
     public static class PropertySerializer
     {
-        private class TsvProperty
+        private static readonly HashSet<ObjectType> SerializableObjectTypes = new HashSet<ObjectType>
         {
-            public TsvProperty(string name, string index, bool isIndexer)
+            ObjectType.Table,
+            ObjectType.Partition,
+            ObjectType.DataSource,
+            ObjectType.Expression,
+            ObjectType.Column,
+            ObjectType.Role,
+            ObjectType.Model,
+            ObjectType.Hierarchy,
+            ObjectType.Level,
+            ObjectType.Measure,
+            ObjectType.KPI,
+            ObjectType.Relationship,
+            ObjectType.Perspective,
+        };
+
+        private class Property
+        {
+            public Property(string name, string key, bool isIndexer)
             {
                 Name = name;
-                Index = index;
+                Key = key;
                 IsIndexer = isIndexer;
             }
 
             public string Name { get; }
-            public string Index { get; }
+            public string Key { get; }
             public bool IsIndexer { get; }
         }
 
-        private static TsvProperty[] ParseTsvProperties(string properties)
+        private static Property[] ParseProperties(string header)
         {
             var regex = new Regex("(.*)\\[([^()]*)\\]$", RegexOptions.IgnoreCase);
 
-            var tsvProperties = properties.Split(',').Select((p) =>
-            {
-                var match = regex.Match(p.Trim());
+            var properties = header.Split(',').Where((p) => !string.IsNullOrWhiteSpace(p))
+                .Select((p) =>
+                {
+                    var match = regex.Match(p.Trim());
 
-                return new TsvProperty
-                (
-                    name: match.Success ? match.Groups[1].Value : p,
-                    index: match.Success ? match.Groups[2].Value : null,
-                    isIndexer: match.Success
-                );
-            });
-            
-            return tsvProperties.ToArray();
+                    return new Property
+                    (
+                        name: match.Success ? match.Groups[1].Value : p.Trim(),
+                        key: match.Success ? match.Groups[2].Value : null,
+                        isIndexer: match.Success
+                    );
+                });
+
+            return properties.ToArray();
         }
 
-        private static string GetTsvForObject(TabularObject obj, TsvProperty[] properties)
+        private static Property[] ExpandProperties(Property[] properties, IEnumerable<TabularObject> objects)
+        {
+            var expandedProperties = new List<Property>();
+
+            foreach (var property in properties)
+            {
+                if (property.IsIndexer)
+                {
+                    expandedProperties.Add(property);
+                }
+                else
+                {
+                    var expandedKeys = new List<string>();
+                    
+                    foreach (var tabularObject in objects)
+                    {
+                        var value = tabularObject.GetType().GetProperty(property.Name)?.GetValue(tabularObject);
+                        if (value != null)
+                        {
+                            if (value is TranslationIndexer translations)
+                                expandedKeys.AddRange(translations.Keys);
+                            else if (value is PerspectiveIndexer perspectives)
+                                expandedKeys.AddRange(perspectives.Keys);
+                            else if (value is ExtendedPropertyCollection extendedProperties)
+                                expandedKeys.AddRange(extendedProperties.Keys);
+                            else if (value is AnnotationCollection annotations)
+                                expandedKeys.AddRange(annotations.Keys);
+                        }
+                    }
+
+                    if (expandedKeys.Any())
+                        expandedProperties.AddRange(expandedKeys.Distinct().Select((k) => new Property(property.Name, key: k, isIndexer: true)));
+                    else
+                        expandedProperties.Add(property);
+                }
+            }
+
+            return expandedProperties.ToArray();
+        }
+
+        private static string GetTsvForObject(TabularObject obj, Property[] properties)
         {
             var sb = new StringBuilder();
             sb.Append(obj.GetObjectPath());
@@ -62,13 +120,13 @@ namespace TabularEditor.Scripting
                     else if (prop.IsIndexer)
                     {
                         if (pValue is TranslationIndexer translations)
-                            sb.Append(translations.Keys.Contains(prop.Index) ? ToString(translations[prop.Index]) : string.Empty);
+                            sb.Append(translations.Keys.Contains(prop.Key) ? ToString(translations[prop.Key]) : string.Empty);
                         else if (pValue is PerspectiveIndexer perspectives)
-                            sb.Append(perspectives.Keys.Contains(prop.Index) ? ToString(perspectives[prop.Index]) : string.Empty);
+                            sb.Append(perspectives.Keys.Contains(prop.Key) ? ToString(perspectives[prop.Key]) : string.Empty);
                         if (pValue is ExtendedPropertyCollection extendedProperties)
-                            sb.Append(extendedProperties.Keys.Contains(prop.Index) ? ToString(extendedProperties[prop.Index]) : string.Empty);
+                            sb.Append(extendedProperties.Keys.Contains(prop.Key) ? ToString(extendedProperties[prop.Key]) : string.Empty);
                         else if (pValue is AnnotationCollection annotations)
-                            sb.Append(annotations.Keys.Contains(prop.Index) ? ToString(annotations[prop.Index]) : string.Empty);
+                            sb.Append(annotations.Keys.Contains(prop.Key) ? ToString(annotations[prop.Key]) : string.Empty);
                     }
                     else
                         sb.Append(ToString(pValue));
@@ -86,37 +144,30 @@ namespace TabularEditor.Scripting
         // TODO: Provide more formatting options
         public static string ExportProperties(this IEnumerable<ITabularNamedObject> objects, string properties = "Name,Description,SourceColumn,Expression,FormatString,DataType")
         {
-            var tsvProperties = ParseTsvProperties(properties);
+            // Only certain types of objects can have their properties exported
+            var serializableObjects = objects.OfType<TabularObject>().Where((o) => SerializableObjectTypes.Contains(o.ObjectType)).ToArray();
+
+            var parsedProperties = ParseProperties(properties);
+            var expandedProperties = ExpandProperties(parsedProperties, serializableObjects);
+            
             var sb = new StringBuilder();
             sb.Append("Object\t");
-            sb.Append(properties.Replace(",", "\t"));
-            foreach (var obj in objects.OfType<TabularObject>())
-            {
-                // Only certain types of objects can have their properties exported:
-                // TODO: Change this to a HashSet lookup
-                switch(obj.ObjectType)
-                {
-                    case ObjectType.Table:
-                    case ObjectType.Partition:
-                    case ObjectType.DataSource:
-                    case ObjectType.Expression:
-                    case ObjectType.Column:
-                    case ObjectType.Role:
-                    case ObjectType.Model:
-                    case ObjectType.Hierarchy:
-                    case ObjectType.Level:
-                    case ObjectType.Measure:
-                    case ObjectType.KPI:
-                    case ObjectType.Relationship:
-                    case ObjectType.Perspective:
-                        break;
-                    default:
-                        continue;
-                }
 
-                sb.Append("\n");
-                sb.Append(GetTsvForObject(obj, tsvProperties));
+            foreach (var property in expandedProperties)
+            {
+                sb.Append(property.Name);
+                if (property.IsIndexer) 
+                    sb.Append($"[{ property.Key }]");
+                if (property != expandedProperties.Last())
+                    sb.Append("\t");
             }
+
+            foreach (var obj in serializableObjects)
+            {
+                sb.Append("\n");
+                sb.Append(GetTsvForObject(obj, expandedProperties));
+            }
+
             return sb.ToString();
         }
 
@@ -124,16 +175,16 @@ namespace TabularEditor.Scripting
         public static void ImportProperties(string tsvData)
         {
             var rows = tsvData.Split('\n');
-            var properties = string.Join(",", rows[0].Replace("\r", "").Split('\t').Skip(1).ToArray());
-            var tsvProperties = ParseTsvProperties(properties);
+            var header = string.Join(",", rows[0].Replace("\r", "").Split('\t').Skip(1).ToArray());
+            var properties = ParseProperties(header);
             foreach (var row in rows.Skip(1))
             {
                 if (!string.IsNullOrWhiteSpace(row))
-                    AssignTsvToObject(row, tsvProperties);
+                    AssignTsvToObject(row, properties);
             }
         }
 
-        private static void AssignTsvToObject(string propertyValues, TsvProperty[] properties)
+        private static void AssignTsvToObject(string propertyValues, Property[] properties)
         {
             var values = propertyValues.Replace("\r", "").Split('\t').Select(v => v.Replace("\\n", "\n").Replace("\\r", "\r").Replace("\\t", "\t")).ToArray();
             var obj = ResolveObjectPath(values[0]);
@@ -142,6 +193,9 @@ namespace TabularEditor.Scripting
             for (int i = 0; i < properties.Length; i++)
             {
                 var pInfo = obj.GetType().GetProperty(properties[i].Name);
+                if (pInfo == null)
+                    continue;
+
                 var pValue = values[i + 1]; // This is shifted by 1 since the first column is the Object path
 
                 if (properties[i].IsIndexer)
@@ -149,31 +203,31 @@ namespace TabularEditor.Scripting
                     if (typeof(TranslationIndexer).IsAssignableFrom(pInfo.PropertyType))
                     {
                         var translations = (TranslationIndexer)pInfo.GetValue(obj);
-                        if (translations.Keys.Contains(properties[i].Index))
-                            translations[properties[i].Index] = pValue;
+                        if (translations.Keys.Contains(properties[i].Key))
+                            translations[properties[i].Key] = pValue;
                     }
                     else if (typeof(PerspectiveIndexer).IsAssignableFrom(pInfo.PropertyType))
                     {
                         var perspectives = (PerspectiveIndexer)pInfo.GetValue(obj);
-                        if (perspectives.Keys.Contains(properties[i].Index))
-                            perspectives[properties[i].Index] = Convert.ToBoolean(pValue);
+                        if (perspectives.Keys.Contains(properties[i].Key))
+                            perspectives[properties[i].Key] = Convert.ToBoolean(pValue);
                     }
-                    else if (typeof(ExtendedPropertyCollection).IsAssignableFrom(pInfo.PropertyType))
+                    else if (typeof(ExtendedPropertyCollection).IsAssignableFrom(pInfo.PropertyType) && !string.Empty.Equals(pValue))
                     {
                         var extendedProperties = (ExtendedPropertyCollection)pInfo.GetValue(obj);
-                        extendedProperties[properties[i].Index] = pValue;
+                        extendedProperties[properties[i].Key] = pValue;
                     }
-                    else if (typeof(AnnotationCollection).IsAssignableFrom(pInfo.PropertyType))
+                    else if (typeof(AnnotationCollection).IsAssignableFrom(pInfo.PropertyType) && !string.Empty.Equals(pValue))
                     {
                         var annotations = (AnnotationCollection)pInfo.GetValue(obj);
-                        annotations[properties[i].Index] = pValue;
+                        annotations[properties[i].Key] = pValue;
                     }
 
                     continue;
                 }
 
                 // Consider only properties that exist, and have a public setter:
-                if (pInfo == null || !pInfo.CanWrite || !pInfo.GetSetMethod(true).IsPublic) continue;
+                if (!pInfo.CanWrite || !pInfo.GetSetMethod(true).IsPublic) continue;
 
                 if (typeof(TabularObject).IsAssignableFrom(pInfo.PropertyType))
                 {
