@@ -36,14 +36,6 @@ namespace TabularEditor.TOMWrapper
             return sb.ToString();
         }
 
-        public void FromJson(string json)
-        {
-            var translations = JObject.Parse(json);
-
-            foreach (var translation in translations.Properties())
-                this[translation.Name] = translation.Value.ToString();
-        }
-
         bool IExpandableIndexer.EnableMultiLine => false;
 
         public Dictionary<string, string> Copy()
