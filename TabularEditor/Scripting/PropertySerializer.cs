@@ -82,6 +82,7 @@ namespace TabularEditor.Scripting
                 else
                 {
                     var expandedKeys = new List<string>();
+                    var isIndexer = false;
 
                     foreach (var tabularObject in objects)
                     {
@@ -89,17 +90,29 @@ namespace TabularEditor.Scripting
                         if (value != null)
                         {
                             if (value is TranslationIndexer translations)
+                            {
+                                isIndexer = true;
                                 expandedKeys.AddRange(translations.Keys);
+                            }
                             else if (value is PerspectiveIndexer perspectives)
+                            {
+                                isIndexer = true;
                                 expandedKeys.AddRange(perspectives.Keys);
+                            }
                             else if (value is ExtendedPropertyCollection extendedProperties)
+                            {
+                                isIndexer = true;
                                 expandedKeys.AddRange(extendedProperties.Keys);
+                            }
                             else if (value is AnnotationCollection annotations)
+                            {
+                                isIndexer = true;
                                 expandedKeys.AddRange(annotations.Keys);
+                            }
                         }
                     }
 
-                    if (expandedKeys.Any())
+                    if (isIndexer)
                         expandedProperties.AddRange(expandedKeys.Distinct().Select((k) => new Property(property.Name, key: k, isIndexer: true)));
                     else
                         expandedProperties.Add(property);
