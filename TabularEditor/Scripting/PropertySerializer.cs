@@ -39,6 +39,14 @@ namespace TabularEditor.Scripting
             public string Name { get; }
             public string Key { get; }
             public bool IsIndexer { get; }
+
+            public override string ToString()
+            {
+                if (IsIndexer)
+                    return $"{ Name }[{ Key }]";
+
+                return Name;
+            }
         }
 
         private static Property[] ParseProperties(string header)
@@ -74,7 +82,7 @@ namespace TabularEditor.Scripting
                 else
                 {
                     var expandedKeys = new List<string>();
-                    
+
                     foreach (var tabularObject in objects)
                     {
                         var value = tabularObject.GetType().GetProperty(property.Name)?.GetValue(tabularObject);
@@ -152,15 +160,7 @@ namespace TabularEditor.Scripting
             
             var sb = new StringBuilder();
             sb.Append("Object\t");
-
-            foreach (var property in expandedProperties)
-            {
-                sb.Append(property.Name);
-                if (property.IsIndexer) 
-                    sb.Append($"[{ property.Key }]");
-                if (property != expandedProperties.Last())
-                    sb.Append("\t");
-            }
+            sb.Append(string.Join("\t", expandedProperties.Select(Convert.ToString)));
 
             foreach (var obj in serializableObjects)
             {
@@ -209,8 +209,8 @@ namespace TabularEditor.Scripting
                     else if (typeof(PerspectiveIndexer).IsAssignableFrom(pInfo.PropertyType))
                     {
                         var perspectives = (PerspectiveIndexer)pInfo.GetValue(obj);
-                        if (perspectives.Keys.Contains(properties[i].Key))
-                            perspectives[properties[i].Key] = Convert.ToBoolean(pValue);
+                        if (perspectives.Keys.Contains(properties[i].Key))                        
+                                perspectives[properties[i].Key] = Convert.ToBoolean(pValue);
                     }
                     else if (typeof(ExtendedPropertyCollection).IsAssignableFrom(pInfo.PropertyType) && !string.Empty.Equals(pValue))
                     {
