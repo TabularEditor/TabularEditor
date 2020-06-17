@@ -157,7 +157,7 @@ namespace TabularEditor.Scripting
 
             var parsedProperties = ParseProperties(properties);
             var expandedProperties = ExpandProperties(parsedProperties, serializableObjects);
-            
+
             var sb = new StringBuilder();
             sb.Append("Object\t");
             sb.Append(string.Join("\t", expandedProperties.Select(Convert.ToString)));
@@ -204,13 +204,13 @@ namespace TabularEditor.Scripting
                     {
                         var translations = (TranslationIndexer)pInfo.GetValue(obj);
                         if (translations.Keys.Contains(properties[i].Key))
-                            translations[properties[i].Key] = pValue;
+                            translations[properties[i].Key] = string.Empty.Equals(pValue) ? null : pValue;
                     }
                     else if (typeof(PerspectiveIndexer).IsAssignableFrom(pInfo.PropertyType))
                     {
                         var perspectives = (PerspectiveIndexer)pInfo.GetValue(obj);
-                        if (perspectives.Keys.Contains(properties[i].Key))                        
-                                perspectives[properties[i].Key] = Convert.ToBoolean(pValue);
+                        if (perspectives.Keys.Contains(properties[i].Key))
+                            perspectives[properties[i].Key] = Convert.ToBoolean(pValue);
                     }
                     else if (typeof(ExtendedPropertyCollection).IsAssignableFrom(pInfo.PropertyType) && !string.Empty.Equals(pValue))
                     {
@@ -293,7 +293,7 @@ namespace TabularEditor.Scripting
                 }
             }
             parts = partsFixed.ToArray();
-            
+
             var model = TabularModelHandler.Singleton.Model;
             if (model == null || parts.Length == 0) return null;
             if (parts.Length == 1 && parts[0] == "model") return model;
