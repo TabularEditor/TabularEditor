@@ -20,7 +20,7 @@ namespace TabularEditor
     {
         public UIController UI;
 
-        private string CurrentCustomAction;
+        private CustomActionJson CurrentCustomAction;
 
         public static FormMain Singleton;
 
@@ -102,13 +102,17 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             if (File.Exists(ScriptEngine.CustomActionsJsonPath))
             {
                 custActions = CustomActionsJson.LoadFromJson(ScriptEngine.CustomActionsJsonPath);
-                foreach (var act in custActions.Actions)
+                foreach (var action in custActions.Actions)
                 {
-                    customActionsToolStripMenuItem.DropDownItems.Add(act.Name, null, (s, e) =>
-                    {
-                        CurrentCustomAction = act.Name;
-                        txtAdvanced.Text = act.Execute;
-                    });
+                    var item = customActionsToolStripMenuItem.DropDownItems.Add(action.Name);
+                    item.ToolTipText = action.Tooltip;
+                    item.AutoToolTip = true;
+                    item.Tag = action;
+                    item.Click += (s, e) =>
+                    {                        
+                        var clickAction = CurrentCustomAction = (CustomActionJson)(s as ToolStripItem).Tag;                        
+                        txtAdvanced.Text = clickAction.Execute;
+                    };
                 }
             }
 
@@ -494,10 +498,11 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         {
             // TODO: Move this somewhere else
             using (var form = new SaveCustomActionForm())
-            {
-                form.Context = UI.Selection.Context;
-                form.txtName.Text = CurrentCustomAction;
-
+            {   
+                form.txtName.Text = CurrentCustomAction?.Name;
+                form.txtTooltip.Text = CurrentCustomAction?.Tooltip;
+                form.Context = CurrentCustomAction?.ValidContexts ?? UI.Selection.Context;
+             
                 var res = form.ShowDialog();
 
                 if (res == DialogResult.OK)
@@ -528,11 +533,35 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
                     custActions.Actions = list.ToArray();
                     custActions.SaveToJson(ScriptEngine.CustomActionsJsonPath);
+                    CurrentCustomAction = act;
 
                     ScriptEngine.AddCustomActions(UI.Actions);
                     PopulateCustomActionsDropDown();
                 }
             }
+        }
+
+        private void DeleteCurrentCustomAction()
+        {
+            if (CurrentCustomAction == null)
+                return;
+
+            var dialogResult = MessageBox.Show($"Are you sure you want to delete the custom action [{ CurrentCustomAction.Name }] ?", "Confirm delete action", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (dialogResult != DialogResult.Yes)
+                return;
+
+            if (custActions == null) 
+                custActions = new CustomActionsJson() { Actions = new CustomActionJson[0] };
+
+            custActions.Actions = custActions.Actions.Where(a => !a.Name.Equals(CurrentCustomAction.Name, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+            var toRemove = UI.Actions.OfType<CustomAction>().FirstOrDefault(a => a.BaseName.Equals(CurrentCustomAction.Name, StringComparison.InvariantCultureIgnoreCase));
+            if (toRemove != null) 
+                UI.Actions.Remove(toRemove);
+
+            custActions.SaveToJson(ScriptEngine.CustomActionsJsonPath);
+            CurrentCustomAction = null;
+            
+            PopulateCustomActionsDropDown();
         }
 
         private void actSaveCustomAction_Execute(object sender, EventArgs e)
@@ -544,7 +573,17 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         {
             actSaveCustomAction.Enabled = !string.IsNullOrEmpty(txtAdvanced.Text);
         }
-        
+
+        private void actDeleteCustomAction_Execute(object sender, EventArgs e)
+        {
+            DeleteCurrentCustomAction();
+        }
+
+        private void actDeleteCustomAction_Update(object sender, EventArgs e)
+        {
+            actDeleteCustomAction.Enabled = CurrentCustomAction != null;
+        }
+
 
         PreferencesForm PreferencesForm = new PreferencesForm();
 
