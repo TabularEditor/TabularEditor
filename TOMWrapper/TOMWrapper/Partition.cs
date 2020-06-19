@@ -18,6 +18,7 @@ namespace TabularEditor.TOMWrapper
         internal static void CreateCalculatedTablePartition(CalculatedTable calcTable)
         {
             var tomPartition = new TOM.Partition();
+            tomPartition.Mode = TOM.ModeType.Import;
             tomPartition.Name = calcTable.Name;
             var partition = new Partition(tomPartition);
 
