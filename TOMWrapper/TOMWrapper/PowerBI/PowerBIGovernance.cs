@@ -43,7 +43,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
                 GovernanceMode = PowerBIGovernanceMode.Unrestricted;
         }
 
-        private bool IsPBIDesktop(TOM.Database database)
+        internal bool IsPBIDesktop(TOM.Database database)
         {
             var server = database.Server;
             if (server == null) return false;

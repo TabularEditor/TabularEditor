@@ -47,7 +47,7 @@ namespace TabularEditor.TOMWrapper
         public string ConnectionInfo => IsConnected && database?.Server != null ? database.Server.Name : "(No connection)";
         public int CompatibilityLevel => database.CompatibilityLevel;
         public bool PbiMode => Database?.CompatibilityMode == Microsoft.AnalysisServices.CompatibilityMode.PowerBI;
-
+        public bool IsPbiDesktop => PowerBIGovernance.IsPBIDesktop(database);
         /// <summary>
         /// Applys translation from a JSON string.
         /// </summary>
@@ -114,7 +114,9 @@ namespace TabularEditor.TOMWrapper
         private PowerBiTemplate pbit;
 
         private string serverName;
-        
+
+        private readonly string applicationName = "TabularEditor-" + Guid.NewGuid().ToString("D");
+
         /// <summary>
         /// Connects to a SQL Server 2016 Analysis Services instance and loads a tabular model
         /// from one of the deployed databases on the instance.
@@ -130,7 +132,9 @@ namespace TabularEditor.TOMWrapper
 
             Singleton = this;
             server = new TOM.Server();
-            server.Connect(serverName);
+
+            var connectionString = TabularConnection.GetConnectionString(serverName, applicationName);
+            server.Connect(connectionString);
 
             if (databaseName == null)
             {
@@ -158,7 +162,15 @@ namespace TabularEditor.TOMWrapper
             CheckErrors();
         }
 
-        internal static TabularModelHandler Singleton { get; private set; }
+        private static TabularModelHandler _singleton;
+        internal static TabularModelHandler Singleton
+        {
+            get => _singleton;
+            set
+            {
+                _singleton = value;
+            }
+        }
 
         public bool IsConnected { get { return Version != -1; } }
         public long Version { get; private set; } = -1;
