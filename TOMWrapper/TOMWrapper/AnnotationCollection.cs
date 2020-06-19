@@ -41,7 +41,10 @@ namespace TabularEditor.TOMWrapper
 
             set
             {
-                Parent.SetAnnotation(index, value.ToString());
+                if (value == null)
+                    Parent.RemoveAnnotation(index);
+                else
+                    Parent.SetAnnotation(index, value.ToString());
             }
         }
 
