@@ -468,8 +468,15 @@ namespace TabularEditor.UI
             FilterEnabled = !string.IsNullOrEmpty(filter);
             if (UI.FormMain._colTable.IsVisible) UI.FormMain._colTable.IsVisible = false;
             TreeModel.Filter = filter;
+            if(TreeModel.Filter == null)
+            {
+                FilterEnabled = false;
+                UI.FormMain.actToggleFilter.Checked = false;
+            }
             TreeModel.FilterMode = FilterMode;
             TreeModel.OnStructureChanged();
+            if (FilterEnabled && TreeModel.FilterMode == FilterMode.Child)
+                UI.TreeView.ExpandAll();
             
             /*
             // Regular name filtering:

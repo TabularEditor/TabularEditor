@@ -8,6 +8,7 @@ using System.Linq.Dynamic;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using TabularEditor.BestPracticeAnalyzer;
 using TabularEditor.TOMWrapper;
 using TabularEditor.TreeViewAdvExtension;
@@ -101,6 +102,7 @@ namespace TabularEditor
             foreach (var lev in Model.AllLevels) yield return lev;
             foreach (var trans in Model.Cultures) yield return trans;
             foreach (var persp in Model.Perspectives) yield return persp;
+            foreach (var ci in Model.AllCalculationItems) yield return ci;
         }
 
         private bool SatisfiesFilterCriteria(ITabularNamedObject obj)
@@ -147,7 +149,7 @@ namespace TabularEditor
 
                 case FilterMode.Child:
                     // Parent objects are shown if they contain visible children:
-                    if (obj.ObjectType == ObjectType.Folder || obj.ObjectType == ObjectType.Table || obj.ObjectType == ObjectType.Group)
+                    if (obj.ObjectType == ObjectType.Folder || obj.ObjectType == ObjectType.Table || obj.ObjectType == ObjectType.CalculationGroupTable || obj.ObjectType == ObjectType.Group || obj.ObjectType == ObjectType.CalculationItemCollection)
                         return GetChildren(obj as ITabularObjectContainer).Any(child => VisibleInTreeLocal(child));
                     
                     // Relationships are shown if a column at either end satisfies the criteria:
@@ -184,7 +186,16 @@ namespace TabularEditor
                     _useLinqSearch = _filter.StartsWith(":");
                     _linqFilter = _useLinqSearch ? _filter.Substring(1) : null;
                     _useWildcardSearch = !_useLinqSearch && (_filter.Contains('*') || _filter.Contains('?'));
-                    if (_useLinqSearch) PrepareDynamicLinqLambdas();
+                    if (_useLinqSearch)
+                    {
+                        var valid = PrepareDynamicLinqLambdas();
+                        if(!valid)
+                        {
+                            _filter = null;
+                            _linqFilter = null;
+                            _useLinqSearch = false;
+                        }
+                    }
                 }
                 else
                 {
@@ -227,43 +238,61 @@ namespace TabularEditor
         private Func<CalculatedColumn, bool> LF_CalculatedColumn;
         private Func<CalculatedTableColumn, bool> LF_CalculatedTableColumn;
         private Func<CalculatedTable, bool> LF_CalculatedTable;
+        private Func<CalculationItem, bool> LF_CalculationItem;
         private Func<KPI, bool> LF_KPI;
         private Func<Variation, bool> LF_Variation;
         private Func<NamedExpression, bool> LF_NamedExpression;
         private Func<ModelRole, bool> LF_ModelRole;
 
-        private void PrepareDynamicLinqLambda<T>(ref Func<T, bool> lf)
+        /// <summary>
+        /// Returns false if an error was encountered during parsing
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="lf"></param>
+        /// <returns></returns>
+        private bool PrepareDynamicLinqLambda<T>(ref Func<T, bool> lf)
         {
-                lf = null;
-                try
-                {
-                    lf = System.Linq.Dynamic.DynamicExpression.ParseLambda<T, bool>(_linqFilter).Compile();
-                }
-                catch { }
+            lf = null;
+            try
+            {
+                lf = System.Linq.Dynamic.DynamicExpression.ParseLambda<T, bool>(_linqFilter).Compile();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                lastError = ex.Message;
+                return false;
+            }
         }
-        
 
-        private void PrepareDynamicLinqLambdas()
+        private string lastError;
+
+        private bool PrepareDynamicLinqLambdas()
         {
-            PrepareDynamicLinqLambda(ref LF_Model);
-            PrepareDynamicLinqLambda(ref LF_Table);
-            PrepareDynamicLinqLambda(ref LF_Measure);
-            PrepareDynamicLinqLambda(ref LF_Hierarchy);
-            PrepareDynamicLinqLambda(ref LF_Level);
-            PrepareDynamicLinqLambda(ref LF_Relationship);
-            PrepareDynamicLinqLambda(ref LF_Perspective);
-            PrepareDynamicLinqLambda(ref LF_Culture);
-            PrepareDynamicLinqLambda(ref LF_Partition);
-            PrepareDynamicLinqLambda(ref LF_ProviderDataSource);
-            PrepareDynamicLinqLambda(ref LF_DataColumn);
-            PrepareDynamicLinqLambda(ref LF_CalculatedColumn);
-            PrepareDynamicLinqLambda(ref LF_CalculatedTable);
-            PrepareDynamicLinqLambda(ref LF_CalculatedTableColumn);
-            PrepareDynamicLinqLambda(ref LF_KPI);
-            PrepareDynamicLinqLambda(ref LF_StructuredDataSource);
-            PrepareDynamicLinqLambda(ref LF_Variation);
-            PrepareDynamicLinqLambda(ref LF_NamedExpression);
-            PrepareDynamicLinqLambda(ref LF_ModelRole);
+            var anyValid = PrepareDynamicLinqLambda(ref LF_Model)
+                || PrepareDynamicLinqLambda(ref LF_Table)
+                || PrepareDynamicLinqLambda(ref LF_Measure)
+                || PrepareDynamicLinqLambda(ref LF_Hierarchy)
+                || PrepareDynamicLinqLambda(ref LF_Level)
+                || PrepareDynamicLinqLambda(ref LF_Relationship)
+                || PrepareDynamicLinqLambda(ref LF_Perspective)
+                || PrepareDynamicLinqLambda(ref LF_Culture)
+                || PrepareDynamicLinqLambda(ref LF_Partition)
+                || PrepareDynamicLinqLambda(ref LF_ProviderDataSource)
+                || PrepareDynamicLinqLambda(ref LF_DataColumn)
+                || PrepareDynamicLinqLambda(ref LF_CalculatedColumn)
+                || PrepareDynamicLinqLambda(ref LF_CalculatedTable)
+                || PrepareDynamicLinqLambda(ref LF_CalculatedTableColumn)
+                || PrepareDynamicLinqLambda(ref LF_KPI)
+                || PrepareDynamicLinqLambda(ref LF_StructuredDataSource)
+                || PrepareDynamicLinqLambda(ref LF_Variation)
+                || PrepareDynamicLinqLambda(ref LF_NamedExpression)
+                || PrepareDynamicLinqLambda(ref LF_ModelRole)
+                || PrepareDynamicLinqLambda(ref LF_CalculationItem);
+
+            if (!anyValid) MessageBox.Show("Your filter expression has an error: " + lastError, "Unable to apply filter", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            return anyValid;
         }
 
         private bool SatisfiesLinq(ITabularNamedObject obj)
@@ -295,6 +324,7 @@ namespace TabularEditor
                 case ObjectType.Variation: return LF_Variation == null ? false : LF_Variation(obj as Variation);
                 case ObjectType.Expression: return LF_NamedExpression == null ? false : LF_NamedExpression(obj as NamedExpression);
                 case ObjectType.Role: return LF_ModelRole == null ? false : LF_ModelRole(obj as ModelRole);
+                case ObjectType.CalculationItem: return LF_CalculationItem == null ? false : LF_CalculationItem(obj as CalculationItem);
                 default:
                     return false;
             }
