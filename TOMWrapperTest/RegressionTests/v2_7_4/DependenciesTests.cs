@@ -20,6 +20,7 @@ namespace TOMWrapperTest.RegressionTests.v2_7_4
         ""partitions"": [
           {
             ""name"": ""NewTable"",
+            ""mode"": ""import"",
             ""source"": {
               ""type"": ""calculated""
             }
