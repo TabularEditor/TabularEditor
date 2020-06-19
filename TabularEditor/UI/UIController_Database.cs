@@ -115,13 +115,16 @@ namespace TabularEditor.UI
                 {
                     Handler = new TabularModelHandler(connectionString, databaseName);
 
-                    if (Preferences.Current.AllowUnsupportedPBIFeatures)
+                    if (Handler.IsPbiDesktop)
                     {
-                        MessageBox.Show("Experimental Power BI features is enabled. You can edit any object and property of this Power BI Desktop model, but be aware that many types of changes ARE NOT CURRENTLY SUPPORTED by Microsoft.\n\nKeep a backup of your .pbix file and proceed at your own risk.", "Power BI Desktop Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
-                    else if (Handler.PowerBIGovernance.GovernanceMode == TOMWrapper.PowerBI.PowerBIGovernanceMode.ReadOnly)
-                    {
-                        MessageBox.Show("Editing a Power BI Desktop model that does not use the Enhanced Model Metadata (V3) format is not allowed, unless you enable Experimental Power BI Features under File > Preferences.\n\nTabular Editor will still load the model in read-only mode.", "Power BI Desktop Model Read-only", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        if (Preferences.Current.AllowUnsupportedPBIFeatures)
+                        {
+                            MessageBox.Show("Experimental Power BI features is enabled. You can edit any object and property of this Power BI Desktop model, but be aware that many types of changes ARE NOT CURRENTLY SUPPORTED by Microsoft.\n\nKeep a backup of your .pbix file and proceed at your own risk.", "Power BI Desktop Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                        else if (Handler.PowerBIGovernance.GovernanceMode == TOMWrapper.PowerBI.PowerBIGovernanceMode.ReadOnly)
+                        {
+                            MessageBox.Show("Editing a Power BI Desktop model that does not use the Enhanced Model Metadata (V3) format is not allowed, unless you enable Experimental Power BI Features under File > Preferences.\n\nTabular Editor will still load the model in read-only mode.", "Power BI Desktop Model Read-only", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
                     }
 
                     File_Current = null;
