@@ -183,6 +183,8 @@ namespace TabularEditor.TOMWrapper
             if (obj is ProviderDataSource) return "Data Source (Legacy)";
             if (obj is MPartition p1) return $"Partition (M - {p1.GetMode()})";
             if (obj is Partition p2) return $"Partition (Legacy - {p2.GetMode()})";
+            if (obj is CalculationGroupTable cgt) return $"Calculation Group Table" + (plural ? "s" : "");
+            if (obj is CalculatedTable ct) return $"Calculated Table" + (plural ? "s" : "");
             if (obj is Table t) return $"Table ({t.GetMode()})";
             else return obj.ObjectType.GetTypeName(plural);
         }

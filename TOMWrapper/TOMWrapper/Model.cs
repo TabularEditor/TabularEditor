@@ -155,6 +155,11 @@ namespace TabularEditor.TOMWrapper
         public IEnumerable<Column> AllColumns { get { return Tables.SelectMany(t => t.Columns); } }
 
         /// <summary>
+        /// Iterates all calculation items on all calculation groups of the model.
+        /// </summary>
+        [Browsable(false), IntelliSense("Iterates all calculation items on all calculation groups of the model.")]
+        public IEnumerable<CalculationItem> AllCalculationItems { get { return CalculationGroups.SelectMany(t => t.CalculationItems); } }
+        /// <summary>
         /// Iterates all partitions on all tables of the model.
         /// </summary>
         [Browsable(false), IntelliSense("A collection of every partition across all tables in the model.")]

@@ -191,7 +191,7 @@ namespace TabularEditor.TOMWrapper
 
         [Category("Metadata")]
         [DisplayName("Object Type"),IntelliSense("The type name of this object (\"Folder\", \"Measure\", \"Table\", etc.).")]
-        public string ObjectTypeName { get { return this.GetTypeName(); } }
+        public virtual string ObjectTypeName { get { return this.GetTypeName(); } }
 
         /// <summary>
         /// Creates a TabularObject representing the provided TOM MetadataObject.
