@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.Scripting
@@ -39,7 +40,7 @@ namespace TabularEditor.Scripting
             public string Name { get; }
             public string Key { get; }
             public bool IsIndexer { get; }
-
+            public Type IndexerValueType { get; set; }
             public override string ToString()
             {
                 if (IsIndexer)
@@ -87,28 +88,10 @@ namespace TabularEditor.Scripting
                     foreach (var tabularObject in objects)
                     {
                         var value = tabularObject.GetType().GetProperty(property.Name)?.GetValue(tabularObject);
-                        if (value != null)
+                        if (value is IExpandableIndexer indexerProperty)
                         {
-                            if (value is TranslationIndexer translations)
-                            {
-                                isIndexer = true;
-                                expandedKeys.AddRange(translations.Keys);
-                            }
-                            else if (value is PerspectiveIndexer perspectives)
-                            {
-                                isIndexer = true;
-                                expandedKeys.AddRange(perspectives.Keys);
-                            }
-                            else if (value is ExtendedPropertyCollection extendedProperties)
-                            {
-                                isIndexer = true;
-                                expandedKeys.AddRange(extendedProperties.Keys);
-                            }
-                            else if (value is AnnotationCollection annotations)
-                            {
-                                isIndexer = true;
-                                expandedKeys.AddRange(annotations.Keys);
-                            }
+                            isIndexer = true;
+                            expandedKeys.AddRange(indexerProperty.Keys);
                         }
                     }
 
@@ -138,16 +121,9 @@ namespace TabularEditor.Scripting
                     else if (pValue is TabularObject)
                         // Improve GetObjectPath to always provide unique path, and create corresponding method to resolve a path
                         sb.Append((pValue as TabularObject).GetObjectPath());
-                    else if (prop.IsIndexer)
+                    else if (prop.IsIndexer && pValue is IExpandableIndexer indexer)
                     {
-                        if (pValue is TranslationIndexer translations)
-                            sb.Append(translations.Keys.Contains(prop.Key) ? ToString(translations[prop.Key]) : string.Empty);
-                        else if (pValue is PerspectiveIndexer perspectives)
-                            sb.Append(perspectives.Keys.Contains(prop.Key) ? ToString(perspectives[prop.Key]) : string.Empty);
-                        if (pValue is ExtendedPropertyCollection extendedProperties)
-                            sb.Append(extendedProperties.Keys.Contains(prop.Key) ? ToString(extendedProperties[prop.Key]) : string.Empty);
-                        else if (pValue is AnnotationCollection annotations)
-                            sb.Append(annotations.Keys.Contains(prop.Key) ? ToString(annotations[prop.Key]) : string.Empty);
+                        sb.Append(indexer.Keys.Contains(prop.Key) ? ToString(indexer[prop.Key]) : string.Empty);
                     }
                     else
                         sb.Append(ToString(pValue));
@@ -203,6 +179,7 @@ namespace TabularEditor.Scripting
             var obj = ResolveObjectPath(values[0]);
             if (obj == null) return;
 
+
             for (int i = 0; i < properties.Length; i++)
             {
                 var pInfo = obj.GetType().GetProperty(properties[i].Name);
@@ -210,52 +187,56 @@ namespace TabularEditor.Scripting
                     continue;
 
                 var pValue = values[i + 1]; // This is shifted by 1 since the first column is the Object path
-
-                if (properties[i].IsIndexer)
+                try
                 {
-                    if (typeof(TranslationIndexer).IsAssignableFrom(pInfo.PropertyType))
+                    if (properties[i].IsIndexer)
                     {
-                        var translations = (TranslationIndexer)pInfo.GetValue(obj);
-                        if (translations.Keys.Contains(properties[i].Key))
-                            translations[properties[i].Key] = string.Empty.Equals(pValue) ? null : pValue;
-                    }
-                    else if (typeof(PerspectiveIndexer).IsAssignableFrom(pInfo.PropertyType))
-                    {
-                        var perspectives = (PerspectiveIndexer)pInfo.GetValue(obj);
-                        if (perspectives.Keys.Contains(properties[i].Key))
-                            perspectives[properties[i].Key] = Convert.ToBoolean(pValue);
-                    }
-                    else if (typeof(ExtendedPropertyCollection).IsAssignableFrom(pInfo.PropertyType) && !string.Empty.Equals(pValue))
-                    {
-                        var extendedProperties = (ExtendedPropertyCollection)pInfo.GetValue(obj);
-                        extendedProperties[properties[i].Key] = pValue;
-                    }
-                    else if (typeof(AnnotationCollection).IsAssignableFrom(pInfo.PropertyType) && !string.Empty.Equals(pValue))
-                    {
-                        var annotations = (AnnotationCollection)pInfo.GetValue(obj);
-                        annotations[properties[i].Key] = pValue;
+                        if (typeof(IExpandableIndexer).IsAssignableFrom(pInfo.PropertyType))
+                        {
+                            var indexer = (IExpandableIndexer)pInfo.GetValue(obj);
+                            var indexerValueType = GetIndexerValueType(indexer);
+                            if (indexer.Keys.Contains(properties[i].Key))
+                            {
+                                if (string.Empty.Equals(pValue) && indexerValueType.IsValueType) continue; // Can't set value types to null
+
+                                if (indexerValueType.IsEnum)
+                                {
+                                    indexer[properties[i].Key] = Enum.Parse(indexerValueType, pValue);
+                                }
+                                else
+                                {
+                                    indexer[properties[i].Key] = string.Empty.Equals(pValue) ? null : Convert.ChangeType(pValue, indexerValueType);
+                                }
+                            }
+                        }
+
+                        continue;
                     }
 
-                    continue;
+                    // Consider only properties that exist, and have a public setter:
+                    if (!pInfo.CanWrite || !pInfo.GetSetMethod(true).IsPublic) continue;
+
+                    if (typeof(TabularObject).IsAssignableFrom(pInfo.PropertyType))
+                    {
+                        // Object references need to be resolved:
+                        var pValueObj = ResolveObjectPath(pValue);
+                        pInfo.SetValue(obj, pValueObj);
+                    }
+                    else if (pInfo.PropertyType.IsEnum)
+                    {
+                        // Value is conerted from string to an enum type:
+                        pInfo.SetValue(obj, Enum.Parse(pInfo.PropertyType, pValue));
+                    }
+                    else
+                    {
+                        // Value is converted directly from string to the type of the property:
+                        pInfo.SetValue(obj, Convert.ChangeType(pValue, pInfo.PropertyType));
+                    }
+
                 }
-
-                // Consider only properties that exist, and have a public setter:
-                if (!pInfo.CanWrite || !pInfo.GetSetMethod(true).IsPublic) continue;
-
-                if (typeof(TabularObject).IsAssignableFrom(pInfo.PropertyType))
+                catch (Exception ex)
                 {
-                    // Object references need to be resolved:
-                    var pValueObj = ResolveObjectPath(pValue);
-                    pInfo.SetValue(obj, pValueObj);
-                }
-                else if (pInfo.PropertyType.IsEnum)
-                {
-                    // Value is conerted from string to an enum type:
-                    pInfo.SetValue(obj, Enum.Parse(pInfo.PropertyType, pValue));
-                }
-                else {
-                    // Value is converted directly from string to the type of the property:
-                    pInfo.SetValue(obj, Convert.ChangeType(pValue, pInfo.PropertyType));
+                    throw new Exception($"ImportProperties error: Unable to assign value \"{pValue}\" to property '{properties[i].ToString()}' on {obj.ObjectType.GetTypeName()} \"{obj.GetName()}\": {ex.Message}");
                 }
             }
         }
@@ -347,6 +328,20 @@ namespace TabularEditor.Scripting
             }
         }
 
+        static Type GetIndexerValueType(IExpandableIndexer indexer)
+        {
+            // Most indexers use strings, but a few derive from GenericIndexer, in which case the
+            // 2nd generic type argument dictates the value type of the indexer:
 
+            var indexerType = indexer.GetType();
+            while(indexerType != null && !indexerType.IsGenericType)
+            {
+                indexerType = indexerType.BaseType;
+            }
+            if (indexerType != null && indexerType.Name == "GenericIndexer`2")
+                return indexerType.GenericTypeArguments[1];
+
+            return typeof(string);
+        }
     }
 }
