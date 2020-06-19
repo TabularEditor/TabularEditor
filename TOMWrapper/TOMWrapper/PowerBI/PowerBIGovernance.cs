@@ -99,7 +99,12 @@ namespace TabularEditor.TOMWrapper.PowerBI
                     case Properties.TRANSLATEDDISPLAYFOLDERS:
                     case Properties.TRANSLATEDNAMES:
                     case Properties.ISHIDDEN:
+                    case Properties.DETAILROWSEXPRESSION:
+                    case Properties.DEFAULTDETAILROWSEXPRESSION:
                     case Properties.DESCRIPTION:
+                    case Properties.FORMATSTRING:
+                    case Properties.SUMMARIZEBY:
+                    case Properties.DATACATEGORY:
                     case Properties.DISPLAYFOLDER:
                     case Properties.KPI:
                     case Properties.DISCOURAGEIMPLICITMEASURES:
@@ -195,7 +200,6 @@ namespace TabularEditor.TOMWrapper.PowerBI
         {
             if (GovernanceMode == PowerBIGovernanceMode.Unrestricted) return true;
             
-            // TODO: Only display a subset of properties in restricted / readonly mode:
             switch(property)
             {
                 case Properties.NAME:
@@ -209,6 +213,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
                 case Properties.DEFAULTDETAILROWSEXPRESSION:
                 case Properties.DETAILROWSEXPRESSION:
                 case Properties.DATATYPE:
+                case Properties.DATACATEGORY:
                 case Properties.CALCULATIONGROUPPRECEDENCE:
                 case Properties.ORDINAL:
                 case Properties.FROMCOLUMN:
@@ -220,6 +225,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
                 case Properties.CROSSFILTERINGBEHAVIOR:
                 case Properties.ISACTIVE:
                 case Properties.ISKEY:
+                case Properties.KPI:
                 case Properties.SUMMARIZEBY:
                 case Properties.TRANSLATEDDESCRIPTIONS:
                 case Properties.TRANSLATEDDISPLAYFOLDERS:
