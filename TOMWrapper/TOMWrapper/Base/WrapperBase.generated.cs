@@ -5,11 +5,11 @@ using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 using TabularEditor.PropertyGridUI;
+using TabularEditor.PropertyGridUI.Converters;
 using TabularEditor.TOMWrapper.Undo;
-using TabularEditor.TOMWrapper.Utils;
-using TabularEditor.TOMWrapper.PowerBI;
 using System.Drawing.Design;
 using TOM = Microsoft.AnalysisServices.Tabular;
+
 namespace TabularEditor.TOMWrapper
 {
     internal static partial class Properties
@@ -1991,7 +1991,7 @@ namespace TabularEditor.TOMWrapper
 ///             Specifies the type of data contained in the column so that you can add custom behaviors based on column type. There are 248 possible values. The first ten are Invalid (-1), All (1), Regular (2), Image (3), ImageBMP (4), ImageGIF (5), ImageJPG (6), ImagePNG (7), ImageTIFF (8), ImageURL (9), Id (10). For the rest, please refer to the MS-SSAS-T SQL Server Analysis Services Tabular Protocol documentation on MSDN.
 ///             </summary>
 		[DisplayName("Data Category")]
-		[Category("Options"),Description(@"Specifies the type of data contained in the column so that you can add custom behaviors based on column type. There are 248 possible values. The first ten are Invalid (-1), All (1), Regular (2), Image (3), ImageBMP (4), ImageGIF (5), ImageJPG (6), ImagePNG (7), ImageTIFF (8), ImageURL (9), Id (10). For the rest, please refer to the MS-SSAS-T SQL Server Analysis Services Tabular Protocol documentation on MSDN."),IntelliSense(@"Specifies the type of data contained in the column so that you can add custom behaviors based on column type. There are 248 possible values. The first ten are Invalid (-1), All (1), Regular (2), Image (3), ImageBMP (4), ImageGIF (5), ImageJPG (6), ImagePNG (7), ImageTIFF (8), ImageURL (9), Id (10). For the rest, please refer to the MS-SSAS-T SQL Server Analysis Services Tabular Protocol documentation on MSDN.")]
+		[Category("Options"),Description(@"Specifies the type of data contained in the column so that you can add custom behaviors based on column type. There are 248 possible values. The first ten are Invalid (-1), All (1), Regular (2), Image (3), ImageBMP (4), ImageGIF (5), ImageJPG (6), ImagePNG (7), ImageTIFF (8), ImageURL (9), Id (10). For the rest, please refer to the MS-SSAS-T SQL Server Analysis Services Tabular Protocol documentation on MSDN."),IntelliSense(@"Specifies the type of data contained in the column so that you can add custom behaviors based on column type. There are 248 possible values. The first ten are Invalid (-1), All (1), Regular (2), Image (3), ImageBMP (4), ImageGIF (5), ImageJPG (6), ImagePNG (7), ImageTIFF (8), ImageURL (9), Id (10). For the rest, please refer to the MS-SSAS-T SQL Server Analysis Services Tabular Protocol documentation on MSDN.")][TypeConverter(typeof(ColumnDataCategoryConverter))]
 		public string DataCategory {
 			get {
 			    return MetadataObject.DataCategory;
@@ -11888,7 +11888,7 @@ namespace TabularEditor.TOMWrapper
 ///             Specifies the type of Table so that you can customize application behavior based on the type of data in the table. Allowed values are identical to those of dimension type properties for Multidimensional models. Regular is the default. Other values include Time (2), Geography (3), Organization (4), BillOfMaterials (5), Accounts (6), Customers (7), Products (8), Scenario (9), Quantitativ1e (10), Utility (11), Currency (12), Rates (13), Channel (14) - channel dimension, Promotion (15).
 ///             </summary>
 		[DisplayName("Data Category")]
-		[Category("Options"),Description(@"Specifies the type of Table so that you can customize application behavior based on the type of data in the table. Allowed values are identical to those of dimension type properties for Multidimensional models. Regular is the default. Other values include Time (2), Geography (3), Organization (4), BillOfMaterials (5), Accounts (6), Customers (7), Products (8), Scenario (9), Quantitativ1e (10), Utility (11), Currency (12), Rates (13), Channel (14) - channel dimension, Promotion (15)."),IntelliSense(@"Specifies the type of Table so that you can customize application behavior based on the type of data in the table. Allowed values are identical to those of dimension type properties for Multidimensional models. Regular is the default. Other values include Time (2), Geography (3), Organization (4), BillOfMaterials (5), Accounts (6), Customers (7), Products (8), Scenario (9), Quantitativ1e (10), Utility (11), Currency (12), Rates (13), Channel (14) - channel dimension, Promotion (15).")]
+		[Category("Options"),Description(@"Specifies the type of Table so that you can customize application behavior based on the type of data in the table. Allowed values are identical to those of dimension type properties for Multidimensional models. Regular is the default. Other values include Time (2), Geography (3), Organization (4), BillOfMaterials (5), Accounts (6), Customers (7), Products (8), Scenario (9), Quantitativ1e (10), Utility (11), Currency (12), Rates (13), Channel (14) - channel dimension, Promotion (15)."),IntelliSense(@"Specifies the type of Table so that you can customize application behavior based on the type of data in the table. Allowed values are identical to those of dimension type properties for Multidimensional models. Regular is the default. Other values include Time (2), Geography (3), Organization (4), BillOfMaterials (5), Accounts (6), Customers (7), Products (8), Scenario (9), Quantitativ1e (10), Utility (11), Currency (12), Rates (13), Channel (14) - channel dimension, Promotion (15).")][TypeConverter(typeof(TableDataCategoryConverter))]
 		public string DataCategory {
 			get {
 			    return MetadataObject.DataCategory;

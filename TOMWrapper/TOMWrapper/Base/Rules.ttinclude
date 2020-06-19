@@ -440,6 +440,9 @@ partial class Rules {
 		if(propertyName == "ColumnOrigin") return "[Browsable(false)]";
 		if(propertyName == "IsSimpleMeasure") return "[Browsable(false)]";
 
+		if(propertyName == "DataCategory" && className == "Table") return "[TypeConverter(typeof(TableDataCategoryConverter))]";
+		if(propertyName == "DataCategory" && className.EndsWith("Column")) return "[TypeConverter(typeof(ColumnDataCategoryConverter))]";
+
 		if(propertyName == "Password") return "[PasswordPropertyText(true)]";
 		
 		if(propertyName == "StatusGraphic") return "[TypeConverter(typeof(KPIStatusGraphicConverter))]";

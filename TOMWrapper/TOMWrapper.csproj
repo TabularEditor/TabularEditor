@@ -79,6 +79,8 @@
     <Compile Include="PropertyGridUI\CollectionEditors\SetCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\CalculationItemCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\ColumnSetCollectionEditor.cs" />
+    <Compile Include="PropertyGridUI\Converters\ColumnDataCategoryConverter.cs" />
+    <Compile Include="PropertyGridUI\Converters\TableDataCategoryConverter.cs" />
     <Compile Include="TOMWrapper\CalculationGroupAttribute.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\ExtendedPropertyCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\RoleMemberCollectionEditor.cs" />
