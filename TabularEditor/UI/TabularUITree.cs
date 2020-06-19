@@ -269,26 +269,27 @@ namespace TabularEditor
 
         private bool PrepareDynamicLinqLambdas()
         {
+            // Note, we only use a single '|' as we don't want the expression to short-circuit:
             var anyValid = PrepareDynamicLinqLambda(ref LF_Model)
-                || PrepareDynamicLinqLambda(ref LF_Table)
-                || PrepareDynamicLinqLambda(ref LF_Measure)
-                || PrepareDynamicLinqLambda(ref LF_Hierarchy)
-                || PrepareDynamicLinqLambda(ref LF_Level)
-                || PrepareDynamicLinqLambda(ref LF_Relationship)
-                || PrepareDynamicLinqLambda(ref LF_Perspective)
-                || PrepareDynamicLinqLambda(ref LF_Culture)
-                || PrepareDynamicLinqLambda(ref LF_Partition)
-                || PrepareDynamicLinqLambda(ref LF_ProviderDataSource)
-                || PrepareDynamicLinqLambda(ref LF_DataColumn)
-                || PrepareDynamicLinqLambda(ref LF_CalculatedColumn)
-                || PrepareDynamicLinqLambda(ref LF_CalculatedTable)
-                || PrepareDynamicLinqLambda(ref LF_CalculatedTableColumn)
-                || PrepareDynamicLinqLambda(ref LF_KPI)
-                || PrepareDynamicLinqLambda(ref LF_StructuredDataSource)
-                || PrepareDynamicLinqLambda(ref LF_Variation)
-                || PrepareDynamicLinqLambda(ref LF_NamedExpression)
-                || PrepareDynamicLinqLambda(ref LF_ModelRole)
-                || PrepareDynamicLinqLambda(ref LF_CalculationItem);
+                | PrepareDynamicLinqLambda(ref LF_Table)
+                | PrepareDynamicLinqLambda(ref LF_Measure)
+                | PrepareDynamicLinqLambda(ref LF_Hierarchy)
+                | PrepareDynamicLinqLambda(ref LF_Level)
+                | PrepareDynamicLinqLambda(ref LF_Relationship)
+                | PrepareDynamicLinqLambda(ref LF_Perspective)
+                | PrepareDynamicLinqLambda(ref LF_Culture)
+                | PrepareDynamicLinqLambda(ref LF_Partition)
+                | PrepareDynamicLinqLambda(ref LF_ProviderDataSource)
+                | PrepareDynamicLinqLambda(ref LF_DataColumn)
+                | PrepareDynamicLinqLambda(ref LF_CalculatedColumn)
+                | PrepareDynamicLinqLambda(ref LF_CalculatedTable)
+                | PrepareDynamicLinqLambda(ref LF_CalculatedTableColumn)
+                | PrepareDynamicLinqLambda(ref LF_KPI)
+                | PrepareDynamicLinqLambda(ref LF_StructuredDataSource)
+                | PrepareDynamicLinqLambda(ref LF_Variation)
+                | PrepareDynamicLinqLambda(ref LF_NamedExpression)
+                | PrepareDynamicLinqLambda(ref LF_ModelRole)
+                | PrepareDynamicLinqLambda(ref LF_CalculationItem);
 
             if (!anyValid) MessageBox.Show("Your filter expression has an error: " + lastError, "Unable to apply filter", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
