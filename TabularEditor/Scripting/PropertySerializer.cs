@@ -88,10 +88,19 @@ namespace TabularEditor.Scripting
                     foreach (var tabularObject in objects)
                     {
                         var value = tabularObject.GetType().GetProperty(property.Name)?.GetValue(tabularObject);
+                        if (value == null) continue; // Ignore non-existing properties, as they could exist on other objects in the collection
+
+                        if (value is ITabularObjectCollection)
+                            throw new Exception($"ExportProperties error: Cannot export property {property.Name} on {tabularObject.ObjectType.GetTypeName()} \"{tabularObject.GetName()}\" since it is a collection.");
+
                         if (value is IExpandableIndexer indexerProperty)
                         {
                             isIndexer = true;
                             expandedKeys.AddRange(indexerProperty.Keys);
+                        }
+                        else if (value != null && value.GetType().IsClass && value.GetType() != typeof(string))
+                        {
+                            throw new Exception($"ExportProperties error: Cannot export property {property.Name} on {tabularObject.ObjectType.GetTypeName()} \"{tabularObject.GetName()}\" since it is a complex object.");
                         }
                     }
 
