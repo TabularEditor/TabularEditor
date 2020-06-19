@@ -45,7 +45,7 @@ namespace TabularEditor.TOMWrapper
         public Model Model { get; private set; }
         public TOM.Database Database { get { return database; } }
         public string ConnectionInfo => IsConnected && database?.Server != null ? database.Server.Name : "(No connection)";
-        public int CompatibilityLevel { get; private set; }
+        public int CompatibilityLevel => database.CompatibilityLevel;
         public bool PbiMode => Database?.CompatibilityMode == Microsoft.AnalysisServices.CompatibilityMode.PowerBI;
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace TabularEditor.TOMWrapper
 
             database = new TOM.Database("SemanticModel") { CompatibilityLevel = compatibilityLevel,
                 CompatibilityMode = pbiDatasetModel ? Microsoft.AnalysisServices.CompatibilityMode.PowerBI : Microsoft.AnalysisServices.CompatibilityMode.AnalysisServices };
-            CompatibilityLevel = compatibilityLevel;
+
             database.Model = new TOM.Model();
             if (pbiDatasetModel) database.Model.DefaultPowerBIDataSourceVersion = TOM.PowerBIDataSourceVersion.PowerBI_V3;
 
@@ -141,8 +141,6 @@ namespace TabularEditor.TOMWrapper
             {
                 database = server.Databases.GetByName(databaseName);
             }
-            CompatibilityLevel = database.CompatibilityLevel;
-
             if (CompatibilityLevel < 1200) throw new InvalidOperationException("Only databases with Compatibility Level 1200 or higher can be loaded in Tabular Editor.");
 
             SourceType = ModelSourceType.Database;

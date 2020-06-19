@@ -5,6 +5,7 @@ using Microsoft.AnalysisServices.Tabular;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,28 +27,16 @@ namespace TabularEditor.TOMWrapper
 
         internal Database(Model model, Microsoft.AnalysisServices.Core.Database tomDatabase)
         {
+            Debug.Assert(tomDatabase != null);
             var db = tomDatabase as TOM.Database;
             TOMDatabase = db;
             _model = model;
-            _name = tomDatabase.Name;
-            _id = tomDatabase.ID;
-            _compatibilityLevel = tomDatabase.CompatibilityLevel;
         }
-
-        [Browsable(false)]
-        public bool NameModified => _name != TOMDatabase.Name;
-        [Browsable(false)]
-        public bool IdModified => _id != TOMDatabase.ID;
-        [Browsable(false)]
-        public bool CompatibilityLevelModified => _compatibilityLevel != TOMDatabase.CompatibilityLevel;
 
         public override string ToString()
         {
             return TOMDatabase?.Server == null ? "(Metadata loaded from file)" : ServerName + "." + Name;
         }
-
-        private string _name;
-        private string _id;
 
         public event PropertyChangedEventHandler PropertyChanged;
         public event PropertyChangingEventHandler PropertyChanging;
@@ -82,7 +71,7 @@ namespace TabularEditor.TOMWrapper
         [Description("The name of the deployed database. Changing this has no effect on an already deployed database.")]
         public string Name
         {
-            get { return _name; }
+            get => TOMDatabase.Name;
             set
             {
                 var oldValue = Name;
@@ -92,17 +81,14 @@ namespace TabularEditor.TOMWrapper
                 OnPropertyChanging(Properties.NAME, value, ref undoable, ref cancel);
                 if (cancel) return;
                 if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedNonMetadataObjectAction(this, Properties.NAME, oldValue, value));
-                _name = value;
+                TOMDatabase.Name = value;
                 OnPropertyChanged(Properties.NAME, oldValue, value);
             }
         }
         [Description("The ID of the deployed database. Changing this has no effect on an already deployed database.")]
         public string ID
         {
-            get
-            {
-                return _id;
-            }
+            get => TOMDatabase.ID;
             set
             {
                 var oldValue = ID;
@@ -112,7 +98,7 @@ namespace TabularEditor.TOMWrapper
                 OnPropertyChanging(Properties.ID, value, ref undoable, ref cancel);
                 if (cancel) return;
                 if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedNonMetadataObjectAction(this, Properties.ID, oldValue, value));
-                _id = value;
+                TOMDatabase.ID = value;
                 OnPropertyChanged(Properties.ID, oldValue, value);
             }
         }
@@ -142,15 +128,70 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                return _compatibilityLevel;
+                return TOMDatabase.CompatibilityLevel;
+            }
+            set
+            {
+                var oldValue = CompatibilityLevel;
+                if (oldValue == value) return;
+                bool undoable = true;
+                bool cancel = false;
+                OnPropertyChanging(Properties.COMPATIBILITYLEVEL, value, ref undoable, ref cancel);
+                if (cancel) return;
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedNonMetadataObjectAction(this, Properties.COMPATIBILITYLEVEL, oldValue, value));
+                TOMDatabase.CompatibilityLevel = value;
+                OnPropertyChanged(Properties.COMPATIBILITYLEVEL, oldValue, value);
             }
         }
         [DisplayName("Compatibility Mode")]
-        public string CompatibilityMode
+        public CompatibilityMode CompatibilityMode
         {
-            get
+            get => (CompatibilityMode)TOMDatabase.CompatibilityMode;
+            set
             {
-                return TOMDatabase?.CompatibilityMode.ToString();
+                var oldValue = CompatibilityMode;
+                if (oldValue == value) return;
+                bool undoable = true;
+                bool cancel = false;
+                OnPropertyChanging(Properties.COMPATIBILITYMODE, value, ref undoable, ref cancel);
+                if (cancel) return;
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedNonMetadataObjectAction(this, Properties.COMPATIBILITYMODE, oldValue, value));
+                TOMDatabase.CompatibilityMode = (Microsoft.AnalysisServices.CompatibilityMode)value;
+                OnPropertyChanged(Properties.COMPATIBILITYMODE, oldValue, value);
+            }
+        }
+
+        public string Description
+        {
+            get => TOMDatabase.Description;
+            set
+            {
+                var oldValue = Description;
+                if (oldValue == value) return;
+                bool undoable = true;
+                bool cancel = false;
+                OnPropertyChanging(Properties.DESCRIPTION, value, ref undoable, ref cancel);
+                if (cancel) return;
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedNonMetadataObjectAction(this, Properties.DESCRIPTION, oldValue, value));
+                TOMDatabase.Description = value;
+                OnPropertyChanged(Properties.DESCRIPTION, oldValue, value);
+            }
+        }
+
+        public bool Visible
+        {
+            get => TOMDatabase.Visible;
+            set
+            {
+                var oldValue = Visible;
+                if (oldValue == value) return;
+                bool undoable = true;
+                bool cancel = false;
+                OnPropertyChanging(Properties.VISIBLE, value, ref undoable, ref cancel);
+                if (cancel) return;
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedNonMetadataObjectAction(this, Properties.VISIBLE, oldValue, value));
+                TOMDatabase.Visible = value;
+                OnPropertyChanged(Properties.VISIBLE, oldValue, value);
             }
         }
 
@@ -158,7 +199,15 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                return TOMDatabase?.Version;
+                return TOMDatabase.Version;
+            }
+        }
+
+        public string EstimatedSize
+        {
+            get
+            {
+                return (TOMDatabase.EstimatedSize / 1024.0 / 1024.0).ToString("#,##0.00") + " MB";
             }
         }
 
@@ -229,7 +278,33 @@ namespace TabularEditor.TOMWrapper
 
     internal static partial class Properties
     {
+        public const string COMPATIBILITYMODE = "CompatibilityMode";
         public const string COMPATIBILITYLEVEL = "CompatibilityLevel";
         public const string ID = "Id";
+        public const string VISIBLE = "Visible";
+    }
+
+    //
+    // Summary:
+    //     An enumeration of the compatibility modes supported by the various AnalysisServices
+    //     services.
+    public enum CompatibilityMode
+    {
+        //
+        // Summary:
+        //     Unknown Mode.
+        Unknown = 0,
+        //
+        // Summary:
+        //     Basic AnalysisServices mode - used on SSAS and AAS.
+        AnalysisServices = 1,
+        //
+        // Summary:
+        //     Power BI mode.
+        PowerBI = 2,
+        //
+        // Summary:
+        //     Excel mode.
+        Excel = 4
     }
 }
