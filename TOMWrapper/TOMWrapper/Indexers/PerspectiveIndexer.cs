@@ -115,7 +115,13 @@ namespace TabularEditor.TOMWrapper
         protected override void SetInPerspective(Perspective perspective, bool included)
         {
             var pts = perspective.MetadataObject.PerspectiveTables;
-            if (included && !pts.Contains(Table.Name)) pts.Add(new Microsoft.AnalysisServices.Tabular.PerspectiveTable() { Table = Table.MetadataObject });
+            if (included)
+            {
+                if (!pts.Contains(Table.Name)) pts.Add(new Microsoft.AnalysisServices.Tabular.PerspectiveTable() { Table = Table.MetadataObject });
+                else return; // If TOM already contains a PerspectiveTable then we don't need to do anything.
+            }
+            if (!included && !pts.Contains(Table.Name))
+                return; // If no PerspectiveTable exists in TOM then we're done.
 
             // Including/excluding a table from a perspective, is equivalent to including/excluding all child
             // objects. The PerspectiveTable will be created automatically if needed.
