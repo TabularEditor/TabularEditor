@@ -179,7 +179,7 @@ namespace TabularEditor.UI.Actions
         {
             get
             {
-                return _name(ui == null ? UITreeSelection.Empty : ui.Selection, TabularModelHandler.Singleton.Model);
+                return _name(ui == null ? UITreeSelection.Empty : ui.Selection, TabularModelHandler.Singleton?.Model);
             }
         }
 

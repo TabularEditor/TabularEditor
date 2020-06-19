@@ -560,8 +560,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
             custActions.SaveToJson(ScriptEngine.CustomActionsJsonPath);
             CurrentCustomAction = null;
-
-            ScriptEngine.AddCustomActions(UI.Actions);
+            
             PopulateCustomActionsDropDown();
         }
 
