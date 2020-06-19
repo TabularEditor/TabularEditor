@@ -122,50 +122,47 @@ namespace TabularEditor.UI
                 if (contextFilter != Context.Everywhere && !action.ValidContexts.HasX(contextFilter)) continue;
                 if (contextFilter == Context.Everywhere && !action.ValidContexts.HasX(Selection.Context)) continue;
 
-                if (action is IModelAction && (action as IModelAction).Name.StartsWith("Create New\\")) createNewActions++;
+                if (action is IModelAction act && act.Name.StartsWith("Create New\\")) createNewActions++;
                 availableActions.Add(action);
             }
 
             foreach (var action in availableActions)
             {
-                if (action is IModelAction)
+                if (action is IModelAction ma)
                 {
-                    var act = action as IModelAction;
                     bool enabled;
                     try {
-                        enabled = act.Enabled(null);
+                        enabled = ma.Enabled(null);
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine("Custom action Enabled error: " + ex.Message);
                         enabled = false;
                     }
-                    if (act.HideWhenDisabled && !enabled) continue;
+                    if (ma.HideWhenDisabled && !enabled) continue;
 
-                    var name = act.Name;
+                    var name = ma.Name;
                     if((createNewActions <= 2 || menu == UI.ModelMenu.DropDown) && name.StartsWith("Create New\\"))
                         name = name.Replace("Create New\\", "New ");
 
                     var item = ContextMenu_AddFromAction(name, menu);
                     
-                    if (!string.IsNullOrEmpty(act.ToolTip)) item.ToolTipText = act.ToolTip;
+                    if (!string.IsNullOrEmpty(ma.ToolTip)) item.ToolTipText = ma.ToolTip;
 
-                    if (act.Shortcut != Keys.None) (item as ToolStripMenuItem).ShortcutKeyDisplayString = new KeysConverter().ConvertToString(act.Shortcut);
+                    if (ma.Shortcut != Keys.None) (item as ToolStripMenuItem).ShortcutKeyDisplayString = new KeysConverter().ConvertToString(ma.Shortcut);
 
-                    item.Tag = act;
+                    item.Tag = ma;
                     item.Enabled = enabled;
                     item.Click += ContextMenuItem_Click;
-                    (act as ICustomMenuAction)?.InitMenu(item, Selection.Context);
+                    (ma as ICustomMenuAction)?.InitMenu(item, Selection.Context);
 
-                } else if (action is IModelMultiAction)
+                } else if (action is IModelMultiAction mma)
                 {
-                    var act = action as IModelMultiAction;
-                    if (act.HideWhenDisabled && !act.Enabled(null)) continue;
+                    if (mma.HideWhenDisabled && !mma.Enabled(null)) continue;
 
-                    ContextMenu_AddFromActionDynamic(act.Path, menu, act);
-                } else if (action is Separator)
+                    ContextMenu_AddFromActionDynamic(mma.Path, menu, mma);
+                } else if (action is Separator sep)
                 {
-                    var sep = action as Separator;
                     var item = ContextMenu_AddFromAction(sep.Path.ConcatPath("---"), menu);
                     if (item != null) item.Tag = sep;
                 }
