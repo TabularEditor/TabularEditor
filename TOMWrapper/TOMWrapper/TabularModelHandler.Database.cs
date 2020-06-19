@@ -73,6 +73,7 @@ namespace TabularEditor.TOMWrapper
             {
                 // TODO: Deleting a column with IsKey = true, then undoing, then saving causes an error... Check if this is still the case.
                 database.AddTabularEditorTag();
+                database.Update();
                 database.Model.SaveChanges();
 
                 AttachCalculatedTableMetadata();

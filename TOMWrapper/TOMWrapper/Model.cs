@@ -249,23 +249,38 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Gets the database object of the model.")]
         public Database Database { get; internal set; }
 
+        private void EnableDataAccessOptions()
+        {
+            if (MetadataObject.DataAccessOptions == null)
+                MetadataObject.DataAccessOptions = new TOM.DataAccessOptions();
+        }
+
         [Category("Data Access Options"),DisplayName("Enable Fast Combine")]
         public bool FastCombine {
-            get { return MetadataObject.DataAccessOptions.FastCombine; } 
-            set { SetValue(FastCombine, value, v => MetadataObject.DataAccessOptions.FastCombine = (bool)v, Properties.FASTCOMBINE); }
+            get { return MetadataObject.DataAccessOptions?.FastCombine ?? false; } 
+            set {
+                EnableDataAccessOptions();
+                SetValue(FastCombine, value, v => MetadataObject.DataAccessOptions.FastCombine = (bool)v, Properties.FASTCOMBINE);
+            }
         }
         private bool ShouldSerializeFastCombine() { return false; }
         [Category("Data Access Options"),DisplayName("Enable Legacy Redirects")]
         public bool LegacyRedirects {
-            get { return MetadataObject.DataAccessOptions.LegacyRedirects; } 
-            set { SetValue(LegacyRedirects, value, v => MetadataObject.DataAccessOptions.LegacyRedirects = (bool)v, Properties.LEGACYREDIRECTS); }
+            get { return MetadataObject.DataAccessOptions?.LegacyRedirects ?? false; } 
+            set {
+                EnableDataAccessOptions();
+                SetValue(LegacyRedirects, value, v => MetadataObject.DataAccessOptions.LegacyRedirects = (bool)v, Properties.LEGACYREDIRECTS);
+            }
         }
         private bool ShouldSerializeLegacyRedirects() { return false; }
         [Category("Data Access Options"), DisplayName("Return Error Values As Nulll")]
         public bool ReturnErrorValuesAsNull
         {
-            get { return MetadataObject.DataAccessOptions.ReturnErrorValuesAsNull; }
-            set { SetValue(ReturnErrorValuesAsNull, value, v => MetadataObject.DataAccessOptions.ReturnErrorValuesAsNull = (bool)v, Properties.RETURNERRORVALUESASNULL); }
+            get { return MetadataObject.DataAccessOptions?.ReturnErrorValuesAsNull ?? false; }
+            set {
+                EnableDataAccessOptions();
+                SetValue(ReturnErrorValuesAsNull, value, v => MetadataObject.DataAccessOptions.ReturnErrorValuesAsNull = (bool)v, Properties.RETURNERRORVALUESASNULL);
+            }
         }
         private bool ShouldSerializeReturnErrorValuesAsNull() { return false; }
 
