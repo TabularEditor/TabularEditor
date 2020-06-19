@@ -11,7 +11,6 @@ using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper.Undo;
 using System.Text;
 using System.IO;
-using json::Newtonsoft.Json.Linq;
 
 namespace TabularEditor.TOMWrapper
 {
