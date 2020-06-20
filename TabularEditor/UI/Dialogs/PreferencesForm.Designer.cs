@@ -78,6 +78,7 @@
             this.chkLocalPerspectives = new System.Windows.Forms.CheckBox();
             this.chkLocalRelationships = new System.Windows.Forms.CheckBox();
             this.chkAllowUnsupportedPBIFeatures = new System.Windows.Forms.CheckBox();
+            this.chkChangeDetectionLocalServer = new System.Windows.Forms.CheckBox();
             this.chkCopyIncludeOLS = new System.Windows.Forms.CheckBox();
             this.chkCopyIncludeRLS = new System.Windows.Forms.CheckBox();
             this.chkCopyIncludePerspectives = new System.Windows.Forms.CheckBox();
@@ -283,6 +284,19 @@
             this.toolTip1.SetToolTip(this.chkAllowUnsupportedPBIFeatures, "Checking this, will let you edit all TOM objects and properties when connected to" +
         " a Power BI data model. USE ONLY FOR EXPERIMENTAL PURPOSES.");
             this.chkAllowUnsupportedPBIFeatures.UseVisualStyleBackColor = true;
+            // 
+            // chkChangeDetectionLocalServer
+            // 
+            this.chkChangeDetectionLocalServer.AutoSize = true;
+            this.chkChangeDetectionLocalServer.Location = new System.Drawing.Point(6, 67);
+            this.chkChangeDetectionLocalServer.Name = "chkChangeDetectionLocalServer";
+            this.chkChangeDetectionLocalServer.Size = new System.Drawing.Size(268, 17);
+            this.chkChangeDetectionLocalServer.TabIndex = 0;
+            this.chkChangeDetectionLocalServer.Text = "Detect changes on local AS instance (experimental)";
+            this.toolTip1.SetToolTip(this.chkChangeDetectionLocalServer, "Checking this, will automatically update the Tabular Object Model loaded in Tabular Editor, when" +
+        " changes are made to the connected model from another application. Note that this feature currently only supports local instances of Analysis Services, such as" +
+        " the one running behind Power BI Desktop.");
+            this.chkChangeDetectionLocalServer.UseVisualStyleBackColor = true;
             // 
             // chkCopyIncludeOLS
             // 
@@ -591,6 +605,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox6.Controls.Add(this.chkBackgroundBpa);
             this.groupBox6.Controls.Add(this.chkAllowUnsupportedPBIFeatures);
+            this.groupBox6.Controls.Add(this.chkChangeDetectionLocalServer);
             this.groupBox6.Location = new System.Drawing.Point(6, 6);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(357, 97);
@@ -1081,6 +1096,7 @@
         private System.Windows.Forms.CheckBox chkCopyIncludeTranslations;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.CheckBox chkAllowUnsupportedPBIFeatures;
+        private System.Windows.Forms.CheckBox chkChangeDetectionLocalServer;
         private System.Windows.Forms.TabPage tabCurrentModel;
         private System.Windows.Forms.CheckBox chkPrefixFiles;
         private System.Windows.Forms.GroupBox grpSaveToFolder;

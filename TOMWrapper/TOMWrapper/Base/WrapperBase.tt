@@ -681,7 +681,9 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
         internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.<#= t.Name #>); }
         internal override void TOM_Clear() { TOM_Collection.Clear(); }
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
-        internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+<# if (t.Name != "Column") { #>
+		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+<# } #>
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
 <# if (t.Name != "Measure" && t.Name != "Relationship" && t.Name != "Column") { #>
@@ -698,7 +700,8 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
-				var item = this[i];
+				var metadataObj = TOM_Get(i) as TOM.<#= t.Name #>;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as <#= t.Name #> : CreateFromMetadata(metadataObj);
 				Handler.WrapperLookup.Remove(item.MetadataObject);
 <# if (t.Name == "Column") { #>
 				if(Table.MetadataObject.Columns[i] is TOM.RowNumberColumn) ixOffset++;
@@ -715,26 +718,33 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 			foreach(var item in this) item.ReapplyReferences();
 		}
 
+		private <#= t.Name #> CreateFromMetadata(TOM.<#= t.Name #> obj)
+		{
+<# if (t.Name == "Table") { #>
+            if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.Calculated) return CalculatedTable.CreateFromMetadata(Model, obj);
+			else if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.CalculationGroup) return CalculationGroupTable.CreateFromMetadata(Model, obj);
+            else return Table.CreateFromMetadata(Model, obj);
+<# } else if (t.Name == "Partition") { #>
+			if(obj.SourceType == TOM.PartitionSourceType.M) return MPartition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
+			else return Partition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
+<# } else
+{
+   foreach(var derived in Rules.GetDerivedTypes(t)) { #>
+			if(obj is TOM.<#= derived.Name #> <#= derived.Name.ToLower() #>Obj) return <#= derived.Name #>.CreateFromMetadata(<#= Rules.GetParent(t) #>, <#= derived.Name.ToLower() #>Obj);
+<# }
+} #>		    return null;
+		}
+
 		/// <summary>
 		/// Calling this method will populate the <#= t.Name #>Collection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
 		/// </summary>
 		internal override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in TOM_Collection) {
-<# if (t.Name == "Table") { #>
-                if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.Calculated) CalculatedTable.CreateFromMetadata(Model, obj);
-				else if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.CalculationGroup) CalculationGroupTable.CreateFromMetadata(Model, obj);
-                else Table.CreateFromMetadata(Model, obj);
-<# } else if (t.Name == "Partition") { #>
-				if(obj.SourceType == TOM.PartitionSourceType.M) MPartition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
-				else Partition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
-<# } else
-{
-   foreach(var derived in Rules.GetDerivedTypes(t)) { #>
-				if(obj is TOM.<#= derived.Name #>) <#= derived.Name #>.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj as TOM.<#= derived.Name #>);
-<# }
-} #>		    }
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
 		}
 
 <#      foreach(PropertyInfo p in props) 

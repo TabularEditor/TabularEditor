@@ -143,7 +143,10 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                return Handler.WrapperLookup[TOM_Get(index)] as T;
+                if (Handler.WrapperLookup.TryGetValue(TOM_Get(index), out TabularObject item))
+                    return item as T;
+                else
+                    return null;
             }
         }
         /// <summary>

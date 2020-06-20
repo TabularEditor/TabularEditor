@@ -30,10 +30,23 @@ namespace TabularEditor.TOMWrapper
             { return _settings; }
             set
             {
+                if (_settings != null) _settings.PropertyChanged -= _settings_PropertyChanged;
                 _settings = value;
-                PowerBIGovernance.UpdateGovernanceMode(this);
-                _tree?.OnStructureChanged();
+                if (_settings != null) _settings.PropertyChanged += _settings_PropertyChanged;
+
+                UpdateSettings();
             }
+        }
+
+        private void UpdateSettings()
+        {
+            PowerBIGovernance.UpdateGovernanceMode(this);
+            _tree?.OnStructureChanged();          
+        }
+
+        private void _settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            UpdateSettings();
         }
 
         public UndoManager UndoManager { get; private set; }
@@ -41,6 +54,11 @@ namespace TabularEditor.TOMWrapper
 
         private TOM.Server server = null;
         private TOM.Database database;
+
+        public static void Cleanup()
+        {
+            ExternalChangeTrace.Cleanup();
+        }
 
         public Model Model { get; private set; }
         public TOM.Database Database { get { return database; } }
@@ -116,6 +134,58 @@ namespace TabularEditor.TOMWrapper
         private string serverName;
 
         private readonly string applicationName = "TabularEditor-" + Guid.NewGuid().ToString("D");
+        private readonly ExternalChangeTrace trace;
+
+        public event EventHandler<ExternalChangeEventArgs> OnExternalChange;
+        public event EventHandler<ProgressReportEventArgs> OnProgressReport;
+
+        private void XEventCallback(TOM.TraceEventArgs eventArgs)
+        {
+            switch(eventArgs.EventClass)
+            {
+                case Microsoft.AnalysisServices.TraceEventClass.ProgressReportBegin:
+                case Microsoft.AnalysisServices.TraceEventClass.ProgressReportCurrent:
+                case Microsoft.AnalysisServices.TraceEventClass.ProgressReportEnd:
+                case Microsoft.AnalysisServices.TraceEventClass.ProgressReportError:
+                    OnProgressReport?.Invoke(this, new ProgressReportEventArgs(eventArgs));
+                    break;
+
+                case Microsoft.AnalysisServices.TraceEventClass.CommandEnd:
+                    if (!Settings.ChangeDetectionLocalServers) return;
+
+                    if (skipEvent) break;
+
+                    var ext = new ExternalChangeEventArgs(eventArgs);
+                    if(OnExternalChange != null)
+                    {
+                        skipEvent = true;
+                        OnExternalChange.BeginInvoke(this, ext, EndExternalChangeEvent, ext);
+                    }
+                    break;
+            }
+        }
+
+        private void EndExternalChangeEvent(IAsyncResult result)
+        {
+            var eventArgs = result.AsyncState as ExternalChangeEventArgs;
+            
+            skipEvent = false;
+        }
+
+        private bool skipEvent = false;
+
+        public void RefreshTom()
+        {
+            database.Model.Sync(new TOM.SyncOptions { DiscardLocalChanges = true });
+
+            Tree.BeginUpdate();
+            Model.Reinit();
+            Tree.RebuildFolderCache();
+            Tree.EndUpdate();
+            Tree.OnStructureChanged();
+
+            UndoManager.Clear();
+        }
 
         /// <summary>
         /// Connects to a SQL Server 2016 Analysis Services instance and loads a tabular model
@@ -135,6 +205,8 @@ namespace TabularEditor.TOMWrapper
 
             var connectionString = TabularConnection.GetConnectionString(serverName, applicationName);
             server.Connect(connectionString);
+
+            trace = new ExternalChangeTrace(server, applicationName, XEventCallback);
 
             if (databaseName == null)
             {
@@ -362,7 +434,7 @@ namespace TabularEditor.TOMWrapper
 
         public void Dispose()
         {
-            if(server != null)
+            if (server != null)
             {
                 server.Dispose();
             }
@@ -383,5 +455,57 @@ namespace TabularEditor.TOMWrapper
                 _tree = value;
             }
         }
+    }
+
+    public class ProgressReportEventArgs
+    {
+        public long IntegerData { get; }
+        public string ObjectName { get; }
+        public string ObjectPath { get; }
+        public string ObjectReference { get; }
+
+        public ProgressEventType EventType { get; }
+
+        public ProgressReportEventArgs(TOM.TraceEventArgs xEvent)
+        {
+            switch(xEvent.EventClass)
+            {
+                case Microsoft.AnalysisServices.TraceEventClass.ProgressReportBegin:
+                    EventType = ProgressEventType.Begin;
+                    break;
+                case Microsoft.AnalysisServices.TraceEventClass.ProgressReportCurrent:
+                    EventType = ProgressEventType.Current;
+                    break;
+                case Microsoft.AnalysisServices.TraceEventClass.ProgressReportEnd:
+                    EventType = ProgressEventType.End;
+                    break;
+                case Microsoft.AnalysisServices.TraceEventClass.ProgressReportError:
+                    EventType = ProgressEventType.Error;
+                    break;
+            }
+
+            this.IntegerData = xEvent.IntegerData;
+            this.ObjectName = xEvent.ObjectName;
+            this.ObjectPath = xEvent.ObjectPath;
+            this.ObjectReference = xEvent.ObjectReference;
+        }
+    }
+
+    public class ExternalChangeEventArgs
+    {
+        public string TextData { get; }
+
+        internal ExternalChangeEventArgs(TOM.TraceEventArgs xEvent)
+        {
+            this.TextData = xEvent.TextData;
+        }
+    }
+
+    public enum ProgressEventType
+    {
+        Begin,
+        Current,
+        End,
+        Error
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -54,21 +55,57 @@ namespace TabularEditor.TOMWrapper
         UnsavedFile
     }
 
-    public class TabularModelHandlerSettings
+    public class TabularModelHandlerSettings : INotifyPropertyChanged
     {
+        private bool _changeDetectionLocalServers;
+        private bool _autoFixup;
+        private bool _pBIFeaturesOnly;
+
+        /// <summary>
+        /// Specifies whether an AS trace should be started to monitor the server for changes
+        /// made by other applications.
+        /// </summary>
+        public bool ChangeDetectionLocalServers
+        {
+            get => _changeDetectionLocalServers;
+            set
+            {
+                if (value == _changeDetectionLocalServers) return;
+                _changeDetectionLocalServers = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ChangeDetectionLocalServers"));
+            }
+        }
+
         /// <summary>
         /// Specifies whether object name changes (tables, column, measures) should result in 
         /// automatic DAX expression updates to reflect the changed names. When set to true,
         /// all expressions in the model are parsed, to build a dependency tree.
         /// </summary>
-        public bool AutoFixup { get; set; }
+        public bool AutoFixup {
+            get => _autoFixup;
+            set
+            {
+                if (value == _autoFixup) return;
+                _autoFixup = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AutoFixup"));
+            }
+        }
 
         /// <summary>
         /// If this is set to TRUE, only features supported by Power BI may be browsed/edited
         /// through the TOMWrapper. This is useful for example when a .pbit file has been loaded,
         /// or when connected to a Power BI Desktop instance.
         /// </summary>
-        public bool PBIFeaturesOnly { get; set; }
+        public bool PBIFeaturesOnly
+        {
+            get => _pBIFeaturesOnly;
+            set
+            {
+                if (value == _pBIFeaturesOnly) return;
+                _pBIFeaturesOnly = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("PBIFeaturesOnly"));
+            }
+        }
 
         public static TabularModelHandlerSettings Default
         {
@@ -77,10 +114,13 @@ namespace TabularEditor.TOMWrapper
                 return new TabularModelHandlerSettings
                 {
                     AutoFixup = true,
-                    PBIFeaturesOnly = true
+                    PBIFeaturesOnly = true,
+                    ChangeDetectionLocalServers = true
                 };
             }
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 
 }

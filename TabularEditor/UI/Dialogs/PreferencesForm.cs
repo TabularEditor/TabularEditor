@@ -139,6 +139,7 @@ namespace TabularEditor.UI.Dialogs
             Preferences.Current.CheckForUpdates = chkAutoUpdate.Checked;
             Preferences.Current.FormulaFixup = chkFixup.Checked;
             Preferences.Current.AllowUnsupportedPBIFeatures = chkAllowUnsupportedPBIFeatures.Checked;
+            Preferences.Current.ChangeDetectionOnLocalServers = chkChangeDetectionLocalServer.Checked;
             Preferences.Current.UseSemicolonsAsSeparators = cmbSeparators.SelectedIndex == 1;
             Preferences.Current.BackgroundBpa = chkBackgroundBpa.Checked;
             Preferences.Current.AnnotateDeploymentMetadata = chkAnnotateDeploymentMetadata.Checked;
@@ -199,6 +200,7 @@ namespace TabularEditor.UI.Dialogs
             chkFixup.Checked = Preferences.Current.FormulaFixup;
             cmbSeparators.SelectedIndex = Preferences.Current.UseSemicolonsAsSeparators ? 1 : 0;
             chkAllowUnsupportedPBIFeatures.Checked = Preferences.Current.AllowUnsupportedPBIFeatures;
+            chkChangeDetectionLocalServer.Checked = Preferences.Current.ChangeDetectionOnLocalServers;
             chkBackgroundBpa.Checked = Preferences.Current.BackgroundBpa;
 
             chkCopyIncludeTranslations.Checked = Preferences.Current.Copy_IncludeTranslations;

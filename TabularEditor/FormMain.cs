@@ -230,11 +230,17 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 if (e.Cancel) return;
             }
 
+            SaveTreeViewColumnPreferences();
+        }
+
+        private void SaveTreeViewColumnPreferences()
+        {
             foreach (var column in tvModel.Columns)
             {
                 // Persist column widths:
                 var cp = Preferences.Current.View_ColumnPreferences.FirstOrDefault(c => c.Name == column.Header);
-                if (cp == null) {
+                if (cp == null)
+                {
                     cp = new ColumnPreferences { Name = column.Header, Visible = true };
                     Preferences.Current.View_ColumnPreferences.Add(cp);
                 }
@@ -243,7 +249,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             Preferences.Current.Save();
         }
 
-    private void actViewOptions_Execute(object sender, EventArgs e)
+        private void actViewOptions_Execute(object sender, EventArgs e)
         {
             UI.SetDisplayOptions(
                 actToggleHidden.Checked,
@@ -649,6 +655,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void bestPracticeAnalyzerToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            throw new Exception("Lol");
             BPAForm.ShowBPA();
         }
 

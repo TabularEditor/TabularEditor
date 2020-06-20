@@ -31,6 +31,7 @@ namespace TabularEditor.UIServices
         public bool UseSemicolonsAsSeparators = false;
         public bool AllowUnsupportedPBIFeatures = false;
         public bool BackgroundBpa = true;
+        public bool ChangeDetectionOnLocalServers = true;
         public string BackupLocation = string.Empty;
         public bool AnnotateDeploymentMetadata = false;
 
@@ -217,7 +218,8 @@ namespace TabularEditor.UIServices
         {
             return new TOMWrapper.TabularModelHandlerSettings {
                 AutoFixup = value.FormulaFixup,
-                PBIFeaturesOnly = !value.AllowUnsupportedPBIFeatures
+                PBIFeaturesOnly = !value.AllowUnsupportedPBIFeatures,
+                ChangeDetectionLocalServers = value.ChangeDetectionOnLocalServers
             };
         }
 
