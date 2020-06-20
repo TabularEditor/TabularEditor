@@ -1008,7 +1008,7 @@ namespace TabularEditor.TOMWrapper
         internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.Variation); }
         internal override void TOM_Clear() { TOM_Collection.Clear(); }
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
-        internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
@@ -1020,7 +1020,8 @@ namespace TabularEditor.TOMWrapper
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
-				var item = this[i];
+				var metadataObj = TOM_Get(i) as TOM.Variation;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as Variation : CreateFromMetadata(metadataObj);
 				Handler.WrapperLookup.Remove(item.MetadataObject);
 				item.MetadataObject = Column.MetadataObject.Variations[i + ixOffset] as TOM.Variation;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
@@ -1034,15 +1035,22 @@ namespace TabularEditor.TOMWrapper
 			foreach(var item in this) item.ReapplyReferences();
 		}
 
+		private Variation CreateFromMetadata(TOM.Variation obj)
+		{
+			if(obj is TOM.Variation variationObj) return Variation.CreateFromMetadata(Column, variationObj);
+		    return null;
+		}
+
 		/// <summary>
 		/// Calling this method will populate the VariationCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
 		/// </summary>
 		internal override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in TOM_Collection) {
-				if(obj is TOM.Variation) Variation.CreateFromMetadata(Column, obj as TOM.Variation);
-		    }
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
 		}
 
 		/// <summary>
@@ -2661,13 +2669,13 @@ namespace TabularEditor.TOMWrapper
         internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.Column); }
         internal override void TOM_Clear() { TOM_Collection.Clear(); }
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
-        internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
-				var item = this[i];
+				var metadataObj = TOM_Get(i) as TOM.Column;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as Column : CreateFromMetadata(metadataObj);
 				Handler.WrapperLookup.Remove(item.MetadataObject);
 				if(Table.MetadataObject.Columns[i] is TOM.RowNumberColumn) ixOffset++;
 				item.MetadataObject = Table.MetadataObject.Columns[i + ixOffset] as TOM.Column;
@@ -2682,17 +2690,24 @@ namespace TabularEditor.TOMWrapper
 			foreach(var item in this) item.ReapplyReferences();
 		}
 
+		private Column CreateFromMetadata(TOM.Column obj)
+		{
+			if(obj is TOM.DataColumn datacolumnObj) return DataColumn.CreateFromMetadata(Table, datacolumnObj);
+			if(obj is TOM.CalculatedTableColumn calculatedtablecolumnObj) return CalculatedTableColumn.CreateFromMetadata(Table, calculatedtablecolumnObj);
+			if(obj is TOM.CalculatedColumn calculatedcolumnObj) return CalculatedColumn.CreateFromMetadata(Table, calculatedcolumnObj);
+		    return null;
+		}
+
 		/// <summary>
 		/// Calling this method will populate the ColumnCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
 		/// </summary>
 		internal override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in TOM_Collection) {
-				if(obj is TOM.DataColumn) DataColumn.CreateFromMetadata(Table, obj as TOM.DataColumn);
-				if(obj is TOM.CalculatedTableColumn) CalculatedTableColumn.CreateFromMetadata(Table, obj as TOM.CalculatedTableColumn);
-				if(obj is TOM.CalculatedColumn) CalculatedColumn.CreateFromMetadata(Table, obj as TOM.CalculatedColumn);
-		    }
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
 		}
 
 		/// <summary>
@@ -3365,7 +3380,7 @@ namespace TabularEditor.TOMWrapper
         internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.Culture); }
         internal override void TOM_Clear() { TOM_Collection.Clear(); }
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
-        internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
@@ -3377,7 +3392,8 @@ namespace TabularEditor.TOMWrapper
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
-				var item = this[i];
+				var metadataObj = TOM_Get(i) as TOM.Culture;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as Culture : CreateFromMetadata(metadataObj);
 				Handler.WrapperLookup.Remove(item.MetadataObject);
 				item.MetadataObject = Model.MetadataObject.Cultures[i + ixOffset] as TOM.Culture;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
@@ -3391,15 +3407,22 @@ namespace TabularEditor.TOMWrapper
 			foreach(var item in this) item.ReapplyReferences();
 		}
 
+		private Culture CreateFromMetadata(TOM.Culture obj)
+		{
+			if(obj is TOM.Culture cultureObj) return Culture.CreateFromMetadata(Model, cultureObj);
+		    return null;
+		}
+
 		/// <summary>
 		/// Calling this method will populate the CultureCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
 		/// </summary>
 		internal override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in TOM_Collection) {
-				if(obj is TOM.Culture) Culture.CreateFromMetadata(Model, obj as TOM.Culture);
-		    }
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
 		}
 
 	}
@@ -3971,7 +3994,7 @@ namespace TabularEditor.TOMWrapper
         internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.DataSource); }
         internal override void TOM_Clear() { TOM_Collection.Clear(); }
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
-        internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
@@ -3983,7 +4006,8 @@ namespace TabularEditor.TOMWrapper
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
-				var item = this[i];
+				var metadataObj = TOM_Get(i) as TOM.DataSource;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as DataSource : CreateFromMetadata(metadataObj);
 				Handler.WrapperLookup.Remove(item.MetadataObject);
 				item.MetadataObject = Model.MetadataObject.DataSources[i + ixOffset] as TOM.DataSource;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
@@ -3997,16 +4021,23 @@ namespace TabularEditor.TOMWrapper
 			foreach(var item in this) item.ReapplyReferences();
 		}
 
+		private DataSource CreateFromMetadata(TOM.DataSource obj)
+		{
+			if(obj is TOM.ProviderDataSource providerdatasourceObj) return ProviderDataSource.CreateFromMetadata(Model, providerdatasourceObj);
+			if(obj is TOM.StructuredDataSource structureddatasourceObj) return StructuredDataSource.CreateFromMetadata(Model, structureddatasourceObj);
+		    return null;
+		}
+
 		/// <summary>
 		/// Calling this method will populate the DataSourceCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
 		/// </summary>
 		internal override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in TOM_Collection) {
-				if(obj is TOM.ProviderDataSource) ProviderDataSource.CreateFromMetadata(Model, obj as TOM.ProviderDataSource);
-				if(obj is TOM.StructuredDataSource) StructuredDataSource.CreateFromMetadata(Model, obj as TOM.StructuredDataSource);
-		    }
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
 		}
 
 		/// <summary>
@@ -4851,7 +4882,7 @@ namespace TabularEditor.TOMWrapper
         internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.Hierarchy); }
         internal override void TOM_Clear() { TOM_Collection.Clear(); }
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
-        internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
@@ -4863,7 +4894,8 @@ namespace TabularEditor.TOMWrapper
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
-				var item = this[i];
+				var metadataObj = TOM_Get(i) as TOM.Hierarchy;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as Hierarchy : CreateFromMetadata(metadataObj);
 				Handler.WrapperLookup.Remove(item.MetadataObject);
 				item.MetadataObject = Table.MetadataObject.Hierarchies[i + ixOffset] as TOM.Hierarchy;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
@@ -4877,15 +4909,22 @@ namespace TabularEditor.TOMWrapper
 			foreach(var item in this) item.ReapplyReferences();
 		}
 
+		private Hierarchy CreateFromMetadata(TOM.Hierarchy obj)
+		{
+			if(obj is TOM.Hierarchy hierarchyObj) return Hierarchy.CreateFromMetadata(Table, hierarchyObj);
+		    return null;
+		}
+
 		/// <summary>
 		/// Calling this method will populate the HierarchyCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
 		/// </summary>
 		internal override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in TOM_Collection) {
-				if(obj is TOM.Hierarchy) Hierarchy.CreateFromMetadata(Table, obj as TOM.Hierarchy);
-		    }
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
 		}
 
 		/// <summary>
@@ -6064,7 +6103,7 @@ namespace TabularEditor.TOMWrapper
         internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.Level); }
         internal override void TOM_Clear() { TOM_Collection.Clear(); }
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
-        internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
@@ -6076,7 +6115,8 @@ namespace TabularEditor.TOMWrapper
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
-				var item = this[i];
+				var metadataObj = TOM_Get(i) as TOM.Level;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as Level : CreateFromMetadata(metadataObj);
 				Handler.WrapperLookup.Remove(item.MetadataObject);
 				item.MetadataObject = Hierarchy.MetadataObject.Levels[i + ixOffset] as TOM.Level;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
@@ -6090,15 +6130,22 @@ namespace TabularEditor.TOMWrapper
 			foreach(var item in this) item.ReapplyReferences();
 		}
 
+		private Level CreateFromMetadata(TOM.Level obj)
+		{
+			if(obj is TOM.Level levelObj) return Level.CreateFromMetadata(Hierarchy, levelObj);
+		    return null;
+		}
+
 		/// <summary>
 		/// Calling this method will populate the LevelCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
 		/// </summary>
 		internal override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in TOM_Collection) {
-				if(obj is TOM.Level) Level.CreateFromMetadata(Hierarchy, obj as TOM.Level);
-		    }
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
 		}
 
 		/// <summary>
@@ -6832,7 +6879,7 @@ namespace TabularEditor.TOMWrapper
         internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.Measure); }
         internal override void TOM_Clear() { TOM_Collection.Clear(); }
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
-        internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Measure); }
@@ -6843,7 +6890,8 @@ namespace TabularEditor.TOMWrapper
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
-				var item = this[i];
+				var metadataObj = TOM_Get(i) as TOM.Measure;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as Measure : CreateFromMetadata(metadataObj);
 				Handler.WrapperLookup.Remove(item.MetadataObject);
 				item.MetadataObject = Table.MetadataObject.Measures[i + ixOffset] as TOM.Measure;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
@@ -6857,15 +6905,22 @@ namespace TabularEditor.TOMWrapper
 			foreach(var item in this) item.ReapplyReferences();
 		}
 
+		private Measure CreateFromMetadata(TOM.Measure obj)
+		{
+			if(obj is TOM.Measure measureObj) return Measure.CreateFromMetadata(Table, measureObj);
+		    return null;
+		}
+
 		/// <summary>
 		/// Calling this method will populate the MeasureCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
 		/// </summary>
 		internal override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in TOM_Collection) {
-				if(obj is TOM.Measure) Measure.CreateFromMetadata(Table, obj as TOM.Measure);
-		    }
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
 		}
 
 		/// <summary>
@@ -8269,7 +8324,7 @@ namespace TabularEditor.TOMWrapper
         internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.ModelRole); }
         internal override void TOM_Clear() { TOM_Collection.Clear(); }
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
-        internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
@@ -8281,7 +8336,8 @@ namespace TabularEditor.TOMWrapper
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
-				var item = this[i];
+				var metadataObj = TOM_Get(i) as TOM.ModelRole;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as ModelRole : CreateFromMetadata(metadataObj);
 				Handler.WrapperLookup.Remove(item.MetadataObject);
 				item.MetadataObject = Model.MetadataObject.Roles[i + ixOffset] as TOM.ModelRole;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
@@ -8295,15 +8351,22 @@ namespace TabularEditor.TOMWrapper
 			foreach(var item in this) item.ReapplyReferences();
 		}
 
+		private ModelRole CreateFromMetadata(TOM.ModelRole obj)
+		{
+			if(obj is TOM.ModelRole modelroleObj) return ModelRole.CreateFromMetadata(Model, modelroleObj);
+		    return null;
+		}
+
 		/// <summary>
 		/// Calling this method will populate the ModelRoleCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
 		/// </summary>
 		internal override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in TOM_Collection) {
-				if(obj is TOM.ModelRole) ModelRole.CreateFromMetadata(Model, obj as TOM.ModelRole);
-		    }
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
 		}
 
 		/// <summary>
@@ -8735,7 +8798,7 @@ namespace TabularEditor.TOMWrapper
         internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.ModelRoleMember); }
         internal override void TOM_Clear() { TOM_Collection.Clear(); }
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
-        internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
@@ -8747,7 +8810,8 @@ namespace TabularEditor.TOMWrapper
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
-				var item = this[i];
+				var metadataObj = TOM_Get(i) as TOM.ModelRoleMember;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as ModelRoleMember : CreateFromMetadata(metadataObj);
 				Handler.WrapperLookup.Remove(item.MetadataObject);
 				item.MetadataObject = ModelRole.MetadataObject.Members[i + ixOffset] as TOM.ModelRoleMember;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
@@ -8761,16 +8825,23 @@ namespace TabularEditor.TOMWrapper
 			foreach(var item in this) item.ReapplyReferences();
 		}
 
+		private ModelRoleMember CreateFromMetadata(TOM.ModelRoleMember obj)
+		{
+			if(obj is TOM.ExternalModelRoleMember externalmodelrolememberObj) return ExternalModelRoleMember.CreateFromMetadata(ModelRole, externalmodelrolememberObj);
+			if(obj is TOM.WindowsModelRoleMember windowsmodelrolememberObj) return WindowsModelRoleMember.CreateFromMetadata(ModelRole, windowsmodelrolememberObj);
+		    return null;
+		}
+
 		/// <summary>
 		/// Calling this method will populate the ModelRoleMemberCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
 		/// </summary>
 		internal override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in TOM_Collection) {
-				if(obj is TOM.ExternalModelRoleMember) ExternalModelRoleMember.CreateFromMetadata(ModelRole, obj as TOM.ExternalModelRoleMember);
-				if(obj is TOM.WindowsModelRoleMember) WindowsModelRoleMember.CreateFromMetadata(ModelRole, obj as TOM.WindowsModelRoleMember);
-		    }
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
 		}
 
 		/// <summary>
@@ -9335,7 +9406,7 @@ namespace TabularEditor.TOMWrapper
         internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.Partition); }
         internal override void TOM_Clear() { TOM_Collection.Clear(); }
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
-        internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
@@ -9347,7 +9418,8 @@ namespace TabularEditor.TOMWrapper
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
-				var item = this[i];
+				var metadataObj = TOM_Get(i) as TOM.Partition;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as Partition : CreateFromMetadata(metadataObj);
 				Handler.WrapperLookup.Remove(item.MetadataObject);
 				item.MetadataObject = Table.MetadataObject.Partitions[i + ixOffset] as TOM.Partition;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
@@ -9361,16 +9433,23 @@ namespace TabularEditor.TOMWrapper
 			foreach(var item in this) item.ReapplyReferences();
 		}
 
+		private Partition CreateFromMetadata(TOM.Partition obj)
+		{
+			if(obj.SourceType == TOM.PartitionSourceType.M) return MPartition.CreateFromMetadata(Table, obj);
+			else return Partition.CreateFromMetadata(Table, obj);
+		    return null;
+		}
+
 		/// <summary>
 		/// Calling this method will populate the PartitionCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
 		/// </summary>
 		internal override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in TOM_Collection) {
-				if(obj.SourceType == TOM.PartitionSourceType.M) MPartition.CreateFromMetadata(Table, obj);
-				else Partition.CreateFromMetadata(Table, obj);
-		    }
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
 		}
 
 		/// <summary>
@@ -9988,7 +10067,7 @@ namespace TabularEditor.TOMWrapper
         internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.Set); }
         internal override void TOM_Clear() { TOM_Collection.Clear(); }
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
-        internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
@@ -10000,7 +10079,8 @@ namespace TabularEditor.TOMWrapper
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
-				var item = this[i];
+				var metadataObj = TOM_Get(i) as TOM.Set;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as Set : CreateFromMetadata(metadataObj);
 				Handler.WrapperLookup.Remove(item.MetadataObject);
 				item.MetadataObject = Table.MetadataObject.Sets[i + ixOffset] as TOM.Set;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
@@ -10014,15 +10094,22 @@ namespace TabularEditor.TOMWrapper
 			foreach(var item in this) item.ReapplyReferences();
 		}
 
+		private Set CreateFromMetadata(TOM.Set obj)
+		{
+			if(obj is TOM.Set setObj) return Set.CreateFromMetadata(Table, setObj);
+		    return null;
+		}
+
 		/// <summary>
 		/// Calling this method will populate the SetCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
 		/// </summary>
 		internal override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in TOM_Collection) {
-				if(obj is TOM.Set) Set.CreateFromMetadata(Table, obj as TOM.Set);
-		    }
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
 		}
 
 		/// <summary>
@@ -10552,7 +10639,7 @@ namespace TabularEditor.TOMWrapper
         internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.Perspective); }
         internal override void TOM_Clear() { TOM_Collection.Clear(); }
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
-        internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
@@ -10564,7 +10651,8 @@ namespace TabularEditor.TOMWrapper
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
-				var item = this[i];
+				var metadataObj = TOM_Get(i) as TOM.Perspective;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as Perspective : CreateFromMetadata(metadataObj);
 				Handler.WrapperLookup.Remove(item.MetadataObject);
 				item.MetadataObject = Model.MetadataObject.Perspectives[i + ixOffset] as TOM.Perspective;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
@@ -10578,15 +10666,22 @@ namespace TabularEditor.TOMWrapper
 			foreach(var item in this) item.ReapplyReferences();
 		}
 
+		private Perspective CreateFromMetadata(TOM.Perspective obj)
+		{
+			if(obj is TOM.Perspective perspectiveObj) return Perspective.CreateFromMetadata(Model, perspectiveObj);
+		    return null;
+		}
+
 		/// <summary>
 		/// Calling this method will populate the PerspectiveCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
 		/// </summary>
 		internal override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in TOM_Collection) {
-				if(obj is TOM.Perspective) Perspective.CreateFromMetadata(Model, obj as TOM.Perspective);
-		    }
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
 		}
 
 		/// <summary>
@@ -11425,7 +11520,7 @@ namespace TabularEditor.TOMWrapper
         internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.Relationship); }
         internal override void TOM_Clear() { TOM_Collection.Clear(); }
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
-        internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
  
@@ -11438,7 +11533,8 @@ namespace TabularEditor.TOMWrapper
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
-				var item = this[i];
+				var metadataObj = TOM_Get(i) as TOM.Relationship;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as Relationship : CreateFromMetadata(metadataObj);
 				Handler.WrapperLookup.Remove(item.MetadataObject);
 				item.MetadataObject = Model.MetadataObject.Relationships[i + ixOffset] as TOM.SingleColumnRelationship;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
@@ -11452,15 +11548,22 @@ namespace TabularEditor.TOMWrapper
 			foreach(var item in this) item.ReapplyReferences();
 		}
 
+		private Relationship CreateFromMetadata(TOM.Relationship obj)
+		{
+			if(obj is TOM.SingleColumnRelationship singlecolumnrelationshipObj) return SingleColumnRelationship.CreateFromMetadata(Model, singlecolumnrelationshipObj);
+		    return null;
+		}
+
 		/// <summary>
 		/// Calling this method will populate the RelationshipCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
 		/// </summary>
 		internal override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in TOM_Collection) {
-				if(obj is TOM.SingleColumnRelationship) SingleColumnRelationship.CreateFromMetadata(Model, obj as TOM.SingleColumnRelationship);
-		    }
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
 		}
 
 		/// <summary>
@@ -12514,7 +12617,7 @@ namespace TabularEditor.TOMWrapper
         internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.Table); }
         internal override void TOM_Clear() { TOM_Collection.Clear(); }
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
-        internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
@@ -12526,7 +12629,8 @@ namespace TabularEditor.TOMWrapper
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
-				var item = this[i];
+				var metadataObj = TOM_Get(i) as TOM.Table;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as Table : CreateFromMetadata(metadataObj);
 				Handler.WrapperLookup.Remove(item.MetadataObject);
 				item.MetadataObject = Model.MetadataObject.Tables[i + ixOffset] as TOM.Table;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
@@ -12540,17 +12644,24 @@ namespace TabularEditor.TOMWrapper
 			foreach(var item in this) item.ReapplyReferences();
 		}
 
+		private Table CreateFromMetadata(TOM.Table obj)
+		{
+            if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.Calculated) return CalculatedTable.CreateFromMetadata(Model, obj);
+			else if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.CalculationGroup) return CalculationGroupTable.CreateFromMetadata(Model, obj);
+            else return Table.CreateFromMetadata(Model, obj);
+		    return null;
+		}
+
 		/// <summary>
 		/// Calling this method will populate the TableCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
 		/// </summary>
 		internal override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in TOM_Collection) {
-                if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.Calculated) CalculatedTable.CreateFromMetadata(Model, obj);
-				else if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.CalculationGroup) CalculationGroupTable.CreateFromMetadata(Model, obj);
-                else Table.CreateFromMetadata(Model, obj);
-		    }
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
 		}
 
 		/// <summary>
@@ -13351,7 +13462,7 @@ namespace TabularEditor.TOMWrapper
         internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.NamedExpression); }
         internal override void TOM_Clear() { TOM_Collection.Clear(); }
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
-        internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
@@ -13363,7 +13474,8 @@ namespace TabularEditor.TOMWrapper
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
-				var item = this[i];
+				var metadataObj = TOM_Get(i) as TOM.NamedExpression;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as NamedExpression : CreateFromMetadata(metadataObj);
 				Handler.WrapperLookup.Remove(item.MetadataObject);
 				item.MetadataObject = Model.MetadataObject.Expressions[i + ixOffset] as TOM.NamedExpression;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
@@ -13377,15 +13489,22 @@ namespace TabularEditor.TOMWrapper
 			foreach(var item in this) item.ReapplyReferences();
 		}
 
+		private NamedExpression CreateFromMetadata(TOM.NamedExpression obj)
+		{
+			if(obj is TOM.NamedExpression namedexpressionObj) return NamedExpression.CreateFromMetadata(Model, namedexpressionObj);
+		    return null;
+		}
+
 		/// <summary>
 		/// Calling this method will populate the NamedExpressionCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
 		/// </summary>
 		internal override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in TOM_Collection) {
-				if(obj is TOM.NamedExpression) NamedExpression.CreateFromMetadata(Model, obj as TOM.NamedExpression);
-		    }
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
 		}
 
 		/// <summary>
@@ -13968,7 +14087,7 @@ namespace TabularEditor.TOMWrapper
         internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.CalculationItem); }
         internal override void TOM_Clear() { TOM_Collection.Clear(); }
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
-        internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
@@ -13980,7 +14099,8 @@ namespace TabularEditor.TOMWrapper
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
-				var item = this[i];
+				var metadataObj = TOM_Get(i) as TOM.CalculationItem;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as CalculationItem : CreateFromMetadata(metadataObj);
 				Handler.WrapperLookup.Remove(item.MetadataObject);
 				item.MetadataObject = CalculationGroup.MetadataObject.CalculationItems[i + ixOffset] as TOM.CalculationItem;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
@@ -13994,15 +14114,22 @@ namespace TabularEditor.TOMWrapper
 			foreach(var item in this) item.ReapplyReferences();
 		}
 
+		private CalculationItem CreateFromMetadata(TOM.CalculationItem obj)
+		{
+			if(obj is TOM.CalculationItem calculationitemObj) return CalculationItem.CreateFromMetadata(CalculationGroup, calculationitemObj);
+		    return null;
+		}
+
 		/// <summary>
 		/// Calling this method will populate the CalculationItemCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
 		/// </summary>
 		internal override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in TOM_Collection) {
-				if(obj is TOM.CalculationItem) CalculationItem.CreateFromMetadata(CalculationGroup, obj as TOM.CalculationItem);
-		    }
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
 		}
 
 		/// <summary>
@@ -14542,7 +14669,7 @@ namespace TabularEditor.TOMWrapper
         internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.TablePermission); }
         internal override void TOM_Clear() { TOM_Collection.Clear(); }
         internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
-        internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
         internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
@@ -14554,7 +14681,8 @@ namespace TabularEditor.TOMWrapper
 		internal override void Reinit() {
 			var ixOffset = 0;
 			for(int i = 0; i < Count; i++) {
-				var item = this[i];
+				var metadataObj = TOM_Get(i) as TOM.TablePermission;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as TablePermission : CreateFromMetadata(metadataObj);
 				Handler.WrapperLookup.Remove(item.MetadataObject);
 				item.MetadataObject = ModelRole.MetadataObject.TablePermissions[i + ixOffset] as TOM.TablePermission;
 				Handler.WrapperLookup.Add(item.MetadataObject, item);
@@ -14568,15 +14696,22 @@ namespace TabularEditor.TOMWrapper
 			foreach(var item in this) item.ReapplyReferences();
 		}
 
+		private TablePermission CreateFromMetadata(TOM.TablePermission obj)
+		{
+			if(obj is TOM.TablePermission tablepermissionObj) return TablePermission.CreateFromMetadata(ModelRole, tablepermissionObj);
+		    return null;
+		}
+
 		/// <summary>
 		/// Calling this method will populate the TablePermissionCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
 		/// </summary>
 		internal override void CreateChildrenFromMetadata()
 		{
 			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
-			foreach(var obj in TOM_Collection) {
-				if(obj is TOM.TablePermission) TablePermission.CreateFromMetadata(ModelRole, obj as TOM.TablePermission);
-		    }
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
 		}
 
 		/// <summary>

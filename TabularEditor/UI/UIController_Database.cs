@@ -133,6 +133,9 @@ namespace TabularEditor.UI
                     LoadTabularModelToUI();
                     LocalInstanceName = ConnectForm.LocalInstanceName;
                     LocalInstanceType = ConnectForm.LocalInstanceType;
+
+                    Handler.OnExternalChange += Handler_OnExternalChange;
+                    if (oldHandler != null) oldHandler.OnExternalChange -= Handler_OnExternalChange;
                 }
                 catch (Exception ex)
                 {
@@ -142,6 +145,21 @@ namespace TabularEditor.UI
                 }
 
             }
+        }
+
+        private void Handler_OnExternalChange(object sender, ExternalChangeEventArgs e)
+        {
+            UI.FormMain.Invoke(new Action(() => {
+
+                if (Handler.HasUnsavedChanges)
+                {
+                    var result = MessageBox.Show("A change was made to the model outside of Tabular Editor. Do you want to update the model metadata in Tabular Editor? You will lose any changes you made in Tabular Editor since the last save.", "External change detected",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                    if (result != DialogResult.Yes) return;
+                }
+                Handler.RefreshTom();
+                UpdateUIText();
+            }));
         }
 
         private void Database_Save()

@@ -329,14 +329,11 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public override Column this[int index]
+        internal override TOM.MetadataObject TOM_Get(int index)
         {
-            get
-            {
-                var rnColIndex = GetRnColIndex();
-                if(rnColIndex > -1 && index >= rnColIndex) index++;
-                return base[index];
-            }
+            var rnColIndex = GetRnColIndex();
+            if (rnColIndex > -1 && index >= rnColIndex) index++;
+            return TOM_Collection[index];
         }
     }
 
