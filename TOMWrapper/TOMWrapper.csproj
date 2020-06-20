@@ -42,9 +42,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.AnalysisServices, Version=19.4.0.2, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.4.0.2\lib\net45\Microsoft.AnalysisServices.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.AnalysisServices.Core, Version=19.4.0.2, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.4.0.2\lib\net45\Microsoft.AnalysisServices.Core.dll</HintPath>
     </Reference>
