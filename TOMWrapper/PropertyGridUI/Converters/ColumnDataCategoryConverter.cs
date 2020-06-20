@@ -277,6 +277,8 @@ namespace TabularEditor.PropertyGridUI.Converters
         ISO8601WeekOfYear = 245,
         ISO8601Years = 246,
         RowNumber = 247,
-        ExtendedType = 248
+        ExtendedType = 248,
+
+        PaddedDateTableDates = 197127
     }
 }
