@@ -119,9 +119,6 @@
     <Reference Include="FastColoredTextBox, Version=2.16.24.0, Culture=neutral, PublicKeyToken=fb8aa12b994ef61b, processorArchitecture=MSIL">
       <HintPath>..\packages\FCTB.2.16.24\lib\FastColoredTextBox.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AnalysisServices, Version=19.4.0.2, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.4.0.2\lib\net45\Microsoft.AnalysisServices.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.AnalysisServices.Core, Version=19.4.0.2, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.4.0.2\lib\net45\Microsoft.AnalysisServices.Core.dll</HintPath>
     </Reference>
