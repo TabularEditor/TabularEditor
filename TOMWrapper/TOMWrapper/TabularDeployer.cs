@@ -94,6 +94,10 @@ namespace TabularEditor.TOMWrapper.Utils
             if (string.IsNullOrWhiteSpace(targetConnectionString)) throw new ArgumentNullException("targetConnectionString");
             var s = new TOM.Server();
             s.Connect(targetConnectionString);
+            if (!s.SupportedCompatibilityLevels.Contains(db.CompatibilityLevel.ToString()))
+                throw new DeploymentException($"The specified server does not support Compatibility Level {db.CompatibilityLevel}");
+
+            db.CompatibilityMode = s.CompatibilityMode;
 
             var tmsl = GetTMSL(db, s, targetDatabaseName, options, true);
             cancellationToken.Register(s.CancelCommand);
@@ -101,7 +105,7 @@ namespace TabularEditor.TOMWrapper.Utils
 
             if (result.ContainsErrors)
             {
-                throw new Exception(string.Join("\n", result.Cast<XmlaResult>().SelectMany(r => r.Messages.Cast<XmlaMessage>().Select(m => m.Description)).ToArray()));
+                throw new DeploymentException(string.Join("\n", result.Cast<XmlaResult>().SelectMany(r => r.Messages.Cast<XmlaMessage>().Select(m => m.Description)).ToArray()));
             }
             
             // Refresh the server object to make sure we get an updated list of databases, in case a new database was made:
@@ -250,6 +254,14 @@ namespace TabularEditor.TOMWrapper.Utils
             }
 
             return tmsl.ToString();
+        }
+    }
+
+    public class DeploymentException: Exception
+    {
+        public DeploymentException(string message): base(message)
+        {
+
         }
     }
 
