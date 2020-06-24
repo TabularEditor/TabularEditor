@@ -10,8 +10,8 @@ Set objFile = objFSO.OpenTextFile(jsonFile, 1)
 strText = objFile.ReadAll
 objFile.Close
 
-strTargetDir = Replace(targetDir, "\", "\\")
-strNewText = Replace(strText, "c:\\Program Files (x86)\\Tabular Editor\\", strTargetDir)
+strTargetDir = Replace(targetDir, "\", "\\") & "TabularEditor.exe"
+strNewText = Replace(strText, "<TABULAR_EDITOR_PATH>", strTargetDir)
 Set objFile = objFSO.OpenTextFile(jsonFile, 2)
 objFile.WriteLine strNewText
 objFile.Close
