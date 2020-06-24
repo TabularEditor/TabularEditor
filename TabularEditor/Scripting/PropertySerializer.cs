@@ -98,7 +98,7 @@ namespace TabularEditor.Scripting
                             isIndexer = true;
                             expandedKeys.AddRange(indexerProperty.Keys);
                         }
-                        else if (value != null && value.GetType().IsClass && value.GetType() != typeof(string))
+                        else if (value != null && value.GetType().IsClass && value.GetType() != typeof(string) && !(value is TabularObject))
                         {
                             throw new Exception($"ExportProperties error: Cannot export property {property.Name} on {tabularObject.ObjectType.GetTypeName()} \"{tabularObject.GetName()}\" since it is a complex object.");
                         }
