@@ -655,7 +655,6 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void bestPracticeAnalyzerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            throw new Exception("Lol");
             BPAForm.ShowBPA();
         }
 
