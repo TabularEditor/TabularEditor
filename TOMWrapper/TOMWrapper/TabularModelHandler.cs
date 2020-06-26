@@ -41,7 +41,15 @@ namespace TabularEditor.TOMWrapper
         private void UpdateSettings()
         {
             PowerBIGovernance.UpdateGovernanceMode(this);
-            _tree?.OnStructureChanged();          
+            _tree?.OnStructureChanged();
+            
+            if(trace != null)
+            {
+                if (_settings.ChangeDetectionLocalServers && !trace.IsStarted)
+                    trace.Start();
+                else if (!_settings.ChangeDetectionLocalServers && trace.IsStarted)
+                    trace.Stop();
+            }
         }
 
         private void _settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -187,6 +195,19 @@ namespace TabularEditor.TOMWrapper
             UndoManager.Clear();
         }
 
+        public static void Log(string additionalMessage, Exception ex)
+        {
+            MessageLogger?.Invoke(additionalMessage + "\r\n    Exception type: " + ex.GetType().Name + "\r\n    Exception message: " + ex.Message + "\r\n    Stack trace: " + ex.StackTrace);
+        }
+        public static void Log(string message)
+        {
+#if DEBUG
+            if (MessageLogger == null) Debug.WriteLine(message);
+#endif
+            MessageLogger?.Invoke(message);
+        }
+        public static Action<string> MessageLogger = null;
+
         /// <summary>
         /// Connects to a SQL Server 2016 Analysis Services instance and loads a tabular model
         /// from one of the deployed databases on the instance.
@@ -205,8 +226,6 @@ namespace TabularEditor.TOMWrapper
 
             var connectionString = TabularConnection.GetConnectionString(serverName, applicationName);
             server.Connect(connectionString);
-
-            trace = new ExternalChangeTrace(server, applicationName, XEventCallback);
 
             if (databaseName == null)
             {
@@ -232,6 +251,9 @@ namespace TabularEditor.TOMWrapper
             UndoManager.Enabled = true;
             PowerBIGovernance.UpdateGovernanceMode(this);
             CheckErrors();
+
+            trace = new ExternalChangeTrace(database, applicationName, XEventCallback);
+            if (Settings.ChangeDetectionLocalServers) trace.Start();
         }
 
         private static TabularModelHandler _singleton;
