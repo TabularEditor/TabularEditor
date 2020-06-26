@@ -21,6 +21,8 @@ namespace TabularEditor.TOMWrapper
 	    public const string ANALYTICSAIMETADATA = "AnalyticsAIMetadata";
 	    public const string ANNOTATIONS = "Annotations";
 	    public const string ATTRIBUTEHIERARCHY = "AttributeHierarchy";
+	    public const string BASECOLUMN = "BaseColumn";
+	    public const string BASETABLE = "BaseTable";
 	    public const string CALCULATIONGROUP = "CalculationGroup";
 	    public const string CALCULATIONITEMS = "CalculationItems";
 	    public const string COLLATION = "Collation";
@@ -150,6 +152,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string STATUSGRAPHIC = "StatusGraphic";
 	    public const string STORAGELOCATION = "StorageLocation";
 	    public const string STRUCTUREMODIFIEDTIME = "StructureModifiedTime";
+	    public const string SUMMARIZATION = "Summarization";
 	    public const string SUMMARIZEBY = "SummarizeBy";
 	    public const string TABLE = "Table";
 	    public const string TABLEDETAILPOSITION = "TableDetailPosition";
@@ -186,6 +189,7 @@ namespace TabularEditor.TOMWrapper
             { typeof(ExternalModelRoleMember) , typeof(TOM.ExternalModelRoleMember) },
             { typeof(Hierarchy) , typeof(TOM.Hierarchy) },
             { typeof(KPI) , typeof(TOM.KPI) },
+            { typeof(AlternateOf) , typeof(TOM.AlternateOf) },
             { typeof(Level) , typeof(TOM.Level) },
             { typeof(Measure) , typeof(TOM.Measure) },
             { typeof(Model) , typeof(TOM.Model) },
@@ -463,6 +467,16 @@ namespace TabularEditor.TOMWrapper
         PowerBI_V1 = 0,
         PowerBI_V2 = 1,
         PowerBI_V3 = 2,
+	}
+	/// <summary>
+///             Specifies the Summarization type to be used by alternative sources' columns.
+///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1460 or above.</remarks>
+	public enum SummarizationType {    
+        GroupBy = 0,
+        Sum = 1,
+        Count = 2,
+        Min = 3,
+        Max = 4,
 	}
   
 	/// <summary>
@@ -5551,6 +5565,274 @@ namespace TabularEditor.TOMWrapper
 				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.EXTENDEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
+				
+				default:
+					return true;
+			}
+		}
+
+    }
+
+  
+	/// <summary>
+///             Represents a AlternativeSource object. It is a child of either a Table or a Column object.
+///             </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1460 or above.</remarks>
+	[TypeConverter(typeof(DynamicPropertyConverter))]
+	public sealed partial class AlternateOf: TabularObject
+			, IInternalAnnotationObject
+	{
+	    internal new TOM.AlternateOf MetadataObject 
+		{ 
+			get 
+			{ 
+				return base.MetadataObject as TOM.AlternateOf; 
+		    } 
+			set 
+			{ 
+				base.MetadataObject = value; 
+			}
+		}
+
+		///<summary>The collection of Annotations on the current Alternate Of.</summary>
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Alternate Of."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+		public AnnotationCollection Annotations { get; private set; }
+		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
+		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
+		public string GetAnnotation(int index) {
+			return MetadataObject.Annotations[index].Value;
+		}
+		///<summary>Returns true if an annotation with the given name exists. Otherwise false.</summary>
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		///<summary>Gets the value of the annotation with the given name. Returns null if no such annotation exists.</summary>
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
+		public string GetAnnotation(string name) {
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
+		}
+		///<summary>Sets the value of the annotation with the given index, assuming it exists.</summary>
+		[IntelliSense("Sets the value of the annotation with the given index, assuming it exists.")]
+		public void SetAnnotation(int index, string value) {
+		    SetAnnotation(index, value, true);
+		}
+		internal void SetAnnotation(int index, string value, bool undoable) {
+		    var name = MetadataObject.Annotations[index].Name;
+			SetAnnotation(name, value, undoable);
+		}
+		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+			SetAnnotation(index, value, undoable);
+		}
+		///<summary>Returns a unique name for a new annotation.</summary>
+		public string GetNewAnnotationName() {
+			return MetadataObject.Annotations.GetNewName("New Annotation");
+		}
+		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		internal void SetAnnotation(string name, string value, bool undoable) {
+			if(name == null) name = GetNewAnnotationName();
+
+			if(value == null) {
+				// Remove annotation if set to null:
+				RemoveAnnotation(name, undoable);
+				return;
+			}
+
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
+
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Change existing annotation:
+
+				var oldValue = GetAnnotation(name);
+				MetadataObject.Annotations[name].Value = value;
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
+			} else {
+				// Add new annotation:
+
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
+			}
+		}
+		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+			this.SetAnnotation(name, value, undoable);
+		}
+		///<summary>Remove an annotation by the given name.</summary>
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		internal void RemoveAnnotation(string name, bool undoable) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
+
+			    var oldValue = MetadataObject.Annotations[name].Value;
+				MetadataObject.Annotations.Remove(name);
+
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
+			}
+		}
+		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+			this.RemoveAnnotation(name, undoable);
+		}
+		///<summary>Gets the number of annotations on the current Alternate Of.</summary>
+		[IntelliSense("Gets the number of annotations on the current Alternate Of.")]
+		public int GetAnnotationsCount() {
+			return MetadataObject.Annotations.Count;
+		}
+		///<summary>Gets a collection of all annotation names on the current Alternate Of.</summary>
+		[IntelliSense("Gets a collection of all annotation names on the current Alternate Of.")]
+		public IEnumerable<string> GetAnnotations() {
+			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		/// <summary>
+///             A value indicating the summarization type used by this alternative sources' column. The possible values are GroupBy (0), Sum (1), Count (2), Min (3), Max (4).
+///             </summary>
+		[DisplayName("Summarization")]
+		[Category("Options"),Description(@"A value indicating the summarization type used by this alternative sources' column. The possible values are GroupBy (0), Sum (1), Count (2), Min (3), Max (4)."),IntelliSense(@"A value indicating the summarization type used by this alternative sources' column. The possible values are GroupBy (0), Sum (1), Count (2), Min (3), Max (4).")]
+		public SummarizationType Summarization {
+			get {
+			    return (SummarizationType)MetadataObject.Summarization;
+			}
+			set {
+				
+				var oldValue = Summarization;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.SUMMARIZATION, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.Summarization = (TOM.SummarizationType)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SUMMARIZATION, oldValue, newValue));
+				OnPropertyChanged(Properties.SUMMARIZATION, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeSummarization() { return false; }
+/// <summary>
+///             ID of the owning/parent column.
+///             </summary>
+		[DisplayName("Column")]
+		[Category("Options"),Description(@"ID of the owning/parent column."),IntelliSense(@"ID of the owning/parent column.")]
+		public Column Column {
+			get {
+				if (MetadataObject.Column == null) return null;
+			    return Handler.WrapperLookup[MetadataObject.Column] as Column;
+            }
+			
+		}
+		private bool ShouldSerializeColumn() { return false; }
+/// <summary>
+///             A reference ID to the referenced source column.
+///             </summary>
+		[DisplayName("Base Column")]
+		[Category("Options"),Description(@"A reference ID to the referenced source column."),IntelliSense(@"A reference ID to the referenced source column.")][TypeConverter(typeof(AllColumnConverter))]
+		public Column BaseColumn {
+			get {
+				if (MetadataObject.BaseColumn == null) return null;
+			    return Handler.WrapperLookup[MetadataObject.BaseColumn] as Column;
+            }
+			set {
+				
+				var oldValue = BaseColumn;
+				var newValue = value;
+				if (oldValue?.MetadataObject == newValue?.MetadataObject) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.BASECOLUMN, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.BaseColumn = value?.MetadataObject;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.BASECOLUMN, oldValue, newValue));
+				OnPropertyChanged(Properties.BASECOLUMN, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeBaseColumn() { return false; }
+/// <summary>
+///             A reference ID to the referenced source table. You may either define BaseTable or BaseColumn, but not both.
+///             </summary>
+		[DisplayName("Base Table")]
+		[Category("Options"),Description(@"A reference ID to the referenced source table. You may either define BaseTable or BaseColumn, but not both."),IntelliSense(@"A reference ID to the referenced source table. You may either define BaseTable or BaseColumn, but not both.")]
+		public Table BaseTable {
+			get {
+				if (MetadataObject.BaseTable == null) return null;
+			    return Handler.WrapperLookup[MetadataObject.BaseTable] as Table;
+            }
+			set {
+				
+				var oldValue = BaseTable;
+				var newValue = value;
+				if (oldValue?.MetadataObject == newValue?.MetadataObject) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.BASETABLE, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.BaseTable = value?.MetadataObject;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.BASETABLE, oldValue, newValue));
+				OnPropertyChanged(Properties.BASETABLE, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeBaseTable() { return false; }
+
+	
+        internal override void RenewMetadataObject()
+        {
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject = MetadataObject.Clone() as TOM.AlternateOf;
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+
+
+
+		/// <summary>
+		/// CTOR - only called from static factory methods on the class
+		/// </summary>
+		AlternateOf(TOM.AlternateOf metadataObject) : base(metadataObject)
+		{
+			
+			// Create indexer for annotations:
+			Annotations = new AnnotationCollection(this);
+		}
+
+
+
+		internal override void Undelete(ITabularObjectCollection collection) {
+			base.Undelete(collection);
+			Reinit();
+			ReapplyReferences();
+		}
+		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
+			if(!base.Browsable(propertyName)) return false;
+
+			switch (propertyName) {
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
 				
 				default:
 					return true;

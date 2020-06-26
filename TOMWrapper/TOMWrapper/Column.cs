@@ -71,6 +71,9 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public IEnumerable<Variation> UsedInVariations { get { return Model.AllColumns.SelectMany(c => c.Variations).Where(v => v.DefaultColumn == this); } }
 
+        [Browsable(false)]
+        public IEnumerable<AlternateOf> UsedInAlternateOfs { get { return Model.AllColumns.Select(c => c.AlternateOf).Where(v => v?.BaseColumn == this); } }
+
         /// <summary>
         /// Enumerates all relationships in which this column participates (either as <see cref="SingleColumnRelationship.FromColumn">FromColumn</see> or <see cref="SingleColumnRelationship.ToColumn">ToColumn</see>).
         /// </summary>
@@ -129,6 +132,10 @@ namespace TabularEditor.TOMWrapper
             if (Handler.CompatibilityLevel >= 1400)
                 UsedInVariations.ToList().ForEach(v => v.Delete());
 
+            // Make sure the column is no longer used in AlternateOf's:
+            if (Handler.CompatibilityLevel >= 1460)
+                UsedInAlternateOfs.ToList().ForEach(a => a.BaseColumn = null);
+
             if (GroupByColumns != null) GroupByColumns.Clear();
 
             base.DeleteLinkedObjects(isChildOfDeleted);
@@ -136,15 +143,67 @@ namespace TabularEditor.TOMWrapper
 
         [DisplayName("Object Level Security"), Category("Translations, Perspectives, Security")]
         public ColumnOLSIndexer ObjectLevelSecurity { get; private set; }
-        
+
+
+        [IntelliSense("Marks this column as an alternate of a column in another table, for aggregation purposes")]
+        public AlternateOf AddAlternateOf(Column column = null, SummarizationType summarization = SummarizationType.Sum)
+        {
+            this.AlternateOf = AlternateOf.CreateNew();
+            if(column != null) this.AlternateOf.BaseColumn = column;
+            this.AlternateOf.Summarization = summarization;
+            return this.AlternateOf;
+        }
+
+        /// <summary>
+        /// Gets or sets the Alternate Of configuration used to specify aggregations.
+        /// </summary>
+        [DisplayName("Alternate Of")]
+        [Category("Options"), IntelliSense("Defines the AlternateOf reference source BaseTable or BaseColumn, and the Summarization."),TypeConverter(typeof(DynamicPropertyConverter))]
+        [Description("Defines the AlternateOf reference source BaseTable or BaseColumn, and the Summarization.")]
+        public AlternateOf AlternateOf
+        {
+            get
+            {
+                if (MetadataObject.AlternateOf == null) return null;
+                return Handler.WrapperLookup[MetadataObject.AlternateOf] as AlternateOf;
+            }
+            set
+            {
+                var oldValue = MetadataObject.AlternateOf != null ? AlternateOf : null;
+                if (oldValue?.MetadataObject == value?.MetadataObject) return;
+                bool undoable = true;
+                bool cancel = false;
+                OnPropertyChanging(Properties.ALTERNATEOF, value, ref undoable, ref cancel);
+                if (cancel) return;
+
+                var newAlternateOf = value?.MetadataObject;
+                if (newAlternateOf != null && newAlternateOf.IsRemoved)
+                {
+                    Handler.WrapperLookup.Remove(newAlternateOf);
+                    newAlternateOf = newAlternateOf.Clone();
+                    value.MetadataObject = newAlternateOf;
+                    Handler.WrapperLookup.Add(newAlternateOf, value);
+                }
+
+                MetadataObject.AlternateOf = newAlternateOf;
+
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ALTERNATEOF, oldValue, value));
+                OnPropertyChanged(Properties.ALTERNATEOF, oldValue, value);
+            }
+        }
 
         protected override void Init()
         {
-            if(Handler.CompatibilityLevel >= 1400)
+            if (Handler.CompatibilityLevel >= 1400)
             {
                 Variations = new VariationCollection("Variations", MetadataObject.Variations, this);
                 ObjectLevelSecurity = new ColumnOLSIndexer(this);
                 if(Handler.PbiMode) GroupByColumns = new GroupingColumnCollection(this);
+            }
+
+            if(Handler.CompatibilityLevel >= 1460)
+            {
+                if (MetadataObject.AlternateOf != null) this.AlternateOf = AlternateOf.CreateFromMetadata(this, MetadataObject.AlternateOf);
             }
 
             base.Init();
