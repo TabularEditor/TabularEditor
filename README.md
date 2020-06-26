@@ -3,7 +3,7 @@ Tabular Editor is a tool that lets you easily manipulate and manage measures, ca
 
 ![](https://raw.githubusercontent.com/otykier/TabularEditor/master/Documentation/Main%20UI%202_1.png)
 
-* [Download Tabular Editor v. 2.11.2 for SQL Server 2016, 2017, 2019 or Azure Analysis Services](https://github.com/otykier/TabularEditor/releases/latest)
+* [Download Tabular Editor v. 2.11.4 for SQL Server 2016, 2017, 2019 or Azure Analysis Services](https://github.com/otykier/TabularEditor/releases/latest)
 
 Tabular Editor, when downloaded from GitHub, is digitally signed. The certificate is kindly funded by [Kapacity A/S](https://www.kapacity.dk).
 
@@ -59,6 +59,7 @@ View the article on www.kapacity.dk/tabular-editor for a general presentation of
 * **2020-06-20** [Version 2.11.0](https://github.com/otykier/TabularEditor/releases/tag/2.11.0) released (digitally signed)
 * **2020-06-24** [Version 2.11.1](https://github.com/otykier/TabularEditor/releases/tag/2.11.1) released (digitally signed)
 * **2020-06-25** [Version 2.11.2](https://github.com/otykier/TabularEditor/releases/tag/2.11.2) released (digitally signed)
+* **2020-06-26** [Version 2.11.4](https://github.com/otykier/TabularEditor/releases/tag/2.11.4) released (digitally signed)
 
 ## Roadmap
 
