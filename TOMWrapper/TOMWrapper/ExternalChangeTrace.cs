@@ -14,26 +14,30 @@ namespace TabularEditor.TOMWrapper
     internal class ExternalChangeTrace
     {
         private TOM.Trace trace;
-        private readonly TOM.Server server;
+        private readonly TOM.Database database;
+        private readonly string databaseNameWhenTraceStarted;
+        private TOM.Server server => database.Server;
         private readonly string applicationName;
         private readonly Action<TOM.TraceEventArgs> onExternalChangeCallback;
 
-        private static List<TOM.Trace> sessionTraces = new List<TOM.Trace>();
+        private static List<TOM.Trace> tabularEditorSessionTraces = new List<TOM.Trace>();
         public static void Cleanup()
         {
-            lock (sessionTraces)
+            lock (tabularEditorSessionTraces)
             {
-                foreach (var trace in sessionTraces)
+                foreach (var trace in tabularEditorSessionTraces)
                 {
                     if (trace.IsStarted)
                         trace.Stop();
+
                     if(trace.Parent != null)
                     {
                         trace.Drop();
                     }
                     trace.Dispose();
                 }
-                sessionTraces.Clear();
+                tabularEditorSessionTraces.Clear();
+                TabularModelHandler.Log("Analysis Services trace cleanup completed");
             }
         }
 
@@ -42,25 +46,18 @@ namespace TabularEditor.TOMWrapper
             if (trace == null || !trace.IsStarted) return;
 
             trace.Stop();
+            TabularModelHandler.Log("Analysis Services trace stopped");
         }
 
-        public void Start()
+        private void Configure()
         {
+            if (server == null) return;
             if (!server.ConnectionInfo.Server.EqualsI("localhost")) return;
 
             try
             {
-
-                if (trace != null)
-                {
-                    if (!trace.IsStarted)
-                        trace.Start();
-
-                    return;
-                }
-
                 this.trace = server.Traces.Add("TabularEditor-" + Guid.NewGuid().ToString("D"));
-                sessionTraces.Add(this.trace);
+                tabularEditorSessionTraces.Add(this.trace);
 
                 TOM.TraceEvent tEvent;
                 tEvent = this.trace.Events.Add(AS.TraceEventClass.CommandEnd);
@@ -68,6 +65,7 @@ namespace TabularEditor.TOMWrapper
                 tEvent.Columns.Add(AS.TraceColumn.Success);
                 tEvent.Columns.Add(AS.TraceColumn.TextData);
                 tEvent.Columns.Add(AS.TraceColumn.ApplicationName);
+                tEvent.Columns.Add(AS.TraceColumn.DatabaseName);
 
                 tEvent = this.trace.Events.Add(AS.TraceEventClass.ProgressReportCurrent);
                 tEvent.Columns.Add(AS.TraceColumn.IntegerData);
@@ -78,21 +76,45 @@ namespace TabularEditor.TOMWrapper
 
                 this.trace.OnEvent += Trace_OnEvent;
                 this.trace.Update();
-                this.trace.Start();
+                TabularModelHandler.Log("Analysis Services trace configured on localhost");
             }
-            catch
+            catch (Exception ex)
             {
                 this.trace = null;
+                TabularModelHandler.Log("Exception while configuring Analysis Services trace", ex);
             }
         }
 
-        public ExternalChangeTrace(TOM.Server server, string applicationName, Action<TOM.TraceEventArgs> onExternalChangeCallback)
+        public void Start()
+        {
+            try
+            {
+                if (trace == null)
+                    Configure();
+
+                if (trace != null)
+                {
+                    if (!trace.IsStarted)
+                    {
+                        trace.Start();
+                        TabularModelHandler.Log("Analysis Services trace started");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TabularModelHandler.Log("Exception while starting Analysis Services trace", ex);
+            }
+        }
+
+        public bool IsStarted => trace != null && trace.IsStarted;
+
+        public ExternalChangeTrace(TOM.Database database, string applicationName, Action<TOM.TraceEventArgs> onExternalChangeCallback)
         {
             this.applicationName = applicationName;
             this.onExternalChangeCallback = onExternalChangeCallback;
-            this.server = server;
-
-            Start();
+            this.database = database;
+            this.databaseNameWhenTraceStarted = database.Name;
         }
 
         private static readonly AS.TraceEventSubclass[] changeSubClasses =
@@ -108,7 +130,7 @@ namespace TabularEditor.TOMWrapper
                 AS.TraceEventSubclass.Batch
             };
 
-        private bool IsChangeSubClass(int eventSubClass)
+        private bool IsChangeSubClass(AS.TraceEventSubclass eventSubClass)
         {
             return Array.IndexOf(changeSubClasses, eventSubClass) >= 0;
         }
@@ -116,7 +138,8 @@ namespace TabularEditor.TOMWrapper
         private void Trace_OnEvent(object sender, TOM.TraceEventArgs e)
         {
             if (e.Success != AS.TraceEventSuccess.Success) return;
-            if (!changeSubClasses.Contains(e.EventSubclass)) return;
+            if (!IsChangeSubClass(e.EventSubclass)) return;
+            if (e.DatabaseName != databaseNameWhenTraceStarted) return;
             if (e.ApplicationName == this.applicationName) return;
             if (!IsChangeXmla(e.TextData)) return;
 
