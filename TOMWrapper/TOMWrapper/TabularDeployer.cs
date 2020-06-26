@@ -27,8 +27,8 @@ namespace TabularEditor.TOMWrapper.Utils
             string tmsl;
 
             db.AddTabularEditorTag();
-            if (!server.Databases.ContainsName(targetDatabaseName)) tmsl = DeployNewTMSL(db, targetDatabaseName, options, includeRestricted);
-            else tmsl = DeployExistingTMSL(db, server, targetDatabaseName, options, includeRestricted);
+            if (!server.Databases.ContainsName(targetDatabaseName)) tmsl = DeployNewTMSL(db, targetDatabaseName, options, includeRestricted, server.CompatibilityMode);
+            else tmsl = DeployExistingTMSL(db, server, targetDatabaseName, options, includeRestricted, server.CompatibilityMode);
 
             return tmsl;
         }
@@ -97,8 +97,6 @@ namespace TabularEditor.TOMWrapper.Utils
             if (!s.SupportedCompatibilityLevels.Contains(db.CompatibilityLevel.ToString()))
                 throw new DeploymentException($"The specified server does not support Compatibility Level {db.CompatibilityLevel}");
 
-            db.CompatibilityMode = s.CompatibilityMode;
-
             var tmsl = GetTMSL(db, s, targetDatabaseName, options, true);
             cancellationToken.Register(s.CancelCommand);
             var result = s.Execute(tmsl);
@@ -134,11 +132,15 @@ namespace TabularEditor.TOMWrapper.Utils
             else return string.Format("{0} '{1}'", ((ObjectType)obj.ObjectType).GetTypeName(), obj.Name);
         }
 
-        internal static string DeployNewTMSL(TOM.Database db, string targetDatabaseName, DeploymentOptions options, bool includeRestricted)
+        internal static string DeployNewTMSL(TOM.Database db, string targetDatabaseName, DeploymentOptions options, bool includeRestricted, Microsoft.AnalysisServices.CompatibilityMode compatibilityMode)
         {
             var rawTmsl = TOM.JsonScripter.ScriptCreate(db, includeRestricted);
 
             var jTmsl = JObject.Parse(rawTmsl);
+            if(jTmsl["create"]["database"]["compatibilityMode"] != null)
+            {
+                jTmsl["create"]["database"]["compatibilityMode"] = compatibilityMode.ToString();
+            }
 
             return jTmsl.TransformCreateTmsl(targetDatabaseName, options).FixCalcGroupMetadata(db).ToString();
         }
@@ -151,7 +153,7 @@ namespace TabularEditor.TOMWrapper.Utils
             return (collection as JArray).FirstOrDefault(t => t.Value<string>("name").EqualsI(objectName));
         }
 
-        internal static string DeployExistingTMSL(TOM.Database db, TOM.Server server, string destinationName, DeploymentOptions options, bool includeRestricted)
+        internal static string DeployExistingTMSL(TOM.Database db, TOM.Server server, string destinationName, DeploymentOptions options, bool includeRestricted, Microsoft.AnalysisServices.CompatibilityMode compatibilityMode)
         {
             var orgDb = server.Databases.GetByName(destinationName);
             orgDb.Refresh(true);
@@ -161,6 +163,10 @@ namespace TabularEditor.TOMWrapper.Utils
 
             var tmslJson = TOM.JsonScripter.ScriptCreateOrReplace(db, includeRestricted);
             var tmsl = JObject.Parse(tmslJson).TransformCreateOrReplaceTmsl(db, orgDb, options).FixCalcGroupMetadata(db);
+            if (tmsl["createOrReplace"]["database"]["compatibilityMode"] != null)
+            {
+                tmsl["createOrReplace"]["database"]["compatibilityMode"] = compatibilityMode.ToString();
+            }
             var orgTmsl = tmsl.DeepClone();
 
             var tmslModel = tmsl["createOrReplace"]["database"]["model"] as JObject;
