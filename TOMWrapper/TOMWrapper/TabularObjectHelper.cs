@@ -125,6 +125,9 @@ namespace TabularEditor.TOMWrapper
                 case TOM.ObjectType.CalculationItem:
                     var ci = obj as TOM.CalculationItem;
                     return GetObjectPath(ci.CalculationGroup) + ".CalculationGroup." + ci.Name;
+                case TOM.ObjectType.AlternateOf:
+                    var ao = obj as TOM.AlternateOf;
+                    return GetObjectPath(ao.Column) + ".AlternateOf";
                 default:
                     throw new NotSupportedException($"Cannot create reference for object of type {obj.ObjectType}.");
             }

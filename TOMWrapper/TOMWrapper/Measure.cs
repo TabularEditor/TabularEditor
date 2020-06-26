@@ -77,7 +77,7 @@ namespace TabularEditor.TOMWrapper
         }
         public KPI AddKPI()
         {
-            KPI = KPI.CreateNew();
+            if(KPI == null) KPI = KPI.CreateNew();
 
             return KPI;
         }

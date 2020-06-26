@@ -148,7 +148,8 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Marks this column as an alternate of a column in another table, for aggregation purposes")]
         public AlternateOf AddAlternateOf(Column column = null, SummarizationType summarization = SummarizationType.Sum)
         {
-            this.AlternateOf = AlternateOf.CreateNew();
+            if (this.AlternateOf == null) this.AlternateOf = AlternateOf.CreateNew();
+
             if(column != null) this.AlternateOf.BaseColumn = column;
             this.AlternateOf.Summarization = summarization;
             return this.AlternateOf;
