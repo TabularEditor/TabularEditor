@@ -207,7 +207,7 @@
     <Compile Include="UndoFramework\UndoManager.cs" />
     <Compile Include="TOMWrapper\TabularCollectionHelper.cs" />
     <Compile Include="TOMWrapper\TabularCultureHelper.cs" />
-    <Compile Include="TOMWrapper\TabularLogicalTree.cs" />
+    <Compile Include="TOMWrapper\TabularTree.cs" />
     <Compile Include="TOMWrapper\TabularModelHandler.cs" />
     <Compile Include="TOMWrapper\TabularNamedObject.cs" />
     <Compile Include="TOMWrapper\TabularObject.cs" />

@@ -348,7 +348,7 @@ namespace TabularEditor.TOMWrapper
 
         }
 
-        public bool VisibleInTree(ITabularNamedObject tabularObject)
+        public virtual bool VisibleInTree(ITabularNamedObject tabularObject)
         {
             // Never show the RowNumber column:
             if ((tabularObject as Column)?.Type == ColumnType.RowNumber) return false;
