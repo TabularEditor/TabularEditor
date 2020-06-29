@@ -38,6 +38,8 @@
             this.bpaResultGoToSep = new System.Windows.Forms.ToolStripSeparator();
             this.bpaResultScript = new System.Windows.Forms.ToolStripMenuItem();
             this.bpaResultFix = new System.Windows.Forms.ToolStripMenuItem();
+            this.bpaResultSep2 = new System.Windows.Forms.ToolStripSeparator();
+            this.bpaResultCopy = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
@@ -82,7 +84,9 @@
             this.bpaResultUnignore,
             this.bpaResultGoToSep,
             this.bpaResultScript,
-            this.bpaResultFix});
+            this.bpaResultFix,
+            this.bpaResultSep2,
+            this.bpaResultCopy});
             this.menContext.Name = "contextMenuStrip1";
             this.menContext.Size = new System.Drawing.Size(169, 120);
             this.menContext.Opening += new System.ComponentModel.CancelEventHandler(this.menContext_Opening);
@@ -131,6 +135,18 @@
             this.bpaResultFix.Size = new System.Drawing.Size(168, 22);
             this.bpaResultFix.Text = "Apply fix";
             this.bpaResultFix.Click += new System.EventHandler(this.btnFix_Click);
+            // 
+            // bpaResultSep2
+            // 
+            this.bpaResultSep2.Name = "bpaResultSep2";
+            this.bpaResultSep2.Size = new System.Drawing.Size(165, 6);
+            // 
+            // bpaResultCopy
+            // 
+            this.bpaResultCopy.Name = "bpaResultCopy";
+            this.bpaResultCopy.Size = new System.Drawing.Size(168, 22);
+            this.bpaResultCopy.Text = "Copy to clipboard";
+            this.bpaResultCopy.Click += new System.EventHandler(this.btnCopy_Click);
             // 
             // statusStrip1
             // 
@@ -395,6 +411,8 @@
         private System.Windows.Forms.ToolStripMenuItem bpaResultIgnore;
         private System.Windows.Forms.ToolStripMenuItem bpaResultScript;
         private System.Windows.Forms.ToolStripMenuItem bpaResultFix;
+        private System.Windows.Forms.ToolStripSeparator bpaResultSep2;
+        private System.Windows.Forms.ToolStripMenuItem bpaResultCopy;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton btnRefresh;
         private System.Windows.Forms.ToolStripButton btnManageRules;
