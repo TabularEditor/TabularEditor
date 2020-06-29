@@ -56,6 +56,27 @@ namespace TabularEditor.UI.Dialogs
             tvResults.Model = AnalyzerResultsTreeModel;
             AnalyzerResultsTreeModel.StructureChanged += AnalyzerResultsTreeModel_StructureChanged;
             tvResults.DefaultToolTipProvider = new AnalyzerResultTooltip();
+
+            tvResults.KeyDown += TvResults_KeyDown;
+        }
+
+        private void TvResults_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyData == (Keys.Control | Keys.C))
+            {
+                CopySelectedToClipboard();
+            }
+        }
+
+        private void CopySelectedToClipboard()
+        {
+            var selectedResults = tvResults.SelectedNodes.Where(n => n.Nodes.Count > 0).SelectMany(n => n.Nodes)
+                .Concat(tvResults.SelectedNodes).Select(n => n.Tag).OfType<AnalyzerResult>().ToList();
+
+            var tsv = "Rule Name\tSeverity\tObject Type\tObject Name\tObject Path\n";
+            tsv += string.Join("\n", selectedResults.Select(r => $"{r.RuleName}\t{r.Rule.Severity}\t{r.ObjectType}\t{r.ObjectName}\t{(r.Object as TabularObject)?.GetObjectPath()}").ToArray());
+
+            Clipboard.SetText(tsv);
         }
 
         private void AnalyzerResultsTreeModel_StructureChanged(object sender, TreePathEventArgs e)
@@ -451,6 +472,11 @@ namespace TabularEditor.UI.Dialogs
 
             Clipboard.SetText(script);
             MessageBox.Show("Fix script copied to clipboard!\n\nPaste into Advanced Script Editor for review.", "Fix script generation", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void btnCopy_Click(object sender, EventArgs e)
+        {
+            CopySelectedToClipboard();
         }
 
         private void btnFix_Click(object sender, EventArgs e)
