@@ -80,7 +80,7 @@ namespace TOMWrapperTest.RegressionTests.v2_9_5
             var handler = new TabularModelHandler("TestData\\CalcGroupOrderTest");
             var model = handler.Model;
 
-            var tmsl = TabularDeployer.DeployNewTMSL(handler.Database, "db", DeploymentOptions.Full, false);
+            var tmsl = TabularDeployer.DeployNewTMSL(handler.Database, "db", DeploymentOptions.Full, false, Microsoft.AnalysisServices.CompatibilityMode.AnalysisServices);
 
             Assert.AreEqual(expectedTmsl, tmsl);
         }

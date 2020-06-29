@@ -28,7 +28,10 @@ namespace TabularEditor.RegressionTests
 
                 Application.DoEvents();
 
-                var treeView = (Application.OpenForms["DependencyForm"] as DependencyForm).treeObjects;
+                var depForm = Application.OpenForms["DependencyForm"] as DependencyForm;
+                depForm.DependencyMode = 2;
+                Application.DoEvents();
+                var treeView = depForm.treeObjects;
                 Assert.AreEqual(1, treeView.Nodes.Count);
                 Assert.AreSame(model.Tables["Employee"], treeView.Nodes[0].Tag);
 
@@ -63,7 +66,10 @@ namespace TabularEditor.RegressionTests
 
                 Application.DoEvents();
 
-                var treeView = (Application.OpenForms["DependencyForm"] as DependencyForm).treeObjects;
+                var depForm = Application.OpenForms["DependencyForm"] as DependencyForm;
+                depForm.DependencyMode = 2;
+                Application.DoEvents();
+                var treeView = depForm.treeObjects;
                 Assert.AreEqual(1, treeView.Nodes.Count);
                 Assert.AreSame(model.Tables["Employee"], treeView.Nodes[0].Tag);
 
@@ -98,7 +104,10 @@ namespace TabularEditor.RegressionTests
 
                 Application.DoEvents();
 
-                var treeView = (Application.OpenForms["DependencyForm"] as DependencyForm).treeObjects;
+                var depForm = Application.OpenForms["DependencyForm"] as DependencyForm;
+                depForm.DependencyMode = 2;
+                Application.DoEvents();
+                var treeView = depForm.treeObjects;
                 Assert.AreEqual(1, treeView.Nodes.Count);
                 Assert.AreSame(model.Tables["Employee"], treeView.Nodes[0].Tag);
                 var childrenBefore = treeView.Nodes[0].Nodes.Count;
@@ -135,7 +144,10 @@ namespace TabularEditor.RegressionTests
 
                 Application.DoEvents();
 
-                var treeView = (Application.OpenForms["DependencyForm"] as DependencyForm).treeObjects;
+                var depForm = Application.OpenForms["DependencyForm"] as DependencyForm;
+                depForm.DependencyMode = 2;
+                Application.DoEvents();
+                var treeView = depForm.treeObjects;
                 Assert.AreEqual(1, treeView.Nodes.Count);
                 Assert.AreSame(model.Tables["Employee"], treeView.Nodes[0].Tag);
                 var childrenBefore = treeView.Nodes[0].Nodes.Count;
