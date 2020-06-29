@@ -43,6 +43,7 @@ namespace TabularEditor
                 if (RootObject is Table)
                 {
                     radioButton3.Enabled = true;
+                    radioButton3.Checked = true;
                 }
                 else
                 {
