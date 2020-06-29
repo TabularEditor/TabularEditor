@@ -179,6 +179,19 @@ namespace TabularEditor
             RefreshTree();
         }
 
+        public int DependencyMode
+        {
+            get => radioButton1.Checked ? 1 : radioButton2.Checked ? 2 : 3;
+            set {
+                if (value == 1)
+                    radioButton1.Checked = true;
+                else if (value == 2)
+                    radioButton2.Checked = true;
+                else if (value == 3)
+                    radioButton3.Checked = true;
+            }
+        }
+
         public void RefreshTree()
         {
             if (RootObject.IsRemoved)
