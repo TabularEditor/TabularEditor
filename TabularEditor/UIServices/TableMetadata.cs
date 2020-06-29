@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
 using TabularEditor.UI.Dialogs;
 
@@ -116,6 +117,7 @@ namespace TabularEditor.UIServices
             {
                 return null;
             }
+            var ignoredColumns = new HashSet<string>();
             var sourceSchema = new Dictionary<string, DataTypeMapping>(StringComparer.InvariantCultureIgnoreCase);
             foreach (DataRow row in schemaTable.Rows)
             {
@@ -125,8 +127,20 @@ namespace TabularEditor.UIServices
                         row["DataTypeName"].ToString() :
                         (row["DataType"] as Type).Name;
                 var mappedType = DataTypeMap(dataType);
+                if (sourceSchema.ContainsKey(colName))
+                {
+                    ignoredColumns.Add(colName);
+                }
+                else
+                    sourceSchema.Add(colName, new DataTypeMapping(dataType, mappedType));
+            }
 
-                sourceSchema.Add(colName, new DataTypeMapping(dataType, mappedType));
+            if(ignoredColumns.Count > 0)
+            {
+                var plural = ignoredColumns.Count > 1 ? "s" : "";
+                var columns = string.Join("", ignoredColumns.Select(c => "\r\n\t" + c).ToArray());
+                var partitionInfo = partition.Table.Partitions.Count > 1 ? $", partition \"{partition.Name}\"" : "";
+                MessageBox.Show($"The query on table '{partition.Table.Name}'{partitionInfo} specified the following column{plural} more than once:\r\n{columns}", "Repeated columns", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
             return sourceSchema;
