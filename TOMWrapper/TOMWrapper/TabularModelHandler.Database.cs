@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.Utils;
 using TOM = Microsoft.AnalysisServices.Tabular;
@@ -73,7 +74,13 @@ namespace TabularEditor.TOMWrapper
             {
                 // TODO: Deleting a column with IsKey = true, then undoing, then saving causes an error... Check if this is still the case.
                 database.AddTabularEditorTag();
-                database.Update();
+                if (Model.Database.HasLocalChanges)
+                {
+                    // TOM always generates an XMLA Alter statement, even when no database properties
+                    // were actually changed, so only send this event if a property was changed:
+                    database.Update();
+                    Thread.Sleep(500);
+                }
                 database.Model.SaveChanges();
 
                 AttachCalculatedTableMetadata();
