@@ -16,7 +16,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    [TypeConverter(typeof(ExpandableObjectConverter))]
+    [TypeConverter(typeof(DynamicPropertyConverter))]
     public sealed class Database : ITabularObject, INotifyPropertyChanged, INotifyPropertyChanging, IDynamicPropertyObject
     {
         [Browsable(false)]
@@ -31,7 +31,29 @@ namespace TabularEditor.TOMWrapper
             var db = tomDatabase as TOM.Database;
             TOMDatabase = db;
             _model = model;
+
+            orgName = tomDatabase.Name;
+            orgID = tomDatabase.ID;
+            orgCompatibilityLevel = tomDatabase.CompatibilityLevel;
+            orgCompatibilityMode = tomDatabase.CompatibilityMode;
+            orgDescription = tomDatabase.Description;
+            orgVisible = tomDatabase.Visible;
         }
+
+        private string orgName;
+        private string orgID;
+        private string orgDescription;
+        private int orgCompatibilityLevel;
+        private Microsoft.AnalysisServices.CompatibilityMode orgCompatibilityMode;
+        private bool orgVisible;
+
+        internal bool HasLocalChanges 
+            => TOMDatabase.Name != orgName 
+            || TOMDatabase.ID != orgID
+            || TOMDatabase.CompatibilityLevel != orgCompatibilityLevel
+            || TOMDatabase.CompatibilityMode != orgCompatibilityMode
+            || TOMDatabase.Description != orgDescription
+            || TOMDatabase.Visible != orgVisible;
 
         public override string ToString()
         {

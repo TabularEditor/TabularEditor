@@ -92,6 +92,8 @@ namespace TabularEditor.TOMWrapper.PowerBI
             else if (GovernanceMode == PowerBIGovernanceMode.ReadOnly) return false;
             else
             {
+                if (type == ObjectType.Database) return false;
+
                 // Some properties can be edited regardless of object type in restricted mode:
                 switch (property)
                 {
@@ -246,6 +248,9 @@ namespace TabularEditor.TOMWrapper.PowerBI
                 case Properties.IDENTITYPROVIDER:
                 case Properties.DISCOURAGEIMPLICITMEASURES:
                 case Properties.DATABASE:
+                case Properties.SERVER:
+                case Properties.COMPATIBILITYLEVEL:
+                case Properties.COMPATIBILITYMODE:
                     return true;
             }
             return false;
