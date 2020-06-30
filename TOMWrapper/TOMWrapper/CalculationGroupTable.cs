@@ -212,9 +212,11 @@ namespace TabularEditor.TOMWrapper
         internal override void Reinit()
         {
             base.Reinit();
-            CalculationGroup.RenewMetadataObject();
+            Handler.WrapperLookup.Remove(CalculationGroup.MetadataObject);
+            CalculationGroup.MetadataObject = MetadataObject.CalculationGroup;
+            Handler.WrapperLookup.Add(CalculationGroup.MetadataObject, CalculationGroup);
+
             CalculationGroup.Reinit();
-            //NameField = new CalculationGroupAttribute(DataColumns.First());
         }
 
         public override ObjectType ObjectType => ObjectType.CalculationGroupTable;

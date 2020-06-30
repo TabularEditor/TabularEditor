@@ -185,7 +185,11 @@ namespace TabularEditor.TOMWrapper
         public void ResetModifiedState() { expressionChangeCounter = 0; }
 
         [Browsable(false),IntelliSense("The model this object belongs to.")]
-        public Model Model { get { return MetadataObject.Model == null ? null : Handler.WrapperLookup[MetadataObject.Model] as Model; } }
+        public Model Model {
+            get {
+                return MetadataObject.Model == null ? null : Handler.WrapperLookup[MetadataObject.Model] as Model;
+            }
+        }
 
         [Browsable(false),IntelliSense("The type of this object (Folder, Measure, Table, etc.).")]
         public virtual ObjectType ObjectType { get { return (ObjectType)MetadataObject.ObjectType; } }

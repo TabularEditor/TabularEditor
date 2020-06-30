@@ -18,5 +18,15 @@ namespace TOMWrapperTest
                 Assert.Fail("Test Server not specified. Please set environment variable TE_TestServer with the connection string of the AS engine server to use for testing");
             return serverName;
         }
+
+        public static readonly string AasServerName = AasGetServerName();
+
+        private static string AasGetServerName()
+        {
+            var serverName = Environment.GetEnvironmentVariable("TE_AasTestServer");
+            if (string.IsNullOrEmpty(serverName))
+                Assert.Fail("Test Server not specified. Please set environment variable TE_AasTestServer with the connection string of the Azure AS engine server to use for testing");
+            return serverName;
+        }
     }
 }

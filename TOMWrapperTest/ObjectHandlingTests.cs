@@ -40,6 +40,7 @@ namespace TabularEditor.TOMWrapper
             var tm = new TabularModelHandler(compatibilityLevel);
 
             var ds = tm.Model.AddDataSource("Test Datasource");
+            ds.ConnectionString = "Provider=MSOLEDBSQL;Data Source=localhost;Initial Catalog=db";
             var r1 = tm.Model.AddRole("Test Role 1");
             var r2 = tm.Model.AddRole("Test Role 2");
             var c1 = tm.Model.AddTranslation("da-DK");

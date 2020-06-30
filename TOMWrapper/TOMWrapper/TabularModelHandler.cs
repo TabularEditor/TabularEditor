@@ -185,6 +185,8 @@ namespace TabularEditor.TOMWrapper
         public void RefreshTom()
         {
             database.Model.Sync(new TOM.SyncOptions { DiscardLocalChanges = true });
+            database.Refresh();
+            Version = database.Version;
 
             Tree.BeginUpdate();
             Model.Reinit();

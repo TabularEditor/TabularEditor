@@ -127,7 +127,8 @@ namespace TabularEditor.TOMWrapper
                 AS.TraceEventSubclass.Delete,
                 AS.TraceEventSubclass.TabularDelete,
                 AS.TraceEventSubclass.TabularRename,
-                AS.TraceEventSubclass.Batch
+                AS.TraceEventSubclass.Batch,
+                AS.TraceEventSubclass.CommitTransaction
             };
 
         private bool IsChangeSubClass(AS.TraceEventSubclass eventSubClass)
@@ -141,11 +142,11 @@ namespace TabularEditor.TOMWrapper
             if (!IsChangeSubClass(e.EventSubclass)) return;
             if (e.DatabaseName != databaseNameWhenTraceStarted) return;
             if (e.ApplicationName == this.applicationName) return;
-            if (!IsChangeXmla(e.TextData)) return;
+            if (!(e.EventSubclass == AS.TraceEventSubclass.CommitTransaction || IsChangeXmla(e.TextData))) return;
 
             this.onExternalChangeCallback(e);
         }
-
+        
         private const string XMLA_ALTER = "Alter";
         private const string XMLA_CREATE = "Create";
         private const string XMLA_DELETE = "Delete";
