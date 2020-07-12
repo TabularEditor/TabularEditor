@@ -7,7 +7,6 @@ using System.Data.OleDb;
 using System.Drawing.Design;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
-using TabularEditor.TextServices;
 using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.TOMWrapper.Undo;
 using TOM = Microsoft.AnalysisServices.Tabular;

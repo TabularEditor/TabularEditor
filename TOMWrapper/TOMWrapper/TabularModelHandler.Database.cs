@@ -190,5 +190,9 @@ namespace TabularEditor.TOMWrapper
                 database.Model.Annotations.Remove(TabularEditorTag);
             }
         }
+        public static bool HasTabularEditorTag(this TabularModelHandler handler)
+        {
+            return handler.Model.MetadataObject.Annotations.Contains(TabularEditorTag);
+        }
     }
 }
