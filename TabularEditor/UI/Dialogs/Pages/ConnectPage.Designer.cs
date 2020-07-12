@@ -98,7 +98,7 @@
             this.panel1.Controls.Add(this.txtUsername);
             this.panel1.Location = new System.Drawing.Point(0, 54);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(273, 100);
+            this.panel1.Size = new System.Drawing.Size(325, 100);
             this.panel1.TabIndex = 54;
             // 
             // rdbUsernamePassword
@@ -118,10 +118,10 @@
             this.rdbIntegrated.Checked = true;
             this.rdbIntegrated.Location = new System.Drawing.Point(90, 4);
             this.rdbIntegrated.Name = "rdbIntegrated";
-            this.rdbIntegrated.Size = new System.Drawing.Size(114, 17);
+            this.rdbIntegrated.Size = new System.Drawing.Size(205, 17);
             this.rdbIntegrated.TabIndex = 0;
             this.rdbIntegrated.TabStop = true;
-            this.rdbIntegrated.Text = "Integrated Security";
+            this.rdbIntegrated.Text = "Windows Integrated or Azure AD login";
             this.rdbIntegrated.UseVisualStyleBackColor = true;
             this.rdbIntegrated.CheckedChanged += new System.EventHandler(this.ValidateUI);
             // 
