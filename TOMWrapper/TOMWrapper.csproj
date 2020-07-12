@@ -76,6 +76,7 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="PropertyGridUI\CollectionEditors\CredentialPropertyCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\SetCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\CalculationItemCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\ColumnSetCollectionEditor.cs" />

@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TabularEditor.PropertyGridUI;
+using TabularEditor.PropertyGridUI.CollectionEditors;
 using TabularEditor.TOMWrapper.Undo;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
@@ -49,7 +50,7 @@ namespace TabularEditor.TOMWrapper
         }
         private bool ShouldSerializeProtocol() { return false; }
 
-        [Category("Credential")]
+        [Category("Credential"),Editor(typeof(CredentialPropertyCollectionEditor),typeof(UITypeEditor))]
         public CredentialImpl Credential { get; private set; }
         
         [Category("Credential")]
@@ -224,9 +225,18 @@ namespace TabularEditor.TOMWrapper
                 this.dataSource = dataSource;
             }
 
-            public string Summary => "Credential";
+            public string Summary => "(Click to edit)";
 
-            public IEnumerable<string> Keys => JObject.Parse(TomCredential.ToString()).Properties().Select(p => p.Name);
+            public IEnumerable<string> Keys
+            {
+                get
+                {
+                    var json = TomCredential.ToString();
+                    if (!string.IsNullOrEmpty(json))
+                        return JObject.Parse(TomCredential.ToString()).Properties().Select(p => p.Name);
+                    else return Enumerable.Empty<string>();
+                }
+            }
 
             public bool EnableMultiLine => false;
 
