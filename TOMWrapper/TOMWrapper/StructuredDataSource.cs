@@ -1,6 +1,10 @@
-﻿using System;
+﻿extern alias json;
+
+using json::Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing.Design;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -35,6 +39,7 @@ namespace TabularEditor.TOMWrapper
             base.Init();
             if (MetadataObject.ConnectionDetails == null) MetadataObject.ConnectionDetails = new TOM.ConnectionDetails();
             if (MetadataObject.Credential == null) MetadataObject.Credential = new TOM.Credential();
+            this.Credential = new CredentialImpl(this);
         }
 
         [Category("Basic")]
@@ -44,7 +49,10 @@ namespace TabularEditor.TOMWrapper
         }
         private bool ShouldSerializeProtocol() { return false; }
 
-        [Category("Credentials")]
+        [Category("Credential")]
+        public CredentialImpl Credential { get; private set; }
+        
+        [Category("Credential")]
         public string Username
         {
             get { return MetadataObject.Credential.Username; }
@@ -52,7 +60,7 @@ namespace TabularEditor.TOMWrapper
         }
         private bool ShouldSerializeUsername() { return false; }
 
-        [Category("Credentials"),PasswordPropertyText(true)]
+        [Category("Credential"),PasswordPropertyText(true)]
         public string Password
         {
             get { return MetadataObject.Credential.Password; }
@@ -60,7 +68,7 @@ namespace TabularEditor.TOMWrapper
         }
         private bool ShouldSerializePassword() { return false; }
 
-        [Category("Credentials")]
+        [Category("Credential")]
         public string PrivacySetting
         {
             get { return MetadataObject.Credential.PrivacySetting; }
@@ -68,7 +76,7 @@ namespace TabularEditor.TOMWrapper
         }
         private bool ShouldSerializePrivacySetting() { return false; }
 
-        [Category("Credentials")]
+        [Category("Credential")]
         public string AuthenticationKind
         {
             get { return MetadataObject.Credential.AuthenticationKind; }
@@ -76,7 +84,7 @@ namespace TabularEditor.TOMWrapper
         }
         private bool ShouldSerializeAuthenticationKind() { return false; }
 
-        [Category("Credentials")]
+        [Category("Credential")]
         public bool EncryptConnection
         {
             get { return MetadataObject.Credential.EncryptConnection; }
@@ -203,6 +211,43 @@ namespace TabularEditor.TOMWrapper
             set { SetValue(View, value, v => { MetadataObject.ConnectionDetails.Address.View = (string)v; }, "View"); }
         }
         private bool ShouldSerializeView() { return false; }
+
+
+
+        [TypeConverter(typeof(IndexerConverter))]
+        public class CredentialImpl: IExpandableIndexer
+        {
+            private readonly StructuredDataSource dataSource;
+            private TOM.Credential TomCredential => dataSource.MetadataObject.Credential;
+            public CredentialImpl(StructuredDataSource dataSource)
+            {
+                this.dataSource = dataSource;
+            }
+
+            public string Summary => "Credential";
+
+            public IEnumerable<string> Keys => JObject.Parse(TomCredential.ToString()).Properties().Select(p => p.Name);
+
+            public bool EnableMultiLine => false;
+
+            public object this[string index]
+            {
+                get => TomCredential[index];
+                set
+                {
+                    if (TomCredential[index] == value) return;
+                    var oldValue = TomCredential[index];
+                    TomCredential[index] = value;
+                    dataSource.Handler.UndoManager.Add(new UndoCredentialAction(dataSource, index, value as string, oldValue as string));
+                }
+            }
+
+
+            public string GetDisplayName(string key)
+            {
+                return key;
+            }
+        }
     }
-    
+
 }
