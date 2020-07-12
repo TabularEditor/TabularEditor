@@ -201,7 +201,6 @@ namespace TabularEditor.TOMWrapper
         {
             switch (propertyName)
             {
-                case Properties.FORMATSTRING: return DataType != DataType.String;
                 case Properties.DETAILROWSEXPRESSION: return Browsable(Properties.DETAILROWSDEFINITION);
                 default: return true;
             }
