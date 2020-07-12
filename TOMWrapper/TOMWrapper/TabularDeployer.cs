@@ -92,14 +92,14 @@ namespace TabularEditor.TOMWrapper.Utils
         internal static DeploymentResult Deploy(TOM.Database db, string targetConnectionString, string targetDatabaseName, DeploymentOptions options, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(targetConnectionString)) throw new ArgumentNullException("targetConnectionString");
-            var s = new TOM.Server();
-            s.Connect(targetConnectionString);
-            if (!s.SupportedCompatibilityLevels.Contains(db.CompatibilityLevel.ToString()))
+            var destinationServer = new TOM.Server();
+            destinationServer.Connect(targetConnectionString);
+            if (!destinationServer.SupportedCompatibilityLevels.Contains(db.CompatibilityLevel.ToString()))
                 throw new DeploymentException($"The specified server does not support Compatibility Level {db.CompatibilityLevel}");
 
-            var tmsl = GetTMSL(db, s, targetDatabaseName, options, true);
-            cancellationToken.Register(s.CancelCommand);
-            var result = s.Execute(tmsl);
+            var tmsl = GetTMSL(db, destinationServer, targetDatabaseName, options, true);
+            cancellationToken.Register(destinationServer.CancelCommand);
+            var result = destinationServer.Execute(tmsl);
 
             if (result.ContainsErrors)
             {
@@ -107,10 +107,10 @@ namespace TabularEditor.TOMWrapper.Utils
             }
             
             // Refresh the server object to make sure we get an updated list of databases, in case a new database was made:
-            s.Refresh();
+            destinationServer.Refresh();
 
             // Fully refresh the deployed database object, to make sure we get updated error messages for the full object tree:
-            var deployedDB = s.Databases.GetByName(targetDatabaseName);
+            var deployedDB = destinationServer.Databases.GetByName(targetDatabaseName);
             deployedDB.Refresh(true);
             return
                 new DeploymentResult(
@@ -118,7 +118,8 @@ namespace TabularEditor.TOMWrapper.Utils
                     TabularModelHandler.GetObjectsNotReady(deployedDB).Where(t => t.Item2 == TOM.ObjectState.DependencyError || t.Item2 == TOM.ObjectState.EvaluationError || t.Item2 == TOM.ObjectState.SemanticError)
                         .Select(t => string.Format("Warning! Object not in \"Ready\"-state: {0} ({1})", GetName(t.Item1), t.Item2.ToString())),
                     TabularModelHandler.GetObjectsNotReady(deployedDB).Where(t => t.Item2 == TOM.ObjectState.CalculationNeeded || t.Item2 == TOM.ObjectState.NoData)
-                        .Select(t => string.Format("Information: Unprocessed object: {0} ({1})", GetName(t.Item1), t.Item2.ToString()))
+                        .Select(t => string.Format("Information: Unprocessed object: {0} ({1})", GetName(t.Item1), t.Item2.ToString())),
+                    destinationServer
                 );
         }
 
@@ -276,11 +277,13 @@ namespace TabularEditor.TOMWrapper.Utils
         public readonly IReadOnlyList<string> Issues;
         public readonly IReadOnlyList<string> Warnings;
         public readonly IReadOnlyList<string> Unprocessed;
-        public DeploymentResult(IEnumerable<string> issues, IEnumerable<string> warnings, IEnumerable<string> unprocessed)
+        public readonly TOM.Server DestinationServer;
+        public DeploymentResult(IEnumerable<string> issues, IEnumerable<string> warnings, IEnumerable<string> unprocessed, TOM.Server destinationServer)
         {
-            Issues = issues.ToList();
-            Warnings = warnings.ToList();
-            Unprocessed = unprocessed.ToList();
+            this.Issues = issues.ToList();
+            this.Warnings = warnings.ToList();
+            this.Unprocessed = unprocessed.ToList();
+            this.DestinationServer = destinationServer;
         }
     }
     public class DeploymentOptions

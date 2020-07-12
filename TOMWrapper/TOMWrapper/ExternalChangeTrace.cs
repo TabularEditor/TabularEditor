@@ -10,7 +10,6 @@ using System.Xml;
 
 namespace TabularEditor.TOMWrapper
 {
-    // TODO: This doesn't work. Let's try to use QueryableXEventData instead...
     internal class ExternalChangeTrace
     {
         private TOM.Trace trace;
