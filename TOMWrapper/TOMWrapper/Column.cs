@@ -288,8 +288,6 @@ namespace TabularEditor.TOMWrapper
         {
             switch (propertyName)
             {
-                case Properties.FORMATSTRING:
-                    return DataType != DataType.String;
                 case Properties.OBJECTLEVELSECURITY:
                     return Handler.CompatibilityLevel >= 1400 && Model.Roles.Any();
                 case Properties.GROUPBYCOLUMNS:
