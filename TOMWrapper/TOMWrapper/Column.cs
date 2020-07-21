@@ -145,7 +145,7 @@ namespace TabularEditor.TOMWrapper
         public ColumnOLSIndexer ObjectLevelSecurity { get; private set; }
 
 
-        [IntelliSense("Marks this column as an alternate of a column in another table, for aggregation purposes")]
+        [IntelliSense("Marks this column as an alternate of a column in another table, for aggregation purposes.")]
         public AlternateOf AddAlternateOf(Column column = null, SummarizationType summarization = SummarizationType.Sum)
         {
             if (this.AlternateOf == null) this.AlternateOf = AlternateOf.CreateNew();
