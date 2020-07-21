@@ -303,17 +303,6 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         {
             actTogglePartitions.Image = tabularTreeImages.Images["partition"];
 
-            // Auto-load the file specified as command line arguments:
-            var args = Environment.GetCommandLineArgs();
-            if (args.Length == 2 && (File.Exists(args[1]) || File.Exists(args[1] + "\\database.json")))
-            {
-                UI.File_Open(args[1]);
-            }
-            if (args.Length == 3)
-            {
-                UI.Database_Open(args[1], args[2]);
-            }
-
             // Populate list of recent files...
             PopulateRecentFilesList();
         }
@@ -633,6 +622,17 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                     var res = MessageBox.Show("A new version of Tabular Editor is available. Would you like to open the download page now?\n\nYou can disable this check under File > Preferences.", "Tabular Editor update available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                     if (res == DialogResult.Yes) UpdateService.OpenDownloadPage();
                 }
+            }
+
+            // Auto-load the file specified as command line arguments:
+            var args = Environment.GetCommandLineArgs();
+            if (args.Length == 2 && (File.Exists(args[1]) || File.Exists(args[1] + "\\database.json")))
+            {
+                UI.File_Open(args[1]);
+            }
+            if (args.Length == 3)
+            {
+                UI.Database_Open(args[1], args[2]);
             }
         }
 
