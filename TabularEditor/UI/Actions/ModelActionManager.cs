@@ -9,6 +9,7 @@ using TabularEditor.TOMWrapper;
 using TabularEditor.TOMWrapper.PowerBI;
 using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.UI.Dialogs;
+using TabularEditor.UIServices;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.UI.Actions
@@ -201,7 +202,7 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => Governance.AllowCreate(s),
                 (s, m) => s.ForEach(i =>
                 {
-                    var obj = (i as IClonableObject).Clone(includeTranslations: i is ITranslatableObject);
+                    var obj = (i as IClonableObject).Clone(includeTranslations: i is ITranslatableObject && Preferences.Current.Copy_IncludeTranslations);
                     if (s.Count == 1) obj.Edit(); // Focuses the cloned item in the tree, and lets the user edit its name
                 }),
                 (s, m) => "Duplicate " + s.Summary(), true, Context.TableObject | Context.Partition | Context.CalculationItem));
@@ -220,8 +221,8 @@ namespace TabularEditor.UI.Actions
                 (s, m) => "Duplicate " + s.Summary(), true, Context.Translation));
 
             // "Duplicate Role / Perspective":
-            Add(new Action((s, m) => Governance.AllowCreate(typeof(Perspective)) && s.Count == 1, (s, m) => s.ForEach(i => (i as IClonableObject).Clone(null, true).Edit()), (s, m) => "Duplicate Perspective", true, Context.Perspective));
-            Add(new Action((s, m) => Governance.AllowCreate(typeof(ModelRole)) && s.Count == 1, (s, m) => s.ForEach(i => (i as IClonableObject).Clone(null, true).Edit()), (s, m) => "Duplicate Role", true, Context.Role));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(Perspective)) && s.Count == 1, (s, m) => s.ForEach(i => (i as IClonableObject).Clone(null, Preferences.Current.Copy_IncludeTranslations).Edit()), (s, m) => "Duplicate Perspective", true, Context.Perspective));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(ModelRole)) && s.Count == 1, (s, m) => s.ForEach(i => (i as IClonableObject).Clone(null, Preferences.Current.Copy_IncludeTranslations).Edit()), (s, m) => "Duplicate Role", true, Context.Role));
 
             // Batch Rename
             Add(new Action((s, m) => Governance.AllowEditProperty(s, TOMWrapper.Properties.NAME) && s.DirectCount > 1, (s, m) =>
