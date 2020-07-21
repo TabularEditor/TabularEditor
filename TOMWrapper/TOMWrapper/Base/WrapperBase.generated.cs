@@ -2578,6 +2578,7 @@ namespace TabularEditor.TOMWrapper
 
         internal override ITabularObjectCollection GetCollectionForChild(TabularObject child)
         {
+			if (child is AlternateOf) return null;
 			if (child is Variation) return Variations;
             return base.GetCollectionForChild(child);
         }

@@ -548,7 +548,9 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 <# if(Rules.HasCollections(t)) { #>
         internal override ITabularObjectCollection GetCollectionForChild(TabularObject child)
         {
-<# foreach(var c in Rules.GetChildCollections(t)) { #>
+<# if(t.Name == "Column") { #>
+			if (child is AlternateOf) return null;
+<# } foreach(var c in Rules.GetChildCollections(t)) { #>
 			if (child is <#= c.Key.Name #>) return <#= Rules.CollectionName(c.Key) #>;
 <# } #>
             return base.GetCollectionForChild(child);
