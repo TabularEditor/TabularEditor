@@ -78,7 +78,7 @@ namespace TabularEditor.UIServices
         public bool SaveToFolder_LocalTranslations = false;
 
 
-        public bool Copy_IncludeTranslations = true;
+        public bool Copy_IncludeTranslations = false;
         public bool Copy_IncludePerspectives = true;
         public bool Copy_IncludeRLS = true;
         public bool Copy_IncludeOLS = true;
