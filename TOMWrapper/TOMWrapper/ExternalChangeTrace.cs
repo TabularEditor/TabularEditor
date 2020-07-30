@@ -20,20 +20,25 @@ namespace TabularEditor.TOMWrapper
         private readonly Action<TOM.TraceEventArgs> onExternalChangeCallback;
 
         private static List<TOM.Trace> tabularEditorSessionTraces = new List<TOM.Trace>();
+
+        private static void CleanupTrace(TOM.Trace trace)
+        {
+            if (trace.IsStarted)
+                trace.Stop();
+
+            if (trace.Parent != null)
+            {
+                trace.Drop();
+            }
+            trace.Dispose();
+        }
         public static void Cleanup()
         {
             lock (tabularEditorSessionTraces)
             {
                 foreach (var trace in tabularEditorSessionTraces)
                 {
-                    if (trace.IsStarted)
-                        trace.Stop();
-
-                    if(trace.Parent != null)
-                    {
-                        trace.Drop();
-                    }
-                    trace.Dispose();
+                    CleanupTrace(trace);
                 }
                 tabularEditorSessionTraces.Clear();
                 TabularModelHandler.Log("Analysis Services trace cleanup completed");
@@ -48,6 +53,25 @@ namespace TabularEditor.TOMWrapper
             TabularModelHandler.Log("Analysis Services trace stopped");
         }
 
+        private string currentTraceName;
+        private const string traceNamePrefix = "TabularEditor-";
+
+        public int GetOrphanedTraceCount()
+        {
+            server.Refresh();
+            return server.Traces.OfType<TOM.Trace>().Count(t => t.Name.StartsWith(traceNamePrefix) && t.Name != currentTraceName);
+        }
+
+        public void CleanOrphanedTraces()
+        {
+            server.Refresh();
+            foreach(var trace in server.Traces.OfType<TOM.Trace>().Where(t => t.Name.StartsWith(traceNamePrefix) && t.Name != currentTraceName)
+                .ToList())
+            {
+                CleanupTrace(trace);
+            }
+        }
+
         private void Configure()
         {
             if (server == null) return;
@@ -55,7 +79,8 @@ namespace TabularEditor.TOMWrapper
 
             try
             {
-                this.trace = server.Traces.Add("TabularEditor-" + Guid.NewGuid().ToString("D"));
+                currentTraceName = traceNamePrefix + Guid.NewGuid().ToString("D");
+                this.trace = server.Traces.Add(currentTraceName);
                 tabularEditorSessionTraces.Add(this.trace);
 
                 TOM.TraceEvent tEvent;

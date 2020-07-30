@@ -195,6 +195,7 @@ namespace TabularEditor.TOMWrapper
             Tree.OnStructureChanged();
 
             UndoManager.Clear();
+			UndoManager.SetCheckpoint();
         }
 
         public static void Log(string additionalMessage, Exception ex)
@@ -254,8 +255,26 @@ namespace TabularEditor.TOMWrapper
             PowerBIGovernance.UpdateGovernanceMode(this);
             CheckErrors();
 
-            trace = new ExternalChangeTrace(database, applicationName, XEventCallback);
-            if (Settings.ChangeDetectionLocalServers) trace.Start();
+            try
+            {
+                ExternalChangeTrace.Cleanup();
+                trace = new ExternalChangeTrace(database, applicationName, XEventCallback);
+                if (Settings.ChangeDetectionLocalServers) trace.Start();
+            }
+            catch (Exception ex)
+            {
+                Log("Exception while configuring AS trace: " + ex.Message);
+            }
+        }
+
+        public void CleanOrphanedTraces()
+        {
+            trace?.CleanOrphanedTraces();
+        }
+
+        public int GetOrphanedTraceCount()
+        {
+            return trace == null ? 0 : trace.GetOrphanedTraceCount();
         }
 
         private static TabularModelHandler _singleton;
