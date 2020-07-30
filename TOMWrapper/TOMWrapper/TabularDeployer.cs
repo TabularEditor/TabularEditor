@@ -224,7 +224,7 @@ namespace TabularEditor.TOMWrapper.Utils
                         }
                         if(tmslModel["cultures"] != null) foreach (JObject culture in tmslModel["cultures"])
                         {
-                            var tableTranslation = GetNamedObj(culture["translations"]["model"]["tables"], newTable.Name);
+                            var tableTranslation = GetNamedObj(culture["translations"]?["model"]?["tables"], newTable.Name);
                             if (tableTranslation == null) continue;
                             GetNamedObj(tableTranslation["columns"], newColumn.Name)?.Remove();
                         }
