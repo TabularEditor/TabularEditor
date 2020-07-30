@@ -73,6 +73,8 @@ namespace TabularEditor.TOMWrapper
                     return string.Format("{0}.Expressions[\"{1}\"]", obj.Model.GetLinqPath(), obj.Name);
                 case ObjectType.TablePermission:
                     return string.Format("{0}.TablePermissions[\"{1}\"]", (obj as TablePermission).Role.GetLinqPath(), (obj as TablePermission).Table.Name);
+                case ObjectType.CalculationGroupTable:
+                    return string.Format("({0}.Tables[\"{1}\"] as CalculationGroupTable)", obj.Model.GetLinqPath(), obj.Name);
                 default:
                     throw new NotSupportedException();
             }
