@@ -210,6 +210,7 @@ namespace TabularEditor.UI
             parser.Types.Add("Model", typeof(Model));
             parser.Types.Add("DaxToken", typeof(TOMWrapper.Utils.DaxToken));
             foreach (var t in typeof(Model).Assembly.ExportedTypes.Where(t => t.IsEnum)) parser.Types.Add(t.Name, t);
+            foreach (var t in typeof(Model).Assembly.ExportedTypes.Where(t => t.IsClass)) parser.Classes.Add(t.Name, t);
         }
 
         public void Update(string script, int pos)

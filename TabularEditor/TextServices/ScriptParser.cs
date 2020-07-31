@@ -53,13 +53,12 @@ namespace TabularEditor.TextServices
 
         private readonly int[] DefaultTerminators = new[] { CSharpLexer.SEMICOLON, CSharpLexer.OP_LAMBDA, CSharpLexer.ASSIGNMENT };
 
-    private int FindNext(IList<IToken> tokens, int fromIndex, int findTokenType)
+        private int FindNext(IList<IToken> tokens, int fromIndex, int findTokenType)
         {
             int terminator = 0;
             return Find(tokens, fromIndex, findTokenType, false, true, out terminator);
         }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals")]
+        
         private int FindValid(IList<IToken> tokens, int fromIndex, bool backward, bool skipParens, out int terminator, params int[] terminators)
         {
             terminator = -1;
@@ -79,8 +78,7 @@ namespace TabularEditor.TextServices
                 if (i < 0 || i >= Ts.Size) return -1;
             }
         }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals")]
+        
         private int Find(IList<IToken> tokens, int fromIndex, int findTokenType, bool backward, bool skipParens, out int terminator, params int[] terminators )
         {
             terminator = -1;
@@ -120,6 +118,7 @@ namespace TabularEditor.TextServices
         }
 
         public Dictionary<string, Type> Types = new Dictionary<string, Type>();
+        public Dictionary<string, Type> Classes = new Dictionary<string, Type>();
         private Dictionary<string, Type> localTypes = new Dictionary<string, Type>();
 
         private CSharpLexer _lexer;
@@ -233,6 +232,17 @@ namespace TabularEditor.TextServices
             try
             {
                 var list = Ts.GetTokens().Where(t => t.Channel == 0).ToList();
+
+                // Safe-cast (obj as Type)
+                var tokenIx = FindTokenAtPos(list, pos - 1);
+                if(tokenIx >= 3 
+                    && list[tokenIx].Type == CSharpLexer.DOT 
+                    && list[tokenIx - 1].Type == CSharpLexer.CLOSE_PARENS 
+                    && list[tokenIx - 2].Type == CSharpLexer.IDENTIFIER
+                    && list[tokenIx - 3].Type == CSharpLexer.AS)
+                {
+                    if (Classes.TryGetValue(list[tokenIx - 2].Text, out Type found)) return found;
+                }
 
                 localTypes.Clear();
                 var p = GetPropPathFrom(pos, list);
