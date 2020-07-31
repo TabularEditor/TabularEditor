@@ -45,6 +45,17 @@ namespace Microsoft.AnalysisServices.Tabular.Helper
             return name;
         }
 
+        public static string GetNameTranslation(this NamedMetadataObject obj, Culture culture = null)
+        {
+            if (obj == null) return null;
+            if (culture != null)
+            {
+                var tran = culture.ObjectTranslations[obj, TranslatedProperty.Caption];
+                if (tran != null) return tran.Value;
+            }
+            return null;
+        }
+
         /// <summary>
         /// Throws an exception of the provided new name is invalid for the specified object.
         /// </summary>
@@ -99,7 +110,7 @@ namespace Microsoft.AnalysisServices.Tabular.Helper
                 {
                     foreach (var c in cultures)
                     {
-                        var translatedName = obj.GetName(c);
+                        var translatedName = obj.GetNameTranslation(c);
                         if (!string.IsNullOrEmpty(translatedName) && translatedName.Equals(obj.Name, StringComparison.InvariantCultureIgnoreCase))
                         {
                             obj.SetName(newName, c);
