@@ -36,12 +36,19 @@ namespace TabularEditor.TOMWrapper
         {
             lock (tabularEditorSessionTraces)
             {
-                foreach (var trace in tabularEditorSessionTraces)
+                try
                 {
-                    CleanupTrace(trace);
+                    foreach (var trace in tabularEditorSessionTraces)
+                    {
+                        CleanupTrace(trace);
+                    }
+                    tabularEditorSessionTraces.Clear();
+                    TabularModelHandler.Log("Analysis Services trace cleanup completed");
                 }
-                tabularEditorSessionTraces.Clear();
-                TabularModelHandler.Log("Analysis Services trace cleanup completed");
+                catch (Exception ex)
+                {
+                    TabularModelHandler.Log("Error occurred during trace cleanup: " + ex.Message);
+                }
             }
         }
 
