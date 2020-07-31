@@ -11,6 +11,7 @@ using System.Windows.Forms;
 
 namespace TabularEditor.PropertyGridUI.CollectionEditors
 {
+    // TODO: Consolidate this class and the DataSourceOptionsPropertyCollectionEditor
     internal class CredentialPropertyCollectionEditor: RefreshGridCollectionEditor
     {
         public CredentialPropertyCollectionEditor(): base(typeof(Collection<CredentialProperty>))
