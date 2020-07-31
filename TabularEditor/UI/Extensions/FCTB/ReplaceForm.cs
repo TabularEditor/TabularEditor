@@ -16,6 +16,15 @@ namespace TabularEditor.UI.Extensions.FCTB
         {
             InitializeComponent();
             this.tb = tb;
+            this.tb.TextChanged += Tb_TextChanged;
+        }
+
+        private bool suspendTextChanged = false;
+
+        private void Tb_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (suspendTextChanged) return;
+            ResetSearch();
         }
 
         private void btClose_Click(object sender, EventArgs e)
@@ -28,7 +37,10 @@ namespace TabularEditor.UI.Extensions.FCTB
             try
             {
                 if (!Find(tbFind.Text))
-                    MessageBox.Show(this, "Not found");
+                {
+                    MessageBox.Show(this, "Search reached end of text");
+                    ResetSearch();
+                }
             }
             catch (Exception ex)
             {
@@ -78,8 +90,7 @@ namespace TabularEditor.UI.Extensions.FCTB
             //
             foreach (var r in range.GetRangesByLines(pattern, opt))
             {
-                tb.Selection.Start = r.Start;
-                tb.Selection.End = r.End;
+                tb.Selection = tb.GetRange(r.Start.iChar, r.End.iChar);
                 tb.DoSelectionVisible();
                 tb.Invalidate();
                 return true;
@@ -122,21 +133,32 @@ namespace TabularEditor.UI.Extensions.FCTB
 
         private void btReplace_Click(object sender, EventArgs e)
         {
+            suspendTextChanged = true;
+
             try
             {
                 if (tb.SelectionLength != 0)
                     if (!tb.Selection.ReadOnly)
-                        tb.InsertText(tbReplace.Text);
+                    {
+                        var start = tb.Selection.Start;
+                        tb.SelectedText = "";
+                        tb.Selection = tb.GetRange(start, start);
+                        tb.SelectedText = tbReplace.Text;
+                    }
                 btFindNext_Click(sender, null);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(this, ex.Message);
             }
+
+            suspendTextChanged = false;
         }
 
         private void btReplaceAll_Click(object sender, EventArgs e)
         {
+            suspendTextChanged = true;
+
             try
             {
                 tb.Selection.BeginUpdate();
@@ -167,22 +189,24 @@ namespace TabularEditor.UI.Extensions.FCTB
                 MessageBox.Show(this, ex.Message);
             }
             tb.Selection.EndUpdate();
+
+            suspendTextChanged = false;
         }
 
         protected override void OnActivated(EventArgs e)
         {
             tbFind.Focus();
-            ResetSerach();
+            ResetSearch();
         }
 
-        void ResetSerach()
+        public void ResetSearch()
         {
             firstSearch = true;
         }
 
         private void cbMatchCase_CheckedChanged(object sender, EventArgs e)
         {
-            ResetSerach();
+            ResetSearch();
         }
     }
 }

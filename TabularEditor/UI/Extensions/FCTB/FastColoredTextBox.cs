@@ -27,6 +27,11 @@ namespace TabularEditor.UI.Extensions.FCTB
             betterReplaceForm.Focus();
         }
 
+        public void ResetSearch()
+        {
+            betterReplaceForm.ResetSearch();
+        }
+
         public override void ShowReplaceDialog()
         {
             this.ShowReplaceDialog(null);
