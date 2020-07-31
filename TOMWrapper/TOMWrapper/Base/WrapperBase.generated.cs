@@ -13568,7 +13568,7 @@ namespace TabularEditor.TOMWrapper
 		private bool ShouldSerializeLineageTag() { return false; }
 /// <summary>
 ///             Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter..
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at Preview or above.</remarks>
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1545 or above.</remarks>
 		[DisplayName("Parameter Values Column")]
 		[Category("Options"),Description(@"Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter.."),IntelliSense(@"Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter..")][TypeConverter(typeof(AllColumnConverter))]
 		public Column ParameterValuesColumn {
@@ -13714,7 +13714,7 @@ namespace TabularEditor.TOMWrapper
 				case Properties.MATTRIBUTES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1535 : Handler.CompatibilityLevel >= 1535;
 				case Properties.PARAMETERVALUESCOLUMN:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1545 : Handler.CompatibilityLevel >= 1545;
 				case Properties.QUERYGROUP:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1480 : Handler.CompatibilityLevel >= 1480;
 				case Properties.PARENT:
