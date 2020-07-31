@@ -21,6 +21,29 @@ namespace TabularEditor.TOMWrapper
         public bool IsVisible => !IsHidden;
 
         /// <summary>
+        /// Delete the measure from its current table and create a deep clone (including all translations, if any) in the destination table.
+        /// </summary>
+        /// <param name="destinationTable"></param>
+        [IntelliSense("Delete the measure from its current table and create a deep clone (including all translations, if any) in the destination table.")]
+        public void MoveTo(Table destinationTable)
+        {
+            Handler.BeginUpdate("Move measure");
+            var name = Name;
+            var newMeasure = Clone(null, true, destinationTable);
+            Delete();
+            newMeasure.Name = name;
+            Handler.EndUpdate();
+        }
+
+        [IntelliSense("Delete the measure from its current table and create a deep clone (including all translations, if any) in the destination table.")]
+        public void MoveTo(string destinationTable)
+        {
+            if (!Model.Tables.Contains(destinationTable)) throw new InvalidOperationException($"Model does not contain a table named '{destinationTable}'");
+            var table = Model.Tables[destinationTable];
+            MoveTo(destinationTable);
+        }
+
+        /// <summary>
         ///             A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError. It is applicable only to columns of the type Calculated or CalculatedTableColumn. It will be empty for other column objects.
         ///             </summary>
         [DisplayName("Error Message")]
