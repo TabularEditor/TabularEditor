@@ -40,7 +40,9 @@ namespace TabularEditor.TOMWrapper
             base.Init();
             if (MetadataObject.ConnectionDetails == null) MetadataObject.ConnectionDetails = new TOM.ConnectionDetails();
             if (MetadataObject.Credential == null) MetadataObject.Credential = new TOM.Credential();
+            if (MetadataObject.Options == null) MetadataObject.Options = new TOM.DataSourceOptions();
             this.Credential = new CredentialImpl(this);
+            this.Options = new DataSourceOptionsImpl(this);
         }
 
         [Category("Basic")]
@@ -50,7 +52,10 @@ namespace TabularEditor.TOMWrapper
         }
         private bool ShouldSerializeProtocol() { return false; }
 
-        [Category("Credential"),Editor(typeof(CredentialPropertyCollectionEditor),typeof(UITypeEditor))]
+        [Category("Options"), Editor(typeof(DataSourceOptionsPropertyCollectionEditor), typeof(UITypeEditor)), Description("Protocol-specific options used to connect the data source")]
+        public DataSourceOptionsImpl Options { get; private set; }
+
+        [Category("Credential"),Editor(typeof(CredentialPropertyCollectionEditor),typeof(UITypeEditor)), Description("Protocol-specific options used to authenticate the connection")]
         public CredentialImpl Credential { get; private set; }
         
         [Category("Credential")]
@@ -249,6 +254,50 @@ namespace TabularEditor.TOMWrapper
                     var oldValue = TomCredential[index];
                     TomCredential[index] = value;
                     dataSource.Handler.UndoManager.Add(new UndoCredentialAction(dataSource, index, value as string, oldValue as string));
+                }
+            }
+
+
+            public string GetDisplayName(string key)
+            {
+                return key;
+            }
+        }
+
+        [TypeConverter(typeof(IndexerConverter))]
+        public class DataSourceOptionsImpl : IExpandableIndexer
+        {
+            private readonly StructuredDataSource dataSource;
+            private TOM.DataSourceOptions TomOptions => dataSource.MetadataObject.Options;
+            public DataSourceOptionsImpl(StructuredDataSource dataSource)
+            {
+                this.dataSource = dataSource;
+            }
+
+            public string Summary => "(Click to edit)";
+
+            public IEnumerable<string> Keys
+            {
+                get
+                {
+                    var json = TomOptions.ToString();
+                    if (!string.IsNullOrEmpty(json))
+                        return JObject.Parse(TomOptions.ToString()).Properties().Select(p => p.Name);
+                    else return Enumerable.Empty<string>();
+                }
+            }
+
+            public bool EnableMultiLine => false;
+
+            public object this[string index]
+            {
+                get => TomOptions[index];
+                set
+                {
+                    if (TomOptions[index] == value) return;
+                    var oldValue = TomOptions[index];
+                    TomOptions[index] = value;
+                    dataSource.Handler.UndoManager.Add(new UndoDataSourceOptionsAction(dataSource, index, value as string, oldValue as string));
                 }
             }
 

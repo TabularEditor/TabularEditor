@@ -76,6 +76,7 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="PropertyGridUI\CollectionEditors\DataSourceOptionsPropertyCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\CredentialPropertyCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\SetCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\CalculationItemCollectionEditor.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="TOMWrapper\TabularModelHandler.Events.cs" />
     <Compile Include="TOMWrapper\TabularModelHandler.FileHandling.cs" />
     <Compile Include="TOMWrapper\TabularObjectContainerHelper.cs" />
+    <Compile Include="UndoFramework\UndoDataSourceOptionsAction.cs" />
     <Compile Include="UndoFramework\UndoCredentialAction.cs" />
     <Compile Include="UndoFramework\UndoExtendedPropertyAction.cs" />
     <Compile Include="UndoFramework\UndoCalculationItemsOrderAction.cs" />
