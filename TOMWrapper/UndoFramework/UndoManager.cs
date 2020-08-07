@@ -144,7 +144,8 @@ namespace TabularEditor.TOMWrapper.Undo
                     do
                     {
                         item = stack.Pop();
-                        if (redo) item.Redo();
+                        if (redo)
+                            item.Redo();
                         else item.Undo();
 
                         if(inversable) inverseStack.Push(item);

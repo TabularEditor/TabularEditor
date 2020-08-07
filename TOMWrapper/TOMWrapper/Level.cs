@@ -16,14 +16,9 @@ namespace TabularEditor.TOMWrapper
             base.AfterRemoval(collection);
         }
 
-
         internal override void ReapplyReferences()
         {
             base.ReapplyReferences();
-
-            // Since the original column could have been deleted since the level was deleted, let's find the column by name:
-            var c = (Collection as LevelCollection).Hierarchy.MetadataObject.Table.Columns[MetadataObject.Column.Name];
-            MetadataObject.Column = c;
 
             Hierarchy.FixLevelOrder(this, this.Ordinal);
         }

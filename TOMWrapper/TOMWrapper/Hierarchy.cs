@@ -35,6 +35,10 @@ namespace TabularEditor.TOMWrapper
         }
 
         #region Convenient methods
+        /// <summary>
+        /// Adds a set of levels to the current hirearchy.
+        /// </summary>
+        [IntelliSense("Adds a set of levels to the current hierarchy")]
         public void AddLevels(IEnumerable<Column> columns, int ordinal = -1)
         {
             if (ordinal == -1) ordinal = Levels.Count;
@@ -53,7 +57,10 @@ namespace TabularEditor.TOMWrapper
             Handler.EndUpdate();
         }
 
-
+        /// <summary>
+        /// Adds a level to the current hirearchy.
+        /// </summary>
+        [IntelliSense("Adds a level to the current hierarchy")]
         public Level AddLevel(Column column, string levelName = null, int ordinal = -1)
         {
             if (column == null) throw new ArgumentNullException("column");
@@ -72,6 +79,10 @@ namespace TabularEditor.TOMWrapper
             return level;
         }
 
+        /// <summary>
+        /// Adds a level to the current hirearchy.
+        /// </summary>
+        [IntelliSense("Adds a level to the current hierarchy")]
         public Level AddLevel(string columnName, string levelName = null, int ordinal = -1)
         {
             return AddLevel(Table.Columns[columnName], levelName, ordinal);
@@ -85,8 +96,6 @@ namespace TabularEditor.TOMWrapper
 
         protected override void Init()
         {
-            Levels = new LevelCollection(this.GetObjectPath() + ".Levels", MetadataObject.Levels, this);
-
             // Loop through all levels, to make sure that they point to the current columns (i.e. not "deleted" columns):
             foreach (var l in Levels) l.MetadataObject.Column = l.MetadataObject.Column == null ? null : Table.Columns[l.MetadataObject.Column.Name].MetadataObject;
         }

@@ -138,7 +138,7 @@ namespace TabularEditor.TOMWrapper
         {
             RenewMetadataObject();
 
-            Collection = collection.GetCurrentCollection();
+            Collection = collection;
             Collection.Add(this);
         }
 

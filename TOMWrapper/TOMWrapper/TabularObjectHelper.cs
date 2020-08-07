@@ -100,8 +100,10 @@ namespace TabularEditor.TOMWrapper
                 case TOM.ObjectType.Table:
                 case TOM.ObjectType.Column:
                 case TOM.ObjectType.Hierarchy:
-                case TOM.ObjectType.Level:
                     return GetObjectPathTableObject(obj as TOM.NamedMetadataObject);
+                case TOM.ObjectType.Level:
+                    var level = obj as TOM.Level;
+                    return GetObjectPathTableObject(level.Hierarchy) + "." + level.Name;
                 case TOM.ObjectType.KPI:
                     return GetObjectPathTableObject((obj as TOM.KPI).Measure) + ".KPI";
                 case TOM.ObjectType.Variation:
