@@ -186,7 +186,7 @@ namespace TabularEditor.TOMWrapper
         /// <param name="levels">A list of column names to add as levels of the hierarchy</param>
         /// <returns></returns>
         [IntelliSense("Adds a new hierarchy to the table and returns a reference to the hierarchy.")]
-        public Hierarchy AddHierarchy(string name, string displayFolder = null, params string[] levels)
+        public Hierarchy AddHierarchy(string name, string displayFolder, params string[] levels)
         {
             return AddHierarchy(name, displayFolder, levels.Select(s => Columns[s]).ToArray());
         }

@@ -109,6 +109,42 @@ namespace TabularEditor.TOMWrapper
             return tm;
         }
 
+        [TestMethod]
+        public void HierarchyTest()
+        {
+            var handler = CreateTestModel();
+            var t1 = handler.Model.Tables["Test Table 1"];
+            var c = t1.AddDataColumn("NewLevelCol");
+
+            var l = t1.Hierarchies["Hierarchy 1"].AddLevel(c);
+            handler.UndoManager.Undo();
+            Assert.IsTrue(l.IsRemoved);
+
+            handler.UndoManager.Redo();
+            Assert.IsFalse(l.IsRemoved);
+            Assert.AreEqual(c, l.Column);
+        }
+
+        [TestMethod]
+        public void HierarchyTest2()
+        {
+            var handler = CreateTestModel();
+            var t1 = handler.Model.Tables["Test Table 1"];
+            var c = t1.AddDataColumn("NewLevelCol");
+
+            var l = t1.Hierarchies["Hierarchy 1"].AddLevel(c);
+            handler.UndoManager.Undo();
+            Assert.IsTrue(l.IsRemoved);
+            handler.UndoManager.Undo();
+            Assert.IsTrue(c.IsRemoved);
+
+            handler.UndoManager.Redo();
+            Assert.IsFalse(c.IsRemoved);
+            handler.UndoManager.Redo();
+            Assert.IsFalse(l.IsRemoved);
+            Assert.AreEqual(c, l.Column);
+        }
+
         public TabularModelHandler ResetAndConnect()
         {
             CreateTestModel(TestFileName);

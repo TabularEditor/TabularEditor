@@ -102,8 +102,6 @@ namespace TabularEditor.TOMWrapper
 
             FormulaFixup.BuildDependencyTree();
         }
-
-        internal readonly Dictionary<string, ITabularObjectCollection> WrapperCollections = new Dictionary<string, ITabularObjectCollection>();
         public TabularObject GetWrapperObject(TOM.MetadataObject obj) { return WrapperLookup[obj]; }
         internal readonly Dictionary<TOM.MetadataObject, TabularObject> WrapperLookup = new Dictionary<TOM.MetadataObject, TabularObject>();
 

@@ -19,7 +19,6 @@ namespace TabularEditor.TOMWrapper
         bool Contains(TabularNamedObject obj);
         bool Contains(string key);
         string CollectionName { get; }
-        ITabularObjectCollection GetCurrentCollection();
         int IndexOf(TabularNamedObject obj);
         TabularObject Parent { get; }
         void CreateChildrenFromMetadata();
@@ -40,7 +39,6 @@ namespace TabularEditor.TOMWrapper
             _parent = parent;
             _handler = TabularModelHandler.Singleton;
             CollectionName = collectionName;
-            Handler.WrapperCollections[CollectionName] = this;
         }
         #endregion
         #region Internal / private members
@@ -232,10 +230,6 @@ namespace TabularEditor.TOMWrapper
         }
         TabularModelHandler ITabularObjectCollection.Handler { get { return _handler; } }
         TabularObject ITabularObjectCollection.Parent { get { return _parent; } }
-        ITabularObjectCollection ITabularObjectCollection.GetCurrentCollection()
-        {
-            return Handler.WrapperCollections[CollectionName];
-        }
         int ITabularObjectCollection.IndexOf(TabularNamedObject obj)
         {
             return IndexOf(obj as T);
