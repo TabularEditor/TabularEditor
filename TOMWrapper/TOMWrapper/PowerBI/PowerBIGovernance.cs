@@ -28,7 +28,14 @@ namespace TabularEditor.TOMWrapper.PowerBI
             typeof(Culture)
         };
 
-        public void UpdateGovernanceMode(TabularModelHandler handler)
+        private readonly TabularModelHandler handler;
+
+        public PowerBIGovernance(TabularModelHandler handler)
+        {
+            this.handler = handler;
+        }
+
+        public void UpdateGovernanceMode()
         {
             if (handler.Database == null) return;
 
@@ -142,6 +149,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
                     case ObjectType.Culture:
                         return true;
                     default:
+                        if (obj is ITranslatableObject && this.handler.Tree.Culture != null) return true;
                         return false;
                 }
         }
@@ -251,6 +259,8 @@ namespace TabularEditor.TOMWrapper.PowerBI
                 case Properties.SERVER:
                 case Properties.COMPATIBILITYLEVEL:
                 case Properties.COMPATIBILITYMODE:
+                case Properties.INPERSPECTIVE:
+                case Properties.CULTURE:
                     return true;
             }
             return false;
