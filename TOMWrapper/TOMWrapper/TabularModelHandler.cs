@@ -40,7 +40,7 @@ namespace TabularEditor.TOMWrapper
 
         private void UpdateSettings()
         {
-            PowerBIGovernance.UpdateGovernanceMode(this);
+            PowerBIGovernance.UpdateGovernanceMode();
             _tree?.OnStructureChanged();
             
             if(trace != null)
@@ -108,14 +108,18 @@ namespace TabularEditor.TOMWrapper
         public ModelSourceType SourceType { get; private set; }
         public string Source { get; private set; }
 
+        private TabularModelHandler(TabularModelHandlerSettings settings)
+        {
+            this.PowerBIGovernance = new PowerBIGovernance(this);
+            Settings = settings ?? TabularModelHandlerSettings.Default;
+            Singleton = this;
+        }
+
         /// <summary>
         /// Creates a new blank Tabular Model
         /// </summary>
-        public TabularModelHandler(int compatibilityLevel = 1200, TabularModelHandlerSettings settings = null, bool pbiDatasetModel = false)
+        public TabularModelHandler(int compatibilityLevel = 1200, TabularModelHandlerSettings settings = null, bool pbiDatasetModel = false): this(settings)
         {
-            Settings = settings ?? TabularModelHandlerSettings.Default;
-
-            Singleton = this;
             server = null;
 
             database = new TOM.Database("SemanticModel") { CompatibilityLevel = compatibilityLevel,
@@ -131,9 +135,9 @@ namespace TabularEditor.TOMWrapper
             Init();
 
             UndoManager.Enabled = true;
-            PowerBIGovernance.UpdateGovernanceMode(this);
+            PowerBIGovernance.UpdateGovernanceMode();
         }
-        internal PowerBIGovernance PowerBIGovernance { get; } = new PowerBIGovernance();
+        internal PowerBIGovernance PowerBIGovernance { get; }
 
         private PowerBiTemplate pbit;
 
@@ -215,14 +219,11 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         /// <param name="serverName"></param>
         /// <param name="databaseName"></param>
-        public TabularModelHandler(string serverName, string databaseName, TabularModelHandlerSettings settings = null)
+        public TabularModelHandler(string serverName, string databaseName, TabularModelHandlerSettings settings = null): this(settings)
         {
             this.serverName = serverName;
             _disableUpdates = true;
 
-            Settings = settings ?? TabularModelHandlerSettings.Default;
-
-            Singleton = this;
             server = new TOM.Server();
 
             var connectionString = TabularConnection.GetConnectionString(serverName, applicationName);
@@ -250,7 +251,7 @@ namespace TabularEditor.TOMWrapper
 
             _disableUpdates = false;
             UndoManager.Enabled = true;
-            PowerBIGovernance.UpdateGovernanceMode(this);
+            PowerBIGovernance.UpdateGovernanceMode();
             CheckErrors();
 
             try

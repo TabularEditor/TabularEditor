@@ -21,12 +21,9 @@ namespace TabularEditor.TOMWrapper
         /// or folder.
         /// </summary>
         /// <param name="path"></param>
-        public TabularModelHandler(string path, TabularModelHandlerSettings settings = null)
+        public TabularModelHandler(string path, TabularModelHandlerSettings settings = null): this(settings)
         {
             _disableUpdates = true;
-
-            Singleton = this;
-            Settings = settings ?? TabularModelHandlerSettings.Default;
 
             var file = new FileInfo(path);
 
@@ -43,7 +40,7 @@ namespace TabularEditor.TOMWrapper
             _disableUpdates = false;
 
             UndoManager.Enabled = true;
-            PowerBIGovernance.UpdateGovernanceMode(this);
+            PowerBIGovernance.UpdateGovernanceMode();
         }
 
         private void LoadSplitModelFiles(string path)
