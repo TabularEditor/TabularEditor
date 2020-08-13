@@ -36,6 +36,11 @@ namespace TabularEditor.UIServices
             }
         }
 
+        public static IEnumerable<string> GetLast(int n = 10)
+        {
+            return Enumerable.Reverse(Current.RecentHistory).Take(n);
+        }
+
         public static void Save()
         {
             var json = JsonConvert.SerializeObject(Current, Formatting.Indented);
