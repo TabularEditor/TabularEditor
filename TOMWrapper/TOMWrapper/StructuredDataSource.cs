@@ -259,8 +259,18 @@ namespace TabularEditor.TOMWrapper
                 {
                     if (TomCredential[index] == value) return;
                     var oldValue = TomCredential[index];
-                    TomCredential[index] = value;
-                    dataSource.Handler.UndoManager.Add(new UndoCredentialAction(dataSource, index, value as string, oldValue as string));
+                    if (index == nameof(TOM.Credential.EncryptConnection))
+                    {
+                        if (bool.TryParse(value as string, out bool result)) {
+                            TomCredential[index] = result;
+                            dataSource.Handler.UndoManager.Add(new UndoCredentialAction(dataSource, index, value as string, oldValue as string));
+                        }
+                    }
+                    else
+                    {
+                        TomCredential[index] = value;
+                        dataSource.Handler.UndoManager.Add(new UndoCredentialAction(dataSource, index, value as string, oldValue as string));
+                    }
                 }
             }
 
