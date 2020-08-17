@@ -174,6 +174,7 @@ namespace TabularEditor.PropertyGridUI
                 case DataType.Double:
                 case DataType.Int64:
                     return BrowsableNumberProperty(propertyName);
+                case DataType.Variant:
                 case DataType.Unknown:
                     // If we don't know the datatype of the object, assume it is a number:
                     return BrowsableNumberProperty(propertyName);
