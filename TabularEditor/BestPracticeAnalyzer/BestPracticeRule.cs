@@ -418,10 +418,12 @@ namespace TabularEditor.BestPracticeAnalyzer
         {
             if(model != null)
             {
+                model.Handler.PowerBIGovernance.SuspendGovernance();
                 if (Rules.Count == 0)
                     model.RemoveAnnotation(BPAAnnotation);
                 else
                     model.SetAnnotation(BPAAnnotation, SerializeToJson());
+                model.Handler.PowerBIGovernance.ResumeGovernance();
                 return true;
             }
             else if(!string.IsNullOrEmpty(FilePath))

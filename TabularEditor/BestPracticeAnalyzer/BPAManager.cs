@@ -168,7 +168,7 @@ namespace TabularEditor.BestPracticeAnalyzer
             btnEditRule.Enabled = CurrentRules.Count() == 1 && (CurrentCollection ?? Analyzer.EffectiveCollectionForRule(CurrentRules.FirstOrDefault().ID)).AllowEdit;
             btnClone.Enabled = CurrentCollection?.AllowEdit == true && CurrentRules.Count() == 1 && (CurrentCollection ?? Analyzer.EffectiveCollectionForRule(CurrentRules.FirstOrDefault().ID)).AllowEdit;
             btnDeleteRule.Enabled = CurrentRules.Any() && CurrentRules.All(r => (CurrentCollection ?? Analyzer.EffectiveCollectionForRule(r.ID)).AllowEdit);
-            btnMoveTo.Enabled = CurrentRules.Any();
+            btnMoveTo.Enabled = CurrentCollection != null && CurrentRules.Any();
         }
 
         private BPAEditorForm editor = new BPAEditorForm();
