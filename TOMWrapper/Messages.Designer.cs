@@ -19,7 +19,7 @@ namespace TabularEditor {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Messages {
@@ -165,6 +165,15 @@ namespace TabularEditor {
         internal static string InvalidExpressionProperty {
             get {
                 return ResourceManager.GetString("InvalidExpressionProperty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t remove this object from the TOM since it has already been deleted..
+        /// </summary>
+        internal static string ObjectAlreadyDeleted {
+            get {
+                return ResourceManager.GetString("ObjectAlreadyDeleted", resourceCulture);
             }
         }
         

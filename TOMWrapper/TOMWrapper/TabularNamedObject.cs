@@ -19,7 +19,7 @@ namespace TabularEditor.TOMWrapper
     /// method for editing the (localized) name and description.
     /// </summary>
     [DebuggerDisplay("{ObjectType} {Name}")]
-    public abstract class TabularNamedObject: TabularObject, IInternalTabularNamedObject, IComparable
+    public abstract class TabularNamedObject : TabularObject, IInternalTabularNamedObject, IComparable
     {
         /// <summary>
         /// Derived classes should override this method to prevent an object from being deleted.
@@ -48,6 +48,7 @@ namespace TabularEditor.TOMWrapper
         public bool CanDelete()
         {
             string dummy;
+            if (IsRemoved) return false;
             return CanDelete(out dummy);
         }
 
@@ -60,7 +61,12 @@ namespace TabularEditor.TOMWrapper
         /// <returns>True if the object can currently be deleted. False, otherwise.</returns>
         public bool CanDelete(out string message)
         {
-            if(!Handler.PowerBIGovernance.AllowDelete(GetType()))
+            if (IsRemoved)
+            {
+                message = Messages.ObjectAlreadyDeleted;
+                return false;
+            }
+            if (!Handler.PowerBIGovernance.AllowDelete(GetType()))
             {
                 message = string.Format(Messages.CannotDeletePowerBIObject, GetType().GetTypeName());
                 return false;
@@ -227,7 +233,7 @@ namespace TabularEditor.TOMWrapper
 
         protected override void Init()
         {
-            
+
         }
 
         protected internal new NamedMetadataObject MetadataObject { get { return base.MetadataObject as NamedMetadataObject; } protected set { base.MetadataObject = value; } }
@@ -244,10 +250,12 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("The name of this object. Warning: Changing the name can break formula logic, if Automatic Formula Fix-up is disabled.")]
         public virtual string Name
         {
-            get {
+            get
+            {
                 return MetadataObject.Name;
             }
-            set {
+            set
+            {
                 var oldValue = Name;
                 if (oldValue == value) return;
                 if (string.IsNullOrEmpty(value?.Trim()))
@@ -261,9 +269,9 @@ namespace TabularEditor.TOMWrapper
                 bool cancel = false;
                 OnPropertyChanging(Properties.NAME, value, ref undoable, ref cancel);
                 if (cancel) return;
-                
+
                 MetadataObject.SetName(value, null);
-                
+
                 Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.NAME, oldValue, value));
                 Handler.UpdateObjectName(this);
                 OnPropertyChanged(Properties.NAME, oldValue, value);
