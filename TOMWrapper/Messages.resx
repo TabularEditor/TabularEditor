@@ -153,6 +153,9 @@
   <data name="InvalidExpressionProperty" xml:space="preserve">
     <value>A {0} object does not have a DAX {1} property.</value>
   </data>
+  <data name="ObjectAlreadyDeleted" xml:space="preserve">
+    <value>Can't remove this object from the TOM since it has already been deleted.</value>
+  </data>
   <data name="OperationDelete" xml:space="preserve">
     <value>Delete {0}</value>
   </data>
