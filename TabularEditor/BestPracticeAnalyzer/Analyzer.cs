@@ -37,9 +37,13 @@ namespace TabularEditor.BestPracticeAnalyzer
         }
         public void Save(IAnnotationObject obj)
         {
+            var model = obj.Model;
+            if (model == null) return;
+            model.Handler.PowerBIGovernance.SuspendGovernance();
             obj.RemoveAnnotation("BestPractizeAnalyzer_IgnoreRules"); // Stupid typo in earlier version
             obj.SetAnnotation(Analyzer.BPAAnnotationIgnore, JsonConvert.SerializeObject(this));
-            UI.UIController.Current.Handler.UndoManager.FlagChange();
+            model.Handler.PowerBIGovernance.ResumeGovernance();
+            model.Handler.UndoManager.FlagChange();
         }
     }
 
@@ -292,6 +296,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         {
             if (_model != null)
             {
+                _model.Handler.PowerBIGovernance.SuspendGovernance();
                 if (ExternalRuleCollections?.Count > 0)
                 {
                     var json = JsonConvert.SerializeObject(ExternalRuleCollections.Select(rc => string.IsNullOrEmpty(rc.FilePath) ? rc.Url : rc.FilePath).ToList());
@@ -299,6 +304,7 @@ namespace TabularEditor.BestPracticeAnalyzer
                 }
                 else
                     _model.RemoveAnnotation(BPAAnnotationExternalRules);
+                _model.Handler.PowerBIGovernance.ResumeGovernance();
             }
         }
 

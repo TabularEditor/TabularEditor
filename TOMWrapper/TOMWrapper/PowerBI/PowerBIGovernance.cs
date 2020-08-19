@@ -62,7 +62,23 @@ namespace TabularEditor.TOMWrapper.PowerBI
             return false; // throw new NotImplementedException();
         }
 
-        public PowerBIGovernanceMode GovernanceMode { get; private set; } = PowerBIGovernanceMode.Unrestricted;
+        private PowerBIGovernanceMode internalGovernanceMode = PowerBIGovernanceMode.Unrestricted;
+        public PowerBIGovernanceMode GovernanceMode
+        {
+            get => GovernanceEffective ? internalGovernanceMode : PowerBIGovernanceMode.Unrestricted;
+            set => internalGovernanceMode = value;
+        }
+
+        private int governanceSuspension = 0;
+        private bool GovernanceEffective => governanceSuspension == 0;
+        public void SuspendGovernance()
+        {
+            governanceSuspension++;
+        }
+        public void ResumeGovernance()
+        {
+            governanceSuspension--;
+        }
 
         public bool AllowCreate(Type type)
         {
