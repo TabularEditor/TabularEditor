@@ -146,7 +146,7 @@ namespace TabularEditor.UI.Dialogs
                 if (chkDeployRoles.Checked)
                 {
                     var n3 = n2.Nodes.Add("Deploy Roles and Permissions");
-                    if (chkDeployStructure.Checked) n3.Nodes.Add("Deploy Role Members");
+                    if (chkDeployRoleMembers.Checked) n3.Nodes.Add("Deploy Role Members");
                 }
                 tvSummary.ExpandAll();
             }

@@ -180,7 +180,7 @@ namespace TabularEditor.TOMWrapper.Utils
                 var orgTable = orgTables[newTable.Name];
 
                 // Remove tables that were changed from calculated to imported or vice versa:
-                if (orgTable.GetSourceType() != newTable.GetSourceType())
+                if (orgTable.IsImported() != newTable.IsImported())
                 {
                     GetNamedObj(tmslModel["tables"], newTable.Name).Remove();
 
@@ -190,7 +190,7 @@ namespace TabularEditor.TOMWrapper.Utils
                     if (tmslModel["perspectives"] != null) foreach (JObject perspective in tmslModel["perspectives"])
                         GetNamedObj(perspective["tables"], newTable.Name)?.Remove();
                     if (tmslModel["cultures"] != null) foreach (JObject culture in tmslModel["cultures"])
-                        GetNamedObj(culture["translations"]["model"]["tables"], newTable.Name)?.Remove();
+                        GetNamedObj(culture["translations"]?["model"]?["tables"], newTable.Name)?.Remove();
                     if (tmslModel["relationships"] != null) foreach (JObject relationship in tmslModel["relationships"].Where(r => r.Value<string>("fromTable").EqualsI(newTable.Name)
                     || r.Value<string>("toTable").EqualsI(newTable.Name)).ToList())
                         relationship.Remove();
@@ -370,12 +370,12 @@ namespace TabularEditor.TOMWrapper.Utils
         /// addition, the method will replace any Roles, RoleMembers, Data Sources and Partitions in the TMSL with
         /// the corresponding TMSL from the specified orgDb, depending on the provided DeploymentOptions.
         /// </summary>
-        public static JObject TransformCreateOrReplaceTmsl(this JObject tmslJObj, TOM.Database db, TOM.Database orgDb, DeploymentOptions options)
+        public static JObject TransformCreateOrReplaceTmsl(this JObject tmslJObj, TOM.Database db, TOM.Database destDb, DeploymentOptions options)
         {
             // Deployment target / existing database (note that TMSL uses the NAME of an existing database, not the ID, to identify the object)
-            tmslJObj["createOrReplace"]["object"]["database"] = orgDb.Name;
-            tmslJObj["createOrReplace"]["database"]["id"] = orgDb.ID;
-            tmslJObj["createOrReplace"]["database"]["name"] = orgDb.Name;
+            tmslJObj["createOrReplace"]["object"]["database"] = destDb.Name;
+            tmslJObj["createOrReplace"]["database"]["id"] = destDb.ID;
+            tmslJObj["createOrReplace"]["database"]["name"] = destDb.Name;
 
             var model = tmslJObj.SelectToken("createOrReplace.database.model");
 
@@ -385,7 +385,7 @@ namespace TabularEditor.TOMWrapper.Utils
                 // Remove roles if present and add original:
                 roles = new JArray();
                 model["roles"] = roles;
-                foreach (var role in orgDb.Model.Roles) roles.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(role)));
+                foreach (var role in destDb.Model.Roles) roles.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(role)));
             }
             else if (roles != null && !options.DeployRoleMembers)
             {
@@ -393,12 +393,12 @@ namespace TabularEditor.TOMWrapper.Utils
                 {
                     var members = new JArray();
                     role["members"] = members;
-
+                    
                     // Remove members if present and add original:
                     var roleName = role["name"].Value<string>();
-                    if (orgDb.Model.Roles.Contains(roleName))
+                    if (destDb.Model.Roles.Contains(roleName))
                     {
-                        foreach (var member in orgDb.Model.Roles[roleName].Members)
+                        foreach (var member in destDb.Model.Roles[roleName].Members)
                             members.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(member)));
                     }
                 }
@@ -409,7 +409,7 @@ namespace TabularEditor.TOMWrapper.Utils
                 // Replace existing data sources with those in the target DB:
                 // TODO: Can we do anything to retain credentials on PowerQuery data sources?
                 var dataSources = model["dataSources"] as JArray;
-                foreach (var orgDataSource in orgDb.Model.DataSources)
+                foreach (var orgDataSource in destDb.Model.DataSources)
                 {
                     dataSources.FirstOrDefault(d => d.Value<string>("name").EqualsI(orgDataSource.Name))?.Remove();
                     dataSources.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(orgDataSource)));
@@ -424,9 +424,9 @@ namespace TabularEditor.TOMWrapper.Utils
                     var tableName = table["name"].Value<string>();
                     if (db.Model.Tables[tableName].IsCalculatedOrCalculationGroup()) continue;
 
-                    if (orgDb.Model.Tables.Contains(tableName))
+                    if (destDb.Model.Tables.Contains(tableName))
                     {
-                        var t = orgDb.Model.Tables[tableName];
+                        var t = destDb.Model.Tables[tableName];
                         if (t.IsCalculatedOrCalculationGroup()) continue;
 
                         var partitions = new JArray();
