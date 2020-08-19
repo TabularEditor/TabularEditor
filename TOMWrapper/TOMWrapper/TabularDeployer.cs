@@ -449,12 +449,21 @@ namespace TabularEditor.TOMWrapper.Utils
             tmslJObj["create"]["database"]["id"] = targetDatabaseName;
             tmslJObj["create"]["database"]["name"] = targetDatabaseName;
 
+            var roles = tmslJObj.SelectToken("create.database.model.roles") as JArray;
             if (!options.DeployRoles)
             {
                 // Remove roles if present
-                var roles = tmslJObj.SelectToken("create.database.model.roles") as JArray;
                 if (roles != null) roles.Clear();
             }
+            else if (roles != null && !options.DeployRoleMembers)
+            {
+                foreach (var role in roles)
+                {
+                    var members = new JArray();
+                    role["members"] = members;
+                }
+            }
+            
 
             return tmslJObj;
         }
