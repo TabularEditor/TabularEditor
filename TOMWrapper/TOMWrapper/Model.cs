@@ -45,6 +45,9 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Adds a new calculated table to the model."), Tests.GenerateTest()]
         public CalculatedTable AddCalculatedTable(string name = null, string expression = null)
         {
+            if (!Handler.PowerBIGovernance.AllowCreate(typeof(CalculatedTable)))
+                throw new PowerBIGovernanceException("Adding Calculated Tables to this Power BI model is not supported.");
+
             Handler.BeginUpdate("add calculated table");
             var t = CalculatedTable.CreateNew(this, name, expression);
             Handler.EndUpdate();
@@ -54,6 +57,9 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Adds a new calculation group to the model."), Tests.GenerateTest(), Tests.CompatibilityLevel(1500)]
         public CalculationGroupTable AddCalculationGroup(string name = null)
         {
+            if (!Handler.PowerBIGovernance.AllowCreate(typeof(CalculationGroupTable)))
+                throw new PowerBIGovernanceException("Adding Calculation Groups to this Power BI model is not supported.");
+
             Handler.BeginUpdate("add calculation group");
             var maxPrecedence = Model.CalculationGroups.Select(c => c.CalculationGroupPrecedence).DefaultIfEmpty(-1).Max();
             var t = CalculationGroupTable.CreateNew(this, name);
