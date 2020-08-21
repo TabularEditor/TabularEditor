@@ -62,6 +62,9 @@ namespace TabularEditor.UI.Actions
             // Import Table Wizard...:
             Add(new Action((s, m) => Governance.AllowCreate(typeof(DataColumn)) && s.DirectCount == 1 && s.DataSource is ProviderDataSource, (s, m) => ImportTablesWizard.ShowWizard(m, s.DataSource as ProviderDataSource), (s, m) => "Import Tables...", true, Context.DataSource));
 
+            // Apply Refresh Policy
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(Partition)) && s.DirectCount == 1 && s.Table.EnableRefreshPolicy, (s, m) => s.Table.ApplyRefreshPolicy(), (s, m) => "Apply Refresh Policy", true, Context.Table));
+
             // Schema check:
             Add(new Action((s, m) => Governance.AllowCreate(typeof(DataColumn)) && s.DirectCount == 1 && m.DataSources.Any(ds => ds.Type == DataSourceType.Provider) && s.DataSource is ProviderDataSource, (s, m) => ScriptHelper.SchemaCheck(s.DataSource as ProviderDataSource), (s, m) => "Refresh Table Metadata...", true, Context.DataSource));
             Add(new Action((s, m) => Governance.AllowCreate(typeof(DataColumn)) && s.DirectCount == 1 && m.DataSources.Any(ds => ds.Type == DataSourceType.Provider) && s.Partition.DataSource is ProviderDataSource, (s, m) => ScriptHelper.SchemaCheck(s.Partition), (s, m) => "Refresh Table Metadata...", true, Context.Partition));

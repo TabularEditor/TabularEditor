@@ -58,7 +58,15 @@ namespace TabularEditor.TOMWrapper.Undo
         /// <summary>
         /// Returns true if no changes have been done relative to the last checkpoint set.
         /// </summary>
-        public bool AtCheckpoint { get { return _UndoStack.Count == checkPointCount; } }
+        public bool AtCheckpoint
+        {
+            get
+            {
+                if (_UndoStack.Count == checkPointCount) return true;
+                if (_UndoStack.Count > checkPointCount && _UndoStack.Take(_UndoStack.Count - checkPointCount).All(u => u is UndoBatchAction uba && uba.Begin)) return true;
+                else return false;
+            }
+        }
 
         /// <summary>
         /// Returns a string containing the entire history of changes applied to the model

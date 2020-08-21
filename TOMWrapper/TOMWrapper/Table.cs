@@ -278,7 +278,18 @@ namespace TabularEditor.TOMWrapper
                     return Handler.CompatibilityLevel >= 1400 && Model.Roles.Any();
                 case Properties.ROWLEVELSECURITY:
                     return Model.Roles.Any();
-                default: return true;
+                case nameof(RollingWindowPeriods):
+                case nameof(RollingWindowGranularity):
+                case nameof(IncrementalGranularity):
+                case nameof(IncrementalPeriods):
+                case nameof(IncrementalPeriodsOffset):
+                case nameof(PollingExpression):
+                case nameof(SourceExpression):
+                    return MetadataObject.RefreshPolicy != null;
+                case nameof(EnableRefreshPolicy):
+                    return Handler.PbiMode;
+                default:
+                    return true;
             }
         }
 
@@ -586,6 +597,136 @@ namespace TabularEditor.TOMWrapper
             {
                 
             }
+        }
+
+        [Category("Refresh Policy"),Description("Target granularity of the rolling window for the whole dataset"),IntelliSense("Target granularity of the rolling window for the whole dataset")]
+        public RefreshGranularityType RollingWindowGranularity
+        {
+            get => (RefreshGranularityType)((MetadataObject.RefreshPolicy as TOM.BasicRefreshPolicy)?.RollingWindowGranularity ?? TOM.RefreshGranularityType.Invalid);
+            set
+            {
+                if (MetadataObject.RefreshPolicy is TOM.BasicRefreshPolicy rp)
+                    SetValue(rp.RollingWindowGranularity, (TOM.RefreshGranularityType)value, v => rp.RollingWindowGranularity = v);
+            }
+        }
+        private bool ShouldSerializeRollingWindowGranularity() { return false; }
+
+        [Category("Refresh Policy"), Description("Number of periods for the rolling window for the whole dataset"), IntelliSense("Number of periods for the rolling window for the whole dataset")]
+        public int RollingWindowPeriods
+        {
+            get => (MetadataObject.RefreshPolicy as TOM.BasicRefreshPolicy)?.RollingWindowPeriods ?? 0;
+            set
+            {
+                if (MetadataObject.RefreshPolicy is TOM.BasicRefreshPolicy rp)
+                    SetValue(rp.RollingWindowPeriods, value, v => rp.RollingWindowPeriods = v);
+            }
+        }
+        private bool ShouldSerializeRollingWindowPeriods() { return false; }
+
+        [Category("Refresh Policy"), Description("Granularity of the (most recent) incremental refresh range"), IntelliSense("Granularity of the (most recent) incremental refresh range")]
+        public RefreshGranularityType IncrementalGranularity
+        {
+            get => (RefreshGranularityType)((MetadataObject.RefreshPolicy as TOM.BasicRefreshPolicy)?.IncrementalGranularity ?? TOM.RefreshGranularityType.Invalid);
+            set
+            {
+                if (MetadataObject.RefreshPolicy is TOM.BasicRefreshPolicy rp)
+                    SetValue(rp.IncrementalGranularity, (TOM.RefreshGranularityType)value, v => rp.IncrementalGranularity = v);
+            }
+        }
+        private bool ShouldSerializeIncrementalGranularity() { return false; }
+
+        [Category("Refresh Policy"), Description("Number of periods for the incremental refresh range"), IntelliSense("Number of periods for the incremental refresh range")]
+        public int IncrementalPeriods
+        {
+            get => (MetadataObject.RefreshPolicy as TOM.BasicRefreshPolicy)?.IncrementalPeriods ?? 0;
+            set
+            {
+                if (MetadataObject.RefreshPolicy is TOM.BasicRefreshPolicy rp)
+                    SetValue(rp.IncrementalPeriods, value, v => rp.IncrementalPeriods = v);
+            }
+        }
+        private bool ShouldSerializeIncrementalPeriods() { return false; }
+
+        [Category("Refresh Policy"), Description("Lag or leading periods from Now() to the rolling window head"), IntelliSense("Lag or leading periods from Now() to the rolling window head")]
+        public int IncrementalPeriodsOffset
+        {
+            get => (MetadataObject.RefreshPolicy as TOM.BasicRefreshPolicy)?.IncrementalPeriodsOffset ?? 0;
+            set
+            {
+                if (MetadataObject.RefreshPolicy is TOM.BasicRefreshPolicy rp)
+                    SetValue(rp.IncrementalPeriodsOffset, value, v => rp.IncrementalPeriodsOffset = v);
+            }
+        }
+        private bool ShouldSerializeIncrementalPeriodsOffset() { return false; }
+
+        [Category("Refresh Policy"), Description("If not null, M expression that is evaluated and stored for each partition upon each refresh or merge operation. Result is stored in Partition.RefreshBookmark"),IntelliSense("If not null, M expression that is evaluated and stored for each partition upon each refresh or merge operation. Result is stored in Partition.RefreshBookmark")]
+        public string PollingExpression
+        {
+            get => (MetadataObject.RefreshPolicy as TOM.BasicRefreshPolicy)?.PollingExpression;
+            set
+            {
+                if (MetadataObject.RefreshPolicy is TOM.BasicRefreshPolicy rp)
+                    SetValue(rp.PollingExpression, value, v => rp.PollingExpression = v);
+            }
+        }
+        private bool ShouldSerializePollingExpression() { return false; }
+
+        [Category("Refresh Policy"), Description("M expression that is used as the source M expression for new partitions. It includes the date filter by referring to 2 M parameters named [RangeStart] and [RangeEnd], which can be dates or integers depending on IntegerDateKey below"), IntelliSense("M expression that is used as the source M expression for new partitions. It includes the date filter by referring to 2 M parameters named [RangeStart] and [RangeEnd], which can be dates or integers depending on IntegerDateKey below")]
+        public string SourceExpression
+        {
+            get => (MetadataObject.RefreshPolicy as TOM.BasicRefreshPolicy)?.SourceExpression;
+            set
+            {
+                if (MetadataObject.RefreshPolicy is TOM.BasicRefreshPolicy rp)
+                    SetValue(rp.SourceExpression, value, v => rp.SourceExpression = v);
+            }
+        }
+        private bool ShouldSerializeSourceExpression() { return false; }
+
+        [Category("Refresh Policy"), Description("Enable or disable incremental refresh policy for this table"), IntelliSense("Enable or disable incremental refresh policy for this table")]
+        public bool EnableRefreshPolicy
+        {
+            get => MetadataObject.RefreshPolicy is TOM.BasicRefreshPolicy;
+            set {
+                SetValue(EnableRefreshPolicy, value, v => MetadataObject.RefreshPolicy = v ? new TOM.BasicRefreshPolicy() : null);
+            }
+        }
+        private bool ShouldSerializeEnableRefreshPolicy() { return false; }
+
+        /// <summary>
+        /// Update partition definitions based on the current refresh policy using the specified Effective Date
+        /// </summary>
+        [IntelliSense("Update partition definitions based on the current refresh policy using the specified Effective Date")]
+        public void ApplyRefreshPolicy(DateTime effectiveDate)
+        {
+            if (MetadataObject.RefreshPolicy != null)
+            {
+                if (Handler.HasUnsavedChanges) throw new NotSupportedException("You must save changes to your model metadata to the server, before you can apply a refresh policy.");
+                MetadataObject.ApplyRefreshPolicy(effectiveDate, false);
+                Reinit();
+                Handler.UpdateVersion();
+                Handler.Tree.OnStructureChanged(this.Partitions);
+            }
+            else
+                throw new NotSupportedException("No refresh policy has been defined for this table.");
+        }
+
+        /// <summary>
+        /// Update partition definitions based on the current refresh policy with Now() as Effective Date
+        /// </summary>
+        [IntelliSense("Update partition definitions based on the current refresh policy with Now() as Effective Date")]
+        public void ApplyRefreshPolicy()
+        {
+            if (MetadataObject.RefreshPolicy != null)
+            {
+                if (Handler.HasUnsavedChanges) throw new NotSupportedException("You must save changes to your model metadata to the server, before you can apply a refresh policy.");
+                MetadataObject.ApplyRefreshPolicy(false);
+                Reinit();
+                Handler.UpdateVersion();
+                Handler.Tree.OnStructureChanged(this.Partitions);
+            }
+            else
+                throw new NotSupportedException("No refresh policy has been defined for this table.");
         }
     }
     

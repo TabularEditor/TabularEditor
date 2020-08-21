@@ -92,10 +92,22 @@ namespace TabularEditor.TOMWrapper
 
         void IInternalTabularObject.ReapplyReferences() => ReapplyReferences();
 
-        protected void SetValue(object org, object value, Action<object> setter, string propertyName)
+        protected void SetValue(object org, object value, Action<object> setter, [CallerMemberName] string propertyName = null)
         {
             var oldValue = org;
             if (oldValue == value) return;
+            bool undoable = true;
+            bool cancel = false;
+            OnPropertyChanging(propertyName, value, ref undoable, ref cancel);
+            if (cancel) return;
+            setter(value);
+            if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, propertyName, oldValue, value));
+            OnPropertyChanged(propertyName, oldValue, value);
+        }
+        protected void SetValue<T>(T org, T value, Action<T> setter, [CallerMemberName] string propertyName = null)
+        {
+            var oldValue = org;
+            if ((oldValue == null && value == null) || oldValue.Equals(value)) return;
             bool undoable = true;
             bool cancel = false;
             OnPropertyChanging(propertyName, value, ref undoable, ref cancel);

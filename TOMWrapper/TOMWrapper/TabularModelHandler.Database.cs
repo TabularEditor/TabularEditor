@@ -34,6 +34,12 @@ namespace TabularEditor.TOMWrapper
             };
         }
 
+        public void UpdateVersion()
+        {
+            var versioninfo = CheckConflicts();
+            Version = versioninfo.DatabaseVersion;
+        }
+
         public void KeepAlive()
         {
             if (database?.Server != null) {
