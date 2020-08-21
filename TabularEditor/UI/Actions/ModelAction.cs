@@ -135,9 +135,19 @@ namespace TabularEditor.UI.Actions
             // Check if the context is valid before executing the action:
             if (!ValidContexts.HasX(selection.Context | Context.Model | Context.Tool)) return;
 
-            handler.BeginUpdate(Name);
-            _execute(selection, handler.Model);
-            handler.EndUpdate();
+            try
+            {
+                handler.BeginUpdate(Name);
+                _execute(selection, handler.Model);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("The action failed with the following error: " + e.Message, "Unable to perform action", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+            finally
+            {
+                handler.EndUpdate();
+            }
 
 
             if (ui == null) return;

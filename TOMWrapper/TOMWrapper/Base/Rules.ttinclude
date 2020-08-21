@@ -480,7 +480,8 @@ partial class Rules {
 		"ExtendedPropertyType",
 		"MetadataPermission",
 		"PowerBIDataSourceVersion",
-		"SummarizationType"
+		"SummarizationType",
+		"RefreshGranularityType"
 	};
 	public static readonly Type[] EnumTypes = _enumTypes.Select(t => ASType(t)).Where(t => t != null).ToArray();
 

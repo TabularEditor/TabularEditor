@@ -479,6 +479,16 @@ namespace TabularEditor.TOMWrapper
         Min = 3,
         Max = 4,
 	}
+	/// <summary>
+///             Specifies the granularity of the refresh policy for auto partitioning
+///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1450 or above.</remarks>
+	public enum RefreshGranularityType {    
+        Day = 0,
+        Month = 1,
+        Quarter = 2,
+        Year = 3,
+        Invalid = -1,
+	}
   
 	/// <summary>
 ///             Variation object.

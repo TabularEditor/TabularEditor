@@ -42,6 +42,45 @@ namespace TabularEditor.TOMWrapper
             base.Init();
         }
 
+        [Category("Refresh Policy"), Description("Gets or sets the range start of the refresh policy for this partition"), IntelliSense("Gets or sets the range start of the refresh policy for this partition")]
+        public DateTime Start
+        {
+            get => (MetadataObject.Source as TOM.PolicyRangePartitionSource)?.Start ?? DateTime.MinValue;
+            set
+            {
+                if (MetadataObject.Source is TOM.PolicyRangePartitionSource prps)
+                    SetValue(prps.Start, value, v => prps.Start = v);
+            }
+        }
+
+        [Category("Refresh Policy"), Description("Gets or sets the range end of the refresh policy for this partition"), IntelliSense("Gets or sets the range end of the refresh policy for this partition")]
+        public DateTime End
+        {
+            get => (MetadataObject.Source as TOM.PolicyRangePartitionSource)?.End ?? DateTime.MinValue;
+            set
+            {
+                if (MetadataObject.Source is TOM.PolicyRangePartitionSource prps)
+                    SetValue(prps.End, value, v => prps.End = v);
+            }
+        }
+
+        [Category("Refresh Policy"), Description("Gets or sets the granularity of the refresh policy for this partition"), IntelliSense("Gets or sets the granularity of the refresh policy for this partition")]
+        public RefreshGranularityType Granularity
+        {
+            get => (RefreshGranularityType)((MetadataObject.Source as TOM.PolicyRangePartitionSource)?.Granularity ?? TOM.RefreshGranularityType.Invalid);
+            set
+            {
+                if (MetadataObject.Source is TOM.PolicyRangePartitionSource prps)
+                    SetValue(prps.Granularity, (TOM.RefreshGranularityType)value, v => prps.Granularity = v);
+            }
+        }
+
+        [Category("Refresh Policy"), Description("Gets the refresh bookmark of the refresh policy for this partition"), IntelliSense("Gets the refresh bookmark of the refresh policy for this partition")]
+        public string RefreshBookmark
+        {
+            get => (MetadataObject.Source as TOM.PolicyRangePartitionSource)?.RefreshBookmark;
+        }
+
         [Category("Basic"),Description("The query which is executed on the Data Source to populate this partition with data.")]
         [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor)), IntelliSense("Gets or sets the query which is executed on the Data Source to populate the partition with data.")]
         public string Query { get { return Expression; } set { Expression = value; } }
@@ -144,6 +183,11 @@ namespace TabularEditor.TOMWrapper
                 case Properties.SOURCETYPE:
                 case Properties.ANNOTATIONS:
                     return true;
+                case Properties.START:
+                case Properties.END:
+                case Properties.GRANULARITY:
+                case Properties.REFRESHBOOKMARK:
+                    return SourceType == PartitionSourceType.PolicyRange;
                 default:
                     return false;
             }
@@ -181,14 +225,17 @@ namespace TabularEditor.TOMWrapper
         {
             switch(propertyName)
             {
-                case "Name":
-                case "Description":
-                case "DataSource":
-                case "Query":
-                case "Expression":
-                case "Mode":
-                case "DataView":
-                case "Annotations":
+                case Properties.NAME:
+                case Properties.DESCRIPTION:
+                case Properties.DATASOURCE:
+                case Properties.QUERY:
+                case Properties.EXPRESSION:
+                case Properties.MODE:
+                case Properties.DATAVIEW:
+                case Properties.ANNOTATIONS:
+                case Properties.START:
+                case Properties.END:
+                case Properties.GRANULARITY:
                     return true;
                 default:
                     return false;
@@ -367,5 +414,15 @@ namespace TabularEditor.TOMWrapper
         {
             return this;
         }
+    }
+
+    internal static partial class Properties
+    {
+        public const string START = "Start";
+        public const string END = "End";
+        public const string GRANULARITY = "Granularity";
+        public const string REFRESHBOOKMARK = "RefreshBookmark";
+        public const string DATASOURCE = "DataSource";
+        public const string QUERY = "Query";
     }
 }
