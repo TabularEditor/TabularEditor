@@ -288,13 +288,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                     return true;
                 }
                 scriptFile = argList[doScript + 1];
-                if (!File.Exists(scriptFile))
-                {
-                    Error("Specified script file not found.\n");
-                    return true;
-                }
-
-                script = File.ReadAllText(scriptFile);
+                script = File.Exists(scriptFile) ? File.ReadAllText(scriptFile) : scriptFile;
             }
 
             var doCheckDs = upperArgList.IndexOf("-SCHEMACHECK");
@@ -482,8 +476,53 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             if (deploy == -1) deploy = upperArgList.IndexOf("-D");
             if (deploy > -1)
             {
-                var serverName = argList.Skip(deploy + 1).FirstOrDefault(); if (serverName != null && serverName.StartsWith("-")) serverName = null;
+                var serverName = argList.Skip(deploy + 1).FirstOrDefault(); if (serverName == null || serverName.StartsWith("-")) serverName = null;
                 var databaseID = argList.Skip(deploy + 2).FirstOrDefault(); if (databaseID != null && databaseID.StartsWith("-")) databaseID = null;
+
+                // Perform direct save:
+                if (serverName == null)
+                {
+                    var nextSwitch = upperArgList.Skip(deploy + 1).FirstOrDefault();
+                    var deploySwitches = new[] { "-L", "-LOGIN", "-O", "-OVERWRITE", "-C", "-CONNECTIONS", "-P", "-PARTITIONS", "-R", "-ROLES", "-M", "-MEMBERS", "-X", "-XMLA" };
+                    if (deploySwitches.Contains(nextSwitch))
+                    {
+                        Error("Invalid argument syntax.\n");
+                        OutputUsage();
+                        return true;
+                    }
+
+                    Console.WriteLine("Saving model metadata back to source...");
+                    if (h.SourceType == ModelSourceType.Database)
+                    {
+                        try
+                        {
+                            h.SaveDB();
+                            Console.WriteLine("Model metadata saved."); 
+
+                            var deploymentResult = h.GetLastDeploymentResults();
+                            foreach (var err in deploymentResult.Issues) if (errorOnDaxErr) Error(err); else Warning(err);
+                            foreach (var err in deploymentResult.Warnings) Warning(err);
+                            foreach (var err in deploymentResult.Unprocessed) if (warnOnUnprocessed) Warning(err); else Console.WriteLine(err);
+                        }
+                        catch (Exception ex)
+                        {
+                            Error("Save failed: " + ex.Message);
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            h.Save(h.Source, h.SourceType == ModelSourceType.Folder ? SaveFormat.TabularEditorFolder : h.SourceType == ModelSourceType.Pbit ? SaveFormat.PowerBiTemplate : SaveFormat.ModelSchemaOnly, h.SerializeOptions, true);
+                            Console.WriteLine("Model metadata saved.");
+                        }
+                        catch (Exception ex)
+                        {
+                            Error("Save failed: " + ex.Message);
+                        }
+                    }
+                    return true;
+                }
 
                 var conn = upperArgList.IndexOf("-CONNECTIONS");
                 if (conn == -1) conn = upperArgList.IndexOf("-C");
@@ -654,7 +693,7 @@ file                Full path of the Model.bim file or database.json model folde
 server              Server\instance name or connection string from which to load the model
 database            Database ID of the model to load
 -S / -SCRIPT        Execute the specified script on the model after loading.
-  script              Full path of a file containing a C# script to execute.
+  script              Full path of a file containing a C# script to execute or an inline script.
 -SC / -SCHEMACHECK  Attempts to connect to all Provider Data Sources in order to detect table schema
                     changes. Outputs...
                       ...warnings for mismatched data types and unmapped source columns
@@ -671,6 +710,8 @@ database            Database ID of the model to load
                       specified, model is not analyzed against local user/local machine rules,
                       but rules defined within the model are still applied.
 -D / -DEPLOY        Command-line deployment
+                      If no additional parameters are specified, this switch will save model metadata
+                      back to the source (file or database).
   server              Name of server to deploy to or connection string to Analysis Services.
   database            ID of the database to deploy (create/overwrite).
   -L / -LOGIN         Disables integrated security when connecting to the server. Specify:
