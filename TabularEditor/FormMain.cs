@@ -768,12 +768,13 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void nodeTextBox5_ValueNeeded(object sender, Aga.Controls.Tree.NodeControls.NodeControlValueEventArgs e)
         {
-            e.Value = (e.Node.Tag as TOMWrapper.Table)?.Source ??
-                (e.Node.Tag as TOMWrapper.Partition)?.Expression.Replace("\n", " ").Trim() ??
+            var value = (e.Node.Tag as TOMWrapper.Table)?.Source ??
+                (e.Node.Tag as TOMWrapper.Partition)?.Expression ??
                 (e.Node.Tag as TOMWrapper.DataColumn)?.SourceColumn ??
                 (e.Node.Tag as TOMWrapper.CalculatedTableColumn)?.SourceColumn ??
                 (e.Node.Tag as TOMWrapper.Level)?.Column?.DaxObjectName ??
-                (e.Node.Tag as TOMWrapper.IExpressionObject)?.Expression.Replace("\n", " ").Trim();
+                (e.Node.Tag as TOMWrapper.IExpressionObject)?.Expression;
+            e.Value = (value ?? string.Empty).Replace('\n', ' ').Trim();
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
