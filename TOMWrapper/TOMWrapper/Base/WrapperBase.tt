@@ -472,7 +472,7 @@ if(Rules.GetParent(t) == "Model") { #>
 		public <#= Rules.Sealed(t) ? "" : "virtual " #><#= t.Name #> Clone(string newName = null<#= 
 Rules.IsTranslatable(t, true) ? ", bool includeTranslations = true" : "" #><#=
 Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" : "" #>) {
-			if(!Handler.PowerBIGovernance.AllowCreate(typeof(<#= t.Name #>))) {
+			if(!Handler.PowerBIGovernance.AllowCreate(this.GetType())) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(<#= t.Name #>).GetTypeName()));
 			}
 
@@ -492,6 +492,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 			// Create the TOM Wrapper object, representing the metadataobject
 			<#= t.Name #> obj <# if(t.Name == "Table") { #>;
 			if(this is CalculatedTable) obj = CalculatedTable.CreateFromMetadata(Parent, tom);
+			else if(this is CalculationGroupTable) obj = CalculationGroupTable.CreateFromMetadata(Parent, tom);
 			else obj <# } #>= CreateFromMetadata(<#= Rules.GetParent(t) != "Model" ? "newParent ?? " : "" #>Parent, tom);
 
 <# if (Rules.IsTranslatable(t, true)) { #>
