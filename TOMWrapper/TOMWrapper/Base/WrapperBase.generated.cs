@@ -143,6 +143,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string SORTBYCOLUMN = "SortByColumn";
 	    public const string SOURCE = "Source";
 	    public const string SOURCECOLUMN = "SourceColumn";
+	    public const string SOURCELINEAGETAG = "SourceLineageTag";
 	    public const string SOURCEPROVIDERTYPE = "SourceProviderType";
 	    public const string SOURCEQUERYCULTURE = "SourceQueryCulture";
 	    public const string SOURCETYPE = "SourceType";
@@ -2509,6 +2510,30 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeLineageTag() { return false; }
+/// <summary>
+///             A tag that represents the lineage of the source for the object.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1550 or above.</remarks>
+		[DisplayName("Source Lineage Tag")]
+		[Category("Options"),Description(@"A tag that represents the lineage of the source for the object."),IntelliSense(@"A tag that represents the lineage of the source for the object.")]
+		public string SourceLineageTag {
+			get {
+			    return MetadataObject.SourceLineageTag;
+			}
+			set {
+				
+				var oldValue = SourceLineageTag;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.SOURCELINEAGETAG, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.SourceLineageTag = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SOURCELINEAGETAG, oldValue, newValue));
+				OnPropertyChanged(Properties.SOURCELINEAGETAG, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeSourceLineageTag() { return false; }
 		///<summary>The parent table of the current Column.</summary>
 		[Browsable(false)]
 		public Table Table
@@ -2646,6 +2671,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1540 : Handler.CompatibilityLevel >= 1540;
 				case Properties.RELATEDCOLUMNDETAILS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : false;
+				case Properties.SOURCELINEAGETAG:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1550 : Handler.CompatibilityLevel >= 1550;
 				case Properties.VARIATIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1200 : Handler.CompatibilityLevel >= 1400;
 				
@@ -2962,6 +2989,18 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("LineageTag"));
 				this.ToList().ForEach(item => { item.LineageTag = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the SourceLineageTag property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the SourceLineageTag property of all objects in the collection at once.")]
+		public string SourceLineageTag {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("SourceLineageTag"));
+				this.ToList().ForEach(item => { item.SourceLineageTag = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}
@@ -4674,6 +4713,30 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeLineageTag() { return false; }
+/// <summary>
+///             A tag that represents the lineage of the source for the object.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1550 or above.</remarks>
+		[DisplayName("Source Lineage Tag")]
+		[Category("Options"),Description(@"A tag that represents the lineage of the source for the object."),IntelliSense(@"A tag that represents the lineage of the source for the object.")]
+		public string SourceLineageTag {
+			get {
+			    return MetadataObject.SourceLineageTag;
+			}
+			set {
+				
+				var oldValue = SourceLineageTag;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.SOURCELINEAGETAG, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.SourceLineageTag = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SOURCELINEAGETAG, oldValue, newValue));
+				OnPropertyChanged(Properties.SOURCELINEAGETAG, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeSourceLineageTag() { return false; }
 		///<summary>The parent table of the current Hierarchy.</summary>
 		[Browsable(false)]
 		public Table Table
@@ -4859,6 +4922,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.LINEAGETAG:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1540 : Handler.CompatibilityLevel >= 1540;
+				case Properties.SOURCELINEAGETAG:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1550 : Handler.CompatibilityLevel >= 1550;
 				case Properties.PARENT:
 					return false;
 				
@@ -4999,6 +5064,18 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("LineageTag"));
 				this.ToList().ForEach(item => { item.LineageTag = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the SourceLineageTag property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the SourceLineageTag property of all objects in the collection at once.")]
+		public string SourceLineageTag {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("SourceLineageTag"));
+				this.ToList().ForEach(item => { item.SourceLineageTag = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}
@@ -6186,6 +6263,30 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeLineageTag() { return false; }
 /// <summary>
+///             A tag that represents the lineage of the source for the object.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1550 or above.</remarks>
+		[DisplayName("Source Lineage Tag")]
+		[Category("Options"),Description(@"A tag that represents the lineage of the source for the object."),IntelliSense(@"A tag that represents the lineage of the source for the object.")]
+		public string SourceLineageTag {
+			get {
+			    return MetadataObject.SourceLineageTag;
+			}
+			set {
+				
+				var oldValue = SourceLineageTag;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.SOURCELINEAGETAG, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.SourceLineageTag = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SOURCELINEAGETAG, oldValue, newValue));
+				OnPropertyChanged(Properties.SOURCELINEAGETAG, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeSourceLineageTag() { return false; }
+/// <summary>
 ///             A reference to a Hierarchy object that owns this level.
 ///             </summary>
 		[DisplayName("Hierarchy")]
@@ -6353,6 +6454,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.LINEAGETAG:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1540 : Handler.CompatibilityLevel >= 1540;
+				case Properties.SOURCELINEAGETAG:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1550 : Handler.CompatibilityLevel >= 1550;
 				case Properties.PARENT:
 					return false;
 				
@@ -6452,6 +6555,18 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("LineageTag"));
 				this.ToList().ForEach(item => { item.LineageTag = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the SourceLineageTag property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the SourceLineageTag property of all objects in the collection at once.")]
+		public string SourceLineageTag {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("SourceLineageTag"));
+				this.ToList().ForEach(item => { item.SourceLineageTag = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}
@@ -6957,6 +7072,30 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeLineageTag() { return false; }
+/// <summary>
+///             A tag that represents the lineage of the source for the object.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1550 or above.</remarks>
+		[DisplayName("Source Lineage Tag")]
+		[Category("Options"),Description(@"A tag that represents the lineage of the source for the object."),IntelliSense(@"A tag that represents the lineage of the source for the object.")]
+		public string SourceLineageTag {
+			get {
+			    return MetadataObject.SourceLineageTag;
+			}
+			set {
+				
+				var oldValue = SourceLineageTag;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.SOURCELINEAGETAG, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.SourceLineageTag = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SOURCELINEAGETAG, oldValue, newValue));
+				OnPropertyChanged(Properties.SOURCELINEAGETAG, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeSourceLineageTag() { return false; }
 		///<summary>The parent table of the current Measure.</summary>
 		[Browsable(false)]
 		public Table Table
@@ -7124,6 +7263,8 @@ namespace TabularEditor.TOMWrapper
 					return false;
 				case Properties.LINEAGETAG:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1540 : Handler.CompatibilityLevel >= 1540;
+				case Properties.SOURCELINEAGETAG:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1550 : Handler.CompatibilityLevel >= 1550;
 				case Properties.PARENT:
 					return false;
 				
@@ -7299,6 +7440,18 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("LineageTag"));
 				this.ToList().ForEach(item => { item.LineageTag = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the SourceLineageTag property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the SourceLineageTag property of all objects in the collection at once.")]
+		public string SourceLineageTag {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("SourceLineageTag"));
+				this.ToList().ForEach(item => { item.SourceLineageTag = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}
@@ -12616,6 +12769,30 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeLineageTag() { return false; }
+/// <summary>
+///             A tag that represents the lineage of the source for the object.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1550 or above.</remarks>
+		[DisplayName("Source Lineage Tag")]
+		[Category("Options"),Description(@"A tag that represents the lineage of the source for the object."),IntelliSense(@"A tag that represents the lineage of the source for the object.")]
+		public string SourceLineageTag {
+			get {
+			    return MetadataObject.SourceLineageTag;
+			}
+			set {
+				
+				var oldValue = SourceLineageTag;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.SOURCELINEAGETAG, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.SourceLineageTag = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SOURCELINEAGETAG, oldValue, newValue));
+				OnPropertyChanged(Properties.SOURCELINEAGETAG, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeSourceLineageTag() { return false; }
 
         /// <Summary>
 		/// Collection of perspectives in which this Table is visible.
@@ -12864,6 +13041,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : false;
 				case Properties.SHOWASVARIATIONSONLY:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1200 : Handler.CompatibilityLevel >= 1400;
+				case Properties.SOURCELINEAGETAG:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1550 : Handler.CompatibilityLevel >= 1550;
 				case Properties.PARENT:
 					return false;
 				
@@ -13041,6 +13220,18 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("LineageTag"));
 				this.ToList().ForEach(item => { item.LineageTag = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the SourceLineageTag property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the SourceLineageTag property of all objects in the collection at once.")]
+		public string SourceLineageTag {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("SourceLineageTag"));
+				this.ToList().ForEach(item => { item.SourceLineageTag = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}
@@ -13568,6 +13759,30 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeLineageTag() { return false; }
 /// <summary>
+///             A tag that represents the lineage of the source for the object.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1550 or above.</remarks>
+		[DisplayName("Source Lineage Tag")]
+		[Category("Options"),Description(@"A tag that represents the lineage of the source for the object."),IntelliSense(@"A tag that represents the lineage of the source for the object.")]
+		public string SourceLineageTag {
+			get {
+			    return MetadataObject.SourceLineageTag;
+			}
+			set {
+				
+				var oldValue = SourceLineageTag;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.SOURCELINEAGETAG, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.SourceLineageTag = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SOURCELINEAGETAG, oldValue, newValue));
+				OnPropertyChanged(Properties.SOURCELINEAGETAG, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeSourceLineageTag() { return false; }
+/// <summary>
 ///             Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter..
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1545 or above.</remarks>
 		[DisplayName("Parameter Values Column")]
@@ -13718,6 +13933,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1545 : Handler.CompatibilityLevel >= 1545;
 				case Properties.QUERYGROUP:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1480 : Handler.CompatibilityLevel >= 1480;
+				case Properties.SOURCELINEAGETAG:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1550 : Handler.CompatibilityLevel >= 1550;
 				case Properties.PARENT:
 					return false;
 				
@@ -13848,6 +14065,18 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("LineageTag"));
 				this.ToList().ForEach(item => { item.LineageTag = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the SourceLineageTag property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the SourceLineageTag property of all objects in the collection at once.")]
+		public string SourceLineageTag {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("SourceLineageTag"));
+				this.ToList().ForEach(item => { item.SourceLineageTag = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}
