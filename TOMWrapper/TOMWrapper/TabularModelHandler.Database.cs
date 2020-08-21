@@ -48,6 +48,11 @@ namespace TabularEditor.TOMWrapper
              }
         }
 
+        public DeploymentResult GetLastDeploymentResults()
+        {
+            return TabularDeployer.GetLastDeploymentResults(database);
+        }
+
         /// <summary>
         /// Saves the changes to the database. It is the users responsibility to check if changes were made
         /// to the database since it was loaded to the TOMWrapper. You can use Handler.CheckConflicts() for

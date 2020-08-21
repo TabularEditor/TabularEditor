@@ -321,6 +321,12 @@ namespace TabularEditor.TOMWrapper
                     .Select(c => new Tuple<TOM.NamedMetadataObject, TOM.ObjectState>(c, c.State))
                 );
 
+            // Find calculated columns that are not in the "Ready" state:
+            result.AddRange(
+                    database.Model.Tables.SelectMany(t => t.Columns.OfType<TOM.DataColumn>()).Where(c => c.State != TOM.ObjectState.Ready)
+                    .Select(c => new Tuple<TOM.NamedMetadataObject, TOM.ObjectState>(c, c.State))
+                );
+
             return result;
         }
 

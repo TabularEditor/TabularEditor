@@ -112,14 +112,19 @@ namespace TabularEditor.TOMWrapper.Utils
             // Fully refresh the deployed database object, to make sure we get updated error messages for the full object tree:
             var deployedDB = destinationServer.Databases.GetByName(targetDatabaseName);
             deployedDB.Refresh(true);
+            return GetLastDeploymentResults(deployedDB);
+        }
+
+        public static DeploymentResult GetLastDeploymentResults(TOM.Database database)
+        {
             return
                 new DeploymentResult(
-                    TabularModelHandler.CheckErrors(deployedDB).Select(t => string.Format("Error on {0}: {1}", GetName(t.Item1), t.Item2)),
-                    TabularModelHandler.GetObjectsNotReady(deployedDB).Where(t => t.Item2 == TOM.ObjectState.DependencyError || t.Item2 == TOM.ObjectState.EvaluationError || t.Item2 == TOM.ObjectState.SemanticError)
+                    TabularModelHandler.CheckErrors(database).Select(t => string.Format("Error on {0}: {1}", GetName(t.Item1), t.Item2)),
+                    TabularModelHandler.GetObjectsNotReady(database).Where(t => t.Item2 == TOM.ObjectState.DependencyError || t.Item2 == TOM.ObjectState.EvaluationError || t.Item2 == TOM.ObjectState.SemanticError)
                         .Select(t => string.Format("Warning! Object not in \"Ready\"-state: {0} ({1})", GetName(t.Item1), t.Item2.ToString())),
-                    TabularModelHandler.GetObjectsNotReady(deployedDB).Where(t => t.Item2 == TOM.ObjectState.CalculationNeeded || t.Item2 == TOM.ObjectState.NoData)
+                    TabularModelHandler.GetObjectsNotReady(database).Where(t => t.Item2 == TOM.ObjectState.CalculationNeeded || t.Item2 == TOM.ObjectState.NoData || t.Item2 == TOM.ObjectState.Incomplete)
                         .Select(t => string.Format("Information: Unprocessed object: {0} ({1})", GetName(t.Item1), t.Item2.ToString())),
-                    destinationServer
+                    database.Server
                 );
         }
 
