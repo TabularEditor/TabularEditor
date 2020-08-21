@@ -607,10 +607,10 @@ namespace TabularEditor.TOMWrapper
             var sourceType = GetSourceType(table);
             return sourceType == TOM.PartitionSourceType.Calculated || sourceType == TOM.PartitionSourceType.CalculationGroup;
         }
-        public static bool IsImported(this TOM.Table table)
+        public static bool IsCalculated(this TOM.Table table)
         {
             var sourceType = GetSourceType(table);
-            return sourceType == TOM.PartitionSourceType.M || sourceType == TOM.PartitionSourceType.Query;
+            return sourceType == TOM.PartitionSourceType.Calculated;
         }
     }
 }

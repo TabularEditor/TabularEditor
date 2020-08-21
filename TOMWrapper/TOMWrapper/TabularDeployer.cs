@@ -180,7 +180,7 @@ namespace TabularEditor.TOMWrapper.Utils
                 var orgTable = orgTables[newTable.Name];
 
                 // Remove tables that were changed from calculated to imported or vice versa:
-                if (orgTable.IsImported() != newTable.IsImported())
+                if (orgTable.IsCalculated() != newTable.IsCalculated())
                 {
                     GetNamedObj(tmslModel["tables"], newTable.Name).Remove();
 
