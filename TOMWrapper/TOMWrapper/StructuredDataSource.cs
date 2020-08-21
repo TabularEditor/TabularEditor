@@ -26,8 +26,8 @@ namespace TabularEditor.TOMWrapper
                 Handler.UndoManager.BeginBatch("Update M expressions");
 
                 // TODO: Very crude search-and-replace. We should lex/tokenize the M expressions instead, to be sure that we're doing this right.
-                foreach (var namedExpr in base.Model.Expressions) namedExpr.Expression = namedExpr.Expression.Replace($"#\"{oldValue}\"", $"#\"{newValue}\"");
-                foreach (var part in base.Model.AllPartitions.OfType<MPartition>()) part.Expression = part.Expression.Replace($"#\"{oldValue}\"", $"#\"{newValue}\"");
+                foreach (var namedExpr in base.Model.Expressions) if(namedExpr.Expression != null) namedExpr.Expression = namedExpr.Expression.Replace($"#\"{oldValue}\"", $"#\"{newValue}\"");
+                foreach (var part in base.Model.AllPartitions.OfType<MPartition>()) if (part.Expression != null) part.Expression = part.Expression.Replace($"#\"{oldValue}\"", $"#\"{newValue}\"");
 
                 Handler.UndoManager.EndBatch();
             }
