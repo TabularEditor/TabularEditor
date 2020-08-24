@@ -690,8 +690,8 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             Console.WriteLine(@"Usage:
 
 TABULAREDITOR ( file | server database ) [-S script] [-SC] [(-B | -F) output [id]] [-A [rulefile]] [-V]
-    [-D server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]] [-P] [-R [-M]]]
-        [-W] [-E] [-X xmla_script]] [-N resultsfile]
+    [-D [server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]] [-P] [-R [-M]]]
+        [-X xmla_script]] [-W] [-E]] [-N resultsfile]
 
 file                Full path of the Model.bim file or database.json model folder to load.
 server              Server\instance name or connection string from which to load the model
@@ -730,13 +730,13 @@ database            Database ID of the model to load
     -P / -PARTITIONS    Deploy (overwrite) existing table partitions in the model.
     -R / -ROLES         Deploy roles.
       -M / -MEMBERS       Deploy role members.
-    -W / -WARN        Outputs information about unprocessed objects as warnings.
-    -E / -ERR         Returns a non-zero exit code if Analysis Services returns any error messages
-                        after deployment.
-    -X / -XMLA        No deployment. Generate XMLA/TMSL script for later deployment instead. 
-      xmla_script       File name of the new XMLA/TMSL script output.
-  -T / -TRX         Produces a VSTEST (trx) file with details on the execution.
-    resultsfile       File name of the VSTEST XML file.");
+  -X / -XMLA        No deployment. Generate XMLA/TMSL script for later deployment instead.
+    xmla_script       File name of the new XMLA/TMSL script output.
+  -W / -WARN        Outputs information about unprocessed objects as warnings.
+  -E / -ERR         Returns a non-zero exit code if Analysis Services returns any error messages after
+                      the metadata was deployed / updated.
+-T / -TRX         Produces a VSTEST (trx) file with details on the execution.
+  resultsfile       File name of the VSTEST XML file.");
         }
     }
 }
