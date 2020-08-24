@@ -368,6 +368,7 @@ namespace TabularEditor.Scripting
             includeAssemblies.Add(WrapperDllPath);                                 // TOMWrapper.dll
             includeAssemblies.Add(TomDllPath);                                            // Microsoft.AnalysisServices.Tabular.dll
             includeAssemblies.Add(NewtonsoftJsonDllPath);                          // Newtonsoft.Json.dll
+            includeAssemblies.Add("System.Xml.dll");                          // Newtonsoft.Json.dll
 
             // Custom assemblies:
             if (customAssemblies != null)
@@ -375,15 +376,25 @@ namespace TabularEditor.Scripting
                 foreach (var asm in customAssemblies)
                 {
                     if (string.IsNullOrEmpty(asm)) continue;
+
+                    // First, probe the Tabular Editor installation folder for the assembly:
+                    var probe = AppDomain.CurrentDomain.BaseDirectory + asm;
+                    if (File.Exists(probe))
+                    {
+                        includeAssemblies.Add(probe);
+                        continue;
+                    }
                     
+                    // Next, probe GAC:
                     var asmPath = GetAssemblyPath(asm);
                     if (!string.IsNullOrEmpty(asmPath))
                     {
-                        if (includeAssemblies.Contains(asmPath)) continue;
                         includeAssemblies.Add(asmPath);
+                        continue;
                     }
-                    else
-                        includeAssemblies.Add(asm);
+
+                    // Lastly, include ref as is - compiler will throw an error if not resolved:
+                    includeAssemblies.Add(asm);
                 }
             }
 
