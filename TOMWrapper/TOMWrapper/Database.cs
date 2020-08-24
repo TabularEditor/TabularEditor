@@ -5,10 +5,12 @@ using Microsoft.AnalysisServices.Tabular;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper.PowerBI;
 using TabularEditor.TOMWrapper.Undo;
@@ -54,6 +56,67 @@ namespace TabularEditor.TOMWrapper
             || TOMDatabase.CompatibilityMode != orgCompatibilityMode
             || TOMDatabase.Description != orgDescription
             || TOMDatabase.Visible != orgVisible;
+
+        /// <summary>
+        /// Executes the specified TMSL script against the connected instance of Analysis Services.
+        /// </summary>
+        [IntelliSense("Executes the specified TMSL script against the connected instance of Analysis Services.")]
+        public void ExecuteCommand(string tmsl)
+        {
+            if (TOMDatabase?.Server == null) throw new NotSupportedException("Cannot execute queries when not connected to Analysis Services");
+
+            var xmla = new XElement("Statement", tmsl).ToString();
+            var results = TOMDatabase.Server.Execute(xmla);
+            if (results != null && results.ContainsErrors)
+            {
+                var errorMessage = results[0].Messages.OfType<Microsoft.AnalysisServices.XmlaError>().FirstOrDefault()?.Description;
+                throw new Exception(errorMessage);
+            }
+        }
+
+        /// <summary>
+        /// Executes the specified DAX expression against the connected database and returns an AmoDataReader object that enumerates the result
+        /// </summary>
+        [IntelliSense("Executes the specified DAX expression against the connected database and returns an AmoDataReader object that enumerates the result.")]
+        public IDataReader ExecuteReader(string dax)
+        {
+            if (TOMDatabase?.Server == null) throw new NotSupportedException("Cannot execute queries when not connected to Analysis Services");
+
+            var xmla = new XElement("Statement", dax).ToString();
+            CloseReader();
+            LastOpenedReader = TOMDatabase.Server.ExecuteReader(
+                xmla,
+                out Microsoft.AnalysisServices.XmlaResultCollection results,
+                new Dictionary<string, string> { { "Catalog", TOMDatabase.Name } });
+            if (results != null && results.ContainsErrors)
+            {
+                var errorMessage = results[0].Messages.OfType<Microsoft.AnalysisServices.XmlaError>().FirstOrDefault()?.Description;
+                throw new Exception(errorMessage);
+            }
+            return LastOpenedReader;
+        }
+
+        private Microsoft.AnalysisServices.AmoDataReader LastOpenedReader;
+
+        internal void CloseReader()
+        {
+            if (LastOpenedReader != null && !LastOpenedReader.IsClosed)
+                LastOpenedReader.Close();
+        }
+
+        /// <summary>
+        /// Executes the specified DAX expression against the connected database and returns a data table containing the result
+        /// </summary>
+        [IntelliSense("Executes the specified DAX expression against the connected database and returns a data table containing the result")]
+        public DataTable ExecuteDax(string dax)
+        {
+            var dt = new DataTable();
+            using (var reader = ExecuteReader(dax))
+            {
+                dt.Load(reader);
+            }
+            return dt;
+        }
 
         public override string ToString()
         {

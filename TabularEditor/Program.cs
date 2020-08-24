@@ -374,6 +374,10 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                     Error("Script execution error: " + ex.Message);
                     return true;
                 }
+                finally
+                {
+                    h.Model.Database.CloseReader();
+                }
             }
 
             if (doCheckDs > -1)
