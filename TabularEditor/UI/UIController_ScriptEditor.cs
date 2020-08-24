@@ -158,6 +158,7 @@ namespace TabularEditor.UI
             }
             finally
             {
+                Handler.Model.Database.CloseReader();
                 ScriptEditor_IsExecuting = false;
             }
         }
