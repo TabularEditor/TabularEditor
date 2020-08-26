@@ -408,6 +408,9 @@
       <DependentUpon>SelectDatabaseForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Dialogs\ValidationEventArgs.cs" />
+    <Compile Include="UI\Extensions\DoubleBufferedGridView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\Extensions\FCTB\FastColoredTextBox.cs">
       <SubType>UserControl</SubType>
     </Compile>

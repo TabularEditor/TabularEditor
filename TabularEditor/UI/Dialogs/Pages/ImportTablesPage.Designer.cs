@@ -44,7 +44,7 @@
             this.panel4 = new System.Windows.Forms.Panel();
             this.lblError = new System.Windows.Forms.Label();
             this.loadingPreviewSpinner = new System.Windows.Forms.PictureBox();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.dataGridView1 = new TabularEditor.UI.Extensions.DoubleBufferedGridView();
             this.panel2 = new System.Windows.Forms.Panel();
             this.chkSelectAll = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -461,7 +461,7 @@
         private Aga.Controls.Tree.TreeColumn colSpinner;
         private Aga.Controls.Tree.NodeControls.ExpandingIcon expandingIcon1;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private TabularEditor.UI.Extensions.DoubleBufferedGridView dataGridView1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label2;

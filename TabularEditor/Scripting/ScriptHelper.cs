@@ -17,6 +17,30 @@ namespace TabularEditor.Scripting
     public static class ScriptHelper
     {
         [ScriptMethod]
+        public static object EvaluateDax(string dax)
+        {
+            return TabularModelHandler.Singleton.Model.Database.EvaluateDax(dax);
+        }
+
+        [ScriptMethod]
+        public static DataSet ExecuteDax(string dax)
+        {
+            return TabularModelHandler.Singleton.Model.Database.ExecuteDax(dax);
+        }
+
+        [ScriptMethod]
+        public static IDataReader ExecuteReader(string dax)
+        {
+            return TabularModelHandler.Singleton.Model.Database.ExecuteReader(dax);
+        }
+
+        [ScriptMethod]
+        public static void ExecuteCommand(string tmsl)
+        {
+            TabularModelHandler.Singleton.Model.Database.ExecuteCommand(tmsl);
+        }
+
+        [ScriptMethod]
         public static void SchemaCheck(Partition partition)
         {
             var changes = TableMetadata.GetChanges(partition);
