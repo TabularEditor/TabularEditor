@@ -313,6 +313,28 @@ namespace TabularEditor.TOMWrapper
 
             return obj;
         }
+
+        [Category("Basic"), DisplayName("M Expression"), Description("The Power Query (M) Expression used to populate the partition with data.")]
+        public string MExpression { get => Expression; set => Expression = value; }
+
+        internal override bool IsBrowsable(string propertyName)
+        {
+            switch(propertyName)
+            {
+                case nameof(MExpression): return true;
+                case nameof(Expression): return false;
+            }
+            return base.IsBrowsable(propertyName);
+        }
+
+        internal override bool IsEditable(string propertyName)
+        {
+            switch(propertyName)
+            {
+                case nameof(MExpression): return true;
+            }
+            return base.IsEditable(propertyName);
+        }
     }
 
     public partial class PartitionCollection : ITabularNamedObject, ITabularObjectContainer, ITabularTableObject
