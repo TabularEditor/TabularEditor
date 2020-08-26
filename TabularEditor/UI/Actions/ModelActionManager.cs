@@ -128,7 +128,7 @@ namespace TabularEditor.UI.Actions
                 (s, m) => MPartition.CreateNew(s.Table).Edit(),
                 (s, m) => @"New Partition (Power Query)", true, Context.PartitionCollection | Context.Partition));
 
-            Add(new Action((s, m) => Governance.AllowCreate(typeof(Table)) && m.DataSources.Any(), (s, m) => m.AddTable().Vis().Edit(), (s, m) => @"Create New\Table", false, Context.Tables | Context.Model, Keys.Alt | Keys.D5));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(Table)) && (m.DataSources.Any() || Handler.CompatibilityLevel >= 1400), (s, m) => m.AddTable().Vis().Edit(), (s, m) => @"Create New\Table", false, Context.Tables | Context.Model, Keys.Alt | Keys.D5));
 
             Add(new Action((s, m) => Governance.AllowCreate(typeof(CalculatedTable)), (s, m) => m.AddCalculatedTable().Vis().Edit(), (s, m) => @"Create New\Calculated Table", false, Context.Tables | Context.Model, Keys.Alt | Keys.D6));
             Add(new Action((s, m) => Governance.AllowCreate(typeof(CalculationGroupTable)) && Handler.CompatibilityLevel >= 1470, (s, m) => m.AddCalculationGroup().Vis().Edit(), (s, m) => @"Create New\Calculation Group", false, Context.Tables | Context.Model, Keys.Alt | Keys.D7));
