@@ -1,6 +1,7 @@
 ﻿extern alias json;
 
 using json::Newtonsoft.Json.Linq;
+using Microsoft.AnalysisServices;
 using Microsoft.AnalysisServices.Tabular;
 using System;
 using System.Collections.Generic;
@@ -75,9 +76,9 @@ namespace TabularEditor.TOMWrapper
         }
 
         /// <summary>
-        /// Executes the specified DAX expression against the connected database and returns an AmoDataReader object that enumerates the result
+        /// Executes the specified DAX query against the connected database and returns an AmoDataReader object that enumerates the result
         /// </summary>
-        [IntelliSense("Executes the specified DAX expression against the connected database and returns an AmoDataReader object that enumerates the result.")]
+        [IntelliSense("Executes the specified DAX query against the connected database and returns an AmoDataReader object that enumerates the result.")]
         public IDataReader ExecuteReader(string dax)
         {
             if (TOMDatabase?.Server == null) throw new NotSupportedException("Cannot execute queries when not connected to Analysis Services");
@@ -91,7 +92,7 @@ namespace TabularEditor.TOMWrapper
             if (results != null && results.ContainsErrors)
             {
                 var errorMessage = results[0].Messages.OfType<Microsoft.AnalysisServices.XmlaError>().FirstOrDefault()?.Description;
-                throw new Exception(errorMessage);
+                throw new DaxQueryException(errorMessage);
             }
             return LastOpenedReader;
         }
@@ -105,17 +106,48 @@ namespace TabularEditor.TOMWrapper
         }
 
         /// <summary>
-        /// Executes the specified DAX expression against the connected database and returns a data table containing the result
+        /// Executes the specified DAX query against the connected database and returns a data set containing the result
         /// </summary>
-        [IntelliSense("Executes the specified DAX expression against the connected database and returns a data table containing the result")]
-        public DataTable ExecuteDax(string dax)
+        [IntelliSense("Executes the specified DAX query against the connected database and returns a data set containing the result")]
+        public DataSet ExecuteDax(string dax)
         {
-            var dt = new DataTable();
-            using (var reader = ExecuteReader(dax))
+            var dataSet = new DataSet();
+            using (var reader = ExecuteReader(dax) as AmoDataReader)
             {
-                dt.Load(reader);
+                var adapter = new AmoDataAdapter(reader);
+                adapter.Fill(dataSet);
             }
-            return dt;
+            return dataSet;
+        }
+
+        /// <summary>
+        /// Evaluates the specified DAX expression against the connected database and returns a data table or scalar value containing the result
+        /// </summary>
+        [IntelliSense("Evaluates the specified DAX expression against the connected database and returns a data table or scalar value containing the result")]
+        public object EvaluateDax(string dax)
+        {
+            try
+            {
+                var ds = ExecuteDax($"EVALUATE {dax}");
+                if (ds.Tables.Count == 1)
+                {
+                    var table = ds.Tables[0];
+                    if (table.Columns.Count == 1 && table.Rows.Count == 1)
+                        return table.Rows[0][0];
+                    else
+                        return table;
+                }
+                else
+                    return null;
+            }
+            catch (DaxQueryException)
+            {
+                using (var reader = ExecuteReader($"EVALUATE ROW(\"Value\", {dax})"))
+                {
+                    if (!reader.Read()) return null;
+                    return reader.IsDBNull(0) ? null : reader.GetValue(0);
+                }
+            }
         }
 
         public override string ToString()
@@ -391,5 +423,10 @@ namespace TabularEditor.TOMWrapper
         // Summary:
         //     Excel mode.
         Excel = 4
+    }
+
+    public class DaxQueryException: Exception
+    {
+        public DaxQueryException(string message): base(message) { }
     }
 }
