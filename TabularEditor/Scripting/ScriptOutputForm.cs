@@ -76,6 +76,7 @@ namespace TabularEditor.Scripting
             else if (testTabularCollection != null) ShowTabularObjectCollection(testTabularCollection);
             else if (testDictionary != null) ShowObjectDictionary(testDictionary);
             else if (testList != null) ShowObjectCollection(testList);
+            else if (value is DataTable dt) ShowDataTable(dt);
             else ShowString(value.ToString());
 
             if (errorObjects)
@@ -95,6 +96,8 @@ namespace TabularEditor.Scripting
 
         private static void ShowTabularObject(TabularObject obj)
         {
+            DormantForm.dataGridView.DataSource = null;
+            DormantForm.dataGridView.Visible = false;
             DormantForm.DataProperties.Visible = true;
             DormantForm.DataListView.Visible = false;
             DormantForm.DataListView.VirtualListSize = 0;
@@ -109,7 +112,8 @@ namespace TabularEditor.Scripting
         {
             TabularObjects,
             KeyValuePair,
-            Others
+            Others,
+            DataTable
         }
 
         private List<object> objList;
@@ -117,6 +121,8 @@ namespace TabularEditor.Scripting
 
         private static void ShowCollection()
         {
+            DormantForm.dataGridView.DataSource = null;
+            DormantForm.dataGridView.Visible = false;
             DormantForm.DataProperties.Visible = true;
             DormantForm.DataListView.Visible = true;
             DormantForm.DataListView.VirtualListSize = DormantForm.objList.Count;
@@ -149,6 +155,19 @@ namespace TabularEditor.Scripting
 
             ShowCollection();
         }
+        private static void ShowDataTable(DataTable dt)
+        {
+            DormantForm.Mode = ListMode.DataTable;
+
+            DormantForm.DataProperties.Visible = false;
+            DormantForm.DataListView.VirtualListSize = 0;
+            DormantForm.DataTextBox.Visible = false;
+            DormantForm.DataPropertyGrid.SelectedObject = null;
+            DormantForm.btnCopy.Visible = true;
+
+            DormantForm.dataGridView.Visible = true;
+            DormantForm.dataGridView.DataSource = dt;
+        }
 
         private static void ShowObjectDictionary(IDictionary obj)
         {
@@ -164,6 +183,8 @@ namespace TabularEditor.Scripting
 
         private static void ShowString(string value)
         {
+            DormantForm.dataGridView.DataSource = null;
+            DormantForm.dataGridView.Visible = false;
             DormantForm.DataProperties.Visible = false;
             DormantForm.DataListView.VirtualListSize = 0;
             DormantForm.DataTextBox.Visible = true;
@@ -233,7 +254,15 @@ namespace TabularEditor.Scripting
 
         private void btnCopy_Click(object sender, EventArgs e)
         {
-            Clipboard.SetText(DataTextBox.Text);
+            if(Mode == ListMode.DataTable)
+            {
+                var dt = dataGridView.DataSource as DataTable;
+                var headers = string.Join("\t", dt.Columns.OfType<System.Data.DataColumn>().Select(dc => dc.ColumnName).ToArray());
+                var data = string.Join("\n", dt.Rows.OfType<System.Data.DataRow>().Select(dr => string.Join("\t", dr.ItemArray)));
+                Clipboard.SetText(headers + "\n" + data);
+            }
+            else
+                Clipboard.SetText(DataTextBox.Text);
         }
     }
 }

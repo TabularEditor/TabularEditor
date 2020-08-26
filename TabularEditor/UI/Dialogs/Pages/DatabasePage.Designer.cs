@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.dataGridView1 = new TabularEditor.UI.Extensions.DoubleBufferedGridView();
             this.databaseBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.pnlDatabaseID = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
@@ -189,7 +189,7 @@
 
         #endregion
 
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private TabularEditor.UI.Extensions.DoubleBufferedGridView dataGridView1;
         private System.Windows.Forms.Panel pnlDatabaseID;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtDatabaseName;

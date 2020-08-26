@@ -40,7 +40,9 @@
             this.NameCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.TypeCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btnCopy = new System.Windows.Forms.Button();
+            this.dataGridView = new TabularEditor.UI.Extensions.DoubleBufferedGridView();
             this.DataProperties.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
             this.SuspendLayout();
             // 
             // chkDontShow
@@ -120,6 +122,7 @@
             this.TypeCol});
             this.DataListView.Dock = System.Windows.Forms.DockStyle.Left;
             this.DataListView.FullRowSelect = true;
+            this.DataListView.HideSelection = false;
             this.DataListView.Location = new System.Drawing.Point(0, 0);
             this.DataListView.MultiSelect = false;
             this.DataListView.Name = "DataListView";
@@ -153,12 +156,28 @@
             this.btnCopy.UseVisualStyleBackColor = true;
             this.btnCopy.Click += new System.EventHandler(this.btnCopy_Click);
             // 
+            // dataGridView
+            // 
+            this.dataGridView.AllowUserToAddRows = false;
+            this.dataGridView.AllowUserToDeleteRows = false;
+            this.dataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView.Location = new System.Drawing.Point(13, 13);
+            this.dataGridView.Name = "dataGridView";
+            this.dataGridView.ReadOnly = true;
+            this.dataGridView.Size = new System.Drawing.Size(511, 304);
+            this.dataGridView.TabIndex = 7;
+            this.dataGridView.Visible = false;
+            // 
             // ScriptOutputForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnClose;
             this.ClientSize = new System.Drawing.Size(536, 358);
+            this.Controls.Add(this.dataGridView);
             this.Controls.Add(this.btnCopy);
             this.Controls.Add(this.DataProperties);
             this.Controls.Add(this.DataTextBox);
@@ -170,6 +189,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Script Output";
             this.DataProperties.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -188,5 +208,6 @@
         private System.Windows.Forms.ColumnHeader NameCol;
         private System.Windows.Forms.ColumnHeader TypeCol;
         private System.Windows.Forms.Button btnCopy;
+        private TabularEditor.UI.Extensions.DoubleBufferedGridView dataGridView;
     }
 }

@@ -32,7 +32,7 @@
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.dataGridView1 = new TabularEditor.UI.Extensions.DoubleBufferedGridView();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -122,7 +122,7 @@
         #endregion
         private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private TabularEditor.UI.Extensions.DoubleBufferedGridView dataGridView1;
         private System.Windows.Forms.RichTextBox richTextBox1;
     }
 }
