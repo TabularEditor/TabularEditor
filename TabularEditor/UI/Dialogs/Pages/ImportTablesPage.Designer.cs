@@ -353,12 +353,13 @@
             this.cmbRowReduction.FormattingEnabled = true;
             this.cmbRowReduction.Items.AddRange(new object[] {
             "(None)",
-            "TOP",
+            "TOP with NOLOCK",
             "FIRST",
             "LIMIT and OFFSET",
             "LIMIT",
             "SAMPLE",
-            "ANSI SQL-compatible"});
+            "ANSI SQL-compatible",
+            "TOP (without NOLOCK)" });
             this.cmbRowReduction.Location = new System.Drawing.Point(415, 8);
             this.cmbRowReduction.Name = "cmbRowReduction";
             this.cmbRowReduction.Size = new System.Drawing.Size(142, 21);
