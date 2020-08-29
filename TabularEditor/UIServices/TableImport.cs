@@ -10,6 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using TabularEditor.UI.Dialogs;
+using SC = System.Data.SqlClient;
 
 namespace TabularEditor.UIServices
 {
@@ -172,7 +174,7 @@ namespace TabularEditor.UIServices
     }
 
     public class SqlDataSource: TypedDataSource
-    {
+    {   
         public override ProviderType ProviderType => ProviderType.Sql;
         public override DataSource DataSource => DataSource.SqlDataSource;
         public override DataProvider DataProvider => DataProvider.SqlDataProvider;
@@ -188,7 +190,7 @@ namespace TabularEditor.UIServices
 
         public override IEnumerable<SchemaNode> GetTablesAndViews(string databaseName)
         {
-            var csb = new System.Data.SqlClient.SqlConnectionStringBuilder(ProviderString) { InitialCatalog = databaseName };
+            var csb = new SC.SqlConnectionStringBuilder(ProviderString) { InitialCatalog = databaseName };
             return GetSchema("Tables", csb.ConnectionString).AsEnumerable().Select(r =>
                 new SchemaNode
                 {
@@ -202,8 +204,8 @@ namespace TabularEditor.UIServices
         {
             try
             {
-                var csb = new System.Data.SqlClient.SqlConnectionStringBuilder(ProviderString);
-                var adapter = new System.Data.SqlClient.SqlDataAdapter($"SELECT TOP 200 * FROM {tableOrView.GetRef(identifierQuoting, UseThreePartName)} WITH (NOLOCK)", csb.ConnectionString);
+                var csb = new SC.SqlConnectionStringBuilder(ProviderString);
+                var adapter = new SC.SqlDataAdapter($"SELECT TOP 200 * FROM {tableOrView.GetRef(identifierQuoting, UseThreePartName)}" + (rowLimitClause == RowLimitClause.Top ? " WITH (NOLOCK)" : ""), csb.ConnectionString);
                 adapter.SelectCommand.CommandTimeout = 30;
                 
                 var result = new DataTable();
@@ -230,7 +232,7 @@ namespace TabularEditor.UIServices
         {
             get
             {
-                var csb = new System.Data.SqlClient.SqlConnectionStringBuilder(ProviderString);
+                var csb = new SC.SqlConnectionStringBuilder(ProviderString);
                 return csb.InitialCatalog;
             }
         }
@@ -238,7 +240,7 @@ namespace TabularEditor.UIServices
         {
             get
             {
-                var csb = new System.Data.SqlClient.SqlConnectionStringBuilder(ProviderString);
+                var csb = new SC.SqlConnectionStringBuilder(ProviderString);
                 return csb.DataSource;
             }
         }
@@ -247,10 +249,10 @@ namespace TabularEditor.UIServices
         {
             try
             {
-                using (var conn = new System.Data.SqlClient.SqlConnection(ProviderString))
+                using (var conn = new SC.SqlConnection(ProviderString))
                 {
                     conn.Open();
-                    var cmd = new System.Data.SqlClient.SqlCommand(sql, conn);
+                    var cmd = new SC.SqlCommand(sql, conn);
                     var rdr = cmd.ExecuteReader(CommandBehavior.SchemaOnly);
                     return rdr.GetSchemaTable();
                 }
@@ -516,7 +518,8 @@ namespace TabularEditor.UIServices
         LimitOffset = 3,
         Limit = 4,
         Sample = 5,
-        ANSI = 6
+        ANSI = 6,
+        TopWithoutNolock = 7
     }
 
     public abstract class TypedDataSource
@@ -525,7 +528,8 @@ namespace TabularEditor.UIServices
         {
             switch(limitClause)
             {
-                case RowLimitClause.Top: return $"SELECT TOP {maxRecords} * FROM {tableRef}";
+                case RowLimitClause.Top: return $"SELECT TOP {maxRecords} * FROM {tableRef} WITH (NOLOCK)";
+                case RowLimitClause.TopWithoutNolock: return $"SELECT TOP {maxRecords} * FROM {tableRef}";
                 case RowLimitClause.First: return $"SELECT FIRST {maxRecords} * FROM {tableRef}";
                 case RowLimitClause.Limit: return $"SELECT * FROM {tableRef} LIMIT {maxRecords}";
                 case RowLimitClause.LimitOffset: return $"SELECT * FROM {tableRef} LIMIT {maxRecords} OFFSET 0";
@@ -600,7 +604,12 @@ namespace TabularEditor.UIServices
         {
             TypedDataSource ds;
             bool needsPassword = false;
-            var csb = new DbConnectionStringBuilder() { ConnectionString = tabularDataSource.ConnectionString };
+            string cs = tabularDataSource.ConnectionString;
+            if(!string.IsNullOrWhiteSpace(tabularDataSource.GetPreviewConnectionString()))
+            {
+                cs = tabularDataSource.GetPreviewConnectionString();
+            }
+            var csb = new DbConnectionStringBuilder() { ConnectionString = cs };
 
             if(!string.IsNullOrEmpty(tabularDataSource.Password) && tabularDataSource.Password != "********")
             {
@@ -637,7 +646,8 @@ namespace TabularEditor.UIServices
             ds.NeedsPassword = needsPassword;
             if (needsPassword) ds.MissingPwdConnectionString = tabularDataSource.ConnectionString;
             ds.TabularDsName = tabularDataSource.Name;
-            ds.ProviderString = csb.ConnectionString;
+
+            ds.ProviderString = string.Join(";", csb.Keys.OfType<string>().Select(k => k + "=" + csb[k].ToString()).ToArray());
 
             if (!string.IsNullOrEmpty(tabularDataSource.Account))
             {

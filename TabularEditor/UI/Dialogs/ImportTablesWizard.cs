@@ -332,11 +332,12 @@ namespace TabularEditor.UI.Dialogs
         }
     }
 
-    static class ImportAnnotationsHelper
+    internal static class ImportAnnotationsHelper
     {
         const string QUOTING = "TabularEditor_IdentifierQuoting";
         const string LIMITCLAUSE = "TabularEditor_RowLimitClause";
         const string SCHEMA = "TabularEditor_TableSchema";
+        const string PREVIEWCONNSTRING = "TabularEditor_PreviewConnectionString";
 
         public static IdentifierQuoting GetIdentifierQuoting(this TOMWrapper.DataSource source)
         {
@@ -380,6 +381,13 @@ namespace TabularEditor.UI.Dialogs
             }
 
             return RowLimitClause.Top; // Default
+        }
+        public static string GetPreviewConnectionString(this TOMWrapper.DataSource source)
+        {
+            if (source.HasAnnotation(PREVIEWCONNSTRING))
+                return source.GetAnnotation(PREVIEWCONNSTRING);
+            else
+                return null;
         }
         public static void SetRowLimitClause(this TOMWrapper.DataSource source, RowLimitClause rowLimitClause)
         {
