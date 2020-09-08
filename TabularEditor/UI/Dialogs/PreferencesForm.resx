@@ -120,6 +120,9 @@
   <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>186, 17</value>
   </metadata>
+  <data name="chkChangeDetectionLocalServer.ToolTip" xml:space="preserve">
+    <value>Checking this, will automatically update the Tabular Object Model loaded in Tabular Editor, when changes are made to the connected model from another application. Note that this feature currently only supports local instances of Analysis Services, such as the one running behind Power BI Desktop.</value>
+  </data>
   <data name="chkAutoBackup.ToolTip" xml:space="preserve">
     <value>If this checkbox is enabled, Tabular Editor will backup the model metadata prior to
 every save or deployment to an existing (workspace) database.

@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
 using TabularEditor.UIServices;
 using TabularEditor.TOMWrapper.Serialization;
+using System.Diagnostics;
 
 namespace TabularEditor.UI.Dialogs
 {
@@ -161,6 +162,10 @@ namespace TabularEditor.UI.Dialogs
             Preferences.Current.ProxyAddress = txtProxyAddress.Text;
             Preferences.Current.ProxyUser = txtProxyUser.Text;
             Preferences.Current.ProxyPasswordEncrypted = txtProxyPassword.Text.Encrypt();
+
+            Preferences.Current.ScriptCompilerOptions = txtCompilerOptions.Text;
+            Preferences.Current.ScriptCompilerDirectoryPath = txtCompilerPath.Text;
+            
             ProxyCache.ClearProxyCache();
 
             Preferences.Current.SaveToFolder_Levels = new HashSet<string>();
@@ -229,6 +234,10 @@ namespace TabularEditor.UI.Dialogs
             txtProxyAddress.Text = Preferences.Current.ProxyAddress;
             txtProxyUser.Text = Preferences.Current.ProxyUser;
             txtProxyPassword.Text = Preferences.Current.ProxyPasswordEncrypted.Decrypt();
+
+            txtCompilerOptions.Text = Preferences.Current.ScriptCompilerOptions;
+            txtCompilerPath.Text = Preferences.Current.ScriptCompilerDirectoryPath;
+
             UpdateProxyUI();
 
         }
@@ -373,6 +382,11 @@ namespace TabularEditor.UI.Dialogs
             txtProxyAddress.Enabled = !chkSystemProxy.Checked;
             txtProxyUser.Enabled = !chkSystemProxy.Checked;
             txtProxyPassword.Enabled = !chkSystemProxy.Checked;
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("https://github.com/otykier/TabularEditor/wiki/Advanced-Scripting#compiling-with-roslyn");
         }
     }
 }
