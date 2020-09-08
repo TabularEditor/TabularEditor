@@ -236,7 +236,7 @@ namespace Aga.Controls.Tree
 			_readonlySelection = new ReadOnlyCollection<TreeNodeAdv>(_selection);
 			_columns = new TreeColumnCollection(this);
 			_toolTip = new ToolTip();
-
+            _toolTip.AutoPopDelay = 20000;
 			_measureContext = new DrawContext();
 			_measureContext.Font = Font;
 			_measureContext.Graphics = Graphics.FromImage(new Bitmap(1, 1));
