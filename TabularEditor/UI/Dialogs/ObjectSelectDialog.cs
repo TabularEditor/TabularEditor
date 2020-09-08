@@ -13,13 +13,13 @@ using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.UI.Dialogs
 {
-    public partial class ColumnSelectDialog : Form, ICustomEditor
+    public partial class ObjectSelectDialog<T> : Form where T: TabularNamedObject
     {
         string[] columnNames;
-        List<Column> columns;
-        public Column SelectedColumn { get; set; }
+        List<T> columns;
+        public T SelectedColumn { get; set; }
 
-        public ColumnSelectDialog()
+        public ObjectSelectDialog()
         {
             InitializeComponent();
 
@@ -36,7 +36,7 @@ namespace TabularEditor.UI.Dialogs
             suspendResize = false;
         }
 
-        public void Setup(IEnumerable<Column> columns)
+        public void Setup(IEnumerable<T> columns)
         {
             listView1.Items.Clear();
             this.columns = columns.OrderBy(c => c.Name).ToList();
@@ -64,6 +64,36 @@ namespace TabularEditor.UI.Dialogs
             base.OnShown(e);
         }
 
+        protected void Prep(IEnumerable<T> columns, T preselect, string label)
+        {
+            label1.Text = label;
+            Setup(columns);
+            listView1.SelectedIndices.Clear();
+            var ix = this.columns.IndexOf(preselect);
+            if (ix >= 0)
+            {
+                listView1.SelectedIndices.Add(ix);
+                listView1.EnsureVisible(ix);
+                btnOK.Enabled = true;
+            }
+            else
+            {
+                btnOK.Enabled = false;
+            }
+        }
+
+        public static T SelectObject(IEnumerable<T> columns, T preselect = null, string label = "Select object:")
+        {
+            var selector = new ObjectSelectDialog<T>();
+            selector.Text = "Select " + typeof(T).Name;
+            selector.Prep(columns, preselect, label);
+            if (selector.ShowDialog() == DialogResult.Cancel) return null;
+            else return selector.SelectedColumn;
+        }
+    }
+
+    public class ColumnSelectDialog: ObjectSelectDialog<Column>, ICustomEditor
+    {
         public object Edit(object instance, string property, object value, out bool cancel)
         {
             if (instance is Column instanceColumn)
@@ -71,23 +101,14 @@ namespace TabularEditor.UI.Dialogs
                 switch (property)
                 {
                     case "Sort By Column":
-                        Setup(instanceColumn.Table.Columns.Where(c => c != instanceColumn));
-                        listView1.SelectedIndices.Clear();
-                        var ix = columns.IndexOf(value as Column);
-                        if (ix >= 0)
-                        {
-                            listView1.SelectedIndices.Add(ix);
-                            listView1.EnsureVisible(ix);
-                        }
+                        Prep(instanceColumn.Table.Columns.Where(c => c != instanceColumn), value as Column, "Select column:");
                         break;
                     case TOMWrapper.Properties.GROUPBYCOLUMNS:
-                        Setup(instanceColumn.Table.Columns.Except(value as IEnumerable<Column>));
-                        listView1.SelectedIndices.Clear();
+                        Prep(instanceColumn.Table.Columns.Except(value as IEnumerable<Column>), null, "Select column:");
                         break;
                 }
             }
-            btnOK.Enabled = listView1.SelectedIndices.Count > 0;
-            if(ShowDialog() == DialogResult.Cancel)
+            if (ShowDialog() == DialogResult.Cancel)
             {
                 cancel = true;
                 return null;

@@ -1,6 +1,6 @@
 ﻿namespace TabularEditor.UI.Dialogs
 {
-    partial class ColumnSelectDialog
+    partial class ObjectSelectDialog<T>
     {
         /// <summary>
         /// Required designer variable.

@@ -287,11 +287,11 @@
       <DependentUpon>ClipForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Dialogs\ConnectSqlForm.cs" />
-    <Compile Include="UI\Dialogs\ColumnSelectDialog.cs">
+    <Compile Include="UI\Dialogs\ObjectSelectDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\Dialogs\ColumnSelectDialog.Designer.cs">
-      <DependentUpon>ColumnSelectDialog.cs</DependentUpon>
+    <Compile Include="UI\Dialogs\ObjectSelectDialog.Designer.cs">
+      <DependentUpon>ObjectSelectDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Dialogs\CultureSelectDialog.cs">
       <SubType>Form</SubType>
@@ -616,8 +616,8 @@
     <EmbeddedResource Include="Scripting\ScriptOutputForm.resx">
       <DependentUpon>ScriptOutputForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\ColumnSelectDialog.resx">
-      <DependentUpon>ColumnSelectDialog.cs</DependentUpon>
+    <EmbeddedResource Include="UI\Dialogs\ObjectSelectDialog.resx">
+      <DependentUpon>ObjectSelectDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\CultureSelectDialog.resx">
       <DependentUpon>CultureSelectDialog.cs</DependentUpon>
