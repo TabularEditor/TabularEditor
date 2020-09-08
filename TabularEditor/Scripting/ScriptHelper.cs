@@ -16,6 +16,64 @@ namespace TabularEditor.Scripting
 {
     public static class ScriptHelper
     {
+        [ScriptMethod,IntelliSense("Displays a dialog that allows the user to select a column from the specified collection")]
+        public static Column SelectColumn(this IEnumerable<Column> columns, Column preselect = null, string label = "Select column:")
+        {
+            return SelectObject(columns, preselect, label);
+        }
+
+        [ScriptMethod]
+        public static Column SelectColumn(this Table table, Column preselect = null, string label = "Select column:")
+        {
+            return SelectColumn(table.Columns, preselect, label);
+        }
+        [ScriptMethod]
+        public static Table SelectTable(this IEnumerable<Table> tables, Table preselect = null, string label = "Select table:")
+        {
+            return SelectObject(tables, preselect, label);
+        }
+        [ScriptMethod]
+        public static Table SelectTable(Table preselect = null, string label = "Select table:")
+        {
+            return SelectObject(TabularModelHandler.Singleton.Model.Tables, preselect, label);
+        }
+        [ScriptMethod]
+        public static Table SelectTable(this Model model, Table preselect = null, string label = "Select table:")
+        {
+            return SelectObject(model.Tables, preselect, label);
+        }
+        [ScriptMethod]
+        public static Measure SelectMeasure(this IEnumerable<Measure> measures, Measure preselect = null, string label = "Select measure:")
+        {
+            return SelectObject(measures, preselect, label);
+        }
+
+        [ScriptMethod]
+        public static Measure SelectMeasure(this Table table, Measure preselect = null, string label = "Select measure:")
+        {
+            return SelectMeasure(table.Measures, preselect, label);
+        }
+        [ScriptMethod]
+        public static Measure SelectMeasure(Measure preselect = null, string label = "Select measure:")
+        {
+            return SelectMeasure(TabularModelHandler.Singleton.Model.AllMeasures, preselect, label);
+        }
+        [ScriptMethod]
+        public static Measure SelectMeasure(this Model model, Measure preselect = null, string label = "Select measure:")
+        {
+            return SelectMeasure(model.AllMeasures, preselect, label);
+        }
+
+        [ScriptMethod]
+        public static T SelectObject<T>(this IEnumerable<T> columns, T preselect = null, string label = "Select object:") where T : TabularNamedObject
+        {
+            var isHourglass = Hourglass.Enabled;
+            if (isHourglass) Hourglass.Enabled = false;
+            var result = ObjectSelectDialog<T>.SelectObject(columns, preselect, label);
+            if (isHourglass) Hourglass.Enabled = true;
+            return result;
+        }
+
         [ScriptMethod]
         public static object EvaluateDax(string dax)
         {
