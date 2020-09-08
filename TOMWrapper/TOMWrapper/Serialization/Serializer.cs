@@ -227,7 +227,13 @@ namespace TabularEditor.TOMWrapper.Serialization
         {
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.CalculatedColumn>(json.ToString());
             tom.Name = target.Columns.GetNewName(tom.Name);
-            tom.SortByColumn = json["sortByColumn"] != null ? target.MetadataObject.Columns[json.Value<string>("sortByColumn")] : null;
+
+            if (json["sortByColumn"] != null)
+            {
+                var srcColumnName = json.Value<string>("sortByColumn");
+                if (target.MetadataObject.Columns.ContainsName(srcColumnName))
+                    tom.SortByColumn = target.MetadataObject.Columns[srcColumnName];
+            }
 
             var column = CalculatedColumn.CreateFromMetadata(target, tom);
 
