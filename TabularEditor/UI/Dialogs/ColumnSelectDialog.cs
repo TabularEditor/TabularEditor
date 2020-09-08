@@ -23,13 +23,17 @@ namespace TabularEditor.UI.Dialogs
         {
             InitializeComponent();
 
-            listView1.SizeChanged += ListView1_SizeChanged;
+            listView1.Resize += ListView1_Resize;
         }
 
-        private void ListView1_SizeChanged(object sender, EventArgs e)
+        private bool suspendResize = false;
+
+        private void ListView1_Resize(object sender, EventArgs e)
         {
-            columnHeader1.Width = listView1.ClientRectangle.Width - 1;
-            listView1.Invalidate();
+            if (suspendResize) return;
+            suspendResize = true;
+            columnHeader1.Width = listView1.ClientRectangle.Width - 2;
+            suspendResize = false;
         }
 
         public void Setup(IEnumerable<Column> columns)
@@ -62,9 +66,9 @@ namespace TabularEditor.UI.Dialogs
 
         public object Edit(object instance, string property, object value, out bool cancel)
         {
-            if(instance is Column instanceColumn)
+            if (instance is Column instanceColumn)
             {
-                switch(property)
+                switch (property)
                 {
                     case "Sort By Column":
                         Setup(instanceColumn.Table.Columns.Where(c => c != instanceColumn));
@@ -82,6 +86,7 @@ namespace TabularEditor.UI.Dialogs
                         break;
                 }
             }
+            btnOK.Enabled = listView1.SelectedIndices.Count > 0;
             if(ShowDialog() == DialogResult.Cancel)
             {
                 cancel = true;
