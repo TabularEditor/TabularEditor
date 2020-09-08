@@ -130,6 +130,12 @@
             this.treeView2 = new System.Windows.Forms.TreeView();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.groupBox10 = new System.Windows.Forms.GroupBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.txtCompilerPath = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.txtCompilerOptions = new System.Windows.Forms.TextBox();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.groupBox3.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabFeatures.SuspendLayout();
@@ -147,6 +153,7 @@
             this.tabCurrentModel.SuspendLayout();
             this.grpSaveToFolder.SuspendLayout();
             this.groupBox8.SuspendLayout();
+            this.groupBox10.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnOK
@@ -290,12 +297,10 @@
             this.chkChangeDetectionLocalServer.AutoSize = true;
             this.chkChangeDetectionLocalServer.Location = new System.Drawing.Point(6, 67);
             this.chkChangeDetectionLocalServer.Name = "chkChangeDetectionLocalServer";
-            this.chkChangeDetectionLocalServer.Size = new System.Drawing.Size(268, 17);
+            this.chkChangeDetectionLocalServer.Size = new System.Drawing.Size(270, 17);
             this.chkChangeDetectionLocalServer.TabIndex = 0;
             this.chkChangeDetectionLocalServer.Text = "Detect changes on local AS instance (experimental)";
-            this.toolTip1.SetToolTip(this.chkChangeDetectionLocalServer, "Checking this, will automatically update the Tabular Object Model loaded in Tabular Editor, when" +
-        " changes are made to the connected model from another application. Note that this feature currently only supports local instances of Analysis Services, such as" +
-        " the one running behind Power BI Desktop.");
+            this.toolTip1.SetToolTip(this.chkChangeDetectionLocalServer, resources.GetString("chkChangeDetectionLocalServer.ToolTip"));
             this.chkChangeDetectionLocalServer.UseVisualStyleBackColor = true;
             // 
             // chkCopyIncludeOLS
@@ -615,6 +620,7 @@
             // 
             // tabGeneral
             // 
+            this.tabGeneral.Controls.Add(this.groupBox10);
             this.tabGeneral.Controls.Add(this.groupBox9);
             this.tabGeneral.Controls.Add(this.groupBox1);
             this.tabGeneral.Location = new System.Drawing.Point(4, 22);
@@ -671,26 +677,26 @@
             // txtProxyPassword
             // 
             this.txtProxyPassword.Enabled = false;
-            this.txtProxyPassword.Location = new System.Drawing.Point(89, 95);
+            this.txtProxyPassword.Location = new System.Drawing.Point(99, 95);
             this.txtProxyPassword.Name = "txtProxyPassword";
             this.txtProxyPassword.PasswordChar = '●';
-            this.txtProxyPassword.Size = new System.Drawing.Size(151, 20);
+            this.txtProxyPassword.Size = new System.Drawing.Size(141, 20);
             this.txtProxyPassword.TabIndex = 6;
             // 
             // txtProxyUser
             // 
             this.txtProxyUser.Enabled = false;
-            this.txtProxyUser.Location = new System.Drawing.Point(89, 69);
+            this.txtProxyUser.Location = new System.Drawing.Point(99, 69);
             this.txtProxyUser.Name = "txtProxyUser";
-            this.txtProxyUser.Size = new System.Drawing.Size(151, 20);
+            this.txtProxyUser.Size = new System.Drawing.Size(141, 20);
             this.txtProxyUser.TabIndex = 5;
             // 
             // txtProxyAddress
             // 
             this.txtProxyAddress.Enabled = false;
-            this.txtProxyAddress.Location = new System.Drawing.Point(89, 43);
+            this.txtProxyAddress.Location = new System.Drawing.Point(99, 43);
             this.txtProxyAddress.Name = "txtProxyAddress";
-            this.txtProxyAddress.Size = new System.Drawing.Size(262, 20);
+            this.txtProxyAddress.Size = new System.Drawing.Size(252, 20);
             this.txtProxyAddress.TabIndex = 4;
             // 
             // chkSystemProxy
@@ -714,7 +720,7 @@
             this.groupBox1.Controls.Add(this.btnVersionCheck);
             this.groupBox1.Controls.Add(this.lblAvailableVersion);
             this.groupBox1.Controls.Add(this.lblCurrentVersion);
-            this.groupBox1.Location = new System.Drawing.Point(6, 138);
+            this.groupBox1.Location = new System.Drawing.Point(6, 258);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(357, 99);
             this.groupBox1.TabIndex = 2;
@@ -1013,6 +1019,65 @@
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Current Model Serialization Settings";
             // 
+            // groupBox10
+            // 
+            this.groupBox10.Controls.Add(this.linkLabel1);
+            this.groupBox10.Controls.Add(this.label7);
+            this.groupBox10.Controls.Add(this.txtCompilerOptions);
+            this.groupBox10.Controls.Add(this.label6);
+            this.groupBox10.Controls.Add(this.txtCompilerPath);
+            this.groupBox10.Location = new System.Drawing.Point(6, 138);
+            this.groupBox10.Name = "groupBox10";
+            this.groupBox10.Size = new System.Drawing.Size(357, 114);
+            this.groupBox10.TabIndex = 4;
+            this.groupBox10.TabStop = false;
+            this.groupBox10.Text = "Advanced Scripting";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 65);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(74, 13);
+            this.label6.TabIndex = 9;
+            this.label6.Text = "Compiler path:";
+            // 
+            // txtCompilerPath
+            // 
+            this.txtCompilerPath.Location = new System.Drawing.Point(99, 62);
+            this.txtCompilerPath.Name = "txtCompilerPath";
+            this.txtCompilerPath.Size = new System.Drawing.Size(252, 20);
+            this.txtCompilerPath.TabIndex = 8;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 91);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(87, 13);
+            this.label7.TabIndex = 11;
+            this.label7.Text = "Compiler options:";
+            // 
+            // txtCompilerOptions
+            // 
+            this.txtCompilerOptions.Location = new System.Drawing.Point(99, 88);
+            this.txtCompilerOptions.Name = "txtCompilerOptions";
+            this.txtCompilerOptions.Size = new System.Drawing.Size(252, 20);
+            this.txtCompilerOptions.TabIndex = 10;
+            // 
+            // linkLabel1
+            // 
+            this.linkLabel1.LinkArea = new System.Windows.Forms.LinkArea(127, 9);
+            this.linkLabel1.Location = new System.Drawing.Point(6, 22);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Size = new System.Drawing.Size(351, 30);
+            this.linkLabel1.TabIndex = 13;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "To use new C# language features when scripting, you must configure Tabular Editor" +
+    " to use a different compiler, such as Roslyn. More info.";
+            this.linkLabel1.UseCompatibleTextRendering = true;
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
+            // 
             // PreferencesForm
             // 
             this.AcceptButton = this.btnOK;
@@ -1060,6 +1125,8 @@
             this.grpSaveToFolder.PerformLayout();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
+            this.groupBox10.ResumeLayout(false);
+            this.groupBox10.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1129,5 +1196,11 @@
         private System.Windows.Forms.Label lblAvailableVersion;
         private System.Windows.Forms.Label lblCurrentVersion;
         private System.Windows.Forms.CheckBox chkAnnotateDeploymentMetadata;
+        private System.Windows.Forms.GroupBox groupBox10;
+        private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox txtCompilerOptions;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox txtCompilerPath;
     }
 }

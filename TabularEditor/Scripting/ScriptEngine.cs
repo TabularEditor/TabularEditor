@@ -398,11 +398,10 @@ namespace TabularEditor.Scripting
                 }
             }
 
-            using (var compiler = new CSharpCodeProvider()) {
-
-                var cp = new CompilerParameters(includeAssemblies.ToArray()) { GenerateInMemory = true, IncludeDebugInformation = true };
-
-                result = compiler.CompileAssemblyFromSource(cp, source);
+            using (var provider = GetProviderWithPreferences())
+            {
+                var compilerParams = GetCompilerParametersWithPreferences(includeAssemblies);
+                result = provider.CompileAssemblyFromSource(compilerParams, source);
             }
 
             if (result.Errors.Count > 0)
@@ -411,6 +410,29 @@ namespace TabularEditor.Scripting
             }
 
             return result;
+        }
+
+        private static CodeDomProvider GetProviderWithPreferences()
+        {
+            var providerOptions = new Dictionary<string, string>();
+            if(Directory.Exists(UIServices.Preferences.Current.ScriptCompilerDirectoryPath))
+            {
+                providerOptions["CompilerDirectoryPath"] = UIServices.Preferences.Current.ScriptCompilerDirectoryPath;
+            }
+            return new CSharpCodeProvider(providerOptions);
+        }
+        private static CompilerParameters GetCompilerParametersWithPreferences(IEnumerable<string> includeAssemblies)
+        {
+            var compilerParameters = new CompilerParameters(includeAssemblies.ToArray())
+            {
+                GenerateInMemory = true,
+                IncludeDebugInformation = true
+            };
+            if(!string.IsNullOrEmpty(UIServices.Preferences.Current.ScriptCompilerOptions))
+            {
+                compilerParameters.CompilerOptions = UIServices.Preferences.Current.ScriptCompilerOptions;
+            }
+            return compilerParameters;
         }
 
         // See: https://stackoverflow.com/questions/6121276/is-it-possible-to-load-an-assembly-from-the-gac-without-the-fullname

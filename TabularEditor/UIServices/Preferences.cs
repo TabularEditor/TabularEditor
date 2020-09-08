@@ -50,6 +50,9 @@ namespace TabularEditor.UIServices
         /// </summary>
         public string ProxyPasswordEncrypted = string.Empty;
 
+        public string ScriptCompilerDirectoryPath = string.Empty;
+        public string ScriptCompilerOptions = string.Empty;
+
         #region Deprecated
         // Deprecated
         public bool? SaveToFolder_IgnoreInferredObjects = null;
