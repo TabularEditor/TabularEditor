@@ -164,15 +164,15 @@ namespace TabularEditor.TOMWrapper
             if (destTable?.GetType() == typeof(Table))
             {
                 // DataColumns and Partitions can only be deserialized onto a Table destination (not CalculatedTable):
-                foreach (var obj in objectContainer.Get<DataColumn>()) inserted.Add(Serializer.DeserializeDataColumn(obj, destTable));
+                foreach (var obj in objectContainer.Get<DataColumn>().OrderBy(obj => obj["sortByColumn"] == null ? 0 : 1)) inserted.Add(Serializer.DeserializeDataColumn(obj, destTable));
                 foreach (var obj in objectContainer.Get<Partition>()) inserted.Add(Serializer.DeserializePartition(obj, destTable));
                 foreach (var obj in objectContainer.Get<MPartition>()) inserted.Add(Serializer.DeserializeMPartition(obj, destTable));
             }
 
             if (destTable is Table)
             {
-                // Measures, Hierarchies and CalculatedColumns can be deserialized onto a Table (or Table derived) destinated:
-                foreach (var obj in objectContainer.Get<CalculatedColumn>()) inserted.Add(Serializer.DeserializeCalculatedColumn(obj, destTable));
+                // Measures, Hierarchies and CalculatedColumns can be deserialized onto a Table (or Table derived) destination:
+                foreach (var obj in objectContainer.Get<CalculatedColumn>().OrderBy(obj => obj["sortByColumn"] == null ? 0 : 1)) inserted.Add(Serializer.DeserializeCalculatedColumn(obj, destTable));
                 foreach (var obj in objectContainer.Get<Hierarchy>()) inserted.Add(Serializer.DeserializeHierarchy(obj, destTable));
                 foreach (var obj in objectContainer.Get<Measure>()) inserted.Add(Serializer.DeserializeMeasure(obj, destTable));
             }
