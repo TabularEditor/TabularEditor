@@ -281,6 +281,7 @@ namespace TabularEditor.UIServices
                 case "tinyint":
                 case "int64":
                 case "int32":
+                case "int16":
                 case "long":
                     result = DataType.Int64; break;
 
@@ -302,7 +303,7 @@ namespace TabularEditor.UIServices
                 default:
                     if (srcType.Contains("int"))
                         result = DataType.Int64;
-                    if (srcType.Contains("date"))
+                    else if (srcType.Contains("date"))
                         result = DataType.DateTime;
                     else
                         result = DataType.String;
