@@ -292,7 +292,6 @@ namespace TabularEditor.UIServices
         public override IEnumerable<SchemaNode> GetTablesAndViews(string databaseName)
         {
             var csb = new System.Data.OleDb.OleDbConnectionStringBuilder(ProviderString);
-            if (csb.ContainsKey("Initial Catalog")) csb.Remove("Initial Catalog");
             var restrictionList = new string[4];
             restrictionList[0] = databaseName;
             return GetSchema("Tables", csb.ConnectionString, restrictionList).AsEnumerable().Select(r =>
