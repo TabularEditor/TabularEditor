@@ -52,7 +52,7 @@ namespace TabularEditor.UI
                     {
                         try
                         {
-                            Program.UpdateDeploymentMetadata(Handler.Model, DeploymentModeMetadata.WizardUI);
+                            Handler.Model.UpdateDeploymentMetadata(DeploymentModeMetadata.WizardUI);
                             TabularDeployer.Deploy(Handler, f.DeployTargetServer.ConnectionString, f.DeployTargetDatabaseName, f.DeployOptions, df.CancelToken);
                         }
                         catch (Exception ex)
@@ -203,7 +203,7 @@ namespace TabularEditor.UI
 
                 try
                 {
-                    Program.UpdateDeploymentMetadata(Handler.Model, DeploymentModeMetadata.SaveUI);
+                    Handler.Model.UpdateDeploymentMetadata(DeploymentModeMetadata.SaveUI);
                     Handler.SaveDB();
                 }
                 catch (Exception e)

@@ -16,9 +16,38 @@ using TabularEditor.UIServices;
 
 namespace TabularEditor
 {
-    static class Program
+    internal static class Program
     {
         public static bool CommandLineMode { get; private set; } = false;
+        public static CommandLineHandler CommandLine { get; private set; }
+
+        public static bool RunWithArgs(params string[] args)
+        {
+            if (args.Length > 1)
+            {
+                Console.WriteLine("");
+                Console.WriteLine($"{ Application.ProductName } { Application.ProductVersion } (build { UpdateService.CurrentBuild })");
+                Console.WriteLine("--------------------------------");
+            }
+
+            var plugins = LoadPlugins();
+            SetupLibraries(plugins);
+
+            CommandLineMode = true;
+            CommandLine = new CommandLineHandler();
+            if (args.Length > 1 && CommandLine.HandleCommandLine(args))
+            {
+                if (CommandLine.EnableVSTS)
+                {
+                    Console.WriteLine("##vso[task.complete result={0};]Done.", 
+                        CommandLine.ErrorCount > 0 ? "Failed" : ((CommandLine.WarningCount > 0) ? "SucceededWithIssues" : "Succeeded"));
+                }
+                Environment.ExitCode = CommandLine.ErrorCount > 0 ? 1 : 0;
+                return false;
+            }
+            CommandLineMode = false;
+            return true;
+        }
 
         /// <summary>
         /// The main entry point for the application.
@@ -27,35 +56,15 @@ namespace TabularEditor
         static void Main()
         {
             ConsoleHandler.RedirectToParent();
-
-            var args = Environment.GetCommandLineArgs();
-            if (args.Length > 1)
-            {
-                Console.WriteLine("");
-                Console.WriteLine($"{ Application.ProductName } { Application.ProductVersion } (build { UpdateService.CurrentBuild })");
-                Console.WriteLine("--------------------------------");
-            }
-
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
-            var plugins = LoadPlugins();
-            SetupLibraries(plugins);
-
-            CommandLineMode = true;
-            if (args.Length > 1 && HandleCommandLine(args))
+            var args = Environment.GetCommandLineArgs();
+            if (RunWithArgs(args))
             {
-                if (enableVSTS)
-                {
-                    Console.WriteLine("##vso[task.complete result={0};]Done.", errorCount > 0 ? "Failed" : ((warningCount > 0) ? "SucceededWithIssues" : "Succeeded"));
-                }
-                Environment.Exit(errorCount > 0 ? 1 : 0);
-                return;
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new FormMain());
             }
-            CommandLineMode = false;
-
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FormMain());
             TabularModelHandler.Cleanup();
         }
 
@@ -141,30 +150,34 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
 
         public static List<ITabularEditorPlugin> Plugins = new List<ITabularEditorPlugin>();
         public static TestRun testRun;
-        static bool enableVSTS;
-        static int errorCount = 0;
-        static int warningCount = 0;
+    }
 
-        public static void Error(string errorMessage, params object[] args)
+    internal class CommandLineHandler
+    {
+        public bool EnableVSTS { get; private set; }
+        public int ErrorCount { get; private set; } = 0;
+        public int WarningCount { get; private set; } = 0;
+
+        internal void Error(string errorMessage, params object[] args)
         {
-            if (enableVSTS)
+            if (EnableVSTS)
             {
-                if(args.Length == 0)
+                if (args.Length == 0)
                     Console.WriteLine("##vso[task.logissue type=error;]" + errorMessage);
                 else
                     Console.WriteLine("##vso[task.logissue type=error;]" + errorMessage, args);
             }
             else
-                if(args.Length == 0)
-                    Console.WriteLine(errorMessage);
-                else
-                    Console.WriteLine(errorMessage, args);
+                if (args.Length == 0)
+                Console.WriteLine(errorMessage);
+            else
+                Console.WriteLine(errorMessage, args);
 
-            errorCount++;
+            ErrorCount++;
         }
-        public static void Warning(string errorMessage, params object[] args)
+        internal void Warning(string errorMessage, params object[] args)
         {
-            if (enableVSTS)
+            if (EnableVSTS)
             {
                 if (args.Length == 0)
                     Console.WriteLine("##vso[task.logissue type=warning;]" + errorMessage);
@@ -177,22 +190,22 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
             else
                 Console.WriteLine(errorMessage, args);
 
-            warningCount++;
+            WarningCount++;
         }
 
-        static void ErrorX(string errorMessage, string sourcePath, int line, int column, string code, params object[] args)
+        void ErrorX(string errorMessage, string sourcePath, int line, int column, string code, params object[] args)
         {
-            if (enableVSTS)
+            if (EnableVSTS)
             {
                 Console.WriteLine(string.Format("##vso[task.logissue type=error;sourcepath={0};linenumber={1};columnnumber={2};code={3}]{4}", sourcePath, line, column, code, errorMessage), args);
             }
             else
                 Console.WriteLine(string.Format("Error {0} on line {1}, col {2}: {3}", code, line, column, errorMessage));
 
-            errorCount++;
+            ErrorCount++;
         }
 
-        static bool HandleCommandLine(string[] args)
+        internal bool HandleCommandLine(string[] args)
         {
             var upperArgList = args.Select(arg => arg.ToUpper()).ToList();
             var argList = args.Select(arg => arg).ToList();
@@ -202,7 +215,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 return true;
             }
 
-            enableVSTS = upperArgList.IndexOf("-VSTS") > -1 || upperArgList.IndexOf("-V") > -1;
+            EnableVSTS = upperArgList.IndexOf("-VSTS") > -1 || upperArgList.IndexOf("-V") > -1;
             var warnOnUnprocessed = upperArgList.IndexOf("-WARN") > -1 || upperArgList.IndexOf("-W") > -1;
             var errorOnDaxErr = upperArgList.IndexOf("-ERR") > -1 || upperArgList.IndexOf("-E") > -1;
 
@@ -273,7 +286,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                     OutputUsage();
                     return true;
                 }
-                testRun = new TestRun(h.Database?.Name ?? h.Source);
+                Program.testRun = new TestRun(h.Database?.Name ?? h.Source);
                 testRunFile = argList[doTestRun + 1];
             }
 
@@ -437,7 +450,8 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
 
                 IEnumerable<BPA.AnalyzerResult> bpaResults;
                 if (suppliedRules == null) bpaResults = analyzer.AnalyzeAll();
-                else {
+                else
+                {
                     var effectiveRules = analyzer.GetEffectiveRules(false, false, true, true, suppliedRules);
                     bpaResults = analyzer.Analyze(effectiveRules);
                 }
@@ -501,7 +515,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                         try
                         {
                             h.SaveDB();
-                            Console.WriteLine("Model metadata saved."); 
+                            Console.WriteLine("Model metadata saved.");
 
                             var deploymentResult = h.GetLastDeploymentResults();
                             foreach (var err in deploymentResult.Issues) if (errorOnDaxErr) Error(err); else Warning(err);
@@ -647,7 +661,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                     else
                     {
                         Console.WriteLine("Deploying...");
-                        UpdateDeploymentMetadata(h.Model, DeploymentModeMetadata.CLI);
+                        h.Model.UpdateDeploymentMetadata(DeploymentModeMetadata.CLI);
                         var deploymentResult = TabularDeployer.Deploy(h, cs, databaseID, options);
                         Console.WriteLine("Deployment succeeded.");
                         foreach (var err in deploymentResult.Issues) if (errorOnDaxErr) Error(err); else Warning(err);
@@ -662,30 +676,16 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 }
 
             }
-            if (testRun != null)
+            if (Program.testRun != null)
             {
-                testRun.SerializeAsVSTest(testRunFile);
+                Program.testRun.SerializeAsVSTest(testRunFile);
                 Console.WriteLine("VSTest XML file saved: " + testRunFile);
             }
 
             return true;
         }
 
-        public static void UpdateDeploymentMetadata(Model model, DeploymentModeMetadata deploymentMode)
-        {
-            model.DeploymentMetadata = Preferences.Current.AnnotateDeploymentMetadata ?
-                new DeploymentMetadata
-                {
-                    ClientMachine = Environment.MachineName,
-                    DeploymentMode = deploymentMode,
-                    TabularEditorBuild = UpdateService.CurrentBuild.ToString(),
-                    Time = DateTime.Now,
-                    User = Environment.UserDomainName + "\\" + Environment.UserName
-                } : null;
-            model.UpdateDeploymentMetadata();
-        }
-
-        static void OutputUsage()
+        void OutputUsage()
         {
             Console.WriteLine(@"Usage:
 
