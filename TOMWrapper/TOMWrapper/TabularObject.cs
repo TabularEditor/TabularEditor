@@ -107,7 +107,7 @@ namespace TabularEditor.TOMWrapper
         protected void SetValue<T>(T org, T value, Action<T> setter, [CallerMemberName] string propertyName = null)
         {
             var oldValue = org;
-            if ((oldValue == null && value == null) || oldValue.Equals(value)) return;
+            if ((oldValue == null && value == null) || (oldValue != null && oldValue.Equals(value))) return;
             bool undoable = true;
             bool cancel = false;
             OnPropertyChanging(propertyName, value, ref undoable, ref cancel);
