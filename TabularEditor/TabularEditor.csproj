@@ -223,6 +223,7 @@
     </Compile>
     <Compile Include="UIServices\ClipboardListener.cs" />
     <Compile Include="UIServices\Crypto.cs" />
+    <Compile Include="UIServices\DeploymentMetadata.cs" />
     <Compile Include="UIServices\DynamicLinq.cs" />
     <Compile Include="UIServices\FileSystemHelper.cs" />
     <Compile Include="UIServices\LinqExtensions.cs" />

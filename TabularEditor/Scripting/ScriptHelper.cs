@@ -282,7 +282,7 @@ namespace TabularEditor.Scripting
         {
             var header = string.Format("Script warning{0}", lineNumber >= 0 ? " (line " + lineNumber + ")" : "", message);
 
-            if (Program.CommandLineMode) Program.Warning((suppressHeader ? "" : (header + ": ")) + message);
+            if (Program.CommandLineMode) Program.CommandLine.Warning((suppressHeader ? "" : (header + ": ")) + message);
             else MessageBox.Show(message, header, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
         [ScriptMethod]
@@ -290,7 +290,7 @@ namespace TabularEditor.Scripting
         {
             var header = string.Format("Script error{0}", lineNumber >= 0 ? " (line " + lineNumber + ")" : "", message);
 
-            if (Program.CommandLineMode) Program.Error((suppressHeader ? "" : ( header + ": ")) + message);
+            if (Program.CommandLineMode) Program.CommandLine.Error((suppressHeader ? "" : ( header + ": ")) + message);
             else MessageBox.Show(message, header, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 

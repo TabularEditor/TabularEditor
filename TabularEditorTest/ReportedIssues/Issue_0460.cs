@@ -18,8 +18,10 @@ namespace TabularEditor.ReportedIssues
 Technical Details:
 RootActivityId: 08de469b - 3d73 - 4313 - 89ac - f014f1bd84be
 Date(UTC): 5 / 2 / 2020 8:21:06 PM";
-            Program.Error(msg);
-            Program.Error(msg, new object[] { });
+
+            var clHandler = new CommandLineHandler();
+            clHandler.Error(msg);
+            clHandler.Error(msg, new object[] { });
         }
     }
 }
