@@ -387,7 +387,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         }
     }
 
-    public class BestPracticeCollection: IEnumerable<BestPracticeRule>, IRuleDefinition
+    public class BestPracticeCollection: IRuleDefinition, IReadOnlyList<BestPracticeRule>
     {
         internal static readonly string LocalUserRulesFile = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\BPARules.json";
         internal static readonly string LocalMachineRulesFile = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\TabularEditor\BPARules.json";
@@ -411,6 +411,10 @@ namespace TabularEditor.BestPracticeAnalyzer
         string IRuleDefinition.Name => Name;
 
         IEnumerable<BestPracticeRule> IRuleDefinition.Rules => Rules;
+
+        public int Count => ((IReadOnlyList<BestPracticeRule>)Rules).Count;
+
+        public BestPracticeRule this[int index] => ((IReadOnlyList<BestPracticeRule>)Rules)[index];
 
         private Model model;
 
