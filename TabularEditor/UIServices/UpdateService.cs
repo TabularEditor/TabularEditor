@@ -36,13 +36,22 @@ namespace TabularEditor.UIServices
         {
             try
             {
-                var cli = new WebClient();
-                cli.Proxy = ProxyCache.GetProxy(VERSION_MANIFEST_URL);
-                var availableBuildString = cli.DownloadString(VERSION_MANIFEST_URL + "?q=" + Guid.NewGuid().ToString());
-                AvailableBuild = Version.Parse(availableBuildString);
-                if (AvailableBuild > CurrentBuild)
+                var url = VERSION_MANIFEST_URL + "?q=" + Guid.NewGuid().ToString();
+                var wr = WebRequest.CreateHttp(url);
+                wr.Proxy = ProxyCache.GetProxy(url);
+                wr.Timeout = 5000;
+
+                using (var response = wr.GetResponse())
                 {
-                    return true;
+                    using (var reader = new System.IO.StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        var availableBuildString = reader.ReadToEnd();
+                        AvailableBuild = Version.Parse(availableBuildString);
+                        if (AvailableBuild > CurrentBuild)
+                        {
+                            return true;
+                        }
+                    }
                 }
             }
             catch (Exception ex)

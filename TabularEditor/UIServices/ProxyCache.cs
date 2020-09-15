@@ -27,8 +27,10 @@ namespace TabularEditor.UIServices
             {
                 var wr = WebRequest.CreateHttp(UpdateService.VERSION_MANIFEST_URL);
                 wr.Proxy = proxy;
-                var resp = wr.GetResponse();
+                using (var resp = wr.GetResponse())
+                {
 
+                }
                 return false;
             }
             catch (System.Net.WebException wex)
