@@ -1948,6 +1948,7 @@
             this.txtExpression.Size = new System.Drawing.Size(644, 198);
             this.txtExpression.TabIndex = 23;
             this.txtExpression.Zoom = 100;
+            this.txtExpression.ImeMode = System.Windows.Forms.ImeMode.On;
             // 
             // lblCurrentMeasure
             // 
@@ -2084,6 +2085,7 @@
             this.txtAdvanced.TabIndex = 16;
             this.txtAdvanced.Zoom = 100;
             this.txtAdvanced.ZoomChanged += new System.EventHandler(this.txtAdvanced_ZoomChanged);
+            this.txtAdvanced.ImeMode = System.Windows.Forms.ImeMode.On;
             // 
             // toolStrip4
             // 
