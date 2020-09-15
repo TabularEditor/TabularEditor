@@ -26,6 +26,7 @@ namespace TabularEditor.UIServices
     {
         #region Serializable properties
         public bool CheckForUpdates = false;
+        public bool SkipPatchUpdates = false;
         public bool CollectTelemetry = true;
         public bool FormulaFixup = true;
         public bool UseSemicolonsAsSeparators = false;

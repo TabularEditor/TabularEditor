@@ -85,6 +85,7 @@
     <Compile Include="TabularUITree\LinqFilterTests.cs" />
     <Compile Include="TabularUITree\GetPathTests.cs" />
     <Compile Include="CLITests.cs" />
+    <Compile Include="UpdateServiceTests.cs" />
     <None Include="TestData\SetPQSourceCredentials.csx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

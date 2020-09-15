@@ -80,15 +80,16 @@ namespace TabularEditor.UI.Dialogs
             var newVersion = UpdateService.Check(true);
             RestoreProxySettings();
 
-            if (!newVersion.HasValue) return;
-            if(newVersion.Value)
+            if (newVersion == VersionCheckResult.Unknown) return;
+            if(newVersion == VersionCheckResult.NoNewVersion)
+            {
+                MessageBox.Show("You are currently using the latest version of Tabular Editor.", "No updates available", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
             {
                 btnVersionCheck.Visible = false;
                 lblAvailableVersion.Visible = true;
                 lblAvailableVersion.Text = "Available Version: " + UpdateService.AvailableBuild + " (click to download)";
-            } else
-            {
-                MessageBox.Show("You are currently using the latest version of Tabular Editor.", "No updates available", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -108,6 +109,11 @@ namespace TabularEditor.UI.Dialogs
         {
             txtBackupPath.Enabled = chkAutoBackup.Checked;
             btnFolder.Enabled = chkAutoBackup.Checked;
+        }
+
+        private void chkAutoUpdate_CheckedChanged(object sender, EventArgs e)
+        {
+            chkSkipPatch.Enabled = chkAutoUpdate.Checked;
         }
 
         private void lblAvailableVersion_Click(object sender, EventArgs e)
@@ -138,6 +144,7 @@ namespace TabularEditor.UI.Dialogs
         {
             Preferences.Current.BackupLocation = chkAutoBackup.Checked ? txtBackupPath.Text : string.Empty;
             Preferences.Current.CheckForUpdates = chkAutoUpdate.Checked;
+            Preferences.Current.SkipPatchUpdates = chkSkipPatch.Checked;
             Preferences.Current.FormulaFixup = chkFixup.Checked;
             Preferences.Current.AllowUnsupportedPBIFeatures = chkAllowUnsupportedPBIFeatures.Checked;
             Preferences.Current.ChangeDetectionOnLocalServers = chkChangeDetectionLocalServer.Checked;
@@ -192,7 +199,7 @@ namespace TabularEditor.UI.Dialogs
 
         private void LoadSettings()
         {
-            if (UpdateService.UpdateAvailable ?? false)
+            if (UpdateService.AvailableVersion.UpdateAvailable())
             {
                 btnVersionCheck.Visible = false;
                 lblAvailableVersion.Visible = true;
@@ -201,7 +208,11 @@ namespace TabularEditor.UI.Dialogs
 
             chkAutoBackup.Checked = Preferences.Current.BackupOnSave;
             txtBackupPath.Text = Preferences.Current.BackupLocation;
+
             chkAutoUpdate.Checked = Preferences.Current.CheckForUpdates;
+            chkSkipPatch.Checked = Preferences.Current.SkipPatchUpdates;
+            chkSkipPatch.Enabled = chkAutoUpdate.Checked;
+
             chkFixup.Checked = Preferences.Current.FormulaFixup;
             cmbSeparators.SelectedIndex = Preferences.Current.UseSemicolonsAsSeparators ? 1 : 0;
             chkAllowUnsupportedPBIFeatures.Checked = Preferences.Current.AllowUnsupportedPBIFeatures;
