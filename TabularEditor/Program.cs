@@ -432,20 +432,28 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                 BPA.BestPracticeCollection suppliedRules = null;
                 if (!string.IsNullOrEmpty(rulefile))
                 {
-                    if (!File.Exists(rulefile))
+                    if (File.Exists(rulefile))
                     {
-                        Error("Rulefile not found: {0}", rulefile);
-                        return true;
+                        try
+                        {
+                            suppliedRules = BPA.BestPracticeCollection.GetCollectionFromFile(Environment.CurrentDirectory, rulefile);
+                        }
+                        catch
+                        {
+                            Error("Invalid rulefile: {0}", rulefile);
+                            return true;
+                        }
                     }
-                    try
+                    else
                     {
-                        suppliedRules = BPA.BestPracticeCollection.GetCollectionFromFile(Environment.CurrentDirectory, rulefile);
+                        suppliedRules = BPA.BestPracticeCollection.GetCollectionFromUrl(rulefile);
+                        if (suppliedRules.Count == 0)
+                        {
+                            Error("No rules defined in specified URL: {0}", rulefile);
+                            return true;
+                        }
                     }
-                    catch
-                    {
-                        Error("Invalid rulefile: {0}", rulefile);
-                        return true;
-                    }
+                    
                 }
 
                 IEnumerable<BPA.AnalyzerResult> bpaResults;
@@ -689,7 +697,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
         {
             Console.WriteLine(@"Usage:
 
-TABULAREDITOR ( file | server database ) [-S script] [-SC] [(-B | -F) output [id]] [-A [rulefile]] [-V]
+TABULAREDITOR ( file | server database ) [-S script] [-SC] [(-B | -F) output [id]] [-A [rules]] [-V]
     [-D [server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]] [-P] [-R [-M]]]
         [-X xmla_script]] [-W] [-E]] [-N resultsfile]
 
@@ -710,7 +718,7 @@ database            Database ID of the model to load
   id                  Optional id/name to assign to the Database object when saving.
 -V / -VSTS          Output Visual Studio Team Services logging commands.
 -A / -ANALYZE       Runs Best Practice Analyzer and outputs the result to the console.
-  rulefile            Optional path of file containing additional BPA rules to be analyzed. If
+  rules               Optional path of file or URL of additional BPA rules to be analyzed. If
                       specified, model is not analyzed against local user/local machine rules,
                       but rules defined within the model are still applied.
 -D / -DEPLOY        Command-line deployment
