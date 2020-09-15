@@ -115,6 +115,7 @@
             this.chkSystemProxy = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.chkAutoUpdate = new System.Windows.Forms.CheckBox();
+            this.chkSkipPatch = new System.Windows.Forms.CheckBox();
             this.btnVersionCheck = new System.Windows.Forms.Button();
             this.lblAvailableVersion = new System.Windows.Forms.Label();
             this.lblCurrentVersion = new System.Windows.Forms.Label();
@@ -717,6 +718,7 @@
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.chkAutoUpdate);
+            this.groupBox1.Controls.Add(this.chkSkipPatch);
             this.groupBox1.Controls.Add(this.btnVersionCheck);
             this.groupBox1.Controls.Add(this.lblAvailableVersion);
             this.groupBox1.Controls.Add(this.lblCurrentVersion);
@@ -736,7 +738,17 @@
             this.chkAutoUpdate.TabIndex = 4;
             this.chkAutoUpdate.Text = "Check for updated version on start-up";
             this.chkAutoUpdate.UseVisualStyleBackColor = true;
-            this.chkAutoUpdate.Click += new System.EventHandler(this.chkAutoBackup_CheckedChanged);
+            this.chkAutoUpdate.Click += new System.EventHandler(this.chkAutoUpdate_CheckedChanged);
+            // 
+            // chkSkipPatch
+            // 
+            this.chkSkipPatch.AutoSize = true;
+            this.chkSkipPatch.Location = new System.Drawing.Point(230, 75);
+            this.chkSkipPatch.Name = "chkSkipPatch";
+            this.chkSkipPatch.Size = new System.Drawing.Size(100, 17);
+            this.chkSkipPatch.TabIndex = 5;
+            this.chkSkipPatch.Text = "Skip patch builds";
+            this.chkSkipPatch.UseVisualStyleBackColor = true;
             // 
             // btnVersionCheck
             // 
@@ -1192,6 +1204,7 @@
         private System.Windows.Forms.CheckBox chkSystemProxy;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox chkAutoUpdate;
+        private System.Windows.Forms.CheckBox chkSkipPatch;
         private System.Windows.Forms.Button btnVersionCheck;
         private System.Windows.Forms.Label lblAvailableVersion;
         private System.Windows.Forms.Label lblCurrentVersion;

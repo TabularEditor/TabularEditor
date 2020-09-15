@@ -617,7 +617,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
             if(Preferences.Current.CheckForUpdates)
             {
-                if(UpdateService.Check(false) ?? false)
+                if(UpdateService.Check(false).UpdateAvailable(Preferences.Current.SkipPatchUpdates))
                 {
                     var res = MessageBox.Show("A new version of Tabular Editor is available. Would you like to open the download page now?\n\nYou can disable this check under File > Preferences.", "Tabular Editor update available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                     if (res == DialogResult.Yes) UpdateService.OpenDownloadPage();

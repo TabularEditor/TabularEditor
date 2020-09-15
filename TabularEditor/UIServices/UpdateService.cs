@@ -16,23 +16,23 @@ namespace TabularEditor.UIServices
 
         public static Version CurrentBuild { get; } = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
         public static Version AvailableBuild { get; private set; } = null;
-        public static bool? UpdateAvailable { get; private set; } = false;
+        public static VersionCheckResult AvailableVersion { get; private set; } = VersionCheckResult.NoNewVersion;
 
         /// <summary>
         /// Checks online to see if an updated version is available.
         /// </summary>
         /// <param name="displayErrors">Set to true to display an error message in case the update check fails</param>
         /// <returns>True if a newer version of Tabular Editor is available, false otherwise</returns>
-        public static bool? Check(bool displayErrors = false)
+        public static VersionCheckResult Check(bool displayErrors = false)
         {
             using (new Hourglass())
             {
-                UpdateAvailable = InternalCheck(displayErrors);
+                AvailableVersion = InternalCheck(displayErrors);
             }
-            return UpdateAvailable;
+            return AvailableVersion;
         }
 
-        private static bool? InternalCheck(bool displayErrors)
+        private static VersionCheckResult InternalCheck(bool displayErrors)
         {
             try
             {
@@ -47,24 +47,72 @@ namespace TabularEditor.UIServices
                     {
                         var availableBuildString = reader.ReadToEnd();
                         AvailableBuild = Version.Parse(availableBuildString);
-                        if (AvailableBuild > CurrentBuild)
-                        {
-                            return true;
-                        }
+
+                        return CurrentBuild.DetermineUpdate(AvailableBuild);
                     }
                 }
             }
             catch (Exception ex)
             {
                 if(displayErrors) MessageBox.Show(ex.Message, "Unable to check for updated versions", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return null;
+                return VersionCheckResult.Unknown;
             }
-            return false;
         }
 
         public static void OpenDownloadPage()
         {
             System.Diagnostics.Process.Start(DOWNLOAD_UPDATE_URL);
+        }
+    }
+
+    public enum VersionCheckResult
+    {
+        NoNewVersion,
+        PatchAvailable,
+        MinorAvailable,
+        MajorAvailable,
+        Unknown
+    }
+
+    public static class VersionCheckResultExtension
+    {
+        public static bool UpdateAvailable(this VersionCheckResult result, bool skipPatchUpdates = false)
+        {
+            switch(result)
+            {
+                case VersionCheckResult.PatchAvailable:
+                    if (skipPatchUpdates)
+                        return false;
+                    else
+                        return true;
+                case VersionCheckResult.MinorAvailable:
+                case VersionCheckResult.MajorAvailable:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+
+
+        internal static VersionCheckResult DetermineUpdate(this Version current, Version available)
+        {
+            if (available.Major > current.Major)
+            {
+                return VersionCheckResult.MajorAvailable;
+            }
+            else if (available.Major == current.Major && available.Minor > current.Minor)
+            {
+                return VersionCheckResult.MinorAvailable;
+            }
+            else if (available > current)
+            {
+                return VersionCheckResult.PatchAvailable;
+            }
+            else
+            {
+                return VersionCheckResult.NoNewVersion;
+            }
         }
     }
 }
