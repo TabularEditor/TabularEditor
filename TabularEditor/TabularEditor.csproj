@@ -188,7 +188,7 @@
       <DependentUpon>MoveToCollectionDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="BindingHelper.cs" />
-    <Compile Include="CommandLine.cs" />
+    <Compile Include="CommandLineHandler.cs" />
     <Compile Include="ConsoleHandler.cs" />
     <Compile Include="CustomCombobox\CustomComboBox.cs">
       <SubType>Component</SubType>
