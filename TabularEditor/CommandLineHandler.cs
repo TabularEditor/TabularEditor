@@ -86,10 +86,17 @@ namespace TabularEditor
             CommandLineMode = false;
         }
 
+        List<string> upperArgList;
+        List<string> argList;
+        bool warnOnUnprocessed;
+        bool errorOnDaxErr;
+        Dictionary<string, string> replaceMap = new Dictionary<string, string>();
+
+
         private void InternalHandleCommandLine(string[] args)
         {
-            var upperArgList = args.Select(arg => arg.ToUpper()).ToList();
-            var argList = args.Select(arg => arg).ToList();
+            upperArgList = args.Select(arg => arg.ToUpper()).ToList();
+            argList = args.ToList();
             if (upperArgList.Contains("-?") || upperArgList.Contains("/?") || upperArgList.Contains("-H") || upperArgList.Contains("/H") || upperArgList.Contains("HELP"))
             {
                 OutputUsage();
@@ -97,73 +104,10 @@ namespace TabularEditor
             }
 
             EnableVSTS = upperArgList.IndexOf("-VSTS") > -1 || upperArgList.IndexOf("-V") > -1;
-            var warnOnUnprocessed = upperArgList.IndexOf("-WARN") > -1 || upperArgList.IndexOf("-W") > -1;
-            var errorOnDaxErr = upperArgList.IndexOf("-ERR") > -1 || upperArgList.IndexOf("-E") > -1;
+            warnOnUnprocessed = upperArgList.IndexOf("-WARN") > -1 || upperArgList.IndexOf("-W") > -1;
+            errorOnDaxErr = upperArgList.IndexOf("-ERR") > -1 || upperArgList.IndexOf("-E") > -1;
 
-            if (args.Length == 2 || args[2].StartsWith("-"))
-            {
-                // File argument provided (either alone or with switches), i.e.:
-                //      TabularEditor.exe myfile.bim
-                //      TabularEditor.exe myfile.bim -...
-
-                if (!File.Exists(args[1]) && !File.Exists(args[1] + "\\database.json"))
-                {
-                    Error("File not found: {0}", args[1]);
-                    return;
-                }
-                else
-                {
-                    // If nothing else was specified on the command-line, open the UI:
-                    if (args.Length == 2)
-                    {
-                        LaunchUi = true;
-                        return;
-                    }
-                }
-
-                try
-                {
-                    // Load model:
-                    Console.WriteLine("Loading model...");
-                    Handler = new TOMWrapper.TabularModelHandler(args[1]);
-                }
-                catch (Exception e)
-                {
-                    Error("Error loading file: " + e.Message);
-                    return;
-                }
-
-            }
-            else if (args.Length == 3 || args[3].StartsWith("-"))
-            {
-                // Server + Database argument provided (either alone or with switches), i.e.:
-                //      TabularEditor.exe localhost AdventureWorks
-                //      TabularEditor.exe localhost AdventureWorks -...
-                // If nothing else was specified on the command-line, open the UI:
-                if (args.Length == 3)
-                {
-                    LaunchUi = true;
-                    return;
-                }
-
-                try
-                {
-                    // Load model:
-                    Console.WriteLine("Loading model...");
-                    Handler = new TOMWrapper.TabularModelHandler(args[1], args[2]);
-                }
-                catch (Exception e)
-                {
-                    Error("Error loading model: " + e.Message);
-                    return;
-                }
-            }
-            else
-            {
-                // Otherwise, it's nonsensical
-                LaunchUi = true;
-                return;
-            }
+            LoadModel();
 
             var doTestRun = upperArgList.IndexOf("-T");
             string testRunFile = null;
@@ -265,283 +209,98 @@ namespace TabularEditor
                 Handler.Save(saveToFolderOutputPath, SaveFormat.TabularEditorFolder, null, true);
             }
 
-            var replaceMap = new Dictionary<string, string>();
-
-            var analyze = upperArgList.IndexOf("-ANALYZE");
-            if (analyze == -1) analyze = upperArgList.IndexOf("-A");
-            if (analyze > -1)
+            var doAnalyze = upperArgList.IndexOf("-ANALYZE");
+            if (doAnalyze == -1) doAnalyze = upperArgList.IndexOf("-A");
+            if (doAnalyze > -1)
             {
-                var rulefile = analyze + 1 < argList.Count ? argList[analyze + 1] : "";
+                var rulefile = doAnalyze + 1 < argList.Count ? argList[doAnalyze + 1] : "";
                 if (rulefile.StartsWith("-") || string.IsNullOrEmpty(rulefile)) rulefile = null;
 
-                Console.WriteLine("Running Best Practice Analyzer...");
-                Console.WriteLine("=================================");
-
-                var analyzer = new BPA.Analyzer();
-                analyzer.SetModel(Handler.Model, Handler.SourceType == ModelSourceType.Database ? null : FileSystemHelper.DirectoryFromPath(Handler.Source));
-
-                BPA.BestPracticeCollection suppliedRules = null;
-                if (!string.IsNullOrEmpty(rulefile))
-                {
-                    if (File.Exists(rulefile))
-                    {
-                        try
-                        {
-                            suppliedRules = BPA.BestPracticeCollection.GetCollectionFromFile(Environment.CurrentDirectory, rulefile);
-                        }
-                        catch
-                        {
-                            Error("Invalid rulefile: {0}", rulefile);
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        suppliedRules = BPA.BestPracticeCollection.GetCollectionFromUrl(rulefile);
-                        if (suppliedRules.Count == 0)
-                        {
-                            Error("No rules defined in specified URL: {0}", rulefile);
-                            return;
-                        }
-                    }
-                    
-                }
-
-                IEnumerable<BPA.AnalyzerResult> bpaResults;
-                if (suppliedRules == null) bpaResults = analyzer.AnalyzeAll();
-                else
-                {
-                    var effectiveRules = analyzer.GetEffectiveRules(false, false, true, true, suppliedRules);
-                    bpaResults = analyzer.Analyze(effectiveRules);
-                }
-
-                bool none = true;
-                foreach (var res in bpaResults.Where(r => !r.Ignored))
-                {
-                    if (res.InvalidCompatibilityLevel)
-                    {
-                        Console.WriteLine("Skipping rule '{0}' as it does not apply to Compatibility Level {1}.", res.RuleName, Handler.CompatibilityLevel);
-                    }
-                    else
-                    if (res.RuleHasError)
-                    {
-                        none = false;
-                        Error("Error on rule '{0}': {1}", res.RuleName, res.RuleError);
-                    }
-                    else
-                    {
-                        none = false;
-                        if (res.Object != null)
-                        {
-                            var text = string.Format("{0} {1} violates rule \"{2}\"",
-                                res.Object.GetTypeName(),
-                                (res.Object as IDaxObject)?.DaxObjectFullName ?? res.ObjectName,
-                                res.RuleName
-                                );
-                            if (res.Rule.Severity <= 1) Console.WriteLine(text);
-                            else if (res.Rule.Severity == 2) Warning(text);
-                            else if (res.Rule.Severity >= 3) Error(text);
-                        }
-                    }
-
-                }
-                if (none) Console.WriteLine("No objects in violation of Best Practices.");
-                Console.WriteLine("=================================");
+                AnalyzeBestPracticeRules(rulefile);
             }
 
-            var deploy = upperArgList.IndexOf("-DEPLOY");
-            if (deploy == -1) deploy = upperArgList.IndexOf("-D");
-            if (deploy > -1)
+            var doDeploy = upperArgList.IndexOf("-DEPLOY");
+            if (doDeploy == -1) doDeploy = upperArgList.IndexOf("-D");
+            if (doDeploy > -1)
             {
-                var serverName = argList.Skip(deploy + 1).FirstOrDefault(); if (serverName == null || serverName.StartsWith("-")) serverName = null;
-                var databaseID = argList.Skip(deploy + 2).FirstOrDefault(); if (databaseID != null && databaseID.StartsWith("-")) databaseID = null;
+                var serverName = argList.Skip(doDeploy + 1).FirstOrDefault(); if (serverName == null || serverName.StartsWith("-")) serverName = null;
+                var databaseID = argList.Skip(doDeploy + 2).FirstOrDefault(); if (databaseID != null && databaseID.StartsWith("-")) databaseID = null;
 
-                // Perform direct save:
-                if (serverName == null)
-                {
-                    var nextSwitch = upperArgList.Skip(deploy + 1).FirstOrDefault();
-                    var deploySwitches = new[] { "-L", "-LOGIN", "-O", "-OVERWRITE", "-C", "-CONNECTIONS", "-P", "-PARTITIONS", "-R", "-ROLES", "-M", "-MEMBERS", "-X", "-XMLA" };
-                    if (deploySwitches.Contains(nextSwitch))
-                    {
-                        Error("Invalid argument syntax.\n");
-                        OutputUsage();
-                        return;
-                    }
-
-                    Console.WriteLine("Saving model metadata back to source...");
-                    if (Handler.SourceType == ModelSourceType.Database)
-                    {
-                        try
-                        {
-                            Handler.SaveDB();
-                            Console.WriteLine("Model metadata saved.");
-
-                            var deploymentResult = Handler.GetLastDeploymentResults();
-                            foreach (var err in deploymentResult.Issues) if (errorOnDaxErr) Error(err); else Warning(err);
-                            foreach (var err in deploymentResult.Warnings) Warning(err);
-                            foreach (var err in deploymentResult.Unprocessed) if (warnOnUnprocessed) Warning(err); else Console.WriteLine(err);
-                        }
-                        catch (Exception ex)
-                        {
-                            Error("Save failed: " + ex.Message);
-                        }
-                    }
-                    else
-                    {
-                        try
-                        {
-                            Handler.Save(Handler.Source, Handler.SourceType == ModelSourceType.Folder ? SaveFormat.TabularEditorFolder : Handler.SourceType == ModelSourceType.Pbit ? SaveFormat.PowerBiTemplate : SaveFormat.ModelSchemaOnly, Handler.SerializeOptions, true);
-                            Console.WriteLine("Model metadata saved.");
-                        }
-                        catch (Exception ex)
-                        {
-                            Error("Save failed: " + ex.Message);
-                        }
-                    }
-                    return;
-                }
-
-                var conn = upperArgList.IndexOf("-CONNECTIONS");
-                if (conn == -1) conn = upperArgList.IndexOf("-C");
-                if (conn > -1)
-                {
-                    var replaces = argList.Skip(conn + 1).TakeWhile(s => s[0] != '-').ToList();
-
-                    if (replaces.Count > 0 && replaces.Count % 2 == 0)
-                    {
-                        // Placeholder replacing:
-                        for (var index = 0; index < replaces.Count; index = index + 2)
-                        {
-                            replaceMap.Add(replaces[index], replaces[index + 1]);
-                        }
-                    }
-                }
-
-                string userName = null;
-                string password = null;
-                var options = DeploymentOptions.StructureOnly;
-
-                var switches = args.Skip(deploy + 1).Where(arg => arg.StartsWith("-")).Select(arg => arg.ToUpper()).ToList();
-
-                if (string.IsNullOrEmpty(serverName) || string.IsNullOrEmpty(databaseID))
-                {
-                    Error("Invalid argument syntax.\n");
-                    OutputUsage();
-                    return;
-                }
-                if (switches.Contains("-L") || switches.Contains("-LOGIN"))
-                {
-                    var switchPos = upperArgList.IndexOf("-LOGIN"); if (switchPos == -1) switchPos = upperArgList.IndexOf("-L");
-                    userName = argList.Skip(switchPos + 1).FirstOrDefault(); if (userName != null && userName.StartsWith("-")) userName = null;
-                    password = argList.Skip(switchPos + 2).FirstOrDefault(); if (password != null && password.StartsWith("-")) password = null;
-                    if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
-                    {
-                        Error("Missing username or password.\n");
-                        OutputUsage();
-                        return;
-                    }
-                    switches.Remove("-L"); switches.Remove("-LOGIN");
-                }
-                if (switches.Contains("-O") || switches.Contains("-OVERWRITE"))
-                {
-                    options.DeployMode = DeploymentMode.CreateOrAlter;
-                    switches.Remove("-O"); switches.Remove("-OVERWRITE");
-                }
-                else
-                {
-                    options.DeployMode = DeploymentMode.CreateDatabase;
-                }
-                if (switches.Contains("-P") || switches.Contains("-PARTITIONS"))
-                {
-                    options.DeployPartitions = true;
-                    switches.Remove("-P"); switches.Remove("-PARTITIONS");
-                }
-                if (switches.Contains("-C") || switches.Contains("-CONNECTIONS"))
-                {
-                    options.DeployConnections = true;
-                    switches.Remove("-C"); switches.Remove("-CONNECTIONS");
-                }
-                if (switches.Contains("-R") || switches.Contains("-ROLES"))
-                {
-                    options.DeployRoles = true;
-                    switches.Remove("-R"); switches.Remove("-ROLES");
-
-                    if (switches.Contains("-M") || switches.Contains("-MEMBERS"))
-                    {
-                        options.DeployRoleMembers = true;
-                        switches.Remove("-M"); switches.Remove("-MEMBERS");
-                    }
-                }
-                var xmla_scripting_only = switches.Contains("-X") || switches.Contains("-XMLA");
-                string xmla_script_file = null;
-                if (xmla_scripting_only)
-                {
-                    var switchPos = upperArgList.IndexOf("-XMLA"); if (switchPos == -1) switchPos = upperArgList.IndexOf("-X");
-                    xmla_script_file = argList.Skip(switchPos + 1).FirstOrDefault(); if (String.IsNullOrWhiteSpace(xmla_script_file) || xmla_script_file.StartsWith("-")) xmla_script_file = null;
-                    if (string.IsNullOrEmpty(xmla_script_file))
-                    {
-                        Error("Missing xmla_script_file.\n");
-                        OutputUsage();
-                        return;
-                    }
-                    switches.Remove("-X");
-                    switches.Remove("-XMLA");
-
-                }
-                /*if(switches.Count > 0)
-                {
-                    Error("Unknown switch {0}\n", switches[0]);
-                    OutputUsage();
-                    return true;
-                }*/
-
-                try
-                {
-                    if (replaceMap.Count > 0)
-                    {
-                        Console.WriteLine("Switching connection string placeholders...");
-                        foreach (var map in replaceMap) Handler.Model.DataSources.SetPlaceholder(map.Key, map.Value);
-                    }
-
-                    var cs = string.IsNullOrEmpty(userName) ? TabularConnection.GetConnectionString(serverName) :
-                        TabularConnection.GetConnectionString(serverName, userName, password);
-                    if (xmla_scripting_only)
-                    {
-                        Console.WriteLine("Generating XMLA/TMSL script...");
-                        var s = new TOM.Server();
-                        s.Connect(cs);
-                        var xmla = TabularDeployer.GetTMSL(Handler.Database, s, databaseID, options);
-                        using (var sw = new StreamWriter(xmla_script_file))
-                        {
-                            sw.Write(xmla);
-                        }
-                        Console.WriteLine("XMLA/TMSL script generated.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Deploying...");
-                        Handler.Model.UpdateDeploymentMetadata(DeploymentModeMetadata.CLI);
-                        var deploymentResult = TabularDeployer.Deploy(Handler, cs, databaseID, options);
-                        Console.WriteLine("Deployment succeeded.");
-                        foreach (var err in deploymentResult.Issues) if (errorOnDaxErr) Error(err); else Warning(err);
-                        foreach (var err in deploymentResult.Warnings) Warning(err);
-                        foreach (var err in deploymentResult.Unprocessed)
-                            if (warnOnUnprocessed) Warning(err); else Console.WriteLine(err);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Error($"{(xmla_scripting_only ? "Script generation" : "Deployment")} failed! {ex.Message}");
-                }
-
+                Deploy(serverName, databaseID, doDeploy);
             }
             if (Program.testRun != null)
             {
                 Program.testRun.SerializeAsVSTest(testRunFile);
                 Console.WriteLine("VSTest XML file saved: " + testRunFile);
             }
+        }
 
-            return;
+        void LoadModel()
+        {
+            if (argList.Count == 2 || argList[2].StartsWith("-"))
+            {
+                // File argument provided (either alone or with switches), i.e.:
+                //      TabularEditor.exe myfile.bim
+                //      TabularEditor.exe myfile.bim -...
+
+                if (!File.Exists(argList[1]) && !File.Exists(argList[1] + "\\database.json"))
+                {
+                    Error("File not found: {0}", argList[1]);
+                    throw new CommandLineException();
+                }
+                else
+                {
+                    // If nothing else was specified on the command-line, open the UI:
+                    if (argList.Count == 2)
+                    {
+                        LaunchUi = true;
+                        throw new CommandLineException();
+                    }
+                }
+
+                try
+                {
+                    // Load model:
+                    Console.WriteLine("Loading model...");
+                    Handler = new TOMWrapper.TabularModelHandler(argList[1]);
+                }
+                catch (Exception e)
+                {
+                    Error("Error loading file: " + e.Message);
+                    throw new CommandLineException();
+                }
+
+            }
+            else if (argList.Count == 3 || argList[3].StartsWith("-"))
+            {
+                // Server + Database argument provided (either alone or with switches), i.e.:
+                //      TabularEditor.exe localhost AdventureWorks
+                //      TabularEditor.exe localhost AdventureWorks -...
+                // If nothing else was specified on the command-line, open the UI:
+                if (argList.Count == 3)
+                {
+                    LaunchUi = true;
+                    throw new CommandLineException();
+                }
+
+                try
+                {
+                    // Load model:
+                    Console.WriteLine("Loading model...");
+                    Handler = new TOMWrapper.TabularModelHandler(argList[1], argList[2]);
+                }
+                catch (Exception e)
+                {
+                    Error("Error loading model: " + e.Message);
+                    throw new CommandLineException();
+                }
+            }
+            else
+            {
+                // Otherwise, it's nonsensical
+                LaunchUi = true;
+                throw new CommandLineException();
+            }
         }
 
         void OutputUsage()
@@ -598,6 +357,258 @@ database            Database ID of the model to load
   -W / -WARN        Outputs information about unprocessed objects as warnings.
   -E / -ERR         Returns a non-zero exit code if Analysis Services returns any error messages after
                       the metadata was deployed / updated.");
+        }
+
+        void Deploy(string serverName, string databaseID, int doDeploy)
+        {
+            // Perform direct save:
+            if (serverName == null)
+            {
+                var nextSwitch = upperArgList.Skip(doDeploy + 1).FirstOrDefault();
+                var deploySwitches = new[] { "-L", "-LOGIN", "-O", "-OVERWRITE", "-C", "-CONNECTIONS", "-P", "-PARTITIONS", "-R", "-ROLES", "-M", "-MEMBERS", "-X", "-XMLA" };
+                if (deploySwitches.Contains(nextSwitch))
+                {
+                    Error("Invalid argument syntax.");
+                    OutputUsage();
+                    throw new CommandLineException();
+                }
+
+                Console.WriteLine("Saving model metadata back to source...");
+                if (Handler.SourceType == ModelSourceType.Database)
+                {
+                    try
+                    {
+                        Handler.SaveDB();
+                        Console.WriteLine("Model metadata saved.");
+
+                        var deploymentResult = Handler.GetLastDeploymentResults();
+                        foreach (var err in deploymentResult.Issues) if (errorOnDaxErr) Error(err); else Warning(err);
+                        foreach (var err in deploymentResult.Warnings) Warning(err);
+                        foreach (var err in deploymentResult.Unprocessed) if (warnOnUnprocessed) Warning(err); else Console.WriteLine(err);
+                    }
+                    catch (Exception ex)
+                    {
+                        Error("Save failed: " + ex.Message);
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        Handler.Save(Handler.Source, Handler.SourceType == ModelSourceType.Folder ? SaveFormat.TabularEditorFolder : Handler.SourceType == ModelSourceType.Pbit ? SaveFormat.PowerBiTemplate : SaveFormat.ModelSchemaOnly, Handler.SerializeOptions, true);
+                        Console.WriteLine("Model metadata saved.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Error("Save failed: " + ex.Message);
+                    }
+                }
+                throw new CommandLineException();
+            }
+
+            var conn = upperArgList.IndexOf("-CONNECTIONS");
+            if (conn == -1) conn = upperArgList.IndexOf("-C");
+            if (conn > -1)
+            {
+                var replaces = argList.Skip(conn + 1).TakeWhile(s => s[0] != '-').ToList();
+
+                if (replaces.Count > 0 && replaces.Count % 2 == 0)
+                {
+                    // Placeholder replacing:
+                    for (var index = 0; index < replaces.Count; index = index + 2)
+                    {
+                        replaceMap.Add(replaces[index], replaces[index + 1]);
+                    }
+                }
+            }
+
+            string userName = null;
+            string password = null;
+            var options = DeploymentOptions.StructureOnly;
+
+            var switches = argList.Skip(doDeploy + 1).Where(arg => arg.StartsWith("-")).Select(arg => arg.ToUpper()).ToList();
+
+            if (string.IsNullOrEmpty(serverName) || string.IsNullOrEmpty(databaseID))
+            {
+                Error("Invalid argument syntax.\n");
+                OutputUsage();
+                throw new CommandLineException();
+            }
+            if (switches.Contains("-L") || switches.Contains("-LOGIN"))
+            {
+                var switchPos = upperArgList.IndexOf("-LOGIN"); if (switchPos == -1) switchPos = upperArgList.IndexOf("-L");
+                userName = argList.Skip(switchPos + 1).FirstOrDefault(); if (userName != null && userName.StartsWith("-")) userName = null;
+                password = argList.Skip(switchPos + 2).FirstOrDefault(); if (password != null && password.StartsWith("-")) password = null;
+                if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
+                {
+                    Error("Missing username or password.\n");
+                    OutputUsage();
+                    throw new CommandLineException();
+
+                }
+                switches.Remove("-L"); switches.Remove("-LOGIN");
+            }
+            if (switches.Contains("-O") || switches.Contains("-OVERWRITE"))
+            {
+                options.DeployMode = DeploymentMode.CreateOrAlter;
+                switches.Remove("-O"); switches.Remove("-OVERWRITE");
+            }
+            else
+            {
+                options.DeployMode = DeploymentMode.CreateDatabase;
+            }
+            if (switches.Contains("-P") || switches.Contains("-PARTITIONS"))
+            {
+                options.DeployPartitions = true;
+                switches.Remove("-P"); switches.Remove("-PARTITIONS");
+            }
+            if (switches.Contains("-C") || switches.Contains("-CONNECTIONS"))
+            {
+                options.DeployConnections = true;
+                switches.Remove("-C"); switches.Remove("-CONNECTIONS");
+            }
+            if (switches.Contains("-R") || switches.Contains("-ROLES"))
+            {
+                options.DeployRoles = true;
+                switches.Remove("-R"); switches.Remove("-ROLES");
+
+                if (switches.Contains("-M") || switches.Contains("-MEMBERS"))
+                {
+                    options.DeployRoleMembers = true;
+                    switches.Remove("-M"); switches.Remove("-MEMBERS");
+                }
+            }
+            var xmla_scripting_only = switches.Contains("-X") || switches.Contains("-XMLA");
+            string xmla_script_file = null;
+            if (xmla_scripting_only)
+            {
+                var switchPos = upperArgList.IndexOf("-XMLA"); if (switchPos == -1) switchPos = upperArgList.IndexOf("-X");
+                xmla_script_file = argList.Skip(switchPos + 1).FirstOrDefault(); if (String.IsNullOrWhiteSpace(xmla_script_file) || xmla_script_file.StartsWith("-")) xmla_script_file = null;
+                if (string.IsNullOrEmpty(xmla_script_file))
+                {
+                    Error("Missing xmla_script_file.\n");
+                    OutputUsage();
+                    throw new CommandLineException();
+                }
+                switches.Remove("-X");
+                switches.Remove("-XMLA");
+            }
+
+            try
+            {
+                if (replaceMap.Count > 0)
+                {
+                    Console.WriteLine("Switching connection string placeholders...");
+                    foreach (var map in replaceMap) Handler.Model.DataSources.SetPlaceholder(map.Key, map.Value);
+                }
+
+                var cs = string.IsNullOrEmpty(userName) ? TabularConnection.GetConnectionString(serverName) :
+                    TabularConnection.GetConnectionString(serverName, userName, password);
+                if (xmla_scripting_only)
+                {
+                    Console.WriteLine("Generating XMLA/TMSL script...");
+                    var s = new TOM.Server();
+                    s.Connect(cs);
+                    var xmla = TabularDeployer.GetTMSL(Handler.Database, s, databaseID, options);
+                    using (var sw = new StreamWriter(xmla_script_file))
+                    {
+                        sw.Write(xmla);
+                    }
+                    Console.WriteLine("XMLA/TMSL script generated.");
+                }
+                else
+                {
+                    Console.WriteLine("Deploying...");
+                    Handler.Model.UpdateDeploymentMetadata(DeploymentModeMetadata.CLI);
+                    var deploymentResult = TabularDeployer.Deploy(Handler, cs, databaseID, options);
+                    Console.WriteLine("Deployment succeeded.");
+                    foreach (var err in deploymentResult.Issues) if (errorOnDaxErr) Error(err); else Warning(err);
+                    foreach (var err in deploymentResult.Warnings) Warning(err);
+                    foreach (var err in deploymentResult.Unprocessed)
+                        if (warnOnUnprocessed) Warning(err); else Console.WriteLine(err);
+                }
+            }
+            catch (Exception ex)
+            {
+                Error($"{(xmla_scripting_only ? "Script generation" : "Deployment")} failed! {ex.Message}");
+            }
+        }
+
+        void AnalyzeBestPracticeRules(string rulefile)
+        {
+            Console.WriteLine("Running Best Practice Analyzer...");
+            Console.WriteLine("=================================");
+
+            var analyzer = new BPA.Analyzer();
+            analyzer.SetModel(Handler.Model, Handler.SourceType == ModelSourceType.Database ? null : FileSystemHelper.DirectoryFromPath(Handler.Source));
+
+            BPA.BestPracticeCollection suppliedRules = null;
+            if (!string.IsNullOrEmpty(rulefile))
+            {
+                if (File.Exists(rulefile))
+                {
+                    try
+                    {
+                        suppliedRules = BPA.BestPracticeCollection.GetCollectionFromFile(Environment.CurrentDirectory, rulefile);
+                    }
+                    catch
+                    {
+                        Error("Invalid rulefile: {0}", rulefile);
+                        throw new CommandLineException();
+                    }
+                }
+                else
+                {
+                    suppliedRules = BPA.BestPracticeCollection.GetCollectionFromUrl(rulefile);
+                    if (suppliedRules.Count == 0)
+                    {
+                        Error("No rules defined in specified URL: {0}", rulefile);
+                        throw new CommandLineException();
+                    }
+                }
+
+            }
+
+            IEnumerable<BPA.AnalyzerResult> bpaResults;
+            if (suppliedRules == null) bpaResults = analyzer.AnalyzeAll();
+            else
+            {
+                var effectiveRules = analyzer.GetEffectiveRules(false, false, true, true, suppliedRules);
+                bpaResults = analyzer.Analyze(effectiveRules);
+            }
+
+            bool none = true;
+            foreach (var res in bpaResults.Where(r => !r.Ignored))
+            {
+                if (res.InvalidCompatibilityLevel)
+                {
+                    Console.WriteLine("Skipping rule '{0}' as it does not apply to Compatibility Level {1}.", res.RuleName, Handler.CompatibilityLevel);
+                }
+                else
+                if (res.RuleHasError)
+                {
+                    none = false;
+                    Error("Error on rule '{0}': {1}", res.RuleName, res.RuleError);
+                }
+                else
+                {
+                    none = false;
+                    if (res.Object != null)
+                    {
+                        var text = string.Format("{0} {1} violates rule \"{2}\"",
+                            res.Object.GetTypeName(),
+                            (res.Object as IDaxObject)?.DaxObjectFullName ?? res.ObjectName,
+                            res.RuleName
+                            );
+                        if (res.Rule.Severity <= 1) Console.WriteLine(text);
+                        else if (res.Rule.Severity == 2) Warning(text);
+                        else if (res.Rule.Severity >= 3) Error(text);
+                    }
+                }
+
+            }
+            if (none) Console.WriteLine("No objects in violation of Best Practices.");
+            Console.WriteLine("=================================");
         }
 
         void ExecuteScripts()
