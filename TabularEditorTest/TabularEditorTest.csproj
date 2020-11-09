@@ -86,6 +86,9 @@
     <Compile Include="TabularUITree\GetPathTests.cs" />
     <Compile Include="CLITests.cs" />
     <Compile Include="UpdateServiceTests.cs" />
+    <None Include="TestData\AdventureWorks.bim">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="TestData\SetPQSourceCredentials.csx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -93,6 +96,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Compile Include="UiTester.cs" />
+    <None Include="TestData\Silly02-WithErrors.csx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\Silly01.csx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TabularEditor\TabularEditor.csproj">

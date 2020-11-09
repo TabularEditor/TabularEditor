@@ -1,0 +1,1 @@
+﻿Model.AllMeasures.Count().Output();
