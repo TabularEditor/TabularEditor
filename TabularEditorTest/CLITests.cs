@@ -105,6 +105,14 @@ namespace TabularEditor
         }
 
         [TestMethod]
+        public void Deployment()
+        {
+            var result = CommandLine("TestData\\AdventureWorks.bim", "-D", "localhost", "AdventureWorks", "-O", "-C", "-P", "-R", "-M", "-E", "-W");
+
+            Assert.IsTrue(result.Output.Any(s => s == "Deploying..."));
+        }
+
+        [TestMethod]
         public void NoScripts()
         {
             var result = CommandLine("TestData\\AdventureWorks.bim", "-S");
