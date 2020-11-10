@@ -227,7 +227,7 @@ def collect_ref_data(app, doctree):
 
     for node in doctree.traverse(nodes.section):
         for target in frozenset(node.attributes.get('ids', [])):
-            anchors.append(target.replace('/', '')
+            anchors.append(target.replace('/', ''))
 
     for node in doctree.traverse(nodes.reference):
         uri = node.get('refuri')
