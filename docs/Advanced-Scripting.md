@@ -49,7 +49,7 @@ In the above examples, `predicate` is a lambda expression that takes a single ob
 
 This predicate would return true only if the Name of the measure contains the character string "Reseller". Wrap the expression in curly braces and use the `return` keyword, if you need more advanced logic:
 
-```cs
+```csharp
 .Where(obj => {
     if(obj is Column) {
         return false;
@@ -89,7 +89,7 @@ If no measures are currently selected in the tree, the above code does nothing, 
 
 Although we cannot set the Name property of multiple objects at once, we still have some options available. If we just want to replace all occurrences of some character string with another, we can use the provided “Rename” method, like so:
 
-```cs
+```csharp
 Selected.Measures
         .Rename("Amount", "Value");
 ```
@@ -97,14 +97,14 @@ Selected.Measures
 This would replace any occurence of the word ”Amount” with the word ”Value” in the names of all currently selected measures.
 Alternatively, we may use the LINQ ForEach()-method, as described above, to include more advanced logic:
 
-```cs
+```csharp
 Selected.Measures
         .ForEach(m => if(m.Name.Contains("Reseller")) m.Name += " DEPRECATED");
 ```
 
 This example will append the text " DEPRECATED" to the names of all selected measures where the names contain the word "Reseller". Alternatively, we could use the LINQ extension method `Where()` to filter the collection before applying the `ForEach()` operation, which would yield exactly the same result:
 
-```cs
+```csharp
 Selected.Measures
         .Where(m => m.Name.Contains("Reseller"))
         .ForEach(m => m.Name += " DEPRECATED");
