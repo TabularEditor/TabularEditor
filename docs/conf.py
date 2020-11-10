@@ -17,12 +17,22 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
+import os
+import re
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
+from docutils import nodes
 
 from recommonmark.parser import CommonMarkParser
 from recommonmark.transform import AutoStructify
+
+# -- Environment ----------------------------------------------------------
+
+IS_READTHEDOCS = os.environ.get('READTHEDOCS') == 'True'
+
+docs_dir = os.path.dirname(__file__)
+project_dir = os.path.join(docs_dir, '..')
+node_modules_bin_dir = os.path.join(project_dir, 'node_modules', '.bin')
 
 # -- General configuration ------------------------------------------------
 
