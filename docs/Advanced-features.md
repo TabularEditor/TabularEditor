@@ -11,7 +11,7 @@ In addition to the features mentioned in the [Features at a glance](/Features-at
 * [Command-line options and deployment](/Command-line-Options)
 * [Metadata Backup](/Advanced-features#metadata-backup)
 * [Formula Fix-up and Formula Dependencies](/Advanced-features#formula-fix-up-and-formula-dependencies)
-* [Import/Export Translations](/Advanced-features#importexport-translations)
+* [Import/Export Translations](/Advanced-features#import-export-translations)
 * [Folder Serialization](/Advanced-features#folder-serialization)
 * [User Settings Files](/Advanced-features#user-settings-files)
 * [Best Practice Analyzer](/Best-Practice-Analyzer)
