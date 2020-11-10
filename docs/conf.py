@@ -242,7 +242,7 @@ def process_refs(app, doctree, docname):
     Fixes all references (local links) within documents, breaks the build
     if it finds any links to non-existent documents or anchors.
     """
-    if 'references' not in app.env.metadata[docname]:
+    if 'references' in app.env.metadata[docname]:
         for reference in app.env.metadata[docname]['references']:
             referenced_docname, anchor = parse_reference(reference)
 
