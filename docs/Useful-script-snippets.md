@@ -1,30 +1,12 @@
+# Useful Script Snippets
+
 Here's a collection of small script snippets to get you started using the [Advanced Scripting functionality](/Advanced-Scripting) of Tabular Editor. Many of these scripts are useful to save as [Custom Actions](/Custom-Actions), so that you can easily reuse them from the context menu.'
 
 If you want to explore other scripts or want to contribute your own, please go to the [Tabular Editor Scripts repository](https://github.com/TabularEditor/Scripts).
 
-### Table of contents
-
-* [Create measures from columns](/Useful-script-snippets#create-measures-from-columns)
-* [Generate Time Intelligence measures](/Useful-script-snippets#generate-time-intelligence-measures)
-* [Handling perspectives](/Useful-script-snippets#handling-perspectives)
-* [Export object properties to a file](/Useful-script-snippets#export-object-properties-to-a-file)
-* [Generating documentation](/Useful-script-snippets#generating-documentation)
-* [Generating measures from a file](/Useful-script-snippets#generating-measures-from-a-file)
-* [Creating data columns from partition source metadata](/Useful-script-snippets#creating-data-columns-from-partition-source-metadata)
-* [Format DAX expressions](/Useful-script-snippets#format-dax-expressions)
-* [Generate list of source columns for a table](/Useful-script-snippets#generate-list-of-source-columns-for-a-table)
-* [Auto-creating relationships](/Useful-script-snippets#auto-creating-relationships)
-* [Create DumpFilters measure](/Useful-script-snippets#create-dumpfilters-measure)
-* [CamelCase to ProperCase](/Useful-script-snippets#camelcase-to-proper-case)
-* [Export dependencies between tables and measures](/Useful-script-snippets#exporting-dependencies-between-tables-and-measures)
-* [Setting up aggregations](/Useful-script-snippets#setting-up-aggregations-power-bi-dataset-only)
-* [Querying Analysis Services](/Useful-script-snippets#querying-analysis-services)
-* [Replace Power Query server and database names](/Useful-script-snippets#replace-power-query-server-and-database-names)
-* [Replace Power Query data sources and partitions with legacy](/Useful-script-snippets#replace-power-query-data-sources-and-partitions-with-legacy)
-
 ***
 
-#### Create measures from columns
+## Create measures from columns
 ```csharp
 // Creates a SUM measure for every currently selected column and hide the column.
 foreach(var c in Selected.Columns)
@@ -49,7 +31,7 @@ This snippet uses the `<Table>.AddMeasure(<name>, <expression>, <displayFolder>)
 
 ***
 
-#### Generate Time Intelligence measures
+## Generate Time Intelligence measures
 First, create custom actions for individual Time Intelligence aggregations. For example:
 ```csharp
 // Creates a TOTALYTD measure for every selected measure.
@@ -124,7 +106,7 @@ foreach(var m in Selected.Measures) {
 }
 ```
 
-#### Including additional properties
+### Including additional properties
 
 If you want to set additional properties on the newly created measure, the above script can be modified like so:
 
@@ -146,7 +128,7 @@ foreach(var m in Selected.Measures) {
 
 ***
 
-#### Handling perspectives ####
+## Handling perspectives
 Measures, columns, hierarchies and tables all expose the `InPerspective` property, which holds a True/False value for every perspective in the model, that indicates if the given object is a member of that perspective or not. So for example:
 
 ```csharp
@@ -197,7 +179,7 @@ foreach(var m in Selected.Measures) {
 
 ***
 
-#### Export object properties to a file
+## Export object properties to a file
 For some workflows, it may be useful to edit multiple object properties in bulk using Excel. Use the following snippet to export a standard set of properties to a .TSV file, which can then be subsequently imported (see below).
 ```csharp
 // Export properties for the currently selected objects:
@@ -232,7 +214,7 @@ var tsv = ReadFile("Exported Properties 1.tsv");
 ImportProperties(tsv);
 ```
 
-##### Exporting indexed properties
+### Exporting indexed properties
 
 As of Tabular Editor 2.11.0, the `ExportProperties` and `ImportProperties` methods support indexed properties. Indexed properties are properties that take a key in addition to the property name. One example is `myMeasure.TranslatedNames`. This property represents the collection of all strings applied as name translations for `myMeasure`. In C#, you can access the translated caption of a specific culture using the indexing operator: `myMeasure.TranslatedNames["da-DK"]`.
 
@@ -275,7 +257,7 @@ SaveFile(@"c:\Project\ObjectTranslations.tsv", tsv);
 
 ***
 
-#### Generating documentation
+## Generating documentation
 The `ExportProperties` method shown above, can also be used if you want to document all or parts of your model. The following snippet will extract a set of properties from all visible measures or columns in a Tabular Model, and save it as a TSV file:
 
 ```csharp
@@ -294,7 +276,7 @@ SaveFile("documentation.tsv", tsv);
 ```
 ***
 
-#### Generating measures from a file
+## Generating measures from a file
 
 The above techniques of exporting/importing properties, is useful if you want to edit object properties in bulk of *existing* objects in your model. What if you want to import a list of measures that do not already exist?
 
@@ -349,7 +331,7 @@ start /wait TabularEditor.exe "localhost" "AdventureWorks" -S "c:\Projects\Autog
 
 ***
 
-#### Creating Data Columns from Partition Source metadata
+## Creating Data Columns from Partition Source metadata
 **Note:** If you're using version 2.7.2 or newer, make sure to try the new "Import Table..." feature.
 
 If a table uses a Query partition based on an OLE DB provider data source, we can automatically refresh the column metadata of that table by executing the following snippet:
@@ -370,7 +352,7 @@ This assumes that the partitions of the 'Reseller Sales' table is using a Provid
 
 ***
 
-#### Format DAX expressions
+## Format DAX expressions
 Please don't abuse this. Each call to `FormatDax` will generate one web request to www.daxformatter.com, so please take care not to loop over several hundred measures if you don't need to. daxformatter.com is a free service after all, so let's not [DDoS-attack](https://en.wikipedia.org/wiki/Denial-of-service_attack) them from Tabular Editor...
 
 ```csharp
@@ -380,7 +362,7 @@ Selected.Measures.ForEach(m => m.Expression = FormatDax(m.Expression));
 
 ***
 
-#### Generate list of source columns for a table
+## Generate list of source columns for a table
 The following script outputs a nicely formatted list of source columns for the currently selected table. This may be useful if you want to replace partition queries that use `SELECT *` with explicit columns.
 
 ```csharp
@@ -393,7 +375,7 @@ string.Join(",\r\n",
 
 ***
 
-### Auto-creating relationships
+## Auto-creating relationships
 If you’re consistently using a certain set of naming conventions within your team, you’ll quickly find that scripts can be even more powerful.
 
 The following script, when executed on one or more fact tables, will automatically create relationships to all relevant dimension tables, based on column names. The script will search for fact table columns having the name pattern `xxxyyyKey` where the xxx is an optional qualifier for role-playing use, and the yyy is the dimension table name. On the dimension table, a column named `yyyKey` must exist and have the same data type as the column on the fact table. For example, a column named “ProductKey” will be related to the “ProductKey” column on the Product table. You can specify a different column name suffix to use in place of "Key".
@@ -438,7 +420,7 @@ foreach(var fact in Selected.Tables)
 
 ***
 
-### Create DumpFilters measure
+## Create DumpFilters measure
 Inspired by [this article](https://www.sqlbi.com/articles/displaying-filter-context-in-power-bi-tooltips/), here's a script that will create a [DumpFilters] measure on the currently selected table:
 
 ```csharp
@@ -469,7 +451,7 @@ Selected.Table.AddMeasure("DumpFilters", dax);
 
 ***
 
-### CamelCase to Proper Case
+## CamelCase to Proper Case
 
 A common naming scheme for columns and tables on a relation database, is CamelCase. That is, names do not contain any spaces and individual words start with a capital letter. In a Tabular model, tables and columns that are not hidden, will be visible to business users, and so it would often be preferable to use a "prettier" naming scheme. The following script will convert CamelCased names to Proper Case. Sequences of uppercase letters are kept as-is (acronyms). For example, the script will convert the following:
 
@@ -513,7 +495,7 @@ foreach(var obj in Selected.OfType<ITabularNamedObject>()) {
 
 ***
 
-### Exporting dependencies between tables and measures
+## Exporting dependencies between tables and measures
 
 Let's say you have a large, complex model, and you want to know which measures are potentially affected by changes to the underlying data.
 
@@ -543,7 +525,7 @@ tsv.Output();
 ```
 ***
 
-### Setting up Aggregations (Power BI Dataset only)
+## Setting up Aggregations (Power BI Dataset only)
 As of [Tabular Editor 2.11.3](https://github.com/otykier/TabularEditor/releases/tag/2.11.3), you can now set the `AlternateOf` property on a column, enabling you to define aggregation tables on your model. This feature is enabled for Power BI Datasets (Compatibility Level 1460 or higher) through the Power BI Service XMLA endpoint.
 
 Select a range of columns and run the following script to initiate the `AlternateOf` property on them:
@@ -578,7 +560,7 @@ After running the script, you should see that the `AlternateOf` property has bee
 
 ***
 
-### Querying Analysis Services
+## Querying Analysis Services
 
 As of version [2.12.1](https://github.com/otykier/TabularEditor/releases/tag/2.12.1), Tabular Editor now provides a number of helper methods for executing DAX queries and evaluating DAX expressions against your model. These methods work only when model metadata have been loaded directly from an instance of Analysis Services, such as when using the "File > Open > From DB..." option, or when using the Power BI external tools integration of Tabular Editor.
 
@@ -652,7 +634,7 @@ If you come up with some other interesting uses of these methods, please conside
 
 ***
 
-### Replace Power Query server and database names
+## Replace Power Query server and database names
 
 Power BI Dataset that import data from SQL Server-based datasources, often contain M expressions that look like the following. Tabular Editor does unfortunately not have any mechanism for "parsing" such an expression, but if we wanted to replace the server and database names in this expression with something else, without knowing the original values, we can exploit the fact that the values are enclosed in double quotes:
 
@@ -703,7 +685,7 @@ foreach(var p in Model.AllPartitions.OfType<MPartition>())
 
 ***
 
-### Replace Power Query data sources and partitions with Legacy
+## Replace Power Query data sources and partitions with Legacy
 
 If you are working with a Power BI-based model that uses Power Query (M) expressions for partitions against a SQL Server-based data source, you will unfortunately not be able to use Tabular Editor's Data Import wizard or perform a schema check (i.e. comparing imported columns with columns in the data source).
 
