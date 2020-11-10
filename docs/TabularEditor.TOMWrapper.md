@@ -1,3 +1,5 @@
+# TabularEditor.TOMWrapper Reference
+
 This is auto-generated documentation for the TOMWrapper API. Use CTRL+F or the sidebar on the right, to locate a specific class, property or method.
 
 ## `AddObjectType`
