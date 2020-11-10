@@ -15,7 +15,7 @@ The idea is quite simple. Start by adding a number of new perspectives to your m
 
 ![image](https://user-images.githubusercontent.com/8976200/43960154-6b637042-9cb1-11e8-906b-6671bbb9558e.png)
 
-Here, we use a `$`-sign as the prefix on the perspective names. Later on we will see how these perspectives are stripped from the model, so that end users will not see them. They are only used by the model developers.
+Here, we use a ``$``-sign as the prefix on the perspective names. Later on we will see how these perspectives are stripped from the model, so that end users will not see them. They are only used by the model developers.
 
 Now, simply add all objects needed in the individual models to these perspectives. Use the Perspective dropdown in Tabular Editor to confirm that a model contains the necessary objects. Here's a handy script that can be used to ensure that all dependencies are included in the perspective as well:
 
