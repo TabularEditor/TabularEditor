@@ -55,7 +55,7 @@ Documentation
   Master-model-pattern
 
 :: _developer-docs:
-.. toctree:
+.. toctree::
   :maxdepth: 1
   :caption: For Developers
 
