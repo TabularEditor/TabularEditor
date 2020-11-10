@@ -231,7 +231,7 @@ def collect_ref_data(app, doctree):
 
     for node in doctree.traverse(nodes.reference):
         uri = node.get('refuri')
-        if uri and not uri.startswith(('http://', 'https://')):
+        if uri and not uri.startswith(('http://', 'https://')) and not uri.contains('@'):
             references.append(to_reference(uri, basedoc=docname))
 
     app.env.metadata[docname]['anchors'] = anchors
