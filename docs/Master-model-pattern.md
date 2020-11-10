@@ -120,7 +120,7 @@ For measures, we do the same thing, but simplified to only remove measures that 
 * The measure is hidden (or the table in which the measure resides is hidden)
 * The measure is not directly or indirectly referenced in any DAX expressions on other visible objects in the perspective
 
-If you're a team of developers working on the model, you should already be using Tabular Editors ["Save to Folder" functionality](/Advanced-features#save-to-folder--open-from-folder-experimental) together with a source control environment such as Git. Make sure to check the "Serialize perspectives per-object" option under "File" > "Preferences" > "Save to Folder", to avoid getting heaps of merge conflicts on your perspective definitions.
+If you're a team of developers working on the model, you should already be using Tabular Editors ["Save to Folder" functionality](/Advanced-features#folder-serialization) together with a source control environment such as Git. Make sure to check the "Serialize perspectives per-object" option under "File" > "Preferences" > "Save to Folder", to avoid getting heaps of merge conflicts on your perspective definitions.
 
 ![image](https://user-images.githubusercontent.com/8976200/44029969-935e0efe-9eff-11e8-93de-c1223f7ebe7f.png)
 
