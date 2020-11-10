@@ -78,7 +78,7 @@ The layout and structure of the Model.bim file, makes it horrible for purposes o
 
 For better release management workflows with Tabular Models, it would be interesting if Tabular Editor could save/load a Model.bim file as a folder structure with individual files for measures, calculated columns, etc. There should be command-line options available for exporting/importing Model.bim files from/to this format, and it should be possible to deploy directly from this format (in cases where you don't need the Model.bim file itself). These individual files should contain the same JSON as the Model.bim file, but without the "ModifiedTime" information, so that they can easily be used in Version Control software, allowing multiple developers to work on the same model at once.
 
-**Update**: [Available in 2.2](/Advanced-features#save-to-folder--open-from-folder-experimental).
+**Update**: [Available in 2.2](/Advanced-features#folder-serialization).
 
 **Update**: As of 2.3, options exist to store Perspective and Translation metadata as annotations on the individual objects. This is useful for source control scenarios with multiple developers, to avoid having single files that gets lots of edits when developers change translations, perspective memberships, etc.
 
