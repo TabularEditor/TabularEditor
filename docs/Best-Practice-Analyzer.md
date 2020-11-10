@@ -1,4 +1,9 @@
-**Note: Some of the information and screenshots in this article is outdated, as the Best Practice Analyzer has received a [complete overhaul in Tabular Editor v. 2.8.1](/Best-Practice-Analyzer-Improvements). Information on Dynamic LINQ (rule expressions) is still up-to-date.**
+# Best Practice Analyzer
+
+```eval_rst
+.. note::
+    Some of the information and screenshots in this article is outdated, as the Best Practice Analyzer has received a [complete overhaul in Tabular Editor v. 2.8.1](/Best-Practice-Analyzer-Improvements). Information on Dynamic LINQ (rule expressions) is still up-to-date.**
+```
 
 Inspired by [this excellent suggestion](https://github.com/otykier/TabularEditor/issues/39), I am proud to present the Best Practice Analyzer (BPA) - a brand new feature of Tabular Editor. Go to the Tools-menu and click "Best Practice Analyzer...", this will open the following window (you can continue working on your model in the main window, while the BPA window stays open):
 
@@ -26,7 +31,7 @@ Note that the rule ID's must always be unique. In case a rule within the model m
 - Rules stored in the %AppData%\Local folder
 - Rules stored in the %ProgramData% folder
 
-### Rule Expression Samples
+## Rule Expression Samples
 In this section, you'll see some examples of Dynamic LINQ expressions that can be used to define rules. The expression that is entered in the Rule Expression Editor, will be evaluated whenever focus leaves the textbox, and any syntax errors will be shown on top of the screen:
 
 ![image](https://cloud.githubusercontent.com/assets/8976200/25380170/9f01634e-29af-11e7-952e-e10a1f28df32.png)
@@ -77,7 +82,7 @@ To compare against enumeration properties, simply pass the enumerated value as a
 (Name.EndsWith("Key") or Name.EndsWith("ID")) and SummarizeBy <> "None"
 ```
 
-### Finding unused objects
+## Finding unused objects
 When building Tabular Models it is important to avoid high-cardinality columns at all costs. Typical culprits are system timestamps, technical keys, etc. that have been imported to the model by mistake. In general, we should make sure that the model only contains columns that are actually needed. Wouldn't it be nice if the Best Practice Analyzer could tell us which columns are likely not needed at all?
 
 The following rule will report columns that:
@@ -108,7 +113,7 @@ and not ReferencedBy.AllTables.Any(not IsHidden)
 and not ReferencedBy.Roles.Any()
 ```
 
-### Fixing objects
+## Fixing objects
 In some cases, it is possible to automatically fix the issues on objects satisfying the criteria of a rule. For example when it's just a matter of setting a simple property on the object. Take a closer look at the JSON behind the following rule:
 
 ```json

@@ -1,3 +1,5 @@
+# Command Line
+
 Tabular Editor can be executed from the command-line to perform various tasks, which may be useful in Automated Build and Deployment scenarios, etc.
 
 **Note:** Since TabularEditor.exe is a WinForms application, executing it directly from a windows command-prompt will cause the thread to return immediately to the prompt. This may cause issues in command scripts, etc. To wait for TabularEditor.exe to complete its command-line tasks, always execute it using: `start /wait TabularEditor ...`
@@ -199,7 +201,7 @@ As of [version 2.8](https://github.com/otykier/TabularEditor/releases/tag/2.8), 
 
 You can also annotate tables and columns if you want the schema check to treat them in a specific way. [More information here](/Importing-Tables#ignoring-objects).
 
-### Command Line output and Exit Codes
+## Command Line output and Exit Codes
 The command line provides various details, depending on the switches used and any events encountered during execution. Exit Codes were introduced in [version 2.7.4](https://github.com/otykier/TabularEditor/releases/tag/2.7.4).
 
 |Level|Command|Message|Clarification|

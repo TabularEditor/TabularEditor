@@ -1,14 +1,6 @@
-The following article will give you a quick overview of the most important features of Tabular Editor. Click an item on the list below for additional details:
+# Basic Features
 
-* [Load/save Model.bim files](/Features-at-a-glance#loadsave-modelbim-files)
-* [Connect/deploy to SSAS Tabular Databases](/Features-at-a-glance#connectdeploy-to-ssas-tabular-databases)
-* [Hierarchical display of model objects](/Features-at-a-glance#hierarchical-display)
-* [Select and edit properties of multiple objects at once](/Features-at-a-glance#editing-properties)
-* [Duplicate multiple objects and perform batch renamings](/Features-at-a-glance#duplicate-objects-and-batch-renamings)
-* [Drag and drop objects between display folders and tables](/Features-at-a-glance#drag-and-drop-objects)
-* [Add, edit and simulate perspectives and translations](/Features-at-a-glance#working-with-perspectives-and-translations)
-* [View perspectives/translations within object context](/Features-at-a-glance#perspectivestranslations-within-object-context)
-* [Undo/Redo support](/Features-at-a-glance#undoredo-support)
+The following article will give you a quick overview of the most important features of Tabular Editor.
 
 ## Load/save Model.bim files
 Hitting CTRL+O shows an Open File dialog, which lets you select a Model.bim file to load in Tabular Editor. The file must be of Compatibility Level 1200 or newer (JSON format). CTRL+S saves any changes you make in Tabular Editor back to the file (we recommend backing up your Model.bim files before using Tabular Editor). If you want to deploy the loaded model to an Analysis Services server instance, see [Deployment](/Features-at-a-glance#deployment) below.
@@ -24,7 +16,7 @@ Any time you press CTRL+S after the database has been loaded, the database will 
 
 If you want to save the connected model to a Model.bim file, choose "Save As..." from the "File" menu.
 
-### Deployment
+## Deployment
 If you want to deploy the currently loaded model to a new database, or overwrite an existing database with the model changes (for example when loading from a Model.bim file), use the Deployment Wizard under "Model" > "Deploy...". The wizard will guide you through the deployment process, and allow you to choose which areas of the model to deploy. More information can be found [here](/Advanced-features#deployment-wizard).
 
 ## Hierarchical display
