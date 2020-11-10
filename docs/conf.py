@@ -23,6 +23,7 @@ import re
 # sys.path.insert(0, os.path.abspath('.'))
 from docutils import nodes
 
+from sphinx.errors import SphinxError
 from recommonmark.parser import CommonMarkParser
 from recommonmark.transform import AutoStructify
 
