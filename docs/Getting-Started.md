@@ -1,7 +1,9 @@
+# Getting Started
+
 ## Installation
 Simply download the .msi file from the [Release page](https://github.com/otykier/TabularEditor/releases/latest) and run the .msi installation.
 
-### Prerequisites
+## Prerequisites
 Tabular Editor uses the [Tabular Object Model](https://docs.microsoft.com/en-us/analysis-services/tom/introduction-to-the-tabular-object-model-tom-in-analysis-services-amo?view=asallproducts-allversions) to load and save metadata to and from Model.bim files or existing databases. This is included in the .msi installer, but alternatively, it may be downloaded from the [Azure Analysis Services Client Libraries](https://docs.microsoft.com/en-us/azure/analysis-services/analysis-services-data-providers) page (Click "AMO" version 18.4.0.5 or newer).
 
 ## Working with Tabular Editor
@@ -47,10 +49,10 @@ Similarly, leaving out "Deploy Table Partitions", will make sure that existing p
 
 When the "Deploy Roles" box is checked, the roles in the target database will be updated to reflect what you have in the loaded model, however if the "Deploy Role Members" is unchecked, the members of each role will be unchanged in the target database.
 
-### Command Line usage
+## Command Line usage
 You can use the command line for automated deployment. All deployment options that are available through the GUI, are also available through the command line.
 
-#### Deployment Examples
+### Deployment Examples
 
 `TabularEditor.exe c:\Projects\Model.bim`
 
@@ -69,10 +71,12 @@ By default, partitions, data sources and roles will not be overwritten in the ta
 
 More information on command-line options can be found [here](/Command-line-Options).
 
-#### Note
-Since TabularEditor.exe is a Windows Forms application, running it from the command line will execute the application in a different thread, returning control to the caller immediately. This may cause issues when running deployments as part of a batch job where you need to await succesful deployment before proceeding with the job. If you experience these issues, use `start /wait` to let TabularEditor finish its job before returning control to the caller:
+```eval_rst
+.. note::
+    Since TabularEditor.exe is a Windows Forms application, running it from the command line will execute the application in a different thread, returning control to the caller immediately. This may cause issues when running deployments as part of a batch job where you need to await succesful deployment before proceeding with the job. If you experience these issues, use `start /wait` to let TabularEditor finish its job before returning control to the caller:
 
-`start /wait TabularEditor.exe c:\Projects\Model.bim -deploy localhost AdventureWorks`
+    `start /wait TabularEditor.exe c:\Projects\Model.bim -deploy localhost AdventureWorks`
+```
 
 ## Advanced Scripting
 Tabular Editor lets you use C# to script changes to the loaded model. This is practical when you want to apply several changes to many objects at once. The Advanced Script editor has access to two objects:
