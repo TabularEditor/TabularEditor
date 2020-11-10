@@ -9,7 +9,7 @@ Working with Analysis Services Tabular, you may already be familiar with SQL Ser
 ### Why isn't Tabular Editor available as a plug-in for Visual Studio?
 While a better user experience for working with Tabular Models inside Visual Studio would definitely be appreciated, a stand-alone tool provides some benefits over a plug-in: First of all, you **don't need a Visual Studio/SSDT installation to use Tabular Editor**. Tabular Editor only requires the AMO libraries, which is quite a small installation compared to VS. Secondly, TabularEditor.exe can be executed with command-line options for deployment, scripting, etc., which would not be possible in a .vsix (plug-in) project.
 
-Also worth mentioning: Tabular Editor can be downloaded as a standalone .exe file, meaning you do not need to install anything (provided you already have the [prerequisites](#prerequisites)). In other words, you can run Tabular Editor without having admin rights on your Windows machine.
+Also worth mentioning: Tabular Editor can be downloaded as a [standalone .zip file](https://github.com/otykier/TabularEditor/releases/latest/download/TabularEditor.Portable.zip), meaning you do not need to install anything. In other words, you can run Tabular Editor without having admin rights on your Windows machine. Simply download the zip file, extract it, and run TabularEditor.exe.
 
 ### What features are planned for upcoming releases?
 You can view the current roadmap [here](/Roadmap).
