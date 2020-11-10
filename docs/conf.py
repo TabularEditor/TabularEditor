@@ -180,7 +180,7 @@ texinfo_documents = [
 def setup(app):
     app.add_config_value('recommonmark_config', {
             'enable_eval_rst': True,
-            'url_resolver': lambda url: github_doc_root + url,
+            #'url_resolver': lambda url: github_doc_root + url,
 			'enable_math': False,
 			'enable_inline_math': False
             #'auto_toc_tree_section': 'Contents',
