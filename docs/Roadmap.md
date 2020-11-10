@@ -92,4 +92,4 @@ Today, it is already possible to connect Tabular Editor to a model hosted by Pow
 
 This is a standard feature in SSDT, which would be useful to have in Tabular Editor as well.
 
-**Update**: [Available in 2.2](/Advanced-features#importexport-translations).
+**Update**: [Available in 2.2](/Advanced-features#import-export-translations).
