@@ -219,11 +219,11 @@ def collect_ref_data(app, doctree):
         if 'name=' in node.rawsource:
             match = re.search(r'name="([^\"]+)', node.rawsource)
             if match:
-                anchors.append(match.group(1))
+                anchors.append(match.group(1).replace('/', ''))
         elif 'id=' in node.rawsource:
             match = re.search(r'id="([^\"]+)', node.rawsource)
             if match:
-                anchors.append(match.group(1))
+                anchors.append(match.group(1).replace('/', ''))
 
     for node in doctree.traverse(nodes.section):
         for target in frozenset(node.attributes.get('ids', [])):
