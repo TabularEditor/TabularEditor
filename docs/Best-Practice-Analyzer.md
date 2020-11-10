@@ -2,7 +2,7 @@
 
 ```eval_rst
 .. note::
-    Some of the information and screenshots in this article is outdated, as the Best Practice Analyzer has received a `complete overhaul in Tabular Editor v. 2.8.1 <https://docs.tabulareditor.com/en/latest/Best-Practice-Analyzer-Improvements.html>`. Information on Dynamic LINQ (rule expressions) is still up-to-date.
+    Some of the information and screenshots in this article is outdated, as the Best Practice Analyzer has received a `complete overhaul in Tabular Editor v. 2.8.1 <https://docs.tabulareditor.com/en/latest/Best-Practice-Analyzer-Improvements.html>`_. Information on Dynamic LINQ (rule expressions) is still up-to-date.
 ```
 
 Inspired by [this excellent suggestion](https://github.com/otykier/TabularEditor/issues/39), I am proud to present the Best Practice Analyzer (BPA) - a brand new feature of Tabular Editor. Go to the Tools-menu and click "Best Practice Analyzer...", this will open the following window (you can continue working on your model in the main window, while the BPA window stays open):
