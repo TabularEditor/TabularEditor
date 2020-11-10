@@ -190,7 +190,7 @@ Finally, we are ready to deploy our model as 3 different versions. Unfortunately
 The script we need looks like the following. The idea is that we create one script per developer perspective. Save the script as a text file and name it something like `ResellerModel.cs`:
 
 ```csharp
-var version = "$ResellerModel"; // TODO: Replace this with the name of your developer perspective
+var version = "`$`ResellerModel"; // TODO: Replace this with the name of your developer perspective
 
 // Remove tables, measures, columns and hierarchies that are not part of the perspective:
 foreach(var t in Model.Tables.ToList()) {
@@ -204,7 +204,7 @@ foreach(var t in Model.Tables.ToList()) {
 
 // Remove user perspectives based on annotations and all developer perspectives:
 foreach(var p in Model.Perspectives.ToList()) {
-    if(p.Name.StartsWith("$")) p.Delete();
+    if(p.Name.StartsWith("`$`")) p.Delete();
 
     // Keep all other perspectives that do not have the "DevPerspectives" annotation, while removing
     // those that have the annotation, if <version> is not specified in the annotation:
@@ -284,7 +284,7 @@ When you're starting to use custom annotations a lot, there may be situations wh
 First off, let's say we wanted to find all objects where we added an annotation with the name "$InternetModel_Expression". Type the following into the filter textbox and hit ENTER:
 
 ```
-:GetAnnotation("$InternetModel_Expression")<>null
+:GetAnnotation("`$`InternetModel_Expression")<>null
 ```
 
 Or, if you want to find all objects, that have an annotation ending with the word "_Expression", use:
@@ -297,7 +297,7 @@ Note that these functions are case-sensitive, so if your annotation was written 
 You could also search for objects where the annotation had a specific value:
 
 ```
-:GetAnnotation($InternetModel_Description).Contains("TODO")
+:GetAnnotation(`$`InternetModel_Description).Contains("TODO")
 ```
 
 ### Conclusion
