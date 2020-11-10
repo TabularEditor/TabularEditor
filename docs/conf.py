@@ -242,22 +242,22 @@ def process_refs(app, doctree, docname):
     Fixes all references (local links) within documents, breaks the build
     if it finds any links to non-existent documents or anchors.
     """
-	if app.env.metadata[docname].has_key('references'):
-		for reference in app.env.metadata[docname]['references']:
-			referenced_docname, anchor = parse_reference(reference)
+    if app.env.metadata[docname].has_key('references'):
+        for reference in app.env.metadata[docname]['references']:
+            referenced_docname, anchor = parse_reference(reference)
 
-			if referenced_docname not in app.env.metadata:
-				message = "Document '{}' is referenced from '{}', but it could not be found"
-				raise SphinxError(message.format(referenced_docname, docname))
+            if referenced_docname not in app.env.metadata:
+                message = "Document '{}' is referenced from '{}', but it could not be found"
+                raise SphinxError(message.format(referenced_docname, docname))
 
-			if anchor and anchor not in app.env.metadata[referenced_docname]['anchors']:
-				message = "Section '{}#{}' is referenced from '{}', but it could not be found"
-				raise SphinxError(message.format(referenced_docname, anchor, docname))
+            if anchor and anchor not in app.env.metadata[referenced_docname]['anchors']:
+                message = "Section '{}#{}' is referenced from '{}', but it could not be found"
+                raise SphinxError(message.format(referenced_docname, anchor, docname))
 
-			for node in doctree.traverse(nodes.reference):
-				uri = node.get('refuri')
-				if to_reference(uri, basedoc=docname) == reference:
-					node['refuri'] = to_uri(app, referenced_docname, anchor)
+            for node in doctree.traverse(nodes.reference):
+                uri = node.get('refuri')
+                if to_reference(uri, basedoc=docname) == reference:
+                    node['refuri'] = to_uri(app, referenced_docname, anchor)
 
 def to_uri(app, docname, anchor=None):
     uri = ''
