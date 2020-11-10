@@ -50,7 +50,8 @@ Documentation
   Advanced-Scripting
   Custom-Actions
   Command Line <Command-line-Options>
-  Best Practice Analyzer <Best-Practice-Analyzer-Improvements>
+  Best Practice Analyzer <Best-Practice-Analyzer>
+  Best Practice Analyzer Improvements <Best-Practice-Analyzer-Improvements>
   Advanced Filtering <Advanced-Filtering-of-the-Explorer-Tree>
   Master-model-pattern
 
