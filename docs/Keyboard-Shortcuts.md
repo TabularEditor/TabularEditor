@@ -1,3 +1,5 @@
+# Keyboard Shortcuts
+
 As of version 2.7.3, Tabular Editor now supports the following keyboard shortcuts:
 
 |General|Shortcut|

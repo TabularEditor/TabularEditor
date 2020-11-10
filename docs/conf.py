@@ -178,6 +178,10 @@ texinfo_documents = [
 
 
 def setup(app):
+    # Fixing how references (local links) work with Markdown
+    app.connect('doctree-read', collect_ref_data)
+    app.connect('doctree-resolved', process_refs)
+
     app.add_config_value('recommonmark_config', {
             'enable_eval_rst': True,
             #'url_resolver': lambda url: github_doc_root + url,
@@ -186,3 +190,105 @@ def setup(app):
             #'auto_toc_tree_section': 'Contents',
             }, True)
     app.add_transform(AutoStructify)
+
+# -- Markdown References --------------------------------------------------
+
+def collect_ref_data(app, doctree):
+    """
+    Finds all anchors and references (local links) within documents,
+    and saves them as meta data
+    """
+    filename = doctree.attributes['source'].replace(docs_dir, '').lstrip('/')
+    docname = filename.replace('.md', '')
+
+    anchors = []
+    references = []
+
+    for node in doctree.traverse(nodes.raw):
+        if 'name=' in node.rawsource:
+            match = re.search(r'name="([^\"]+)', node.rawsource)
+            if match:
+                anchors.append(match.group(1))
+        elif 'id=' in node.rawsource:
+            match = re.search(r'id="([^\"]+)', node.rawsource)
+            if match:
+                anchors.append(match.group(1))
+
+    for node in doctree.traverse(nodes.section):
+        for target in frozenset(node.attributes.get('ids', [])):
+            anchors.append(target)
+
+    for node in doctree.traverse(nodes.reference):
+        uri = node.get('refuri')
+        if uri and not uri.startswith(('http://', 'https://')):
+            references.append(to_reference(uri, basedoc=docname))
+
+    app.env.metadata[docname]['anchors'] = anchors
+    app.env.metadata[docname]['references'] = references
+
+def process_refs(app, doctree, docname):
+    """
+    Fixes all references (local links) within documents, breaks the build
+    if it finds any links to non-existent documents or anchors.
+    """
+    for reference in app.env.metadata[docname]['references']:
+        referenced_docname, anchor = parse_reference(reference)
+
+        if referenced_docname not in app.env.metadata:
+            message = "Document '{}' is referenced from '{}', but it could not be found"
+            raise SphinxError(message.format(referenced_docname, docname))
+
+        if anchor and anchor not in app.env.metadata[referenced_docname]['anchors']:
+            message = "Section '{}#{}' is referenced from '{}', but it could not be found"
+            raise SphinxError(message.format(referenced_docname, anchor, docname))
+
+        for node in doctree.traverse(nodes.reference):
+            uri = node.get('refuri')
+            if to_reference(uri, basedoc=docname) == reference:
+                node['refuri'] = to_uri(app, referenced_docname, anchor)
+
+def to_uri(app, docname, anchor=None):
+    uri = ''
+
+    if IS_READTHEDOCS:
+        language = app.config.language or 'en'
+        version_name = os.environ.get('READTHEDOCS_VERSION')
+        uri = '/{}/{}'.format(language, version_name)
+
+    uri += '/{}.html'.format(docname)
+    if anchor:
+        uri += '#{}'.format(anchor)
+
+    return uri
+
+def to_reference(uri, basedoc=None):
+    """
+    Helper function, compiles a 'reference' from given URI and base
+    document name
+    """
+    if '#' in uri:
+        filename, anchor = uri.split('#', 1)
+        filename = filename or basedoc
+    else:
+        filename = uri or basedoc
+        anchor = None
+
+    if not filename:
+        message = "For self references like '{}' you need to provide the 'basedoc' argument".format(uri)
+        raise ValueError(message)
+
+    reference = os.path.splitext(filename.lstrip('/'))[0]
+    if anchor:
+        reference += '#' + anchor
+    return reference
+
+def parse_reference(reference):
+    """
+    Helper function, parses a 'reference' to document name and anchor
+    """
+    if '#' in reference:
+        docname, anchor = reference.split('#', 1)
+    else:
+        docname = reference
+        anchor = None
+    return docname, anchor
