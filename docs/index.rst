@@ -47,8 +47,9 @@ Documentation
   :maxdepth: 1
   :caption: Advanced Topics
 
-  Useful-script-snippets
   Advanced-Scripting
+  FormatDax
+  Useful-script-snippets
   Custom-Actions
   Command Line <Command-line-Options>
   Best Practice Analyzer <Best-Practice-Analyzer>
