@@ -222,7 +222,13 @@ namespace TabularEditor.Scripting
             daxFormatterDirectCalls++;
             if(daxFormatterDirectCalls > 3 && !daxFormatterWarningShown)
             {
-                Warning("This script is making multiple calls to the \"FormatDax\" method, which has been deprecated! Calls will be throttled to not overload the DaxFormatter.com service. To avoid throttling, please change your script to use the FormatDax extension method going forward.\n\nFor more information, see:\n\ndocs.tabulareditor.com/formatdax");
+                if(Program.CommandLineMode)
+                    Warning("This script is making multiple calls to the \"FormatDax\" method, which has been deprecated! Calls will be throttled to not overload the DaxFormatter.com service. To avoid throttling, please change your script to use the FormatDax extension method going forward. For more information, see: https://docs.tabulareditor.com/formatdax");
+                else
+                {
+                    var mr = MessageBox.Show("This script is making multiple calls to the \"FormatDax\" method, which has been deprecated! Calls will be throttled to not overload the DaxFormatter.com service. To avoid throttling, please change your script to use the FormatDax extension method going forward.\n\nFor more information, see:\n\nhttps://docs.tabulareditor.com/formatdax\n\nContinue script execution?", "FormatDax method deprecated!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    if (mr == DialogResult.No) throw new ScriptCancelledException();
+                }
                 daxFormatterWarningShown = true;
             }
             // To avoid overloading the DaxFormatter service, let's add a 2 second delay if less than 2 seconds have passed since the last call:
