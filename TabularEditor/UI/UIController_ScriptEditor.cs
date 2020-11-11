@@ -14,6 +14,7 @@ using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
 using TabularEditor.UI.Tree;
 using System.Collections;
+using TabularEditor.Scripting;
 
 namespace TabularEditor.UI
 {
@@ -129,6 +130,7 @@ namespace TabularEditor.UI
             Handler.BeginUpdate("script");
             try
             {
+                ScriptHelper.BeforeScriptExecution();
                 ScriptEditor_IsExecuting = true;
                 dyn.Invoke(Handler.Model, Selection);
                 var actionCount = Handler.EndUpdateAll();
@@ -160,6 +162,7 @@ namespace TabularEditor.UI
             {
                 Handler.Model.Database.CloseReader();
                 ScriptEditor_IsExecuting = false;
+                ScriptHelper.AfterScriptExecution();
             }
         }
 

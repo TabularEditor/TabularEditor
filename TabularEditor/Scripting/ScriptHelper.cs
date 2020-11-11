@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TabularEditor.Dax;
 using TabularEditor.TextServices;
 using TabularEditor.TOMWrapper;
+using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.UI;
 using TabularEditor.UI.Actions;
 using TabularEditor.UI.Dialogs;
@@ -212,13 +215,24 @@ namespace TabularEditor.Scripting
             return useSemicolons ? ExpressionParser.CommasToSemicolons(dax) : ExpressionParser.SemicolonsToCommas(dax);
         }
 
-        [ScriptMethod]
+        [ScriptMethod][Obsolete]
         public static string FormatDax(string dax, bool shortFormat = false, bool skipSpaceAfterFunctionName = false)
         {
+            daxFormatterDirectCalls++;
+            if(daxFormatterDirectCalls > 3 && !daxFormatterWarningShown)
+            {
+                Warning("This script is making multiple calls to the \"FormatDax\" method, which has been deprecated! Calls will be throttled to not overload the DaxFormatter.com service. To avoid throttling, please change your script to use the FormatDax extension method going forward.\n\nFor more information, see:\n\ndocs.tabulareditor.com/formatdax");
+                daxFormatterWarningShown = true;
+            }
+            if(daxFormatterWarningShown)
+            {
+                Thread.Sleep(200);
+            }
+
             var textToFormat = "x :=" + dax;
             try
             {
-                var result = TabularEditor.Dax.DaxFormatterProxy.FormatDax(textToFormat, false, shortFormat, skipSpaceAfterFunctionName).FormattedDax;
+                var result = DaxFormatterProxy.FormatDax(textToFormat, false, shortFormat, skipSpaceAfterFunctionName).FormattedDax;
                 if (string.IsNullOrWhiteSpace(result))
                 {
                     return dax;
@@ -229,6 +243,77 @@ namespace TabularEditor.Scripting
             {
                 return dax;
             }
+        }
+
+        public static void BeforeScriptExecution()
+        {
+            daxFormatterWarningShown = false;
+            daxFormatterDirectCalls = 0;
+            objectsFlaggedForFormatting.Clear();
+        }
+        public static void AfterScriptExecution()
+        {
+            if(objectsFlaggedForFormatting.Count > 0)
+            {
+                CallDaxFormatter();
+            }
+            objectsFlaggedForFormatting.Clear();
+        }
+        private static bool daxFormatterWarningShown = false;
+        private static int daxFormatterDirectCalls = 0;
+        private static HashSet<IDaxDependantObject> objectsFlaggedForFormatting = new HashSet<IDaxDependantObject>();
+
+        [ScriptMethod]
+        public static void FormatDax(this IDaxDependantObject obj)
+        {
+            objectsFlaggedForFormatting.Add(obj);
+        }
+
+        [ScriptMethod]
+        public static void FormatDax(this IEnumerable<IDaxDependantObject> objects, bool shortFormat = false, bool? skipSpaceAfterFunctionName = null)
+        {
+            // Call DAX Formatter with an array of all expressions to be formatted:
+            var objectRefs = new List<Tuple<IDaxDependantObject, DAXProperty>>();
+            var expressions = new List<string>();
+            foreach (var obj in objects)
+            {
+                if (obj.IsRemoved) continue;
+
+                foreach (var prop in obj.GetDAXProperties())
+                {
+                    var dax = obj.GetDAX(prop);
+                    if (!string.IsNullOrWhiteSpace(dax))
+                    {
+                        objectRefs.Add(new Tuple<IDaxDependantObject, DAXProperty>(obj, prop));
+                        expressions.Add("x :=" + dax);
+                    }
+                }
+            }
+            var formatResult = DaxFormatterProxy.FormatDaxMulti(expressions, false, shortFormat, skipSpaceAfterFunctionName ?? Preferences.Current.DaxFormatterSkipSpaceAfterFunctionName);
+
+            // Assign the formatted dax back to the objects:
+            if (formatResult.Count == expressions.Count)
+            {
+                for (int i = 0; i < formatResult.Count; i++)
+                {
+                    var result = formatResult[i];
+                    if (result.errors.Count > 0) continue;
+
+                    var obj = objectRefs[i].Item1;
+                    var daxProperty = objectRefs[i].Item2;
+                    var formattedDax = result.FormattedDax.Substring(6).Trim();
+
+                    obj.SetDAX(daxProperty, formattedDax);
+                }
+            }
+        }
+
+        [ScriptMethod]
+        public static void CallDaxFormatter(bool shortFormat = false, bool? skipSpaceAfterFunctionName = null)
+        {
+            FormatDax(objectsFlaggedForFormatting, shortFormat, skipSpaceAfterFunctionName);
+
+            objectsFlaggedForFormatting.Clear();
         }
 
         [ScriptMethod]

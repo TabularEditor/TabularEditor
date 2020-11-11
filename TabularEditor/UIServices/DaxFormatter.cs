@@ -37,9 +37,28 @@ namespace TabularEditor.Dax
         public string DatabaseCompatibilityLevel { get; set; } // Values: 1200, 1400
     }
 
-    public class DaxFormatterRequest : ServerDatabaseInfo
+    public class DaxFormatterRequestSingle : DaxFormatterRequest
     {
         public string Dax { get; set; }
+
+        public DaxFormatterRequestSingle(bool useSemicolonsAsSeparators, bool shortFormat, bool skipSpaceAfterFunctionName) : base(useSemicolonsAsSeparators, shortFormat, skipSpaceAfterFunctionName)
+        {
+
+        }
+    }
+
+    public class DaxFormatterRequestMulti : DaxFormatterRequest
+    {
+        public List<string> Dax { get; set; }
+
+        public DaxFormatterRequestMulti(bool useSemicolonsAsSeparators, bool shortFormat, bool skipSpaceAfterFunctionName) : base(useSemicolonsAsSeparators, shortFormat, skipSpaceAfterFunctionName)
+        {
+
+        }
+    }
+
+    public class DaxFormatterRequest : ServerDatabaseInfo
+    {
         public int? MaxLineLenght { get; set; }
         public bool? SkipSpaceAfterFunctionName { get; set; }
         public char ListSeparator { get; set; }
@@ -106,14 +125,15 @@ namespace TabularEditor.Dax
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         }
 
-        public const string DaxTextFormatUri = "https://www.daxformatter.com/api/daxformatter/DaxTextFormat";
+        public const string DaxTextFormatUri = "https://www.daxformatter.com/api/daxformatter/daxtextformat";
+        public const string DaxTextFormatMultiUri = "https://www.daxformatter.com/api/daxformatter/daxtextformatmulti";
 
         private static string redirectUrl;  // cache the redirected URL
         private static string redirectHost;
 
         public static DaxFormatterResult FormatDax(string query, bool useSemicolonsAsSeparators, bool shortFormat, bool skipSpaceAfterFunctionName)
         {
-            string output = CallDaxFormatter(DaxTextFormatUri, query, useSemicolonsAsSeparators, shortFormat, skipSpaceAfterFunctionName);
+            string output = CallDaxFormatterSingle(DaxTextFormatUri, query, useSemicolonsAsSeparators, shortFormat, skipSpaceAfterFunctionName);
             var res2 = new DaxFormatterResult();
             if (output.StartsWith("{"))
             {
@@ -125,7 +145,23 @@ namespace TabularEditor.Dax
             return res2;
         }
 
-        private static string CallDaxFormatter(string uri, string query, bool useSemicolonsAsSeparators, bool shortFormat, bool skipSpaceAfterFunctionName)
+        public static List<DaxFormatterResult> FormatDaxMulti(List<string> dax, bool useSemicolonsAsSeparators, bool shortFormat, bool skipSpaceAfterFunctionName)
+        {
+            string output = CallDaxFormatterMulti(DaxTextFormatMultiUri, dax, useSemicolonsAsSeparators, shortFormat, skipSpaceAfterFunctionName);
+
+            List<DaxFormatterResult> res;
+            if (output.StartsWith("["))
+            {
+                res = JsonConvert.DeserializeObject<List<DaxFormatterResult>>(output);
+            }
+            else
+            {
+                res = new List<DaxFormatterResult>();
+            }
+            return res;
+        }
+
+        private static string CallDaxFormatterSingle(string uri, string dax, bool useSemicolonsAsSeparators, bool shortFormat, bool skipSpaceAfterFunctionName)
         {
             try
             {
@@ -133,9 +169,69 @@ namespace TabularEditor.Dax
                 var originalUri = new Uri(uri);
                 var actualUri = new UriBuilder(originalUri.Scheme, redirectHost, originalUri.Port, originalUri.PathAndQuery).ToString();
 
-                var req = new DaxFormatterRequest(useSemicolonsAsSeparators, shortFormat, skipSpaceAfterFunctionName)
+                var req = new DaxFormatterRequestSingle(useSemicolonsAsSeparators, shortFormat, skipSpaceAfterFunctionName)
                 {
-                    Dax = query
+                    Dax = dax
+                };
+
+                var data = JsonConvert.SerializeObject(req, Formatting.Indented);
+
+                var enc = System.Text.Encoding.UTF8;
+                var data1 = enc.GetBytes(data);
+
+                // this should allow DaxFormatter to work through http 1.0 proxies
+                // see: http://stackoverflow.com/questions/566437/http-post-returns-the-error-417-expectation-failed-c
+                //System.Net.ServicePointManager.Expect100Continue = false;
+
+                var wr = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(actualUri);
+                wr.Proxy = ProxyCache.GetProxy(actualUri);
+
+                wr.Timeout = Preferences.Current.DaxFormatterRequestTimeout;
+                wr.Method = "POST";
+                wr.Accept = "application/json, text/javascript, */*; q=0.01";
+                wr.Headers.Add("Accept-Encoding", "gzip,deflate");
+                wr.Headers.Add("Accept-Language", "en-US,en;q=0.8");
+                wr.ContentType = "application/json; charset=UTF-8";
+                wr.AutomaticDecompression = DecompressionMethods.GZip;
+
+                string output = "";
+                using (var strm = wr.GetRequestStream())
+                {
+                    strm.Write(data1, 0, data1.Length);
+
+                    using (var resp = wr.GetResponse())
+                    {
+                        //var outStrm = new System.IO.Compression.GZipStream(resp.GetResponseStream(), System.IO.Compression.CompressionMode.Decompress);
+                        var outStrm = resp.GetResponseStream();
+                        using (var reader = new System.IO.StreamReader(outStrm))
+                        {
+                            output = reader.ReadToEnd().Trim();
+                        }
+                    }
+                }
+
+                return output;
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+            }
+        }
+
+        private static string CallDaxFormatterMulti(string uri, List<string> dax, bool useSemicolonsAsSeparators, bool shortFormat, bool skipSpaceAfterFunctionName)
+        {
+            try
+            {
+                PrimeConnection(uri);
+                var originalUri = new Uri(uri);
+                var actualUri = new UriBuilder(originalUri.Scheme, redirectHost, originalUri.Port, originalUri.PathAndQuery).ToString();
+
+                var req = new DaxFormatterRequestMulti(useSemicolonsAsSeparators, shortFormat, skipSpaceAfterFunctionName)
+                {
+                    Dax = dax
                 };
 
                 var data = JsonConvert.SerializeObject(req, Formatting.Indented);
