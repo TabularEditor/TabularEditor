@@ -1,11 +1,4 @@
-In this article:
-
-- [Importing tables](/Importing-Tables#importing-tables)
-- [Refreshing table metadata](/Importing-Tables#refreshing-table-metadata)
-- [Azure Active Directory with MFA](/Importing-Tables#azure-active-directory-with-mfa)
-- [Manually importing schema metadata](/Importing-Tables#manually-importing-schemametadata)
-
-## Importing Tables
+# Importing Tables
 
 If you already have a Legacy Data Source in your model, you can right click it, and choose "Import Tables...". Tabular Editor will attempt to connect using the data provider and credentials specified in the Data Source. If succesful, you should get a list of all the databases, tables and views accessible through the Data Source:
 
@@ -17,7 +10,7 @@ You can select multiple tables/views to import at once. When you click "Import",
 
 That's it! No more going back and forth between Tabular Editor and SSDT.
 
-### A note on Legacy vs. Structured Data Sources
+## A note on Legacy vs. Structured Data Sources
 As there is currently no way for Tabular Editor to infer the metadata returned from M (Power Query) expressions, this UI only supports Legacy (aka. Provider) Data Sources. If you must use Structured Data Sources, you can still use a temporary Legacy connection to import the table schema initially (assuming your data source can be accessed through SQL, OLE DB or ODBC), and then manually switch the partitions on the imported tables, to use the Structured Data Sources. If you are importing data from "exotic" data sources, such as web services, Azure Data Lake Storage, etc. schema metadata can not be imported automatically, but [there is an option for providing the metadata information through the clipboard](/Importing-Tables#power-query-data-sources).
 
 In general, though, it is recommended to always use a Legacy connection for the following types of sources:
@@ -31,7 +24,7 @@ In general, though, it is recommended to always use a Legacy connection for the 
 
 For authentication using Azure Active Directory with MFA, please see here.
 
-### Importing without a pre-existing Data Source
+## Importing without a pre-existing Data Source
 
 If your model does not yet contain any data sources, you can import tables by going to the "Model" menu and clicking "Import Tables...". The resulting UI looks like this:
 
@@ -47,7 +40,7 @@ The next option on the list, "Use a temporary connection", will not cause a new 
 
 The last option, "Manually import metadata from another application", is used when you want to import a new table based on a list of column metadata. This is useful for Structured (Power Query) Data Sources, [see below](/Importing-Tables#power-query-data-sources).
 
-### SQL capabilities
+## SQL capabilities
 For non-SQL Server data sources (or more precisely, data sources that do not use the Native SQL Client driver), please pay attention to the two dropdown-boxes near the bottom of the screen:
 
 ![image](https://user-images.githubusercontent.com/8976200/51613859-b952b600-1f24-11e9-8fd7-7c5269aaab26.png)
@@ -99,11 +92,11 @@ Here are step by step instructions to set up the data source to work with MFA:
 1. Create a new legacy data source and add it to your model. Model > New Data Source (Legacy)
 2. Specify `System.Data.OleDb` as the Provider property and use a connection string that looks as follows, substituting the correct server, database and user names:
 
-#### For Synapse SQL pools:
+### For Synapse SQL pools:
 ```
 Provider=MSOLEDBSQL;Data Source=<synapse workspace name>-ondemand.sql.azuresynapse.net;User ID=daniel@adventureworks.com;Database=<database name>;Authentication=ActiveDirectoryInteractive
 ```
-#### For Azure SQL databases:
+### For Azure SQL databases:
 ```
 Provider=MSOLEDBSQL;Data Source=<sql server name>.database.windows.net;User ID=daniel@adventureworks.com;Database=<database name>;Authentication=ActiveDirectoryInteractive
 ```
@@ -119,7 +112,7 @@ When parsing the text on the left hand side, Tabular Editor searches for certain
 
 ![image](https://user-images.githubusercontent.com/8976200/70419758-6f07f400-1a66-11ea-838d-9a587c8021ca.png)
 
-### Power Query data sources
+## Power Query data sources
 
 Since there is no officially supported way to execute or validate a Power Query/M expression, Tabular Editor only has limited support for Power Query data sources. As of 2.9.0, you may use the "Manually import metadata from another application"-option of the Import Table Wizard, as described above, to import a schema from a Power Query query in Excel or Power BI Desktop. The workflow is the following:
 

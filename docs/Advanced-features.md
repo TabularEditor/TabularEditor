@@ -1,20 +1,6 @@
-In addition to the features mentioned in the [Features at a glance](/Features-at-a-glance) article, Tabular Editor also supports the following features for advanced usage:
+# Advanced Features
 
-* [Replace tables](/Advanced-features#replace-tables)
-* [Roles and Row-Level Security](/Advanced-features#roles-and-row-level-security)
-* [View table partition definitions](/Advanced-features#view-table-partitions)
-* [DAX expression editor with syntax highlighting (for measures and calculated columns)](/Advanced-features#dax-expression-editor)
-* [Advanced Scripting](/Advanced-Scripting)
-* [Custom actions to boost productivity](/Custom-Actions)
-* [Scripting/referencing objects as DAX/TMSL/TOM(C#)](/Advanced-features#scriptingreferencing-objects)
-* [Deployment Wizard supporting partial deployment](/Advanced-features#deployment-wizard)
-* [Command-line options and deployment](/Command-line-Options)
-* [Metadata Backup](/Advanced-features#metadata-backup)
-* [Formula Fix-up and Formula Dependencies](/Advanced-features#formula-fix-up-and-formula-dependencies)
-* [Import/Export Translations](/Advanced-features#importexport-translations)
-* [Folder Serialization](/Advanced-features#folder-serialization)
-* [User Settings Files](/Advanced-features#user-settings-files)
-* [Best Practice Analyzer](/Best-Practice-Analyzer)
+In addition to the features mentioned in the [Features at a glance](/Features-at-a-glance) article, Tabular Editor also supports the following features for advanced usage.
 
 ## Replace tables
 As of version 2.7, you can now replace a table simply by copying (CTRL+C) one table - even from another instance of Tabular Editor - and then selecting the table you want to replace, before hitting paste (CTRL+V). A prompt will ask you to confirm whether you really want to replace the table ("Yes"), insert as a new table ("No") or cancel the operation entirely:

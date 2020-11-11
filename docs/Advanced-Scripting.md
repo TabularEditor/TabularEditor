@@ -1,3 +1,5 @@
+# Advanced Scripting
+
 This is an introduction to the Advanced Scripting capabilities of Tabular Editor. Information in this document is subject to change. Also, make sure to check out the article on [Useful script snippets](/Useful-script-snippets), for some more real-life examples of what you can do with the scripting capabilities of Tabular Editor.
 
 ## What is Advanced Scripting?
@@ -199,7 +201,7 @@ In addition, the following .NET Framework assemblies are loaded by default:
 - TabularEditor.Exe
 - Microsoft.AnalysisServices.Tabular.Dll
 
-# Compiling with Roslyn
+## Compiling with Roslyn
 
 If you prefer to compile your scripts using the new Roslyn compiler introduced with Visual Studio 2017, you can set this up under File > Preferences > General, starting with Tabular Editor version 2.12.2. This allows you to use newer C# language features such as string interpolation. Simply specify the path to the directory that holds the compiler executable (`csc.exe`) and specify the language version as an option for the compiler:
 
