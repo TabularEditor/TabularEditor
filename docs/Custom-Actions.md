@@ -1,5 +1,8 @@
 # Custom Actions
-_Please note that this functionality is unrelated to the Custom Actions feature available for Multidimensional models._
+```eval_rst
+.. note::
+    Please note that this functionality is unrelated to the Custom Actions feature available for Multidimensional models.
+```
 
 Say you have created a useful script using the `Selected` object, and you want to be able to execute the script several times on different objects in the explorer tree. Instead of hitting the "Play" button whenever you want to execute the script, Tabular Editor lets you save it as a Custom Action:
 
@@ -29,7 +32,7 @@ As you can see, `Name` and `Tooltip` gets their values from whatever was specifi
 
 The `ValidContexts` property holds a list of object types for which the Action will be available. When selecting objects in the tree, a selection containing any objects different from the types listed in the `ValidContexts` property will hide the action from the context menu.
 
-### Controlling Action Availability
+## Controlling Action Availability
 If you need even more control on when an action can be invoked from the context menu, you can set the `Enabled` property to a custom expression that must return a boolean value, indicating whether the action will be available for the given selection. By default, the `Enabled` property has the value "true", which means that the action will always be enabled within the valid context. Keep this in mind, when using the singular object references on the `Selected` object, such as `Selected.Measure` or `Selected.Table`, as these will throw an error if the current selection does not contain exactly one of that type of object. In such a case, it is recommended to use the `Enabled` property to check that one and only one object of the required type, has been selected:
 
 ```json

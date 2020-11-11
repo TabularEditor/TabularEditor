@@ -1,3 +1,5 @@
+# Master Model Pattern
+
 It is not uncommon to have several Tabular models in an organisation, with a substantial amount of functional overlap. For the development team, keeping these models up to date with shared features can be a pain point. In this article, we'll see an alternate approach that may be suitable in situations where it makes sense to combine all these models into a single "Master" model, that is then deployed partially into several different subset models. Tabular Editor enables this approach by utilising perspectives in a special way (while still allowing perspectives to work the usual way).
 
 **Disclaimer:** While this technique works, it is not supported by Microsoft, and there is a fair amount of learning, scripting and hacking involved. Decide for yourself whether you think it's the right approach for your team.
@@ -10,7 +12,7 @@ Let's say that for some reason, these is a need to deploy everything relating to
 
 Instead of actually maintaining one development branch for each of the different versions, the technique presented here, lets you maintain just one model using metadata to indicate how the model should be split upon deployment.
 
-### (Ab)using perspectives
+## (Ab)using perspectives
 The idea is quite simple. Start by adding a number of new perspectives to your model, corresponding to the number of target models you need to deploy to. Make sure to prefix these perspectives in a consistent way, to separate them from user-oriented perspectives:
 
 ![image](https://user-images.githubusercontent.com/8976200/43960154-6b637042-9cb1-11e8-906b-6671bbb9558e.png)
@@ -124,10 +126,10 @@ If you're a team of developers working on the model, you should already be using
 
 ![image](https://user-images.githubusercontent.com/8976200/44029969-935e0efe-9eff-11e8-93de-c1223f7ebe7f.png)
 
-### Adding more fine-grained control
+## Adding more fine-grained control
 By now, you've probably guessed that we're going to use scripting to create one version of the model for every of our prefixed developer perspectives. The script will simply remove all objects from the model, that are not included in a given developer perspective. However, before we do that, there are a couple more situations we need to handle.
 
-#### Controlling non-perspective objects
+### Controlling non-perspective objects
 Some objects, such as perspectives, data sources and roles, are not included nor excluded from perspectives themselves, but we may still need a way to specify which of our model versions they should belong to. For this, we're going to use annotations. So going back to our Adventure Works model, we may want the "Inventory" and "Internet Operation" perspectives to appear in "$InternetModel" and "$ManagementModel", while "Reseller Operation" should appear in "$ResellerModel" and "$ManagementModel".
 
 So let's add a new annotation called "DevPerspectives" on each of the 3 original perspectives, and let's just supply the names of the developer perspectives as a comma-separated string:
@@ -136,7 +138,7 @@ So let's add a new annotation called "DevPerspectives" on each of the 3 original
 
 When adding new *user* perspectives to the model, remember to add the same annotation and provide the names of the developer perspectives that you want the *user* perspective included in. When scripting the final model versions later on, we will use the information in these annotations to include the perspectives needed. We can do the same thing for data sources and roles.
 
-#### Controlling object metadata
+### Controlling object metadata
 There may also be situations where the same measure should have slightly different expressions or format strings across the different model versions. Again, we can use annotation to provide the metadata per developer perspective, and then apply the metadata when we script out the final model.
 
 The easiest way to get all object properties serialized into text, would probably be the [ExportProperties](/Useful-script-snippets#export-object-properties-to-a-file) script function. However, that’s a little overkill for our use case, so let’s just specify directly which properties we want to store as annotations. Create the following script:
@@ -169,7 +171,7 @@ Use your new custom actions to apply model version specific changes to the devel
 
 In the screenshot above, we have 3 annotations for each of the developer perspectives. In reality, though, we would only need to create these annotations for those developer perspectives where the properties should differ from their native values.
 
-### Altering partition queries
+## Altering partition queries
 We can use a similar technique to apply changes to partition queries between the different versions. For example, we may want different SQL `WHERE` criterias on some partition queries depending on the version. Let's start by creating a set of new annotations on our *table* objects, to specify the base SQL query we want our partitions to use for each version. Here, for example, we want to restrict which records are included in the Product table on two of our three versions:
 
 ![image](https://user-images.githubusercontent.com/8976200/44736562-69221580-aaa4-11e8-82ee-88388015d30d.png)
@@ -184,7 +186,7 @@ Define the placeholder values within each partition (note, you must be using [Ta
 
 In dynamic partitioning scenarios, don't forget to include these annotations in the script you're using when creating the new partitions. In the next section, we'll see how to apply these placeholder values during deployment.
 
-### Deploying different versions
+## Deploying different versions
 Finally, we are ready to deploy our model as 3 different versions. Unfortunately, the Deployment Wizard UI in Tabular Editor cannot split up the model for us based on the perspectives and annotations we created, so we'd have to create an additional script, that strips down our model to a specific version. This script can then be executed as part of a command-line deployment, so that the whole deployment process can be packaged in a command file, a PowerShell executable or maybe even integrated in your build/automated deployment process?
 
 The script we need looks like the following. The idea is that we create one script per developer perspective. Save the script as a text file and name it something like `ResellerModel.cs`:
@@ -270,7 +272,7 @@ start /wait /d "c:\Program Files (x86)\Tabular Editor" TabularEditor.exe Model.b
 
 This assumes that you are executing the command line within the directory of your Model.bim file (or Database.json file if using the "Save to Folder"-functionality). The -S switch instructs Tabular Editor to apply the supplied script to the model, and the -D switch performs the deployment. The -O switch allows overwriting an existing database with the same name, and the -R switch indicates that we also want to overwrite roles of the target database.
 
-### Master model processing
+## Master model processing
 If you have a dedicated processing server and large amounts of data overlap between the individual models, it may make sense for you to process the data into the master model first, before splitting it up. This way, you can avoid processing the same data several times, into individual models. **This assumes, however, that you are not processing any tables where the partition query has been changed between versions, as shown in [this section](/Master-model-pattern#altering-partition-queries).** The recipe for this is outlined below:
 
 1. (Optional - in case there were metadata changes) Deploy your master model to your processing server
@@ -278,7 +280,7 @@ If you have a dedicated processing server and large amounts of data overlap betw
 3. Synchronise the master model into every individual model and use the command above to strip down the individual models after synchronisation, followed by a ProcessRecalc if necessary.
 4. (Optional) Process any tables on the individual models, that have version-specific partition queries.
 
-### Tips and tricks
+## Tips and tricks
 When you're starting to use custom annotations a lot, there may be situations where you want to list all objects with a specific annotation. This is where the Dynamic LINQ expressions of the Filter-box comes in handy.
 
 First off, let's say we wanted to find all objects where we added an annotation with the name "$InternetModel_Expression". Type the following into the filter textbox and hit ENTER:
@@ -300,5 +302,5 @@ You could also search for objects where the annotation had a specific value:
 :GetAnnotation(`$`InternetModel_Description).Contains("TODO")
 ```
 
-### Conclusion
+## Conclusion
 The technique described here can be very helpful when maintaining many similar models with a lots of shared functionality, such as Calendar tables and other common dimensions. The scripts used can be neatly reused as Custom Actions within Tabular Editor, while the actual deployment can be automated in various ways.

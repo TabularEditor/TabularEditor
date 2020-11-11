@@ -1,6 +1,8 @@
+# Advanced Object Filtering
+
 This article describes how to use the "Filter" textbox within Tabular Editor - an incredibly useful feature when navigating complex models.
 
-### Filtering Mode
+## Filtering Mode
 As of [2.7.4](https://github.com/otykier/TabularEditor/releases/tag/2.7.4), Tabular Editor now lets you decide how the filter should apply to objects in the hierarchy, and how search results are displayed. This is controlled using the three right-most toolbar buttons next to the Filter button:
 
 ![image](https://user-images.githubusercontent.com/8976200/46567931-08a4b480-c93d-11e8-96fd-e197e87a0587.png)
@@ -9,7 +11,7 @@ As of [2.7.4](https://github.com/otykier/TabularEditor/releases/tag/2.7.4), Tabu
 * ![image](https://user-images.githubusercontent.com/8976200/46567940-2ffb8180-c93d-11e8-9fba-84fbb79b6bb3.png) **Hierarchical by children**: The search will apply to _child_ objects, that is Measures, Columns, Hierarchies, etc. Parent objects will only be displayed if they have at least one child object matching the search criteria.
 * ![image](https://user-images.githubusercontent.com/8976200/46567941-37bb2600-c93d-11e8-9c02-86502f41bce8.png) **Flat**: The search will apply to all objects, and results will be displayed in a flat list. Objects that contain child items will still display these in a hierarchical manner.
 
-### Simple search
+## Simple search
 Type anything into the Filter textbox and hit [Enter] to do a simple case-insensitive search within object names. For example, typing "sales" in the Filter textbox, using the "By Parent" filtering mode, will produce the following results:
 
 ![image](https://user-images.githubusercontent.com/8976200/46568002-5f5ebe00-c93e-11e8-997b-7f89dfd92076.png)
@@ -20,7 +22,7 @@ Expanding any of the tables will reveal all measures, columns, hierarchies and p
 
 Notice how the "Employee" table now appears in the list, since it has a couple of child items (columns in this case), that contain the word "sales".
 
-### Wildcard search
+## Wildcard search
 When typing in a string in the Filter textbox, you can use the wildcard `?` to denote any single character, and `*` to denote any sequence of characters (zero or more). So typing `*sales*` would produce exactly the same results as shown above, however typing `sales*` will only show objects whose name _starts_ with the word "sales" (again, this is case-insensitive).
 
 Searching for `sales*` by parent:
@@ -37,7 +39,7 @@ Flat search for `sales*` (toggle info columns [Ctrl]+[F1] to show detailed infor
 
 Wildcards can be placed anywhere in the string, and you can include as many as you need. If that's not complex enough, read on...
 
-### Dynamic LINQ search
+## Dynamic LINQ search
 You can also use [Dynamic LINQ](https://github.com/kahanu/System.Linq.Dynamic/wiki/Dynamic-Expressions) to search for objects, which is the same thing you do when creating [Best Practice Analyzer rules](/Best-Practice-Analyzer). To enable Dynamic LINQ mode in the filter box, simply put a `:` (colon) in front of your search string. For example, to view all objects whose name end with "Key" (case-sensitive) write:
 
 ```

@@ -46,14 +46,15 @@ node_modules_bin_dir = os.path.join(project_dir, 'node_modules', '.bin')
 # ones.
 extensions = [
     "recommonmark",
+    "sphinx_markdown_tables",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
-#source_parsers = {
-#    '.md': CommonMarkParser
-#}
+# source_parsers = {
+#    '.md': 'recommonmark.parser.CommonMarkParser'
+# }
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -219,11 +220,11 @@ def collect_ref_data(app, doctree):
         if 'name=' in node.rawsource:
             match = re.search(r'name="([^\"]+)', node.rawsource)
             if match:
-                anchors.append(match.group(1))
+                anchors.append(match.group(1).replace('/', ''))
         elif 'id=' in node.rawsource:
             match = re.search(r'id="([^\"]+)', node.rawsource)
             if match:
-                anchors.append(match.group(1))
+                anchors.append(match.group(1).replace('/', ''))
 
     for node in doctree.traverse(nodes.section):
         for target in frozenset(node.attributes.get('ids', [])):
@@ -242,21 +243,22 @@ def process_refs(app, doctree, docname):
     Fixes all references (local links) within documents, breaks the build
     if it finds any links to non-existent documents or anchors.
     """
-    for reference in app.env.metadata[docname]['references']:
-        referenced_docname, anchor = parse_reference(reference)
+    if 'references' in app.env.metadata[docname]:
+        for reference in app.env.metadata[docname]['references']:
+            referenced_docname, anchor = parse_reference(reference)
 
-        if referenced_docname not in app.env.metadata:
-            message = "Document '{}' is referenced from '{}', but it could not be found"
-            raise SphinxError(message.format(referenced_docname, docname))
+            if referenced_docname not in app.env.metadata:
+                message = "Document '{}' is referenced from '{}', but it could not be found"
+                raise SphinxError(message.format(referenced_docname, docname))
 
-        if anchor and anchor not in app.env.metadata[referenced_docname]['anchors']:
-            message = "Section '{}#{}' is referenced from '{}', but it could not be found"
-            raise SphinxError(message.format(referenced_docname, anchor, docname))
+            if anchor and anchor not in app.env.metadata[referenced_docname]['anchors']:
+                message = "Section '{}#{}' is referenced from '{}', but it could not be found"
+                raise SphinxError(message.format(referenced_docname, anchor, docname))
 
-        for node in doctree.traverse(nodes.reference):
-            uri = node.get('refuri')
-            if to_reference(uri, basedoc=docname) == reference:
-                node['refuri'] = to_uri(app, referenced_docname, anchor)
+            for node in doctree.traverse(nodes.reference):
+                uri = node.get('refuri')
+                if to_reference(uri, basedoc=docname) == reference:
+                    node['refuri'] = to_uri(app, referenced_docname, anchor)
 
 def to_uri(app, docname, anchor=None):
     uri = ''
