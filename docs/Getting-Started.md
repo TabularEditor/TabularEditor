@@ -12,7 +12,7 @@ The recommended workflow is to set up the tables and relationships using SSDT as
 
 Load a Model.bim file by choosing the Open > From File... option in the File menu (CTRL+O), or open an existing database from an instance of Analysis Services by choosing the Open > From DB... option. In the latter case, you will be prompted for a server name and optional credentials:
 
-![Connecting to an already deployed Tabular Model](https://github.com/otykier/TabularEditor/blob/master/Documentation/Connect.png)
+![Connecting to an already deployed Tabular Model](https://raw.githubusercontent.com/otykier/TabularEditor/master/Documentation/Connect.png)
 
 This also works with the new Azure Analysis Services PaaS. The "Local Instance" dropdown, may be used to browse and connect to any running instances of Power BI Desktop or Visual Studio Integrated Workspaces. **Note that although Tabular Editor can make changes to a Power BI model through the TOM, not all modelling operations are supported by Microsoft. [More information](/Power-BI-Desktop-Integration)**
 
