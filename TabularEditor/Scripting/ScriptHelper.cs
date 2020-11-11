@@ -213,12 +213,12 @@ namespace TabularEditor.Scripting
         }
 
         [ScriptMethod]
-        public static string FormatDax(string dax, bool shortFormat = false)
+        public static string FormatDax(string dax, bool shortFormat = false, bool skipSpaceAfterFunctionName = false)
         {
             var textToFormat = "x :=" + dax;
             try
             {
-                var result = TabularEditor.Dax.DaxFormatterProxy.FormatDax(textToFormat, false, shortFormat).FormattedDax;
+                var result = TabularEditor.Dax.DaxFormatterProxy.FormatDax(textToFormat, false, shortFormat, skipSpaceAfterFunctionName).FormattedDax;
                 if (string.IsNullOrWhiteSpace(result))
                 {
                     return dax;
