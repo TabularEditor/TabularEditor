@@ -420,7 +420,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 var textToFormat = "x :=" + txtExpression.Text;
                 try
                 {
-                    var result = TabularEditor.Dax.DaxFormatterProxy.FormatDax(textToFormat, Preferences.Current.UseSemicolonsAsSeparators, sender == actExpressionFormatDAXShort, Preferences.Current.DaxFormatterSkipSpaceAfterFunctionName).FormattedDax;
+                    var result = TabularEditor.Dax.DaxFormatterProxy.Instance.FormatDax(textToFormat, Preferences.Current.UseSemicolonsAsSeparators, sender == actExpressionFormatDAXShort, Preferences.Current.DaxFormatterSkipSpaceAfterFunctionName).FormattedDax;
                     if (string.IsNullOrWhiteSpace(result))
                     {
                         lblStatus.Text = "Could not format DAX (invalid syntax).";

@@ -14,7 +14,7 @@ namespace TabularEditor
     internal static class Program
     {
         public static bool CommandLineMode => CommandLine.CommandLineMode;
-        public static CommandLineHandler CommandLine { get; internal set; }
+        public static ICommandLineHandler CommandLine { get; internal set; } = new CommandLineHandler();
 
         public static bool RunWithArgs(params string[] args)
         {
@@ -28,7 +28,6 @@ namespace TabularEditor
             var plugins = LoadPlugins();
             SetupLibraries(plugins);
             
-            CommandLine = new CommandLineHandler();
             if (args.Length > 1)
             {
                 CommandLine.HandleCommandLine(args);

@@ -225,6 +225,7 @@
     <Compile Include="UIServices\DeploymentMetadata.cs" />
     <Compile Include="UIServices\DynamicLinq.cs" />
     <Compile Include="UIServices\FileSystemHelper.cs" />
+    <Compile Include="UIServices\IDaxFormatterProxy.cs" />
     <Compile Include="UIServices\LinqExtensions.cs" />
     <Compile Include="UIServices\ManagedIpHelper.cs" />
     <Compile Include="UIServices\PowerBIHelper.cs" />

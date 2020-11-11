@@ -117,9 +117,10 @@ namespace TabularEditor.Dax
         public List<DaxFormatterError> errors;
     }
 
-    public class DaxFormatterProxy
+    public class DaxFormatterProxy : IDaxFormatterProxy
     {
-        static DaxFormatterProxy()
+        public static DaxFormatterProxy Instance = new DaxFormatterProxy();
+        private DaxFormatterProxy()
         {
             // force the use of TLS 1.2
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -128,10 +129,10 @@ namespace TabularEditor.Dax
         public const string DaxTextFormatUri = "https://www.daxformatter.com/api/daxformatter/daxtextformat";
         public const string DaxTextFormatMultiUri = "https://www.daxformatter.com/api/daxformatter/daxtextformatmulti";
 
-        private static string redirectUrl;  // cache the redirected URL
-        private static string redirectHost;
+        private string redirectUrl;  // cache the redirected URL
+        private string redirectHost;
 
-        public static DaxFormatterResult FormatDax(string query, bool useSemicolonsAsSeparators, bool shortFormat, bool skipSpaceAfterFunctionName)
+        public DaxFormatterResult FormatDax(string query, bool useSemicolonsAsSeparators, bool shortFormat, bool skipSpaceAfterFunctionName)
         {
             string output = CallDaxFormatterSingle(DaxTextFormatUri, query, useSemicolonsAsSeparators, shortFormat, skipSpaceAfterFunctionName);
             var res2 = new DaxFormatterResult();
@@ -145,7 +146,7 @@ namespace TabularEditor.Dax
             return res2;
         }
 
-        public static List<DaxFormatterResult> FormatDaxMulti(List<string> dax, bool useSemicolonsAsSeparators, bool shortFormat, bool skipSpaceAfterFunctionName)
+        public List<DaxFormatterResult> FormatDaxMulti(List<string> dax, bool useSemicolonsAsSeparators, bool shortFormat, bool skipSpaceAfterFunctionName)
         {
             string output = CallDaxFormatterMulti(DaxTextFormatMultiUri, dax, useSemicolonsAsSeparators, shortFormat, skipSpaceAfterFunctionName);
 
@@ -161,7 +162,7 @@ namespace TabularEditor.Dax
             return res;
         }
 
-        private static string CallDaxFormatterSingle(string uri, string dax, bool useSemicolonsAsSeparators, bool shortFormat, bool skipSpaceAfterFunctionName)
+        private string CallDaxFormatterSingle(string uri, string dax, bool useSemicolonsAsSeparators, bool shortFormat, bool skipSpaceAfterFunctionName)
         {
             try
             {
@@ -221,7 +222,7 @@ namespace TabularEditor.Dax
             }
         }
 
-        private static string CallDaxFormatterMulti(string uri, List<string> dax, bool useSemicolonsAsSeparators, bool shortFormat, bool skipSpaceAfterFunctionName)
+        private string CallDaxFormatterMulti(string uri, List<string> dax, bool useSemicolonsAsSeparators, bool shortFormat, bool skipSpaceAfterFunctionName)
         {
             try
             {
@@ -281,7 +282,7 @@ namespace TabularEditor.Dax
             }
         }
 
-        private static void PrimeConnection(string uri)
+        private void PrimeConnection(string uri)
         {
             if (redirectHost == null)
             {
