@@ -23,3 +23,4 @@ using System.Runtime.InteropServices;
 [assembly: Guid("f7588159-3f24-4bfa-a6f6-551657896c34")]
 
 [assembly: InternalsVisibleTo("TabularEditorTest")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

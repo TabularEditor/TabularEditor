@@ -208,6 +208,7 @@ namespace TabularEditor.Scripting
             }
         }
 
+        internal static IDaxFormatterProxy DaxFormatter { get; set; } = DaxFormatterProxy.Instance;
 
         [ScriptMethod]
         public static string ConvertDax(string dax, bool useSemicolons = true)
@@ -224,15 +225,17 @@ namespace TabularEditor.Scripting
                 Warning("This script is making multiple calls to the \"FormatDax\" method, which has been deprecated! Calls will be throttled to not overload the DaxFormatter.com service. To avoid throttling, please change your script to use the FormatDax extension method going forward.\n\nFor more information, see:\n\ndocs.tabulareditor.com/formatdax");
                 daxFormatterWarningShown = true;
             }
-            if(daxFormatterWarningShown)
+            // To avoid overloading the DaxFormatter service, let's add a 2 second delay if less than 2 seconds have passed since the last call:
+            if(daxFormatterWarningShown && (DateTime.Now - daxFormatterLastCall).TotalSeconds < 2.0)
             {
-                Thread.Sleep(200);
+                Thread.Sleep(2000);
             }
+            daxFormatterLastCall = DateTime.Now;
 
             var textToFormat = "x :=" + dax;
             try
             {
-                var result = DaxFormatterProxy.FormatDax(textToFormat, false, shortFormat, skipSpaceAfterFunctionName).FormattedDax;
+                var result = DaxFormatter.FormatDax(textToFormat, false, shortFormat, skipSpaceAfterFunctionName).FormattedDax;
                 if (string.IsNullOrWhiteSpace(result))
                 {
                     return dax;
@@ -261,6 +264,7 @@ namespace TabularEditor.Scripting
         }
         private static bool daxFormatterWarningShown = false;
         private static int daxFormatterDirectCalls = 0;
+        private static DateTime daxFormatterLastCall = DateTime.MinValue;
         private static HashSet<IDaxDependantObject> objectsFlaggedForFormatting = new HashSet<IDaxDependantObject>();
 
         [ScriptMethod]
@@ -289,7 +293,7 @@ namespace TabularEditor.Scripting
                     }
                 }
             }
-            var formatResult = DaxFormatterProxy.FormatDaxMulti(expressions, false, shortFormat, skipSpaceAfterFunctionName ?? Preferences.Current.DaxFormatterSkipSpaceAfterFunctionName);
+            var formatResult = DaxFormatter.FormatDaxMulti(expressions, false, shortFormat, skipSpaceAfterFunctionName ?? Preferences.Current.DaxFormatterSkipSpaceAfterFunctionName);
 
             // Assign the formatted dax back to the objects:
             if (formatResult.Count == expressions.Count)

@@ -13,15 +13,27 @@ using System.Text.RegularExpressions;
 
 namespace TabularEditor
 {
-    internal class CommandLineHandler
+    internal interface ICommandLineHandler
+    {
+        void Error(string errorMessage, params object[] args);
+        void Warning(string errorMessage, params object[] args);
+        bool CommandLineMode { get; }
+        void HandleCommandLine(string[] args);
+        bool EnableVSTS { get; }
+        int ErrorCount { get; }
+        int WarningCount { get; }
+        bool LaunchUi { get; }
+    }
+
+    internal class CommandLineHandler: ICommandLineHandler
     {
         public bool EnableVSTS { get; private set; }
         public int ErrorCount { get; private set; } = 0;
         public int WarningCount { get; private set; } = 0;
         public bool LaunchUi { get; private set; } = false;
-        internal bool CommandLineMode { get; private set; } = false;
+        public bool CommandLineMode { get; private set; } = false;
 
-        internal void Error(string errorMessage, params object[] args)
+        public void Error(string errorMessage, params object[] args)
         {
             if (EnableVSTS)
             {
@@ -38,7 +50,7 @@ namespace TabularEditor
 
             ErrorCount++;
         }
-        internal void Warning(string errorMessage, params object[] args)
+        public void Warning(string errorMessage, params object[] args)
         {
             if (EnableVSTS)
             {
@@ -56,7 +68,7 @@ namespace TabularEditor
             WarningCount++;
         }
 
-        void ErrorX(string errorMessage, string sourcePath, int line, int column, string code, params object[] args)
+        private void ErrorX(string errorMessage, string sourcePath, int line, int column, string code, params object[] args)
         {
             if (EnableVSTS)
             {
@@ -72,7 +84,7 @@ namespace TabularEditor
         List<string> ScriptFiles = new List<string>();
         TabularModelHandler Handler;
 
-        internal void HandleCommandLine(string[] args)
+        public void HandleCommandLine(string[] args)
         {
             CommandLineMode = true;
             try
