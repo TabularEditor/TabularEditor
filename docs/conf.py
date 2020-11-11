@@ -262,11 +262,11 @@ def process_refs(app, doctree, docname):
 
 def to_uri(app, docname, anchor=None):
     uri = ''
-
-    if IS_READTHEDOCS:
-        language = app.config.language or 'en'
-        version_name = os.environ.get('READTHEDOCS_VERSION')
-        uri = '/{}/{}'.format(language, version_name)
+#
+#    if IS_READTHEDOCS:
+#        language = app.config.language or 'en'
+#        version_name = os.environ.get('READTHEDOCS_VERSION')
+#        uri = '/{}/{}'.format(language, version_name)
 
     uri += '/{}.html'.format(docname)
     if anchor:
