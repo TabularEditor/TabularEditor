@@ -223,10 +223,10 @@ namespace TabularEditor.Scripting
             if(daxFormatterDirectCalls > 3 && !daxFormatterWarningShown)
             {
                 if(Program.CommandLineMode)
-                    Warning("This script is making multiple calls to the \"FormatDax\" method, which has been deprecated! Calls will be throttled to not overload the DaxFormatter.com service. To avoid throttling, please change your script to use the FormatDax extension method going forward. For more information, see: https://docs.tabulareditor.com/formatdax");
+                    Warning("This script is making multiple calls to the \"FormatDax\" method, which has been deprecated! Calls will be throttled to not overload the DaxFormatter.com service. To avoid throttling, please change your script to use the FormatDax extension method going forward. For more information, see: https://docs.tabulareditor.com/FormatDax.html");
                 else
                 {
-                    var mr = MessageBox.Show("This script is making multiple calls to the \"FormatDax\" method, which has been deprecated! Calls will be throttled to not overload the DaxFormatter.com service. To avoid throttling, please change your script to use the FormatDax extension method going forward.\n\nFor more information, see:\n\nhttps://docs.tabulareditor.com/formatdax\n\nContinue script execution?", "FormatDax method deprecated!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    var mr = MessageBox.Show("This script is making multiple calls to the \"FormatDax\" method, which has been deprecated! Calls will be throttled to not overload the DaxFormatter.com service. To avoid throttling, please change your script to use the FormatDax extension method going forward.\n\nFor more information, see:\n\nhttps://docs.tabulareditor.com/FormatDax\n\nContinue script execution?", "FormatDax method deprecated!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                     if (mr == DialogResult.No) throw new ScriptCancelledException();
                 }
                 daxFormatterWarningShown = true;
