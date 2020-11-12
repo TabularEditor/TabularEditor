@@ -243,5 +243,5 @@ For more information about these rights, please contact us.
 
 Don't hesitate to contact us if you have any questions.
 
-- Via Email: [contact@tabulareditor.com](mailto:contact@tabulareditor.com)
+- Via Email: contact@tabulareditor.com
 - Via this Link: [https://tabulareditor.com/contact](https://tabulareditor.com/contact)
