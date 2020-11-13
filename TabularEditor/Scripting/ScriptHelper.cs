@@ -231,10 +231,10 @@ namespace TabularEditor.Scripting
                 }
                 daxFormatterWarningShown = true;
             }
-            // To avoid overloading the DaxFormatter service, let's add a 2 second delay if less than 2 seconds have passed since the last call:
-            if(daxFormatterWarningShown && (DateTime.Now - daxFormatterLastCall).TotalSeconds < 2.0)
+            // To avoid overloading the DaxFormatter service, let's add a 5 second delay if less than 5 seconds have passed since the last call:
+            if(daxFormatterWarningShown && (DateTime.Now - daxFormatterLastCall).TotalSeconds < 5.0)
             {
-                Thread.Sleep(2000);
+                Thread.Sleep(5000);
             }
             daxFormatterLastCall = DateTime.Now;
 
