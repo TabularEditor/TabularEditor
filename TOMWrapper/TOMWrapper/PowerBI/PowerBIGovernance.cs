@@ -17,10 +17,6 @@ namespace TabularEditor.TOMWrapper.PowerBI
         private HashSet<Type> Manipulatable = new HashSet<Type>() {
             typeof(Measure),
             typeof(KPI),
-            typeof(ModelRole),
-            typeof(ModelRoleMember),
-            typeof(ExternalModelRoleMember),
-            typeof(WindowsModelRoleMember),
             typeof(CalculationGroup),
             typeof(CalculationGroupTable),
             typeof(CalculationItem),
