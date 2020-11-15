@@ -13,6 +13,8 @@ namespace TabularEditor.TOMWrapper.PowerBI
     /// </summary>
     internal class PowerBIGovernance
     {
+        private readonly Version OLSSupport = new Version(2, 88, 0, 0);
+
         // Defines a list of object types that can be removed/added from/to a Power BI data model:
         private HashSet<Type> Manipulatable = new HashSet<Type>() {
             typeof(Measure),
@@ -154,7 +156,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
                     case Properties.MODELPERMISSION:
                     case Properties.COLUMNPERMISSIONS:
                     case Properties.TABLEPERMISSIONS:
-                        return PBIDesktopVersionSimple > 20.11M ; // Conditional on Power BI version (must be December 2020 release or newer)
+                        return PBIDesktopVersion >= OLSSupport ; // Conditional on Power BI version (must be December 2020 release or newer)
                 }
 
                 switch (type)
