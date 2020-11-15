@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TabularEditor.TOMWrapper;
+using TabularEditor.TOMWrapper.Serialization;
 using TOMWrapperTest;
 
 namespace TabularEditor.TOMWrapper.Tests
@@ -57,6 +58,61 @@ namespace TabularEditor.TOMWrapper.Tests
             handler.EndUpdate(true, true); // Rollback Batch 1
             Assert.AreEqual(0, handler.UndoManager.BatchDepth);
             Assert.AreEqual(0, handler.UndoManager.UndoSize);
+        }
+
+        [TestMethod]
+        public void UndoRedoCopyPerspectiveTest()
+        {
+            var handler = ObjectHandlingTests.CreateTestModel();
+            var model = handler.Model;
+
+            var serializedCopy = Serializer.SerializeObjects(new[] { model.Perspectives["Test Perspective 1"] });
+            var parsedCopy = Serializer.ParseObjectJsonContainer(serializedCopy);
+            handler.Actions.InsertObjects(parsedCopy);
+            Assert.AreEqual(3, model.Perspectives.Count);
+
+            handler.UndoManager.Undo();
+            Assert.AreEqual(2, model.Perspectives.Count);
+
+            handler.UndoManager.Redo();
+            Assert.AreEqual(3, model.Perspectives.Count);
+
+            handler.UndoManager.Undo();
+            Assert.AreEqual(2, model.Perspectives.Count);
+
+            // Using undo/redo on a copied perspective object causes a TOMInternalException crash on the call to TOM .Clone
+            // We use a workaround with serializing to/from JSON instead of calling .Clone, but we keep this test method
+            // so we can go back to .Clone in case this issue is fixed later on.
+
+            handler.UndoManager.Redo();
+            Assert.AreEqual(3, model.Perspectives.Count);
+        }
+
+        [TestMethod]
+        public void UndoRedoCopyCultureTest()
+        {
+            var handler = ObjectHandlingTests.CreateTestModel();
+            var model = handler.Model;
+
+            var serializedCopy = Serializer.SerializeObjects(new[] { model.Cultures["da-DK"] });
+            var parsedCopy = Serializer.ParseObjectJsonContainer(serializedCopy);
+            model.Cultures["da-DK"].Delete();
+            Assert.AreEqual(1, model.Cultures.Count);
+
+            handler.Actions.InsertObjects(parsedCopy);
+            Assert.AreEqual(2, model.Cultures.Count);
+
+            handler.UndoManager.Undo();
+            Assert.AreEqual(1, model.Cultures.Count);
+
+            handler.UndoManager.Redo();
+            Assert.AreEqual(2, model.Cultures.Count);
+
+            handler.UndoManager.Undo();
+            Assert.AreEqual(1, model.Cultures.Count);
+
+            handler.UndoManager.Redo();
+            Assert.AreEqual(2, model.Cultures.Count);
         }
     }
 }
