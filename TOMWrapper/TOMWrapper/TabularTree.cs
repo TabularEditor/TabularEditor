@@ -284,7 +284,7 @@ namespace TabularEditor.TOMWrapper
             {
                 items = table.GetChildren();
                 if (Options.HasFlag(LogicalTreeOptions.OrderByName))
-                    items = items.OrderBy(i => i.GetDisplayOrder()).ThenBy(i => i.Name);
+                    items = items.OrderBy(i => i.GetDisplayOrder()).ThenBy(i => i.GetName(Culture));
             }
             items = items.Where(i => VisibleInTree(i));
 
@@ -344,7 +344,7 @@ namespace TabularEditor.TOMWrapper
                 result = objContainer.GetChildren();
             }
 
-            return Options.HasFlag(LogicalTreeOptions.OrderByName) ? result.OrderBy(o => o.Name) : result;
+            return Options.HasFlag(LogicalTreeOptions.OrderByName) ? result.OrderBy(o => o.GetName(Culture)) : result;
 
         }
 
