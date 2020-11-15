@@ -210,7 +210,7 @@ namespace TabularEditor
             {
                 Console.WriteLine("Building Model.bim file...");
                 if (buildReplaceId != null) { Handler.Database.Name = buildReplaceId; Handler.Database.ID = buildReplaceId; }
-                Handler.Save(buildOutputPath, SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+                Handler.Save(buildOutputPath, SaveFormat.ModelSchemaOnly, null, true);
             }
             else if (!string.IsNullOrEmpty(saveToFolderOutputPath))
             {
