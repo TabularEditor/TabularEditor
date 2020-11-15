@@ -54,6 +54,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string DEFAULTPOWERBIDATASOURCEVERSION = "DefaultPowerBIDataSourceVersion";
 	    public const string DESCRIPTION = "Description";
 	    public const string DETAILROWSDEFINITION = "DetailRowsDefinition";
+	    public const string DISCOURAGECOMPOSITEMODELS = "DiscourageCompositeModels";
 	    public const string DISCOURAGEIMPLICITMEASURES = "DiscourageImplicitMeasures";
 	    public const string DISCOURAGEREPORTMEASURES = "DiscourageReportMeasures";
 	    public const string DISPLAYFOLDER = "DisplayFolder";
@@ -8063,6 +8064,30 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeMAttributes() { return false; }
 /// <summary>
+///             Determines whether to discourage composite models.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1560 or above.</remarks>
+		[DisplayName("Discourage Composite Models")]
+		[Category("Options"),Description(@"Determines whether to discourage composite models."),IntelliSense(@"Determines whether to discourage composite models.")]
+		public bool DiscourageCompositeModels {
+			get {
+			    return MetadataObject.DiscourageCompositeModels;
+			}
+			set {
+				
+				var oldValue = DiscourageCompositeModels;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.DISCOURAGECOMPOSITEMODELS, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.DiscourageCompositeModels = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISCOURAGECOMPOSITEMODELS, oldValue, newValue));
+				OnPropertyChanged(Properties.DISCOURAGECOMPOSITEMODELS, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeDiscourageCompositeModels() { return false; }
+/// <summary>
 ///             A reference to a default measure.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("Default Measure")]
@@ -8241,6 +8266,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.DEFAULTPOWERBIDATASOURCEVERSION:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1450 : Handler.CompatibilityLevel >= 1450;
+				case Properties.DISCOURAGECOMPOSITEMODELS:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1560 : Handler.CompatibilityLevel >= 1560;
 				case Properties.DISCOURAGEIMPLICITMEASURES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1470 : Handler.CompatibilityLevel >= 1470;
 				case Properties.DISCOURAGEREPORTMEASURES:
