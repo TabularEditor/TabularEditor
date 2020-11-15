@@ -47,12 +47,13 @@ namespace TabularEditor.PropertyGridUI
         {
             var pdc = new PropertyDescriptorCollection(null);
             var dict = value as IExpandableIndexer;
-            //dict.Refresh();
+            var isReadOnly = context.PropertyDescriptor.IsReadOnly;
+
             foreach(var key in dict.Keys.OrderBy(k => dict.GetDisplayName(k)))
             {
                 PropertyDescriptor pd;
 
-                pd = new DictionaryPropertyDescriptor(dict, key, context.PropertyDescriptor.Name, dict.GetDisplayName(key));
+                pd = new DictionaryPropertyDescriptor(dict, key, context.PropertyDescriptor.Name, dict.GetDisplayName(key), isReadOnly);
                 pdc.Add(pd);
             }
             return pdc;
@@ -88,13 +89,15 @@ namespace TabularEditor.PropertyGridUI
         IExpandableIndexer _dictionary;
         string _key;
         string _propertyName;
+        bool _readOnly;
 
-        internal DictionaryPropertyDescriptor(IExpandableIndexer d, string key, string propertyName, string displayName)
+        internal DictionaryPropertyDescriptor(IExpandableIndexer d, string key, string propertyName, string displayName, bool readOnly)
             : base(displayName, null)
         {
             _propertyName = propertyName;
             _dictionary = d;
             _key = key;
+            _readOnly = readOnly;
         }
         public override Type PropertyType
         {
@@ -123,7 +126,7 @@ namespace TabularEditor.PropertyGridUI
 
         public override bool IsReadOnly
         {
-            get { return false; }
+            get { return _readOnly; }
         }
 
         public override Type ComponentType
