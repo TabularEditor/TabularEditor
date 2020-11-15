@@ -533,7 +533,13 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
+<# if(t.Name == "Perspective") { #>
+            // The TOM .Clone() method causes a TOMInternalException on Perspective objects, so we recreate the object from its serialized version instead
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Perspective>(json);
+<# } else { #>
             MetadataObject = MetadataObject.Clone() as TOM.<#= t.Name #>;
+<# } #>
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 

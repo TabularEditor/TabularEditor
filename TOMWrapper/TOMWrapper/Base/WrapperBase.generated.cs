@@ -11034,7 +11034,9 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.Perspective;
+            // The TOM .Clone() method causes a TOMInternalException on Perspective objects, so we recreate the object from its serialized version instead
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Perspective>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
