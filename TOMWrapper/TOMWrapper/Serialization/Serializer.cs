@@ -366,21 +366,31 @@ namespace TabularEditor.TOMWrapper.Serialization
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.Perspective>(json.ToString());
             tom.Name = model.Perspectives.GetNewName(tom.Name);
 
+            var tomModel = model.MetadataObject;
+            foreach(var pt in tom.PerspectiveTables.ToList())
+            {
+                if (tomModel.Tables.Contains(pt.Name))
+                {
+                    var tomTable = tomModel.Tables[pt.Name];
+                    foreach (var pc in pt.PerspectiveColumns.ToList()) if (!tomTable.Columns.Contains(pc.Name)) pt.PerspectiveColumns.Remove(pc.Name);
+                    foreach (var pm in pt.PerspectiveMeasures.ToList()) if (!tomTable.Measures.Contains(pm.Name)) pt.PerspectiveMeasures.Remove(pm.Name);
+                    foreach (var ph in pt.PerspectiveHierarchies.ToList()) if (!tomTable.Hierarchies.Contains(ph.Name)) pt.PerspectiveHierarchies.Remove(ph.Name);
+                }
+                else
+                    tom.PerspectiveTables.Remove(pt.Name);
+            }
+
             var perspective = Perspective.CreateFromMetadata(model, tom);
+
 
             return perspective;
         }
 
         public static Culture DeserializeCulture(JObject json, Model model)
         {
-            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Culture>(json.ToString());
-            tom.Name = model.Cultures.GetNewName(tom.Name);
-
-            var culture = Culture.CreateFromMetadata(model, tom);
-
-            return culture;
+            TabularCultureHelper.ImportCulture(json, model, true, false);
+            return model.Cultures[json["name"].Value<string>()];
         }
-
         public static ProviderDataSource DeserializeProviderDataSource(JObject json, Model model)
         {
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.ProviderDataSource>(json.ToString());
