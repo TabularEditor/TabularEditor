@@ -3,6 +3,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TabularEditor.TOMWrapper;
+using TabularEditor.TOMWrapper.Serialization;
 
 namespace TabularEditor
 {
@@ -153,6 +155,26 @@ namespace TabularEditor
 
             Assert.IsTrue(result.ErrorCount > 1);
             Assert.AreEqual(0, result.WarningCount);
+        }
+
+        [TestMethod]
+        public void TestDualSerialization()
+        {
+            var handler1 = new TabularModelHandler(1500);
+            handler1.Save("TestSaveAsFolder", SaveFormat.TabularEditorFolder, SerializeOptions.DefaultFolder, false, false, false);
+            var annotation1 = handler1.Model.GetAnnotation("TabularEditor_SerializeOptions");
+
+            CommandLine("TestSaveAsFolder", "-BUILD", "TestFromSaveAsFolder.bim");
+            CommandLine("TestFromSaveAsFolder.bim", "-FOLDER", "TestSaveAsFolder2");
+
+            var handler2 = new TabularModelHandler("TestFromSaveAsFolder.bim");
+            var annotation2 = handler2.Model.GetAnnotation("TabularEditor_SerializeOptions");
+
+            var handler3 = new TabularModelHandler("TestSaveAsFolder2");
+            var annotation3 = handler2.Model.GetAnnotation("TabularEditor_SerializeOptions");
+
+            Assert.AreEqual(annotation1, annotation2, "Model should retain serialization settings when saved from CLI");
+            Assert.AreEqual(annotation1, annotation3, "Model should retain serialization settings when saved from CLI");
         }
     }
 
