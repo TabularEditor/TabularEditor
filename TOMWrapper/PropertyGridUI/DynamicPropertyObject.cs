@@ -133,7 +133,7 @@ namespace TabularEditor.PropertyGridUI
         {
             get
             {
-                return !_editable || _descriptor.IsReadOnly;
+                return !_editable;
             }
         }
 

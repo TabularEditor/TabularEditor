@@ -15,15 +15,16 @@ using TabularEditor.TOMWrapper.Utils;
 namespace TabularEditor.TOMWrapper
 {
     [TypeConverter(typeof(IndexerConverter))]
-    public abstract class GenericIndexer<T, T1> : IEnumerable<T1>, IExpandableIndexer
+    public abstract class GenericIndexer<T, T1> : IEnumerable<T1>, IExpandableIndexer, IGenericIndexer
         where T : TabularNamedObject
     {
-        protected TabularObject ParentObject;
+        internal TabularObject ParentObject { get; private set; }
+        TabularObject IGenericIndexer.ParentObject => ParentObject;
         protected TabularModelHandler Handler;
         protected Model Model { get { return Handler.Model; } }
         protected GenericIndexer(TabularObject parent)
         {
-            ParentObject = parent;
+            this.ParentObject = parent;
             Handler = parent.Handler;
         }
         protected virtual bool EnableMultiLine => false;
@@ -164,5 +165,10 @@ namespace TabularEditor.TOMWrapper
         {
             return GetEnumerator();
         }
+    }
+
+    internal interface IGenericIndexer
+    {
+        TabularObject ParentObject { get; }
     }
 }
