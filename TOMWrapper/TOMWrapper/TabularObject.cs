@@ -127,10 +127,19 @@ namespace TabularEditor.TOMWrapper
         public event PropertyChangingEventHandler PropertyChanging;
 
         internal abstract void RenewMetadataObject();
-        internal virtual void Undelete(ITabularObjectCollection collection) { }
+        internal virtual void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) { }
         internal virtual void ReapplyReferences() { }
         internal virtual void DeleteLinkedObjects(bool isChildOfDeleted) { }
         internal virtual void Reinit() { }
+
+        internal static readonly TOM.SerializeOptions RenewMetadataOptions = new TOM.SerializeOptions
+        {
+            IgnoreInferredObjects = true,
+            IgnoreInferredProperties = false,
+            IgnoreTimestamps = true,
+            IncludeRestrictedInformation = true,
+            SplitMultilineStrings = false
+        };
 
         internal virtual ITabularObjectCollection GetCollectionForChild(TabularObject child)
         {

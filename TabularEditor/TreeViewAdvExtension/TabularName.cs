@@ -73,7 +73,7 @@ namespace TabularEditor.UI.Tree
         public override object GetValue(TreeNodeAdv node)
         {
             var level = node?.Tag as Level;
-            if(level != null)
+            if(level != null && level.Column != null)
             {
                 return string.Format("{0} ({1})", level.GetName(UI.TreeModel?.Culture), level.Column.GetName(UI.TreeModel?.Culture));
             }

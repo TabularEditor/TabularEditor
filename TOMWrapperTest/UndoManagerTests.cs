@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -113,6 +114,152 @@ namespace TabularEditor.TOMWrapper.Tests
 
             handler.UndoManager.Redo();
             Assert.AreEqual(2, model.Cultures.Count);
+        }
+
+        [TestMethod]
+        public void UndoDeleteColumnUsedAsLevelTest()
+        {
+            var handler = ObjectHandlingTests.CreateTestModel();
+            var model = handler.Model;
+
+            var t1 = model.Tables["Test Table 1"];
+            var h1 = t1.Hierarchies["Hierarchy 1"];
+            Assert.AreEqual(4, h1.Levels.Count);
+            Assert.AreEqual(t1.Columns["Column 1"], h1.Levels["Level 1"].Column);
+
+            t1.Columns["Column 1"].Delete();
+            Assert.AreEqual(3, h1.Levels.Count);
+
+            handler.UndoManager.Undo();
+
+            Assert.AreEqual(4, h1.Levels.Count);
+            Assert.AreEqual(t1.Columns["Column 1"], h1.Levels["Level 1"].Column);
+        }
+
+        [TestMethod]
+        public void UndoDeleteSortByColumnTest()
+        {
+            var handler = ObjectHandlingTests.CreateTestModel();
+            var model = handler.Model;
+
+            var t1 = model.Tables["Test Table 1"];
+            t1.Columns["Column 2"].SortByColumn = t1.Columns["Column 1"];
+
+            t1.Columns["Column 2"].Delete();
+            t1.Columns["Column 1"].Delete();
+
+            handler.UndoManager.Undo();
+            handler.UndoManager.Undo();
+            
+            Assert.AreEqual(t1.Columns["Column 1"], t1.Columns["Column 2"].SortByColumn);
+        }
+
+        [TestMethod]
+        public void RecreateFromMetadataPerformanceTest()
+        {
+            var handler = ObjectHandlingTests.CreateTestModel();
+            var model = handler.Model;
+
+            var t1 = model.Tables["Test Table 1"];
+
+            var sw = new Stopwatch();
+            sw.Start();
+            for (int i = 0; i < 10000; i++)
+            {
+                t1.Columns["Column 1"].Delete();
+                handler.UndoManager.Undo();
+            }
+            sw.Stop();
+            Console.WriteLine(sw.ElapsedMilliseconds);
+        }
+
+        [TestMethod]
+        public void TestUndoStackDepth()
+        {
+            var handler = ObjectHandlingTests.CreateTestModel(fileName: null, compatibilityLevel: 1200, enableUndo: false);
+            var model = handler.Model;
+
+            var t1 = model.AddTable("T1");
+            var c1 = t1.AddDataColumn("c1");
+            var c2 = t1.AddDataColumn("c2");
+            var c3 = t1.AddDataColumn("c3");
+            c1.SortByColumn = c2;
+            var cc1 = t1.AddCalculatedColumn("cc1");
+            t1.AddHierarchy("h1", null, c1, c2, c3);
+            var m1 = t1.AddMeasure("m1");
+            m1.AddKPI();
+
+            handler.UndoManager.Enabled = true;
+
+            t1.Delete();
+            Assert.AreEqual(1, handler.UndoManager.UndoSize);
+
+            handler.UndoManager.Undo();
+            handler.UndoManager.Redo();
+            handler.UndoManager.Undo();
+
+            var json = @"{
+  ""name"": ""T1"",
+  ""columns"": [
+    {
+      ""name"": ""c1"",
+      ""dataType"": ""string"",
+      ""sortByColumn"": ""c2""
+    },
+    {
+      ""name"": ""c2"",
+      ""dataType"": ""string""
+    },
+    {
+      ""name"": ""c3"",
+      ""dataType"": ""string""
+    },
+    {
+      ""type"": ""calculated"",
+      ""name"": ""cc1"",
+      ""dataType"": ""unknown"",
+      ""isDataTypeInferred"": true
+    }
+  ],
+  ""partitions"": [
+    {
+      ""name"": ""T1"",
+      ""source"": {
+        ""type"": ""query"",
+        ""dataSource"": ""Test Datasource""
+      }
+    }
+  ],
+  ""measures"": [
+    {
+      ""name"": ""m1"",
+      ""kpi"": {}
+    }
+  ],
+  ""hierarchies"": [
+    {
+      ""name"": ""h1"",
+      ""levels"": [
+        {
+          ""name"": ""c1"",
+          ""ordinal"": 0,
+          ""column"": ""c1""
+        },
+        {
+          ""name"": ""c2"",
+          ""ordinal"": 1,
+          ""column"": ""c2""
+        },
+        {
+          ""name"": ""c3"",
+          ""ordinal"": 2,
+          ""column"": ""c3""
+        }
+      ]
+    }
+  ]
+}";
+            Assert.AreEqual(json, Microsoft.AnalysisServices.Tabular.JsonSerializer.SerializeObject(t1.MetadataObject));
         }
     }
 }
