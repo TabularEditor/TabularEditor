@@ -155,19 +155,24 @@ namespace TabularEditor.TOMWrapper
         {
         }
 
+        private TOM.PerspectiveTable GetPerspectiveTable(Perspective perspective)
+        {
+            return perspective.MetadataObject.PerspectiveTables.Find(Column.MetadataObject.Table.Name);
+        }
+
         protected override bool GetValue(Perspective key)
         {
-            var pTables = key.MetadataObject.PerspectiveTables.Find(Column.Table.Name);
-            if (pTables == null) return false;
+            var pTable = GetPerspectiveTable(key);
+            if (pTable == null) return false;
 
-            var pColumns = pTables.PerspectiveColumns.Find(Column.Name);
+            var pColumns = pTable.PerspectiveColumns.Find(Column.Name);
             return pColumns != null;
         }
 
         protected override void SetInPerspective(Perspective perspective, bool included)
         {
             var column = Column.MetadataObject;
-            var pColumns = perspective.MetadataObject.PerspectiveTables.Find(Column.Table.Name)?.PerspectiveColumns;
+            var pColumns = GetPerspectiveTable(perspective)?.PerspectiveColumns;
 
             if (included)
             {
@@ -196,9 +201,14 @@ namespace TabularEditor.TOMWrapper
         {
         }
 
+        private TOM.PerspectiveTable GetPerspectiveTable(Perspective perspective)
+        {
+            return perspective.MetadataObject.PerspectiveTables.Find(Measure.MetadataObject.Table.Name);
+        }
+
         protected override bool GetValue(Perspective key)
         {
-            var pTables = key.MetadataObject.PerspectiveTables.Find(Measure.Table.Name);
+            var pTables = GetPerspectiveTable(key);
             if (pTables == null) return false;
 
             var pMeasures = pTables.PerspectiveMeasures.Find(Measure.Name);
@@ -208,7 +218,7 @@ namespace TabularEditor.TOMWrapper
         protected override void SetInPerspective(Perspective perspective, bool included)
         {
             var measure = Measure.MetadataObject;
-            var pMeasures = perspective.MetadataObject.PerspectiveTables.Find(Measure.Table.Name)?.PerspectiveMeasures;
+            var pMeasures = GetPerspectiveTable(perspective)?.PerspectiveMeasures;
 
             if (included)
             {
@@ -237,9 +247,14 @@ namespace TabularEditor.TOMWrapper
         {
         }
 
+        private TOM.PerspectiveTable GetPerspectiveTable(Perspective perspective)
+        {
+            return perspective.MetadataObject.PerspectiveTables.Find(Hierarchy.MetadataObject.Table.Name);
+        }
+
         protected override bool GetValue(Perspective key)
         {
-            var pTables = key.MetadataObject.PerspectiveTables.Find(Hierarchy.Table.Name);
+            var pTables = GetPerspectiveTable(key);
             if (pTables == null) return false;
 
             var pHierarchys = pTables.PerspectiveHierarchies.Find(Hierarchy.Name);
@@ -249,7 +264,7 @@ namespace TabularEditor.TOMWrapper
         protected override void SetInPerspective(Perspective perspective, bool included)
         {
             var hierarchy = Hierarchy.MetadataObject;
-            var pHierarchys = perspective.MetadataObject.PerspectiveTables.Find(Hierarchy.Table.Name)?.PerspectiveHierarchies;
+            var pHierarchys = GetPerspectiveTable(perspective)?.PerspectiveHierarchies;
 
             if (included)
             {

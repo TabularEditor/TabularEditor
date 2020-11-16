@@ -353,11 +353,19 @@ This assumes that the partitions of the 'Reseller Sales' table is using a Provid
 ***
 
 ## Format DAX expressions
-Please don't abuse this. Each call to `FormatDax` will generate one web request to www.daxformatter.com, so please take care not to loop over several hundred measures if you don't need to. daxformatter.com is a free service after all, so let's not [DDoS-attack](https://en.wikipedia.org/wiki/Denial-of-service_attack) them from Tabular Editor...
+Please see [FormatDax](/FormatDax) for more information.
 
 ```csharp
-// Works in Tabular Editor version 2.7.3 or newer:
-Selected.Measures.ForEach(m => m.Expression = FormatDax(m.Expression));
+// Works in Tabular Editor version 2.13.0 or newer:
+Selected.Measures.FormatDax();
+```
+
+Alternate syntax:
+
+```csharp
+// Works in Tabular Editor version 2.13.0 or newer:
+foreach(var m in Selected.Measures)
+    m.FormatDax();
 ```
 
 ***

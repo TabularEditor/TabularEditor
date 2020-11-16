@@ -15,17 +15,6 @@ namespace TabularEditor.TOMWrapper
     public partial class Partition: IExpressionObject
     {
         public bool NeedsValidation { get { return false; } set { } }
-        internal static void CreateCalculatedTablePartition(CalculatedTable calcTable)
-        {
-            var tomPartition = new TOM.Partition();
-            tomPartition.Mode = TOM.ModeType.Import;
-            tomPartition.Name = calcTable.Name;
-            var partition = new Partition(tomPartition);
-
-            calcTable.Partitions.Add(partition);
-            partition.Init();
-            partition.MetadataObject.Source = new TOM.CalculatedPartitionSource();
-        }
 
         protected override void Init()
         {

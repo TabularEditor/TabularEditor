@@ -4,7 +4,7 @@
 <#@ assembly name="System.Data.Linq" #>
 <#@ assembly name="System.Xml" #>
 <#@ assembly name="System.Xml.Linq" #>
-<#@ assembly name="$(SolutionDir)\packages\Microsoft.AnalysisServices.retail.amd64.19.9.0.1\lib\net45\Microsoft.AnalysisServices.Tabular.dll" #>
+<#@ assembly name="$(SolutionDir)\packages\Microsoft.AnalysisServices.retail.amd64.19.12.7.2\lib\net45\Microsoft.AnalysisServices.Tabular.dll" #>
 <#@ assembly name="EnvDTE" #>
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System.Linq" #>
@@ -27,7 +27,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
 <#
-   Rules.XmlDocFile = Host.ResolvePath(@"..\..\..\packages\Microsoft.AnalysisServices.retail.amd64.19.9.0.1\lib\net45\Microsoft.AnalysisServices.Tabular.xml");
+   Rules.XmlDocFile = Host.ResolvePath(@"..\..\..\packages\Microsoft.AnalysisServices.retail.amd64.19.12.7.2\lib\net45\Microsoft.AnalysisServices.Tabular.xml");
 
    if(!File.Exists(Rules.XmlDocFile)) {
 	   throw new Exception("Could not locate file: " + Rules.XmlDocFile);
@@ -533,7 +533,8 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.<#= t.Name #>;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.<#=t.Name#>>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -621,8 +622,8 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 		}
 <# } #>
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete2(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete2(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 <# if(t.Name == "Table") { #>

@@ -29,7 +29,7 @@ namespace TabularEditor.UI.Dialogs
                 return comboBox1.SelectedIndex == 0 ? 1200
                     : comboBox1.SelectedIndex == 1 ? 1400
                     : comboBox1.SelectedIndex == 2 ? 1500
-                    : 1520;
+                    : 1560;
             }
         }
         public bool PbiDatasetModel => comboBox1.SelectedIndex == 3;

@@ -13,14 +13,12 @@ namespace TabularEditor.TOMWrapper.PowerBI
     /// </summary>
     internal class PowerBIGovernance
     {
+        private readonly Version OLSSupport = new Version(2, 88, 0, 0);
+
         // Defines a list of object types that can be removed/added from/to a Power BI data model:
         private HashSet<Type> Manipulatable = new HashSet<Type>() {
             typeof(Measure),
             typeof(KPI),
-            typeof(ModelRole),
-            typeof(ModelRoleMember),
-            typeof(ExternalModelRoleMember),
-            typeof(WindowsModelRoleMember),
             typeof(CalculationGroup),
             typeof(CalculationGroupTable),
             typeof(CalculationItem),
@@ -37,6 +35,8 @@ namespace TabularEditor.TOMWrapper.PowerBI
 
         public void UpdateGovernanceMode()
         {
+            PBIDesktopVersion = new Version();
+            PBIDesktopVersionSimple = 0.0M;
             if (handler.Database == null) return;
 
             if (handler.Settings.PBIFeaturesOnly && (handler.SourceType == ModelSourceType.Pbit || IsPBIDesktop(handler.Database)))
@@ -48,6 +48,18 @@ namespace TabularEditor.TOMWrapper.PowerBI
             }
             else
                 GovernanceMode = PowerBIGovernanceMode.Unrestricted;
+
+            if (handler.Model.HasAnnotation("PBIDesktopVersion"))
+            {
+                var versionStringSplit = handler.Model.GetAnnotation("PBIDesktopVersion").Split(' ');
+                if (versionStringSplit.Length > 0 && Version.TryParse(versionStringSplit[0], out Version version))
+                    PBIDesktopVersion = version;
+                if (versionStringSplit.Length > 1 && System.Text.RegularExpressions.Regex.IsMatch(versionStringSplit[1], "^\\(\\d\\d\\.\\d\\d\\)$"))
+                {
+                    var _versions = versionStringSplit[1].Replace("(", "").Replace(")", "").Split('.');
+                    PBIDesktopVersionSimple = int.Parse(_versions[0]) + (int.Parse(_versions[1]) / 100.0M);
+                }
+            }
         }
 
         internal bool IsPBIDesktop(TOM.Database database)
@@ -68,6 +80,8 @@ namespace TabularEditor.TOMWrapper.PowerBI
             get => GovernanceEffective ? internalGovernanceMode : PowerBIGovernanceMode.Unrestricted;
             set => internalGovernanceMode = value;
         }
+        public Version PBIDesktopVersion { get; private set; }
+        public decimal PBIDesktopVersionSimple { get; private set; }
 
         private int governanceSuspension = 0;
         private bool GovernanceEffective => governanceSuspension == 0;
@@ -133,7 +147,16 @@ namespace TabularEditor.TOMWrapper.PowerBI
                     case Properties.DISPLAYFOLDER:
                     case Properties.KPI:
                     case Properties.DISCOURAGEIMPLICITMEASURES:
+                    case Properties.INPERSPECTIVE:
                         return true;
+
+                    case Properties.OBJECTLEVELSECURITY:
+                    case Properties.METADATAPERMISSION:
+                    case Properties.FILTEREXPRESSION:
+                    case Properties.MODELPERMISSION:
+                    case Properties.COLUMNPERMISSIONS:
+                    case Properties.TABLEPERMISSIONS:
+                        return PBIDesktopVersion >= OLSSupport ; // Conditional on Power BI version (must be December 2020 release or newer)
                 }
 
                 switch (type)
@@ -277,6 +300,15 @@ namespace TabularEditor.TOMWrapper.PowerBI
                 case Properties.COMPATIBILITYMODE:
                 case Properties.INPERSPECTIVE:
                 case Properties.CULTURE:
+                case Properties.OBJECTLEVELSECURITY:
+                case Properties.METADATAPERMISSION:
+                case Properties.COLUMNPERMISSIONS:
+                case Properties.MODELPERMISSION:
+                case Properties.TABLEPERMISSIONS:
+                case Properties.ROLE:
+                case Properties.TABLE:
+                case Properties.ERRORMESSAGE:
+                case Properties.FILTEREXPRESSION:
                     return true;
             }
             return false;

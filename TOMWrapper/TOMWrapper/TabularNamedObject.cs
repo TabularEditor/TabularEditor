@@ -140,9 +140,11 @@ namespace TabularEditor.TOMWrapper
         /// of its levels, etc.
         /// </summary>
         /// <param name="collection"></param>
-        internal override void Undelete(ITabularObjectCollection collection)
+        internal override void Undelete(ITabularObjectCollection collection, Type objectType, string json)
         {
-            RenewMetadataObject();
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject = Microsoft.AnalysisServices.Tabular.JsonSerializer.DeserializeObject(objectType, json) as NamedMetadataObject;
+            Handler.WrapperLookup.Add(MetadataObject, this);
 
             Collection = collection;
             Collection.Add(this);

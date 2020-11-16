@@ -52,5 +52,6 @@ namespace TabularEditor.TOMWrapper
             Assert.AreEqual(PartitionSourceType.Calculated, t.Partitions[0].SourceType);
             Assert.AreEqual(expression, t.Partitions[0].Expression);
         }
+        
     }
 }

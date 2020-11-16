@@ -82,7 +82,7 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                if (Model.Relationships.Any(r => r != this && (
+                if (Model != null && Model.Relationships.Any(r => r != this && (
                      (r.FromColumn == FromColumn && r.ToColumn == ToColumn) ||
                      (r.ToColumn == FromColumn && r.FromColumn == ToColumn))))
                     return "More than one relationship exists between the same two columns.";

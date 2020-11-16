@@ -187,6 +187,8 @@ namespace TabularEditor.UI.Dialogs
                 table.AddDataColumn(col.Name, col.Source, null, col.DataType);
             }
             table.Edit();
+            if (UIController.Current.TreeModel.Perspective != null)
+                table.InPerspective[UIController.Current.TreeModel.Perspective] = true;
         }
 
         private static void DoImport(Pages.ImportMode importMode, Model model, TypedDataSource source, IEnumerable<SchemaNode> schemaNodes, RowLimitClause rowLimitClause, IdentifierQuoting identifierQuoting)
@@ -202,10 +204,13 @@ namespace TabularEditor.UI.Dialogs
                 }
                 newTable.Partitions[0].Name = tableSchema.Name;
                 newTable.Partitions[0].Query = tableSchema.GetSql(identifierQuoting, true, source.UseThreePartName);
-
-                if(importMode != Pages.ImportMode.UseTempDs && !(source is SqlDataSource))
+                if (source?.TabularDsName != null && model.DataSources.Contains(source.TabularDsName))
                 {
                     newTable.Partitions[0].DataSource = model.DataSources[source.TabularDsName];
+                }
+
+                if (importMode != Pages.ImportMode.UseTempDs && !(source is SqlDataSource))
+                {
                     newTable.SetRowLimitClause(rowLimitClause);
                     newTable.SetIdentifierQuoting(identifierQuoting);
                 }
@@ -227,6 +232,8 @@ namespace TabularEditor.UI.Dialogs
                 }
                 newTable.SetTableSchema(tableSchema);
                 newTable.Select();
+                if (UIController.Current.TreeModel.Perspective != null)
+                    newTable.InPerspective[UIController.Current.TreeModel.Perspective] = true;
             }
         }
 

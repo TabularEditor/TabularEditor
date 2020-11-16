@@ -14,6 +14,7 @@ using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
 using TabularEditor.UI.Tree;
 using System.Collections;
+using TabularEditor.Scripting;
 
 namespace TabularEditor.UI
 {
@@ -129,11 +130,16 @@ namespace TabularEditor.UI
             Handler.BeginUpdate("script");
             try
             {
+                ScriptHelper.BeforeScriptExecution();
                 ScriptEditor_IsExecuting = true;
                 dyn.Invoke(Handler.Model, Selection);
                 var actionCount = Handler.EndUpdateAll();
                 UI.StatusExLabel.Text = string.Format("Script executed succesfully. {0} model change{1}.", actionCount, actionCount == 1 ? "" : "s");
                 UI.TreeView.Focus();
+            }
+            catch (ScriptCancelledException)
+            {
+                UI.StatusExLabel.Text = "Script cancelled.";
             }
             catch (Exception ex)
             {
@@ -160,6 +166,7 @@ namespace TabularEditor.UI
             {
                 Handler.Model.Database.CloseReader();
                 ScriptEditor_IsExecuting = false;
+                ScriptHelper.AfterScriptExecution();
             }
         }
 
