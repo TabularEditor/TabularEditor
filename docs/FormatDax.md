@@ -8,6 +8,7 @@ The reason for the deprecation is that the web service at https://www.daxformatt
 ```csharp
 foreach(var m in Model.AllMeasures)
 {
+    // DON'T DO THIS
     m.Expression = FormatDax(m.Expression);
 }
 ```
