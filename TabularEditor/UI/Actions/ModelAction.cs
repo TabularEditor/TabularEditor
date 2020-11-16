@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TabularEditor.TOMWrapper;
 using System.Windows.Forms;
+using Aga.Controls.Tree;
 
 namespace TabularEditor.UI.Actions
 {
@@ -165,11 +166,15 @@ namespace TabularEditor.UI.Actions
             {
                 var tree = ui.Elements.TreeView;
                 tree.ClearSelection();
+                TreeNodeAdv firstNode = null;
                 foreach (var obj in ui.Actions.SelectObjects)
                 {
-                    tree.FindNodeByTag(obj).IsSelected = true;
+                    var node = tree.FindNodeByTag(obj);
+                    if (firstNode == null) firstNode = node;
+                    if (node != null) node.IsSelected = true;
                 }
-                tree.EnsureVisible(tree.FindNodeByTag(ui.Actions.SelectObjects[0]));
+                if(firstNode != null)
+                    tree.EnsureVisible(firstNode);
             }
         }
 
