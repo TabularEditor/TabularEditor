@@ -321,7 +321,8 @@ namespace TabularEditor
 
 TABULAREDITOR ( file | server database ) [-S script1 [script2] [...]]
     [-SC] [-A [rules]] [(-B | -F) output [id]] [-V] [-T resultsfile]
-    [-D [server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]] [-P] [-R [-M]]]
+    [-D [server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]]
+        [-P [-Y]] [-R [-M]]]
         [-X xmla_script]] [-W] [-E]]
 
 file                Full path of the Model.bim file or database.json model folder to load.
@@ -362,6 +363,7 @@ database            Database ID of the model to load
                         connection strings of every data source in the model, with the specified values
                         (value1, value2, ...).
     -P / -PARTITIONS    Deploy (overwrite) existing table partitions in the model.
+      -Y / -SKIPPOLICY    Do not overwrite partitions that have Incremental Refresh Policies defined.
     -R / -ROLES         Deploy roles.
       -M / -MEMBERS       Deploy role members.
   -X / -XMLA        No deployment. Generate XMLA/TMSL script for later deployment instead.
@@ -377,7 +379,7 @@ database            Database ID of the model to load
             if (serverName == null)
             {
                 var nextSwitch = upperArgList.Skip(doDeploy + 1).FirstOrDefault();
-                var deploySwitches = new[] { "-L", "-LOGIN", "-O", "-OVERWRITE", "-C", "-CONNECTIONS", "-P", "-PARTITIONS", "-R", "-ROLES", "-M", "-MEMBERS", "-X", "-XMLA" };
+                var deploySwitches = new[] { "-L", "-LOGIN", "-O", "-OVERWRITE", "-C", "-CONNECTIONS", "-P", "-PARTITIONS", "-Y", "-SKIPPOLICY", "-R", "-ROLES", "-M", "-MEMBERS", "-X", "-XMLA" };
                 if (deploySwitches.Contains(nextSwitch))
                 {
                     Error("Invalid argument syntax.");
@@ -473,6 +475,12 @@ database            Database ID of the model to load
             {
                 options.DeployPartitions = true;
                 switches.Remove("-P"); switches.Remove("-PARTITIONS");
+
+                if (switches.Contains("-Y") || switches.Contains("-SKIPPOLICY"))
+                {
+                    options.SkipRefreshPolicyPartitions = true;
+                    switches.Remove("-Y"); switches.Remove("-SKIPPOLICY");
+                }
             }
             if (switches.Contains("-C") || switches.Contains("-CONNECTIONS"))
             {
