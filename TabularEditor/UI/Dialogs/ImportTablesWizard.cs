@@ -187,6 +187,8 @@ namespace TabularEditor.UI.Dialogs
                 table.AddDataColumn(col.Name, col.Source, null, col.DataType);
             }
             table.Edit();
+            if (UIController.Current.TreeModel.Perspective != null)
+                table.InPerspective[UIController.Current.TreeModel.Perspective] = true;
         }
 
         private static void DoImport(Pages.ImportMode importMode, Model model, TypedDataSource source, IEnumerable<SchemaNode> schemaNodes, RowLimitClause rowLimitClause, IdentifierQuoting identifierQuoting)
@@ -227,6 +229,8 @@ namespace TabularEditor.UI.Dialogs
                 }
                 newTable.SetTableSchema(tableSchema);
                 newTable.Select();
+                if (UIController.Current.TreeModel.Perspective != null)
+                    newTable.InPerspective[UIController.Current.TreeModel.Perspective] = true;
             }
         }
 
