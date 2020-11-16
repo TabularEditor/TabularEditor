@@ -359,19 +359,6 @@ namespace TabularEditor.TOMWrapper
 
         protected override void Init()
         {
-            if (Partitions.Count == 0 && !(this is CalculatedTable))
-            {
-                // Make sure the table contains at least one partition (Calculated Tables handles this on their own), but don't add it to the undo stack:
-                Handler.UndoManager.Enabled = false;
-
-                if (Model.DataSources.Any(ds => ds.Type == DataSourceType.Provider) || Handler.CompatibilityLevel < 1400)
-                    Partition.CreateNew(this, Name);
-                else
-                    MPartition.CreateNew(this, Name);
-
-                Handler.UndoManager.Enabled = true;
-            }
-
             RowLevelSecurity = new TableRLSIndexer(this);
 
             if (Handler.CompatibilityLevel >= 1400)

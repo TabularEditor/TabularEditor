@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using TOM = Microsoft.AnalysisServices.Tabular;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.TOMWrapper.Undo
@@ -6,12 +9,15 @@ namespace TabularEditor.TOMWrapper.Undo
     internal class UndoClearAction : IUndoAction
     {
         ITabularObjectCollection _collection;
-        TabularNamedObject[] _objs;
+        Tuple<TabularNamedObject, Type, string>[] _objs;
 
         public UndoClearAction(ITabularObjectCollection collection, TabularNamedObject[] content)
         {
             _collection = collection;
-            _objs = content;
+            _objs = content.Select(o => new Tuple<TabularNamedObject, Type, string>(
+                o, 
+                o.MetadataObject.GetType(), 
+                TOM.JsonSerializer.SerializeObject(o.MetadataObject))).ToArray();
         }
 
         public string ActionName { get { return "clear"; } }
@@ -23,7 +29,7 @@ namespace TabularEditor.TOMWrapper.Undo
 
         public void Undo()
         {
-            foreach (var obj in _objs) obj.Undelete(_collection);
+            foreach (var obj in _objs) obj.Item1.Undelete(_collection, obj.Item2, obj.Item3);
         }
 
         public string GetSummary()

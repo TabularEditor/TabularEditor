@@ -44,13 +44,6 @@ namespace TabularEditor.TOMWrapper
         {
             base.Init();
 
-            if (Partitions.Count == 0) {
-                // Make sure the calculated table contains at least one partition (but don't add that to the undo stack):
-                Handler.UndoManager.Enabled = false;
-                Partition.CreateCalculatedTablePartition(this);
-                Handler.UndoManager.Enabled = true;
-            }
-
             Partitions[0].PropertyChanged += Partition_PropertyChanged;
         }
 
@@ -83,7 +76,11 @@ namespace TabularEditor.TOMWrapper
         {
             var metadataObject = new TOM.Table();
             metadataObject.Name = parent.Tables.GetNewName(string.IsNullOrWhiteSpace(name) ? "New Calculated Table" : name);
-
+            var tomPartition = new TOM.Partition();
+            tomPartition.Mode = TOM.ModeType.Import;
+            tomPartition.Name = metadataObject.Name;
+            tomPartition.Source = new TOM.CalculatedPartitionSource();
+            metadataObject.Partitions.Add(tomPartition);
             var obj = new CalculatedTable(metadataObject);
             parent.Tables.Add(obj);
             obj.Init();

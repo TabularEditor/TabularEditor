@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.TOMWrapper.Undo
@@ -14,9 +15,13 @@ namespace TabularEditor.TOMWrapper.Undo
         ITabularObjectCollection _collection;
         TabularNamedObject _obj;
         UndoAddRemoveActionType _actionType;
+        string _json;
+        Type _tomObjectType;
 
         public UndoAddRemoveAction(ITabularObjectCollection collection, TabularNamedObject obj, UndoAddRemoveActionType actionType)
         {
+            _tomObjectType = obj.MetadataObject.GetType();
+            _json = Microsoft.AnalysisServices.Tabular.JsonSerializer.SerializeObject(obj.MetadataObject, TabularObject.RenewMetadataOptions);
             _collection = collection;
             _obj = obj;
             _actionType = actionType;
@@ -34,7 +39,7 @@ namespace TabularEditor.TOMWrapper.Undo
         {
             if (_actionType == UndoAddRemoveActionType.Add)
             {
-                _obj.Undelete(_collection);
+                _obj.Undelete(_collection, _tomObjectType, _json);
                 //_collection.Add(_obj);
             }
             else
@@ -49,7 +54,7 @@ namespace TabularEditor.TOMWrapper.Undo
             //_collection.Remove(_obj);
             else
             {
-                _obj.Undelete(_collection);
+                _obj.Undelete(_collection, _tomObjectType, _json);
                 //_collection.Add(_obj);
             }
         }

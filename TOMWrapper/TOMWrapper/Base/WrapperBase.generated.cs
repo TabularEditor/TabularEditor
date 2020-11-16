@@ -964,7 +964,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.Variation;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Variation>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -992,8 +993,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -1262,7 +1263,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.StructuredDataSource;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.StructuredDataSource>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -1284,8 +1286,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -1453,7 +1455,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.CalculatedColumn;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.CalculatedColumn>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -1475,8 +1478,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -1678,7 +1681,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.CalculatedTableColumn;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.CalculatedTableColumn>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -1700,8 +1704,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -2607,7 +2611,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.Column;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Column>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -2660,8 +2665,8 @@ namespace TabularEditor.TOMWrapper
 			Variations.Reinit();
 		}
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -3375,7 +3380,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.Culture;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Culture>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -3403,8 +3409,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -3611,7 +3617,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.DataColumn;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.DataColumn>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -3633,8 +3640,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -3989,7 +3996,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.DataSource;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.DataSource>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -4017,8 +4025,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -4266,7 +4274,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.ExternalModelRoleMember;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.ExternalModelRoleMember>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -4288,8 +4297,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -4857,7 +4866,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.Hierarchy;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Hierarchy>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -4915,8 +4925,8 @@ namespace TabularEditor.TOMWrapper
 			Levels.Reinit();
 		}
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -5618,7 +5628,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.KPI;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.KPI>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -5640,8 +5651,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -5891,7 +5902,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.AlternateOf;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.AlternateOf>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -5910,8 +5922,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -6418,7 +6430,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.Level;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Level>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -6449,8 +6462,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -7217,7 +7230,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.Measure;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Measure>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -7252,8 +7266,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -8128,7 +8142,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.Model;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Model>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -8242,8 +8257,8 @@ namespace TabularEditor.TOMWrapper
 			Expressions.Reinit();
 		}
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -8693,7 +8708,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.ModelRole;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.ModelRole>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -8755,8 +8771,8 @@ namespace TabularEditor.TOMWrapper
 			TablePermissions.Reinit();
 		}
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -9201,7 +9217,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.ModelRoleMember;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.ModelRoleMember>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -9229,8 +9246,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -9805,7 +9822,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.Partition;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Partition>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -9833,8 +9851,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -10471,7 +10489,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.Set;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Set>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -10500,8 +10519,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -11034,8 +11053,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            // The TOM .Clone() method causes a TOMInternalException on Perspective objects, so we recreate the object from its serialized version instead
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Perspective>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -11067,8 +11085,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -11438,7 +11456,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.ProviderDataSource;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.ProviderDataSource>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -11460,8 +11479,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -11925,7 +11944,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.Relationship;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Relationship>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -11953,8 +11973,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -12298,7 +12318,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.SingleColumnRelationship;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.SingleColumnRelationship>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -12320,8 +12341,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -12871,8 +12892,26 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.Table();
-			metadataObject.Name = parent.Tables.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Table).GetTypeName() : name);
-			var obj = new Table(metadataObject);
+            metadataObject.Name = parent.Tables.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Table).GetTypeName() : name);
+            if (parent.DataSources.Any(ds => ds.Type == DataSourceType.Provider) || parent.Handler.CompatibilityLevel < 1400)
+            {
+                var tomPartition = new TOM.Partition();
+                tomPartition.Name = metadataObject.Name;
+                var qps = new TOM.QueryPartitionSource();
+                tomPartition.Source = qps;
+                if (!parent.DataSources.Any(ds => ds.Type == DataSourceType.Provider)) parent.AddDataSource();
+                qps.DataSource = parent.DataSources.FirstOrDefault(ds => ds.Type == DataSourceType.Provider).MetadataObject;
+                metadataObject.Partitions.Add(tomPartition);
+            }
+            else
+            {
+                var tomPartition = new TOM.Partition();
+                tomPartition.Name = metadataObject.Name;
+                tomPartition.Source = new TOM.MPartitionSource();
+                metadataObject.Partitions.Add(tomPartition);
+            }
+
+            var obj = new Table(metadataObject);
 
 			parent.Tables.Add(obj);
 			
@@ -12946,7 +12985,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.Table;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Table>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -13047,8 +13087,8 @@ namespace TabularEditor.TOMWrapper
 			Measures.Reinit();
 		}
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 			Handler.Tree.RebuildFolderCacheForTable(this);
@@ -13363,7 +13403,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.WindowsModelRoleMember;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.WindowsModelRoleMember>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -13385,8 +13426,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -13924,7 +13965,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.NamedExpression;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.NamedExpression>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -13952,8 +13994,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -14338,7 +14380,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.CalculationGroup;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.CalculationGroup>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -14380,8 +14423,8 @@ namespace TabularEditor.TOMWrapper
 			CalculationItems.Reinit();
 		}
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -14575,7 +14618,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.CalculationItem;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.CalculationItem>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -14597,8 +14641,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}
@@ -15147,7 +15191,8 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            MetadataObject = MetadataObject.Clone() as TOM.TablePermission;
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.TablePermission>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
 
@@ -15175,8 +15220,8 @@ namespace TabularEditor.TOMWrapper
 
 
 
-		internal override void Undelete(ITabularObjectCollection collection) {
-			base.Undelete(collection);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 		}

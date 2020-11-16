@@ -17,18 +17,6 @@ namespace TabularEditor.TOMWrapper
         [Browsable(true), DisplayName("Table Permissions"), Category("Security")]
         public RoleOLSIndexer MetadataPermission { get; private set; }
 
-        internal override void RemoveReferences()
-        {
-            base.RemoveReferences();
-
-            foreach(var tp in TablePermissions)
-            {
-                tp.DependsOn.Keys.ToList().ForEach(d => d.ReferencedBy.Remove(tp));
-                tp.DependsOn.Clear();
-            }
-            TablePermissions.Clear();
-        }
-
         /// <summary>
         /// Specify domain/usernames of the members in this role. One member per line. DEPRECATED: Use the Members collection instead.
         /// </summary>
