@@ -14,9 +14,9 @@ foreach(var m in Model.AllMeasures)
 
 This is fine for small models with a few tens of measures, but the traffic on www.daxformatter.com indicates that a script such as the above is being executed across multiple models with thousands of measures, even several times per day!
 
-To address this issue, Tabular Editor 2.13.0 will show a warning when `FormatDax` is called more than three times in a row, using the syntax above. In addition, subsequent calls will be throttled with a 2 second delay between each call.
+To address this issue, Tabular Editor 2.13.0 will show a warning when `FormatDax` is called more than three times in a row, using the syntax above. In addition, subsequent calls will be throttled with a 5 second delay between each call.
 
-# Alternative syntax
+## Alternative syntax
 
 Tabular Editor 2.13.0 introduces two different ways of calling FormatDax. The above script can be rewritten into either of the following:
 
