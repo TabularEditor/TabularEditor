@@ -51,7 +51,7 @@
             "1200 (Azure Analysis Services / SQL Server 2016+)",
             "1400 (Azure Analysis Services / SQL Server 2017+)",
             "1500 (Azure Analysis Services / SQL Server 2019+)",
-            "1520 (Power BI Premium Datasets / A SKU)"});
+            "1560 (Power BI Premium Datasets / A SKU)"});
             this.comboBox1.Location = new System.Drawing.Point(12, 32);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(379, 21);

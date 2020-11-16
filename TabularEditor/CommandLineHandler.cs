@@ -13,15 +13,27 @@ using System.Text.RegularExpressions;
 
 namespace TabularEditor
 {
-    internal class CommandLineHandler
+    internal interface ICommandLineHandler
+    {
+        void Error(string errorMessage, params object[] args);
+        void Warning(string errorMessage, params object[] args);
+        bool CommandLineMode { get; }
+        void HandleCommandLine(string[] args);
+        bool EnableVSTS { get; }
+        int ErrorCount { get; }
+        int WarningCount { get; }
+        bool LaunchUi { get; }
+    }
+
+    internal class CommandLineHandler: ICommandLineHandler
     {
         public bool EnableVSTS { get; private set; }
         public int ErrorCount { get; private set; } = 0;
         public int WarningCount { get; private set; } = 0;
         public bool LaunchUi { get; private set; } = false;
-        internal bool CommandLineMode { get; private set; } = false;
+        public bool CommandLineMode { get; private set; } = false;
 
-        internal void Error(string errorMessage, params object[] args)
+        public void Error(string errorMessage, params object[] args)
         {
             if (EnableVSTS)
             {
@@ -38,7 +50,7 @@ namespace TabularEditor
 
             ErrorCount++;
         }
-        internal void Warning(string errorMessage, params object[] args)
+        public void Warning(string errorMessage, params object[] args)
         {
             if (EnableVSTS)
             {
@@ -56,7 +68,7 @@ namespace TabularEditor
             WarningCount++;
         }
 
-        void ErrorX(string errorMessage, string sourcePath, int line, int column, string code, params object[] args)
+        private void ErrorX(string errorMessage, string sourcePath, int line, int column, string code, params object[] args)
         {
             if (EnableVSTS)
             {
@@ -72,7 +84,7 @@ namespace TabularEditor
         List<string> ScriptFiles = new List<string>();
         TabularModelHandler Handler;
 
-        internal void HandleCommandLine(string[] args)
+        public void HandleCommandLine(string[] args)
         {
             CommandLineMode = true;
             try
@@ -198,7 +210,7 @@ namespace TabularEditor
             {
                 Console.WriteLine("Building Model.bim file...");
                 if (buildReplaceId != null) { Handler.Database.Name = buildReplaceId; Handler.Database.ID = buildReplaceId; }
-                Handler.Save(buildOutputPath, SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+                Handler.Save(buildOutputPath, SaveFormat.ModelSchemaOnly, null, true);
             }
             else if (!string.IsNullOrEmpty(saveToFolderOutputPath))
             {
@@ -309,7 +321,8 @@ namespace TabularEditor
 
 TABULAREDITOR ( file | server database ) [-S script1 [script2] [...]]
     [-SC] [-A [rules]] [(-B | -F) output [id]] [-V] [-T resultsfile]
-    [-D [server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]] [-P] [-R [-M]]]
+    [-D [server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]]
+        [-P [-Y]] [-R [-M]]]
         [-X xmla_script]] [-W] [-E]]
 
 file                Full path of the Model.bim file or database.json model folder to load.
@@ -350,6 +363,7 @@ database            Database ID of the model to load
                         connection strings of every data source in the model, with the specified values
                         (value1, value2, ...).
     -P / -PARTITIONS    Deploy (overwrite) existing table partitions in the model.
+      -Y / -SKIPPOLICY    Do not overwrite partitions that have Incremental Refresh Policies defined.
     -R / -ROLES         Deploy roles.
       -M / -MEMBERS       Deploy role members.
   -X / -XMLA        No deployment. Generate XMLA/TMSL script for later deployment instead.
@@ -365,7 +379,7 @@ database            Database ID of the model to load
             if (serverName == null)
             {
                 var nextSwitch = upperArgList.Skip(doDeploy + 1).FirstOrDefault();
-                var deploySwitches = new[] { "-L", "-LOGIN", "-O", "-OVERWRITE", "-C", "-CONNECTIONS", "-P", "-PARTITIONS", "-R", "-ROLES", "-M", "-MEMBERS", "-X", "-XMLA" };
+                var deploySwitches = new[] { "-L", "-LOGIN", "-O", "-OVERWRITE", "-C", "-CONNECTIONS", "-P", "-PARTITIONS", "-Y", "-SKIPPOLICY", "-R", "-ROLES", "-M", "-MEMBERS", "-X", "-XMLA" };
                 if (deploySwitches.Contains(nextSwitch))
                 {
                     Error("Invalid argument syntax.");
@@ -461,6 +475,12 @@ database            Database ID of the model to load
             {
                 options.DeployPartitions = true;
                 switches.Remove("-P"); switches.Remove("-PARTITIONS");
+
+                if (switches.Contains("-Y") || switches.Contains("-SKIPPOLICY"))
+                {
+                    options.SkipRefreshPolicyPartitions = true;
+                    switches.Remove("-Y"); switches.Remove("-SKIPPOLICY");
+                }
             }
             if (switches.Contains("-C") || switches.Contains("-CONNECTIONS"))
             {

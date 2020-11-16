@@ -625,4 +625,8 @@ namespace TabularEditor.Scripting
             }
         }
     }
+
+    public class ScriptCancelledException: Exception
+    {
+    }
 }

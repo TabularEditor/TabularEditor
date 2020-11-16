@@ -84,10 +84,10 @@ namespace TabularEditor.TOMWrapper
         {
             if (!TOM_Contains(item.MetadataObject)) throw new InvalidOperationException();
 
+            Handler.UndoManager.Add(new UndoAddRemoveAction(this, item, UndoAddRemoveActionType.Remove));
             TOM_Remove(item.MetadataObject);
             item.Collection = null;
 
-            Handler.UndoManager.Add(new UndoAddRemoveAction(this, item, UndoAddRemoveActionType.Remove));
             DoCollectionChanged(NotifyCollectionChangedAction.Remove, item);
             return true;
         }

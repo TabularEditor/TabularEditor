@@ -296,6 +296,7 @@ namespace TabularEditor.TOMWrapper.Utils
         public DeploymentMode DeployMode = DeploymentMode.CreateOrAlter;
         public bool DeployConnections = false;
         public bool DeployPartitions = false;
+        public bool SkipRefreshPolicyPartitions = false;
         public bool DeployRoles = true;
         public bool DeployRoleMembers = false;
 
@@ -307,7 +308,7 @@ namespace TabularEditor.TOMWrapper.Utils
         /// <summary>
         /// Full deployment.
         /// </summary>
-        public static DeploymentOptions Full = new DeploymentOptions() { DeployConnections = true, DeployPartitions = true, DeployRoles = true, DeployRoleMembers = true };
+        public static DeploymentOptions Full = new DeploymentOptions() { DeployConnections = true, DeployPartitions = true, DeployRoles = true, DeployRoleMembers = true, SkipRefreshPolicyPartitions = false };
 
         /// <summary>
         /// StructureOnly deployment. Does not overwrite roles or role members.
@@ -316,7 +317,14 @@ namespace TabularEditor.TOMWrapper.Utils
 
         public DeploymentOptions Clone()
         {
-            return new DeploymentOptions { DeployMode = this.DeployMode, DeployConnections = this.DeployConnections, DeployPartitions = this.DeployPartitions, DeployRoleMembers = this.DeployRoleMembers, DeployRoles = this.DeployRoles };
+            return new DeploymentOptions {
+                DeployMode = this.DeployMode,
+                DeployConnections = this.DeployConnections,
+                DeployPartitions = this.DeployPartitions,
+                DeployRoleMembers = this.DeployRoleMembers,
+                DeployRoles = this.DeployRoles,
+                SkipRefreshPolicyPartitions = this.SkipRefreshPolicyPartitions
+            };
         }
     }
 
@@ -421,7 +429,7 @@ namespace TabularEditor.TOMWrapper.Utils
                 }
             }
 
-            if (!options.DeployPartitions)
+            if (!options.DeployPartitions || options.SkipRefreshPolicyPartitions)
             {
                 var tables = tmslJObj.SelectToken("createOrReplace.database.model.tables") as JArray;
                 foreach (var table in tables)
@@ -434,9 +442,14 @@ namespace TabularEditor.TOMWrapper.Utils
                         var t = destDb.Model.Tables[tableName];
                         if (t.IsCalculatedOrCalculationGroup()) continue;
 
-                        var partitions = new JArray();
-                        table["partitions"] = partitions;
-                        foreach (var pt in t.Partitions) partitions.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(pt)));
+                        // If destination partition is not a policyrange
+                        if (options.SkipRefreshPolicyPartitions || t.GetSourceType() != TOM.PartitionSourceType.PolicyRange)
+                        {
+                            // Retain existing partitions on destination:
+                            var partitions = new JArray();
+                            table["partitions"] = partitions;
+                            foreach (var pt in t.Partitions) partitions.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(pt)));
+                        }
                     }
                 }
             }

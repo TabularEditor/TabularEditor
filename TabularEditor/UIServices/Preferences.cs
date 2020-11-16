@@ -30,6 +30,8 @@ namespace TabularEditor.UIServices
         public bool CollectTelemetry = true;
         public bool FormulaFixup = true;
         public bool UseSemicolonsAsSeparators = false;
+        public int DaxFormatterRequestTimeout = 5000;
+        public bool DaxFormatterSkipSpaceAfterFunctionName = false;
         public bool AllowUnsupportedPBIFeatures = false;
         public bool BackgroundBpa = true;
         public bool ChangeDetectionOnLocalServers = true;

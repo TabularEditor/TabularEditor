@@ -118,14 +118,14 @@
     <Reference Include="FastColoredTextBox, Version=2.16.24.0, Culture=neutral, PublicKeyToken=fb8aa12b994ef61b, processorArchitecture=MSIL">
       <HintPath>..\packages\FCTB.2.16.24\lib\FastColoredTextBox.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Core, Version=19.10.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.10.0\lib\net45\Microsoft.AnalysisServices.Core.dll</HintPath>
+    <Reference Include="Microsoft.AnalysisServices.Core, Version=19.12.7.2, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.12.7.2\lib\net45\Microsoft.AnalysisServices.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Tabular, Version=19.10.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.10.0\lib\net45\Microsoft.AnalysisServices.Tabular.dll</HintPath>
+    <Reference Include="Microsoft.AnalysisServices.Tabular, Version=19.12.7.2, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.12.7.2\lib\net45\Microsoft.AnalysisServices.Tabular.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Tabular.Json, Version=19.10.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.10.0\lib\net45\Microsoft.AnalysisServices.Tabular.Json.dll</HintPath>
+    <Reference Include="Microsoft.AnalysisServices.Tabular.Json, Version=19.12.7.2, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.12.7.2\lib\net45\Microsoft.AnalysisServices.Tabular.Json.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Data.ConnectionUI.Dialog, Version=0.0.0.0, Culture=neutral, PublicKeyToken=f4ca07f51760da93, processorArchitecture=MSIL">
       <HintPath>..\packages\DataConnectionDialog.1.2\lib\Microsoft.Data.ConnectionUI.Dialog.dll</HintPath>
@@ -225,6 +225,7 @@
     <Compile Include="UIServices\DeploymentMetadata.cs" />
     <Compile Include="UIServices\DynamicLinq.cs" />
     <Compile Include="UIServices\FileSystemHelper.cs" />
+    <Compile Include="UIServices\IDaxFormatterProxy.cs" />
     <Compile Include="UIServices\LinqExtensions.cs" />
     <Compile Include="UIServices\ManagedIpHelper.cs" />
     <Compile Include="UIServices\PowerBIHelper.cs" />
@@ -716,9 +717,6 @@
     <EmbeddedResource Include="UI\Extensions\FCTB\ReplaceForm.resx">
       <DependentUpon>ReplaceForm.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="app.config">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

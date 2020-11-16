@@ -35,9 +35,10 @@ namespace TabularEditor.TOMWrapper
         /// </remarks>
         /// <param name="fileName">If specified, the model will be saved to this file.</param>
         /// <param name="compatibilityLevel">Specify the compatibility level of the created model.</param>
-        public static TabularModelHandler CreateTestModel(string fileName = null, int compatibilityLevel = 1200)
+        public static TabularModelHandler CreateTestModel(string fileName = null, int compatibilityLevel = 1200, bool enableUndo = true)
         {
             var tm = new TabularModelHandler(compatibilityLevel);
+            tm.UndoManager.Enabled = enableUndo;
 
             var ds = tm.Model.AddDataSource("Test Datasource");
             ds.ConnectionString = "Provider=MSOLEDBSQL;Data Source=localhost;Initial Catalog=db";

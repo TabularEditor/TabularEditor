@@ -40,14 +40,14 @@
     <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
       <HintPath>..\packages\Antlr4.Runtime.4.6.6\lib\net45\Antlr4.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Core, Version=19.10.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.10.0\lib\net45\Microsoft.AnalysisServices.Core.dll</HintPath>
+    <Reference Include="Microsoft.AnalysisServices.Core, Version=19.12.7.2, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.12.7.2\lib\net45\Microsoft.AnalysisServices.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Tabular, Version=19.10.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.10.0\lib\net45\Microsoft.AnalysisServices.Tabular.dll</HintPath>
+    <Reference Include="Microsoft.AnalysisServices.Tabular, Version=19.12.7.2, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.12.7.2\lib\net45\Microsoft.AnalysisServices.Tabular.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Tabular.Json, Version=19.10.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.10.0\lib\net45\Microsoft.AnalysisServices.Tabular.Json.dll</HintPath>
+    <Reference Include="Microsoft.AnalysisServices.Tabular.Json, Version=19.12.7.2, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.12.7.2\lib\net45\Microsoft.AnalysisServices.Tabular.Json.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>

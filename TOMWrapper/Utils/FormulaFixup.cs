@@ -182,8 +182,6 @@ namespace TabularEditor.TOMWrapper.Utils
             }
 
             sw.Stop();
-
-            Console.WriteLine("Dependency tree built in {0} ms", sw.ElapsedMilliseconds);
         }
     }
 }
