@@ -51,6 +51,7 @@ namespace TabularEditor
         {
             ConsoleHandler.RedirectToParent();
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+            System.Net.WebRequest.DefaultWebProxy.Credentials = System.Net.CredentialCache.DefaultNetworkCredentials;
 
             var args = Environment.GetCommandLineArgs();
             if (RunWithArgs(args))
