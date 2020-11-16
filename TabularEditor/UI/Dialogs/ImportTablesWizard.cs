@@ -204,10 +204,13 @@ namespace TabularEditor.UI.Dialogs
                 }
                 newTable.Partitions[0].Name = tableSchema.Name;
                 newTable.Partitions[0].Query = tableSchema.GetSql(identifierQuoting, true, source.UseThreePartName);
-
-                if(importMode != Pages.ImportMode.UseTempDs && !(source is SqlDataSource))
+                if (source?.TabularDsName != null && model.DataSources.Contains(source.TabularDsName))
                 {
                     newTable.Partitions[0].DataSource = model.DataSources[source.TabularDsName];
+                }
+
+                if (importMode != Pages.ImportMode.UseTempDs && !(source is SqlDataSource))
+                {
                     newTable.SetRowLimitClause(rowLimitClause);
                     newTable.SetIdentifierQuoting(identifierQuoting);
                 }
