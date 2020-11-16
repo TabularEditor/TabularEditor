@@ -415,9 +415,12 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void actExpressionFormatDAX_Execute(object sender, EventArgs e)
         {
+            if (string.IsNullOrEmpty(txtExpression.Text)) return;
+
             using (var hg = new Hourglass())
             {
                 var textToFormat = "x :=" + txtExpression.Text;
+                var newline = txtExpression.Text.StartsWith("\n") || txtExpression.Text.StartsWith("\r\n");
                 try
                 {
                     var result = TabularEditor.Dax.DaxFormatterProxy.Instance.FormatDax(textToFormat, Preferences.Current.UseSemicolonsAsSeparators, sender == actExpressionFormatDAXShort, Preferences.Current.DaxFormatterSkipSpaceAfterFunctionName).FormattedDax;
@@ -427,7 +430,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                         return;
                     }
                     lblStatus.Text = "DAX formatted succesfully";
-                    txtExpression.Text = result.Substring(6).Trim();
+                    txtExpression.Text = (newline ? "\n" : "") + result.Substring(6).Trim();
                 }
                 catch (Exception ex)
                 {
