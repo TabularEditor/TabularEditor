@@ -443,7 +443,8 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.<#= t.Name #>();
 			metadataObject.<#=typeof(ModelRoleMember).IsAssignableFrom(t)?"Member":""#>Name = parent.<#= Rules.GetCollection(t) #>.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(<#= t.Name #>).GetTypeName() : name);
-			var obj = new <#= t.Name #>(metadataObject);
+            InitMetadata(metadataObject, parent);
+            var obj = new <#= t.Name #>(metadataObject);
 
 			parent.<#= Rules.GetCollection(t) #>.Add(obj);
 			
@@ -451,6 +452,8 @@ namespace TabularEditor.TOMWrapper
 
 			return obj;
 		}
+
+        static partial void InitMetadata(TOM.<#= t.Name #> metadataObject, <#= Rules.GetParent(t) #> parent);
 
 <# // Create parameterless constructors for objects at Model scope (perspectives, roles, etc.)
 if(Rules.GetParent(t) == "Model") { #>
@@ -622,8 +625,8 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 		}
 <# } #>
 
-		internal override void Undelete2(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
-			base.Undelete2(collection, tomObjectType, tomJson);
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
 			Reinit();
 			ReapplyReferences();
 <# if(t.Name == "Table") { #>

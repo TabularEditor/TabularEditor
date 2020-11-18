@@ -357,6 +357,31 @@ namespace TabularEditor.TOMWrapper
             return FolderCache[""].GetChildrenByFolders();
         }
 
+        static partial void InitMetadata(TOM.Table metadataObject, Model parent)
+        {
+            if (parent.DataSources.Any(ds => ds.Type == DataSourceType.Provider) || parent.Handler.CompatibilityLevel < 1400)
+            {
+                var tomPartition = new TOM.Partition
+                {
+                    Name = metadataObject.Name
+                };
+                var qps = new TOM.QueryPartitionSource();
+                tomPartition.Source = qps;
+                if (!parent.DataSources.Any(ds => ds.Type == DataSourceType.Provider)) parent.AddDataSource();
+                qps.DataSource = parent.DataSources.FirstOrDefault(ds => ds.Type == DataSourceType.Provider).MetadataObject;
+                metadataObject.Partitions.Add(tomPartition);
+            }
+            else
+            {
+                var tomPartition = new TOM.Partition
+                {
+                    Name = metadataObject.Name,
+                    Source = new TOM.MPartitionSource()
+                };
+                metadataObject.Partitions.Add(tomPartition);
+            }
+        }
+
         protected override void Init()
         {
             RowLevelSecurity = new TableRLSIndexer(this);

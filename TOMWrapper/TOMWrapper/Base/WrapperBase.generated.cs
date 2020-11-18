@@ -919,7 +919,8 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Variation();
 			metadataObject.Name = parent.Variations.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Variation).GetTypeName() : name);
-			var obj = new Variation(metadataObject);
+            InitMetadata(metadataObject, parent);
+            var obj = new Variation(metadataObject);
 
 			parent.Variations.Add(obj);
 			
@@ -927,6 +928,8 @@ namespace TabularEditor.TOMWrapper
 
 			return obj;
 		}
+
+        static partial void InitMetadata(TOM.Variation metadataObject, Column parent);
 
 
 		/// <summary>
@@ -1208,7 +1211,8 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.StructuredDataSource();
 			metadataObject.Name = parent.DataSources.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(StructuredDataSource).GetTypeName() : name);
-			var obj = new StructuredDataSource(metadataObject);
+            InitMetadata(metadataObject, parent);
+            var obj = new StructuredDataSource(metadataObject);
 
 			parent.DataSources.Add(obj);
 			
@@ -1216,6 +1220,8 @@ namespace TabularEditor.TOMWrapper
 
 			return obj;
 		}
+
+        static partial void InitMetadata(TOM.StructuredDataSource metadataObject, Model parent);
 
 		/// <summary>
 		/// Creates a new StructuredDataSource and adds it to the current Model.
@@ -1400,7 +1406,8 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.CalculatedColumn();
 			metadataObject.Name = parent.Columns.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(CalculatedColumn).GetTypeName() : name);
-			var obj = new CalculatedColumn(metadataObject);
+            InitMetadata(metadataObject, parent);
+            var obj = new CalculatedColumn(metadataObject);
 
 			parent.Columns.Add(obj);
 			
@@ -1408,6 +1415,8 @@ namespace TabularEditor.TOMWrapper
 
 			return obj;
 		}
+
+        static partial void InitMetadata(TOM.CalculatedColumn metadataObject, Table parent);
 
 
 		/// <summary>
@@ -1628,7 +1637,8 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.CalculatedTableColumn();
 			metadataObject.Name = parent.Columns.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(CalculatedTableColumn).GetTypeName() : name);
-			var obj = new CalculatedTableColumn(metadataObject);
+            InitMetadata(metadataObject, parent);
+            var obj = new CalculatedTableColumn(metadataObject);
 
 			parent.Columns.Add(obj);
 			
@@ -1636,6 +1646,8 @@ namespace TabularEditor.TOMWrapper
 
 			return obj;
 		}
+
+        static partial void InitMetadata(TOM.CalculatedTableColumn metadataObject, Table parent);
 
 
 		/// <summary>
@@ -3325,7 +3337,8 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Culture();
 			metadataObject.Name = parent.Cultures.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Culture).GetTypeName() : name);
-			var obj = new Culture(metadataObject);
+            InitMetadata(metadataObject, parent);
+            var obj = new Culture(metadataObject);
 
 			parent.Cultures.Add(obj);
 			
@@ -3333,6 +3346,8 @@ namespace TabularEditor.TOMWrapper
 
 			return obj;
 		}
+
+        static partial void InitMetadata(TOM.Culture metadataObject, Model parent);
 
 		/// <summary>
 		/// Creates a new Culture and adds it to the current Model.
@@ -3564,7 +3579,8 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.DataColumn();
 			metadataObject.Name = parent.Columns.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(DataColumn).GetTypeName() : name);
-			var obj = new DataColumn(metadataObject);
+            InitMetadata(metadataObject, parent);
+            var obj = new DataColumn(metadataObject);
 
 			parent.Columns.Add(obj);
 			
@@ -3572,6 +3588,8 @@ namespace TabularEditor.TOMWrapper
 
 			return obj;
 		}
+
+        static partial void InitMetadata(TOM.DataColumn metadataObject, Table parent);
 
 
 		/// <summary>
@@ -4229,7 +4247,8 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.ExternalModelRoleMember();
 			metadataObject.MemberName = parent.Members.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(ExternalModelRoleMember).GetTypeName() : name);
-			var obj = new ExternalModelRoleMember(metadataObject);
+            InitMetadata(metadataObject, parent);
+            var obj = new ExternalModelRoleMember(metadataObject);
 
 			parent.Members.Add(obj);
 			
@@ -4237,6 +4256,8 @@ namespace TabularEditor.TOMWrapper
 
 			return obj;
 		}
+
+        static partial void InitMetadata(TOM.ExternalModelRoleMember metadataObject, ModelRole parent);
 
 
 		/// <summary>
@@ -4812,7 +4833,8 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Hierarchy();
 			metadataObject.Name = parent.Hierarchies.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Hierarchy).GetTypeName() : name);
-			var obj = new Hierarchy(metadataObject);
+            InitMetadata(metadataObject, parent);
+            var obj = new Hierarchy(metadataObject);
 
 			parent.Hierarchies.Add(obj);
 			
@@ -4820,6 +4842,8 @@ namespace TabularEditor.TOMWrapper
 
 			return obj;
 		}
+
+        static partial void InitMetadata(TOM.Hierarchy metadataObject, Table parent);
 
 
 		/// <summary>
@@ -6381,7 +6405,8 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Level();
 			metadataObject.Name = parent.Levels.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Level).GetTypeName() : name);
-			var obj = new Level(metadataObject);
+            InitMetadata(metadataObject, parent);
+            var obj = new Level(metadataObject);
 
 			parent.Levels.Add(obj);
 			
@@ -6389,6 +6414,8 @@ namespace TabularEditor.TOMWrapper
 
 			return obj;
 		}
+
+        static partial void InitMetadata(TOM.Level metadataObject, Hierarchy parent);
 
 
 		/// <summary>
@@ -7175,7 +7202,8 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Measure();
 			metadataObject.Name = parent.Measures.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Measure).GetTypeName() : name);
-			var obj = new Measure(metadataObject);
+            InitMetadata(metadataObject, parent);
+            var obj = new Measure(metadataObject);
 
 			parent.Measures.Add(obj);
 			
@@ -7183,6 +7211,8 @@ namespace TabularEditor.TOMWrapper
 
 			return obj;
 		}
+
+        static partial void InitMetadata(TOM.Measure metadataObject, Table parent);
 
 
 		/// <summary>
@@ -8653,7 +8683,8 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.ModelRole();
 			metadataObject.Name = parent.Roles.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(ModelRole).GetTypeName() : name);
-			var obj = new ModelRole(metadataObject);
+            InitMetadata(metadataObject, parent);
+            var obj = new ModelRole(metadataObject);
 
 			parent.Roles.Add(obj);
 			
@@ -8661,6 +8692,8 @@ namespace TabularEditor.TOMWrapper
 
 			return obj;
 		}
+
+        static partial void InitMetadata(TOM.ModelRole metadataObject, Model parent);
 
 		/// <summary>
 		/// Creates a new ModelRole and adds it to the current Model.
@@ -9777,7 +9810,8 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Partition();
 			metadataObject.Name = parent.Partitions.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Partition).GetTypeName() : name);
-			var obj = new Partition(metadataObject);
+            InitMetadata(metadataObject, parent);
+            var obj = new Partition(metadataObject);
 
 			parent.Partitions.Add(obj);
 			
@@ -9785,6 +9819,8 @@ namespace TabularEditor.TOMWrapper
 
 			return obj;
 		}
+
+        static partial void InitMetadata(TOM.Partition metadataObject, Table parent);
 
 
 		/// <summary>
@@ -10444,7 +10480,8 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Set();
 			metadataObject.Name = parent.Sets.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Set).GetTypeName() : name);
-			var obj = new Set(metadataObject);
+            InitMetadata(metadataObject, parent);
+            var obj = new Set(metadataObject);
 
 			parent.Sets.Add(obj);
 			
@@ -10452,6 +10489,8 @@ namespace TabularEditor.TOMWrapper
 
 			return obj;
 		}
+
+        static partial void InitMetadata(TOM.Set metadataObject, Table parent);
 
 
 		/// <summary>
@@ -10994,7 +11033,8 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Perspective();
 			metadataObject.Name = parent.Perspectives.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Perspective).GetTypeName() : name);
-			var obj = new Perspective(metadataObject);
+            InitMetadata(metadataObject, parent);
+            var obj = new Perspective(metadataObject);
 
 			parent.Perspectives.Add(obj);
 			
@@ -11002,6 +11042,8 @@ namespace TabularEditor.TOMWrapper
 
 			return obj;
 		}
+
+        static partial void InitMetadata(TOM.Perspective metadataObject, Model parent);
 
 		/// <summary>
 		/// Creates a new Perspective and adds it to the current Model.
@@ -11401,7 +11443,8 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.ProviderDataSource();
 			metadataObject.Name = parent.DataSources.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(ProviderDataSource).GetTypeName() : name);
-			var obj = new ProviderDataSource(metadataObject);
+            InitMetadata(metadataObject, parent);
+            var obj = new ProviderDataSource(metadataObject);
 
 			parent.DataSources.Add(obj);
 			
@@ -11409,6 +11452,8 @@ namespace TabularEditor.TOMWrapper
 
 			return obj;
 		}
+
+        static partial void InitMetadata(TOM.ProviderDataSource metadataObject, Model parent);
 
 		/// <summary>
 		/// Creates a new ProviderDataSource and adds it to the current Model.
@@ -12263,7 +12308,8 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.SingleColumnRelationship();
 			metadataObject.Name = parent.Relationships.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(SingleColumnRelationship).GetTypeName() : name);
-			var obj = new SingleColumnRelationship(metadataObject);
+            InitMetadata(metadataObject, parent);
+            var obj = new SingleColumnRelationship(metadataObject);
 
 			parent.Relationships.Add(obj);
 			
@@ -12271,6 +12317,8 @@ namespace TabularEditor.TOMWrapper
 
 			return obj;
 		}
+
+        static partial void InitMetadata(TOM.SingleColumnRelationship metadataObject, Model parent);
 
 		/// <summary>
 		/// Creates a new SingleColumnRelationship and adds it to the current Model.
@@ -12892,25 +12940,8 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.Table();
-            metadataObject.Name = parent.Tables.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Table).GetTypeName() : name);
-            if (parent.DataSources.Any(ds => ds.Type == DataSourceType.Provider) || parent.Handler.CompatibilityLevel < 1400)
-            {
-                var tomPartition = new TOM.Partition();
-                tomPartition.Name = metadataObject.Name;
-                var qps = new TOM.QueryPartitionSource();
-                tomPartition.Source = qps;
-                if (!parent.DataSources.Any(ds => ds.Type == DataSourceType.Provider)) parent.AddDataSource();
-                qps.DataSource = parent.DataSources.FirstOrDefault(ds => ds.Type == DataSourceType.Provider).MetadataObject;
-                metadataObject.Partitions.Add(tomPartition);
-            }
-            else
-            {
-                var tomPartition = new TOM.Partition();
-                tomPartition.Name = metadataObject.Name;
-                tomPartition.Source = new TOM.MPartitionSource();
-                metadataObject.Partitions.Add(tomPartition);
-            }
-
+			metadataObject.Name = parent.Tables.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Table).GetTypeName() : name);
+            InitMetadata(metadataObject, parent);
             var obj = new Table(metadataObject);
 
 			parent.Tables.Add(obj);
@@ -12919,6 +12950,8 @@ namespace TabularEditor.TOMWrapper
 
 			return obj;
 		}
+
+        static partial void InitMetadata(TOM.Table metadataObject, Model parent);
 
 		/// <summary>
 		/// Creates a new Table and adds it to the current Model.
@@ -13358,7 +13391,8 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.WindowsModelRoleMember();
 			metadataObject.MemberName = parent.Members.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(WindowsModelRoleMember).GetTypeName() : name);
-			var obj = new WindowsModelRoleMember(metadataObject);
+            InitMetadata(metadataObject, parent);
+            var obj = new WindowsModelRoleMember(metadataObject);
 
 			parent.Members.Add(obj);
 			
@@ -13366,6 +13400,8 @@ namespace TabularEditor.TOMWrapper
 
 			return obj;
 		}
+
+        static partial void InitMetadata(TOM.WindowsModelRoleMember metadataObject, ModelRole parent);
 
 
 		/// <summary>
@@ -13910,7 +13946,8 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.NamedExpression();
 			metadataObject.Name = parent.Expressions.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(NamedExpression).GetTypeName() : name);
-			var obj = new NamedExpression(metadataObject);
+            InitMetadata(metadataObject, parent);
+            var obj = new NamedExpression(metadataObject);
 
 			parent.Expressions.Add(obj);
 			
@@ -13918,6 +13955,8 @@ namespace TabularEditor.TOMWrapper
 
 			return obj;
 		}
+
+        static partial void InitMetadata(TOM.NamedExpression metadataObject, Model parent);
 
 		/// <summary>
 		/// Creates a new NamedExpression and adds it to the current Model.
@@ -14573,7 +14612,8 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.CalculationItem();
 			metadataObject.Name = parent.CalculationItems.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(CalculationItem).GetTypeName() : name);
-			var obj = new CalculationItem(metadataObject);
+            InitMetadata(metadataObject, parent);
+            var obj = new CalculationItem(metadataObject);
 
 			parent.CalculationItems.Add(obj);
 			
@@ -14581,6 +14621,8 @@ namespace TabularEditor.TOMWrapper
 
 			return obj;
 		}
+
+        static partial void InitMetadata(TOM.CalculationItem metadataObject, CalculationGroup parent);
 
 
 		/// <summary>
@@ -15146,7 +15188,8 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.TablePermission();
 			metadataObject.Name = parent.TablePermissions.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(TablePermission).GetTypeName() : name);
-			var obj = new TablePermission(metadataObject);
+            InitMetadata(metadataObject, parent);
+            var obj = new TablePermission(metadataObject);
 
 			parent.TablePermissions.Add(obj);
 			
@@ -15154,6 +15197,8 @@ namespace TabularEditor.TOMWrapper
 
 			return obj;
 		}
+
+        static partial void InitMetadata(TOM.TablePermission metadataObject, ModelRole parent);
 
 
 		/// <summary>
