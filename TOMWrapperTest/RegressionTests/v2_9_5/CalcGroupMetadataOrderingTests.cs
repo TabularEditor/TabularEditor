@@ -11,7 +11,10 @@ namespace TOMWrapperTest.RegressionTests.v2_9_5
     public class CalcGroupMetadataOrderingTests
     {
         const string expectedTmsl = @"{
-  ""create"": {
+  ""createOrReplace"": {
+    ""object"": {
+      ""database"": ""db""
+    },
     ""database"": {
       ""name"": ""db"",
       ""compatibilityLevel"": 1500,
