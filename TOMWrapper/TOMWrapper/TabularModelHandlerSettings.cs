@@ -62,6 +62,11 @@ namespace TabularEditor.TOMWrapper
         private bool _pBIFeaturesOnly;
 
         /// <summary>
+        /// Set to true to always add a PowerQuery (M) partition by default to newly created tables
+        /// </summary>
+        public bool UsePowerQueryPartitionsByDefault { get; set; } = false;
+
+        /// <summary>
         /// Specifies whether an AS trace should be started to monitor the server for changes
         /// made by other applications.
         /// </summary>

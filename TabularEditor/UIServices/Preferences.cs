@@ -48,6 +48,8 @@ namespace TabularEditor.UIServices
         public string ProxyAddress = string.Empty;
         public string ProxyUser = string.Empty;
 
+        public bool UsePowerQueryPartitionsByDefault = false;
+
         /// <summary>
         /// Stores an encrypted version of the user password. Use the string Decrypt() extension method to decrypt.
         /// </summary>
@@ -225,7 +227,8 @@ namespace TabularEditor.UIServices
             return new TOMWrapper.TabularModelHandlerSettings {
                 AutoFixup = value.FormulaFixup,
                 PBIFeaturesOnly = !value.AllowUnsupportedPBIFeatures,
-                ChangeDetectionLocalServers = value.ChangeDetectionOnLocalServers
+                ChangeDetectionLocalServers = value.ChangeDetectionOnLocalServers,
+                UsePowerQueryPartitionsByDefault = value.UsePowerQueryPartitionsByDefault
             };
         }
 
