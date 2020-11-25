@@ -1029,7 +1029,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:TOMWrapper, Version=2.13.7625.24512, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:TOMWrapper, Version=2.13.7634.15698, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_CE28F9A0B2916DB17B0C51E000795538"
@@ -1249,15 +1249,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Tabular Editor"
-        "ProductCode" = "8:{6A9FE5C2-D886-4861-AF8C-296B4CFADA19}"
-        "PackageCode" = "8:{82F58512-6D42-4141-96B6-4F1361D2A8FE}"
+        "ProductCode" = "8:{6B9EF89A-EA39-49D6-890C-DD4315338882}"
+        "PackageCode" = "8:{F96820F4-2954-48DF-B231-B497A0DBBAA5}"
         "UpgradeCode" = "8:{E20734F5-CD2A-4A76-AB20-014819FCDE35}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:2.13.0"
+        "ProductVersion" = "8:2.13.1"
         "Manufacturer" = "8:Kapacity A/S"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:https://tabulareditor.com"
