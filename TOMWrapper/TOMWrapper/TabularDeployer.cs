@@ -140,12 +140,12 @@ namespace TabularEditor.TOMWrapper.Utils
 
         internal static string DeployNewTMSL(TOM.Database db, string targetDatabaseName, DeploymentOptions options, bool includeRestricted, Microsoft.AnalysisServices.CompatibilityMode compatibilityMode)
         {
-            var rawTmsl = TOM.JsonScripter.ScriptCreate(db, includeRestricted);
+            var rawTmsl = TOM.JsonScripter.ScriptCreateOrReplace(db, includeRestricted);
 
             var jTmsl = JObject.Parse(rawTmsl);
-            if(jTmsl["create"]["database"]["compatibilityMode"] != null)
+            if(jTmsl["createOrReplace"]["database"]["compatibilityMode"] != null)
             {
-                jTmsl["create"]["database"]["compatibilityMode"] = compatibilityMode.ToString();
+                jTmsl["createOrReplace"]["database"]["compatibilityMode"] = compatibilityMode.ToString();
             }
 
             return jTmsl.TransformCreateTmsl(targetDatabaseName, options).FixCalcGroupMetadata(db).ToString();
@@ -464,10 +464,11 @@ namespace TabularEditor.TOMWrapper.Utils
         /// </summary>
         public static JObject TransformCreateTmsl(this JObject tmslJObj, string targetDatabaseName, DeploymentOptions options)
         {
-            tmslJObj["create"]["database"]["id"] = targetDatabaseName;
-            tmslJObj["create"]["database"]["name"] = targetDatabaseName;
+            tmslJObj["createOrReplace"]["object"]["database"] = targetDatabaseName;
+            tmslJObj["createOrReplace"]["database"]["id"] = targetDatabaseName;
+            tmslJObj["createOrReplace"]["database"]["name"] = targetDatabaseName;
 
-            var roles = tmslJObj.SelectToken("create.database.model.roles") as JArray;
+            var roles = tmslJObj.SelectToken("createOrReplace.database.model.roles") as JArray;
             if (!options.DeployRoles)
             {
                 // Remove roles if present
