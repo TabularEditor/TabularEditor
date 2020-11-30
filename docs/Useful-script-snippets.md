@@ -812,3 +812,20 @@ foreach(var t in Model.Tables)
     foreach(var p in mPartitions.ToList()) p.Delete();
 }
 ```
+
+# Replace all Translated Columns
+
+If you are looking for a way to only "batch rename" the translated names without touching source columns, you can do that with snippit. It will first add a translation if it isn't present and then replace therm you want to replace. 
+
+```
+foreach (var m in Selected.Columns)
+{
+    foreach(var culture in Model.Cultures)
+    { 
+        // if no translation yet add measure name first
+        if(string.IsNullOrEmpty(m.TranslatedNames[culture]))
+            m.TranslatedNames[culture] = m.Name;
+        m.TranslatedNames[culture] = m.TranslatedNames[culture].Replace("Expected Shipment Date", "ETD");
+    }
+}
+```
