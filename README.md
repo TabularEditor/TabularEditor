@@ -3,7 +3,7 @@ Tabular Editor is a tool that lets you easily manipulate and manage measures, ca
 
 ![](https://raw.githubusercontent.com/otykier/TabularEditor/master/Documentation/Main%20UI%202_1.png)
 
-* [Download Latest Tabular Editor for SQL Server 2016, 2017, 2019 or Azure Analysis Services](../../../releases/latest)
+* [Download Latest Tabular Editor for SQL Server 2016, 2017, 2019, Azure Analysis Services or Power BI Premium](../../../releases/latest)
 
 Tabular Editor, when downloaded from GitHub, is digitally signed. The certificate is kindly funded by [Kapacity A/S](https://www.kapacity.dk).
 
