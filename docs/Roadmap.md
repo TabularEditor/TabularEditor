@@ -40,7 +40,7 @@ Taking this one step further, it would be interesting to expose more Tabular Edi
 
 ## Automated build, test, publishing and documentation using VSTS
 
-DevOps using VSTS and general clean-up of Tabular Editor source code. Using xmldocs, we can auto-generate github wiki-pages to document the API.
+DevOps using VSTS and general clean-up of Tabular Editor source code.
 
 ## Formula fix-up
 
