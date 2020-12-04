@@ -28,8 +28,13 @@ namespace TabularEditor.TOMWrapper
                     Model.Tables.SelectMany(t => t.Measures).Count());
             }
         }
+        private bool ShouldSerializeStatsMeasureCaptions() { return false; }
 
+        /// <summary>
+        /// Specifies the type of the linguistic metadata from the Content property. E.g. XML or JSON.
+        /// </summary>
         [DisplayName("Content Type"), Browsable(true), Category("Linguistic Metadata")]
+        [IntelliSense("Specifies the type of the linguistic metadata from the Content property. E.g. XML or JSON.")]
         public ContentType? ContentType
         {
             get
@@ -37,9 +42,28 @@ namespace TabularEditor.TOMWrapper
                 return this.MetadataObject.LinguisticMetadata == null ? null : (ContentType?)this.MetadataObject.LinguisticMetadata.ContentType;
             }
         }
+        private bool ShouldSerializeContentType() { return false; }
 
+        internal override bool IsEditable(string propertyName)
+        {
+            if (propertyName == nameof(ContentType)) return false;
+            return base.IsEditable(propertyName);
+        }
+
+        internal override bool IsBrowsable(string propertyName)
+        {
+            if(propertyName == nameof(ContentType) || propertyName == nameof(Content))
+            {
+                return Handler.CompatibilityLevel >= 1465;
+            }
+            return base.IsBrowsable(propertyName);
+        }
+
+        /// <summary>
+        /// A string that contains the natural language synonyms.
+        /// </summary>
         [DisplayName("Content"), Browsable(true), Category("Linguistic Metadata")]
-        [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
+        [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor)),IntelliSense("A string that contains the natural language synonyms.")]
         public string Content
         {
             get
@@ -60,17 +84,21 @@ namespace TabularEditor.TOMWrapper
                     return;
                 }
 
-                var newContentType = (ContentType?)(value.Trim().StartsWith("{") ? TOM.ContentType.Json : TOM.ContentType.Xml);
+                var tomNewContentType = value.Trim().StartsWith("{") ? TOM.ContentType.Json : TOM.ContentType.Xml;
+                var newContentType = (ContentType?)tomNewContentType;
                 var currentContentType = ContentType;
-                if (newContentType != currentContentType)
-                {
-                    this.MetadataObject.LinguisticMetadata = new LinguisticMetadata() { ContentType = value.Trim().StartsWith("{") ? TOM.ContentType.Json : TOM.ContentType.Xml, Content = value };
-                }
-                else
-                    this.MetadataObject.LinguisticMetadata.Content = value;
-                SetValue(orgValue, value, (v) => { });
+                
+                SetValue(orgValue, value, (v) => {
+                    if (newContentType != currentContentType)
+                    {
+                        this.MetadataObject.LinguisticMetadata = new LinguisticMetadata() { ContentType = tomNewContentType, Content = v };
+                    }
+                    else
+                        this.MetadataObject.LinguisticMetadata.Content = v;
+                });
             }
         }
+        private bool ShouldSerializeContent() { return false; }
 
         [DisplayName("Translated Column Names"), Browsable(true), Category("Translation Statistics")]
         public string StatsColumnCaptions
@@ -82,6 +110,7 @@ namespace TabularEditor.TOMWrapper
                     Model.Tables.SelectMany(t => t.Columns).Count());
             }
         }
+        private bool ShouldSerializeStatsColumnCaptions() { return false; }
 
         [DisplayName("Translated Hierarchy Names"), Browsable(true), Category("Translation Statistics")]
         public string StatsHierarchyCaptions
@@ -93,6 +122,7 @@ namespace TabularEditor.TOMWrapper
                     Model.Tables.SelectMany(t => t.Hierarchies).Count());
             }
         }
+        private bool ShouldSerializeStatsHierarchyCaptions() { return false; }
 
         [DisplayName("Translated Level Names"), Browsable(true), Category("Translation Statistics")]
         public string StatsLevelCaptions
@@ -104,6 +134,7 @@ namespace TabularEditor.TOMWrapper
                     Model.Tables.SelectMany(t => t.Hierarchies.SelectMany(h => h.Levels)).Count());
             }
         }
+        private bool ShouldSerializeStatsLevelCaptions() { return false; }
 
         [DisplayName("Translated Table Names"), Browsable(true), Category("Translation Statistics")]
         public string StatsTableCaptions
@@ -115,6 +146,7 @@ namespace TabularEditor.TOMWrapper
                     Model.Tables.Count());
             }
         }
+        private bool ShouldSerializeStatsTableCaptions() { return false; }
 
         [DisplayName("Translated Measure Folders"), Browsable(true), Category("Translation Statistics")]
         public string StatsMeasureDisplayFolders
@@ -201,6 +233,7 @@ namespace TabularEditor.TOMWrapper
                 OnPropertyChanged(Properties.NAME, oldValue, value);
             }
         }
+        private bool ShouldSerializeName() { return false; }
 
         private void UpdateDisplayName()
         {
