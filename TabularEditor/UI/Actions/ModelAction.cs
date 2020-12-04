@@ -181,7 +181,7 @@ namespace TabularEditor.UI.Actions
         public virtual void Execute(object arg)
         {
             InternalExecute(arg, null);
-            ui.Handler.Model.Database.CloseReader();
+            TabularModelHandler.Singleton.Model.Database.CloseReader();
         }
 
         public void ExecuteWithSelection(object arg, IEnumerable<ITabularNamedObject> alternateSelection)
