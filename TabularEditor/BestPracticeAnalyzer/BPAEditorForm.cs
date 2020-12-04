@@ -101,7 +101,7 @@ namespace TabularEditor.UI.Dialogs
         public BPAEditorForm()
         {
             InitializeComponent();
-
+            
             this.FormClosing += BPAEditorForm_FormClosing;
 
             lb = new CheckedListBox();

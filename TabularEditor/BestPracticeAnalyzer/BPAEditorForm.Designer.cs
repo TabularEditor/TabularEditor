@@ -38,7 +38,7 @@
             this.txtName = new System.Windows.Forms.TextBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.txtExpression = new System.Windows.Forms.RichTextBox();
+            this.txtExpression = new System.Windows.Forms.TextBox();
             this.pnlInfo = new System.Windows.Forms.Panel();
             this.lblInfo = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -169,6 +169,7 @@
             // txtExpression
             // 
             this.txtExpression.AcceptsTab = true;
+            this.txtExpression.Multiline = true;
             this.txtExpression.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtExpression.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtExpression.Location = new System.Drawing.Point(3, 3);
@@ -371,7 +372,7 @@
         private System.Windows.Forms.TextBox txtName;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.RichTextBox txtExpression;
+        private System.Windows.Forms.TextBox txtExpression;
         private System.Windows.Forms.Panel pnlInfo;
         private System.Windows.Forms.Label lblInfo;
         private System.Windows.Forms.Panel panel1;
