@@ -11,6 +11,7 @@ using Microsoft.AnalysisServices.Tabular;
 using System.Globalization;
 using TabularEditor.UIServices;
 using System.Threading;
+using Microsoft.AnalysisServices;
 
 namespace TabularEditor.UI.Dialogs.Pages
 {
@@ -41,7 +42,7 @@ namespace TabularEditor.UI.Dialogs.Pages
                 else
                 {
                     dataGridView1.DataBindingComplete += dataGridView1_DataBindingComplete;
-                    dataGridView1.DataSource = _server?.Databases.Cast<Database>().OrderBy(db => db.Name).ToList();
+                    dataGridView1.DataSource = DatabaseInfo.GetDatabasesFromServer(_server);
                 }
             }
             get
@@ -90,7 +91,7 @@ namespace TabularEditor.UI.Dialogs.Pages
             {
                 suspendEvent = true;
 
-                txtDatabaseName.Text = (dataGridView1.SelectedRows[0].DataBoundItem as Database).Name;
+                txtDatabaseName.Text = (dataGridView1.SelectedRows[0].DataBoundItem as DatabaseInfo).Name;
                 OnValidation();
 
                 suspendEvent = false;
@@ -166,6 +167,49 @@ namespace TabularEditor.UI.Dialogs.Pages
                 }
             }
 
+        }
+    }
+
+    public class DatabaseInfo
+    {
+        public string ID { get; set; }
+        public string Name { get; set; }
+        public int CompatibilityLevel { get; set; }
+        public DateTime LastUpdate { get; set; }
+        public string Description { get; set; }
+
+        public static List<DatabaseInfo> GetDatabasesFromServer(Server server)
+        {
+            var result = new List<DatabaseInfo>();
+            using (var reader = server.ExecuteReader("<Statement>SELECT * FROM $SYSTEM.DBSCHEMA_CATALOGS</Statement>", out XmlaResultCollection results))
+            {
+                if(results != null && results.ContainsErrors)
+                {
+                    throw new Exception("Unable to query databases from server: " + results.GetMessageString());
+                }
+                while(reader.Read())
+                {
+                    
+                    result.Add(new DatabaseInfo
+                    {
+                        ID = reader.GetString(reader.GetOrdinal("DATABASE_ID")),
+                        Name = reader.GetString(reader.GetOrdinal("CATALOG_NAME")),
+                        CompatibilityLevel = reader.GetInt32(reader.GetOrdinal("COMPATIBILITY_LEVEL")),
+                        LastUpdate = reader.GetDateTime(reader.GetOrdinal("DATE_MODIFIED")),
+                        Description = reader.GetString(reader.GetOrdinal("DESCRIPTION"))
+                    });
+                }
+            }
+            return result;
+        }
+    }
+
+    static class XmlaExtension
+    {
+        public static string GetMessageString(this XmlaResultCollection xmlaResults)
+        {
+            return string.Join(Environment.NewLine,
+                xmlaResults.OfType<XmlaResult>().SelectMany(r => r.Messages.OfType<XmlaMessage>()).Select(msg => msg.Description).ToArray());
         }
     }
 }
