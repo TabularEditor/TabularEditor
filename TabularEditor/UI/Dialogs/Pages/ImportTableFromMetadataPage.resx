@@ -120,6 +120,6 @@
   <data name="linkLabel1.Text" xml:space="preserve">
     <value>Paste table schema metadata into the textbox below. Each line should represent one table column and hold information about the column name and data type.
 
-For example, you can use Power Query in Excel or Power BI as described in the Tabular Editor wiki, to extract the metadata.</value>
+For example, you can use Power Query in Excel or Power BI as described in the Tabular Editor documentation, to extract the metadata.</value>
   </data>
 </root>

@@ -39,7 +39,7 @@ namespace TabularEditor.UI.Dialogs
             InitializeComponent();
 
             linkLabel1.Links.Add(27, 29, Path.GetDirectoryName(ScriptEngine.CustomActionsJsonPath));
-            linkLabel1.Links.Add(73, 20, "https://github.com/otykier/TabularEditor/wiki/Advanced-Scripting#creating-custom-actions");
+            linkLabel1.Links.Add(73, 20, "https://docs.tabulareditor.com/Custom-Actions.html");
 
             chkListboxContexts.Items.AddRange(
                 Enum.GetValues(typeof(Context)).Cast<Context>()
