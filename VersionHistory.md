@@ -62,5 +62,6 @@
 * **2020-09-15** [Version 2.12.4](../../../releases/tag/2.12.4) released (digitally signed)
 
 ## 2.13.X
-* **2020-11-25** [Version 2.13.1](../../../releases/tag/2.13.1) released (digitally signed)
 * **2020-11-16** [Version 2.13.0](../../../releases/tag/2.13.0) released (digitally signed)
+* **2020-11-25** [Version 2.13.1](../../../releases/tag/2.13.1) released (digitally signed)
+* **2020-12-04** [Version 2.13.2](../../../releases/tag/2.13.2) released (digitally signed)
