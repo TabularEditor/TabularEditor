@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using TabularEditor.TOMWrapper.Undo;
 using json.Newtonsoft.Json;
+using System.ComponentModel.Design;
+using System.Drawing.Design;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -24,6 +26,49 @@ namespace TabularEditor.TOMWrapper
                 return string.Format("{0} of {1}",
                     MetadataObject.ObjectTranslations.Count(o => o.Property == TranslatedProperty.Caption && o.Object is TOM.Measure && (o.Object as NamedMetadataObject).Name != o.Value && !string.IsNullOrEmpty(o.Value)),
                     Model.Tables.SelectMany(t => t.Measures).Count());
+            }
+        }
+
+        [DisplayName("Content Type"), Browsable(true), Category("Linguistic Metadata")]
+        public ContentType? ContentType
+        {
+            get
+            {
+                return this.MetadataObject.LinguisticMetadata == null ? null : (ContentType?)this.MetadataObject.LinguisticMetadata.ContentType;
+            }
+        }
+
+        [DisplayName("Content"), Browsable(true), Category("Linguistic Metadata")]
+        [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
+        public string Content
+        {
+            get
+            {
+                return this.MetadataObject.LinguisticMetadata?.Content;
+            }
+            set
+            {
+                var orgValue = this.MetadataObject.LinguisticMetadata?.Content;
+
+                if (string.IsNullOrEmpty(value))
+                {
+                    if (this.MetadataObject.LinguisticMetadata != null)
+                    {
+                        this.MetadataObject.LinguisticMetadata = null;
+                        SetValue(orgValue, value, (v) => { });
+                    }
+                    return;
+                }
+
+                var newContentType = (ContentType?)(value.Trim().StartsWith("{") ? TOM.ContentType.Json : TOM.ContentType.Xml);
+                var currentContentType = ContentType;
+                if (newContentType != currentContentType)
+                {
+                    this.MetadataObject.LinguisticMetadata = new LinguisticMetadata() { ContentType = value.Trim().StartsWith("{") ? TOM.ContentType.Json : TOM.ContentType.Xml, Content = value };
+                }
+                else
+                    this.MetadataObject.LinguisticMetadata.Content = value;
+                SetValue(orgValue, value, (v) => { });
             }
         }
 
