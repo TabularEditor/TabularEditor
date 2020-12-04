@@ -247,6 +247,13 @@ namespace TabularEditor.TOMWrapper
         };
 	}
 	/// <summary>
+///             The type of the content of a string. E.g. XML or JSON.
+///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1465 or above.</remarks>
+	public enum ContentType {    
+        Xml = 0,
+        Json = 1,
+	}
+	/// <summary>
 ///             Indicates the dialect of the query expression.
 ///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 	public enum ExpressionKind {    
