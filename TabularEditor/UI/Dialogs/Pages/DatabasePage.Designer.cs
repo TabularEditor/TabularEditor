@@ -39,7 +39,6 @@
             this.colName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CompatibilityLevel = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colLastUpdate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colLastProcessed = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.databaseBindingSource)).BeginInit();
@@ -62,7 +61,6 @@
             this.colName,
             this.CompatibilityLevel,
             this.colLastUpdate,
-            this.colLastProcessed,
             this.colDescription});
             this.dataGridView1.DataSource = this.databaseBindingSource;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -157,13 +155,6 @@
             this.colLastUpdate.Name = "colLastUpdate";
             this.colLastUpdate.ReadOnly = true;
             // 
-            // colLastProcessed
-            // 
-            this.colLastProcessed.DataPropertyName = "LastProcessed";
-            this.colLastProcessed.HeaderText = "Last Processed";
-            this.colLastProcessed.Name = "colLastProcessed";
-            this.colLastProcessed.ReadOnly = true;
-            // 
             // colDescription
             // 
             this.colDescription.DataPropertyName = "Description";
@@ -199,7 +190,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colName;
         private System.Windows.Forms.DataGridViewTextBoxColumn CompatibilityLevel;
         private System.Windows.Forms.DataGridViewTextBoxColumn colLastUpdate;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colLastProcessed;
         private System.Windows.Forms.DataGridViewTextBoxColumn colDescription;
     }
 }
