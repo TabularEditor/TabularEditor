@@ -38,7 +38,7 @@ namespace TabularEditor.UI.Dialogs.Pages
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/otykier/TabularEditor/wiki/Importing-Tables#power-query-data-sources");
+            System.Diagnostics.Process.Start("https://docs.tabulareditor.com/Importing-Tables.html?highlight=import#power-query-data-sources");
         }
         private bool IsNameProperty(string text)
         {
