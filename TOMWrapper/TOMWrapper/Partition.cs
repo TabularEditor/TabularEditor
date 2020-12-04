@@ -304,6 +304,7 @@ namespace TabularEditor.TOMWrapper
         }
 
         [Category("Basic"), DisplayName("M Expression"), Description("The Power Query (M) Expression used to populate the partition with data.")]
+        [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
         public string MExpression { get => Expression; set => Expression = value; }
 
         internal override bool IsBrowsable(string propertyName)
