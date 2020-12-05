@@ -34,11 +34,35 @@ namespace TabularEditor.UIServices
                 case ModelSourceType.File: ServerType = ".bim file"; break;
                 case ModelSourceType.Folder: ServerType = ".bim exploded"; break;
                 case ModelSourceType.Database:
-                    switch (ui.LocalInstanceType)
+                    var server = ui.Handler.Database.Server;
+                    if (server.CompatibilityMode == Microsoft.AnalysisServices.CompatibilityMode.PowerBI)
                     {
-                        case EmbeddedInstanceType.None: ServerType = "SSAS"; break;
-                        case EmbeddedInstanceType.Devenv: ServerType = "SSDT Workspace"; break;
-                        case EmbeddedInstanceType.PowerBI: ServerType = "PBI Desktop"; break;
+                        if(server.ServerLocation == Microsoft.AnalysisServices.ServerLocation.OnPremise)
+                        {
+                            if (server.ServerMode == Microsoft.AnalysisServices.ServerMode.SharePoint)
+                            {
+                                ServerType = "PBI Desktop";
+                            }
+                            else
+                            {
+                                ServerType = "PBI Report Server";
+                            }
+                        }
+                        else
+                        {
+                            ServerType = "PBI Service";
+                        }
+                    }
+                    else
+                    {
+                        if (server.ServerLocation == Microsoft.AnalysisServices.ServerLocation.OnPremise)
+                        {
+                            ServerType = "SSAS";
+                        }
+                        else
+                        {
+                            ServerType = "Azure AS";
+                        }
                     }
                     break;
             }
