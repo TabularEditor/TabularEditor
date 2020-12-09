@@ -15,7 +15,7 @@ View the article on www.kapacity.dk/tabular-editor for a general presentation of
 * [Webinar: Boosting SSAS Productivity using Tabular Editor](https://www.youtube.com/watch?v=UENChJ_IfRw&feature=youtu.be&t=453)
 * [Getting Started](https://docs.tabulareditor.com/Getting-Started.html)
 * [Features at a Glance](https://docs.tabulareditor.com/Features-at-a-glance.html)
-* [Advanced Features](https://docs.tabulareditor.com/Advanced-Features.html)
+* [Advanced Features](https://docs.tabulareditor.com/Advanced-features.html)
 * [Advanced Scripting](https://docs.tabulareditor.com/Advanced-Scripting.html)
 * [FAQ](https://docs.tabulareditor.com/FAQ.html)
 
