@@ -13,11 +13,11 @@ Tabular Editor, when downloaded from GitHub, is digitally signed. The certificat
 View the article on www.kapacity.dk/tabular-editor for a general presentation of the tool and the motivations behind it.
 
 * [Webinar: Boosting SSAS Productivity using Tabular Editor](https://www.youtube.com/watch?v=UENChJ_IfRw&feature=youtu.be&t=453)
-* [Getting Started](https://docs.tabulareditor.com/Getting-Started)
-* [Features at a Glance](https://docs.tabulareditor.com/Features-at-a-glance)
-* [Advanced Features](https://docs.tabulareditor.com/Advanced-Features)
-* [Advanced Scripting](https://docs.tabulareditor.com/Advanced-Scripting)
-* [FAQ](https://docs.tabulareditor.com/FAQ)
+* [Getting Started](https://docs.tabulareditor.com/Getting-Started.html)
+* [Features at a Glance](https://docs.tabulareditor.com/Features-at-a-glance.html)
+* [Advanced Features](https://docs.tabulareditor.com/Advanced-Features.html)
+* [Advanced Scripting](https://docs.tabulareditor.com/Advanced-Scripting.html)
+* [FAQ](https://docs.tabulareditor.com/FAQ.html)
 
 ## Version History
 
@@ -30,4 +30,4 @@ View the article on www.kapacity.dk/tabular-editor for a general presentation of
 
 ## Roadmap
 
-View the full roadmap for upcoming features [here](https://docs.tabulareditor.com/Roadmap).
+View the full roadmap for upcoming features [here](https://docs.tabulareditor.com/Roadmap.html).
