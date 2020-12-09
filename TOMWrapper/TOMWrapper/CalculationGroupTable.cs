@@ -166,7 +166,7 @@ namespace TabularEditor.TOMWrapper
             metadataObject.Columns.Add(nameCol);
             metadataObject.Columns.Add(ordinalCol);
             nameCol.SortByColumn = ordinalCol;
-            metadataObject.Partitions.Add(new TOM.Partition { Source = new TOM.CalculationGroupSource() });
+            metadataObject.Partitions.Add(new TOM.Partition { Source = new TOM.CalculationGroupSource(), Mode = TOM.ModeType.Import });
             metadataObject.Name = parent.Tables.GetNewName(string.IsNullOrWhiteSpace(name) ? "New Calculation Group" : name);
 
             return CreateFromMetadata(parent, metadataObject);
