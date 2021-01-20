@@ -3,11 +3,7 @@ Tabular Editor 3.0 supports editing model metadata loaded from disk with a simul
 
 This makes the development workflow a lot simpler, since you only need to hit Save (Ctrl+S) once, to simultaneously save your changes to the disk **and** update the metadata in the workspace database. This also has the advantage, that any error messages returned from Analysis Services, are immediately visible in Tabular Editor upon hitting Save. In a sense, this is similar to the way SSDT / Visual Studio or Power BI Desktop does, except that you are in control of when the workspace database is updated.
 
-To enable this feature, make sure that the "Allow User Options and Workspace Database Connections"-setting is enabled under File > Preferences > Features:
-
-![image](https://user-images.githubusercontent.com/8976200/58197738-2c025100-7ccd-11e9-89fd-7fcbc380b7ac.png)
-
-The next time you load a model from a Model.bim file or folder structure, you will see the following prompt:
+When you load a model from a Model.bim file or folder structure, you will see the following prompt:
 
 ![image](https://user-images.githubusercontent.com/8976200/58166683-a65db180-7c8a-11e9-9df3-be9a716b3ad1.png)
 
