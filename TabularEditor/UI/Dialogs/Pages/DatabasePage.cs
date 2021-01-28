@@ -11,6 +11,7 @@ using Microsoft.AnalysisServices.Tabular;
 using System.Globalization;
 using TabularEditor.UIServices;
 using System.Threading;
+using Microsoft.AnalysisServices;
 
 namespace TabularEditor.UI.Dialogs.Pages
 {
