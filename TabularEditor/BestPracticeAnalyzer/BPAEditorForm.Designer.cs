@@ -170,6 +170,8 @@
             // 
             this.txtExpression.AcceptsTab = true;
             this.txtExpression.Multiline = true;
+            this.txtExpression.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtExpression.WordWrap = true;
             this.txtExpression.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtExpression.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtExpression.Location = new System.Drawing.Point(3, 3);
