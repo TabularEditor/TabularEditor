@@ -55,12 +55,32 @@ namespace TabularEditor.UI.Dialogs.Pages
         {
             dataGridView1.DataBindingComplete -= dataGridView1_DataBindingComplete;
             if (ClearSelection) DoClearSelection();
-            var databaseList = dataGridView1.DataSource as List<Database>;
+            var databaseList = dataGridView1.DataSource as List<DatabaseInfo>;
             if (databaseList != null && !string.IsNullOrEmpty(PreselectDb))
             {
                 var index = databaseList.FirstIndexOf(db => db.Name == PreselectDb);
-                if (index >= 0) dataGridView1.CurrentCell = dataGridView1.Rows[index].Cells[0];
+                if (index >= 0)
+                    dataGridView1.CurrentCell = dataGridView1.Rows[index].Cells[0];
+                else
+                {
+                    clearSelectionOnEnable = true;
+                    txtDatabaseName.Text = PreselectDb;
+                }
             }
+        }
+
+        private bool suspendAllEvents = true;
+        private bool clearSelectionOnEnable = false;
+
+        public void EnableEvents()
+        {
+            if (clearSelectionOnEnable) dataGridView1.ClearSelection();
+            suspendAllEvents = false;
+            OnValidation();
+        }
+        public void DisableEvents()
+        {
+            suspendAllEvents = true;
         }
 
         public bool AllowNew
@@ -74,40 +94,45 @@ namespace TabularEditor.UI.Dialogs.Pages
             }
         }
 
-        bool suspendEvent = false;
+        bool suspendSelectionChanged = false;
 
         public void DoClearSelection()
         {
-            suspendEvent = true;
+            suspendSelectionChanged = true;
             dataGridView1.ClearSelection();
             txtDatabaseName.Text = "";
-            suspendEvent = false;
+            suspendSelectionChanged = false;
             OnValidation();
         }
 
         private void dataGridView1_SelectionChanged_1(object sender, EventArgs e)
         {
-            if (dataGridView1.SelectedRows.Count == 1 && !suspendEvent)
+            if (suspendAllEvents) return;
+            if (suspendSelectionChanged) return;
+
+            if (dataGridView1.SelectedRows.Count == 1)
             {
-                suspendEvent = true;
+                suspendSelectionChanged = true;
 
                 txtDatabaseName.Text = (dataGridView1.SelectedRows[0].DataBoundItem as DatabaseInfo).Name;
                 OnValidation();
 
-                suspendEvent = false;
+                suspendSelectionChanged = false;
             }
         }
 
         private void txtDatabaseID_TextChanged(object sender, EventArgs e)
         {
-            if (!suspendEvent)
+            if (suspendAllEvents) return;
+
+            if (!suspendSelectionChanged)
             {
-                suspendEvent = true;
+                suspendSelectionChanged = true;
 
                 dataGridView1.ClearSelection();
                 OnValidation();
 
-                suspendEvent = false;
+                suspendSelectionChanged = false;
             }
         }
 

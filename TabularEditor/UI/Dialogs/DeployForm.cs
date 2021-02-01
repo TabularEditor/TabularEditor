@@ -47,7 +47,15 @@ namespace TabularEditor.UI.Dialogs
                 _currentPage = value;
                 Steps[_currentPage].Font = new Font(lblStep1.Font, FontStyle.Bold);
                 Pages[_currentPage].Visible = true;
-                if (_currentPage == 1) Pages[_currentPage].Focus();
+                if (_currentPage == 1)
+                {
+                    Pages[1].Focus();
+                    (Pages[1] as DatabasePage).EnableEvents();
+                }
+                else
+                {
+                    (Pages[1] as DatabasePage).DisableEvents();
+                }
                 lblHint.Text = Hints[_currentPage];
 
                 btnPrev.Enabled = _currentPage > 0;
