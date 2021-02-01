@@ -21,6 +21,7 @@ namespace TabularEditor.UI.Dialogs
         public static DialogResult Show(Server server)
         {
             var form = new SelectDatabaseForm();
+            form.databasePage1.EnableEvents();
             form.databasePage1.Server = server;
             var result = form.ShowDialog();
             DatabaseName = form.databasePage1.DatabaseName;
