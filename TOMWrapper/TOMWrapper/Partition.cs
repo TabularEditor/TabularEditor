@@ -123,7 +123,7 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public StructuredDataSource StructuredDataSource => DataSource as StructuredDataSource;
 
-        [Category("Basic"),DisplayName("Data Source"),Description("The Data Source used by this partition."),TypeConverter(typeof(DataSourceConverter))]
+        [Category("Basic"), DisplayName("Data Source"), Description("The Data Source used by this partition."), TypeConverter(typeof(DataSourceConverter)), IntelliSense("The Data Source used by this partition.")]
         public DataSource DataSource
         {
             get
@@ -133,22 +133,22 @@ namespace TabularEditor.TOMWrapper
                     var ds = (MetadataObject.Source as TOM.QueryPartitionSource)?.DataSource;
                     return ds == null ? null : Handler.WrapperLookup[ds] as DataSource;
                 }
+                else if (MetadataObject.Source is TOM.EntityPartitionSource)
+                {
+                    var ds = (MetadataObject.Source as TOM.EntityPartitionSource)?.DataSource;
+                    return ds == null ? null : Handler.WrapperLookup[ds] as DataSource;
+                }
                 else return null;
             }
             set
             {
-                if (MetadataObject.Source is TOM.QueryPartitionSource)
+                if (MetadataObject.Source is TOM.QueryPartitionSource qps)
                 {
-                    if (value == null) return;
-                    var oldValue = DataSource;
-                    if (oldValue == value) return;
-                    bool undoable = true;
-                    bool cancel = false;
-                    OnPropertyChanging("DataSource", value, ref undoable, ref cancel);
-                    if (cancel) return;
-                    (MetadataObject.Source as TOM.QueryPartitionSource).DataSource = value?.MetadataObject;
-                    if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "DataSource", oldValue, value));
-                    OnPropertyChanged("DataSource", oldValue, value);
+                    SetValue(DataSource, value, (v) => qps.DataSource = v?.MetadataObject);
+                }
+                else if (MetadataObject.Source is TOM.EntityPartitionSource eps)
+                {
+                    SetValue(DataSource, value, (v) => eps.DataSource = v?.MetadataObject);
                 }
             }
         }
@@ -229,101 +229,6 @@ namespace TabularEditor.TOMWrapper
                 default:
                     return false;
             }
-        }
-    }
-
-    public class MPartition: Partition
-    {
-        public override Partition Clone(string newName = null, Table newParent = null)
-        {
-            if (!Handler.PowerBIGovernance.AllowCreate(typeof(Partition)))
-            {
-                throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject, typeof(Partition).GetTypeName()));
-            }
-
-            Handler.BeginUpdate("Clone Partition");
-
-            // Create a clone of the underlying metadataobject:
-            var tom = MetadataObject.Clone() as TOM.Partition;
-
-
-            // Assign a new, unique name:
-            tom.Name = Parent.Partitions.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
-
-            // Create the TOM Wrapper object, representing the metadataobject
-            MPartition obj = CreateFromMetadata(newParent ?? Parent, tom);
-
-            Handler.EndUpdate();
-
-            return obj;
-        }
-
-        protected override void Init()
-        {
-            if (MetadataObject.Source == null && !(Parent is CalculatedTable))
-            {
-                if (Model.DataSources.Count == 0) StructuredDataSource.CreateNew(Model);
-                MetadataObject.Source = new TOM.MPartitionSource();
-            }
-            base.Init();
-        }
-
-        protected MPartition(TOM.Partition metadataObject) : base(metadataObject)
-        {
-        }
-
-        public new static MPartition CreateNew(Table parent, string name = null)
-        {
-            if (!parent.Handler.PowerBIGovernance.AllowCreate(typeof(MPartition)))
-            {
-                throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject, typeof(MPartition).GetTypeName()));
-            }
-
-            var metadataObject = new TOM.Partition();
-            metadataObject.Name = parent.Partitions.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(MPartition).GetTypeName() : name);
-            metadataObject.Source = new TOM.MPartitionSource();
-
-            var obj = new MPartition(metadataObject);
-
-            parent.Partitions.Add(obj);
-
-            obj.Init();
-
-            return obj;
-
-        }
-
-        internal new static MPartition CreateFromMetadata(Table parent, TOM.Partition metadataObject)
-        {
-            var obj = new MPartition(metadataObject);
-            parent.Partitions.Add(obj);
-
-            obj.Init();
-
-            return obj;
-        }
-
-        [Category("Basic"), DisplayName("M Expression"), Description("The Power Query (M) Expression used to populate the partition with data.")]
-        [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
-        public string MExpression { get => Expression; set => Expression = value; }
-
-        internal override bool IsBrowsable(string propertyName)
-        {
-            switch(propertyName)
-            {
-                case nameof(MExpression): return true;
-                case nameof(Expression): return false;
-            }
-            return base.IsBrowsable(propertyName);
-        }
-
-        internal override bool IsEditable(string propertyName)
-        {
-            switch(propertyName)
-            {
-                case nameof(MExpression): return true;
-            }
-            return base.IsEditable(propertyName);
         }
     }
 

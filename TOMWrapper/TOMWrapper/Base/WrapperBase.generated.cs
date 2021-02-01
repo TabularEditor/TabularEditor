@@ -243,6 +243,7 @@ namespace TabularEditor.TOMWrapper
             typeof(CalculationItem),
             typeof(TablePermission),
 	        typeof(MPartition),
+            typeof(EntityPartition),
 			typeof(CalculatedTable),
 			typeof(CalculationGroupTable)
         };
@@ -9972,6 +9973,7 @@ namespace TabularEditor.TOMWrapper
 		private Partition CreateFromMetadata(TOM.Partition obj)
 		{
 			if(obj.SourceType == TOM.PartitionSourceType.M) return MPartition.CreateFromMetadata(Table, obj);
+            else if(obj.SourceType == TOM.PartitionSourceType.Entity) return EntityPartition.CreateFromMetadata(Table, obj);
 			else return Partition.CreateFromMetadata(Table, obj);
 		    return null;
 		}
