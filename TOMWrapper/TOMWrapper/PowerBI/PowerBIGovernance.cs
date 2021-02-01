@@ -177,6 +177,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
             if (GovernanceMode == PowerBIGovernanceMode.Unrestricted) return true;
             else if (GovernanceMode == PowerBIGovernanceMode.ReadOnly) return false;
             else
+                if (obj is ITranslatableObject && this.handler.Tree.Culture != null) return true;
                 switch(obj.ObjectType)
                 {
                     // Only allow column renames when parent table is a calc group table in restricted mode:
@@ -188,7 +189,6 @@ namespace TabularEditor.TOMWrapper.PowerBI
                     case ObjectType.Culture:
                         return true;
                     default:
-                        if (obj is ITranslatableObject && this.handler.Tree.Culture != null) return true;
                         return false;
                 }
         }
