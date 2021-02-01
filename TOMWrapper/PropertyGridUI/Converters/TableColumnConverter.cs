@@ -36,6 +36,7 @@ namespace TabularEditor.PropertyGridUI
         {
             if (context.Instance is ITabularTableObject) return (context.Instance as ITabularTableObject).Table;
             if (context.Instance is ITabularNamedObject[]) return ((context.Instance as ITabularNamedObject[]).First() as Column)?.Table;
+            if (context.Instance is object[] objectArray) return (objectArray.First() as Column)?.Table;
             return null;
         }
 

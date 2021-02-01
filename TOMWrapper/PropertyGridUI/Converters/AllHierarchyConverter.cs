@@ -23,7 +23,9 @@ namespace TabularEditor.PropertyGridUI
         private Model GetModel(ITypeDescriptorContext context)
         {
             if (context.Instance is ITabularNamedObject[]) return (context.Instance as ITabularNamedObject[]).First().Model;
-            else return (context.Instance as ITabularNamedObject).Model;
+            else if (context.Instance is ITabularObject tabularObject) return tabularObject.Model;
+            else if (context.Instance is object[] objects && objects.First() is ITabularObject tabularObject2) return tabularObject2.Model;
+            else return TabularModelHandler.Singleton.Model;
         }
 
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
