@@ -353,6 +353,8 @@ YIELD:                                    'YIELD'                               
 YIELDDISC:                                'YIELDDISC'                              -> channel(KEYWORD_CHANNEL);
 YIELDMAT:                                 'YIELDMAT'                               -> channel(KEYWORD_CHANNEL);
 
+EXTERNALMEASURE:                          'EXTERNALMEASURE'                        -> channel(KEYWORD_CHANNEL);
+
 // Statements:
 DEFINE:                                  'DEFINE'                                  -> channel(KEYWORD_CHANNEL);
 EVALUATE:                                'EVALUATE'                                -> channel(KEYWORD_CHANNEL);
