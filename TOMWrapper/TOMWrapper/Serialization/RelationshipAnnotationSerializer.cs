@@ -14,20 +14,21 @@ namespace TabularEditor.TOMWrapper.Serialization
     {
         public static void StoreRelationshipsAsAnnotations(this Model model)
         {
+            bool hasRelationshipVariations = model.AllColumns.Any(v => v.Variations.Any(v2 => v2.Relationship != null));
             if(model.Relationships.OfType<SingleColumnRelationship>().Any(r => r.FromColumn == null || r.ToColumn == null))
             {
                 throw new SerializationException("One or more relationships are incomplete (FromColumn or ToColumn not set).");
             }
             
-            foreach (var table in model.Tables) StoreRelationshipsAsAnnotations(table);
+            foreach (var table in model.Tables) StoreRelationshipsAsAnnotations(table, hasRelationshipVariations);
         }
 
-        public static void StoreRelationshipsAsAnnotations(Table table)
+        public static void StoreRelationshipsAsAnnotations(Table table, bool hasRelationshipVariations)
         {
-            table.SetAnnotation(AnnotationHelper.ANN_RELATIONSHIPS, table.GetRelationshipsJson(json.Newtonsoft.Json.Formatting.Indented), false);
+            table.SetAnnotation(AnnotationHelper.ANN_RELATIONSHIPS, table.GetRelationshipsJson(json.Newtonsoft.Json.Formatting.Indented, hasRelationshipVariations), false);
         }
 
-        public static string GetRelationshipsJson(this Table table, json.Newtonsoft.Json.Formatting format)
+        public static string GetRelationshipsJson(this Table table, json.Newtonsoft.Json.Formatting format, bool hasRelationshipVariations)
         {
             JArray rels = new JArray();
             foreach (var rel in table.Model.Relationships.Where(r => r.FromTable == table)
@@ -35,7 +36,8 @@ namespace TabularEditor.TOMWrapper.Serialization
             {
                 var json = TOM.JsonSerializer.SerializeObject(rel.MetadataObject, new TOM.SerializeOptions() { IgnoreInferredObjects = true, IgnoreInferredProperties = true, IgnoreTimestamps = true });
                 var jObj = JObject.Parse(json);
-                jObj.Remove("name");
+                // Only remove relationship name if model does not use variations:
+                if(!hasRelationshipVariations) jObj.Remove("name");
                 rels.Add(jObj);
             }
             return rels.ToString(format);
