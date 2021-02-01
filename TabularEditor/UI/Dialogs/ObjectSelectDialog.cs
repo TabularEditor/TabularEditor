@@ -96,7 +96,9 @@ namespace TabularEditor.UI.Dialogs
     {
         public object Edit(object instance, string property, object value, out bool cancel)
         {
-            if (instance is Column instanceColumn)
+            var instanceColumn = instance as Column ?? (instance as object[]).First() as Column;
+
+            if (instanceColumn != null)
             {
                 switch (property)
                 {
