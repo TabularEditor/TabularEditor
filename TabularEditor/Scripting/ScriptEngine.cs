@@ -212,12 +212,12 @@ namespace TabularEditor.Scripting
 {
     public static class CustomActions 
     {
-        public static void CreateCustomActions(IList<TabularEditor.UI.Actions.IBaseAction> am)
+        public static void __CreateCustomActions(IList<TabularEditor.UI.Actions.IBaseAction> __am)
         {"
 );
             for (var ix = 0; ix < actions.Actions.Length; ix++)
             {
-                sb.Append(t3 + "am.Add(CustomAction");
+                sb.Append(t3 + "__am.Add(__CustomAction");
                 sb.Append(ix);
                 sb.AppendLine("());");
             }
@@ -226,10 +226,10 @@ namespace TabularEditor.Scripting
             sb.AppendLine(t2 + "}"); // End Method
             foreach (var act in actions.Actions)
             {
-                sb.Append(t2 + "private static TabularEditor.UI.Actions.CustomAction CustomAction");
+                sb.Append(t2 + "private static TabularEditor.UI.Actions.CustomAction __CustomAction");
                 sb.Append(i);
                 sb.AppendLine("() {");
-                sb.AppendLine(t3 + "var act = new TabularEditor.UI.Actions.CustomAction(");
+                sb.AppendLine(t3 + "var __act = new TabularEditor.UI.Actions.CustomAction(");
 
                 // EnabledDelegate:
                 sb.Append(t4 + "(Selected, Model) => ");
@@ -247,17 +247,17 @@ namespace TabularEditor.Scripting
 
                 if (!string.IsNullOrEmpty(act.Tooltip))
                 {
-                    sb.Append(t3 + "act.ToolTip = @\"");
+                    sb.Append(t3 + "__act.ToolTip = @\"");
                     sb.Append(act.Tooltip.Replace("\"", "\"\""));
                     sb.AppendLine("\";");
                 }
 
-                sb.Append(t3 + "act.ValidContexts = (Context)");
+                sb.Append(t3 + "__act.ValidContexts = (Context)");
                 sb.Append((int)act.ValidContexts);
                 sb.AppendLine(";");
 
                 sb.AppendLine();
-                sb.AppendLine("return act;");
+                sb.AppendLine("return __act;");
 
                 sb.AppendLine(t2 + "}");
                 i++;
@@ -300,7 +300,7 @@ namespace TabularEditor.Scripting
             {
                 var assembly = result.CompiledAssembly;
                 var type = assembly.GetType("TabularEditor.Scripting.CustomActions");
-                var method = type.GetMethod("CreateCustomActions");
+                var method = type.GetMethod("__CreateCustomActions");
                 AddCustomActions = (Action<IList<IBaseAction>>)Delegate.CreateDelegate(typeof(Action<IList<IBaseAction>>), method);
             }
 
