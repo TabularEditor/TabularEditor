@@ -32,6 +32,10 @@ namespace TabularEditor.TOMWrapper.Tests
         public void DuplicateTest()
         {
             var handler = new TabularModelHandler(Constants.ServerName, "TomWrapperTest");
+            var roleX = handler.Model.AddRole("Role X");
+            roleX.RowLevelSecurity["Date"] = "TRUE()";
+
+            roleX.Clone("Cloned role");
 
             var c = handler.Model.Tables["Date"].AddCalculatedColumn();
             c.Clone("Cloned Column");
