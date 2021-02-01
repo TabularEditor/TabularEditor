@@ -11267,7 +11267,7 @@ namespace TabularEditor.TOMWrapper
 ///             A string used to open the connection to the data source.
 ///             </summary>
 		[DisplayName("Connection String")]
-		[Category("Connection Details"),Description(@"A string used to open the connection to the data source."),IntelliSense(@"A string used to open the connection to the data source.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[Category("Connection Details"),Description(@"A string used to open the connection to the data source."),IntelliSense(@"A string used to open the connection to the data source.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)),TypeConverter(typeof(ConnectionStringConverter))]
 		public string ConnectionString {
 			get {
 			    return MetadataObject.ConnectionString;
