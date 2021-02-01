@@ -251,6 +251,9 @@ namespace TabularEditor.TOMWrapper.PowerBI
             
             switch(property)
             {
+                case nameof(EntityPartition.EntityName):
+                case nameof(EntityPartition.ExpressionSource):
+                case nameof(MPartition.MExpression):
                 case Properties.NAME:
                 case Properties.OBJECTTYPENAME:
                 case Properties.ISHIDDEN:

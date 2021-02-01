@@ -62,6 +62,7 @@ namespace TabularEditor.TOMWrapper
 <# foreach(var t in Rules.ObjectTypes.Keys.Where(obj => Rules.IsCreatable(obj))) { #>
             typeof(<#= t.Name #>),
 <# } #>	        typeof(MPartition),
+            typeof(EntityPartition),
 			typeof(CalculatedTable),
 			typeof(CalculationGroupTable)
         };
@@ -733,6 +734,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
             else return Table.CreateFromMetadata(Model, obj);
 <# } else if (t.Name == "Partition") { #>
 			if(obj.SourceType == TOM.PartitionSourceType.M) return MPartition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
+            else if(obj.SourceType == TOM.PartitionSourceType.Entity) return EntityPartition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
 			else return Partition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
 <# } else
 {

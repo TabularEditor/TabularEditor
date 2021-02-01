@@ -74,6 +74,9 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="PropertyGridUI\Converters\NamedExpressionConverter.cs" />
+    <Compile Include="TOMWrapper\EntityPartition.cs" />
+    <Compile Include="TOMWrapper\MPartition.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\ConnectionAddressPropertyCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\DataSourceOptionsPropertyCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\CredentialPropertyCollectionEditor.cs" />

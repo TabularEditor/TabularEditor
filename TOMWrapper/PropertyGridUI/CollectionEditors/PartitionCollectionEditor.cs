@@ -17,14 +17,27 @@ namespace TabularEditor.PropertyGridUI
 
         }
 
+        protected override CollectionForm CreateCollectionForm()
+        {
+            // HACK: By setting the private "newItemTypes" field of the CollectionEditor to null, we force the CreateNewItemTypes() method to be called upon every launch of the form:
+            var newItemTypesFieldInfo = typeof(CollectionEditor).GetField("newItemTypes", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            newItemTypesFieldInfo.SetValue(this, null);
+            return base.CreateCollectionForm();
+        }
+
         protected override Type[] CreateNewItemTypes()
         {
-            if (TabularModelHandler.Singleton.CompatibilityLevel >= 1400)
+            var cl = TabularModelHandler.Singleton.CompatibilityLevel;
+            if (cl >= 1400)
             {
                 if (TabularModelHandler.Singleton.Model.DataSources.Any(ds => ds.Type == DataSourceType.Provider))
-                    return new[] { typeof(Partition), typeof(MPartition) };
+                    return cl >= 1561 
+                        ? new[] { typeof(Partition), typeof(MPartition), typeof(EntityPartition) } 
+                        : new[] { typeof(Partition), typeof(MPartition) };
                 else
-                    return new[] { typeof(MPartition) };
+                    return cl >= 1561 
+                        ? new[] { typeof(MPartition), typeof(EntityPartition) } 
+                        : new[] { typeof(MPartition) };
             }
             else
                 return base.CreateNewItemTypes();
@@ -54,6 +67,10 @@ namespace TabularEditor.PropertyGridUI
             if(itemType == typeof(Partition))
             {
                 return Partition.CreateNew(table);
+            }
+            if (itemType == typeof(EntityPartition))
+            {
+                return EntityPartition.CreateNew(table);
             }
             return base.CreateInstance(itemType);
         }
