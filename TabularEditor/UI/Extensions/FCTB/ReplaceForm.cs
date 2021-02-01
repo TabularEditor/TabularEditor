@@ -90,7 +90,8 @@ namespace TabularEditor.UI.Extensions.FCTB
             //
             foreach (var r in range.GetRangesByLines(pattern, opt))
             {
-                tb.Selection = tb.GetRange(r.Start.iChar, r.End.iChar);
+                tb.Selection.Start = r.Start;
+                tb.Selection.End = r.End;
                 tb.DoSelectionVisible();
                 tb.Invalidate();
                 return true;
