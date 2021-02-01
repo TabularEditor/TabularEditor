@@ -459,8 +459,15 @@ namespace TabularEditor.UI.Dialogs
 
             foreach (var item in items)
             {
+                if (string.IsNullOrEmpty(item.Rule.FixExpression)) continue;
+
                 if (script != "") script += "\n";
-                script += item.Object.GetLinqPath() + "." + item.Rule.FixExpression + ";";
+                if(item.Rule.FixExpression.IndexOfAny(new[] { '{','}',';' }) >= 0)
+                {
+                    continue;
+                }
+                else
+                    script += item.Object.GetLinqPath() + "." + item.Rule.FixExpression + ";";
             }
 
             return script;
