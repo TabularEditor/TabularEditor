@@ -2,6 +2,7 @@
 using FastColoredTextBoxNS;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -161,7 +162,7 @@ namespace TabularEditor.UI
 
             Handler.Settings = Preferences.Current.GetSettings();
 
-            LastDeploymentDb = null;
+            LastDeploymentDb = Path.GetFileNameWithoutExtension(File_Current);
 
             UI.FormMain.actToggleFilter.Checked = false;
             //DisableLinqMode();
