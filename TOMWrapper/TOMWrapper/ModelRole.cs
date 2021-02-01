@@ -95,10 +95,10 @@ namespace TabularEditor.TOMWrapper
 
         protected override void Init()
         {
+            foreach (var tp in this.TablePermissions.ToList()) tp.DelayedInit();
+
             RowLevelSecurity = new RoleRLSIndexer(this);
             if (Handler.CompatibilityLevel >= 1400) MetadataPermission = new RoleOLSIndexer(this);
-
-
 
             base.Init();
         }

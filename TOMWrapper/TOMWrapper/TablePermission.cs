@@ -73,9 +73,16 @@ namespace TabularEditor.TOMWrapper
 
         protected override void Init()
         {
-            if (MetadataObject.Table == null) throw new InvalidOperationException($"Role '{Role.Name}' points to table '{Name}', which doesn't exist.");
-            ColumnPermissions = new RoleColumnOLSIndexer(this);
             if (!string.IsNullOrEmpty(ErrorMessage)) Handler._errors.Add(this);
+            if (MetadataObject.Model != null) DelayedInit();
+        }
+
+        public void DelayedInit()
+        {
+            if (MetadataObject.Table == null)
+                Delete();
+            else if(ColumnPermissions == null)
+                ColumnPermissions = new RoleColumnOLSIndexer(this);
         }
 
         [Browsable(true), DisplayName("OLS Column Permissions"), Category("Security")]
