@@ -13,17 +13,21 @@ namespace TabularEditor.TOMWrapper.PowerBI
     /// </summary>
     internal class PowerBIGovernance
     {
-        private readonly Version OLSSupport = new Version(2, 88, 0, 0);
+        private static readonly Version Base = new Version(1, 0, 0, 0);
+        private static readonly Version OLSSupport = new Version(2, 88, 0, 0);
+        private static readonly Version RoleModdingSupport = new Version(2, 90, 0, 0);
 
         // Defines a list of object types that can be removed/added from/to a Power BI data model:
-        private HashSet<Type> Manipulatable = new HashSet<Type>() {
-            typeof(Measure),
-            typeof(KPI),
-            typeof(CalculationGroup),
-            typeof(CalculationGroupTable),
-            typeof(CalculationItem),
-            typeof(Perspective),
-            typeof(Culture)
+        private Dictionary<Type, Version> Manipulatable = new Dictionary<Type,Version>() {
+            { typeof(Measure), Base },
+            { typeof(KPI), Base },
+            { typeof(CalculationGroup), Base },
+            { typeof(CalculationGroupTable), Base },
+            { typeof(CalculationItem), Base },
+            { typeof(Perspective), Base },
+            { typeof(Culture), Base },
+            { typeof(TablePermission), OLSSupport },
+            { typeof(ModelRole), RoleModdingSupport }
         };
 
         private readonly TabularModelHandler handler;
@@ -98,7 +102,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
         {
             if (GovernanceMode == PowerBIGovernanceMode.Unrestricted) return true;
             else if (GovernanceMode == PowerBIGovernanceMode.ReadOnly) return false;
-            else return Manipulatable.Contains(type);
+            else return Manipulatable.TryGetValue(type, out Version minVersion) && minVersion <= PBIDesktopVersion;
         }
 
         public bool AllowCreate(IEnumerable<ITabularObject> objects)
@@ -110,7 +114,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
         {
             if (GovernanceMode == PowerBIGovernanceMode.Unrestricted) return true;
             else if (GovernanceMode == PowerBIGovernanceMode.ReadOnly) return false;
-            else return Manipulatable.Contains(type);
+            else return Manipulatable.TryGetValue(type, out Version minVersion) && minVersion <= PBIDesktopVersion;
         }
 
         public bool AllowDelete(IEnumerable<ITabularObject> objects)
@@ -156,6 +160,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
                     case Properties.MODELPERMISSION:
                     case Properties.COLUMNPERMISSIONS:
                     case Properties.TABLEPERMISSIONS:
+                    case Properties.ROWLEVELSECURITY:
                         return PBIDesktopVersion >= OLSSupport ; // Conditional on Power BI version (must be December 2020 release or newer)
                 }
 
@@ -304,6 +309,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
                 case Properties.INPERSPECTIVE:
                 case Properties.CULTURE:
                 case Properties.OBJECTLEVELSECURITY:
+                case Properties.ROWLEVELSECURITY:
                 case Properties.METADATAPERMISSION:
                 case Properties.COLUMNPERMISSIONS:
                 case Properties.MODELPERMISSION:
