@@ -208,8 +208,8 @@ namespace TabularEditor.TOMWrapper
 
         public void UpdateDeploymentMetadata()
         {
-            if (Handler.CompatibilityLevel >= 1400) RemoveExtendedProperty(DM);
-            RemoveAnnotation(DM);
+            if (Handler.CompatibilityLevel >= 1400) RemoveExtendedProperty(DM, false);
+            RemoveAnnotation(DM, false);
             if (DeploymentMetadata == null) return;
 
             var json = JsonConvert.SerializeObject(DeploymentMetadata);
