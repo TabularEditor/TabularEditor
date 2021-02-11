@@ -46,7 +46,23 @@ namespace TabularEditor.UI.Dialogs
                     .Where(v => v.Has1(Context.SingularObjects))
                     .Select(v => Enum.GetName(typeof(Context),v)).ToArray()
                 );
+
+            chkListboxContexts.ColumnWidth = GetLargestItemWidth(chkListboxContexts) + 20;
             ValidateOK();
+        }
+
+        private int GetLargestItemWidth(CheckedListBox clb)
+        {
+            int result = 0;
+            foreach (string str in clb.Items)
+            {
+                int width = TextRenderer.MeasureText(str, clb.Font).Width;
+                if (width > result)
+                {
+                    result = width;
+                }
+            }
+            return result;
         }
 
         private void btnOK_Click(object sender, EventArgs e)
