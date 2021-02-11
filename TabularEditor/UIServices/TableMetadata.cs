@@ -151,11 +151,13 @@ namespace TabularEditor.UIServices
             return sourceSchema;
         }
 
-        const string TE_SKIPCHECK = "TabularEditor_SkipSkemaCheck";
-        const string TE_IGNOREADDED = "TabularEditor_IgnoreSourceColumnAdded";
-        const string TE_IGNORETYPES = "TabularEditor_IgnoreDataTypeChange";
-        const string TE_IGNOREREMOVED = "TabularEditor_IgnoreMissingSourceColumn";
-        const string TE_ADDFALSECRITERIA = "TabularEditor_AddFalseWhereClause";
+        public const string TE_NOWARN = "TabularEditor_SchemaCheckNoWarnings";
+        public const string TE_SKIPCHECK_TYPO = "TabularEditor_SkipSkemaCheck"; // For backwards compatibility because of a typo...
+        public const string TE_SKIPCHECK = "TabularEditor_SkipSchemaCheck";
+        public const string TE_IGNOREADDED = "TabularEditor_IgnoreSourceColumnAdded";
+        public const string TE_IGNORETYPES = "TabularEditor_IgnoreDataTypeChange";
+        public const string TE_IGNOREREMOVED = "TabularEditor_IgnoreMissingSourceColumn";
+        public const string TE_ADDFALSECRITERIA = "TabularEditor_AddFalseWhereClause";
 
         public static List<MetadataChange> GetChanges(Partition partition)
         {
@@ -163,7 +165,7 @@ namespace TabularEditor.UIServices
             var result = new List<MetadataChange>();
             var table = partition.Table;
 
-            if (table.CheckFlag(TE_SKIPCHECK)) return result;
+            if (table.CheckFlag(TE_SKIPCHECK) || table.CheckFlag(TE_SKIPCHECK_TYPO)) return result;
 
             var sourceSchema = GetSourceSchema(partition);
             if(sourceSchema == null)

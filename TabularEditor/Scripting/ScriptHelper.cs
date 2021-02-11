@@ -193,7 +193,9 @@ namespace TabularEditor.Scripting
                 foreach (var change in changes)
                 {
                     var msg = change.ToString();
-                    if (change.ChangeType == MetadataChangeType.SourceColumnNotFound || change.ChangeType == MetadataChangeType.SourceQueryError) Error(msg,-1,true);
+                    var changeShouldProduceError = change.ChangeType == MetadataChangeType.SourceColumnNotFound || change.ChangeType == MetadataChangeType.SourceQueryError;
+                    var noWarnings = model.CheckFlag(TableMetadata.TE_NOWARN);
+                    if (changeShouldProduceError || noWarnings) Error(msg,-1,true);
                     else Warning(msg,-1,true);
                 }
             }
