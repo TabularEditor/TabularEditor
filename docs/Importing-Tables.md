@@ -72,7 +72,7 @@ You can perform a schema check at the model level from the command line by using
 As of Tabular Editor 2.9.8, you can exclude objects from schema checks / metadata refresh. This is controlled by setting an annotation on the objects that you wish to leave out. As the annotation name, use the codes listed below. You can leave the annotation value blank or set it to "1", "true" or "yes". Setting the annotation value to "0", "false" or "no" will effectively disable the annotation, as if it didn't exist:
 
 **Table flags:**
-- `TabularEditor_SkipSkemaCheck`: Causes Tabular Editor to completely skip a schema check on this table.
+- `TabularEditor_SkipSchemaCheck`: Causes Tabular Editor to completely skip a schema check on this table.
 - `TabularEditor_IgnoreSourceColumnAdded`: Tabular Editor will ignore additional columns that are not mapped to any table columns on this table.
 - `TabularEditor_IgnoreDataTypeChange`: Tabular Editor will ignore mismatched data types on any column of the table.
 - `TabularEditor_IgnoreMissingSourceColumn`: Tabular Editor will ignore imported columns where the source column apparently does not exist in the source.
@@ -82,6 +82,14 @@ As of Tabular Editor 2.9.8, you can exclude objects from schema checks / metadat
 - `TabularEditor_IgnoreMissingSourceColumn`: Tabular Editor will ignore an apparently missing source column for this specific column.
 
 The flags impact schema checking through both the UI and the CLI.
+
+### Treating warnings as errors
+
+By default, the CLI will report an error when a partition query could not be executed, or when the imported table contains a column that does not match any column in the source query. The CLI will report a warning when a column's data type does not match the column in the source query, or if the source query contains columns that are not mapped to any columns in the imported table. The CLI will also report a warning when source queries of different partitions on the same table, do not return the same columns.
+
+Starting with Tabular Editor version 2.14.1, you can change the behaviour of the CLI such that all warnings as listed above are reported as errors. To do this, add the following annotation at the **model** level:
+
+- `TabularEditor_SchemaCheckNoWarnings`: Causes Tabular Editor to treat all schema check warnings as errors.
 
 ## Azure Active Directory with MFA
 
