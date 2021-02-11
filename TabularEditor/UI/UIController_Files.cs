@@ -321,12 +321,21 @@ namespace TabularEditor.UI
 
                         try
                         {
+                            var orgDbName = Handler.Database.Name;
+                            var orgDbId = Handler.Database.ID;
+                            if (LocalInstanceType == EmbeddedInstanceType.PowerBI && LocalInstanceName.StartsWith("localhost") && Guid.TryParse(orgDbName, out _))
+                            {
+                                Handler.Database.Name = LocalInstanceName.Split('.').Skip(1).FirstOrDefault()?.Replace(".","_") ?? Handler.Database.Name;
+                                //Handler.Database.ID = Handler.Database.Name;
+                            }
                             Handler.Save(dialog.FileName,
                                 saveFormat,
                                 serializationOptions,
                                 dialog.UseSerializationFromAnnotations,
                                 resetCheckPoint,
                                 restoreSerializationOptions);
+                            Handler.Database.Name = orgDbName;
+                            Handler.Database.Name = orgDbId;
 
                             RecentFiles.Add(dialog.FileName);
                             RecentFiles.Save();
