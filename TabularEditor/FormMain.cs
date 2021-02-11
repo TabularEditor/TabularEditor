@@ -166,6 +166,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             actToggleMeasures.Checked = Preferences.Current.View_Measures;
             actToggleColumns.Checked = Preferences.Current.View_Columns;
             actToggleHierarchies.Checked = Preferences.Current.View_Hierarchies;
+            actTogglePartitions.Checked = Preferences.Current.View_Partitions;
             actToggleAllObjectTypes.Checked = Preferences.Current.View_AllObjectTypes;
             actToggleOrderByName.Checked = !Preferences.Current.View_SortAlphabetically;
 
