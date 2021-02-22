@@ -1781,7 +1781,7 @@ namespace TabularEditor.TOMWrapper
 ///             For a DataColumn, specifies the data type. See <see href="https://msdn.microsoft.com/library/gg492146.aspx" /> for a list of supported data types.  
 ///             </summary>
 		[DisplayName("Data Type")]
-		[Category("Basic"),Description(@"For a DataColumn, specifies the data type. See <see href=""https://msdn.microsoft.com/library/gg492146.aspx for a list of supported data types."),IntelliSense(@"For a DataColumn, specifies the data type. See <see href=""https://msdn.microsoft.com/library/gg492146.aspx for a list of supported data types.")][TypeConverter(typeof(DataTypeEnumConverter))]
+		[Category("Basic"),Description(@"For a DataColumn, specifies the data type. See https://msdn.microsoft.com/library/gg492146.aspx for a list of supported data types."),IntelliSense(@"For a DataColumn, specifies the data type. See https://msdn.microsoft.com/library/gg492146.aspx for a list of supported data types.")][TypeConverter(typeof(DataTypeEnumConverter))]
 		public DataType DataType {
 			get {
 			    return (DataType)MetadataObject.DataType;
