@@ -17,6 +17,13 @@ namespace TabularEditor.TOMWrapper
     /// </summary>
     public class CalculationGroupTable : Table
     {
+        /// <summary>
+        /// Adds a calculation item with the given name and expression to the calculation group table.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        [IntelliSense("Adds a calculation item with the given name and expression to the calculation group table.")]
         public CalculationItem AddCalculationItem(string name = null, string expression = null)
         {
             var item = CalculationItem.CreateNew(CalculationGroup, string.IsNullOrEmpty(name) ? "New Calculation" : name);
