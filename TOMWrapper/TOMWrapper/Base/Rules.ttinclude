@@ -126,7 +126,7 @@ partial class Rules {
 			var doc = nodeReader.ReadInnerXml()
 				.Replace("<see cref=\"T:Microsoft.AnalysisServices.Tabular.", "")
 				.Replace("<see cref=\"P:Microsoft.AnalysisServices.Tabular.", "")
-				.Replace("\" />", "").Replace("\"","\"\"").Trim();
+				.Replace("\" />", "").Replace("\"","\"\"").Replace("<see href=\"\"", "").Trim();
 			if(doc == "Missing comment") return "The " + propertyName + " of this " + t.Name;
 			return doc;
         }
