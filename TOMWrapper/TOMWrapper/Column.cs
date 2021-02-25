@@ -223,11 +223,11 @@ namespace TabularEditor.TOMWrapper
         private List<CalculatedTableColumn> _originForCalculatedTableColumnsCache;
 
         /// <summary>
-        /// A collection of columns that make up a composite key for the current column.
+        /// A collection of columns that should be grouped together with this column when used in visuals (RelatedColumnDetails).
         /// </summary>
         [NoMultiselect(), Editor(typeof(ColumnSetCollectionEditor), typeof(UITypeEditor)), Category("Options"), DisplayName("Group By Columns")]
-        [IntelliSense("A collection of columns that make up a composite key for the current column.")]
-        [Description("A collection of columns that make up a composite key for the current column.")]
+        [IntelliSense("A collection of columns that should be grouped together with this column when used in visuals (RelatedColumnDetails).")]
+        [Description("A collection of columns that should be grouped together with this column when used in visuals (RelatedColumnDetails).")]
         public GroupingColumnCollection GroupByColumns { get; private set; }
 
         protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)

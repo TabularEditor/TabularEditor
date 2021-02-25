@@ -20,10 +20,10 @@ namespace TabularEditor.TOMWrapper
         }
 
         /// <summary>
-        /// Adds the specified column as a composite key column
+        /// Adds the specified column as a related column
         /// </summary>
         /// <param name="item"></param>
-        [IntelliSense("Adds the specified column as a composite key column")]
+        [IntelliSense("Adds the specified column as a related column")]
         public new void Add(Column item)
         {
             base.Add(item);
@@ -37,10 +37,10 @@ namespace TabularEditor.TOMWrapper
         }
 
         /// <summary>
-        /// Removes the specified column from the collection of composite key columns
+        /// Removes the specified column from the collection of related columns
         /// </summary>
         /// <param name="item"></param>
-        [IntelliSense("Adds the specified column as a composite key column")]
+        [IntelliSense("Removes the specified column from the collection of related columns")]
         public new bool Remove(Column item)
         {
             return base.Remove(item);
@@ -59,9 +59,9 @@ namespace TabularEditor.TOMWrapper
         }
 
         /// <summary>
-        /// Removes all columns from the collectino of composite key columns
+        /// Removes all columns from the collection of related columns
         /// </summary>
-        [IntelliSense("Removes all columns from the collectino of composite key columns")]
+        [IntelliSense("Removes all columns from the collection of related columns")]
         public new void Clear()
         {
             base.Clear();
