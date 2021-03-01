@@ -284,7 +284,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
         private bool ShouldSerializeLegacyRedirects() { return false; }
-        [Category("Data Access Options"), DisplayName("Return Error Values As Nulll")]
+        [Category("Data Access Options"), DisplayName("Return Error Values As Null")]
         public bool ReturnErrorValuesAsNull
         {
             get { return MetadataObject.DataAccessOptions?.ReturnErrorValuesAsNull ?? false; }
