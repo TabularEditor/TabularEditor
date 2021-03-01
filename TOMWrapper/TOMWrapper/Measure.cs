@@ -199,6 +199,12 @@ namespace TabularEditor.TOMWrapper
                         Handler.EndUpdate(); // This batch was started in OnPropertyChanging
                     }
                     break;
+                case Properties.FORMATSTRING:
+                    Handler.PowerBIGovernance.SuspendGovernance();
+                    RemoveAnnotation("Format", true);
+                    Handler.PowerBIGovernance.ResumeGovernance();
+                    Handler.EndUpdate();
+                    break;
             }
 
             base.OnPropertyChanged(propertyName, oldValue, newValue);
@@ -212,6 +218,9 @@ namespace TabularEditor.TOMWrapper
                     // When formula fixup is enabled, we need to begin a new batch of undo operations, as this
                     // name change could result in expression changes on multiple objects:
                     if (Handler.Settings.AutoFixup) Handler.BeginUpdate("Set Property 'Name'"); // This batch will be ended in the corresponding OnPropertyChanged
+                    break;
+                case Properties.FORMATSTRING:
+                    Handler.BeginUpdate("Set Property 'Format String'");
                     break;
             }
             base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
