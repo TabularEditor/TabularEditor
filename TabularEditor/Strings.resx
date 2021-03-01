@@ -168,13 +168,13 @@
 &lt;/DeploymentTarget&gt;</value>
   </data>
   <data name="ExportBuildSuccess" xml:space="preserve">
-    <value>Build files succesfully exported:
+    <value>Build files successfully exported:
 
 {0}
 
 Make sure to check the settings in the files before executing the Analysis Services Deployment Wizard.</value>
   </data>
   <data name="ExportBuildSuccessCaption" xml:space="preserve">
-    <value>Build files succesfully exported</value>
+    <value>Build files successfully exported</value>
   </data>
 </root>

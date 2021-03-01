@@ -129,7 +129,7 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
                             {
                                 Plugins.Add(plugin);
                                 pluginAssemblies.Add(pluginAssembly);
-                                Console.WriteLine("Succesfully loaded plugin " + pluginType.Name + " from assembly " + Path.GetFileName(dll));
+                                Console.WriteLine("Successfully loaded plugin " + pluginType.Name + " from assembly " + Path.GetFileName(dll));
                             }
                         }
                     }

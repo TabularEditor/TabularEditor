@@ -210,7 +210,7 @@ namespace TabularEditor.UI.Dialogs
 
         /// <summary>
         /// Call this method to validate the dynamic linq expression and rebuild the
-        /// visual builder tree. Returns true if the expression was succesfully
+        /// visual builder tree. Returns true if the expression was successfully
         /// validated - false otherwise.
         /// 
         /// This method also displays an info-panel at the top of the screen, in case
