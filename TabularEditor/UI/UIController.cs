@@ -240,7 +240,12 @@ namespace TabularEditor.UI
         private void Tree_UpdateComplete(object sender, EventArgs e)
         {
             UI.TreeView.Invalidate();
-            UI.PropertyGrid.Refresh();
+            if (UI.PropertyGrid.SelectedObjects.OfType<ITabularObject>().Any(to => to.IsRemoved))
+            {
+                UI.PropertyGrid.SelectedObject = null;
+            }
+            else
+                UI.PropertyGrid.Refresh();
 
             InvokeBPABackground();
 
