@@ -66,7 +66,7 @@ namespace TabularEditor.UI
             {
                 Actions.Add(new Separator());
                 ScriptEngine.AddCustomActions?.Invoke(Actions);
-                UI.StatusExLabel.Text = string.Format("Succesfully loaded {0} custom action{1}. Compilation took {2} seconds.",
+                UI.StatusExLabel.Text = string.Format("Successfully loaded {0} custom action{1}. Compilation took {2} seconds.",
                     ScriptEngine.CustomActionCount, ScriptEngine.CustomActionCount == 1 ? "" : "s", ScriptEngine.CustomActionCompiletime / 1000m);
             } else
             {

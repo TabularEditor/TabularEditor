@@ -134,7 +134,7 @@ namespace TabularEditor.UI
                 ScriptEditor_IsExecuting = true;
                 dyn.Invoke(Handler.Model, Selection);
                 var actionCount = Handler.EndUpdateAll();
-                UI.StatusExLabel.Text = string.Format("Script executed succesfully. {0} model change{1}.", actionCount, actionCount == 1 ? "" : "s");
+                UI.StatusExLabel.Text = string.Format("Script executed successfully. {0} model change{1}.", actionCount, actionCount == 1 ? "" : "s");
                 UI.TreeView.Focus();
             }
             catch (ScriptCancelledException)

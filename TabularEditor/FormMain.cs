@@ -430,7 +430,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                         lblStatus.Text = "Could not format DAX (invalid syntax).";
                         return;
                     }
-                    lblStatus.Text = "DAX formatted succesfully";
+                    lblStatus.Text = "DAX formatted successfully";
                     txtExpression.Text = (newline ? "\n" : "") + result.Substring(6).Trim();
                 }
                 catch (Exception ex)
