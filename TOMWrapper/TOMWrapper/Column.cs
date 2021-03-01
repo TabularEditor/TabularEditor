@@ -318,7 +318,7 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public string DaxTableName
         {
-            get { return Table.DaxTableName; }
+            get { return Table?.DaxTableName ?? ""; }
         }
 
     }
