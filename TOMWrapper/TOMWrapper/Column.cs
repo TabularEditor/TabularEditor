@@ -241,6 +241,12 @@ namespace TabularEditor.TOMWrapper
                 _originForCalculatedTableColumnsCache = OriginForCalculatedTableColumns.ToList();
                 if (Handler.Settings.AutoFixup || _originForCalculatedTableColumnsCache.Count > 0) Handler.BeginUpdate("Set Property 'Name'");
             }
+
+            if (propertyName == Properties.FORMATSTRING)
+            {
+                Handler.BeginUpdate("Set Property 'Format String'");
+            }
+
             base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
         }
 
@@ -279,6 +285,14 @@ namespace TabularEditor.TOMWrapper
                 if (rels.Count > 1) Handler.Tree.BeginUpdate();
                 rels.ForEach(r => r.UpdateName());
                 if (rels.Count > 1) Handler.Tree.EndUpdate();
+            }
+
+            if (propertyName == Properties.FORMATSTRING)
+            {
+                Handler.PowerBIGovernance.SuspendGovernance();
+                RemoveAnnotation("Format", true);
+                Handler.PowerBIGovernance.ResumeGovernance();
+                Handler.EndUpdate();
             }
 
             base.OnPropertyChanged(propertyName, oldValue, newValue);
