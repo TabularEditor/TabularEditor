@@ -314,7 +314,7 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Gets a string that may be used for referencing the table in a DAX expression.
         /// </summary>
-        [Browsable(true), Category("Metadata"), DisplayName("DAX identifier")]
+        [Browsable(true), Category("Metadata"), DisplayName("DAX Identifier")]
         public string DaxObjectFullName
         {
             get
