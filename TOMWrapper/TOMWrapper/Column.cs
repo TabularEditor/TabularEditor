@@ -297,7 +297,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        [Browsable(true), Category("Metadata"), DisplayName("DAX identifier")]
+        [Browsable(true), Category("Metadata"), DisplayName("DAX Identifier")]
         public string DaxObjectFullName
         {
             get
