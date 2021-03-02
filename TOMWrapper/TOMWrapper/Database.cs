@@ -22,6 +22,8 @@ namespace TabularEditor.TOMWrapper
     [TypeConverter(typeof(DynamicPropertyConverter))]
     public sealed class Database : ITabularObject, INotifyPropertyChanged, INotifyPropertyChanging, IDynamicPropertyObject
     {
+        public static readonly char[] InvalidNameCharacters = new[] { '.', ',', ';', '\'', '`', ':', '/', '\\', '*', '|', '?', '"', '&', '%', '$', '!', '+', '=', '(', ')', '[', ']', '{', '}', '<', '>' };
+
         [Browsable(false)]
         public TOM.Database TOMDatabase { get; private set; }
 

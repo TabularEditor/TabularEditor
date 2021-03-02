@@ -54,6 +54,8 @@ namespace TabularEditor.UI.Dialogs.Pages
             PowerBIInstancesLoaded = true;
         }
 
+        public LocalInstance LocalInstance => comboBox1.SelectedItem as LocalInstance;
+
         public Server GetServer()
         {
             var result = new Server();
@@ -117,7 +119,7 @@ namespace TabularEditor.UI.Dialogs.Pages
         {
             get
             {
-                var item = comboBox1.SelectedItem as PowerBIInstance;
+                var item = comboBox1.SelectedItem as LocalInstance;
                 if (item != null) return "localhost:" + item.Port;
                 return txtServer.Text;
             }
@@ -127,30 +129,15 @@ namespace TabularEditor.UI.Dialogs.Pages
             }
         }
 
-        public string LocalInstanceName
-        {
-            get
-            {
-                return GetLocalInstanceName(comboBox1.SelectedIndex);
-            }
-        }
-        public EmbeddedInstanceType LocalInstanceType
-        {
-            get
-            {
-                return (comboBox1.SelectedItem as PowerBIInstance)?.Icon ?? EmbeddedInstanceType.None;
-            }
-        }
-
         private string GetLocalInstanceName(int index)
         {
             if(index >= 0)
             {
-                var item = comboBox1.Items[index] as PowerBIInstance;
+                var item = comboBox1.Items[index] as LocalInstance;
                 if (item != null) return string.Format("{0}.{1}{2}",
                     "localhost:" + item.Port,
                     item.Name,
-                    item.Icon == EmbeddedInstanceType.PowerBI ? ".pbix" : "");
+                    item.Type == LocalInstanceType.PowerBI ? ".pbix" : "");
             }
             return null;
         }
@@ -180,9 +167,9 @@ namespace TabularEditor.UI.Dialogs.Pages
 
             if (e.Index >= 0)
             {
-                var item = comboBox1.Items[e.Index] as PowerBIInstance;
+                var item = comboBox1.Items[e.Index] as LocalInstance;
 
-                e.Graphics.DrawImage(imageList1.Images[(int)item.Icon - 1], e.Bounds.Left + 2, e.Bounds.Top + 2);
+                e.Graphics.DrawImage(imageList1.Images[(int)item.Type - 1], e.Bounds.Left + 2, e.Bounds.Top + 2);
 
                 e.Graphics.DrawString(GetLocalInstanceName(e.Index), e.Font, new SolidBrush(e.ForeColor), e.Bounds.Left + 24, e.Bounds.Top + 3);
             }

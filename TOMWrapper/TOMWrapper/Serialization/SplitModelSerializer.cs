@@ -53,12 +53,14 @@ namespace TabularEditor.TOMWrapper.Serialization
                 jobj["name"] = model.Database?.Name ?? "SemanticModel";
                 if (model.Database != null)
                 {
-                    if (model.Database.CompatibilityMode == CompatibilityMode.PowerBI && Guid.TryParse(model.Database.ID, out _))
-                    {
-                        if (jobj["id"] != null) jobj.Remove("id");
-                    }
-                    else if (!model.Database.Name.EqualsI(model.Database.ID)) jobj["id"] = model.Database.ID;
-                    else if (jobj["id"] != null) jobj.Remove("id");
+                    if (!model.Database.Name.EqualsI(model.Database.ID)) jobj["id"] = model.Database.ID;
+                    else if (jobj["id"] != null) jobj["id"].Remove();
+                }
+
+                if (options.DatabaseNameOverride != null)
+                {
+                    jobj["name"] = options.DatabaseNameOverride;
+                    if (jobj["id"] != null) jobj["id"].Remove();
                 }
 
                 var jModel = jobj["model"] as JObject;

@@ -223,7 +223,7 @@ namespace TabularEditor.UI
             var restoreSerializationOptions = connectedToDatabase;
 
             // The serialization options to use when saving (unless users check the "Use serialization settings from annotations" checkbox):
-            var serializationOptions = Preferences.Current.GetSerializeOptions();
+            var serializationOptions = Preferences.Current.GetSerializeOptions(LocalInstance?.Type == LocalInstanceType.PowerBI ? LocalInstance.Name : null);
 
             using (var dialog = SaveAsDialog.CreateFileDialog(showSfa, defaultFileName, allowPbit))
             {
@@ -305,7 +305,7 @@ namespace TabularEditor.UI
             var restoreSerializationOptions = connectedToDatabase;
 
             // The serialization options to use when saving (unless users check the "Use serialization settings from annotations" checkbox):
-            var serializationOptions = Preferences.Current.GetSerializeOptions();
+            var serializationOptions = Preferences.Current.GetSerializeOptions(LocalInstance?.Type == LocalInstanceType.PowerBI ? LocalInstance.Name : null);
 
             // Only show the "Use serialize options from annotations" checkbox when the current model has these annotations:
             var showSfa = Handler.HasSerializeOptions;
@@ -321,21 +321,12 @@ namespace TabularEditor.UI
 
                         try
                         {
-                            var orgDbName = Handler.Database.Name;
-                            var orgDbId = Handler.Database.ID;
-                            if (LocalInstanceType == EmbeddedInstanceType.PowerBI && LocalInstanceName.StartsWith("localhost") && Guid.TryParse(orgDbName, out _))
-                            {
-                                Handler.Database.Name = LocalInstanceName.Split('.').Skip(1).FirstOrDefault()?.Replace(".","_") ?? Handler.Database.Name;
-                                //Handler.Database.ID = Handler.Database.Name;
-                            }
                             Handler.Save(dialog.FileName,
                                 saveFormat,
                                 serializationOptions,
                                 dialog.UseSerializationFromAnnotations,
                                 resetCheckPoint,
                                 restoreSerializationOptions);
-                            Handler.Database.Name = orgDbName;
-                            Handler.Database.Name = orgDbId;
 
                             RecentFiles.Add(dialog.FileName);
                             RecentFiles.Save();

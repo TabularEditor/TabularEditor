@@ -87,5 +87,42 @@ namespace TabularEditor
             if (str == null || other == null) return str == other;
             return str.Equals(other, StringComparison.InvariantCultureIgnoreCase);
         }
+
+        public static string Replace(this string value, char[] find, char replace)
+        {
+            var sb = new StringBuilder();
+            foreach (var c in value)
+            {
+                if (find.Contains(c))
+                {
+                    sb.Append(replace);
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+            return sb.ToString();
+        }
+
+        public static string Replace(this string value, char[] find, char[] replace)
+        {
+            if (find.Length != replace.Length) throw new ArgumentException("The 'find' and 'replace' arrays have different lengths.");
+
+            var sb = new StringBuilder();
+            foreach (var c in value)
+            {
+                var ix = Array.IndexOf(find, c);
+                if (ix >= 0)
+                {
+                    sb.Append(replace[ix]);
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+            return sb.ToString();
+        }
     }
 }

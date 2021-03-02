@@ -37,6 +37,7 @@ namespace TabularEditor.UIServices
         public bool ChangeDetectionOnLocalServers = true;
         public string BackupLocation = string.Empty;
         public bool AnnotateDeploymentMetadata = false;
+        public bool UsePbixFileNameWhenSavingToDisk = true;
 
         // TODO: Handle backwards compatibility
         public bool IgnoreInferredObjects = true;
@@ -232,7 +233,7 @@ namespace TabularEditor.UIServices
             };
         }
 
-        static public SerializeOptions GetSerializeOptions(this Preferences value)
+        static public SerializeOptions GetSerializeOptions(this Preferences value, string powerBiDatabaseNameOverride = null)
         {
             var serializeOptions = new SerializeOptions()
             {
@@ -247,6 +248,7 @@ namespace TabularEditor.UIServices
             serializeOptions.LocalTranslations = value.SaveToFolder_LocalTranslations;
             serializeOptions.LocalRelationships = value.SaveToFolder_LocalRelationships;
             serializeOptions.Levels = new HashSet<string>(value.SaveToFolder_Levels);
+            if (value.UsePbixFileNameWhenSavingToDisk) serializeOptions.DatabaseNameOverride = powerBiDatabaseNameOverride;
 
             return serializeOptions;
         }

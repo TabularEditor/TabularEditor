@@ -16,8 +16,7 @@ namespace TabularEditor.UI.Dialogs
 
         public static string ConnectionString { get; private set; }
         public static Server Server { get; private set; }
-        public static string LocalInstanceName { get; private set; }
-        public static EmbeddedInstanceType LocalInstanceType { get; private set; }
+        public static LocalInstance LocalInstance { get; private set; }
 
         public static DialogResult Show(string caption = "Connect to Tabular Server")
         {
@@ -34,8 +33,7 @@ namespace TabularEditor.UI.Dialogs
             {
                 ConnectionString = connectPage.GetConnectionString();
                 Server = connectPage.GetServer();
-                LocalInstanceName = connectPage.LocalInstanceName;
-                LocalInstanceType = connectPage.LocalInstanceType;
+                LocalInstance = connectPage.LocalInstance;
                 if (Server == null) e.Cancel = true;
             }
         }

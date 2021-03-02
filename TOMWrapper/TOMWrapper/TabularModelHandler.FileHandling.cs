@@ -152,6 +152,7 @@ namespace TabularEditor.TOMWrapper
 
         public void Save(string path, SaveFormat format, SerializeOptions options, bool useAnnotatedSerializeOptions = false, bool resetCheckpoint = false, bool restoreSerializationOptions = true)
         {
+            var overrideDatabaseName = options?.DatabaseNameOverride;
             _disableUpdates = true;
             bool hasOptions = HasSerializeOptions;
             SerializeOptions optionsBackup = SerializeOptions.Default;
@@ -170,6 +171,8 @@ namespace TabularEditor.TOMWrapper
                 optionsBackup = SerializeOptions;
                 SetSerializeOptions(options, false);
             }
+
+            options.DatabaseNameOverride = overrideDatabaseName?.Replace(TOMWrapper.Database.InvalidNameCharacters, '_');
 
             try
             {
@@ -236,6 +239,12 @@ namespace TabularEditor.TOMWrapper
             {
                 if (!Model.Database.Name.EqualsI(Model.Database.ID)) jObject["id"] = Model.Database.ID;
                 else if (jObject["id"] != null) jObject["id"].Remove();
+            }
+
+            if (options.DatabaseNameOverride != null)
+            {
+                jObject["name"] = options.DatabaseNameOverride;
+                if (jObject["id"] != null) jObject["id"].Remove();
             }
 
             dbcontent = jObject.ToString(Formatting.Indented);

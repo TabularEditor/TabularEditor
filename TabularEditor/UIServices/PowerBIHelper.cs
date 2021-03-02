@@ -81,18 +81,18 @@ using System.Net;
 
 namespace TabularEditor.UIServices
 {
-    public enum EmbeddedInstanceType
+    public enum LocalInstanceType
     {
         None = 0,
         Devenv = 1,
         PowerBI = 2
     }
-    public class PowerBIInstance
+    public class LocalInstance
     {
-        public PowerBIInstance(string name, int port, EmbeddedInstanceType icon)
+        public LocalInstance(string name, int port, LocalInstanceType icon)
         {
             Port = port;
-            Icon = icon;
+            Type = icon;
             try
             {
                 var dashPos = name.LastIndexOf(" - ");
@@ -113,13 +113,13 @@ namespace TabularEditor.UIServices
         public int Port { get; private set; }
         public string Name { get; private set; }
 
-        public EmbeddedInstanceType Icon { get; private set; }
+        public LocalInstanceType Type { get; private set; }
     }
 
     public class PowerBIHelper
     {
 
-        private static List<PowerBIInstance> _instances = new List<PowerBIInstance>();
+        private static List<LocalInstance> _instances = new List<LocalInstance>();
         private static bool _portSet = false;
 
         public static void Refresh()
@@ -131,14 +131,14 @@ namespace TabularEditor.UIServices
             foreach (var proc in Process.GetProcessesByName("msmdsrv"))
             {
                 int _port = 0;
-                EmbeddedInstanceType _icon = EmbeddedInstanceType.PowerBI;
+                LocalInstanceType _icon = LocalInstanceType.PowerBI;
                 var parent = proc.GetParent();
 
                 // exit here if the parent == "services" then this is a SSAS instance
                 if (parent.ProcessName.Equals("services", StringComparison.OrdinalIgnoreCase)) continue;
 
                 // if the process was launched from Visual Studio change the icon
-                if (parent.ProcessName == "devenv") _icon = EmbeddedInstanceType.Devenv;
+                if (parent.ProcessName == "devenv") _icon = LocalInstanceType.Devenv;
 
                 // get the window title so that we can parse out the file name
                 var parentTitle = parent.MainWindowTitle;
@@ -156,7 +156,7 @@ namespace TabularEditor.UIServices
                     {
                         _port = tcpRow.LocalEndPoint.Port;
                         _portSet = true;
-                        _instances.Add(new PowerBIInstance(parentTitle, _port, _icon));
+                        _instances.Add(new LocalInstance(parentTitle, _port, _icon));
                         //Log.Debug("{class} {method} PowerBI found on port: {port}", "PowerBIHelper", "Refresh", _port);
                     }
                     else
@@ -174,7 +174,7 @@ namespace TabularEditor.UIServices
 
 
 
-        public static List<PowerBIInstance> Instances
+        public static List<LocalInstance> Instances
         {
             get
             {

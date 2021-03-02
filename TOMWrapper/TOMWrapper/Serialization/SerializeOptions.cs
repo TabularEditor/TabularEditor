@@ -1,4 +1,7 @@
-﻿using System;
+﻿extern alias json;
+
+using json::Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace TabularEditor.TOMWrapper.Serialization
 {
-    public class SerializeOptions: IEquatable<SerializeOptions>
+    public class SerializeOptions
     {
         public SerializeOptions Clone()
         {
@@ -64,6 +67,9 @@ namespace TabularEditor.TOMWrapper.Serialization
         public bool LocalTranslations = false;
         public bool LocalPerspectives = false;
         public bool LocalRelationships = false;
+
+        [JsonIgnore]
+        public string DatabaseNameOverride = null;
 
         public HashSet<string> Levels = new HashSet<string>();
 

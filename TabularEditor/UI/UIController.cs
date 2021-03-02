@@ -383,7 +383,7 @@ namespace TabularEditor.UI
             {
                 UI.FormMain.Text = string.Format("{0}{1} - {2}",
                     Handler.IsConnected ? (
-                        string.IsNullOrEmpty(LocalInstanceName) ? Handler.Source : LocalInstanceName
+                        LocalInstance?.Type == LocalInstanceType.PowerBI ? $"{LocalInstance.Name}.pbix (localhost:{LocalInstance.Port})" : Handler.Source
                         ) : (File_Current ?? "(Unsaved model)"),
                     Handler.HasUnsavedChanges ? "*" : "", appName);
 
