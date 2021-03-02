@@ -75,8 +75,7 @@ namespace TabularEditor.UI
             }
         }
 
-        public string LocalInstanceName { get; private set; }
-        public EmbeddedInstanceType LocalInstanceType { get; private set; }
+        public LocalInstance LocalInstance { get; private set; }
 
         public void Database_Connect()
         {
@@ -84,22 +83,21 @@ namespace TabularEditor.UI
 
             if (ConnectForm.Show() == DialogResult.Cancel) return;
 
-            switch(ConnectForm.LocalInstanceType)
+            switch(ConnectForm.LocalInstance?.Type ?? LocalInstanceType.None)
             {
-                case EmbeddedInstanceType.None:
+                case LocalInstanceType.None:
                     if (SelectDatabaseForm.Show(ConnectForm.Server) == DialogResult.Cancel) return;
                     break;
-                case EmbeddedInstanceType.Devenv:
+                case LocalInstanceType.Devenv:
                     MessageBox.Show("You are connecting to an integrated workspace in Visual Studio.\n\nChanges made through Tabular Editor may not be properly persisted to the Tabular Project in Visual Studio and may corrupt your model file.\n\nMake sure to keep a backup of the Model.bim file and proceed at your own risk.", "Connecting to embedded model", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     break;
             }
 
             UI.StatusLabel.Text = "Opening Model from Database...";
             ClearUI();
-            UpdateUIText();
 
-            Database_Open(ConnectForm.ConnectionString,
-                string.IsNullOrEmpty(ConnectForm.LocalInstanceName) ? SelectDatabaseForm.DatabaseName : null);
+            Database_Open(ConnectForm.ConnectionString, ConnectForm.LocalInstance?.Type == LocalInstanceType.PowerBI ? null : SelectDatabaseForm.DatabaseName);
+            UpdateUIText();
         }
 
         private System.Windows.Forms.Timer KeepAliveTimer;
@@ -130,9 +128,13 @@ namespace TabularEditor.UI
                     File_Current = null;
                     File_Directory = null;
                     File_SaveMode = ModelSourceType.Database;
+                    if(Handler.IsPbiDesktop && ConnectForm.LocalInstance == null)
+                    {
+                        LocalInstance = PowerBIHelper.Instances.FirstOrDefault(i => i.Port.ToString() == Handler.Database.Server.ConnectionInfo.Port);
+                    }
+                    else
+                        LocalInstance = ConnectForm.LocalInstance;
                     LoadTabularModelToUI();
-                    LocalInstanceName = ConnectForm.LocalInstanceName;
-                    LocalInstanceType = ConnectForm.LocalInstanceType;
 
                     Handler.OnExternalChange += Handler_OnExternalChange;
                     if (oldHandler != null) oldHandler.OnExternalChange -= Handler_OnExternalChange;
