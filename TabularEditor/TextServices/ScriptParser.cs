@@ -269,6 +269,11 @@ namespace TabularEditor.TextServices
                     var assignmentEnd = FindNext(list, i, CSharpLexer.SEMICOLON);
                     if (assignmentEnd != -1)
                     {
+                        if(assignmentEnd > 2 && list[assignmentEnd - 2].Type == CSharpLexer.AS && list[assignmentEnd - 1].Type == CSharpLexer.IDENTIFIER && Classes.TryGetValue(list[assignmentEnd - 1].Text, out Type result))
+                        {
+                            return result;
+                        }
+
                         var propPath = GetPropPathFrom(list[assignmentEnd].StopIndex+1, list);
                         return GetPropPathType(propPath, list);
                     }
