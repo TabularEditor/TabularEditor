@@ -5875,7 +5875,7 @@ namespace TabularEditor.TOMWrapper
 ///             A reference ID to the referenced source column.
 ///             </summary>
 		[DisplayName("Base Column")]
-		[Category("Options"),Description(@"A reference ID to the referenced source column."),IntelliSense(@"A reference ID to the referenced source column.")][TypeConverter(typeof(AllColumnConverter))]
+		[Category("Options"),Description(@"A reference ID to the referenced source column."),IntelliSense(@"A reference ID to the referenced source column.")][TypeConverter(typeof(AllOtherTablesColumnConverter))]
 		public Column BaseColumn {
 			get {
 				if (MetadataObject.BaseColumn == null) return null;
@@ -5900,7 +5900,7 @@ namespace TabularEditor.TOMWrapper
 ///             A reference ID to the referenced source table. You may either define BaseTable or BaseColumn, but not both.
 ///             </summary>
 		[DisplayName("Base Table")]
-		[Category("Options"),Description(@"A reference ID to the referenced source table. You may either define BaseTable or BaseColumn, but not both."),IntelliSense(@"A reference ID to the referenced source table. You may either define BaseTable or BaseColumn, but not both.")]
+		[Category("Options"),Description(@"A reference ID to the referenced source table. You may either define BaseTable or BaseColumn, but not both."),IntelliSense(@"A reference ID to the referenced source table. You may either define BaseTable or BaseColumn, but not both.")][TypeConverter(typeof(OtherTablesConverter))]
 		public Table BaseTable {
 			get {
 				if (MetadataObject.BaseTable == null) return null;
