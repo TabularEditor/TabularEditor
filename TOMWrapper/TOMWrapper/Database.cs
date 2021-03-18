@@ -381,6 +381,12 @@ namespace TabularEditor.TOMWrapper
             {
                 var s = TOMDatabase?.Server;
                 if (s == null) return null;
+                if(s.CompatibilityMode == Microsoft.AnalysisServices.CompatibilityMode.PowerBI)
+                {
+                    var productName = s.ServerLocation == ServerLocation.OnPremise ? "Power BI Desktop" : "Power BI Service";
+                    return $"{productName} (AS build {s.Version})";
+                        
+                }
                 return string.Format("{0} ({1}) {2}",s.ProductName, s.ProductLevel, s.Version);
             }
         }
