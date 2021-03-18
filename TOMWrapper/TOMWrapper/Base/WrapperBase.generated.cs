@@ -1760,6 +1760,7 @@ namespace TabularEditor.TOMWrapper
 			, ITabularTableObject
 			, IDescriptionObject
 			, IFormattableObject
+			, ILineageTagObject
 			, IInternalAnnotationObject
 			, IInternalExtendedPropertyObject
 			, IInternalTabularPerspectiveObject
@@ -3015,18 +3016,6 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("EncodingHint"));
 				this.ToList().ForEach(item => { item.EncodingHint = value; });
-				Handler.UndoManager.EndBatch();
-			}
-		}
-		/// <summary>
-		/// Sets the LineageTag property of all objects in the collection at once.
-		/// </summary>
-		[Description("Sets the LineageTag property of all objects in the collection at once.")]
-		public string LineageTag {
-			set {
-				if(Handler == null) return;
-				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("LineageTag"));
-				this.ToList().ForEach(item => { item.LineageTag = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}
@@ -4360,6 +4349,7 @@ namespace TabularEditor.TOMWrapper
 			, IHideableObject
 			, ITabularTableObject
 			, IDescriptionObject
+			, ILineageTagObject
 			, IInternalAnnotationObject
 			, IInternalExtendedPropertyObject
 			, IInternalTabularPerspectiveObject
@@ -4822,6 +4812,13 @@ namespace TabularEditor.TOMWrapper
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
 		internal static Hierarchy CreateFromMetadata(Table parent, TOM.Hierarchy metadataObject) {
+            // Generate a new LineageTag if an object with the provided lineage tag already exists:
+            if(!string.IsNullOrEmpty(metadataObject.LineageTag)) {
+                if (parent.Handler.CompatibilityLevel < 1540) metadataObject.LineageTag = null;
+                else if (parent.MetadataObject.Hierarchies.FindByLineageTag(metadataObject.LineageTag) != metadataObject) {
+                    metadataObject.LineageTag = Guid.NewGuid().ToString();
+                }
+            }
 			var obj = new Hierarchy(metadataObject);
 			parent.Hierarchies.Add(obj);
 			
@@ -4842,6 +4839,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.Hierarchy();
+            if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
 			metadataObject.Name = parent.Hierarchies.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Hierarchy).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Hierarchy(metadataObject);
@@ -4870,6 +4868,10 @@ namespace TabularEditor.TOMWrapper
 			// Create a clone of the underlying metadataobject:
 			var tom = MetadataObject.Clone() as TOM.Hierarchy;
 
+            if(Model.Database.CompatibilityLevel >= 1540 && !string.IsNullOrEmpty(LineageTag)) {
+                tom.LineageTag = Guid.NewGuid().ToString();
+                foreach(var l in tom.Levels) l.LineageTag = Guid.NewGuid().ToString();
+            }
 
 			// Assign a new, unique name:
 			tom.Name = Parent.Hierarchies.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
@@ -5107,18 +5109,6 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("HideMembers"));
 				this.ToList().ForEach(item => { item.HideMembers = value; });
-				Handler.UndoManager.EndBatch();
-			}
-		}
-		/// <summary>
-		/// Sets the LineageTag property of all objects in the collection at once.
-		/// </summary>
-		[Description("Sets the LineageTag property of all objects in the collection at once.")]
-		public string LineageTag {
-			set {
-				if(Handler == null) return;
-				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("LineageTag"));
-				this.ToList().ForEach(item => { item.LineageTag = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}
@@ -5983,6 +5973,7 @@ namespace TabularEditor.TOMWrapper
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Level: TabularNamedObject
 			, IDescriptionObject
+			, ILineageTagObject
 			, IInternalAnnotationObject
 			, IInternalExtendedPropertyObject
 			, IInternalTranslatableObject
@@ -6394,6 +6385,13 @@ namespace TabularEditor.TOMWrapper
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
 		internal static Level CreateFromMetadata(Hierarchy parent, TOM.Level metadataObject) {
+            // Generate a new LineageTag if an object with the provided lineage tag already exists:
+            if(!string.IsNullOrEmpty(metadataObject.LineageTag)) {
+                if (parent.Handler.CompatibilityLevel < 1540) metadataObject.LineageTag = null;
+                else if (parent.MetadataObject.Levels.FindByLineageTag(metadataObject.LineageTag) != metadataObject) {
+                    metadataObject.LineageTag = Guid.NewGuid().ToString();
+                }
+            }
 			var obj = new Level(metadataObject);
 			parent.Levels.Add(obj);
 			
@@ -6414,6 +6412,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.Level();
+            if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
 			metadataObject.Name = parent.Levels.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Level).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Level(metadataObject);
@@ -6442,6 +6441,9 @@ namespace TabularEditor.TOMWrapper
 			// Create a clone of the underlying metadataobject:
 			var tom = MetadataObject.Clone() as TOM.Level;
 
+            if(Model.Database.CompatibilityLevel >= 1540 && !string.IsNullOrEmpty(LineageTag)) {
+                tom.LineageTag = Guid.NewGuid().ToString();
+            }
 
 			// Assign a new, unique name:
 			tom.Name = Parent.Levels.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
@@ -6608,18 +6610,6 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		/// <summary>
-		/// Sets the LineageTag property of all objects in the collection at once.
-		/// </summary>
-		[Description("Sets the LineageTag property of all objects in the collection at once.")]
-		public string LineageTag {
-			set {
-				if(Handler == null) return;
-				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("LineageTag"));
-				this.ToList().ForEach(item => { item.LineageTag = value; });
-				Handler.UndoManager.EndBatch();
-			}
-		}
-		/// <summary>
 		/// Sets the SourceLineageTag property of all objects in the collection at once.
 		/// </summary>
 		[Description("Sets the SourceLineageTag property of all objects in the collection at once.")]
@@ -6645,6 +6635,7 @@ namespace TabularEditor.TOMWrapper
 			, IDescriptionObject
 			, IExpressionObject
 			, IFormattableObject
+			, ILineageTagObject
 			, IInternalAnnotationObject
 			, IInternalExtendedPropertyObject
 			, IInternalTabularPerspectiveObject
@@ -7191,6 +7182,13 @@ namespace TabularEditor.TOMWrapper
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
 		internal static Measure CreateFromMetadata(Table parent, TOM.Measure metadataObject) {
+            // Generate a new LineageTag if an object with the provided lineage tag already exists:
+            if(!string.IsNullOrEmpty(metadataObject.LineageTag)) {
+                if (parent.Handler.CompatibilityLevel < 1540) metadataObject.LineageTag = null;
+                else if (parent.MetadataObject.Measures.FindByLineageTag(metadataObject.LineageTag) != metadataObject) {
+                    metadataObject.LineageTag = Guid.NewGuid().ToString();
+                }
+            }
 			var obj = new Measure(metadataObject);
 			parent.Measures.Add(obj);
 			
@@ -7211,6 +7209,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.Measure();
+            if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
 			metadataObject.Name = parent.Measures.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Measure).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Measure(metadataObject);
@@ -7239,6 +7238,9 @@ namespace TabularEditor.TOMWrapper
 			// Create a clone of the underlying metadataobject:
 			var tom = MetadataObject.Clone() as TOM.Measure;
 
+            if(Model.Database.CompatibilityLevel >= 1540 && !string.IsNullOrEmpty(LineageTag)) {
+                tom.LineageTag = Guid.NewGuid().ToString();
+            }
 
 			// Assign a new, unique name:
 			tom.Name = Parent.Measures.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
@@ -7493,18 +7495,6 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("DataCategory"));
 				this.ToList().ForEach(item => { item.DataCategory = value; });
-				Handler.UndoManager.EndBatch();
-			}
-		}
-		/// <summary>
-		/// Sets the LineageTag property of all objects in the collection at once.
-		/// </summary>
-		[Description("Sets the LineageTag property of all objects in the collection at once.")]
-		public string LineageTag {
-			set {
-				if(Handler == null) return;
-				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("LineageTag"));
-				this.ToList().ForEach(item => { item.LineageTag = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}
@@ -12430,6 +12420,7 @@ namespace TabularEditor.TOMWrapper
 	public partial class Table: TabularNamedObject
 			, IHideableObject
 			, IDescriptionObject
+			, ILineageTagObject
 			, IInternalAnnotationObject
 			, IInternalExtendedPropertyObject
 			, IInternalTabularPerspectiveObject
@@ -12955,6 +12946,13 @@ namespace TabularEditor.TOMWrapper
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
 		internal static Table CreateFromMetadata(Model parent, TOM.Table metadataObject) {
+            // Generate a new LineageTag if an object with the provided lineage tag already exists:
+            if(!string.IsNullOrEmpty(metadataObject.LineageTag)) {
+                if (parent.Handler.CompatibilityLevel < 1540) metadataObject.LineageTag = null;
+                else if (parent.MetadataObject.Tables.FindByLineageTag(metadataObject.LineageTag) != metadataObject) {
+                    metadataObject.LineageTag = Guid.NewGuid().ToString();
+                }
+            }
 			var obj = new Table(metadataObject);
 			parent.Tables.Add(obj);
 			
@@ -12975,6 +12973,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.Table();
+            if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
 			metadataObject.Name = parent.Tables.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Table).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Table(metadataObject);
@@ -13014,6 +13013,17 @@ namespace TabularEditor.TOMWrapper
 
 			// Make sure that measures on the table are renamed:
 			foreach(var m in tom.Measures) m.Name = tom.Measures.GetNewName(m.Name);
+
+            // Make sure new lineage tags are generated:
+            if(Model.Database.CompatibilityLevel >= 1540 && !string.IsNullOrEmpty(LineageTag)) {
+                tom.LineageTag = Guid.NewGuid().ToString();
+                foreach(var m in tom.Measures) m.LineageTag = Guid.NewGuid().ToString();
+                foreach(var c in tom.Columns) c.LineageTag = Guid.NewGuid().ToString();
+                foreach(var h in tom.Hierarchies) {
+                    h.LineageTag = Guid.NewGuid().ToString();
+                    foreach(var l in h.Levels) l.LineageTag = Guid.NewGuid().ToString();
+                }
+            }
 
 			// Assign a new, unique name:
 			tom.Name = Parent.Tables.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
@@ -13361,18 +13371,6 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		/// <summary>
-		/// Sets the LineageTag property of all objects in the collection at once.
-		/// </summary>
-		[Description("Sets the LineageTag property of all objects in the collection at once.")]
-		public string LineageTag {
-			set {
-				if(Handler == null) return;
-				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("LineageTag"));
-				this.ToList().ForEach(item => { item.LineageTag = value; });
-				Handler.UndoManager.EndBatch();
-			}
-		}
-		/// <summary>
 		/// Sets the SourceLineageTag property of all objects in the collection at once.
 		/// </summary>
 		[Description("Sets the SourceLineageTag property of all objects in the collection at once.")]
@@ -13540,6 +13538,7 @@ namespace TabularEditor.TOMWrapper
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class NamedExpression: TabularNamedObject
 			, IDescriptionObject
+			, ILineageTagObject
 			, IInternalAnnotationObject
 			, IInternalExtendedPropertyObject
 			, IClonableObject
@@ -13974,6 +13973,13 @@ namespace TabularEditor.TOMWrapper
 		private bool ShouldSerializeParameterValuesColumn() { return false; }
 
 		internal static NamedExpression CreateFromMetadata(Model parent, TOM.NamedExpression metadataObject) {
+            // Generate a new LineageTag if an object with the provided lineage tag already exists:
+            if(!string.IsNullOrEmpty(metadataObject.LineageTag)) {
+                if (parent.Handler.CompatibilityLevel < 1540) metadataObject.LineageTag = null;
+                else if (parent.MetadataObject.Expressions.FindByLineageTag(metadataObject.LineageTag) != metadataObject) {
+                    metadataObject.LineageTag = Guid.NewGuid().ToString();
+                }
+            }
 			var obj = new NamedExpression(metadataObject);
 			parent.Expressions.Add(obj);
 			
@@ -13994,6 +14000,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.NamedExpression();
+            if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
 			metadataObject.Name = parent.Expressions.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(NamedExpression).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new NamedExpression(metadataObject);
@@ -14031,6 +14038,9 @@ namespace TabularEditor.TOMWrapper
 			// Create a clone of the underlying metadataobject:
 			var tom = MetadataObject.Clone() as TOM.NamedExpression;
 
+            if(Model.Database.CompatibilityLevel >= 1540 && !string.IsNullOrEmpty(LineageTag)) {
+                tom.LineageTag = Guid.NewGuid().ToString();
+            }
 
 			// Assign a new, unique name:
 			tom.Name = Parent.Expressions.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
@@ -14222,18 +14232,6 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("MAttributes"));
 				this.ToList().ForEach(item => { item.MAttributes = value; });
-				Handler.UndoManager.EndBatch();
-			}
-		}
-		/// <summary>
-		/// Sets the LineageTag property of all objects in the collection at once.
-		/// </summary>
-		[Description("Sets the LineageTag property of all objects in the collection at once.")]
-		public string LineageTag {
-			set {
-				if(Handler == null) return;
-				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("LineageTag"));
-				this.ToList().ForEach(item => { item.LineageTag = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}
