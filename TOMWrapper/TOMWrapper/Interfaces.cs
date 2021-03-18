@@ -28,6 +28,11 @@ namespace TabularEditor.TOMWrapper
         void ReapplyReferences();
     }
 
+    public interface ILineageTagObject: ITabularNamedObject
+    {
+        string LineageTag { get; set; }
+    }
+
     /// <summary>
     /// Objects whose name and description properties can be translated
     /// </summary>
