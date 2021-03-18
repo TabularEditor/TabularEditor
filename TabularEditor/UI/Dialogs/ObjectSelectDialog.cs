@@ -106,7 +106,7 @@ namespace TabularEditor.UI.Dialogs
                         Prep(instanceColumn.Table.Columns.Where(c => c != instanceColumn), value as Column, "Select column:");
                         break;
                     case TOMWrapper.Properties.GROUPBYCOLUMNS:
-                        Prep(instanceColumn.Table.Columns.Except(value as IEnumerable<Column>), null, "Select column:");
+                        Prep(value == null ? instanceColumn.Table.Columns : instanceColumn.Table.Columns.Except((value as object[]).Cast<Column>()), null, "Select column:");
                         break;
                 }
             }
