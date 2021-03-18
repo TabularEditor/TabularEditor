@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -9,9 +10,22 @@ using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.PropertyGridUI
 {
+    internal class AllOtherTablesColumnConverter: AllColumnConverter
+    {
+        public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
+        {
+            var table = GetTable(context);
+            return new StandardValuesCollection(table.Model.Tables.Where(t => t != table).SelectMany(t => t.Columns).OrderBy(c => c.DaxObjectFullName).ToList());
+        }
+    }
+
     internal class AllColumnConverter : TypeConverter
     {
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
+        {
+            return true;
+        }
+        public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
         {
             return true;
         }
@@ -22,10 +36,19 @@ namespace TabularEditor.PropertyGridUI
 
         private Model GetModel(ITypeDescriptorContext context)
         {
+            if (context.Instance is AlternateOf ao) return ao.Model;
             if (context.Instance is ITabularObject[]) return (context.Instance as ITabularObject[]).First().Model;
             else if (context.Instance is ITabularObject tabularObject) return tabularObject.Model;
             else if (context.Instance is object[] objects && objects.First() is ITabularObject tabularObject2) return tabularObject2.Model;
             else return TabularModelHandler.Singleton.Model;
+        }
+        protected Table GetTable(ITypeDescriptorContext context)
+        {
+            if (context.Instance is AlternateOf ao) return ao.Column.Table;
+            if (context.Instance is ITabularTableObject) return (context.Instance as ITabularTableObject).Table;
+            if (context.Instance is ITabularNamedObject[]) return ((context.Instance as ITabularNamedObject[]).First() as Column)?.Table;
+            if (context.Instance is object[] objectArray) return (objectArray.First() as Column)?.Table;
+            return null;
         }
 
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)

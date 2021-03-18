@@ -404,7 +404,8 @@ partial class Rules {
     {
 	    if(className == "Variation" && propertyName == "Column") return "[TypeConverter(typeof(TableColumnConverter)),ReadOnly(true)]";
 		if(propertyName == "ParameterValuesColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
-		if(propertyName == "BaseColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
+		if(propertyName == "BaseColumn") return "[TypeConverter(typeof(AllOtherTablesColumnConverter))]";
+		if(propertyName == "BaseTable") return "[TypeConverter(typeof(OtherTablesConverter))]";
 		if(propertyName == "SortByColumn") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(ColumnConverter))]";
 		if(propertyName == "DefaultColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
 		if(propertyName == "DefaultHierarchy") return "[TypeConverter(typeof(AllHierarchyConverter))]";
