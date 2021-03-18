@@ -102,14 +102,18 @@ namespace TabularEditor.UI.Actions
             // and one for script to file.
             if (parent.Items[0] is ToolStripLabel) return;
 
-            var modes = GetValidRefreshTypes(currentContext).Select(m => m.ToString()).ToArray();
+            var modes = GetValidRefreshTypes(currentContext).ToList();
 
-            if (modes.Length > 1)
+            if (modes.Count > 1)
             {
                 var cmb = new ToolStripComboBox();
                 cmb.DropDownStyle = ComboBoxStyle.DropDownList;
-                cmb.Items.AddRange(modes);
-                cmb.SelectedIndex = 4;
+                cmb.Items.AddRange(modes.Select(m => m.ToString()).ToArray());
+                var currentMode = modes.IndexOf(refreshType);
+                if (currentMode < 0) currentMode = modes.IndexOf(RefreshType.Automatic);
+                if (currentMode < 0) currentMode = 0;
+                refreshType = modes[currentMode];
+                cmb.SelectedIndex = currentMode < 0 ? 0 : currentMode;
                 cmb.SelectedIndexChanged += (s, e) => {
                     Enum.TryParse(cmb.Text, out refreshType);
                 };
