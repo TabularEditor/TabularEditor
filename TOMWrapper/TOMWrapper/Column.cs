@@ -199,7 +199,6 @@ namespace TabularEditor.TOMWrapper
             {
                 Variations = new VariationCollection("Variations", MetadataObject.Variations, this);
                 ObjectLevelSecurity = new ColumnOLSIndexer(this);
-                if(Handler.PbiMode) GroupByColumns = new GroupingColumnCollection(this);
             }
 
             if(Handler.CompatibilityLevel >= 1460)
@@ -221,6 +220,8 @@ namespace TabularEditor.TOMWrapper
         }
 
         private List<CalculatedTableColumn> _originForCalculatedTableColumnsCache;
+        
+        private GroupingColumnCollection _groupByColumns;
 
         /// <summary>
         /// A collection of columns that should be grouped together with this column when used in visuals (RelatedColumnDetails).
@@ -228,7 +229,18 @@ namespace TabularEditor.TOMWrapper
         [NoMultiselect(), Editor(typeof(ColumnSetCollectionEditor), typeof(UITypeEditor)), Category("Options"), DisplayName("Group By Columns")]
         [IntelliSense("A collection of columns that should be grouped together with this column when used in visuals (RelatedColumnDetails).")]
         [Description("A collection of columns that should be grouped together with this column when used in visuals (RelatedColumnDetails).")]
-        public GroupingColumnCollection GroupByColumns { get; private set; }
+        public GroupingColumnCollection GroupByColumns
+        {
+            get
+            {
+                if (Handler.PbiMode && Handler.CompatibilityLevel >= 1400)
+                {
+                    if (_groupByColumns == null) _groupByColumns = new GroupingColumnCollection(this);
+                    return _groupByColumns;
+                }
+                return null;
+            }
+        }
 
         protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
         {

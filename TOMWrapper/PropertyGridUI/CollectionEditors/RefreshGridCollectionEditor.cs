@@ -23,8 +23,7 @@ namespace TabularEditor.PropertyGridUI
         bool cancelled = false;
         protected bool Cancelled => cancelled;
         Type itemType = null;
-
-
+        protected List<object> CurrentItems { get; private set; }
 
         public RefreshGridCollectionEditor(Type type) : base(typeof(IList))
         {
@@ -87,9 +86,29 @@ namespace TabularEditor.PropertyGridUI
             return col;
         }
 
+        protected override void DestroyInstance(object instance)
+        {
+            this.CurrentItems.Remove(instance);
+            base.DestroyInstance(instance);
+        }
+
+        protected override object CreateInstance(Type itemType)
+        {
+            var instance = CreateCustomInstance(itemType);
+            this.CurrentItems.Add(instance);
+            return instance;
+        }
+
+        protected virtual object CreateCustomInstance(Type itemType)
+        {
+            return base.CreateInstance(itemType);
+        }
+
         protected override object[] GetItems(object editValue)
         {
-            return (editValue as ITabularObjectCollection).Cast<object>().ToArray();
+            var items = (editValue as ITabularObjectCollection).Cast<object>();
+            this.CurrentItems = items.ToList();
+            return items.ToArray();
         }
 
         protected override Type CreateCollectionItemType()

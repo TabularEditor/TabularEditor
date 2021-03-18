@@ -16,9 +16,9 @@ namespace TabularEditor.PropertyGridUI
     {
         public ColumnSetCollectionEditor(Type type) : base(type) { }
 
-        protected override object AddObject(out bool cancel)
+        protected override object AddObject(object[] currentItems, out bool cancel)
         {
-            return CustomEditors.Edit(Context.Instance, Properties.GROUPBYCOLUMNS, (Context.Instance as Column).GroupByColumns, out cancel);
+            return CustomEditors.Edit(Context.Instance, Properties.GROUPBYCOLUMNS, currentItems, out cancel);
         }
     }
 
@@ -26,28 +26,60 @@ namespace TabularEditor.PropertyGridUI
     {
         public CancellableAddCollectionEditor(Type type) : base(type) { }
 
-        Delegate orgClickHandler;
+        Delegate orgAddClickHandler;
+        Delegate orgRemoveClickHandler;
+        CollectionForm form;
 
         protected override CollectionForm CreateCollectionForm()
         {
-            var form = base.CreateCollectionForm();
-            var addButton = form.Controls.Find("addButton", true).First() as Button;
-            orgClickHandler = DisableEvents(addButton, "Click")[0];
+            form = base.CreateCollectionForm();
+            var addButton = form.Controls.Find("addButton", true).First();
+            orgAddClickHandler = DisableEvents(addButton, "Click")[0];
             addButton.Click += OverrideAddButtonClick;
+
+            var removeButton = form.Controls.Find("removeButton", true).First();
+            orgRemoveClickHandler = DisableEvents(removeButton, "Click")[0];
+            removeButton.Click += OverrideRemoveButtonClick;
             return form;
         }
 
-        protected abstract object AddObject(out bool cancel);
+        protected abstract object AddObject(object[] currentItems, out bool cancel);
 
         private object newObject;
         private void OverrideAddButtonClick(object sender, EventArgs e)
         {
-            newObject = AddObject(out bool cancel);
+            var selectedItems = AddObject(CurrentItems.ToArray(), out bool cancel);
             if (cancel) return;
-            orgClickHandler.DynamicInvoke(sender, e);
+            if (selectedItems is object[] multipleItems)
+            {
+                foreach (var item in multipleItems)
+                {
+                    newObject = item;
+                    orgAddClickHandler.DynamicInvoke(sender, e);
+                }
+            }
+            else
+            {
+                newObject = selectedItems;
+                orgAddClickHandler.DynamicInvoke(sender, e);
+            }
         }
 
-        protected override object CreateInstance(Type itemType)
+        private void OverrideRemoveButtonClick(object sender, EventArgs e)
+        {
+            var selectedItems = (form.Controls.Find("listbox", true)[0] as ListBox).SelectedItems;
+            if (selectedItems.Count > 0)
+            {
+                var listItemType = selectedItems[0].GetType();
+                var valueProp = listItemType.GetProperty("Value");
+                var actualItems = selectedItems.OfType<object>().Select(o => valueProp.GetValue(o)).ToList();
+                foreach (var item in actualItems) CurrentItems.Remove(item);
+            }
+
+            orgRemoveClickHandler.DynamicInvoke(sender, e);
+        }
+
+        protected override object CreateCustomInstance(Type itemType)
         {
             return newObject;
         }
