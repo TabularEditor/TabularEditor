@@ -105,8 +105,9 @@ namespace TabularEditor.PropertyGridUI
         protected Table Table(ITypeDescriptorContext context)
         {
             if (context.Instance is ITabularTableObject) return (context.Instance as ITabularTableObject).Table;
-            if (context.Instance is ITabularNamedObject[]) return ((context.Instance as ITabularNamedObject[]).First() as Column)?.Table;
-            if (context.Instance is object[] objectArray) return (objectArray.First() as Column)?.Table;
+            if (context.Instance is ITabularObject[] tabularObjects) return (tabularObjects.First() as Column)?.Table;
+            if (context.Instance is ITabularNamedObject[] tabularObjects2) return (tabularObjects2.First() as Column)?.Table;
+            if (context.Instance is object[] tabularObjects3) return (tabularObjects3.First() as Column)?.Table;
             return null;
         }
 
