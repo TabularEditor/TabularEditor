@@ -37,10 +37,10 @@ namespace TabularEditor.PropertyGridUI
         private Model GetModel(ITypeDescriptorContext context)
         {
             if (context.Instance is AlternateOf ao) return ao.Model;
-            if (context.Instance is ITabularObject[]) return (context.Instance as ITabularObject[]).First().Model;
-            else if (context.Instance is ITabularObject tabularObject) return tabularObject.Model;
-            else if (context.Instance is object[] objects && objects.First() is ITabularObject tabularObject2) return tabularObject2.Model;
-            else return TabularModelHandler.Singleton.Model;
+            else if (context.Instance is ITabularObject[] tabularObjects) return tabularObjects.First().Model;
+            else if (context.Instance is ITabularNamedObject[] tabularObjects2) return tabularObjects2.First().Model;
+            else if (context.Instance is object[] tabularObjects3) return (tabularObjects3.First() as ITabularObject).Model;
+            else return (context.Instance as ITabularObject).Model;
         }
         protected Table GetTable(ITypeDescriptorContext context)
         {
