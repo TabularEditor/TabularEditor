@@ -9,11 +9,12 @@ using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.PropertyGridUI
 {
-    public class AlternateOfEditor: UITypeEditor
+    public class AlternateOfEditor : UITypeEditor
     {
         public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
         {
             var column = context.Instance as Column;
+            if (column == null) return UITypeEditorEditStyle.None;
             return column.AlternateOf == null ? UITypeEditorEditStyle.Modal : UITypeEditorEditStyle.None;
         }
 
@@ -28,6 +29,7 @@ namespace TabularEditor.PropertyGridUI
         public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
         {
             var measure = context.Instance as Measure;
+            if (measure == null) return UITypeEditorEditStyle.None;
             return measure.KPI == null ? UITypeEditorEditStyle.Modal : UITypeEditorEditStyle.None;
         }
 
