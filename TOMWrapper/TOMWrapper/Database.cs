@@ -385,9 +385,16 @@ namespace TabularEditor.TOMWrapper
                 {
                     var productName = s.ServerLocation == ServerLocation.OnPremise ? "Power BI Desktop" : "Power BI Service";
                     return $"{productName} (AS build {s.Version})";
-                        
+
                 }
-                return string.Format("{0} ({1}) {2}",s.ProductName, s.ProductLevel, s.Version);
+                if (!string.IsNullOrEmpty(s.ProductLevel))
+                {
+                    return $"{s.ProductName} {s.ProductLevel} (AS build {s.Version})";
+                }
+                else
+                {
+                    return $"{s.ProductName} (AS build {s.Version})";
+                }
             }
         }
 
