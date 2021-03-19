@@ -11,15 +11,11 @@ namespace TOMWrapperTest
         {
             var propertyGrid = new PropertyGrid();
             propertyGrid.SelectedObject = obj;
-            return GetPropertyDescriptors(propertyGrid);
-        }
 
-        public static FluentPropertyGridTest GetPropertyDescriptors(this PropertyGrid propertyGrid)
-        {
             var item = propertyGrid.SelectedGridItem;
             while(item.Parent != null) { item = item.Parent; }
 
-            var result = new FluentPropertyGridTest();
+            var result = new FluentPropertyGridTest(obj);
 
             var itemStack = new Stack<GridItem>();
             itemStack.Push(item);
@@ -32,8 +28,14 @@ namespace TOMWrapperTest
                 {
                     itemStack.Push(subItem);
                 }
-                if(item.PropertyDescriptor != null)
+                if (item.PropertyDescriptor != null)
+                {
                     result.Add(item.GetPath(), item.PropertyDescriptor);
+                }
+                else
+                {
+                    result.Categories.Add(item.Label, item.GridItems.OfType<GridItem>().Where(gi => gi.PropertyDescriptor != null).Select(gi => gi.PropertyDescriptor.Name).ToList());
+                }
             }
 
             return result;

@@ -2,11 +2,22 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using TabularEditor.TOMWrapper;
+using System;
 
 namespace TOMWrapperTest
 {
     public class FluentPropertyGridTest: Dictionary<string, PropertyDescriptor>
     {
+        public Dictionary<string, List<string>> Categories { get; private set; } = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+
+        public ITabularNamedObject Target { get; }
+
+        public FluentPropertyGridTest(ITabularNamedObject target)
+        {
+            this.Target = target;
+        }
+
         public FluentPropertyGridTest Assert(string propertyPath, bool? readOnly = null, string displayName = null, string errorMessage = null)
         {
             UT.Assert.IsTrue(this.ContainsKey(propertyPath), $"Property '{propertyPath}' is not browsable but it should be.");
@@ -73,6 +84,21 @@ namespace TOMWrapperTest
         public FluentPropertyGridTest IsHidden(string propertyPath, string errorMessage = null)
         {
             UT.Assert.IsFalse(this.ContainsKey(propertyPath) && this[propertyPath].IsBrowsable, errorMessage ?? $"Property '{propertyPath}' is browsable, but it shouldn't be.");
+            return this;
+        }
+
+        public FluentPropertyGridTest HasCategory(string categoryName)
+        {
+            UT.Assert.IsTrue(this.Categories.ContainsKey(categoryName), $"Expected category '{categoryName}' but '{Target}/{Target.Name}' does not have any properties under this category.");
+            return this;
+        }
+
+        public FluentPropertyGridTest NotHasCategory(string categoryName)
+        {
+            if(this.Categories.ContainsKey(categoryName))
+            {
+                UT.Assert.Fail($"Expected category '{categoryName}' to not exist on '{Target}/{Target.Name}', but the category exists with the following properties:\n\n" + string.Join("\n", this.Categories[categoryName]));
+            }
             return this;
         }
     }

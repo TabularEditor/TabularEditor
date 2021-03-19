@@ -59,9 +59,10 @@ namespace TabularEditor.TOMWrapper
     {
         bool ITabularNamedObject.CanEditName() { return false; }
 
+        private string _name;
 
-        [ReadOnly(true)]
-        public string Name { get; set; }
+        [ReadOnly(true), Category("Basic")]
+        public string Name { get => _name; set { } }
         public TranslationIndexer TranslatedNames { get { return null; } }
         public ObjectType ObjectType { get { return ObjectType.Group; } }
         public Model Model { get { return TabularModelHandler.Singleton.Model; } }
@@ -103,13 +104,13 @@ namespace TabularEditor.TOMWrapper
             throw new NotSupportedException();
         }
 
-        [Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<Perspective>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]
+        [Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<Perspective>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter)), Category("Basic")]
         public PerspectiveCollection Perspectives { get { return Model.Perspectives; } }
 
-        [Editor(typeof(TabularEditor.PropertyGridUI.CultureCollectionEditor), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]
+        [Editor(typeof(TabularEditor.PropertyGridUI.CultureCollectionEditor), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter)), Category("Basic")]
         public CultureCollection Cultures { get { return Model.Cultures; } }
 
-        [Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<ModelRole>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]
+        [Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<ModelRole>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter)), Category("Basic")]
         public ModelRoleCollection Roles { get { return Model.Roles; } }
 
         public bool Browsable(string propertyName)
@@ -138,7 +139,7 @@ namespace TabularEditor.TOMWrapper
 
         internal LogicalGroup(string name)
         {
-            Name = name;
+            this._name = name;
         }
     }
 }
