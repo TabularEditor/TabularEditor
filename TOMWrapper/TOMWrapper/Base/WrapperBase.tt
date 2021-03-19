@@ -114,8 +114,21 @@ namespace TabularEditor.TOMWrapper
 	foreach(PropertyInfo p in props) 
 	{   
 	    if (p.Name == "ExtendedProperties") { #>
+        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
 		///<summary>The collection of Extended Properties on the current <#=Rules.SplitCamelCase(t.Name)#>.</summary>
         [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current <#=Rules.SplitCamelCase(t.Name)#>."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -247,8 +260,21 @@ namespace TabularEditor.TOMWrapper
 		<# }
 
 		if (p.Name == "Annotations") { #>
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
 		///<summary>The collection of Annotations on the current <#=Rules.SplitCamelCase(t.Name)#>.</summary>
         [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current <#=Rules.SplitCamelCase(t.Name)#>."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]

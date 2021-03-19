@@ -127,8 +127,7 @@ namespace TabularEditor.TOMWrapper
 
         Table ITabularTableObject.Table => Parent.Table;
     }
-
-    [TypeConverter(typeof(DynamicPropertyNonExpandableConverter))]
+    
     public partial class CalculationItemCollection : ITabularNamedObject, ITabularObjectContainer, ITabularTableObject, IDynamicPropertyObject
     {
         [ReadOnly(true)]

@@ -523,8 +523,21 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
 		///<summary>The collection of Annotations on the current Variation.</summary>
         [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Variation."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -640,8 +653,21 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
 
-				///<summary>The collection of Extended Properties on the current Variation.</summary>
+		        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Extended Properties on the current Variation.</summary>
         [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Variation."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -1802,8 +1828,21 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDataType() { return false; }
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
 		///<summary>The collection of Annotations on the current Column.</summary>
         [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Column."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -1919,8 +1958,21 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
 
-				///<summary>The collection of Extended Properties on the current Column.</summary>
+		        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Extended Properties on the current Column.</summary>
         [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Column."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -3066,8 +3118,21 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
 		///<summary>The collection of Annotations on the current Culture.</summary>
         [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Culture."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -3183,8 +3248,21 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
 
-				///<summary>The collection of Extended Properties on the current Culture.</summary>
+		        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Extended Properties on the current Culture.</summary>
         [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Culture."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -3701,8 +3779,21 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
 		///<summary>The collection of Annotations on the current Data Source.</summary>
         [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Data Source."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -3818,8 +3909,21 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
 
-				///<summary>The collection of Extended Properties on the current Data Source.</summary>
+		        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Extended Properties on the current Data Source.</summary>
         [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Data Source."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -4368,8 +4472,21 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
 		///<summary>The collection of Annotations on the current Hierarchy.</summary>
         [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Hierarchy."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -4485,8 +4602,21 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
 
-				///<summary>The collection of Extended Properties on the current Hierarchy.</summary>
+		        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Extended Properties on the current Hierarchy.</summary>
         [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Hierarchy."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -5147,8 +5277,21 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
 		///<summary>The collection of Annotations on the current KPI.</summary>
         [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current KPI."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -5264,8 +5407,21 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
 
-				///<summary>The collection of Extended Properties on the current KPI.</summary>
+		        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Extended Properties on the current KPI.</summary>
         [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current KPI."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -5717,8 +5873,21 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
 		///<summary>The collection of Annotations on the current Alternate Of.</summary>
         [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Alternate Of."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -5991,8 +6160,21 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
 		///<summary>The collection of Annotations on the current Level.</summary>
         [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Level."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -6108,8 +6290,21 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
 
-				///<summary>The collection of Extended Properties on the current Level.</summary>
+		        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Extended Properties on the current Level.</summary>
         [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Level."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -6654,8 +6849,21 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
 		///<summary>The collection of Annotations on the current Measure.</summary>
         [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Measure."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -6771,8 +6979,21 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
 
-				///<summary>The collection of Extended Properties on the current Measure.</summary>
+		        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Extended Properties on the current Measure.</summary>
         [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Measure."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -7548,8 +7769,21 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeHasLocalChanges() { return false; }
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
 		///<summary>The collection of Annotations on the current Model.</summary>
         [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Model."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -7665,8 +7899,21 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
 
-				///<summary>The collection of Extended Properties on the current Model.</summary>
+		        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Extended Properties on the current Model.</summary>
         [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Model."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -8365,8 +8612,21 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
 		///<summary>The collection of Annotations on the current Model Role.</summary>
         [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Model Role."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -8482,8 +8742,21 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
 
-				///<summary>The collection of Extended Properties on the current Model Role.</summary>
+		        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Extended Properties on the current Model Role.</summary>
         [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Model Role."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -8937,8 +9210,21 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
 		///<summary>The collection of Annotations on the current Model Role Member.</summary>
         [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Model Role Member."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -9054,8 +9340,21 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
 
-				///<summary>The collection of Extended Properties on the current Model Role Member.</summary>
+		        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Extended Properties on the current Model Role Member.</summary>
         [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Model Role Member."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -9429,8 +9728,21 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeSourceType() { return false; }
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
 		///<summary>The collection of Annotations on the current Partition.</summary>
         [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Partition."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -9546,8 +9858,21 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
 
-				///<summary>The collection of Extended Properties on the current Partition.</summary>
+		        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Extended Properties on the current Partition.</summary>
         [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Partition."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -10045,8 +10370,21 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
 		///<summary>The collection of Annotations on the current Set.</summary>
         [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Set."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -10162,8 +10500,21 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
 
-				///<summary>The collection of Extended Properties on the current Set.</summary>
+		        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Extended Properties on the current Set.</summary>
         [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Set."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -10729,8 +11080,21 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
 		///<summary>The collection of Annotations on the current Perspective.</summary>
         [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Perspective."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -10846,8 +11210,21 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
 
-				///<summary>The collection of Extended Properties on the current Perspective.</summary>
+		        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Extended Properties on the current Perspective.</summary>
         [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Perspective."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -11594,8 +11971,21 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeFromTable() { return false; }
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
 		///<summary>The collection of Annotations on the current Relationship.</summary>
         [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Relationship."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -11711,8 +12101,21 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
 
-				///<summary>The collection of Extended Properties on the current Relationship.</summary>
+		        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Extended Properties on the current Relationship.</summary>
         [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Relationship."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -12439,8 +12842,21 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
 		///<summary>The collection of Annotations on the current Table.</summary>
         [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Table."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -12556,8 +12972,21 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
 
-				///<summary>The collection of Extended Properties on the current Table.</summary>
+		        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Extended Properties on the current Table.</summary>
         [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Table."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -13555,8 +13984,21 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
 		///<summary>The collection of Annotations on the current Named Expression.</summary>
         [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Named Expression."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -13672,8 +14114,21 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
 
-				///<summary>The collection of Extended Properties on the current Named Expression.</summary>
+		        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Extended Properties on the current Named Expression.</summary>
         [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Named Expression."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
@@ -14281,8 +14736,21 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
 		///<summary>The collection of Annotations on the current Calculation Group.</summary>
         [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Calculation Group."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -14865,8 +15333,21 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
 		///<summary>The collection of Annotations on the current Table Permission.</summary>
         [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Table Permission."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
 		public AnnotationCollection Annotations { get; private set; }
 		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
 		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
@@ -14982,8 +15463,21 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
 
-				///<summary>The collection of Extended Properties on the current Table Permission.</summary>
+		        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Extended Properties on the current Table Permission.</summary>
         [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Table Permission."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
 		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
 
 		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>

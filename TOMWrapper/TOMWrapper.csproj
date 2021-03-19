@@ -24,6 +24,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>LocateDeadCode.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -74,8 +75,10 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="PropertyGridUI\AlternateOfEditor.cs" />
     <Compile Include="PropertyGridUI\Converters\ConnectionStringConverter.cs" />
     <Compile Include="PropertyGridUI\Converters\NamedExpressionConverter.cs" />
+    <Compile Include="PropertyGridUI\PropertyActionAttribute.cs" />
     <Compile Include="TOMWrapper\EntityPartition.cs" />
     <Compile Include="TOMWrapper\MPartition.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\ConnectionAddressPropertyCollectionEditor.cs" />

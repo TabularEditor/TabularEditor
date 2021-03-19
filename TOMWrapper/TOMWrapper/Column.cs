@@ -150,10 +150,35 @@ namespace TabularEditor.TOMWrapper
         {
             if (this.AlternateOf == null) this.AlternateOf = AlternateOf.CreateNew();
 
-            if(column != null) this.AlternateOf.BaseColumn = column;
+            if (summarization == SummarizationType.Count)
+            {
+                if (column != null) this.AlternateOf.BaseTable = column.Table;
+            }
+            else
+            {
+                if (column != null) this.AlternateOf.BaseColumn = column;
+            }
             this.AlternateOf.Summarization = summarization;
             return this.AlternateOf;
         }
+
+        [DisplayName("Remove Alternate Of")]
+        public void RemoveAlternateOf()
+        {
+            Handler.BeginUpdate("Remove Alternate Of");
+            AlternateOf = null;
+            Handler.EndUpdate();
+        }
+        private bool CanRemoveAlternateOf() => AlternateOf != null;
+
+        [DisplayName("Add Alternate Of")]
+        private void InternalAddAlternateOf()
+        {
+            Handler.BeginUpdate("Add Alternate Of");
+            this.AddAlternateOf();
+            Handler.EndUpdate();
+        }
+        private bool CanInternalAddAlternateOf() => AlternateOf == null;
 
         /// <summary>
         /// Gets or sets the Alternate Of configuration used to specify aggregations.
@@ -161,6 +186,7 @@ namespace TabularEditor.TOMWrapper
         [DisplayName("Alternate Of")]
         [Category("Options"), IntelliSense("Defines the AlternateOf reference source BaseTable or BaseColumn, and the Summarization."),TypeConverter(typeof(DynamicPropertyConverter))]
         [Description("Defines the AlternateOf reference source BaseTable or BaseColumn, and the Summarization.")]
+        [PropertyAction(nameof(RemoveAlternateOf), nameof(InternalAddAlternateOf)), Editor(typeof(AlternateOfEditor), typeof(UITypeEditor))]
         public AlternateOf AlternateOf
         {
             get

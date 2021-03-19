@@ -42,35 +42,17 @@ namespace TabularEditor.PropertyGridUI
             if (value is IDynamicPropertyObject)
             {
                 var obj = value as IDynamicPropertyObject;
-                pds = original.Select(pd => new DynamicPropertyDescriptor(pd, multi, obj.Browsable(pd.Name), obj.Editable(pd.Name)));
-            }
-            else
-            {
-                pds = original.Select(pd => new DynamicPropertyDescriptor(pd, multi));
-            }
-            return new PropertyDescriptorCollection(pds.Where(pd => pd.IsBrowsable).ToArray());
-        }
+                pds = original.Select(pd =>
+                {
+                    var dpd = new DynamicPropertyDescriptor(pd, multi, obj.Browsable(pd.Name), obj.Editable(pd.Name));
+                    var customActionAttribute = pd.Attributes.OfType<PropertyActionAttribute>().FirstOrDefault();
+                    if(customActionAttribute != null)
+                    {
+                        dpd.CustomActions = customActionAttribute.GetPropertyActions(value, pd.ComponentType);
+                    }
 
-        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
-        {
-            if (value is TabularObject) return (value as TabularObject).GetTypeName();
-            return base.ConvertTo(context, culture, value, destinationType);
-        }
-    }
-
-    internal class DynamicPropertyNonExpandableConverter: TypeConverter
-    {
-        public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes)
-        {
-            var original = base.GetProperties(context, value, attributes).Cast<PropertyDescriptor>();
-            var multi = context.Instance.GetType().IsArray;
-
-            IEnumerable<DynamicPropertyDescriptor> pds;
-
-            if (value is IDynamicPropertyObject)
-            {
-                var obj = value as IDynamicPropertyObject;
-                pds = original.Select(pd => new DynamicPropertyDescriptor(pd, multi, obj.Browsable(pd.Name), obj.Editable(pd.Name)));
+                    return dpd;
+                });
             }
             else
             {
@@ -137,6 +119,8 @@ namespace TabularEditor.PropertyGridUI
             }
         }
 
+        public IReadOnlyList<PropertyAction> CustomActions { get; set; }
+
         public override bool CanResetValue(object component)
         {
             return _descriptor.CanResetValue(component);
@@ -161,5 +145,12 @@ namespace TabularEditor.PropertyGridUI
         {
             return _descriptor.ShouldSerializeValue(component);
         }
+    }
+
+    public class PropertyAction
+    {
+        public string Name { get; set; }
+        public Action Execute { get; set; }
+        public Func<bool> Enabled { get; set; }
     }
 }

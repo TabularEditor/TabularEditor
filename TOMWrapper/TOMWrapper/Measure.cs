@@ -7,6 +7,7 @@ using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.TOMWrapper.Undo;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using TabularEditor.Utils;
+using System.Drawing.Design;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -100,14 +101,19 @@ namespace TabularEditor.TOMWrapper
         }
         public KPI AddKPI()
         {
+            Handler.BeginUpdate("Add KPI");
             if(KPI == null) KPI = KPI.CreateNew();
-
+            Handler.EndUpdate();
             return KPI;
         }
+        private bool CanAddKPI() => KPI == null;
         public void RemoveKPI()
         {
+            Handler.BeginUpdate("Remove KPI");
             KPI = null;
+            Handler.EndUpdate();
         }
+        private bool CanRemoveKPI() => KPI != null;
 
         private KPI KPIBackup;
         private bool _needsValidation = false;
@@ -134,6 +140,7 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
 		[DisplayName("KPI")]
         [Category("Options"), IntelliSense("The KPI of this Measure.")]
+        [PropertyAction(nameof(AddKPI), nameof(RemoveKPI)), Editor(typeof(KpiEditor), typeof(UITypeEditor))]
         public KPI KPI
         {
             get
