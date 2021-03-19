@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TabularEditor.PropertyGridUI;
 
 namespace TabularEditor.PropertyGridExtension
 {
@@ -15,6 +17,39 @@ namespace TabularEditor.PropertyGridExtension
     /// </summary>
     public class NavigatablePropertyGrid: System.Windows.Forms.PropertyGrid
     {
+        public NavigatablePropertyGrid()
+        {
+            this.ContextMenuStrip = new ContextMenuStrip();
+            this.ContextMenuStrip.Opening += ContextMenuStrip_Opening;
+        }
+
+        public override void Refresh()
+        {
+            base.Refresh();
+        }
+
+        private void ContextMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            GridItem item = this.SelectedGridItem;
+            var hasItems = false;
+            this.ContextMenuStrip.Items.Clear();
+            if (item.PropertyDescriptor is DynamicPropertyDescriptor dpd)
+            {
+                if(dpd.CustomActions != null && dpd.CustomActions.Count > 0)
+                {
+                    foreach(var act in dpd.CustomActions)
+                    {
+                        if (act.Enabled())
+                        {
+                            hasItems = true;
+                            this.ContextMenuStrip.Items.Add(act.Name).Click += (s, e2) => act.Execute();
+                        }
+                    }
+                }
+            }
+            e.Cancel = !hasItems;
+        }
+
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if (ActiveControl is TextBox &&
