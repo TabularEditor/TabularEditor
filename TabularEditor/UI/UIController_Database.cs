@@ -155,7 +155,7 @@ namespace TabularEditor.UI
 
                 if (Handler.HasUnsavedChanges)
                 {
-                    var result = MessageBox.Show("A change was made to the model outside of Tabular Editor. Do you want to update the model metadata in Tabular Editor? You will lose any changes you made in Tabular Editor since the last save.", "External change detected",
+                    var result = MessageBox.Show(UI.FormMain, "A change was made to the model outside of Tabular Editor. Do you want to update the model metadata in Tabular Editor? You will lose any changes you made in Tabular Editor since the last save.", "External change detected",
                         MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                     if (result != DialogResult.Yes) return;
                 }
