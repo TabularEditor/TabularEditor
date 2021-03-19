@@ -47,7 +47,7 @@ namespace TabularEditor.PropertyGridUI
         {
             var pdc = new PropertyDescriptorCollection(null);
             var dict = value as IExpandableIndexer;
-            var isReadOnly = context.PropertyDescriptor.IsReadOnly;
+            var isReadOnly = !(context.Instance as IDynamicPropertyObject).Editable(context.PropertyDescriptor.Name);
 
             foreach(var key in dict.Keys.OrderBy(k => dict.GetDisplayName(k)))
             {

@@ -58,6 +58,7 @@
     <Reference Include="System" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -70,10 +71,13 @@
   <ItemGroup>
     <Compile Include="Constants.cs" />
     <Compile Include="FixUpTests.cs" />
+    <Compile Include="FluentPropertyGridTest.cs" />
     <Compile Include="ObjectCreationTests.cs" />
     <Compile Include="ObjectHandlingTests.cs" />
     <Compile Include="PowerBITests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyDescriptorTests.cs" />
+    <Compile Include="PropertyGridTestHelper.cs" />
     <Compile Include="RegressionTests\v2_7_4\CopyTableNoColumnsTests.cs" />
     <Compile Include="RegressionTests\v2_7_4\PerspectiveMembershipTests.cs" />
     <Compile Include="RegressionTests\v2_7_4\TranslationsTests.cs" />

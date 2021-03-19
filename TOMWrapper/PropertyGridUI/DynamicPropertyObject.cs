@@ -98,7 +98,7 @@ namespace TabularEditor.PropertyGridUI
             _descriptor = descriptor;
             _multiselect = multiselect;
             _browsable = browsable;
-            _editable = editable;
+            _editable = editable && !descriptor.IsReadOnly && !descriptor.Attributes.OfType<Attribute>().Any(a => a is ReadOnlyAttribute roa && roa.IsReadOnly);
         }
 
         public override bool IsBrowsable
@@ -110,14 +110,6 @@ namespace TabularEditor.PropertyGridUI
                     return _browsable && !base.Attributes.Cast<Attribute>().Any(a => a.GetType() == typeof(NoMultiselectAttribute));
                 } else
                     return _browsable && base.IsBrowsable;
-            }
-        }
-
-        public override string Name
-        {
-            get
-            {
-                return string.IsNullOrEmpty(base.DisplayName) ? base.Name : base.DisplayName;
             }
         }
 
