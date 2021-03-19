@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Microsoft.AnalysisServices.Tabular;
+using TOM = Microsoft.AnalysisServices.Tabular;
 using System.Globalization;
 using TabularEditor.UIServices;
-using System.Threading;
-using Microsoft.AnalysisServices;
+using AS = Microsoft.AnalysisServices;
 
 namespace TabularEditor.UI.Dialogs.Pages
 {
@@ -28,8 +23,8 @@ namespace TabularEditor.UI.Dialogs.Pages
         public bool ClearSelection { get; set; } = false;
         public string PreselectDb { get; set; } = "";
 
-        private Server _server;
-        public Server Server
+        private TOM.Server _server;
+        public TOM.Server Server
         {
             set
             {
@@ -203,10 +198,10 @@ namespace TabularEditor.UI.Dialogs.Pages
         public DateTime LastUpdate { get; set; }
         public string Description { get; set; }
 
-        public static List<DatabaseInfo> GetDatabasesFromServer(Server server)
+        public static List<DatabaseInfo> GetDatabasesFromServer(TOM.Server server)
         {
             var result = new List<DatabaseInfo>();
-            using (var reader = server.ExecuteReader("<Statement>SELECT * FROM $SYSTEM.DBSCHEMA_CATALOGS</Statement>", out XmlaResultCollection results))
+            using (var reader = server.ExecuteReader("<Statement>SELECT * FROM $SYSTEM.DBSCHEMA_CATALOGS</Statement>", out AS.XmlaResultCollection results))
             {
                 if(results != null && results.ContainsErrors)
                 {
@@ -231,10 +226,10 @@ namespace TabularEditor.UI.Dialogs.Pages
 
     static class XmlaExtension
     {
-        public static string GetMessageString(this XmlaResultCollection xmlaResults)
+        public static string GetMessageString(this AS.XmlaResultCollection xmlaResults)
         {
             return string.Join(Environment.NewLine,
-                xmlaResults.OfType<XmlaResult>().SelectMany(r => r.Messages.OfType<XmlaMessage>()).Select(msg => msg.Description).ToArray());
+                xmlaResults.OfType<AS.XmlaResult>().SelectMany(r => r.Messages.OfType<AS.XmlaMessage>()).Select(msg => msg.Description).ToArray());
         }
     }
 }
