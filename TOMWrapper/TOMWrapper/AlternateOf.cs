@@ -37,31 +37,64 @@ namespace TabularEditor.TOMWrapper
         [ReadOnly(true)]
         public override string ObjectTypeName => "Alternate Of";
 
+        private bool suspendChange = false;
+
+        protected override void OnPropertyChanging(string propertyName, object newValue, ref bool undoable, ref bool cancel)
+        {
+            base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
+            if (!Handler.UndoManager.UndoInProgress && !suspendChange)
+            {
+                switch (propertyName)
+                {
+                    case Properties.BASETABLE:
+                    case Properties.BASECOLUMN:
+                    case Properties.SUMMARIZATION:
+                        Handler.BeginUpdate($"Set Property '{propertyName.SplitCamelCase()}'");
+                        break;
+                }
+            }
+        }
+
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
             base.OnPropertyChanged(propertyName, oldValue, newValue);
+            if (!Handler.UndoManager.UndoInProgress && !suspendChange)
+            {
+                suspendChange = true;
 
-            if(propertyName == Properties.BASETABLE && newValue != null)
-            {
-                BaseColumn = null;
-                Summarization = SummarizationType.Count;
-            }
-            if (propertyName == Properties.BASECOLUMN && newValue != null)
-            {
-                BaseTable = null;
-                if (Summarization == SummarizationType.Count)
-                    Summarization = SummarizationType.Sum;
-            }
-            if (propertyName == Properties.SUMMARIZATION)
-            {
-                if(BaseColumn != null && (SummarizationType)newValue == SummarizationType.Count)
+                switch (propertyName)
                 {
-                    BaseColumn = null;
+                    case Properties.BASETABLE:
+                        if (newValue != null)
+                        {
+                            BaseColumn = null;
+                            Summarization = SummarizationType.Count;
+                        }
+                        Handler.EndUpdate();
+                        break;
+                    case Properties.BASECOLUMN:
+                        if (newValue != null)
+                        {
+                            BaseTable = null;
+                            if (Summarization == SummarizationType.Count)
+                                Summarization = SummarizationType.Sum;
+                        }
+                        Handler.EndUpdate();
+                        break;
+                    case Properties.SUMMARIZATION:
+                        if (BaseColumn != null && (SummarizationType)newValue == SummarizationType.Count)
+                        {
+                            BaseColumn = null;
+                        }
+                        else if (BaseTable != null && (SummarizationType)newValue != SummarizationType.Count)
+                        {
+                            BaseTable = null;
+                        }
+                        Handler.EndUpdate();
+                        break;
                 }
-                else if (BaseTable != null && (SummarizationType)newValue != SummarizationType.Count)
-                {
-                    BaseTable = null;
-                }
+
+                suspendChange = false;
             }
         }
 

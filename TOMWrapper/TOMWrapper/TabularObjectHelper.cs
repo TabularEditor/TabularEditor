@@ -39,45 +39,71 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public static string GetLinqPath(this ITabularNamedObject obj)
+        private static string GetLinqPath(this TabularObject obj)
         {
-            switch (obj.ObjectType)
+            switch (obj)
             {
-                case ObjectType.KPI:
-                    return (obj as KPI).Measure.GetLinqPath() + ".KPI";
-                case ObjectType.Model:
+                case KPI kpi:
+                    return kpi.Measure.GetLinqPath() + ".KPI";
+                case Model model:
                     return "Model";
-                case ObjectType.Column:
-                    return string.Format("({0}.Columns[\"{1}\"] as {2})", (obj as ITabularTableObject).Table.GetLinqPath(), obj.Name, obj.GetType().Name);
-                case ObjectType.Measure:
-                    return string.Format("{0}.Measures[\"{1}\"]", (obj as ITabularTableObject).Table.GetLinqPath(), obj.Name);
-                case ObjectType.Hierarchy:
-                    return string.Format("{0}.Hierarchies[\"{1}\"]", (obj as ITabularTableObject).Table.GetLinqPath(), obj.Name);
-                case ObjectType.Partition:
-                    return string.Format("({0}.Partitions[\"{1}\"] as {2})", (obj as ITabularTableObject).Table.GetLinqPath(), obj.Name, obj.GetType().Name);
-                case ObjectType.Table:
-                    return string.Format("{0}.Tables[\"{1}\"]", obj.Model.GetLinqPath(), obj.Name);
-                case ObjectType.Level:
-                    return string.Format("{0}.Levels[\"{1}\"]", (obj as Level).Hierarchy.GetLinqPath(), obj.Name);
-                case ObjectType.Perspective:
-                    return string.Format("{0}.Perspectives[\"{1}\"]", obj.Model.GetLinqPath(), obj.Name);
-                case ObjectType.Culture:
-                    return string.Format("{0}.Cultures[\"{1}\"]", obj.Model.GetLinqPath(), obj.Name);
-                case ObjectType.DataSource:
-                    return string.Format("({0}.DataSources[\"{1}\"] as {2})", obj.Model.GetLinqPath(), obj.Name, obj.GetType().Name);
-                case ObjectType.Relationship:
-                    return string.Format("({0}.Relationships[{1}] as {2})", obj.Model.GetLinqPath(), obj.MetadataIndex, obj.GetType().Name);
-                case ObjectType.Role:
-                    return string.Format("{0}.Roles[\"{1}\"]", obj.Model.GetLinqPath(), obj.Name);
-                case ObjectType.Expression:
-                    return string.Format("{0}.Expressions[\"{1}\"]", obj.Model.GetLinqPath(), obj.Name);
-                case ObjectType.TablePermission:
-                    return string.Format("{0}.TablePermissions[\"{1}\"]", (obj as TablePermission).Role.GetLinqPath(), (obj as TablePermission).Table.Name);
-                case ObjectType.CalculationGroupTable:
-                    return string.Format("({0}.Tables[\"{1}\"] as CalculationGroupTable)", obj.Model.GetLinqPath(), obj.Name);
+                case Column column:
+                    return string.Format("{0}.Columns[\"{1}\"]", column.Table.GetLinqPath(), column.Name);
+                case Measure measure:
+                    return string.Format("{0}.Measures[\"{1}\"]", measure.Table.GetLinqPath(), measure.Name);
+                case Hierarchy hierarchy:
+                    return string.Format("{0}.Hierarchies[\"{1}\"]", hierarchy.Table.GetLinqPath(), hierarchy.Name);
+                case Partition partition:
+                    return string.Format("{0}.Partitions[\"{1}\"]", partition.Table.GetLinqPath(), partition.Name, obj.GetType().Name);
+                case Table table:
+                    return string.Format("Model.Tables[\"{0}\"]", table.Name);
+                case Level level:
+                    return string.Format("{0}.Levels[\"{1}\"]", level.Hierarchy.GetLinqPath(), level.Name);
+                case Perspective perspective:
+                    return string.Format("{0}.Perspectives[\"{1}\"]", obj.Model.GetLinqPath(), perspective.Name);
+                case Culture culture:
+                    return string.Format("{0}.Cultures[\"{1}\"]", obj.Model.GetLinqPath(), culture.Name);
+                case DataSource ds:
+                    return string.Format("{0}.DataSources[\"{1}\"]", obj.Model.GetLinqPath(), ds.Name, obj.GetType().Name);
+                case Relationship rel:
+                    return string.Format("{0}.Relationships[{1}]", obj.Model.GetLinqPath(), rel.MetadataIndex, obj.GetType().Name);
+                case ModelRole role:
+                    return string.Format("{0}.Roles[\"{1}\"]", obj.Model.GetLinqPath(), role.Name);
+                case NamedExpression expression:
+                    return string.Format("{0}.Expressions[\"{1}\"]", obj.Model.GetLinqPath(), expression.Name);
+                case TablePermission tp:
+                    return string.Format("{0}.TablePermissions[\"{1}\"]", tp.Role.GetLinqPath(), tp.Table.Name);
+                case CalculationItem ci:
+                    return string.Format("{0}.CalculationItems[\"{1}\"]", ci.CalculationGroupTable.GetLinqPath(true), ci.Name);
+                case Variation variation:
+                    return string.Format("{0}.Variations[\"{1}\"]", variation.Column.GetLinqPath(), variation.Name);
+                case CalculationGroup cg:
+                    return string.Format("{0}.CalculationGroup", cg.Table.GetLinqPath(true));
+                case AlternateOf altOf:
+                    return string.Format("{0}.AlternateOf", altOf.Column.GetLinqPath());
                 default:
                     throw new NotSupportedException();
             }
+        }
+
+        public static string GetLinqPath(this TabularObject obj, bool explicitCast = true)
+        {
+            if (explicitCast)
+            {
+                switch (obj)
+                {
+                    case Column _:
+                    case Partition _:
+                    case Table _:
+                    case DataSource _:
+                    case Relationship _:
+                        return $"({GetLinqPath(obj)} as {obj.GetType().Name})";
+                    default:
+                        return GetLinqPath(obj);
+                }
+            }
+            else
+                return GetLinqPath(obj);
         }
 
         private static string GetObjectPathTableObject(TOM.NamedMetadataObject obj)

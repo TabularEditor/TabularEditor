@@ -111,7 +111,7 @@ namespace TabularEditor.TOMWrapper
             {
                 return _reordering;
             }
-            set
+            internal set
             {
                 if(value)
                 {
