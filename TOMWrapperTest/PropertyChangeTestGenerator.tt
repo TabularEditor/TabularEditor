@@ -1,0 +1,173 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="$(ProjectDir)\..\packages\Microsoft.AnalysisServices.retail.amd64.19.18.0\lib\net45\Microsoft.AnalysisServices.Tabular.dll" #>
+<#@ assembly name="$(ProjectDir)\..\TOMWrapper\bin\Debug\TOMWrapper.dll" #>
+<#@ assembly name="EnvDTE" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Reflection" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="TabularEditor.TOMWrapper" #>
+<#@ import namespace="TabularEditor.TOMWrapper.Utils" #>
+<#@ import namespace="TabularEditor.TOMWrapper.Tests" #>
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TabularEditor.TOMWrapper.Serialization;
+
+namespace TabularEditor.TOMWrapper.GeneratedTests
+{
+<# 
+var exceptions = new List<(Type, string)>(){
+    (typeof(TablePermission), "Name"),            // Names of Table Permissions can't be changed
+    (typeof(KPI), "Name"),                        // Names of KPIs can't be changed
+    (typeof(Level), "Ordinal"),                   // Level ordinals are reevaluated to be kept in range when changed
+    (typeof(CalculationItem), "Ordinal"),         // Calc item ordinals are reevaluated to be kept in range when changed
+    (typeof(SingleColumnRelationship), "Name"),   // Names cannot be set on SingleColumnRelationships
+    (typeof(Partition), "Granularity"),           // Can't set Granularity property on non-refresh policy-based partitions
+    (typeof(MPartition), "Granularity"),           // Can't set Granularity property on non-refresh policy-based partitions
+    (typeof(Model), "DiscourageImplicitMeasures"), // Can't be change because model contains calc groups
+    (typeof(Model), "DiscourageReportMeasures"),   // Doesn't work in TOM yet
+
+    // Incremental refresh policies are disabled for calc tables and calc group tables:
+    (typeof(CalculationGroupTable), "IncrementalGranularity"),
+    (typeof(CalculationGroupTable), "IncrementalPeriodsOffset"),
+    (typeof(CalculationGroupTable), "IncrementalPeriods"),
+    (typeof(CalculationGroupTable), "IncrementalPollingExpression"),
+    (typeof(CalculationGroupTable), "RollingWindowGranularity"),
+    (typeof(CalculationGroupTable), "RollingWindowPeriods"),
+    (typeof(CalculationGroupTable), "PollingExpression"),
+    (typeof(CalculationGroupTable), "SourceExpression"),
+    
+    (typeof(CalculatedTable), "IncrementalGranularity"),
+    (typeof(CalculatedTable), "IncrementalPeriodsOffset"),
+    (typeof(CalculatedTable), "IncrementalPeriods"),
+    (typeof(CalculatedTable), "IncrementalPollingExpression"),
+    (typeof(CalculatedTable), "RollingWindowGranularity"),
+    (typeof(CalculatedTable), "RollingWindowPeriods"),
+    (typeof(CalculatedTable), "PollingExpression"),
+    (typeof(CalculatedTable), "SourceExpression"),
+};
+
+var valueExceptions = new List<object>() 
+{
+    ModeType.Push,
+    ModeType.Dual,
+    DataType.Automatic,
+    DataType.Unknown
+};
+
+var modelPath = Host.ResolvePath("TestData\\AllProperties.bim");
+var modelHandler = new TabularModelHandler(modelPath);
+var typesList = modelHandler.WrapperLookup.Values.OfType<TabularObject>().Select(v => (v.GetType(), v.GetLinqPath(), v)).ToList();
+var types = new Dictionary<Type, string>();
+foreach(var type in typesList) 
+{
+    if(type.Item3 is Partition pt && (pt.Table is CalculationGroupTable || pt.Table is CalculatedTable)) continue;
+    types[type.Item1] = type.Item2;
+}
+
+/*var types = new Dictionary<Type, string>() { 
+    { typeof(Table) , "Model.Tables[\"Table\"]" },
+    { typeof(Measure) , "Model.Tables[\"Table\"].Measures[\"Measure\"]" },
+    { typeof(DataColumn) , "Model.Tables[\"Table\"].Columns[\"DC1\"] as DataColumn" },
+    { typeof(CalculatedColumn) , "Model.Tables[\"Table\"].Columns[\"CC1\"] as CalculatedColumn" },
+};*/
+
+var change = new Dictionary<Type, string[]>() {
+    { typeof(string), new[]{ "\"fr-FR\"" }},
+    { typeof(int), new[]{ "123" } },
+    { typeof(bool), new[]{ "true", "false" }},
+};
+
+foreach(var type in types) { #>
+	[TestClass]
+	public class <#= type.Key.Name #>GeneratedTests
+	{
+<#
+foreach(var prop in type.Key.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+    .Where(p => p.GetGetMethod()?.IsPublic == true && p.GetSetMethod()?.IsPublic == true)) 
+{ 
+    if(exceptions.Contains((type.Key, prop.Name))) continue;
+
+    if(change.ContainsKey(prop.PropertyType)) 
+    { #>
+        [TestMethod]
+        public void <#=type.Key.Name#><#=prop.Name#>Test()
+        {
+            var handler = new TabularModelHandler("TestData\\AllProperties.bim");
+            var Model = handler.Model;
+            var obj = <#= type.Value #>;
+            var orgValue = obj.<#= prop.Name #>;
+            var value = orgValue;
+<# foreach(var value in change[prop.PropertyType]) { #>
+
+<# if(prop.Name == "Content") { #>
+            value = "<xml></xml>";
+<# } else { #>
+            value = <#= value #>;
+<# } #>
+            if(obj.<#= prop.Name #> != value)
+            {
+                obj.<#= prop.Name #> = value;
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.<#= prop.Name #>);
+
+                handler.UndoManager.Redo();
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(value, obj.<#= prop.Name #>);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.<#= prop.Name #>);
+            }
+<# } #>
+        }
+<# } else if (prop.PropertyType.IsEnum) { #>
+        [TestMethod]
+        public void <#=type.Key.Name#><#=prop.Name#>Test()
+        {
+            var handler = new TabularModelHandler("TestData\\AllProperties.bim");
+            var Model = handler.Model;
+            var obj = <#= type.Value #>;
+            var orgValue = obj.<#= prop.Name #>;
+<# foreach(var value in Enum.GetValues(prop.PropertyType)) { 
+    if(valueExceptions.Contains(value) || Enum.GetName(prop.PropertyType, value) == "Default") continue;
+#>
+
+            if(obj.<#= prop.Name #> != <#=prop.PropertyType.Name#>.<#= Enum.GetName(prop.PropertyType, value) #>)
+            {
+                obj.<#= prop.Name #> = <#=prop.PropertyType.Name#>.<#= Enum.GetName(prop.PropertyType, value) #>;
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(orgValue, obj.<#= prop.Name #>);
+
+                handler.UndoManager.Redo();
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(<#=prop.PropertyType.Name#>.<#= Enum.GetName(prop.PropertyType, value) #>, obj.<#= prop.Name #>);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(orgValue, obj.<#= prop.Name #>);
+            }
+<# } #>
+        }    
+<# }
+} #>    }
+<#
+}
+#>
+}

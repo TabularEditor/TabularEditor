@@ -21,12 +21,12 @@ namespace TabularEditor.TOMWrapper
     {
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
-            if(propertyName == "Name")
+            if (propertyName == "Name")
             {
                 Handler.UndoManager.BeginBatch("Update M expressions");
 
                 // TODO: Very crude search-and-replace. We should lex/tokenize the M expressions instead, to be sure that we're doing this right.
-                foreach (var namedExpr in base.Model.Expressions) if(namedExpr.Expression != null) namedExpr.Expression = namedExpr.Expression.Replace($"#\"{oldValue}\"", $"#\"{newValue}\"");
+                foreach (var namedExpr in base.Model.Expressions) if (namedExpr.Expression != null) namedExpr.Expression = namedExpr.Expression.Replace($"#\"{oldValue}\"", $"#\"{newValue}\"");
                 foreach (var part in base.Model.AllPartitions.OfType<MPartition>()) if (part.Expression != null) part.Expression = part.Expression.Replace($"#\"{oldValue}\"", $"#\"{newValue}\"");
 
                 Handler.UndoManager.EndBatch();
@@ -46,10 +46,11 @@ namespace TabularEditor.TOMWrapper
             this.Address = new AddressImpl(this);
         }
 
-        [Category("Basic"),Description("Connection protocol"),IntelliSense("Connection protocol")]
-        public string Protocol {
+        [Category("Basic"), Description("Connection protocol"), IntelliSense("Connection protocol")]
+        public string Protocol
+        {
             get { return MetadataObject.ConnectionDetails.Protocol; }
-            set { SetValue(Protocol, value, v => { MetadataObject.ConnectionDetails.Protocol = (string)v; }, "Protocol"); }
+            set { SetValue(Protocol, value, v => { MetadataObject.ConnectionDetails.Protocol = (string)v; }); }
         }
         private bool ShouldSerializeProtocol() { return false; }
 
@@ -57,7 +58,7 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Protocol-specific options used to connect the data source")]
         public DataSourceOptionsImpl Options { get; private set; }
 
-        [Category("Credential"),Editor(typeof(CredentialPropertyCollectionEditor),typeof(UITypeEditor)), Description("Protocol-specific options used to authenticate the connection")]
+        [Category("Credential"), Editor(typeof(CredentialPropertyCollectionEditor), typeof(UITypeEditor)), Description("Protocol-specific options used to authenticate the connection")]
         [IntelliSense("Protocol-specific options used to authenticate the connection")]
         public CredentialImpl Credential { get; private set; }
 
@@ -69,7 +70,7 @@ namespace TabularEditor.TOMWrapper
         public string Username
         {
             get { return MetadataObject.Credential.Username; }
-            set { SetValue(Username, value, v => { MetadataObject.Credential.Username = (string)v; }, "Username"); }
+            set { SetValue(Username, value, v => { MetadataObject.Credential.Username = (string)v; }); }
         }
         private bool ShouldSerializeUsername() { return false; }
 
@@ -77,7 +78,7 @@ namespace TabularEditor.TOMWrapper
         public string Password
         {
             get { return MetadataObject.Credential.Password; }
-            set { SetValue(Password, value, v => { MetadataObject.Credential.Password = (string)v; }, "Password"); }
+            set { SetValue(Password, value, v => { MetadataObject.Credential.Password = (string)v; }); }
         }
         private bool ShouldSerializePassword() { return false; }
 
@@ -85,7 +86,7 @@ namespace TabularEditor.TOMWrapper
         public string PrivacySetting
         {
             get { return MetadataObject.Credential.PrivacySetting; }
-            set { SetValue(PrivacySetting, value, v => { MetadataObject.Credential.PrivacySetting = (string)v; }, "PrivacySetting"); }
+            set { SetValue(PrivacySetting, value, v => { MetadataObject.Credential.PrivacySetting = (string)v; }); }
         }
         private bool ShouldSerializePrivacySetting() { return false; }
 
@@ -93,7 +94,7 @@ namespace TabularEditor.TOMWrapper
         public string AuthenticationKind
         {
             get { return MetadataObject.Credential.AuthenticationKind; }
-            set { SetValue(AuthenticationKind, value, v => { MetadataObject.Credential.AuthenticationKind = (string)v; }, "AuthenticationKind"); }
+            set { SetValue(AuthenticationKind, value, v => { MetadataObject.Credential.AuthenticationKind = (string)v; }); }
         }
         private bool ShouldSerializeAuthenticationKind() { return false; }
 
@@ -101,7 +102,7 @@ namespace TabularEditor.TOMWrapper
         public bool EncryptConnection
         {
             get { return MetadataObject.Credential.EncryptConnection; }
-            set { SetValue(EncryptConnection, value, v => { MetadataObject.Credential.EncryptConnection = (bool)v; }, "EncryptConnection"); }
+            set { SetValue(EncryptConnection, value, v => { MetadataObject.Credential.EncryptConnection = (bool)v; }); }
         }
         private bool ShouldSerializeEncryptConnection() { return false; }
 
@@ -109,7 +110,7 @@ namespace TabularEditor.TOMWrapper
         public string Account
         {
             get { return MetadataObject.ConnectionDetails.Address.Account; }
-            set { SetValue(Account, value, v => { MetadataObject.ConnectionDetails.Address.Account = (string)v; }, "Account"); }
+            set { SetValue(Account, value, v => { MetadataObject.ConnectionDetails.Address.Account = (string)v; }); }
         }
         private bool ShouldSerializeAccount() { return false; }
 
@@ -117,7 +118,7 @@ namespace TabularEditor.TOMWrapper
         public string ConnectionString
         {
             get { return MetadataObject.ConnectionDetails.Address.ConnectionString; }
-            set { SetValue(ConnectionString, value, v => { MetadataObject.ConnectionDetails.Address.ConnectionString = (string)v; }, "ConnectionString"); }
+            set { SetValue(ConnectionString, value, v => { MetadataObject.ConnectionDetails.Address.ConnectionString = (string)v; }); }
         }
         private bool ShouldSerializeConnectionString() { return false; }
 
@@ -125,7 +126,7 @@ namespace TabularEditor.TOMWrapper
         public string ContentType
         {
             get { return MetadataObject.ConnectionDetails.Address.ContentType; }
-            set { SetValue(ContentType, value, v => { MetadataObject.ConnectionDetails.Address.ContentType = (string)v; }, "ContentType"); }
+            set { SetValue(ContentType, value, v => { MetadataObject.ConnectionDetails.Address.ContentType = (string)v; }); }
         }
         private bool ShouldSerializeContentType() { return false; }
 
@@ -133,7 +134,7 @@ namespace TabularEditor.TOMWrapper
         public string Database
         {
             get { return MetadataObject.ConnectionDetails.Address.Database; }
-            set { SetValue(Database, value, v => { MetadataObject.ConnectionDetails.Address.Database = (string)v; }, "Database"); }
+            set { SetValue(Database, value, v => { MetadataObject.ConnectionDetails.Address.Database = (string)v; }); }
         }
         private bool ShouldSerializeDatabase() { return false; }
 
@@ -141,7 +142,7 @@ namespace TabularEditor.TOMWrapper
         public string Domain
         {
             get { return MetadataObject.ConnectionDetails.Address.Domain; }
-            set { SetValue(Domain, value, v => { MetadataObject.ConnectionDetails.Address.Domain = (string)v; }, "Domain"); }
+            set { SetValue(Domain, value, v => { MetadataObject.ConnectionDetails.Address.Domain = (string)v; }); }
         }
         private bool ShouldSerializeDomain() { return false; }
 
@@ -149,15 +150,15 @@ namespace TabularEditor.TOMWrapper
         public string EmailAddress
         {
             get { return MetadataObject.ConnectionDetails.Address.EmailAddress; }
-            set { SetValue(EmailAddress, value, v => { MetadataObject.ConnectionDetails.Address.EmailAddress = (string)v; }, "EmailAddress"); }
+            set { SetValue(EmailAddress, value, v => { MetadataObject.ConnectionDetails.Address.EmailAddress = (string)v; }); }
         }
         private bool ShouldSerializeEmailAddress() { return false; }
 
-        [Category("Connection Details"), Description("Model name (Connection Address property)"), IntelliSense("Model name (Connection Address property)")]
-        public new string Model
+        [Category("Connection Details"), Description("Model name (Connection Address property)"), IntelliSense("Model name (Connection Address property)"), DisplayName("Model")]
+        public string AddressModel
         {
             get { return MetadataObject.ConnectionDetails.Address.Model; }
-            set { SetValue(Model, value, v => { MetadataObject.ConnectionDetails.Address.Model = (string)v; }, "Model"); }
+            set { SetValue(AddressModel, value, v => { MetadataObject.ConnectionDetails.Address.Model = (string)v; }); }
         }
         private bool ShouldSerializeModel() { return false; }
 
@@ -165,7 +166,7 @@ namespace TabularEditor.TOMWrapper
         public string Object
         {
             get { return MetadataObject.ConnectionDetails.Address.Object; }
-            set { SetValue(Object, value, v => { MetadataObject.ConnectionDetails.Address.Object = (string)v; }, "Object"); }
+            set { SetValue(Object, value, v => { MetadataObject.ConnectionDetails.Address.Object = (string)v; }); }
         }
         private bool ShouldSerializeObject() { return false; }
 
@@ -173,7 +174,7 @@ namespace TabularEditor.TOMWrapper
         public string Path
         {
             get { return MetadataObject.ConnectionDetails.Address.Path; }
-            set { SetValue(Path, value, v => { MetadataObject.ConnectionDetails.Address.Path = (string)v; }, "Path"); }
+            set { SetValue(Path, value, v => { MetadataObject.ConnectionDetails.Address.Path = (string)v; }); }
         }
         private bool ShouldSerializePath() { return false; }
 
@@ -181,7 +182,7 @@ namespace TabularEditor.TOMWrapper
         public string Property
         {
             get { return MetadataObject.ConnectionDetails.Address.Property; }
-            set { SetValue(Property, value, v => { MetadataObject.ConnectionDetails.Address.Property = (string)v; }, "Property"); }
+            set { SetValue(Property, value, v => { MetadataObject.ConnectionDetails.Address.Property = (string)v; }); }
         }
         private bool ShouldSerializeProperty() { return false; }
 
@@ -189,7 +190,7 @@ namespace TabularEditor.TOMWrapper
         public string Resource
         {
             get { return MetadataObject.ConnectionDetails.Address.Resource; }
-            set { SetValue(Resource, value, v => { MetadataObject.ConnectionDetails.Address.Resource = (string)v; }, "Resource"); }
+            set { SetValue(Resource, value, v => { MetadataObject.ConnectionDetails.Address.Resource = (string)v; }); }
         }
         private bool ShouldSerializeResource() { return false; }
 
@@ -197,7 +198,7 @@ namespace TabularEditor.TOMWrapper
         public string Schema
         {
             get { return MetadataObject.ConnectionDetails.Address.Schema; }
-            set { SetValue(Schema, value, v => { MetadataObject.ConnectionDetails.Address.Schema = (string)v; }, "Schema"); }
+            set { SetValue(Schema, value, v => { MetadataObject.ConnectionDetails.Address.Schema = (string)v; }); }
         }
         private bool ShouldSerializeSchema() { return false; }
 
@@ -205,7 +206,7 @@ namespace TabularEditor.TOMWrapper
         public string Server
         {
             get { return MetadataObject.ConnectionDetails.Address.Server; }
-            set { SetValue(Server, value, v => { MetadataObject.ConnectionDetails.Address.Server = (string)v; }, "Server"); }
+            set { SetValue(Server, value, v => { MetadataObject.ConnectionDetails.Address.Server = (string)v; }); }
         }
         private bool ShouldSerializeServer() { return false; }
 
@@ -213,7 +214,7 @@ namespace TabularEditor.TOMWrapper
         public string Url
         {
             get { return MetadataObject.ConnectionDetails.Address.Url; }
-            set { SetValue(Url, value, v => { MetadataObject.ConnectionDetails.Address.Url = (string)v; }, "Url"); }
+            set { SetValue(Url, value, v => { MetadataObject.ConnectionDetails.Address.Url = (string)v; }); }
         }
         private bool ShouldSerializeUrl() { return false; }
 
@@ -221,14 +222,12 @@ namespace TabularEditor.TOMWrapper
         public string View
         {
             get { return MetadataObject.ConnectionDetails.Address.View; }
-            set { SetValue(View, value, v => { MetadataObject.ConnectionDetails.Address.View = (string)v; }, "View"); }
+            set { SetValue(View, value, v => { MetadataObject.ConnectionDetails.Address.View = (string)v; }); }
         }
         private bool ShouldSerializeView() { return false; }
 
-
-
         [TypeConverter(typeof(IndexerConverter))]
-        public class CredentialImpl: IExpandableIndexer
+        public class CredentialImpl : IExpandableIndexer
         {
             private readonly StructuredDataSource dataSource;
             private TOM.Credential TomCredential => dataSource.MetadataObject.Credential;
@@ -250,7 +249,9 @@ namespace TabularEditor.TOMWrapper
                 }
             }
 
-            public bool EnableMultiLine => false;
+            bool IExpandableIndexer.EnableMultiLine => false;
+
+            public bool EnableMultiLine(string key) => false;
 
             public object this[string index]
             {
@@ -261,7 +262,8 @@ namespace TabularEditor.TOMWrapper
                     var oldValue = TomCredential[index];
                     if (index == nameof(TOM.Credential.EncryptConnection))
                     {
-                        if (bool.TryParse(value as string, out bool result)) {
+                        if (bool.TryParse(value as string, out bool result))
+                        {
                             TomCredential[index] = result;
                             dataSource.Handler.UndoManager.Add(new UndoCredentialAction(dataSource, index, value as string, oldValue as string));
                         }
@@ -304,7 +306,9 @@ namespace TabularEditor.TOMWrapper
                 }
             }
 
-            public bool EnableMultiLine => false;
+            bool IExpandableIndexer.EnableMultiLine => false;
+
+            public bool EnableMultiLine(string key) => false;
 
             public object this[string index]
             {
@@ -318,6 +322,47 @@ namespace TabularEditor.TOMWrapper
                 }
             }
 
+
+            public string GetDisplayName(string key)
+            {
+                return key;
+            }
+        }
+
+        [TypeConverter(typeof(IndexerConverter))]
+        public class AddressOptionsImpl : IExpandableIndexer
+        {
+            private readonly JObject connectionDetails;
+            private readonly StructuredDataSource dataSource;
+
+            public AddressOptionsImpl(StructuredDataSource dataSource)
+            {
+                this.dataSource = dataSource;
+                this.connectionDetails = JObject.Parse(dataSource.MetadataObject.ConnectionDetails.ToJson());
+            }
+
+            public object this[string index]
+            {
+                get => connectionDetails["address"]?["options"]?[index]?.ToString();
+                set
+                {
+                    if (connectionDetails["address"] == null)
+                        connectionDetails["address"] = new JObject();
+                    if (connectionDetails["address"]["options"] == null)
+                        connectionDetails["address"]["options"] = new JObject();
+
+                    connectionDetails["address"][index] = value.ToString();
+                    dataSource.MetadataObject.ConnectionDetails.ParseJson(connectionDetails.ToString());
+                }
+            }
+
+            public string Summary => "(Click to edit)";
+
+            public IEnumerable<string> Keys => connectionDetails["address"]?["options"] is JObject options ? options.Properties().Select(p => p.Name) : Enumerable.Empty<string>();
+
+            bool IExpandableIndexer.EnableMultiLine => false;
+
+            public bool EnableMultiLine(string key) => false;
 
             public string GetDisplayName(string key)
             {
@@ -341,23 +386,47 @@ namespace TabularEditor.TOMWrapper
             {
                 get
                 {
-                    var json = dataSource.MetadataObject.ConnectionDetails.ToString();
+                    var json = dataSource.MetadataObject.ConnectionDetails.ToJson();
                     if (!string.IsNullOrEmpty(json))
                         return (JObject.Parse(json)["address"] as JObject)?.Properties().Select(p => p.Name) ?? Enumerable.Empty<string>();
                     else return Enumerable.Empty<string>();
                 }
             }
 
-            public bool EnableMultiLine => false;
+            bool IExpandableIndexer.EnableMultiLine => true;
+
+            public bool EnableMultiLine(string index)
+            {
+                return index == "options";
+            }
 
             public object this[string index]
             {
-                get => TomAddress[index];
+                get
+                {
+                    // For some reason, "options" throws a System.NotImplementedException in Microsoft.AnalysisServices.Tabular.CustomJsonPropertyHelper
+                    if (index == "options")
+                    {
+                        return JObject.Parse(dataSource.MetadataObject.ConnectionDetails.ToJson())["address"]["options"].ToString();
+                    }
+                    else
+                        return TomAddress[index];
+                }
                 set
                 {
-                    if (TomAddress[index] == value) return;
-                    var oldValue = TomAddress[index];
-                    TomAddress[index] = value;
+                    // TODO: Governance? OnPropertyChanging / OnPropertyChanged calls?
+
+                    var oldValue = this[index];
+                    if (oldValue == value) return;
+                    if (index == "options")
+                    {
+                        var jObj = JObject.Parse(dataSource.MetadataObject.ConnectionDetails.ToJson());
+                        jObj["address"]["options"] = JObject.Parse(value.ToString());
+                        dataSource.MetadataObject.ConnectionDetails.ParseJson(jObj.ToString());
+                    }
+                    else
+                        TomAddress[index] = value;
+
                     dataSource.Handler.UndoManager.Add(new UndoConnectionAddressAction(dataSource, index, value as string, oldValue as string));
                 }
             }

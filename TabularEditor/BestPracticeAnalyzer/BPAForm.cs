@@ -466,8 +466,10 @@ namespace TabularEditor.UI.Dialogs
                 {
                     continue;
                 }
-                else
-                    script += item.Object.GetLinqPath() + "." + item.Rule.FixExpression + ";";
+                if (item.Object is TabularObject tabularObject)
+                {
+                    script += tabularObject.GetLinqPath() + "." + item.Rule.FixExpression + ";";
+                }
             }
 
             return script;

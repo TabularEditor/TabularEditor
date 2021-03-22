@@ -35,11 +35,13 @@ namespace TabularEditor.TOMWrapper
                 if (MetadataObject.Members.Any(m => m is TOM.ExternalModelRoleMember))
                     throw new InvalidOperationException("This role uses External Role Members. To add External Role Members, please use the Members collection instead.");
 
+                Handler.BeginUpdate("Set property 'Role Members'");
                 Members.Clear();
                 foreach(var member in value.Replace("\r", "").Split('\n'))
                 {
                     WindowsModelRoleMember.CreateNew(this, member);
                 }
+                Handler.EndUpdate();
             }
         }
 

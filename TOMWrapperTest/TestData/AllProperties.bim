@@ -1,0 +1,218 @@
+{
+  "name": "SemanticModel",
+  "compatibilityLevel": 1562,
+  "model": {
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "discourageImplicitMeasures": true,
+    "dataSources": [
+      {
+        "name": "LegacyDataSource",
+        "impersonationMode": "impersonateServiceAccount"
+      },
+      {
+        "type": "structured",
+        "name": "PowerQueryDataSource"
+      }
+    ],
+    "tables": [
+      {
+        "name": "Table",
+        "refreshPolicy": {
+          "policyType": "basic"
+        },
+        "columns": [
+          {
+            "name": "DC1",
+            "dataType": "string",
+            "alternateOf": {
+              "baseColumn": {
+                "table": "CalcTable",
+                "column": "Value"
+              },
+              "summarization": "sum"
+            }
+          },
+          {
+            "type": "calculated",
+            "name": "CC1",
+            "dataType": "int64",
+            "isDataTypeInferred": false,
+            "expression": "1",
+            "variations": [
+              {
+                "name": "Variation1"
+              }
+            ]
+          }
+        ],
+        "partitions": [
+          {
+            "name": "New Table",
+            "source": {
+              "type": "query",
+              "dataSource": "LegacyDataSource"
+            }
+          },
+          {
+            "name": "New M Partition",
+            "source": {
+              "type": "m"
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Measure",
+            "expression": "123",
+            "kpi": {}
+          }
+        ],
+        "hierarchies": [
+          {
+            "name": "H1",
+            "levels": [
+              {
+                "name": "L1",
+                "ordinal": 0,
+                "column": "DC1"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "CalcTable",
+        "columns": [
+          {
+            "type": "calculatedTableColumn",
+            "name": "Value",
+            "dataType": "int64",
+            "isNameInferred": false,
+            "isDataTypeInferred": false,
+            "sourceColumn": "[Value]"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "New Calculated Table",
+            "mode": "import",
+            "source": {
+              "type": "calculated",
+              "expression": "{1}"
+            }
+          }
+        ]
+      },
+      {
+        "name": "CalculationGroup",
+        "calculationGroup": {
+          "calculationItems": [
+            {
+              "name": "CalcItem"
+            }
+          ]
+        },
+        "columns": [
+          {
+            "name": "Name",
+            "dataType": "string",
+            "sourceColumn": "Name",
+            "sortByColumn": "Ordinal"
+          },
+          {
+            "name": "Ordinal",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "Ordinal"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "source": {
+              "type": "calculationGroup"
+            }
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "fd12f5a8-da3e-408b-94dd-83f632a624b0",
+        "fromTable": "Table",
+        "fromColumn": "CC1",
+        "toTable": "CalcTable",
+        "toColumn": "Value"
+      }
+    ],
+    "cultures": [
+      {
+        "name": "da-DK"
+      }
+    ],
+    "perspectives": [
+      {
+        "name": "Perspective",
+        "tables": [
+          {
+            "name": "Table",
+            "columns": [
+              {
+                "name": "DC1"
+              },
+              {
+                "name": "CC1"
+              }
+            ],
+            "measures": [
+              {
+                "name": "Measure"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "roles": [
+      {
+        "name": "Role1",
+        "tablePermissions": [
+          {
+            "name": "CalcTable",
+            "filterExpression": "TRUE()",
+            "extendedProperties": [
+              {
+                "name": "New ExtendedProperty",
+                "value": "123"
+              },
+              {
+                "type": "json",
+                "name": "New ExtendedProperty 1",
+                "value": {
+                  "name": "value"
+                }
+              }
+            ],
+            "annotations": [
+              {
+                "name": "New Annotation",
+                "value": "123"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "expressions": [
+      {
+        "name": "NamedExpr"
+      }
+    ],
+    "annotations": [
+      {
+        "name": "TabularEditor_SerializeOptions",
+        "value": "{\"IgnoreInferredObjects\":true,\"IgnoreInferredProperties\":true,\"IgnoreTimestamps\":true,\"SplitMultilineStrings\":true,\"PrefixFilenames\":false,\"LocalTranslations\":true,\"LocalPerspectives\":true,\"LocalRelationships\":true,\"Levels\":[\"Data Sources\",\"Roles\",\"Tables\",\"Tables/Calculation Items\",\"Tables/Columns\",\"Tables/Hierarchies\",\"Tables/Measures\",\"Tables/Partitions\"]}"
+      }
+    ]
+  }
+}

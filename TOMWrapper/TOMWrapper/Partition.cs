@@ -14,7 +14,7 @@ namespace TabularEditor.TOMWrapper
 {
     public partial class Partition: IExpressionObject
     {
-        public bool NeedsValidation { get { return false; } set { } }
+        public bool NeedsValidation { get { return false; } private set { } }
 
         protected override void Init()
         {

@@ -259,8 +259,26 @@ namespace TabularEditor.TOMWrapper.Undo
             return batchSizeCounter;
         }
 
-        public int UndoSize { get { return _UndoStack.Count; } }
-        public int RedoSize { get { return _RedoStack.Count; } }
+
+        public int UndoSize => _UndoStack.Count;
+        public int UndoSteps => CountSteps(_UndoStack);
+        public int RedoSize => _RedoStack.Count;
+        public int RedoSteps => CountSteps(_RedoStack);
+
+        private int CountSteps(Stack<IUndoAction> actions)
+        {
+            int count = 0;
+            int batchDepth = 0;
+            foreach (var action in actions)
+            {
+                if (batchDepth == 0) count++;
+                if (action is UndoBatchAction uba)
+                {
+                    batchDepth += uba.Begin ? 1 : -1;
+                }
+            }
+            return count;
+        }
 
 
         public int BatchDepth { get { return batchDepth; } }

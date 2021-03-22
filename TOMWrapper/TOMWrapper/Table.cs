@@ -615,7 +615,7 @@ namespace TabularEditor.TOMWrapper
                 return false;
             }
 
-            set
+            private set
             {
                 
             }
