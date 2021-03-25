@@ -132,10 +132,14 @@ namespace TabularEditor
                     else n.Nodes.Add("(Infinite recursion)");
                     currentDepth--;
                 }
-            } else
+            }
+            else
             {
                 if (obj is ITabularTableObject) RecursiveAdd(((ITabularTableObject)obj).Table, n.Nodes);
             }
+
+            // Include the column used as a Sort-by column for the current column:
+            if (obj is Column c && c.SortByColumn != null) RecursiveAdd(c.SortByColumn, n.Nodes);
         }
         private void InverseRecursiveAdd(IDaxObject obj, TreeNodeCollection nodes)
         {
@@ -171,6 +175,14 @@ namespace TabularEditor
                     }
                     else n.Nodes.Add("(Infinite recursion)");
                     currentDepth--;
+                }
+            }
+            if(obj is Column c)
+            {
+                // Include columns that use the current object as a Sort-by column:
+                foreach(var col in c.UsedInSortBy)
+                {
+                    InverseRecursiveAdd(col, n.Nodes);
                 }
             }
         }
