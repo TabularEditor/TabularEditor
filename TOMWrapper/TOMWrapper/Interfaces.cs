@@ -33,6 +33,11 @@ namespace TabularEditor.TOMWrapper
         string LineageTag { get; set; }
     }
 
+    public interface ISynonymObject: ITabularNamedObject
+    {
+        SynonymIndexer Synonyms { get; }
+    }
+
     /// <summary>
     /// Objects whose name and description properties can be translated
     /// </summary>

@@ -95,6 +95,7 @@ namespace TabularEditor.TOMWrapper
 #><#= props.Any(p => p.Name == "ExtendedProperties") ? "\n\t\t\t, IInternalExtendedPropertyObject" : ""
 #><#= Rules.IsPerspectiveObject(t) ? "\n\t\t\t, IInternalTabularPerspectiveObject" : ""
 #><#= Rules.IsTranslatable(t) ? "\n\t\t\t, IInternalTranslatableObject" : ""
+#><#= Rules.IsSynonymObject(t) ? "\n\t\t\t, ISynonymObject" : ""
 #><#= Rules.IsCreatable(t) ? "\n\t\t\t, IClonableObject" : ""
 #>
 	{
@@ -447,6 +448,12 @@ namespace TabularEditor.TOMWrapper
         [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current <#=Rules.SplitCamelCase(t.Name)#>."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
+<# } if (Rules.IsSynonymObject(t)) { #>
+        /// <summary>
+        /// Collection of localized synonyms for this <#= t.Name #>.
+        /// </summary>
+        [Browsable(true),DisplayName("Synonyms"),Description("Shows all translated synonyms of the current <#=Rules.SplitCamelCase(t.Name)#>."),Category("Translations, Perspectives, Security")]
+	    public SynonymIndexer Synonyms { private set; get; }
 <# } if (!t.IsAbstract && Rules.InCollection(t)) { #>
 		internal static <#= t.Name #> CreateFromMetadata(<#= Rules.GetParent(t) #> parent, TOM.<#= t.Name #> metadataObject) {
 <# if (props.Any(p => p.Name == "LineageTag")) { #>
@@ -642,6 +649,8 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 			// Create indexers for translations:
 			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
 			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
+<# } if(Rules.IsSynonymObject(t)) { #>
+			Synonyms = new SynonymIndexer(this);
 <# } if(props.Any(p => p.Name == "DisplayFolder")) { #>
 			TranslatedDisplayFolders = new TranslationIndexer(this, TOM.TranslatedProperty.DisplayFolder);
 <# } if(Rules.IsPerspectiveObject(t)) { #>
@@ -707,6 +716,9 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 <# } if(Rules.InCollection(t)) { #>
 				case Properties.PARENT:
 					return false;
+<# } if(Rules.IsSynonymObject(t)) { #>
+				case nameof(Synonyms):
+					return Synonyms.LinguisticCultures.Any();
 <# } if(Rules.IsTranslatable(t)) { #>
 				
 				// Hides translation properties in the grid, unless the model actually contains translations:

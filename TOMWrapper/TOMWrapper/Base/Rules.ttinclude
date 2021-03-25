@@ -185,6 +185,19 @@ partial class Rules {
         }
     }
 
+	public static bool IsSynonymObject(Type t) {
+		switch(t.Name) {
+			case "Table":
+			case "Level":
+			case "Column":
+			case "Hierarchy":
+			case "Measure":
+				return true;
+			default:
+				return false;
+        }
+    }
+
 	public static bool IsPerspectiveObject(Type t, bool includeAncestors = false) {
 		switch(t.Name) {
 			case "Table":
