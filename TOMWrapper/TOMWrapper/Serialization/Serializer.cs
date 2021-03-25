@@ -214,7 +214,7 @@ namespace TabularEditor.TOMWrapper.Serialization
         // hold references to other objects, that needs to be looked up.
         public static Level DeserializeLevel(JObject json, Hierarchy target)
         {
-            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Level>(json.ToString());
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Level>(json.ToString(Formatting.None));
             tom.Name = target.Levels.GetNewName(tom.Name);
             tom.Column = target.Table.MetadataObject.Columns[json.Value<string>("column")];
 
@@ -225,7 +225,7 @@ namespace TabularEditor.TOMWrapper.Serialization
 
         public static CalculatedColumn DeserializeCalculatedColumn(JObject json, Table target)
         {
-            var tom = TOM.JsonSerializer.DeserializeObject<TOM.CalculatedColumn>(json.ToString());
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.CalculatedColumn>(json.ToString(Formatting.None));
             tom.Name = target.Columns.GetNewName(tom.Name);
 
             if (json["sortByColumn"] != null)
@@ -242,7 +242,7 @@ namespace TabularEditor.TOMWrapper.Serialization
 
         public static DataColumn DeserializeDataColumn(JObject json, Table target)
         {
-            var tom = TOM.JsonSerializer.DeserializeObject<TOM.DataColumn>(json.ToString());
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.DataColumn>(json.ToString(Formatting.None));
             tom.Name = target.Columns.GetNewName(tom.Name);
 
             if (json["sortByColumn"] != null)
@@ -259,7 +259,7 @@ namespace TabularEditor.TOMWrapper.Serialization
 
         public static Measure DeserializeMeasure(JObject json, Table target)
         {
-            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Measure>(json.ToString());
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Measure>(json.ToString(Formatting.None));
             tom.Name = target.Measures.GetNewName(tom.Name);
 
             var measure = Measure.CreateFromMetadata(target, tom);
@@ -269,7 +269,7 @@ namespace TabularEditor.TOMWrapper.Serialization
 
         public static Hierarchy DeserializeHierarchy(JObject json, Table target)
         {
-            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Hierarchy>(json.ToString());
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Hierarchy>(json.ToString(Formatting.None));
             tom.Name = target.Hierarchies.GetNewName(tom.Name);
             for (var i = 0; i < tom.Levels.Count; i++)
             {
@@ -285,7 +285,7 @@ namespace TabularEditor.TOMWrapper.Serialization
 
         public static Partition DeserializePartition(JObject json, Table target)
         {
-            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Partition>(json.ToString());
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Partition>(json.ToString(Formatting.None));
             tom.Name = target.Partitions.GetNewName(tom.Name);
             if(tom.Source is TOM.QueryPartitionSource)
             {
@@ -299,7 +299,7 @@ namespace TabularEditor.TOMWrapper.Serialization
 
         public static MPartition DeserializeMPartition(JObject json, Table target)
         {
-            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Partition>(json.ToString());
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Partition>(json.ToString(Formatting.None));
             tom.Name = target.Partitions.GetNewName(tom.Name);
             var partition = MPartition.CreateFromMetadata(target, tom);
             return partition;
@@ -307,7 +307,7 @@ namespace TabularEditor.TOMWrapper.Serialization
 
         public static CalculatedTable DeserializeCalculatedTable(JObject json, Model model)
         {
-            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Table>(json.ToString());
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Table>(json.ToString(Formatting.None));
             tom.Name = model.Tables.GetNewName(tom.Name);
 
             // Make sure all measures in the table still have model-wide unique names:
@@ -320,7 +320,7 @@ namespace TabularEditor.TOMWrapper.Serialization
 
         public static Table DeserializeTable(JObject json, Model model)
         {
-            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Table>(json.ToString());
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Table>(json.ToString(Formatting.None));
             tom.Name = model.Tables.GetNewName(tom.Name);
 
             // Make sure all measures in the table still have model-wide unique names:
@@ -333,7 +333,7 @@ namespace TabularEditor.TOMWrapper.Serialization
 
         public static SingleColumnRelationship DeserializeSingleColumnRelationship(JObject json, Model model)
         {
-            var tom = TOM.JsonSerializer.DeserializeObject<TOM.SingleColumnRelationship>(json.ToString());
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.SingleColumnRelationship>(json.ToString(Formatting.None));
             tom.Name = Guid.NewGuid().ToString();
 
             var relationship = SingleColumnRelationship.CreateFromMetadata(model, tom);
@@ -343,7 +343,7 @@ namespace TabularEditor.TOMWrapper.Serialization
 
         public static NamedExpression DeserializeNamedExpression(JObject json, Model model)
         {
-            var tom = TOM.JsonSerializer.DeserializeObject<TOM.NamedExpression>(json.ToString());
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.NamedExpression>(json.ToString(Formatting.None));
             tom.Name = model.Expressions.GetNewName(tom.Name);
 
             var expr = NamedExpression.CreateFromMetadata(model, tom);
@@ -353,7 +353,7 @@ namespace TabularEditor.TOMWrapper.Serialization
         }
         public static ModelRole DeserializeModelRole(JObject json, Model model)
         {
-            var tom = TOM.JsonSerializer.DeserializeObject<TOM.ModelRole>(json.ToString());
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.ModelRole>(json.ToString(Formatting.None));
             tom.Name = model.Roles.GetNewName(tom.Name);
 
             var role = ModelRole.CreateFromMetadata(model, tom);
@@ -363,7 +363,7 @@ namespace TabularEditor.TOMWrapper.Serialization
 
         public static Perspective DeserializePerspective(JObject json, Model model)
         {
-            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Perspective>(json.ToString());
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Perspective>(json.ToString(Formatting.None));
             tom.Name = model.Perspectives.GetNewName(tom.Name);
 
             var tomModel = model.MetadataObject;
@@ -388,12 +388,15 @@ namespace TabularEditor.TOMWrapper.Serialization
 
         public static Culture DeserializeCulture(JObject json, Model model)
         {
-            TabularCultureHelper.ImportCulture(json, model, true, false);
-            return model.Cultures[json["name"].Value<string>()];
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Culture>(json.ToString(Formatting.None));
+            tom.Name = model.Cultures.GetNewName();
+            var culture = Culture.CreateFromMetadata(model, tom);
+
+            return culture;
         }
         public static ProviderDataSource DeserializeProviderDataSource(JObject json, Model model)
         {
-            var tom = TOM.JsonSerializer.DeserializeObject<TOM.ProviderDataSource>(json.ToString());
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.ProviderDataSource>(json.ToString(Formatting.None));
             tom.Name = model.DataSources.GetNewName(tom.Name);
 
             var dataSource = ProviderDataSource.CreateFromMetadata(model, tom);
@@ -403,7 +406,7 @@ namespace TabularEditor.TOMWrapper.Serialization
 
         public static StructuredDataSource DeserializeStructuredDataSource(JObject json, Model model)
         {
-            var tom = TOM.JsonSerializer.DeserializeObject<TOM.StructuredDataSource>(json.ToString());
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.StructuredDataSource>(json.ToString(Formatting.None));
             tom.Name = model.DataSources.GetNewName(tom.Name);
 
             var dataSource = StructuredDataSource.CreateFromMetadata(model, tom);
@@ -412,7 +415,7 @@ namespace TabularEditor.TOMWrapper.Serialization
 
         public static CalculationItem DeserializeCalculationItem(JObject json, CalculationGroupTable calculationGroupTable)
         {
-            var tom = TOM.JsonSerializer.DeserializeObject<TOM.CalculationItem>(json.ToString());
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.CalculationItem>(json.ToString(Formatting.None));
             tom.Name = calculationGroupTable.CalculationItems.GetNewName(tom.Name);
             tom.Ordinal = calculationGroupTable.CalculationItems.Any(i => i.Ordinal != -1) ? calculationGroupTable.CalculationItems.Max(i => i.Ordinal) + 1 : -1;
 
@@ -422,7 +425,7 @@ namespace TabularEditor.TOMWrapper.Serialization
 
         public static CalculationGroupTable DeserializeCalculationGroupTable(JObject json, Model model)
         {
-            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Table>(json.ToString());
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Table>(json.ToString(Formatting.None));
             tom.Name = model.Tables.GetNewName(tom.Name);
 
             var calculationGroupTable = CalculationGroupTable.CreateFromMetadata(model, tom);
