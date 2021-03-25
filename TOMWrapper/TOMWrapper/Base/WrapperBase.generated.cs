@@ -1791,6 +1791,7 @@ namespace TabularEditor.TOMWrapper
 			, IInternalExtendedPropertyObject
 			, IInternalTabularPerspectiveObject
 			, IInternalTranslatableObject
+			, ISynonymObject
 	{
 	    internal new TOM.Column MetadataObject 
 		{ 
@@ -2682,6 +2683,11 @@ namespace TabularEditor.TOMWrapper
         [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current Column."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
+        /// <summary>
+        /// Collection of localized synonyms for this Column.
+        /// </summary>
+        [Browsable(true),DisplayName("Synonyms"),Description("Shows all translated synonyms of the current Column."),Category("Translations, Perspectives, Security")]
+	    public SynonymIndexer Synonyms { private set; get; }
 	
         internal override void RenewMetadataObject()
         {
@@ -2714,6 +2720,7 @@ namespace TabularEditor.TOMWrapper
 			// Create indexers for translations:
 			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
 			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
+			Synonyms = new SynonymIndexer(this);
 			TranslatedDisplayFolders = new TranslationIndexer(this, TOM.TranslatedProperty.DisplayFolder);
 
 			// Create indexer for perspectives:
@@ -2766,6 +2773,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1550 : Handler.CompatibilityLevel >= 1550;
 				case Properties.VARIATIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1200 : Handler.CompatibilityLevel >= 1400;
+				case nameof(Synonyms):
+					return Synonyms.LinguisticCultures.Any();
 				
 				// Hides translation properties in the grid, unless the model actually contains translations:
 				case Properties.TRANSLATEDNAMES:
@@ -4458,6 +4467,7 @@ namespace TabularEditor.TOMWrapper
 			, IInternalExtendedPropertyObject
 			, IInternalTabularPerspectiveObject
 			, IInternalTranslatableObject
+			, ISynonymObject
 			, IClonableObject
 	{
 	    internal new TOM.Hierarchy MetadataObject 
@@ -4941,6 +4951,11 @@ namespace TabularEditor.TOMWrapper
         [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current Hierarchy."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
+        /// <summary>
+        /// Collection of localized synonyms for this Hierarchy.
+        /// </summary>
+        [Browsable(true),DisplayName("Synonyms"),Description("Shows all translated synonyms of the current Hierarchy."),Category("Translations, Perspectives, Security")]
+	    public SynonymIndexer Synonyms { private set; get; }
 		internal static Hierarchy CreateFromMetadata(Table parent, TOM.Hierarchy metadataObject) {
             // Generate a new LineageTag if an object with the provided lineage tag already exists:
             if(!string.IsNullOrEmpty(metadataObject.LineageTag)) {
@@ -5065,6 +5080,7 @@ namespace TabularEditor.TOMWrapper
 			// Create indexers for translations:
 			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
 			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
+			Synonyms = new SynonymIndexer(this);
 			TranslatedDisplayFolders = new TranslationIndexer(this, TOM.TranslatedProperty.DisplayFolder);
 
 			// Create indexer for perspectives:
@@ -5113,6 +5129,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1550 : Handler.CompatibilityLevel >= 1550;
 				case Properties.PARENT:
 					return false;
+				case nameof(Synonyms):
+					return Synonyms.LinguisticCultures.Any();
 				
 				// Hides translation properties in the grid, unless the model actually contains translations:
 				case Properties.TRANSLATEDNAMES:
@@ -6146,6 +6164,7 @@ namespace TabularEditor.TOMWrapper
 			, IInternalAnnotationObject
 			, IInternalExtendedPropertyObject
 			, IInternalTranslatableObject
+			, ISynonymObject
 			, IClonableObject
 	{
 	    internal new TOM.Level MetadataObject 
@@ -6579,6 +6598,11 @@ namespace TabularEditor.TOMWrapper
         [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current Level."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
+        /// <summary>
+        /// Collection of localized synonyms for this Level.
+        /// </summary>
+        [Browsable(true),DisplayName("Synonyms"),Description("Shows all translated synonyms of the current Level."),Category("Translations, Perspectives, Security")]
+	    public SynonymIndexer Synonyms { private set; get; }
 		internal static Level CreateFromMetadata(Hierarchy parent, TOM.Level metadataObject) {
             // Generate a new LineageTag if an object with the provided lineage tag already exists:
             if(!string.IsNullOrEmpty(metadataObject.LineageTag)) {
@@ -6686,6 +6710,7 @@ namespace TabularEditor.TOMWrapper
 			// Create indexers for translations:
 			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
 			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
+			Synonyms = new SynonymIndexer(this);
 			
 			// Create indexer for annotations:
 			Annotations = new AnnotationCollection(this);
@@ -6716,6 +6741,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1550 : Handler.CompatibilityLevel >= 1550;
 				case Properties.PARENT:
 					return false;
+				case nameof(Synonyms):
+					return Synonyms.LinguisticCultures.Any();
 				
 				// Hides translation properties in the grid, unless the model actually contains translations:
 				case Properties.TRANSLATEDNAMES:
@@ -6835,6 +6862,7 @@ namespace TabularEditor.TOMWrapper
 			, IInternalExtendedPropertyObject
 			, IInternalTabularPerspectiveObject
 			, IInternalTranslatableObject
+			, ISynonymObject
 			, IClonableObject
 	{
 	    internal new TOM.Measure MetadataObject 
@@ -7402,6 +7430,11 @@ namespace TabularEditor.TOMWrapper
         [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current Measure."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
+        /// <summary>
+        /// Collection of localized synonyms for this Measure.
+        /// </summary>
+        [Browsable(true),DisplayName("Synonyms"),Description("Shows all translated synonyms of the current Measure."),Category("Translations, Perspectives, Security")]
+	    public SynonymIndexer Synonyms { private set; get; }
 		internal static Measure CreateFromMetadata(Table parent, TOM.Measure metadataObject) {
             // Generate a new LineageTag if an object with the provided lineage tag already exists:
             if(!string.IsNullOrEmpty(metadataObject.LineageTag)) {
@@ -7515,6 +7548,7 @@ namespace TabularEditor.TOMWrapper
 			// Create indexers for translations:
 			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
 			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
+			Synonyms = new SynonymIndexer(this);
 			TranslatedDisplayFolders = new TranslationIndexer(this, TOM.TranslatedProperty.DisplayFolder);
 
 			// Create indexer for perspectives:
@@ -7555,6 +7589,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1550 : Handler.CompatibilityLevel >= 1550;
 				case Properties.PARENT:
 					return false;
+				case nameof(Synonyms):
+					return Synonyms.LinguisticCultures.Any();
 				
 				// Hides translation properties in the grid, unless the model actually contains translations:
 				case Properties.TRANSLATEDNAMES:
@@ -12828,6 +12864,7 @@ namespace TabularEditor.TOMWrapper
 			, IInternalExtendedPropertyObject
 			, IInternalTabularPerspectiveObject
 			, IInternalTranslatableObject
+			, ISynonymObject
 			, IClonableObject
 	{
 	    internal new TOM.Table MetadataObject 
@@ -13374,6 +13411,11 @@ namespace TabularEditor.TOMWrapper
         [Browsable(true),DisplayName("Translated Names"),Description("Shows all translated names of the current Table."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedNames { private set; get; }
 
+        /// <summary>
+        /// Collection of localized synonyms for this Table.
+        /// </summary>
+        [Browsable(true),DisplayName("Synonyms"),Description("Shows all translated synonyms of the current Table."),Category("Translations, Perspectives, Security")]
+	    public SynonymIndexer Synonyms { private set; get; }
 		internal static Table CreateFromMetadata(Model parent, TOM.Table metadataObject) {
             // Generate a new LineageTag if an object with the provided lineage tag already exists:
             if(!string.IsNullOrEmpty(metadataObject.LineageTag)) {
@@ -13553,6 +13595,7 @@ namespace TabularEditor.TOMWrapper
 			// Create indexers for translations:
 			TranslatedNames = new TranslationIndexer(this, TOM.TranslatedProperty.Caption);
 			TranslatedDescriptions = new TranslationIndexer(this, TOM.TranslatedProperty.Description);
+			Synonyms = new SynonymIndexer(this);
 
 			// Create indexer for perspectives:
 			InPerspective = new PerspectiveTableIndexer(this);
@@ -13633,6 +13676,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1562 : Handler.CompatibilityLevel >= 1562;
 				case Properties.PARENT:
 					return false;
+				case nameof(Synonyms):
+					return Synonyms.LinguisticCultures.Any();
 				
 				// Hides translation properties in the grid, unless the model actually contains translations:
 				case Properties.TRANSLATEDNAMES:
