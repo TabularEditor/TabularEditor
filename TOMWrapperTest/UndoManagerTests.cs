@@ -177,6 +177,7 @@ namespace TabularEditor.TOMWrapper.Tests
         public void TestUndoStackDepth()
         {
             var handler = ObjectHandlingTests.CreateTestModel(fileName: null, compatibilityLevel: 1200, enableUndo: false);
+            handler.UndoManager.Suspend();
             var model = handler.Model;
 
             var t1 = model.AddTable("T1");
@@ -189,7 +190,7 @@ namespace TabularEditor.TOMWrapper.Tests
             var m1 = t1.AddMeasure("m1");
             m1.AddKPI();
 
-            handler.UndoManager.Enabled = true;
+            handler.UndoManager.Resume();
 
             t1.Delete();
             Assert.AreEqual(1, handler.UndoManager.UndoSize);

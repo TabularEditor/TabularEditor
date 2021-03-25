@@ -68,7 +68,7 @@ namespace TabularEditor.TOMWrapper
             KeepAlive();
 
             _disableUpdates = true;
-            UndoManager.Enabled = false;
+            UndoManager.Suspend();
 
             var sw = Stopwatch.StartNew();
 
@@ -109,7 +109,7 @@ namespace TabularEditor.TOMWrapper
             }
             finally
             {
-                UndoManager.Enabled = true;
+                UndoManager.Resume();
                 _disableUpdates = false;
             }
 

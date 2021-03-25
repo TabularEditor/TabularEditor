@@ -25,7 +25,16 @@ namespace TabularEditor.TOMWrapper.Undo
         /// <summary>
         /// Whether or not the undo manager is collecting operations.
         /// </summary>
-        public bool Enabled { get; internal set; } = false;
+        public bool Enabled => SuspendCount == 0;
+        public void Suspend()
+        {
+            SuspendCount++;
+        }
+        public void Resume()
+        {
+            SuspendCount--;
+        }
+        private int SuspendCount = 0;
 
         /// <summary>
         /// Rolls back all changes done to the model.

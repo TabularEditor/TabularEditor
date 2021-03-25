@@ -95,12 +95,14 @@ namespace TabularEditor.TOMWrapper
         private void Init()
         {
             UndoManager = new UndoManager(this);
+            UndoManager.Suspend();
             Actions = new TabularCommonActions(this);
             Model = Model.CreateFromMetadata(database.Model);
             Model.Database = new Database(Model, database);
             //CheckErrors();
 
             FormulaFixup.BuildDependencyTree();
+            UndoManager.Resume();
         }
         public TabularObject GetWrapperObject(TOM.MetadataObject obj) { return WrapperLookup[obj]; }
         internal readonly Dictionary<TOM.MetadataObject, TabularObject> WrapperLookup = new Dictionary<TOM.MetadataObject, TabularObject>();
@@ -133,8 +135,7 @@ namespace TabularEditor.TOMWrapper
 
             Status = "Succesfully created new model.";
             Init();
-
-            UndoManager.Enabled = true;
+            
             PowerBIGovernance.UpdateGovernanceMode();
         }
         internal PowerBIGovernance PowerBIGovernance { get; }
@@ -248,11 +249,12 @@ namespace TabularEditor.TOMWrapper
             Status = "Connected succesfully.";
             Version = database.Version;
             Init();
+            UndoManager.Suspend();
 
             Model.ClearTabularEditorAnnotations();
 
             _disableUpdates = false;
-            UndoManager.Enabled = true;
+            UndoManager.Resume();
             PowerBIGovernance.UpdateGovernanceMode();
             CheckErrors();
 
