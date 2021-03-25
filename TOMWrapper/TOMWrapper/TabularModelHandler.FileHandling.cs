@@ -36,10 +36,11 @@ namespace TabularEditor.TOMWrapper
             // In any other case, assume this is just a regular Model.bim file:
             else LoadModelFile(path);
 
+            UndoManager.Suspend();
             Model.ClearTabularEditorAnnotations();
             _disableUpdates = false;
 
-            UndoManager.Enabled = true;
+            UndoManager.Resume();
             PowerBIGovernance.UpdateGovernanceMode();
         }
 

@@ -38,7 +38,7 @@ namespace TabularEditor.TOMWrapper
         public static TabularModelHandler CreateTestModel(string fileName = null, int compatibilityLevel = 1200, bool enableUndo = true)
         {
             var tm = new TabularModelHandler(compatibilityLevel);
-            tm.UndoManager.Enabled = enableUndo;
+            if (!enableUndo) tm.UndoManager.Suspend();
 
             var ds = tm.Model.AddDataSource("Test Datasource");
             ds.ConnectionString = "Provider=MSOLEDBSQL;Data Source=localhost;Initial Catalog=db";
@@ -106,6 +106,8 @@ namespace TabularEditor.TOMWrapper
             foreach(var item in t1.GetChildren().OfType<ITabularPerspectiveObject>()) item.InPerspective.All();
 
             if(!string.IsNullOrEmpty(fileName)) tm.Save(fileName, SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+
+            if (!enableUndo) tm.UndoManager.Resume();
 
             return tm;
         }
