@@ -141,6 +141,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
                     case Properties.TRANSLATEDDESCRIPTIONS:
                     case Properties.TRANSLATEDDISPLAYFOLDERS:
                     case Properties.TRANSLATEDNAMES:
+                    case nameof(ISynonymObject.Synonyms):
                     case Properties.ISHIDDEN:
                     case Properties.DETAILROWSEXPRESSION:
                     case Properties.DEFAULTDETAILROWSEXPRESSION:
@@ -152,6 +153,8 @@ namespace TabularEditor.TOMWrapper.PowerBI
                     case Properties.KPI:
                     case Properties.DISCOURAGEIMPLICITMEASURES:
                     case Properties.INPERSPECTIVE:
+                    case nameof(Culture.Content):
+                    case nameof(Culture.ContentType):
                         return true;
 
                     case Properties.OBJECTLEVELSECURITY:
@@ -259,6 +262,8 @@ namespace TabularEditor.TOMWrapper.PowerBI
                 case nameof(EntityPartition.EntityName):
                 case nameof(EntityPartition.ExpressionSource):
                 case nameof(MPartition.MExpression):
+                case nameof(Culture.Content):
+                case nameof(Culture.ContentType):
                 case Properties.NAME:
                 case Properties.OBJECTTYPENAME:
                 case Properties.ISHIDDEN:
@@ -287,6 +292,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
                 case Properties.TRANSLATEDDESCRIPTIONS:
                 case Properties.TRANSLATEDDISPLAYFOLDERS:
                 case Properties.TRANSLATEDNAMES:
+                case nameof(ISynonymObject.Synonyms):
                 case Properties.SOURCECOLUMN:
                 case Properties.STATUSDESCRIPTION:
                 case Properties.STATUSEXPRESSION:
