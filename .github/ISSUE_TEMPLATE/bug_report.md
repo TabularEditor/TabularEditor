@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-Please make sure you're using the [latest version](https://github.com/otykier/TabularEditor/releases/latest) of Tabular Editor before submitting a bug.
+!!! Please make sure you're using the latest version of Tabular Editor before submitting a bug !!!
 
 **Describe the bug**
 A clear and concise description of what the bug is.
