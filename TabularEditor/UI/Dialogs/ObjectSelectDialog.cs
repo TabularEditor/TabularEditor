@@ -102,10 +102,10 @@ namespace TabularEditor.UI.Dialogs
             {
                 switch (property)
                 {
-                    case "Sort By Column":
+                    case nameof(Column.SortByColumn):
                         Prep(instanceColumn.Table.Columns.Where(c => c != instanceColumn), value as Column, "Select column:");
                         break;
-                    case TOMWrapper.Properties.GROUPBYCOLUMNS:
+                    case nameof(Column.GroupByColumns):
                         Prep(value == null ? instanceColumn.Table.Columns : instanceColumn.Table.Columns.Except((value as object[]).Cast<Column>()), null, "Select column:");
                         break;
                 }
