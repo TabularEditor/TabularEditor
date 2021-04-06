@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.ComponentModel.Com2Interop;
 using TabularEditor.PropertyGridUI;
+using TabularEditor.TOMWrapper;
 using TabularEditor.UI.Dialogs;
 
 namespace TabularEditor.UI
@@ -14,10 +15,10 @@ namespace TabularEditor.UI
     {
         public void PropertyGrid_Init()
         {
-            CustomEditors.RegisterEditor("Display Folder", new FormDisplayFolderSelect());
-            CustomEditors.RegisterEditor("Connection String", new ConnectSqlForm());
-            CustomEditors.RegisterEditor("Sort By Column", new ColumnSelectDialog());
-            CustomEditors.RegisterEditor(TOMWrapper.Properties.GROUPBYCOLUMNS, new ColumnSelectDialog());
+            CustomEditors.RegisterEditor(nameof(Measure.DisplayFolder), new FormDisplayFolderSelect());
+            CustomEditors.RegisterEditor(nameof(ProviderDataSource.ConnectionString), new ConnectSqlForm());
+            CustomEditors.RegisterEditor(nameof(Column.SortByColumn), new ColumnSelectDialog());
+            CustomEditors.RegisterEditor(nameof(Column.GroupByColumns), new ColumnSelectDialog());
         }
 
         public void PropertyGrid_UpdateFromSelection()
