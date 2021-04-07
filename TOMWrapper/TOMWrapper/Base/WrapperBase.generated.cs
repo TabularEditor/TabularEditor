@@ -279,6 +279,7 @@ namespace TabularEditor.TOMWrapper
         Entity = 5,
         PolicyRange = 6,
         CalculationGroup = 7,
+        InferredAlternateOf = 8,
 	}
 	/// <summary>
 ///             Describes the type of data contained in the column. 
@@ -2578,10 +2579,10 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeEncodingHint() { return false; }
 /// <summary>
-///             A tag that repesents the lineage of the object.
+///             A tag that represents the lineage of the object.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
 		[DisplayName("Lineage Tag")]
-		[Category("Options"),Description(@"A tag that repesents the lineage of the object."),IntelliSense(@"A tag that repesents the lineage of the object.")]
+		[Category("Options"),Description(@"A tag that represents the lineage of the object."),IntelliSense(@"A tag that represents the lineage of the object.")]
 		public string LineageTag {
 			get {
 			    return MetadataObject.LineageTag;
@@ -4871,10 +4872,10 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeHideMembers() { return false; }
 /// <summary>
-///             A tag that repesents the lineage of the object.
+///             A tag that represents the lineage of the object.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
 		[DisplayName("Lineage Tag")]
-		[Category("Options"),Description(@"A tag that repesents the lineage of the object."),IntelliSense(@"A tag that repesents the lineage of the object.")]
+		[Category("Options"),Description(@"A tag that represents the lineage of the object."),IntelliSense(@"A tag that represents the lineage of the object.")]
 		public string LineageTag {
 			get {
 			    return MetadataObject.LineageTag;
@@ -6501,10 +6502,10 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeDescription() { return false; }
 /// <summary>
-///             A tag that repesents the lineage of the object.
+///             A tag that represents the lineage of the object.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
 		[DisplayName("Lineage Tag")]
-		[Category("Options"),Description(@"A tag that repesents the lineage of the object."),IntelliSense(@"A tag that repesents the lineage of the object.")]
+		[Category("Options"),Description(@"A tag that represents the lineage of the object."),IntelliSense(@"A tag that represents the lineage of the object.")]
 		public string LineageTag {
 			get {
 			    return MetadataObject.LineageTag;
@@ -7350,10 +7351,10 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeDataCategory() { return false; }
 /// <summary>
-///             A tag that repesents the lineage of the object.
+///             A tag that represents the lineage of the object.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
 		[DisplayName("Lineage Tag")]
-		[Category("Options"),Description(@"A tag that repesents the lineage of the object."),IntelliSense(@"A tag that repesents the lineage of the object.")]
+		[Category("Options"),Description(@"A tag that represents the lineage of the object."),IntelliSense(@"A tag that represents the lineage of the object.")]
 		public string LineageTag {
 			get {
 			    return MetadataObject.LineageTag;
@@ -13322,10 +13323,10 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeExcludeFromModelRefresh() { return false; }
 /// <summary>
-///             A tag that repesents the lineage of the object.
+///             A tag that represents the lineage of the object.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
 		[DisplayName("Lineage Tag")]
-		[Category("Options"),Description(@"A tag that repesents the lineage of the object."),IntelliSense(@"A tag that repesents the lineage of the object.")]
+		[Category("Options"),Description(@"A tag that represents the lineage of the object."),IntelliSense(@"A tag that represents the lineage of the object.")]
 		public string LineageTag {
 			get {
 			    return MetadataObject.LineageTag;
@@ -14399,10 +14400,10 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeMAttributes() { return false; }
 /// <summary>
-///             A tag that repesents the lineage of the object.
+///             A tag that represents the lineage of the object.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
 		[DisplayName("Lineage Tag")]
-		[Category("Options"),Description(@"A tag that repesents the lineage of the object."),IntelliSense(@"A tag that repesents the lineage of the object.")]
+		[Category("Options"),Description(@"A tag that represents the lineage of the object."),IntelliSense(@"A tag that represents the lineage of the object.")]
 		public string LineageTag {
 			get {
 			    return MetadataObject.LineageTag;
