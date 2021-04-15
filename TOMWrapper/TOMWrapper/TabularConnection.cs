@@ -17,17 +17,25 @@ namespace TabularEditor.TOMWrapper
 
         private static DbConnectionStringBuilder GetBuilder(string serverNameOrConnectionString)
         {
-            DbConnectionStringBuilder csb = new DbConnectionStringBuilder();
-            try
+            // Special handling of a connection string on the form: "powerbi://api.powerbi.com/v1.0/myorg/workspace;initial catalog=dbname"
+            if (serverNameOrConnectionString.StartsWith("powerbi://", StringComparison.OrdinalIgnoreCase) && serverNameOrConnectionString.Contains(";"))
             {
-                csb.ConnectionString = serverNameOrConnectionString;
+                serverNameOrConnectionString = "Provider=MSOLAP;Data Source=" + serverNameOrConnectionString;
             }
-            catch (ArgumentException ex)
+            DbConnectionStringBuilder csb = new DbConnectionStringBuilder();
+            if (serverNameOrConnectionString.Contains("="))
             {
+                try
+                {
+                    csb.ConnectionString = serverNameOrConnectionString;
+                }
+                catch (ArgumentException)
+                {
+                }
             }
 
-            if (!csb.ContainsKey("Provider")) csb.Add(ProviderKey, "MSOLAP");
-            if (!csb.ContainsAny("Data Source", "DataSource")) csb.Add(DataSourceKey, serverNameOrConnectionString);
+            if (!csb.ContainsKey(ProviderKey)) csb.Add(ProviderKey, "MSOLAP");
+            if (!csb.ContainsAny(DataSourceKey, "DataSource")) csb.Add(DataSourceKey, serverNameOrConnectionString);
 
             return csb;
         }
