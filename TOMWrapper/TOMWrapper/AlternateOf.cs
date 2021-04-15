@@ -76,17 +76,11 @@ namespace TabularEditor.TOMWrapper
                         if (newValue != null)
                         {
                             BaseTable = null;
-                            if (Summarization == SummarizationType.Count)
-                                Summarization = SummarizationType.Sum;
                         }
                         Handler.EndUpdate();
                         break;
                     case Properties.SUMMARIZATION:
-                        if (BaseColumn != null && (SummarizationType)newValue == SummarizationType.Count)
-                        {
-                            BaseColumn = null;
-                        }
-                        else if (BaseTable != null && (SummarizationType)newValue != SummarizationType.Count)
+                        if (BaseTable != null && (SummarizationType)newValue != SummarizationType.Count)
                         {
                             BaseTable = null;
                         }
@@ -102,7 +96,7 @@ namespace TabularEditor.TOMWrapper
         {
             if (propertyName == Properties.COLUMN || propertyName == Properties.OBJECTTYPE) return false;
             if (propertyName == Properties.BASETABLE) return Summarization == SummarizationType.Count;
-            if (propertyName == Properties.BASECOLUMN) return Summarization != SummarizationType.Count;
+            if (propertyName == Properties.BASECOLUMN) return true;
             return base.IsBrowsable(propertyName);
         }
 
