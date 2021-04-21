@@ -18,14 +18,16 @@ $p = Start-Process -filePath TabularEditor.exe -Wait -NoNewWindow -PassThru -Arg
 
 Output:
 ```
-Tabular Editor 2.13.0 (build 2.12.7541.25787)
+Tabular Editor 2.16.0 (build 2.16.7781.40242)
 --------------------------------
+Loading custom actions from: C:\Users\do\AppData\Local\TabularEditor\CustomActions.json
 Usage:
 
 TABULAREDITOR ( file | server database ) [-S script1 [script2] [...]]
-    [-SC] [-A [rules]] [(-B | -F) output [id]] [-V] [-T resultsfile]
-    [-D [server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]] 
-        [-P [-Y]] [-R [-M]]] [-X xmla_script]] [-W] [-E]]
+    [-SC] [-A [rules] | -AX rules] [(-B | -F) output [id]] [-V] [-T resultsfile]
+    [-D [server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]]
+        [-P [-Y]] [-R [-M]]]
+        [-X xmla_script]] [-W] [-E]]
 
 file                Full path of the Model.bim file or database.json model folder to load.
 server              Server\instance name or connection string from which to load the model
@@ -41,6 +43,7 @@ database            Database ID of the model to load
   rules               Optional path of file or URL of additional BPA rules to be analyzed. If
                       specified, model is not analyzed against local user/local machine rules,
                       but rules defined within the model are still applied.
+-AX / -ANALYZEX     Same as -A / -ANALYZE but excludes rules specified in the model annotations.
 -B / -BIM / -BUILD  Saves the model (after optional script execution) as a Model.bim file.
   output              Full path of the Model.bim file to save to.
   id                  Optional id/name to assign to the Database object when saving.
