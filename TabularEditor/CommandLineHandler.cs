@@ -228,7 +228,17 @@ namespace TabularEditor
                 var rulefile = doAnalyze + 1 < argList.Count ? argList[doAnalyze + 1] : "";
                 if (rulefile.StartsWith("-") || string.IsNullOrEmpty(rulefile)) rulefile = null;
 
-                AnalyzeBestPracticeRules(rulefile);
+                AnalyzeBestPracticeRules(rulefile, true);
+            }
+
+            var doAnalyzeX = upperArgList.IndexOf("-ANALYZEX");
+            if (doAnalyzeX == -1) doAnalyzeX = upperArgList.IndexOf("-AX");
+            if (doAnalyzeX > -1)
+            {
+                var rulefile = doAnalyzeX + 1 < argList.Count ? argList[doAnalyzeX + 1] : "";
+                if (rulefile.StartsWith("-") || string.IsNullOrEmpty(rulefile)) rulefile = null;
+
+                AnalyzeBestPracticeRules(rulefile, false);
             }
 
             var doDeploy = upperArgList.IndexOf("-DEPLOY");
@@ -320,7 +330,7 @@ namespace TabularEditor
             Console.WriteLine(@"Usage:
 
 TABULAREDITOR ( file | server database ) [-S script1 [script2] [...]]
-    [-SC] [-A [rules]] [(-B | -F) output [id]] [-V] [-T resultsfile]
+    [-SC] [-A [rules] | -AX rules] [(-B | -F) output [id]] [-V] [-T resultsfile]
     [-D [server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]]
         [-P [-Y]] [-R [-M]]]
         [-X xmla_script]] [-W] [-E]]
@@ -339,6 +349,7 @@ database            Database ID of the model to load
   rules               Optional path of file or URL of additional BPA rules to be analyzed. If
                       specified, model is not analyzed against local user/local machine rules,
                       but rules defined within the model are still applied.
+-AX / -ANALYZEX     Same as -A / -ANALYZE but excludes rules specified in the model annotations.
 -B / -BIM / -BUILD  Saves the model (after optional script execution) as a Model.bim file.
   output              Full path of the Model.bim file to save to.
   id                  Optional id/name to assign to the Database object when saving.
@@ -554,7 +565,7 @@ database            Database ID of the model to load
             }
         }
 
-        void AnalyzeBestPracticeRules(string rulefile)
+        void AnalyzeBestPracticeRules(string rulefile, bool includeModelRules)
         {
             Console.WriteLine("Running Best Practice Analyzer...");
             Console.WriteLine("=================================");
@@ -590,10 +601,14 @@ database            Database ID of the model to load
             }
 
             IEnumerable<BPA.AnalyzerResult> bpaResults;
-            if (suppliedRules == null) bpaResults = analyzer.AnalyzeAll();
+            if (suppliedRules == null)
+            {
+                var effectiveRules = analyzer.GetEffectiveRules(false, false, includeModelRules, includeModelRules);
+                bpaResults = analyzer.Analyze(effectiveRules);
+            }
             else
             {
-                var effectiveRules = analyzer.GetEffectiveRules(false, false, true, true, suppliedRules);
+                var effectiveRules = analyzer.GetEffectiveRules(false, false, includeModelRules, includeModelRules, suppliedRules);
                 bpaResults = analyzer.Analyze(effectiveRules);
             }
 
