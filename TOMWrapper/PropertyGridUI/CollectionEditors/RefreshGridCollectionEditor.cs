@@ -88,14 +88,14 @@ namespace TabularEditor.PropertyGridUI
 
         protected override void DestroyInstance(object instance)
         {
-            this.CurrentItems.Remove(instance);
+            this.CurrentItems?.Remove(instance);
             base.DestroyInstance(instance);
         }
 
         protected override object CreateInstance(Type itemType)
         {
             var instance = CreateCustomInstance(itemType);
-            this.CurrentItems.Add(instance);
+            this.CurrentItems?.Add(instance);
             return instance;
         }
 
