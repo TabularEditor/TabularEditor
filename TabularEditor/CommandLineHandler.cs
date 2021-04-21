@@ -522,8 +522,8 @@ database            Database ID of the model to load
                     foreach (var map in replaceMap) Handler.Model.DataSources.SetPlaceholder(map.Key, map.Value);
                 }
 
-                var cs = string.IsNullOrEmpty(userName) ? TabularConnection.GetConnectionString(serverName) :
-                    TabularConnection.GetConnectionString(serverName, userName, password);
+                var cs = string.IsNullOrEmpty(userName) ? TabularConnection.GetConnectionString(serverName, Program.ApplicationName) :
+                    TabularConnection.GetConnectionString(serverName, userName, password, Program.ApplicationName);
                 if (xmla_scripting_only)
                 {
                     Console.WriteLine("Generating XMLA/TMSL script...");

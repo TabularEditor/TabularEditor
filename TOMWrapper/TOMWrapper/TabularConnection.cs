@@ -42,7 +42,8 @@ namespace TabularEditor.TOMWrapper
         private static DbConnectionStringBuilder GetBuilder(string serverNameOrConnectionString, string applicationName)
         {
             var csb = GetBuilder(serverNameOrConnectionString);
-            csb[ApplicationNameKey] = applicationName;
+            if(!csb.ContainsKey(ApplicationNameKey))
+                csb[ApplicationNameKey] = applicationName;
             return csb;
         }
 
@@ -90,19 +91,6 @@ namespace TabularEditor.TOMWrapper
             if (csb.ContainsKey("Password")) csb.Remove("Password");
             if (csb.ContainsKey("PWD")) csb.Remove("PWD");
             return csb.ToString();
-        }
-
-        public static string GetConnectionString(string serverName)
-        {
-            return string.Format("Provider=MSOLAP;DataSource={0}", serverName);
-        }
-
-        public static string GetConnectionString(string serverName, string userName, string password)
-        {
-            return string.Format("Provider=MSOLAP;DataSource={0};User ID={1};Password=\"{2}\";Persist Security Info=True;Impersonation Level=Impersonate;",
-                serverName,
-                userName,
-                password.Replace("\"", "\"\""));
         }
     }
 }
