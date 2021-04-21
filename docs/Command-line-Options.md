@@ -20,7 +20,6 @@ Output:
 ```
 Tabular Editor 2.16.0 (build 2.16.7781.40242)
 --------------------------------
-Loading custom actions from: C:\Users\do\AppData\Local\TabularEditor\CustomActions.json
 Usage:
 
 TABULAREDITOR ( file | server database ) [-S script1 [script2] [...]]
