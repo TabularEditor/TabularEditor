@@ -59,14 +59,16 @@ namespace TabularEditor.TOMWrapper.Serialization
                 };
             }
         }
-        public bool IgnoreInferredObjects = true;
-        public bool IgnoreInferredProperties = true;
-        public bool IgnoreTimestamps = true;
-        public bool SplitMultilineStrings = true;
-        public bool PrefixFilenames = false;
-        public bool LocalTranslations = false;
-        public bool LocalPerspectives = false;
-        public bool LocalRelationships = false;
+        public bool IgnoreInferredObjects { get; set; } = true;
+        public bool IgnoreInferredProperties { get; set; } = true;
+        public bool IgnoreTimestamps { get; set; } = true;
+        public bool IgnoreLineageTags { get; set; } = false;
+        public bool ShouldSerializeIgnoreLineageTags() => IgnoreLineageTags;
+        public bool SplitMultilineStrings { get; set; } = true;
+        public bool PrefixFilenames { get; set; } = false;
+        public bool LocalTranslations { get; set; } = false;
+        public bool LocalPerspectives { get; set; } = false;
+        public bool LocalRelationships { get; set; } = false;
 
         [JsonIgnore]
         public string DatabaseNameOverride = null;
@@ -81,6 +83,7 @@ namespace TabularEditor.TOMWrapper.Serialization
 
             return other.Levels.SetEquals(this.Levels)
                 && other.IgnoreInferredObjects == IgnoreInferredObjects
+                && other.IgnoreLineageTags == IgnoreLineageTags
                 && other.IgnoreInferredProperties == IgnoreInferredProperties
                 && other.IgnoreTimestamps == IgnoreTimestamps
                 && other.SplitMultilineStrings == SplitMultilineStrings

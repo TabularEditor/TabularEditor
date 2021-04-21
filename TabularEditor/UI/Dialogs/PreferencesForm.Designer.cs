@@ -105,6 +105,12 @@
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.tabGeneral = new System.Windows.Forms.TabPage();
+            this.groupBox10 = new System.Windows.Forms.GroupBox();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.label7 = new System.Windows.Forms.Label();
+            this.txtCompilerOptions = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.txtCompilerPath = new System.Windows.Forms.TextBox();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -131,12 +137,8 @@
             this.treeView2 = new System.Windows.Forms.TreeView();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.groupBox10 = new System.Windows.Forms.GroupBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.txtCompilerPath = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.txtCompilerOptions = new System.Windows.Forms.TextBox();
-            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.chkIgnoreLineageTags = new System.Windows.Forms.CheckBox();
+            this.chkIgnoreLineageTagsCM = new System.Windows.Forms.CheckBox();
             this.groupBox3.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabFeatures.SuspendLayout();
@@ -144,6 +146,7 @@
             this.groupBox7.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.tabGeneral.SuspendLayout();
+            this.groupBox10.SuspendLayout();
             this.groupBox9.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabDAX.SuspendLayout();
@@ -154,7 +157,6 @@
             this.tabCurrentModel.SuspendLayout();
             this.grpSaveToFolder.SuspendLayout();
             this.groupBox8.SuspendLayout();
-            this.groupBox10.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnOK
@@ -242,7 +244,7 @@
             // 
             this.chkLocalTranslations.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.chkLocalTranslations.AutoSize = true;
-            this.chkLocalTranslations.Location = new System.Drawing.Point(6, 238);
+            this.chkLocalTranslations.Location = new System.Drawing.Point(6, 217);
             this.chkLocalTranslations.Name = "chkLocalTranslations";
             this.chkLocalTranslations.Size = new System.Drawing.Size(171, 17);
             this.chkLocalTranslations.TabIndex = 8;
@@ -256,7 +258,7 @@
             // 
             this.chkLocalPerspectives.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.chkLocalPerspectives.AutoSize = true;
-            this.chkLocalPerspectives.Location = new System.Drawing.Point(6, 215);
+            this.chkLocalPerspectives.Location = new System.Drawing.Point(6, 194);
             this.chkLocalPerspectives.Name = "chkLocalPerspectives";
             this.chkLocalPerspectives.Size = new System.Drawing.Size(227, 17);
             this.chkLocalPerspectives.TabIndex = 7;
@@ -271,7 +273,7 @@
             // 
             this.chkLocalRelationships.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.chkLocalRelationships.AutoSize = true;
-            this.chkLocalRelationships.Location = new System.Drawing.Point(6, 261);
+            this.chkLocalRelationships.Location = new System.Drawing.Point(6, 240);
             this.chkLocalRelationships.Name = "chkLocalRelationships";
             this.chkLocalRelationships.Size = new System.Drawing.Size(231, 17);
             this.chkLocalRelationships.TabIndex = 9;
@@ -390,7 +392,7 @@
             // 
             this.chkLocalRelationshipsCM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.chkLocalRelationshipsCM.AutoSize = true;
-            this.chkLocalRelationshipsCM.Location = new System.Drawing.Point(6, 261);
+            this.chkLocalRelationshipsCM.Location = new System.Drawing.Point(6, 240);
             this.chkLocalRelationshipsCM.Name = "chkLocalRelationshipsCM";
             this.chkLocalRelationshipsCM.Size = new System.Drawing.Size(231, 17);
             this.chkLocalRelationshipsCM.TabIndex = 9;
@@ -404,7 +406,7 @@
             // 
             this.chkLocalTranslationsCM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.chkLocalTranslationsCM.AutoSize = true;
-            this.chkLocalTranslationsCM.Location = new System.Drawing.Point(6, 238);
+            this.chkLocalTranslationsCM.Location = new System.Drawing.Point(6, 217);
             this.chkLocalTranslationsCM.Name = "chkLocalTranslationsCM";
             this.chkLocalTranslationsCM.Size = new System.Drawing.Size(171, 17);
             this.chkLocalTranslationsCM.TabIndex = 8;
@@ -418,7 +420,7 @@
             // 
             this.chkLocalPerspectivesCM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.chkLocalPerspectivesCM.AutoSize = true;
-            this.chkLocalPerspectivesCM.Location = new System.Drawing.Point(6, 215);
+            this.chkLocalPerspectivesCM.Location = new System.Drawing.Point(6, 194);
             this.chkLocalPerspectivesCM.Name = "chkLocalPerspectivesCM";
             this.chkLocalPerspectivesCM.Size = new System.Drawing.Size(227, 17);
             this.chkLocalPerspectivesCM.TabIndex = 7;
@@ -632,6 +634,65 @@
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
             // 
+            // groupBox10
+            // 
+            this.groupBox10.Controls.Add(this.linkLabel1);
+            this.groupBox10.Controls.Add(this.label7);
+            this.groupBox10.Controls.Add(this.txtCompilerOptions);
+            this.groupBox10.Controls.Add(this.label6);
+            this.groupBox10.Controls.Add(this.txtCompilerPath);
+            this.groupBox10.Location = new System.Drawing.Point(6, 138);
+            this.groupBox10.Name = "groupBox10";
+            this.groupBox10.Size = new System.Drawing.Size(357, 114);
+            this.groupBox10.TabIndex = 4;
+            this.groupBox10.TabStop = false;
+            this.groupBox10.Text = "Advanced Scripting";
+            // 
+            // linkLabel1
+            // 
+            this.linkLabel1.LinkArea = new System.Windows.Forms.LinkArea(127, 9);
+            this.linkLabel1.Location = new System.Drawing.Point(6, 22);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Size = new System.Drawing.Size(351, 30);
+            this.linkLabel1.TabIndex = 13;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "To use new C# language features when scripting, you must configure Tabular Editor" +
+    " to use a different compiler, such as Roslyn. More info.";
+            this.linkLabel1.UseCompatibleTextRendering = true;
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 91);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(87, 13);
+            this.label7.TabIndex = 11;
+            this.label7.Text = "Compiler options:";
+            // 
+            // txtCompilerOptions
+            // 
+            this.txtCompilerOptions.Location = new System.Drawing.Point(99, 88);
+            this.txtCompilerOptions.Name = "txtCompilerOptions";
+            this.txtCompilerOptions.Size = new System.Drawing.Size(252, 20);
+            this.txtCompilerOptions.TabIndex = 10;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 65);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(74, 13);
+            this.label6.TabIndex = 9;
+            this.label6.Text = "Compiler path:";
+            // 
+            // txtCompilerPath
+            // 
+            this.txtCompilerPath.Location = new System.Drawing.Point(99, 62);
+            this.txtCompilerPath.Name = "txtCompilerPath";
+            this.txtCompilerPath.Size = new System.Drawing.Size(252, 20);
+            this.txtCompilerPath.TabIndex = 8;
+            // 
             // groupBox9
             // 
             this.groupBox9.Controls.Add(this.label5);
@@ -745,7 +806,7 @@
             this.chkSkipPatch.AutoSize = true;
             this.chkSkipPatch.Location = new System.Drawing.Point(230, 75);
             this.chkSkipPatch.Name = "chkSkipPatch";
-            this.chkSkipPatch.Size = new System.Drawing.Size(100, 17);
+            this.chkSkipPatch.Size = new System.Drawing.Size(107, 17);
             this.chkSkipPatch.TabIndex = 5;
             this.chkSkipPatch.Text = "Skip patch builds";
             this.chkSkipPatch.UseVisualStyleBackColor = true;
@@ -830,9 +891,9 @@
             this.groupBox4.Controls.Add(this.chkLocalPerspectives);
             this.groupBox4.Controls.Add(this.treeView1);
             this.groupBox4.Controls.Add(this.label1);
-            this.groupBox4.Location = new System.Drawing.Point(6, 77);
+            this.groupBox4.Location = new System.Drawing.Point(6, 98);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(357, 283);
+            this.groupBox4.Size = new System.Drawing.Size(357, 262);
             this.groupBox4.TabIndex = 4;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Save to Folder Serialization";
@@ -889,7 +950,7 @@
             treeNode12});
             this.treeView1.PathSeparator = "/";
             this.treeView1.ShowLines = false;
-            this.treeView1.Size = new System.Drawing.Size(345, 136);
+            this.treeView1.Size = new System.Drawing.Size(345, 115);
             this.treeView1.TabIndex = 1;
             this.treeView1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCheck);
             // 
@@ -908,13 +969,14 @@
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.chkIgnoreLineageTags);
             this.groupBox2.Controls.Add(this.chkSplitMultiline);
             this.groupBox2.Controls.Add(this.chkIgnoreInfProps);
             this.groupBox2.Controls.Add(this.chkIgnoreInfObjects);
             this.groupBox2.Controls.Add(this.chkIgnoreTimestamps);
             this.groupBox2.Location = new System.Drawing.Point(6, 6);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(357, 65);
+            this.groupBox2.Size = new System.Drawing.Size(357, 86);
             this.groupBox2.TabIndex = 0;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "General Serialization Settings";
@@ -942,9 +1004,9 @@
             this.grpSaveToFolder.Controls.Add(this.chkLocalPerspectivesCM);
             this.grpSaveToFolder.Controls.Add(this.treeView2);
             this.grpSaveToFolder.Controls.Add(this.label2);
-            this.grpSaveToFolder.Location = new System.Drawing.Point(6, 77);
+            this.grpSaveToFolder.Location = new System.Drawing.Point(6, 98);
             this.grpSaveToFolder.Name = "grpSaveToFolder";
-            this.grpSaveToFolder.Size = new System.Drawing.Size(357, 283);
+            this.grpSaveToFolder.Size = new System.Drawing.Size(357, 262);
             this.grpSaveToFolder.TabIndex = 6;
             this.grpSaveToFolder.TabStop = false;
             this.grpSaveToFolder.Text = "Current Model \"Save to Folder\" Settings";
@@ -1001,7 +1063,7 @@
             treeNode24});
             this.treeView2.PathSeparator = "/";
             this.treeView2.ShowLines = false;
-            this.treeView2.Size = new System.Drawing.Size(345, 136);
+            this.treeView2.Size = new System.Drawing.Size(345, 115);
             this.treeView2.TabIndex = 1;
             this.treeView2.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView2_AfterCheck);
             // 
@@ -1020,75 +1082,41 @@
             // 
             this.groupBox8.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox8.Controls.Add(this.chkIgnoreLineageTagsCM);
             this.groupBox8.Controls.Add(this.chkSplitMultilineCM);
             this.groupBox8.Controls.Add(this.chkIgnoreInfPropsCM);
             this.groupBox8.Controls.Add(this.chkIgnoreInfObjectsCM);
             this.groupBox8.Controls.Add(this.chkIgnoreTimestampsCM);
             this.groupBox8.Location = new System.Drawing.Point(6, 6);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(357, 65);
+            this.groupBox8.Size = new System.Drawing.Size(357, 86);
             this.groupBox8.TabIndex = 5;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Current Model Serialization Settings";
             // 
-            // groupBox10
+            // chkIgnoreLineageTags
             // 
-            this.groupBox10.Controls.Add(this.linkLabel1);
-            this.groupBox10.Controls.Add(this.label7);
-            this.groupBox10.Controls.Add(this.txtCompilerOptions);
-            this.groupBox10.Controls.Add(this.label6);
-            this.groupBox10.Controls.Add(this.txtCompilerPath);
-            this.groupBox10.Location = new System.Drawing.Point(6, 138);
-            this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Size = new System.Drawing.Size(357, 114);
-            this.groupBox10.TabIndex = 4;
-            this.groupBox10.TabStop = false;
-            this.groupBox10.Text = "Advanced Scripting";
+            this.chkIgnoreLineageTags.AutoSize = true;
+            this.chkIgnoreLineageTags.Location = new System.Drawing.Point(6, 65);
+            this.chkIgnoreLineageTags.Name = "chkIgnoreLineageTags";
+            this.chkIgnoreLineageTags.Size = new System.Drawing.Size(116, 17);
+            this.chkIgnoreLineageTags.TabIndex = 4;
+            this.chkIgnoreLineageTags.Text = "Ignore lineage tags";
+            this.toolTip1.SetToolTip(this.chkIgnoreLineageTags, "If checked, expressions and other multiline string properties are serialized as a" +
+        " JSON array.");
+            this.chkIgnoreLineageTags.UseVisualStyleBackColor = true;
             // 
-            // label6
+            // chkIgnoreLineageTagsCM
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 65);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(74, 13);
-            this.label6.TabIndex = 9;
-            this.label6.Text = "Compiler path:";
-            // 
-            // txtCompilerPath
-            // 
-            this.txtCompilerPath.Location = new System.Drawing.Point(99, 62);
-            this.txtCompilerPath.Name = "txtCompilerPath";
-            this.txtCompilerPath.Size = new System.Drawing.Size(252, 20);
-            this.txtCompilerPath.TabIndex = 8;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 91);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(87, 13);
-            this.label7.TabIndex = 11;
-            this.label7.Text = "Compiler options:";
-            // 
-            // txtCompilerOptions
-            // 
-            this.txtCompilerOptions.Location = new System.Drawing.Point(99, 88);
-            this.txtCompilerOptions.Name = "txtCompilerOptions";
-            this.txtCompilerOptions.Size = new System.Drawing.Size(252, 20);
-            this.txtCompilerOptions.TabIndex = 10;
-            // 
-            // linkLabel1
-            // 
-            this.linkLabel1.LinkArea = new System.Windows.Forms.LinkArea(127, 9);
-            this.linkLabel1.Location = new System.Drawing.Point(6, 22);
-            this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(351, 30);
-            this.linkLabel1.TabIndex = 13;
-            this.linkLabel1.TabStop = true;
-            this.linkLabel1.Text = "To use new C# language features when scripting, you must configure Tabular Editor" +
-    " to use a different compiler, such as Roslyn. More info.";
-            this.linkLabel1.UseCompatibleTextRendering = true;
-            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
+            this.chkIgnoreLineageTagsCM.AutoSize = true;
+            this.chkIgnoreLineageTagsCM.Location = new System.Drawing.Point(6, 65);
+            this.chkIgnoreLineageTagsCM.Name = "chkIgnoreLineageTagsCM";
+            this.chkIgnoreLineageTagsCM.Size = new System.Drawing.Size(116, 17);
+            this.chkIgnoreLineageTagsCM.TabIndex = 5;
+            this.chkIgnoreLineageTagsCM.Text = "Ignore lineage tags";
+            this.toolTip1.SetToolTip(this.chkIgnoreLineageTagsCM, "If checked, expressions and other multiline string properties are serialized as a" +
+        " JSON array.");
+            this.chkIgnoreLineageTagsCM.UseVisualStyleBackColor = true;
             // 
             // PreferencesForm
             // 
@@ -1121,6 +1149,8 @@
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
             this.tabGeneral.ResumeLayout(false);
+            this.groupBox10.ResumeLayout(false);
+            this.groupBox10.PerformLayout();
             this.groupBox9.ResumeLayout(false);
             this.groupBox9.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -1137,8 +1167,6 @@
             this.grpSaveToFolder.PerformLayout();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
-            this.groupBox10.ResumeLayout(false);
-            this.groupBox10.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1215,5 +1243,7 @@
         private System.Windows.Forms.TextBox txtCompilerOptions;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox txtCompilerPath;
+        private System.Windows.Forms.CheckBox chkIgnoreLineageTags;
+        private System.Windows.Forms.CheckBox chkIgnoreLineageTagsCM;
     }
 }
