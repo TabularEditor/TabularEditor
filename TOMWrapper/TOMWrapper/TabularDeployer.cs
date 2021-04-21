@@ -443,7 +443,7 @@ namespace TabularEditor.TOMWrapper.Utils
                         if (t.IsCalculatedOrCalculationGroup()) continue;
 
                         // If destination partition is not a policyrange
-                        if (options.SkipRefreshPolicyPartitions || t.GetSourceType() != TOM.PartitionSourceType.PolicyRange)
+                        if (!options.DeployPartitions || (options.SkipRefreshPolicyPartitions && t.GetSourceType() == TOM.PartitionSourceType.PolicyRange))
                         {
                             // Retain existing partitions on destination:
                             var partitions = new JArray();

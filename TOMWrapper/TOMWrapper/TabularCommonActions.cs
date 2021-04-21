@@ -167,6 +167,8 @@ namespace TabularEditor.TOMWrapper
                 foreach (var obj in objectContainer.Get<DataColumn>().OrderBy(obj => obj["sortByColumn"] == null ? 0 : 1)) inserted.Add(Serializer.DeserializeDataColumn(obj, destTable));
                 foreach (var obj in objectContainer.Get<Partition>()) inserted.Add(Serializer.DeserializePartition(obj, destTable));
                 foreach (var obj in objectContainer.Get<MPartition>()) inserted.Add(Serializer.DeserializeMPartition(obj, destTable));
+                foreach (var obj in objectContainer.Get<PolicyRangePartition>()) inserted.Add(Serializer.DeserializePolicyRangePartition(obj, destTable));
+                foreach (var obj in objectContainer.Get<EntityPartition>()) inserted.Add(Serializer.DeserializeEntityPartition(obj, destTable));
             }
 
             if (destTable is Table)

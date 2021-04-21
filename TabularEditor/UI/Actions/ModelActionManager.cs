@@ -111,22 +111,38 @@ namespace TabularEditor.UI.Actions
             Add(new Separator(@"Create New"));
 
             Add(new Action(
-                (s, m) => Governance.AllowCreate(typeof(Partition)) && s.Count == 1, 
+                (s, m) => Governance.AllowCreate(typeof(Partition)) && s.Count == 1 && s.Table.Partitions.GetSupportedPartitionTypes().Contains(typeof(Partition)), 
                 (s, m) => Partition.CreateNew(s.Table).Edit(), 
                 (s, m) => @"Create New\Partition" + (Handler.CompatibilityLevel >= 1400 ? " (Legacy)" : ""), true, Context.Table));
             Add(new Action(
-                (s, m) => Governance.AllowCreate(typeof(MPartition)) && s.Count == 1 && Handler.CompatibilityLevel >= 1400,
+                (s, m) => Governance.AllowCreate(typeof(MPartition)) && s.Count == 1 && s.Table.Partitions.GetSupportedPartitionTypes().Contains(typeof(MPartition)),
                 (s, m) => MPartition.CreateNew(s.Table).Edit(),
                 (s, m) => @"Create New\Partition (Power Query)", true, Context.Table));
+            Add(new Action(
+                (s, m) => Governance.AllowCreate(typeof(PolicyRangePartition)) && s.Count == 1 && s.Table.Partitions.GetSupportedPartitionTypes().Contains(typeof(PolicyRangePartition)),
+                (s, m) => MPartition.CreateNew(s.Table).Edit(),
+                (s, m) => @"Create New\Partition (Policy Range)", true, Context.Table));
+            Add(new Action(
+                (s, m) => Governance.AllowCreate(typeof(EntityPartition)) && s.Count == 1 && s.Table.Partitions.GetSupportedPartitionTypes().Contains(typeof(EntityPartition)),
+                (s, m) => MPartition.CreateNew(s.Table).Edit(),
+                (s, m) => @"Create New\Partition (DQ over AS)", true, Context.Table));
 
             Add(new Action(
-                (s, m) => Governance.AllowCreate(typeof(Partition)),
+                (s, m) => Governance.AllowCreate(typeof(Partition)) && s.Table.Partitions.GetSupportedPartitionTypes().Contains(typeof(Partition)),
                 (s, m) => Partition.CreateNew(s.Table).Edit(),
                 (s, m) => @"New Partition" + (Handler.CompatibilityLevel >= 1400 ? " (Legacy)" : ""), true, Context.PartitionCollection | Context.Partition));
             Add(new Action(
-                (s, m) => Governance.AllowCreate(typeof(MPartition)) && Handler.CompatibilityLevel >= 1400,
+                (s, m) => Governance.AllowCreate(typeof(MPartition)) && s.Table.Partitions.GetSupportedPartitionTypes().Contains(typeof(MPartition)),
                 (s, m) => MPartition.CreateNew(s.Table).Edit(),
                 (s, m) => @"New Partition (Power Query)", true, Context.PartitionCollection | Context.Partition));
+            Add(new Action(
+                (s, m) => Governance.AllowCreate(typeof(PolicyRangePartition)) && s.Table.Partitions.GetSupportedPartitionTypes().Contains(typeof(PolicyRangePartition)),
+                (s, m) => MPartition.CreateNew(s.Table).Edit(),
+                (s, m) => @"New Partition (Policy Range)", true, Context.PartitionCollection | Context.Partition));
+            Add(new Action(
+                (s, m) => Governance.AllowCreate(typeof(EntityPartition)) && s.Table.Partitions.GetSupportedPartitionTypes().Contains(typeof(EntityPartition)),
+                (s, m) => MPartition.CreateNew(s.Table).Edit(),
+                (s, m) => @"New Partition (DQ over AS)", true, Context.PartitionCollection | Context.Partition));
 
             Add(new Action((s, m) => Governance.AllowCreate(typeof(Table)) && (m.DataSources.Any() || Handler.CompatibilityLevel >= 1400), (s, m) => m.AddTable().Vis().Edit(), (s, m) => @"Create New\Table", false, Context.Tables | Context.Model, Keys.Alt | Keys.D5));
 

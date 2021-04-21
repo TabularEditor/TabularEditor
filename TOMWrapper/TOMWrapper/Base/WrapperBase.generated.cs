@@ -244,6 +244,7 @@ namespace TabularEditor.TOMWrapper
             typeof(TablePermission),
 	        typeof(MPartition),
             typeof(EntityPartition),
+            typeof(PolicyRangePartition),
 			typeof(CalculatedTable),
 			typeof(CalculationGroupTable)
         };
@@ -10326,6 +10327,7 @@ namespace TabularEditor.TOMWrapper
 		{
 			if(obj.SourceType == TOM.PartitionSourceType.M) return MPartition.CreateFromMetadata(Table, obj);
             else if(obj.SourceType == TOM.PartitionSourceType.Entity) return EntityPartition.CreateFromMetadata(Table, obj);
+            else if(obj.SourceType == TOM.PartitionSourceType.PolicyRange) return PolicyRangePartition.CreateFromMetadata(Table, obj);
 			else return Partition.CreateFromMetadata(Table, obj);
 		    return null;
 		}

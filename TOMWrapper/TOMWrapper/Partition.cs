@@ -31,45 +31,6 @@ namespace TabularEditor.TOMWrapper
             base.Init();
         }
 
-        [Category("Refresh Policy"), Description("Gets or sets the range start of the refresh policy for this partition"), IntelliSense("Gets or sets the range start of the refresh policy for this partition")]
-        public DateTime Start
-        {
-            get => (MetadataObject.Source as TOM.PolicyRangePartitionSource)?.Start ?? DateTime.MinValue;
-            set
-            {
-                if (MetadataObject.Source is TOM.PolicyRangePartitionSource prps)
-                    SetValue(prps.Start, value, v => prps.Start = v);
-            }
-        }
-
-        [Category("Refresh Policy"), Description("Gets or sets the range end of the refresh policy for this partition"), IntelliSense("Gets or sets the range end of the refresh policy for this partition")]
-        public DateTime End
-        {
-            get => (MetadataObject.Source as TOM.PolicyRangePartitionSource)?.End ?? DateTime.MinValue;
-            set
-            {
-                if (MetadataObject.Source is TOM.PolicyRangePartitionSource prps)
-                    SetValue(prps.End, value, v => prps.End = v);
-            }
-        }
-
-        [Category("Refresh Policy"), Description("Gets or sets the granularity of the refresh policy for this partition"), IntelliSense("Gets or sets the granularity of the refresh policy for this partition")]
-        public RefreshGranularityType Granularity
-        {
-            get => (RefreshGranularityType)((MetadataObject.Source as TOM.PolicyRangePartitionSource)?.Granularity ?? TOM.RefreshGranularityType.Invalid);
-            set
-            {
-                if (MetadataObject.Source is TOM.PolicyRangePartitionSource prps)
-                    SetValue(prps.Granularity, (TOM.RefreshGranularityType)value, v => prps.Granularity = v);
-            }
-        }
-
-        [Category("Refresh Policy"), Description("Gets the refresh bookmark of the refresh policy for this partition"), IntelliSense("Gets the refresh bookmark of the refresh policy for this partition")]
-        public string RefreshBookmark
-        {
-            get => (MetadataObject.Source as TOM.PolicyRangePartitionSource)?.RefreshBookmark;
-        }
-
         [Category("Basic"),Description("The query which is executed on the Data Source to populate this partition with data.")]
         [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor)), IntelliSense("Gets or sets the query which is executed on the Data Source to populate the partition with data.")]
         public string Query { get { return Expression; } set { Expression = value; } }
@@ -172,11 +133,6 @@ namespace TabularEditor.TOMWrapper
                 case Properties.SOURCETYPE:
                 case Properties.ANNOTATIONS:
                     return true;
-                case Properties.START:
-                case Properties.END:
-                case Properties.GRANULARITY:
-                case Properties.REFRESHBOOKMARK:
-                    return SourceType == PartitionSourceType.PolicyRange;
                 default:
                     return false;
             }
@@ -222,9 +178,6 @@ namespace TabularEditor.TOMWrapper
                 case Properties.MODE:
                 case Properties.DATAVIEW:
                 case Properties.ANNOTATIONS:
-                case Properties.START:
-                case Properties.END:
-                case Properties.GRANULARITY:
                     return true;
                 default:
                     return false;
@@ -234,6 +187,25 @@ namespace TabularEditor.TOMWrapper
 
     public partial class PartitionCollection : ITabularNamedObject, ITabularObjectContainer, ITabularTableObject
     {
+        internal Type[] GetSupportedPartitionTypes()
+        {
+            if (Table.MetadataObject.RefreshPolicy is TOM.RefreshPolicy) return new[] { typeof(PolicyRangePartition) };
+            var cl = Handler.CompatibilityLevel;
+            if (cl >= 1400)
+            {
+                if (Handler.Model.DataSources.Any(ds => ds.Type == DataSourceType.Provider))
+                    return cl >= 1561
+                        ? new[] { typeof(Partition), typeof(MPartition), typeof(EntityPartition) }
+                        : new[] { typeof(Partition), typeof(MPartition) };
+                else
+                    return cl >= 1561
+                        ? new[] { typeof(MPartition), typeof(EntityPartition) }
+                        : new[] { typeof(MPartition) };
+            }
+            else
+                return new[] { typeof(Partition) };
+        }
+
         bool ITabularNamedObject.CanEditName() { return false; }
 
         [IntelliSense("Converts all M partitions in this collection to regular partitions. The M query is left as-is and needs to be converted to SQL before the partition can be processed.")]
@@ -335,10 +307,6 @@ namespace TabularEditor.TOMWrapper
 
     internal static partial class Properties
     {
-        public const string START = "Start";
-        public const string END = "End";
-        public const string GRANULARITY = "Granularity";
-        public const string REFRESHBOOKMARK = "RefreshBookmark";
         public const string DATASOURCE = "DataSource";
         public const string QUERY = "Query";
     }
