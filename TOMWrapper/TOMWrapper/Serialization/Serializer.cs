@@ -205,6 +205,13 @@ namespace TabularEditor.TOMWrapper.Serialization
             // Hack: Remove \r characters from multiline strings in the BIM:
             // "1 + 2\r", -> "1 + 2",
             if(options.SplitMultilineStrings) serializedDB = serializedDB.Replace("\\r\",\r\n", "\",\r\n");
+            if(options.IgnoreLineageTags)
+            {
+                var jObject = JObject.Parse(serializedDB);
+                var lineageTags = jObject.Descendants().OfType<JProperty>().Where(p => p.Name == "lineageTag").ToList();
+                foreach (var lineageTag in lineageTags) lineageTag.Remove();
+                serializedDB = jObject.ToString();
+            }
 
             return serializedDB;
         }

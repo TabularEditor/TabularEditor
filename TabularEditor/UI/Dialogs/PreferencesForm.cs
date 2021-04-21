@@ -125,6 +125,7 @@ namespace TabularEditor.UI.Dialogs
         {
             var options = Handler.SerializeOptions;
 
+            chkIgnoreLineageTagsCM.Checked = options.IgnoreLineageTags;
             chkIgnoreTimestampsCM.Checked = options.IgnoreTimestamps;
             chkIgnoreInfObjectsCM.Checked = options.IgnoreInferredObjects;
             chkIgnoreInfPropsCM.Checked = options.IgnoreInferredProperties;
@@ -152,6 +153,7 @@ namespace TabularEditor.UI.Dialogs
             Preferences.Current.BackgroundBpa = chkBackgroundBpa.Checked;
             Preferences.Current.AnnotateDeploymentMetadata = chkAnnotateDeploymentMetadata.Checked;
 
+            Preferences.Current.IgnoreLineageTags = chkIgnoreLineageTags.Checked;
             Preferences.Current.IgnoreTimestamps = chkIgnoreTimestamps.Checked;
             Preferences.Current.IgnoreInferredObjects = chkIgnoreInfObjects.Checked;
             Preferences.Current.IgnoreInferredProperties = chkIgnoreInfProps.Checked;
@@ -183,6 +185,7 @@ namespace TabularEditor.UI.Dialogs
         {
             var options = new SerializeOptions();
 
+            options.IgnoreLineageTags = chkIgnoreLineageTagsCM.Checked;
             options.IgnoreTimestamps = chkIgnoreTimestampsCM.Checked;
             options.IgnoreInferredObjects = chkIgnoreInfObjectsCM.Checked;
             options.IgnoreInferredProperties = chkIgnoreInfPropsCM.Checked;
@@ -228,6 +231,7 @@ namespace TabularEditor.UI.Dialogs
 
             LoadCheckedNodes(treeView1.Nodes, Preferences.Current.SaveToFolder_Levels);
 
+            chkIgnoreLineageTags.Checked = Preferences.Current.IgnoreLineageTags;
             chkIgnoreTimestamps.Checked = Preferences.Current.IgnoreTimestamps;
             chkIgnoreInfObjects.Checked = Preferences.Current.IgnoreInferredObjects;
             chkIgnoreInfProps.Checked = Preferences.Current.IgnoreInferredProperties;
