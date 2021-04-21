@@ -59,16 +59,16 @@ namespace TabularEditor.TOMWrapper.Serialization
                 };
             }
         }
-        public bool IgnoreInferredObjects { get; set; } = true;
-        public bool IgnoreInferredProperties { get; set; } = true;
-        public bool IgnoreTimestamps { get; set; } = true;
+        public bool IgnoreInferredObjects = true;
+        public bool IgnoreInferredProperties = true;
+        public bool IgnoreTimestamps = true;
         public bool IgnoreLineageTags { get; set; } = false;
         public bool ShouldSerializeIgnoreLineageTags() => IgnoreLineageTags;
-        public bool SplitMultilineStrings { get; set; } = true;
-        public bool PrefixFilenames { get; set; } = false;
-        public bool LocalTranslations { get; set; } = false;
-        public bool LocalPerspectives { get; set; } = false;
-        public bool LocalRelationships { get; set; } = false;
+        public bool SplitMultilineStrings = true;
+        public bool PrefixFilenames = false;
+        public bool LocalTranslations = false;
+        public bool LocalPerspectives = false;
+        public bool LocalRelationships = false;
 
         [JsonIgnore]
         public string DatabaseNameOverride = null;
