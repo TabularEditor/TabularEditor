@@ -61,7 +61,8 @@ namespace TabularEditor.UI.Dialogs.Pages
             var result = new Server();
             try
             {
-                result.Connect(GetConnectionString());
+                var connectionString = GetConnectionString();
+                result.Connect(connectionString);
 
                 // SharePoint mode seems to be an alias for Power BI mode starting from an update of Power BI some time in 2017:
                 if(result.ServerMode != Microsoft.AnalysisServices.ServerMode.Tabular && result.ServerMode != Microsoft.AnalysisServices.ServerMode.SharePoint)
@@ -156,8 +157,8 @@ namespace TabularEditor.UI.Dialogs.Pages
 
         public string GetConnectionString()
         {
-            return IntegratedSecurity ? TabularConnection.GetConnectionString(ServerName)
-                : TabularConnection.GetConnectionString(ServerName, UserName, Password);
+            return IntegratedSecurity ? TabularConnection.GetConnectionString(ServerName, Program.ApplicationName)
+                : TabularConnection.GetConnectionString(ServerName, UserName, Password, Program.ApplicationName);
         }
 
         private void comboBox1_DrawItem(object sender, DrawItemEventArgs e)

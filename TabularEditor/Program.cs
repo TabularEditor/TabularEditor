@@ -13,6 +13,8 @@ namespace TabularEditor
 {
     internal static class Program
     {
+        public static readonly string ApplicationName = "Tabular Editor " + typeof(Program).Assembly.GetName().Version + " " + Guid.NewGuid().ToString();
+
         public static bool CommandLineMode => CommandLine.CommandLineMode;
         public static ICommandLineHandler CommandLine { get; internal set; } = new CommandLineHandler();
 
