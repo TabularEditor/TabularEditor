@@ -19,6 +19,7 @@ namespace TabularEditor.TOMWrapper.Linguistics
             try
             {
                 var jEntities = JObject.Parse(culture.Content)["Entities"] as JObject;
+                if (jEntities == null) return null;
                 var jEntity = FindEntity(tabularObject, jEntities);
                 if (jEntity == null) return null;
                 var terms = GetTerms(jEntity);
@@ -153,30 +154,34 @@ namespace TabularEditor.TOMWrapper.Linguistics
         }
         private static bool IsTableEntity(Table table, JObject jEntity)
         {
-            var jBinding = jEntity["Binding"] as JObject;
-            return jBinding.Count == 1 && jBinding["ConceptualEntity"] is JValue jConceptualEntity && jConceptualEntity.ToString() == table.Name;
+            var jBinding = GetBinding(jEntity);
+            return jBinding != null && jBinding.Count == 1 && jBinding["ConceptualEntity"] is JValue jConceptualEntity && jConceptualEntity.ToString() == table.Name;
         }
         private static bool IsTableObjectEntity(ITabularTableObject tableObject, JObject jEntity)
         {
-            var jBinding = jEntity["Binding"] as JObject;
-            return jBinding.Count == 2
+            var jBinding = GetBinding(jEntity);
+            return jBinding != null && jBinding.Count == 2
                 && jBinding["ConceptualEntity"] is JValue jConceptualEntity && jConceptualEntity.ToString() == tableObject.Table.Name
                 && jBinding["ConceptualProperty"] is JValue jConceptualProperty && jConceptualProperty.ToString() == tableObject.Name;
         }
         private static bool IsHierarchyEntity(Hierarchy hierarchy, JObject jEntity)
         {
-            var jBinding = jEntity["Binding"] as JObject;
-            return jBinding.Count == 2
+            var jBinding = GetBinding(jEntity);
+            return jBinding != null && jBinding.Count == 2
                 && jBinding["ConceptualEntity"] is JValue jConceptualEntity && jConceptualEntity.ToString() == hierarchy.Table.Name
                 && jBinding["Hierarchy"] is JValue jHierarchy && jHierarchy.ToString() == hierarchy.Name;
         }
         private static bool IsLevelEntity(Level level, JObject jEntity)
         {
-            var jBinding = jEntity["Binding"] as JObject;
-            return jBinding.Count == 3
+            var jBinding = GetBinding(jEntity);
+            return jBinding != null && jBinding.Count == 3
                 && jBinding["ConceptualEntity"] is JValue jConceptualEntity && jConceptualEntity.ToString() == level.Hierarchy.Table.Name
                 && jBinding["Hierarchy"] is JValue jHierarchy && jHierarchy.ToString() == level.Hierarchy.Name
                 && jBinding["HierarchyLevel"] is JValue jLevel && jLevel.ToString() == level.Name;
+        }
+        private static JObject GetBinding(JObject jEntity)
+        {
+            return jEntity["Binding"] as JObject ?? jEntity["Definition"]?["Binding"] as JObject;
         }
     }
 
