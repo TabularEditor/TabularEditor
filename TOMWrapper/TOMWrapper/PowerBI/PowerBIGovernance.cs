@@ -209,6 +209,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
                 case Properties.DESCRIPTION:
                 case Properties.DATACATEGORY:
                 case Properties.FORMATSTRING:
+                case Properties.LINEAGETAG:
                     return true;
                 default:
                     return false;
@@ -288,6 +289,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
                 case Properties.ISACTIVE:
                 case Properties.ISKEY:
                 case Properties.KPI:
+                case Properties.LINEAGETAG:
                 case Properties.SUMMARIZEBY:
                 case Properties.TRANSLATEDDESCRIPTIONS:
                 case Properties.TRANSLATEDDISPLAYFOLDERS:
