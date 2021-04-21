@@ -305,6 +305,21 @@ namespace TabularEditor.TOMWrapper.Serialization
             return partition;
         }
 
+        public static PolicyRangePartition DeserializePolicyRangePartition(JObject json, Table target)
+        {
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Partition>(json.ToString(Formatting.None));
+            tom.Name = target.Partitions.GetNewName(tom.Name);
+            var partition = PolicyRangePartition.CreateFromMetadata(target, tom);
+            return partition;
+        }
+        public static EntityPartition DeserializeEntityPartition(JObject json, Table target)
+        {
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Partition>(json.ToString(Formatting.None));
+            tom.Name = target.Partitions.GetNewName(tom.Name);
+            var partition = EntityPartition.CreateFromMetadata(target, tom);
+            return partition;
+        }
+
         public static CalculatedTable DeserializeCalculatedTable(JObject json, Model model)
         {
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.Table>(json.ToString(Formatting.None));

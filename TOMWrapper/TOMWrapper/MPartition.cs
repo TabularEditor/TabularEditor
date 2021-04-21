@@ -81,11 +81,24 @@ namespace TabularEditor.TOMWrapper
         [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
         public string MExpression { get => Expression; set => Expression = value; }
 
+        [Category("Options"), Description("Gets or sets the M attributes.")]
+        [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
+        public string Attributes
+        {
+            get => (MetadataObject.Source as TOM.MPartitionSource)?.Attributes;
+            set
+            {
+                if (!(MetadataObject.Source is TOM.MPartitionSource mPartitionSource)) return;
+                SetValue(Attributes, value, (v) => mPartitionSource.Attributes = v);
+            }
+        }
+
         internal override bool IsBrowsable(string propertyName)
         {
             switch(propertyName)
             {
                 case nameof(MExpression): return true;
+                case nameof(Attributes): return true;
                 case nameof(Expression): return false;
             }
             return base.IsBrowsable(propertyName);
@@ -95,6 +108,7 @@ namespace TabularEditor.TOMWrapper
         {
             switch(propertyName)
             {
+                case nameof(Attributes): return true;
                 case nameof(MExpression): return true;
             }
             return base.IsEditable(propertyName);

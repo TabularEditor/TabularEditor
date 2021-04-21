@@ -17,6 +17,8 @@ namespace TabularEditor.PropertyGridUI
 
         }
 
+        PartitionCollection Collection => Context.Instance as PartitionCollection ?? (Context.Instance as Table).Partitions;
+
         protected override CollectionForm CreateCollectionForm()
         {
             // HACK: By setting the private "newItemTypes" field of the CollectionEditor to null, we force the CreateNewItemTypes() method to be called upon every launch of the form:
@@ -27,20 +29,7 @@ namespace TabularEditor.PropertyGridUI
 
         protected override Type[] CreateNewItemTypes()
         {
-            var cl = TabularModelHandler.Singleton.CompatibilityLevel;
-            if (cl >= 1400)
-            {
-                if (TabularModelHandler.Singleton.Model.DataSources.Any(ds => ds.Type == DataSourceType.Provider))
-                    return cl >= 1561 
-                        ? new[] { typeof(Partition), typeof(MPartition), typeof(EntityPartition) } 
-                        : new[] { typeof(Partition), typeof(MPartition) };
-                else
-                    return cl >= 1561 
-                        ? new[] { typeof(MPartition), typeof(EntityPartition) } 
-                        : new[] { typeof(MPartition) };
-            }
-            else
-                return base.CreateNewItemTypes();
+            return Collection.GetSupportedPartitionTypes();
         }
 
         protected override object SetItems(object editValue, object[] value)
@@ -71,6 +60,10 @@ namespace TabularEditor.PropertyGridUI
             if (itemType == typeof(EntityPartition))
             {
                 return EntityPartition.CreateNew(table);
+            }
+            if (itemType == typeof(PolicyRangePartition))
+            {
+                return PolicyRangePartition.CreateNew(table);
             }
             return base.CreateInstance(itemType);
         }

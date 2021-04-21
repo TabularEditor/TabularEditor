@@ -214,6 +214,7 @@ namespace TabularEditor.TOMWrapper
             if (obj is DataColumn) return "Column" + (plural ? "s" : "");
             if (obj is StructuredDataSource) return "Data Source (Power Query)";
             if (obj is ProviderDataSource) return "Data Source (Legacy)";
+            if (obj is PolicyRangePartition p4) return $"Partition (Policy Range)";
             if (obj is EntityPartition p3) return $"Partition (DQ over AS)";
             if (obj is MPartition p1) return $"Partition (M - {p1.GetMode()})";
             if (obj is Partition p2) return $"Partition (Legacy - {p2.GetMode()})";

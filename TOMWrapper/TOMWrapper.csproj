@@ -85,6 +85,7 @@
     <Compile Include="PropertyGridUI\Converters\ConnectionStringConverter.cs" />
     <Compile Include="PropertyGridUI\Converters\NamedExpressionConverter.cs" />
     <Compile Include="PropertyGridUI\PropertyActionAttribute.cs" />
+    <Compile Include="TOMWrapper\PolicyRangePartition.cs" />
     <Compile Include="TOMWrapper\EntityPartition.cs" />
     <Compile Include="TOMWrapper\Indexers\SynonymIndexer.cs" />
     <Compile Include="TOMWrapper\SynonymHelper.cs" />
