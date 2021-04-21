@@ -71,10 +71,14 @@ namespace TabularEditor.PropertyGridUI
                 var modelRole = Context.Instance as ModelRole;
 
                 // Members to add:
-                foreach(ModelRoleMember item in items.Except(modelRole.Members))
+                foreach(ModelRoleMember m1 in items.Except(modelRole.Members))
                 {
-                    if (string.IsNullOrEmpty(item.MemberID) && string.IsNullOrEmpty(item.MemberName)) continue;
-                    modelRole.Members.Add(item);
+                    if (string.IsNullOrEmpty(m1.MemberID) && string.IsNullOrEmpty(m1.MemberName)) continue;
+
+                    // Remove duplicate members:
+                    if (modelRole.Members.Any(m2 => EqualAndNotEmpty(m1.MemberID, m2.MemberID) || EqualAndNotEmpty(m1.MemberName, m2.MemberName))) continue;
+
+                    modelRole.Members.Add(m1);
                 }
 
                 // Members to remove:
@@ -85,6 +89,11 @@ namespace TabularEditor.PropertyGridUI
             }
             base.OnFormClosed(e);
         }
+        private bool EqualAndNotEmpty(string v1, string v2)
+        {
+            return !string.IsNullOrEmpty(v1) && v1.EqualsI(v2);
+        }
+
         protected override string GetDisplayText(object value)
         {
             var mrm = value as ModelRoleMember;
