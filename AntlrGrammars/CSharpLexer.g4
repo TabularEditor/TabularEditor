@@ -344,6 +344,7 @@ fragment Whitespace
 	| '\u0009' //'<Horizontal Tab Character (U+0009)>'
 	| '\u000B' //'<Vertical Tab Character (U+000B)>'
 	| '\u000C' //'<Form Feed Character (U+000C)>'
+    | '\u200B' //'<Zero Width Space (U+200B)>'
 	;
 
 fragment UnicodeClassZS
