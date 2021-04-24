@@ -146,6 +146,17 @@ namespace TabularEditor.TOMWrapper
         {
             if (metadataObject.GetSourceType() != TOM.PartitionSourceType.CalculationGroup)
                 throw new ArgumentException("Provided metadataObject is not a Calculation Group Table.");
+
+            // Generate a new LineageTag if an object with the provided lineage tag already exists:
+            if (!string.IsNullOrEmpty(metadataObject.LineageTag))
+            {
+                if (parent.Handler.CompatibilityLevel < 1540) metadataObject.LineageTag = null;
+                else if (parent.MetadataObject.Tables.FindByLineageTag(metadataObject.LineageTag) != metadataObject)
+                {
+                    metadataObject.LineageTag = Guid.NewGuid().ToString();
+                }
+            }
+
             var obj = new CalculationGroupTable(metadataObject);
             parent.Tables.Add(obj);
 
@@ -168,6 +179,7 @@ namespace TabularEditor.TOMWrapper
         {
             parent.DiscourageImplicitMeasures = true;
             var metadataObject = new TOM.Table() { CalculationGroup = new TOM.CalculationGroup() };
+            if (parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
             var nameCol = new TOM.DataColumn { Name = "Name", DataType = TOM.DataType.String, SourceColumn = "Name" };
             var ordinalCol = new TOM.DataColumn { Name = "Ordinal", DataType = TOM.DataType.Int64, IsHidden = true, SourceColumn = "Ordinal" };
             metadataObject.Columns.Add(nameCol);

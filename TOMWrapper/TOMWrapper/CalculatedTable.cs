@@ -75,6 +75,7 @@ namespace TabularEditor.TOMWrapper
         public static CalculatedTable CreateNew(Model parent, string name = null, string expression = null)
         {
             var metadataObject = new TOM.Table();
+            if (parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
             metadataObject.Name = parent.Tables.GetNewName(string.IsNullOrWhiteSpace(name) ? "New Calculated Table" : name);
             var tomPartition = new TOM.Partition();
             tomPartition.Mode = TOM.ModeType.Import;
@@ -102,6 +103,16 @@ namespace TabularEditor.TOMWrapper
         internal new static CalculatedTable CreateFromMetadata(Model parent, TOM.Table metadataObject)
         {
             if (metadataObject.GetSourceType() != TOM.PartitionSourceType.Calculated) throw new ArgumentException("Provided metadataObject is not a Calculated Table.");
+
+            // Generate a new LineageTag if an object with the provided lineage tag already exists:
+            if (!string.IsNullOrEmpty(metadataObject.LineageTag))
+            {
+                if (parent.Handler.CompatibilityLevel < 1540) metadataObject.LineageTag = null;
+                else if (parent.MetadataObject.Tables.FindByLineageTag(metadataObject.LineageTag) != metadataObject)
+                {
+                    metadataObject.LineageTag = Guid.NewGuid().ToString();
+                }
+            }
             var obj = new CalculatedTable(metadataObject);
             parent.Tables.Add(obj);
 
