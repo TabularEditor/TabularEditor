@@ -55,7 +55,10 @@ namespace TabularEditor.UI.Dialogs.Pages
             {
                 var index = databaseList.FirstIndexOf(db => db.Name == PreselectDb);
                 if (index >= 0)
+                {
                     dataGridView1.CurrentCell = dataGridView1.Rows[index].Cells[0];
+                    txtDatabaseName.Text = (dataGridView1.SelectedRows[0].DataBoundItem as DatabaseInfo).Name;
+                }
                 else
                 {
                     clearSelectionOnEnable = true;
