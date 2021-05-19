@@ -238,6 +238,7 @@ namespace TabularEditor
         private Func<CalculatedColumn, bool> LF_CalculatedColumn;
         private Func<CalculatedTableColumn, bool> LF_CalculatedTableColumn;
         private Func<CalculatedTable, bool> LF_CalculatedTable;
+        private Func<CalculationGroupTable, bool> LF_CalculationGroupTable;
         private Func<CalculationItem, bool> LF_CalculationItem;
         private Func<KPI, bool> LF_KPI;
         private Func<Variation, bool> LF_Variation;
@@ -283,6 +284,7 @@ namespace TabularEditor
                 | PrepareDynamicLinqLambda(ref LF_DataColumn)
                 | PrepareDynamicLinqLambda(ref LF_CalculatedColumn)
                 | PrepareDynamicLinqLambda(ref LF_CalculatedTable)
+                | PrepareDynamicLinqLambda(ref LF_CalculationGroupTable)
                 | PrepareDynamicLinqLambda(ref LF_CalculatedTableColumn)
                 | PrepareDynamicLinqLambda(ref LF_KPI)
                 | PrepareDynamicLinqLambda(ref LF_StructuredDataSource)
@@ -304,6 +306,9 @@ namespace TabularEditor
                 case ObjectType.Table:
                     if (obj is CalculatedTable) return LF_CalculatedTable == null ? false : LF_CalculatedTable(obj as CalculatedTable);
                     if (obj is Table) return LF_Table == null ? false : LF_Table(obj as Table);
+                    return false;
+                case ObjectType.CalculationGroupTable:
+                    if (obj is CalculationGroupTable) return LF_CalculationGroupTable == null ? false : LF_CalculationGroupTable(obj as CalculationGroupTable);
                     return false;
                 case ObjectType.Measure: return LF_Measure == null ? false : LF_Measure(obj as Measure);
                 case ObjectType.Hierarchy: return LF_Hierarchy == null ? false : LF_Hierarchy(obj as Hierarchy);
