@@ -280,7 +280,7 @@ namespace TabularEditor.TOMWrapper
         Entity = 5,
         PolicyRange = 6,
         CalculationGroup = 7,
-        InferredAlternateOf = 8,
+        Inferred = 8,
 	}
 	/// <summary>
 ///             Describes the type of data contained in the column. 
