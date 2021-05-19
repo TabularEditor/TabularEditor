@@ -21,6 +21,11 @@ View the article on www.kapacity.dk/tabular-editor for a general presentation of
 
 ## Version History
 
+* **2021-05-19** [Version 2.16.1](../../releases/tag/2.16.1) released (digitally signed)
+* **2021-04-21** [Version 2.16.0](../../releases/tag/2.16.0) released (digitally signed)
+* **2021-04-07** [Version 2.15.3](../../releases/tag/2.15.3) released (digitally signed)
+* **2021-03-25** [Version 2.15.2](../../releases/tag/2.15.2) released (digitally signed)
+* **2021-03-19** [Version 2.15.1](../../releases/tag/2.15.1) released (digitally signed)
 * **2021-03-01** [Version 2.14.2](../../releases/tag/2.14.2) released (digitally signed)
 * **2021-02-11** [Version 2.14.1](../../releases/tag/2.14.1) released (digitally signed)
 * **2021-02-01** [Version 2.14.0](../../releases/tag/2.14.0) released (digitally signed)
