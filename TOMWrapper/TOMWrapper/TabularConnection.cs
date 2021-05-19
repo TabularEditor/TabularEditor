@@ -73,7 +73,7 @@ namespace TabularEditor.TOMWrapper
             if (!csb.ContainsAny("User ID", "UID", "UserName"))
                 csb.Add(UsernameKey, userName);
             if (!csb.ContainsAny("Password", "PWD"))
-                csb.Add(PasswordKey, userName);
+                csb.Add(PasswordKey, password);
 
             return csb.ToString();
         }
