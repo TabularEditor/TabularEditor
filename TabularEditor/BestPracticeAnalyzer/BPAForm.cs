@@ -468,7 +468,8 @@ namespace TabularEditor.UI.Dialogs
                 }
                 if (item.Object is TabularObject tabularObject)
                 {
-                    script += tabularObject.GetLinqPath() + "." + item.Rule.FixExpression + ";";
+                    var itRef = tabularObject.GetLinqPath();
+                    script += itRef + "." + item.Rule.FixExpression.Replace("=it.", "=" + itRef + ".").Replace(" it.", " " + itRef + ".") + ";";
                 }
             }
 

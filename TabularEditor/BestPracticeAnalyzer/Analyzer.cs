@@ -195,9 +195,6 @@ namespace TabularEditor.BestPracticeAnalyzer
         public ITabularNamedObject Object { get; set; }
         public BestPracticeRule Rule { get; set; }
         public bool CanFix { get { return Rule.FixExpression != null; } }
-        public void Fix() {
-            throw new NotImplementedException();
-        }
         /// <summary>
         /// Indicates whether this rule should be ignored on this particular object
         /// </summary>
