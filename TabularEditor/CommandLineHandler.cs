@@ -603,11 +603,13 @@ database            Database ID of the model to load
             IEnumerable<BPA.AnalyzerResult> bpaResults;
             if (suppliedRules == null)
             {
-                var effectiveRules = analyzer.GetEffectiveRules(false, false, includeModelRules, includeModelRules);
+                // When no rule file is provided, we should also include local user/locale machine rules:
+                var effectiveRules = analyzer.GetEffectiveRules(true, true, includeModelRules, includeModelRules);
                 bpaResults = analyzer.Analyze(effectiveRules);
             }
             else
             {
+                // When a rule file is provided, we ignore local user/locale machine rules:
                 var effectiveRules = analyzer.GetEffectiveRules(false, false, includeModelRules, includeModelRules, suppliedRules);
                 bpaResults = analyzer.Analyze(effectiveRules);
             }
