@@ -12,6 +12,7 @@ using TabularEditor.TOMWrapper.Undo;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using TabularEditor.TOMWrapper.PowerBI;
 using TabularEditor.Utils;
+using System.ComponentModel.Design;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -694,6 +695,7 @@ namespace TabularEditor.TOMWrapper
         private bool ShouldSerializePollingExpression() { return false; }
 
         [Category("Refresh Policy"), Description("M expression that is used as the source M expression for new partitions. It includes the date filter by referring to 2 M parameters named [RangeStart] and [RangeEnd], which can be dates or integers depending on IntegerDateKey below"), IntelliSense("M expression that is used as the source M expression for new partitions. It includes the date filter by referring to 2 M parameters named [RangeStart] and [RangeEnd], which can be dates or integers depending on IntegerDateKey below")]
+        [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
         public string SourceExpression
         {
             get => (MetadataObject.RefreshPolicy as TOM.BasicRefreshPolicy)?.SourceExpression;
