@@ -356,7 +356,8 @@ namespace TabularEditor.TOMWrapper.Serialization
         public static SingleColumnRelationship DeserializeSingleColumnRelationship(JObject json, Model model)
         {
             var tom = TOM.JsonSerializer.DeserializeObject<TOM.SingleColumnRelationship>(json.ToString(Formatting.None));
-            tom.Name = Guid.NewGuid().ToString();
+            if(model.Relationships.TOM_ContainsName(tom.Name))
+                tom.Name = Guid.NewGuid().ToString();
 
             var relationship = SingleColumnRelationship.CreateFromMetadata(model, tom);
 
