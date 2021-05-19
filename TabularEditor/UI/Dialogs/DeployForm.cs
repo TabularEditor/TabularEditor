@@ -88,6 +88,7 @@ namespace TabularEditor.UI.Dialogs
 
         public TOM.Server DeployTargetServer { get { return page2.Server; } set { page2.Server = value; } }
         public string DeployTargetDatabaseName => page2.DatabaseName;
+        public string DeployTargetConnectionString => page1.GetConnectionString();
 
         private void DeployForm_KeyDown(object sender, KeyEventArgs e)
         {
