@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 
-<!--
-  [AssemblyVersion("2.16.*")]
-  <?define ProductVersion=!(bind.FileVersion.app.exe) ?> 
--->
-
+  <?define ProductVersion=!(bind.FileVersion.app.exe) ?>
   <?define ProductName = "Tabular Editor" ?>
   <?define ProductManufacturer = "Kapacity A/S" ?>
   <?define PackageManufacturer = "Daniel Otykier" ?>
@@ -14,7 +10,7 @@
   <?define AppInstallFolder = "Tabular Editor" ?>
   <?define AppExecutableName = "TabularEditor.exe" ?>
   
-  <Product Id="*" Name="$(var.ProductName)" Codepage="1252" Language="!(loc.ProductLanguage)" Version="$(var.ProductVersion)" Manufacturer="$(var.ProductManufacturer)" UpgradeCode="{E20734F5-CD2A-4A76-AB20-014819FCDE35}">
+  <Product Id="*" Name="$(var.ProductName)" Language="!(loc.ProductLanguage)" Version="$(var.ProductVersion)" Manufacturer="$(var.ProductManufacturer)" UpgradeCode="{E20734F5-CD2A-4A76-AB20-014819FCDE35}">
 
     <Package Platform="x86" InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Manufacturer="$(var.PackageManufacturer)" Description="!(loc.PackageDescription)" Comments="!(loc.PackageComments)" />
     <MajorUpgrade AllowSameVersionUpgrades="yes" AllowDowngrades="no" DowngradeErrorMessage="!(loc.MajorUpgradeDowngradeErrorMessage)" Schedule="afterInstallValidate" />
