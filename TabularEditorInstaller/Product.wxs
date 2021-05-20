@@ -38,9 +38,11 @@
     <Property Id="ARPHELPLINK">$(var.AppUrlHelpLink)</Property>
     <Property Id="ARPURLINFOABOUT">$(var.AppUrlInfoAbout)</Property>
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+<!-- 
+    Uncoment to set default checkbox status to checked
     <Property Id="CREATEDESKTOPSHORTCUT" Value="1" />
     <Property Id="CREATEPROGRAMMENUSHORTCUT" Value="1" />
-    
+-->
     <CustomAction Id="CustomActionCorrectPbiTool" BinaryKey="BinaryCorrectPbiTool" VBScriptCall="" Execute="commit" Impersonate="no" />
     <CustomAction Id="CustomActionCorrectPbiTool.SetProperty" Property="CustomActionCorrectPbiTool" Value="[INSTALLFOLDER]" />
     
@@ -73,7 +75,7 @@
   <Fragment>
     <DirectoryRef Id="DesktopFolder">
       <Component Id="DesktopShortcut" Guid="{F2753BFB-8041-44F3-9A43-78D69990188E}">
-        <Condition>CREATEDESKTOPSHORTCUT</Condition>
+        <Condition><![CDATA[CREATEDESKTOPSHORTCUT = 1]]></Condition>
         <Shortcut Id="DesktopShortcut" Directory="DesktopFolder" Name="$(var.ProductName)" Target="[INSTALLFOLDER]$(var.AppExecutableName)" />
         <RegistryValue Root="HKCU" Key="Software\[Manufacturer]\$(var.ProductName)" Name="installed" Value="1" Type="integer" KeyPath="yes" />
       </Component>
@@ -81,7 +83,7 @@
     
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ProgramMenuShortcut" Guid="{14ACD56C-F4CD-430A-94CD-6AB2584D9E90}">
-        <Condition>CREATEPROGRAMMENUSHORTCUT</Condition>
+        <Condition><![CDATA[CREATEPROGRAMMENUSHORTCUT = 1]]></Condition>
         <Shortcut Id="ProgramMenuShortcut" Directory="ProgramMenuFolder" Name="$(var.ProductName)" Target="[INSTALLFOLDER]$(var.AppExecutableName)" />
         <RegistryValue Root="HKCU" Key="Software\[Manufacturer]\$(var.ProductName)" Name="installed" Value="1" Type="integer" KeyPath="yes" />
       </Component>
