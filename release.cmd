@@ -16,7 +16,7 @@ CD /d "%~dp0TabularEditorInstaller"
 IF EXIST *.msi    DEL *.msi
 IF EXIST *.wixobj DEL *.wixobj
 IF EXIST *.wixpdb DEL *.wixpdb
-.\wix\candle.exe Product.wxs -dproductVersion="%productversion%" -dPublishFolder="%publishfolder%" -dRootFolder="%rootfolder%" -nologo
+.\wix\candle.exe Product.wxs -dProductVersion="%productversion%" -dPublishFolder="%publishfolder%" -dRootFolder="%rootfolder%" -nologo
 .\wix\light.exe Product.wixobj -ext WixUIExtension.dll -ext WixUtilExtension.dll -cultures:en-us -loc Product_en-us.wxl -out "TabularEditor.Installer.msi" -sice:ICE61 -nologo
 
 EXIT /b %ERRORLEVEL%

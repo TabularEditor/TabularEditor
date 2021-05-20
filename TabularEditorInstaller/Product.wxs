@@ -17,10 +17,10 @@
   <Product Id="*" Name="$(var.ProductName)" Codepage="1252" Language="!(loc.ProductLanguage)" Version="$(var.ProductVersion)" Manufacturer="$(var.ProductManufacturer)" UpgradeCode="{E20734F5-CD2A-4A76-AB20-014819FCDE35}">
 
     <Package Platform="x86" InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Manufacturer="$(var.PackageManufacturer)" Description="!(loc.PackageDescription)" Comments="!(loc.PackageComments)" />
-    <!--Binary Id="CustomActionBinary" SourceFile="extensions\actions\TabularEditor.Installer.CA.dll" /-->
     <MajorUpgrade AllowSameVersionUpgrades="yes" AllowDowngrades="no" DowngradeErrorMessage="!(loc.MajorUpgradeDowngradeErrorMessage)" Schedule="afterInstallValidate" />
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
-    
+    <Binary Id="BinaryCorrectPbiTool" SourceFile="assets\CorrectPbiTool.vbs" />
+
     <Feature Id="DefaultFeature" Title="$(var.ProductName)" Level="1">
       <ComponentRef Id="app.exe" />
       <ComponentRef Id="pbitool.json" />
@@ -45,12 +45,12 @@
     <Property Id="CREATEDESKTOPSHORTCUT" Value="1" />
     <Property Id="CREATEPROGRAMMENUSHORTCUT" Value="1" />
     
-    <CustomAction Id="SetCustomActionPropertyValues" Property="RegisterExternalTool" Value="INSTALLEDEXECUTABLEPATH=[INSTALLFOLDER]$(var.AppExecutableName)" />
-    <!--CustomAction Id="RegisterExternalTool" BinaryKey="CustomActionBinary" DllEntry="PowerBIDesktopRegisterExternalTool" Execute="deferred" Impersonate="no" /-->
+    <CustomAction Id="CustomActionCorrectPbiTool" BinaryKey="BinaryCorrectPbiTool" VBScriptCall="" Execute="commit" Impersonate="no" />
+    <CustomAction Id="CustomActionCorrectPbiTool.SetProperty" Property="CustomActionCorrectPbiTool" Value="[INSTALLFOLDER]" />
     
     <InstallExecuteSequence>
-      <Custom Action="SetCustomActionPropertyValues" After="InstallFiles" />
-      <!--Custom Action="RegisterExternalTool" After="SetCustomActionPropertyValues">NOT Installed AND NOT REMOVE</Custom-->
+      <Custom Action="CustomActionCorrectPbiTool.SetProperty" After="InstallFiles" />
+      <Custom Action="CustomActionCorrectPbiTool" After="CustomActionCorrectPbiTool.SetProperty">NOT Installed AND NOT REMOVE</Custom>
     </InstallExecuteSequence>
     
   </Product>
@@ -93,7 +93,7 @@
 
     <DirectoryRef Id="POWERBIEXTERNALTOOLSFOLDER">
       <Component Id="pbitool.json" Guid="{D09A259B-21E5-4C57-8B4B-D7E7BD18625B}">
-        <File Id="pbitool.json" Name="tabulareditor.pbitool.json" Source="assets\tabulareditor.pbitool.json" KeyPath="yes" />
+        <File Id="pbitool.json" Name="tabulareditor.pbitool.json" Source="$(var.RootFolder)\TabularEditor\tabulareditor.pbitool.json" KeyPath="yes" />
         <RemoveFile Id="REMOVEPOWERBIEXTERNALTOOL" Name="tabulareditor.pbitool.json" On="uninstall" />
       </Component>
     </DirectoryRef>
