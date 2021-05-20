@@ -12,7 +12,7 @@ SET DevEnv="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common
 
 REM Build EXE (REM .exe is automatically signed in a post-build event when built under "Release" mode)
 REM %DevEnv% TabularEditor.sln /Clean
-REM %DevEnv% TabularEditor.sln /Rebuild "%BuildConfiguration%|AnyCpu" REM /Out "%~dp0release.cmd.log"
+REM %DevEnv% TabularEditor.sln /Rebuild "%BuildConfiguration%|AnyCpu" &REM /Out "%~dp0release.cmd.log"
 
 REM Sign EXE 
 REM %SignTool% sign /sha1 b2e9378dcc9030818a76527aa083f373772ae50b /tr http://timestamp.sectigo.com /td SHA256 "%PublishFolder%\TabularEditor.exe"
