@@ -4,7 +4,7 @@
   <String Id="ProductLanguage">1033</String>
   <String Id="PackageDescription">A lightweight editor for SSAS Tabular Models built in .NET/WinForms</String>
   <String Id="PackageComments">This installer contains the logic and data required to install Tabular Editor</String>
-  <String Id="MajorUpgradeDowngradeErrorMessage">"Unable to install because a newer version of Tabular Editor is already installed."</String>
+  <String Id="MajorUpgradeDowngradeErrorMessage">A newer version of Tabular Editor is already installed</String>
   <String Id="CreateDesktopShortcut">Create desktop shortcut</String>
   <String Id="CreateProgramMenuShortcut">Create program menu shortcut</String>
   <String Id="InstallDirDlgDescription">Click Next to install or Change to choose another folder</String>
