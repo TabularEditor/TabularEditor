@@ -80,6 +80,7 @@ namespace TabularEditor.TOMWrapper
 <# }
    foreach(var t in Rules.ObjectTypes.Keys) {
 	   var props = t.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+       var allProps = t.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 #>  
 	<#= Rules.GetTypeXmlDoc(t) #>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
@@ -457,7 +458,7 @@ namespace TabularEditor.TOMWrapper
 	    public SynonymIndexer Synonyms { private set; get; }
 <# } if (!t.IsAbstract && Rules.InCollection(t)) { #>
 		internal static <#= t.Name #> CreateFromMetadata(<#= Rules.GetParent(t) #> parent, TOM.<#= t.Name #> metadataObject) {
-<# if (props.Any(p => p.Name == "LineageTag")) { #>
+<# if (allProps.Any(p => p.Name == "LineageTag")) { #>
             // Generate a new LineageTag if an object with the provided lineage tag already exists:
             if(!string.IsNullOrEmpty(metadataObject.LineageTag)) {
                 if (parent.Handler.CompatibilityLevel < 1540) metadataObject.LineageTag = null;
@@ -487,7 +488,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.<#= t.Name #>();
-<# if(props.Any(p => p.Name == "LineageTag")) { #>
+<# if(allProps.Any(p => p.Name == "LineageTag")) { #>
             if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
 <# } #>
 			metadataObject.<#=typeof(ModelRoleMember).IsAssignableFrom(t)?"Member":""#>Name = parent.<#= Rules.GetCollection(t) #>.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(<#= t.Name #>).GetTypeName() : name);
@@ -551,7 +552,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
                 tom.LineageTag = Guid.NewGuid().ToString();
                 foreach(var l in tom.Levels) l.LineageTag = Guid.NewGuid().ToString();
             }
-<# } else if(props.Any(p => p.Name == "LineageTag")) { #>
+<# } else if(allProps.Any(p => p.Name == "LineageTag")) { #>
             if(Model.Database.CompatibilityLevel >= 1540 && !string.IsNullOrEmpty(LineageTag)) {
                 tom.LineageTag = Guid.NewGuid().ToString();
             }

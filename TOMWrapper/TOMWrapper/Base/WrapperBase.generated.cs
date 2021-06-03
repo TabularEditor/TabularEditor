@@ -1423,6 +1423,13 @@ namespace TabularEditor.TOMWrapper
 		private bool ShouldSerializeExpression() { return false; }
 
 		internal static CalculatedColumn CreateFromMetadata(Table parent, TOM.CalculatedColumn metadataObject) {
+            // Generate a new LineageTag if an object with the provided lineage tag already exists:
+            if(!string.IsNullOrEmpty(metadataObject.LineageTag)) {
+                if (parent.Handler.CompatibilityLevel < 1540) metadataObject.LineageTag = null;
+                else if (parent.MetadataObject.Columns.FindByLineageTag(metadataObject.LineageTag) != metadataObject) {
+                    metadataObject.LineageTag = Guid.NewGuid().ToString();
+                }
+            }
 			var obj = new CalculatedColumn(metadataObject);
 			parent.Columns.Add(obj);
 			
@@ -1443,6 +1450,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.CalculatedColumn();
+            if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
 			metadataObject.Name = parent.Columns.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(CalculatedColumn).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new CalculatedColumn(metadataObject);
@@ -1471,6 +1479,9 @@ namespace TabularEditor.TOMWrapper
 			// Create a clone of the underlying metadataobject:
 			var tom = MetadataObject.Clone() as TOM.CalculatedColumn;
 
+            if(Model.Database.CompatibilityLevel >= 1540 && !string.IsNullOrEmpty(LineageTag)) {
+                tom.LineageTag = Guid.NewGuid().ToString();
+            }
 
 			// Assign a new, unique name:
 			tom.Name = Parent.Columns.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
@@ -1654,6 +1665,13 @@ namespace TabularEditor.TOMWrapper
 		private bool ShouldSerializeColumnOrigin() { return false; }
 
 		internal static CalculatedTableColumn CreateFromMetadata(Table parent, TOM.CalculatedTableColumn metadataObject) {
+            // Generate a new LineageTag if an object with the provided lineage tag already exists:
+            if(!string.IsNullOrEmpty(metadataObject.LineageTag)) {
+                if (parent.Handler.CompatibilityLevel < 1540) metadataObject.LineageTag = null;
+                else if (parent.MetadataObject.Columns.FindByLineageTag(metadataObject.LineageTag) != metadataObject) {
+                    metadataObject.LineageTag = Guid.NewGuid().ToString();
+                }
+            }
 			var obj = new CalculatedTableColumn(metadataObject);
 			parent.Columns.Add(obj);
 			
@@ -1674,6 +1692,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.CalculatedTableColumn();
+            if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
 			metadataObject.Name = parent.Columns.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(CalculatedTableColumn).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new CalculatedTableColumn(metadataObject);
@@ -1702,6 +1721,9 @@ namespace TabularEditor.TOMWrapper
 			// Create a clone of the underlying metadataobject:
 			var tom = MetadataObject.Clone() as TOM.CalculatedTableColumn;
 
+            if(Model.Database.CompatibilityLevel >= 1540 && !string.IsNullOrEmpty(LineageTag)) {
+                tom.LineageTag = Guid.NewGuid().ToString();
+            }
 
 			// Assign a new, unique name:
 			tom.Name = Parent.Columns.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
@@ -3646,6 +3668,13 @@ namespace TabularEditor.TOMWrapper
 		private bool ShouldSerializeSourceColumn() { return false; }
 
 		internal static DataColumn CreateFromMetadata(Table parent, TOM.DataColumn metadataObject) {
+            // Generate a new LineageTag if an object with the provided lineage tag already exists:
+            if(!string.IsNullOrEmpty(metadataObject.LineageTag)) {
+                if (parent.Handler.CompatibilityLevel < 1540) metadataObject.LineageTag = null;
+                else if (parent.MetadataObject.Columns.FindByLineageTag(metadataObject.LineageTag) != metadataObject) {
+                    metadataObject.LineageTag = Guid.NewGuid().ToString();
+                }
+            }
 			var obj = new DataColumn(metadataObject);
 			parent.Columns.Add(obj);
 			
@@ -3666,6 +3695,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.DataColumn();
+            if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
 			metadataObject.Name = parent.Columns.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(DataColumn).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new DataColumn(metadataObject);
@@ -3694,6 +3724,9 @@ namespace TabularEditor.TOMWrapper
 			// Create a clone of the underlying metadataobject:
 			var tom = MetadataObject.Clone() as TOM.DataColumn;
 
+            if(Model.Database.CompatibilityLevel >= 1540 && !string.IsNullOrEmpty(LineageTag)) {
+                tom.LineageTag = Guid.NewGuid().ToString();
+            }
 
 			// Assign a new, unique name:
 			tom.Name = Parent.Columns.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
