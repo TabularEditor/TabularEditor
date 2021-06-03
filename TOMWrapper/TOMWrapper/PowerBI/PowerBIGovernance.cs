@@ -275,6 +275,8 @@ namespace TabularEditor.TOMWrapper.PowerBI
                 case Properties.FORMATSTRINGEXPRESSION:
                 case Properties.DEFAULTDETAILROWSEXPRESSION:
                 case Properties.DETAILROWSEXPRESSION:
+                case Properties.DEFAULTDETAILROWSDEFINITION:
+                case Properties.DETAILROWSDEFINITION:
                 case Properties.DATATYPE:
                 case Properties.DATACATEGORY:
                 case Properties.CALCULATIONGROUPPRECEDENCE:
