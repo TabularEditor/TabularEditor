@@ -23,7 +23,7 @@ Datasets hosted in the Power BI service can have [Incremental Refresh](https://d
   
 ![](https://user-images.githubusercontent.com/8976200/121342866-5f4ec180-c922-11eb-8a7a-cef44d3a407b.png)</li>
 <li>Save your model (Ctrl+S).</li>
-<li>Right-click on the table and choose "Apply incremental refresh"
+<li>Right-click on the table and choose "Apply Refresh Policy"
   
 ![](https://user-images.githubusercontent.com/8976200/121342947-78577280-c922-11eb-82b5-a517fbe86c3e.png)</li>
 </ol>
@@ -39,7 +39,7 @@ The next step is to refresh the data in the partitions. You can use the Power BI
 
 You can also use Tabular Editor to modify existing refresh policies that has been set up using Power BI Desktop. Simply follow step 6-8 above in this case.
 
-## Applying refresh policies with `EffectiveDate``
+## Applying refresh policies with `EffectiveDate`
 
 If you want to generate partitions while overriding the current date (for purposes of generating different rolling window ranges), you can use a small script in Tabular Editor to apply the refresh policy with the [EffectiveDate](https://docs.microsoft.com/en-us/analysis-services/tmsl/refresh-command-tmsl?view=asallproducts-allversions#optional-parameters) parameter.
 
