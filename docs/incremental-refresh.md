@@ -16,10 +16,10 @@ Datasets hosted in the Power BI service can have [Incremental Refresh](https://d
 ```
 ![](https://user-images.githubusercontent.com/8976200/121342389-dc2d6b80-c921-11eb-8848-b67950e55e36.png)</li>
 <li>Next, select the table on which you want to enable incremental refresh</li>
-<li>Set the `EnableRefreshPolicy` property on the table to "true":
+<li>Set the <code>EnableRefreshPolicy</code> property on the table to "true":
   
 ![](https://user-images.githubusercontent.com/8976200/121339872-3842c080-c91f-11eb-8e63-a051b34fb36f.png)</li>
-<li>Configure the remaining properties according to the incremental refresh policy you need. Remember to specify an M expression for the `SourceExpression` property (this is the expression that will be added to partititions created by the incremental refresh policy, which should use the `RangeStart` and `RangeEnd` parameters to filter the data in the source).
+<li>Configure the remaining properties according to the incremental refresh policy you need. Remember to specify an M expression for the <code>SourceExpression</code> property (this is the expression that will be added to partititions created by the incremental refresh policy, which should use the <code>RangeStart</code> and <code>RangeEnd</code> parameters to filter the data in the source).
   
 ![](https://user-images.githubusercontent.com/8976200/121342866-5f4ec180-c922-11eb-8a7a-cef44d3a407b.png)</li>
 <li>Save your model (Ctrl+S).</li>
@@ -50,4 +50,4 @@ var effectiveDate = new DateTime(2020, 1, 1);  // Todo: replace with your effect
 Selected.Table.ApplyRefreshPolicy(effectiveDate);
 ```
 
-![image](https://user-images.githubusercontent.com/8976200/121344362-f9633980-c923-11eb-916c-44a35cf03a36.png)
+![](https://user-images.githubusercontent.com/8976200/121344362-f9633980-c923-11eb-916c-44a35cf03a36.png)
