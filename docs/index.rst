@@ -56,6 +56,7 @@ Documentation
   Best Practice Analyzer Improvements <Best-Practice-Analyzer-Improvements>
   Advanced Filtering <Advanced-Filtering-of-the-Explorer-Tree>
   Master-model-pattern
+  incremental-refresh
 
 .. _developer-docs:
 .. toctree::
