@@ -8,9 +8,7 @@ Datasets hosted in the Power BI service can have [Incremental Refresh](https://d
 2. Incremental refresh requires the `RangeStart` and `RangeEnd` parameters to be created ([more information](https://docs.microsoft.com/en-us/power-bi/connect-data/incremental-refresh-configure#create-parameters)), so let's start by adding two new Shared Expressions in Tabular Editor:
   ![](https://user-images.githubusercontent.com/8976200/121341006-8906e900-c920-11eb-97af-ee683ff40609.png)
 3. Name them `RangeStart` and `RangeEnd` respectively and set their `Kind` propery to "M" and set their expression to the following (the actual date/time value you specify doesn't matter, as it will be set by the PBI service when starting the data refresh):
-  ```M
-  #datetime(2021, 6, 9, 0, 0, 0) meta [IsParameterQuery=true, Type="DateTime", IsParameterQueryRequired=true]
-  ```
+  `#datetime(2021, 6, 9, 0, 0, 0) meta [IsParameterQuery=true, Type="DateTime", IsParameterQueryRequired=true]`
   ![](https://user-images.githubusercontent.com/8976200/121342389-dc2d6b80-c921-11eb-8848-b67950e55e36.png)
 4. Next, select the table on which you want to enable incremental refresh
 5. Set the `EnableRefreshPolicy` property on the table to "true":
