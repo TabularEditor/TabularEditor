@@ -6,10 +6,10 @@ Datasets hosted in the Power BI service can have [Incremental Refresh](https://d
 
 <ol>
 <li>Connect to the Power BI XMLA R/W endpoint of your workspace, and open the dataset on which you want to configure Incremental Refresh.</li>
-<li>Incremental refresh requires the `RangeStart` and `RangeEnd` parameters to be created ([more information](https://docs.microsoft.com/en-us/power-bi/connect-data/incremental-refresh-configure#create-parameters)), so let's start by adding two new Shared Expressions in Tabular Editor:
+  <li>Incremental refresh requires the <code>RangeStart</code> and <code>RangeEnd</code> parameters to be created (<a href="https://docs.microsoft.com/en-us/power-bi/connect-data/incremental-refresh-configure#create-parameters">more information</a>), so let's start by adding two new Shared Expressions in Tabular Editor:
 
 ![](https://user-images.githubusercontent.com/8976200/121341006-8906e900-c920-11eb-97af-ee683ff40609.png)</li>
-<li>Name them `RangeStart` and `RangeEnd` respectively and set their `Kind` propery to "M" and set their expression to the following (the actual date/time value you specify doesn't matter, as it will be set by the PBI service when starting the data refresh):
+<li>Name them <code>RangeStart</code> and <code>RangeEnd</code> respectively, set their <code>Kind</code> property to "M" and set their expression to the following (the actual date/time value you specify doesn't matter, as it will be set by the PBI service when starting the data refresh):
 
 ```M
 #datetime(2021, 6, 9, 0, 0, 0) meta [IsParameterQuery=true, Type="DateTime", IsParameterQueryRequired=true]
