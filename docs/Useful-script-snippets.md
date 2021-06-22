@@ -636,6 +636,10 @@ EvaluateDax(dax).Output();
 
 ![image](https://user-images.githubusercontent.com/8976200/91638389-9b5a0b00-ea0f-11ea-819f-d3eee3ddfa71.png)
 
+Remember you can save these scripts as Custom Actions by clicking the "+" icon just above the script editor. This way, you get an easily reusable collection of DAX queries that you can execute and visualize directly from inside the Tabular Editor context menu:
+
+![image](https://user-images.githubusercontent.com/8976200/91638790-305e0380-ea12-11ea-9d84-313f4388496f.png)
+
 ### Exporting data
 
 You can use the following script to evaluate a DAX query and stream the results to a file (the script uses a tab-separated file format):
@@ -664,10 +668,6 @@ using(var fileWriter = new StreamWriter(file))
     }
 }
 ```
-
-Remember you can save these scripts as Custom Actions by clicking the "+" icon just above the script editor. This way, you get an easily reusable collection of DAX queries that you can execute and visualize directly from inside the Tabular Editor context menu:
-
-![image](https://user-images.githubusercontent.com/8976200/91638790-305e0380-ea12-11ea-9d84-313f4388496f.png)
 
 If you come up with some other interesting uses of these methods, please consider sharing them in the [community scripts repository](https://github.com/TabularEditor/Scripts). Thanks!
 
