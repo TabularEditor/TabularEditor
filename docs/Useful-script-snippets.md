@@ -599,6 +599,8 @@ var tmsl = "{ \"refresh\": { \"type\": \"%type%\", \"objects\": [ { \"database\"
 ExecuteCommand(tmsl);
 ```
 
+### Visualize query results
+
 You can also use the `Output` helper method to visualize the result of a DAX expression returned from `EvaluateDax` directly:
 
 ```csharp
@@ -633,6 +635,35 @@ EvaluateDax(dax).Output();
 ```
 
 ![image](https://user-images.githubusercontent.com/8976200/91638389-9b5a0b00-ea0f-11ea-819f-d3eee3ddfa71.png)
+
+### Exporting data
+
+You can use the following script to evaluate a DAX query and stream the results to a file (the script uses a tab-separated file format):
+
+```csharp
+using System.IO;
+
+// This script evaluates a DAX query and writes the results to file using a tab-separated format:
+
+var dax = "EVALUATE 'Customer'";
+var file = @"c:\temp\file.csv";
+var columnSeparator = "\t";
+
+using(var daxReader = ExecuteReader(dax))
+using(var fileWriter = new StreamWriter(file))
+{
+    // Write column headers:
+    fileWriter.WriteLine(string.Join(columnSeparator, Enumerable.Range(0, daxReader.FieldCount - 1).Select(f => daxReader.GetName(f))));
+
+    while(daxReader.Read())
+    {
+        var rowValues = new object[daxReader.FieldCount];
+        daxReader.GetValues(rowValues);
+        var row = string.Join(columnSeparator, rowValues.Select(v => v == null ? "" : v.ToString()));
+        fileWriter.WriteLine(row);
+    }
+}
+```
 
 Remember you can save these scripts as Custom Actions by clicking the "+" icon just above the script editor. This way, you get an easily reusable collection of DAX queries that you can execute and visualize directly from inside the Tabular Editor context menu:
 
