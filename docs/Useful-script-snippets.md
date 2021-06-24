@@ -780,7 +780,7 @@ ds.ConnectionString = string.Format(
     password);
 
 // Remove Power Query partitions from all tables and replace them with a single Legacy partition:
-foreach(var t in Model.Tables)
+foreach(var t in Model.Tables.Where(t => t.Partitions.OfType<MPartition>().Any()))
 {
     var mPartitions = t.Partitions.OfType<MPartition>();
     if(!mPartitions.Any()) continue;
@@ -833,7 +833,7 @@ ds.ConnectionString = string.Format(
     password);
 
 // Remove Power Query partitions from all tables and replace them with a single Legacy partition:
-foreach(var t in Model.Tables)
+foreach(var t in Model.Tables.Where(t => t.Partitions.OfType<MPartition>().Any()))
 {
     var mPartitions = t.Partitions.OfType<MPartition>();
     if(!mPartitions.Any()) continue;
