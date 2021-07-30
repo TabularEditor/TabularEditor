@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2050
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TabularEditor", "TabularEditor\TabularEditor.csproj", "{F7588159-3F24-4BFA-A6F6-551657896C34}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -26,8 +26,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
 	EndProjectSection
-EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "TabularEditorInstaller", "TabularEditorInstaller\TabularEditorInstaller.vdproj", "{3CF53981-9965-436B-9805-D6F844C2CE15}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TOMWrapperTest", "TOMWrapperTest\TOMWrapperTest.csproj", "{546659EE-5DA6-4BAC-BD5E-0D898389201A}"
 EndProject
@@ -61,8 +59,6 @@ Global
 		{28244C9C-E8CE-43DF-AB98-500BEE2C03A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28244C9C-E8CE-43DF-AB98-500BEE2C03A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28244C9C-E8CE-43DF-AB98-500BEE2C03A1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3CF53981-9965-436B-9805-D6F844C2CE15}.Debug|Any CPU.ActiveCfg = Debug
-		{3CF53981-9965-436B-9805-D6F844C2CE15}.Release|Any CPU.ActiveCfg = Release
 		{546659EE-5DA6-4BAC-BD5E-0D898389201A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{546659EE-5DA6-4BAC-BD5E-0D898389201A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{546659EE-5DA6-4BAC-BD5E-0D898389201A}.Release|Any CPU.ActiveCfg = Release|Any CPU
