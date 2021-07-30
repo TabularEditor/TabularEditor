@@ -389,6 +389,18 @@ namespace TabularEditor.UI
                         {
                             Handler.Save(File_Current, SaveFormat.TabularEditorFolder, null, true, true);
                             File_LastWrite = GetLastDirChange(File_Current);
+                            if (Handler.SerializeOptions.AlsoSaveAsBim)
+                            {
+                                try
+                                {
+                                    Handler.Save(File_Current + "\\model.bim", SaveFormat.ModelSchemaOnly, null, true, true);
+                                    File_LastWrite = File.GetLastWriteTime(File_Current);
+                                }
+                                catch (Exception e)
+                                {
+                                    HandleError("Could not save metadata to file", e);
+                                }
+                            }
                         }
                         catch (Exception e)
                         {
@@ -409,7 +421,7 @@ namespace TabularEditor.UI
                                 Handler.Save(File_Current, SaveFormat.PowerBiTemplate, SerializeOptions.PowerBi, false, true);
                             else
                                 Handler.Save(File_Current, SaveFormat.ModelSchemaOnly, null, true, true);
-                            File_LastWrite = File.GetLastWriteTime(File_Current);
+                                File_LastWrite = File.GetLastWriteTime(File_Current);
                         }
                         catch (Exception e)
                         {

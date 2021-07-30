@@ -44,7 +44,7 @@ namespace TabularEditor.UIServices
         public bool IgnoreInferredProperties = true;
         public bool IgnoreTimestamps = true;
         public bool SplitMultilineStrings = true;
-        public bool IgnoreLineageTags = false;        
+        public bool IgnoreLineageTags = false;
 
         public bool ProxyUseSystem = true;
         public string ProxyAddress = string.Empty;

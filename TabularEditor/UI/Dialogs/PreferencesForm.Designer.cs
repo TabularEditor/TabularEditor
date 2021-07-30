@@ -98,6 +98,7 @@
             this.chkAnnotateDeploymentMetadata = new System.Windows.Forms.CheckBox();
             this.chkIgnoreLineageTags = new System.Windows.Forms.CheckBox();
             this.chkIgnoreLineageTagsCM = new System.Windows.Forms.CheckBox();
+            this.chkAlsoSaveAsBim = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabFeatures = new System.Windows.Forms.TabPage();
@@ -131,7 +132,6 @@
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.tabSerialization = new System.Windows.Forms.TabPage();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.chkAlsoSaveAsBim = new System.Windows.Forms.CheckBox();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -571,6 +571,17 @@
         " JSON array.");
             this.chkIgnoreLineageTagsCM.UseVisualStyleBackColor = true;
             // 
+            // chkAlsoSaveAsBim
+            // 
+            this.chkAlsoSaveAsBim.AutoSize = true;
+            this.chkAlsoSaveAsBim.Location = new System.Drawing.Point(191, 23);
+            this.chkAlsoSaveAsBim.Name = "chkAlsoSaveAsBim";
+            this.chkAlsoSaveAsBim.Size = new System.Drawing.Size(140, 21);
+            this.chkAlsoSaveAsBim.TabIndex = 5;
+            this.chkAlsoSaveAsBim.Text = "Also save as .bim";
+            this.toolTip1.SetToolTip(this.chkAlsoSaveAsBim, "If checked, a .bim file will be saved along with the folder serialized version.");
+            this.chkAlsoSaveAsBim.UseVisualStyleBackColor = true;
+            // 
             // groupBox3
             // 
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -998,17 +1009,6 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Save to Folder Serialization";
             // 
-            // chkAlsoSaveAsBim
-            // 
-            this.chkAlsoSaveAsBim.AutoSize = true;
-            this.chkAlsoSaveAsBim.Location = new System.Drawing.Point(191, 23);
-            this.chkAlsoSaveAsBim.Name = "chkAlsoSaveAsBim";
-            this.chkAlsoSaveAsBim.Size = new System.Drawing.Size(140, 21);
-            this.chkAlsoSaveAsBim.TabIndex = 5;
-            this.chkAlsoSaveAsBim.Text = "Also save as .bim";
-            this.toolTip1.SetToolTip(this.chkAlsoSaveAsBim, "If checked, a .bim file will be saved along with the folder serialized version.");
-            this.chkAlsoSaveAsBim.UseVisualStyleBackColor = true;
-            // 
             // treeView1
             // 
             this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -1138,6 +1138,7 @@
             this.chkAlsoSaveAsBimCM.Size = new System.Drawing.Size(140, 21);
             this.chkAlsoSaveAsBimCM.TabIndex = 11;
             this.chkAlsoSaveAsBimCM.Text = "Also save as .bim";
+            this.toolTip1.SetToolTip(this.chkAlsoSaveAsBimCM, "If checked, a .bim file will be saved along with the folder serialized version.");
             this.chkAlsoSaveAsBimCM.UseVisualStyleBackColor = true;
             // 
             // treeView2

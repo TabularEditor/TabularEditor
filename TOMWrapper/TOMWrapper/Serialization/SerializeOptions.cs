@@ -64,7 +64,7 @@ namespace TabularEditor.TOMWrapper.Serialization
         public bool IgnoreTimestamps = true;
         public bool IgnoreLineageTags { get; set; } = false;
         public bool ShouldSerializeIgnoreLineageTags() => IgnoreLineageTags;
-        public bool SplitMultilineStrings = true;        
+        public bool SplitMultilineStrings = true;
         public bool PrefixFilenames = false;
         public bool AlsoSaveAsBim = false;
         public bool LocalTranslations = false;
