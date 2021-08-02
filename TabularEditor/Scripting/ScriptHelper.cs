@@ -19,6 +19,7 @@ namespace TabularEditor.Scripting
 {
     public static class ScriptHelper
     {
+        #region Object selection
         [ScriptMethod,IntelliSense("Displays a dialog that allows the user to select a column from the specified collection")]
         public static Column SelectColumn(this IEnumerable<Column> columns, Column preselect = null, string label = "Select column:")
         {
@@ -76,7 +77,9 @@ namespace TabularEditor.Scripting
             if (isHourglass) Hourglass.Enabled = true;
             return result;
         }
+        #endregion
 
+        #region Server command execution
         [ScriptMethod]
         public static object EvaluateDax(string dax)
         {
@@ -100,7 +103,9 @@ namespace TabularEditor.Scripting
         {
             TabularModelHandler.Singleton.Model.Database.ExecuteCommand(tmsl);
         }
+        #endregion
 
+        #region Schema checks
         [ScriptMethod]
         public static void SchemaCheck(Partition partition)
         {
@@ -209,7 +214,9 @@ namespace TabularEditor.Scripting
                     SchemaDiffDialog.Show(changes);
             }
         }
+        #endregion
 
+        #region DAX Formatting
         internal static IDaxFormatterProxy DaxFormatter { get; set; } = DaxFormatterProxy.Instance;
 
         [ScriptMethod]
@@ -327,7 +334,9 @@ namespace TabularEditor.Scripting
 
             objectsFlaggedForFormatting.Clear();
         }
+        #endregion
 
+        #region File IO
         [ScriptMethod]
         public static string ReadFile(string filePath)
         {
@@ -346,7 +355,9 @@ namespace TabularEditor.Scripting
         {
             System.IO.File.WriteAllText(filePath, content);
         }
+        #endregion
 
+        #region Notifications and alerts
         [ScriptMethod]
         public static void Output(this object value, int lineNumber = -1)
         {
@@ -398,7 +409,9 @@ namespace TabularEditor.Scripting
             var caption = string.Format("Objects with errors ({0})", items.Count());
             ScriptOutputForm.ShowObject(items, caption, true);
         }
+        #endregion
 
+        #region Custom actions
         [ScriptMethod, IntelliSense("Invoke the custom action with the given name.")]
         public static void CustomAction(string actionName)
         {
@@ -446,5 +459,6 @@ namespace TabularEditor.Scripting
             }
             return commandLineCustomActions.OfType<CustomAction>();
         }
+        #endregion
     }
 }

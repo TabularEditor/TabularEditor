@@ -87,7 +87,7 @@ namespace TabularEditor.TOMWrapper
                 var mode = IsPbiCompatibilityMode(json) ? Microsoft.AnalysisServices.CompatibilityMode.PowerBI : Microsoft.AnalysisServices.CompatibilityMode.AnalysisServices;
                 database = TOM.JsonSerializer.DeserializeDatabase(json, mode: mode);
                 database.CompatibilityMode = mode;
-                Status = "Model loaded succesfully.";
+                Status = "Model loaded successfully.";
                 Init();
 
                 _serializeOptions = SerializeOptions;

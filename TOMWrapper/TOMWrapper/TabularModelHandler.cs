@@ -133,7 +133,7 @@ namespace TabularEditor.TOMWrapper
              SourceType = ModelSourceType.File;
             Source = "Model.bim";
 
-            Status = "Succesfully created new model.";
+            Status = "Successfully created new model.";
             Init();
             
             PowerBIGovernance.UpdateGovernanceMode();
@@ -246,7 +246,7 @@ namespace TabularEditor.TOMWrapper
             SourceType = ModelSourceType.Database;
             Source = database.Server.Name + "." + database.Name;
 
-            Status = "Connected succesfully.";
+            Status = "Connected successfully.";
             Version = database.Version;
             Init();
             UndoManager.Suspend();

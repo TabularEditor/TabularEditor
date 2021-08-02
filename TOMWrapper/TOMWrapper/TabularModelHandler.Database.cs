@@ -155,7 +155,7 @@ namespace TabularEditor.TOMWrapper
 
         /// <summary>
         /// Reattaches any metadata removed from CalculatedTableColumns that are still present (by name) after
-        /// succesful deployment.
+        /// successful deployment.
         /// </summary>
         private void AttachCalculatedTableMetadata()
         {
