@@ -233,7 +233,7 @@ namespace TabularEditor.TOMWrapper.Tests
             handler.UndoManager.Rollback();
             handler.SaveDB();
 
-            // Check that perspectives were succesfully deleted:
+            // Check that perspectives were successfully deleted:
             Assert.IsFalse(m.Perspectives.Contains(pnEx));
         }
 
@@ -305,7 +305,7 @@ namespace TabularEditor.TOMWrapper.Tests
             handler.UndoManager.Rollback();
             handler.SaveDB();
 
-            // Check that perspectives were succesfully deleted:
+            // Check that perspectives were successfully deleted:
             Assert.IsFalse(m.Perspectives.Contains(pnIn));
             Assert.IsFalse(m.Perspectives.Contains(pnEx));
         }

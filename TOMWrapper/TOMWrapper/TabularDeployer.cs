@@ -82,7 +82,7 @@ namespace TabularEditor.TOMWrapper.Utils
 
         /// <summary>
         /// Deploys the specified database to the specified target server and database ID, using the specified options.
-        /// Returns a list of DAX errors (if any) on objects inside the database, in case the deployment was succesful.
+        /// Returns a list of DAX errors (if any) on objects inside the database, in case the deployment was successful.
         /// </summary>
         /// <param name="db"></param>
         /// <param name="targetConnectionString"></param>
