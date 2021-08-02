@@ -21,6 +21,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string ANALYTICSAIMETADATA = "AnalyticsAIMetadata";
 	    public const string ANNOTATIONS = "Annotations";
 	    public const string ATTRIBUTEHIERARCHY = "AttributeHierarchy";
+	    public const string AUTOMATICAGGREGATIONOPTIONS = "AutomaticAggregationOptions";
 	    public const string BASECOLUMN = "BaseColumn";
 	    public const string BASETABLE = "BaseTable";
 	    public const string CALCULATIONGROUP = "CalculationGroup";
@@ -8619,6 +8620,8 @@ namespace TabularEditor.TOMWrapper
 				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.ANALYTICSAIMETADATA:
 					return false;
+				case Properties.AUTOMATICAGGREGATIONOPTIONS:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1564 : Handler.CompatibilityLevel >= 1564;
 				case Properties.DATAACCESSOPTIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.DATASOURCEDEFAULTMAXCONNECTIONS:
