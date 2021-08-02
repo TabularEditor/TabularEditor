@@ -599,6 +599,8 @@ var tmsl = "{ \"refresh\": { \"type\": \"%type%\", \"objects\": [ { \"database\"
 ExecuteCommand(tmsl);
 ```
 
+### Visualize query results
+
 You can also use the `Output` helper method to visualize the result of a DAX expression returned from `EvaluateDax` directly:
 
 ```csharp
@@ -637,6 +639,35 @@ EvaluateDax(dax).Output();
 Remember you can save these scripts as Custom Actions by clicking the "+" icon just above the script editor. This way, you get an easily reusable collection of DAX queries that you can execute and visualize directly from inside the Tabular Editor context menu:
 
 ![image](https://user-images.githubusercontent.com/8976200/91638790-305e0380-ea12-11ea-9d84-313f4388496f.png)
+
+### Exporting data
+
+You can use the following script to evaluate a DAX query and stream the results to a file (the script uses a tab-separated file format):
+
+```csharp
+using System.IO;
+
+// This script evaluates a DAX query and writes the results to file using a tab-separated format:
+
+var dax = "EVALUATE 'Customer'";
+var file = @"c:\temp\file.csv";
+var columnSeparator = "\t";
+
+using(var daxReader = ExecuteReader(dax))
+using(var fileWriter = new StreamWriter(file))
+{
+    // Write column headers:
+    fileWriter.WriteLine(string.Join(columnSeparator, Enumerable.Range(0, daxReader.FieldCount - 1).Select(f => daxReader.GetName(f))));
+
+    while(daxReader.Read())
+    {
+        var rowValues = new object[daxReader.FieldCount];
+        daxReader.GetValues(rowValues);
+        var row = string.Join(columnSeparator, rowValues.Select(v => v == null ? "" : v.ToString()));
+        fileWriter.WriteLine(row);
+    }
+}
+```
 
 If you come up with some other interesting uses of these methods, please consider sharing them in the [community scripts repository](https://github.com/TabularEditor/Scripts). Thanks!
 
@@ -749,7 +780,7 @@ ds.ConnectionString = string.Format(
     password);
 
 // Remove Power Query partitions from all tables and replace them with a single Legacy partition:
-foreach(var t in Model.Tables)
+foreach(var t in Model.Tables.Where(t => t.Partitions.OfType<MPartition>().Any()))
 {
     var mPartitions = t.Partitions.OfType<MPartition>();
     if(!mPartitions.Any()) continue;
@@ -802,7 +833,7 @@ ds.ConnectionString = string.Format(
     password);
 
 // Remove Power Query partitions from all tables and replace them with a single Legacy partition:
-foreach(var t in Model.Tables)
+foreach(var t in Model.Tables.Where(t => t.Partitions.OfType<MPartition>().Any()))
 {
     var mPartitions = t.Partitions.OfType<MPartition>();
     if(!mPartitions.Any()) continue;
