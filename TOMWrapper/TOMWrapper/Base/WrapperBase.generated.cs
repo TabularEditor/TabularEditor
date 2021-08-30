@@ -135,6 +135,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string RELATIONSHIP = "Relationship";
 	    public const string RELATIONSHIPS = "Relationships";
 	    public const string RELYONREFERENTIALINTEGRITY = "RelyOnReferentialIntegrity";
+	    public const string REMOTEPARAMETERNAME = "RemoteParameterName";
 	    public const string RETAINDATATILLFORCECALCULATE = "RetainDataTillForceCalculate";
 	    public const string ROLE = "Role";
 	    public const string ROLES = "Roles";
@@ -1375,30 +1376,6 @@ namespace TabularEditor.TOMWrapper
 		}
 
 /// <summary>
-///             A boolean value indicating whether the data type is inferred.
-///             </summary>
-		[DisplayName("Data Type Inferred")]
-		[Category("Options"),Description(@"A boolean value indicating whether the data type is inferred."),IntelliSense(@"A boolean value indicating whether the data type is inferred.")]
-		public bool IsDataTypeInferred {
-			get {
-			    return MetadataObject.IsDataTypeInferred;
-			}
-			set {
-				
-				var oldValue = IsDataTypeInferred;
-				var newValue = value;
-				if (oldValue == newValue) return;
-				bool undoable = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.ISDATATYPEINFERRED, newValue, ref undoable, ref cancel);
-				if (cancel) return;
-				if (!MetadataObject.IsRemoved) MetadataObject.IsDataTypeInferred = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISDATATYPEINFERRED, oldValue, newValue));
-				OnPropertyChanged(Properties.ISDATATYPEINFERRED, oldValue, newValue);
-			}
-		}
-		private bool ShouldSerializeIsDataTypeInferred() { return false; }
-/// <summary>
 ///             The DAX expression that is evaluated for the calculated column.
 ///             </summary>
 		[DisplayName("Expression")]
@@ -1604,30 +1581,6 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeIsNameInferred() { return false; }
 /// <summary>
-///             A boolean value indicating whether the data type is inferred.
-///             </summary>
-		[DisplayName("Data Type Inferred")]
-		[Category("Options"),Description(@"A boolean value indicating whether the data type is inferred."),IntelliSense(@"A boolean value indicating whether the data type is inferred.")]
-		public bool IsDataTypeInferred {
-			get {
-			    return MetadataObject.IsDataTypeInferred;
-			}
-			set {
-				
-				var oldValue = IsDataTypeInferred;
-				var newValue = value;
-				if (oldValue == newValue) return;
-				bool undoable = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.ISDATATYPEINFERRED, newValue, ref undoable, ref cancel);
-				if (cancel) return;
-				if (!MetadataObject.IsRemoved) MetadataObject.IsDataTypeInferred = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISDATATYPEINFERRED, oldValue, newValue));
-				OnPropertyChanged(Properties.ISDATATYPEINFERRED, oldValue, newValue);
-			}
-		}
-		private bool ShouldSerializeIsDataTypeInferred() { return false; }
-/// <summary>
 ///             Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is an expression (as the Expression of a CalculatedPartitionSource).
 ///             </summary>
 		[DisplayName("Source Column")]
@@ -1830,8 +1783,8 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
-/// <summary> 
-///             For a DataColumn, specifies the data type. See <see href="https://msdn.microsoft.com/library/gg492146.aspx" /> for a list of supported data types.  
+/// <summary>
+///             For a DataColumn, specifies the data type. See <see href="https://msdn.microsoft.com/library/gg492146.aspx" /> for a list of supported data types.
 ///             </summary>
 		[DisplayName("Data Type")]
 		[Category("Basic"),Description(@"For a DataColumn, specifies the data type. See https://msdn.microsoft.com/library/gg492146.aspx for a list of supported data types."),IntelliSense(@"For a DataColumn, specifies the data type. See https://msdn.microsoft.com/library/gg492146.aspx for a list of supported data types.")][TypeConverter(typeof(DataTypeEnumConverter))]
@@ -1854,6 +1807,30 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDataType() { return false; }
+/// <summary>
+///             A boolean value indicating whether the datatype is inferred.
+///             </summary>
+		[DisplayName("Data Type Inferred")]
+		[Category("Options"),Description(@"A boolean value indicating whether the datatype is inferred."),IntelliSense(@"A boolean value indicating whether the datatype is inferred.")]
+		public bool IsDataTypeInferred {
+			get {
+			    return MetadataObject.IsDataTypeInferred;
+			}
+			set {
+				
+				var oldValue = IsDataTypeInferred;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ISDATATYPEINFERRED, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.IsDataTypeInferred = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISDATATYPEINFERRED, oldValue, newValue));
+				OnPropertyChanged(Properties.ISDATATYPEINFERRED, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeIsDataTypeInferred() { return false; }
         private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
         ///<summary>Removes all annotations from this object.</summary>
         [IntelliSense("Removes all annotations from this object.")]
@@ -2886,6 +2863,18 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("DataType"));
 				this.ToList().ForEach(item => { item.DataType = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the IsDataTypeInferred property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the IsDataTypeInferred property of all objects in the collection at once.")]
+		public bool IsDataTypeInferred {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("IsDataTypeInferred"));
+				this.ToList().ForEach(item => { item.IsDataTypeInferred = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}
@@ -7827,12 +7816,12 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
-/// <summary> 
-///             Returns the status of local changes made to the model, which haven't been saved to the server.  
+/// <summary>
+///             Returns the status of local changes made to the model, which haven't been saved to the server.
 ///             <para>If the model is not connected, this value is always <b>False</b>.</para></summary>
 		[DisplayName("Has Local Changes")]
-		[Category("Options"),Description(@"Returns the status of local changes made to the model, which haven't been saved to the server.  
-            <para>If the model is not connected, this value is always <b>False</b>.</para>"),IntelliSense(@"Returns the status of local changes made to the model, which haven't been saved to the server.  
+		[Category("Options"),Description(@"Returns the status of local changes made to the model, which haven't been saved to the server.
+            <para>If the model is not connected, this value is always <b>False</b>.</para>"),IntelliSense(@"Returns the status of local changes made to the model, which haven't been saved to the server.
             <para>If the model is not connected, this value is always <b>False</b>.</para>")]
 		public bool HasLocalChanges {
 			get {
@@ -14486,6 +14475,30 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeSourceLineageTag() { return false; }
 /// <summary>
+///             The parameter name defined in source model, applicable only for proxy model and empty for local model.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at Preview or above.</remarks>
+		[DisplayName("Remote Parameter Name")]
+		[Category("Options"),Description(@"The parameter name defined in source model, applicable only for proxy model and empty for local model."),IntelliSense(@"The parameter name defined in source model, applicable only for proxy model and empty for local model.")]
+		public string RemoteParameterName {
+			get {
+			    return MetadataObject.RemoteParameterName;
+			}
+			set {
+				
+				var oldValue = RemoteParameterName;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.REMOTEPARAMETERNAME, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.RemoteParameterName = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.REMOTEPARAMETERNAME, oldValue, newValue));
+				OnPropertyChanged(Properties.REMOTEPARAMETERNAME, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeRemoteParameterName() { return false; }
+/// <summary>
 ///             Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter..
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1545 or above.</remarks>
 		[DisplayName("Parameter Values Column")]
@@ -14651,6 +14664,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1545 : Handler.CompatibilityLevel >= 1545;
 				case Properties.QUERYGROUP:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1480 : Handler.CompatibilityLevel >= 1480;
+				case Properties.REMOTEPARAMETERNAME:
+					return false;
 				case Properties.SOURCELINEAGETAG:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1550 : Handler.CompatibilityLevel >= 1550;
 				case Properties.PARENT:
@@ -14783,6 +14798,18 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("SourceLineageTag"));
 				this.ToList().ForEach(item => { item.SourceLineageTag = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the RemoteParameterName property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the RemoteParameterName property of all objects in the collection at once.")]
+		public string RemoteParameterName {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("RemoteParameterName"));
+				this.ToList().ForEach(item => { item.RemoteParameterName = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}
