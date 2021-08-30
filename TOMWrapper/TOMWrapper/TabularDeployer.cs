@@ -416,6 +416,22 @@ namespace TabularEditor.TOMWrapper.Utils
                     }
                 }
             }
+            else if (roles != null && options.DeployRoleMembers)
+            {
+                foreach (var role in roles)
+                {
+                    if (role["members"] is JArray members)
+                    {
+                        foreach (JObject member in members)
+                        {
+                            if (member.TryGetValue("identityProvider", out JToken value) && value.ToString() == "AzureAD")
+                            {
+                                member.Remove("memberId");
+                            }
+                        }
+                    }
+                }
+            }
 
             if (!options.DeployConnections)
             {
@@ -482,7 +498,22 @@ namespace TabularEditor.TOMWrapper.Utils
                     role["members"] = members;
                 }
             }
-            
+            else if (roles != null && options.DeployRoleMembers)
+            {
+                foreach (var role in roles)
+                {
+                    if (role["members"] is JArray members)
+                    {
+                        foreach (JObject member in members)
+                        {
+                            if (member.TryGetValue("identityProvider", out JToken value) && value.ToString() == "AzureAD")
+                            {
+                                member.Remove("memberId");
+                            }
+                        }
+                    }
+                }
+            }
 
             return tmslJObj;
         }
