@@ -327,7 +327,7 @@ namespace TabularEditor.UI
                 Add(new MethodAutocompleteItemParen("Last")
                 {
                     ToolTipTitle = type.Name + " Last(predicate)",
-                    ToolTipText = "Returns the last element of the sequency, satisfying the (optionally) specified condition.",
+                    ToolTipText = "Returns the last element of the sequence, satisfying the (optionally) specified condition.",
                     ImageIndex = TabularIcons.ICON_EXMETHOD
                 });
                 Add(new MethodAutocompleteItemParen("Take")
