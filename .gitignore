@@ -65,3 +65,4 @@
 /AntlrGrammars/obj/Debug
 /AntlrGrammars/obj/Release
 *.user
+/Publish/*
