@@ -133,6 +133,7 @@ namespace TabularEditor.UI.Dialogs
 
             LoadCheckedNodes(treeView2.Nodes, options.Levels);
             chkPrefixFilesCM.Checked = options.PrefixFilenames;
+            chkAlsoSaveAsBimCM.Checked = options.AlsoSaveAsBim;
             chkLocalPerspectivesCM.Checked = options.LocalPerspectives;
             chkLocalTranslationsCM.Checked = options.LocalTranslations;
             chkLocalRelationshipsCM.Checked = options.LocalRelationships;
@@ -159,6 +160,7 @@ namespace TabularEditor.UI.Dialogs
             Preferences.Current.IgnoreInferredProperties = chkIgnoreInfProps.Checked;
             Preferences.Current.SplitMultilineStrings = chkSplitMultiline.Checked;
             Preferences.Current.SaveToFolder_PrefixFiles = chkPrefixFiles.Checked;
+            Preferences.Current.SaveToFolder_AlsoSaveAsBim = chkAlsoSaveAsBim.Checked;
             Preferences.Current.SaveToFolder_LocalPerspectives = chkLocalPerspectives.Checked;
             Preferences.Current.SaveToFolder_LocalTranslations = chkLocalTranslations.Checked;
             Preferences.Current.SaveToFolder_LocalRelationships = chkLocalRelationships.Checked;
@@ -191,6 +193,7 @@ namespace TabularEditor.UI.Dialogs
             options.IgnoreInferredProperties = chkIgnoreInfPropsCM.Checked;
             options.SplitMultilineStrings = chkSplitMultilineCM.Checked;
             options.PrefixFilenames = chkPrefixFilesCM.Checked;
+            options.AlsoSaveAsBim = chkAlsoSaveAsBimCM.Checked;
             options.LocalPerspectives = chkLocalPerspectivesCM.Checked;
             options.LocalTranslations = chkLocalTranslationsCM.Checked;
             options.LocalRelationships = chkLocalRelationshipsCM.Checked;
@@ -238,6 +241,7 @@ namespace TabularEditor.UI.Dialogs
             chkSplitMultiline.Checked = Preferences.Current.SplitMultilineStrings;
 
             chkPrefixFiles.Checked = Preferences.Current.SaveToFolder_PrefixFiles;
+            chkAlsoSaveAsBim.Checked = Preferences.Current.SaveToFolder_AlsoSaveAsBim;
             chkLocalPerspectives.Checked = Preferences.Current.SaveToFolder_LocalPerspectives;
             chkLocalTranslations.Checked = Preferences.Current.SaveToFolder_LocalTranslations;
             chkLocalRelationships.Checked = Preferences.Current.SaveToFolder_LocalRelationships;

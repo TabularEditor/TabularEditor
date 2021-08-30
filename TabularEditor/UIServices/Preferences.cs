@@ -83,6 +83,7 @@ namespace TabularEditor.UIServices
         #endregion
 
         public bool SaveToFolder_PrefixFiles = false;
+        public bool SaveToFolder_AlsoSaveAsBim = false;
         public bool SaveToFolder_LocalRelationships = false;
         public bool SaveToFolder_LocalPerspectives = false;
         public bool SaveToFolder_LocalTranslations = false;
@@ -246,6 +247,7 @@ namespace TabularEditor.UIServices
             };
 
             serializeOptions.PrefixFilenames = value.SaveToFolder_PrefixFiles;
+            serializeOptions.AlsoSaveAsBim = value.SaveToFolder_AlsoSaveAsBim;
             serializeOptions.LocalPerspectives = value.SaveToFolder_LocalPerspectives;
             serializeOptions.LocalTranslations = value.SaveToFolder_LocalTranslations;
             serializeOptions.LocalRelationships = value.SaveToFolder_LocalRelationships;
