@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+
+  <?define ProductVersion=!(bind.FileVersion.app.exe) ?>
+  <?define ProductName = "Tabular Editor" ?>
+  <?define ProductManufacturer = "Kapacity A/S" ?>
+  <?define PackageManufacturer = "Daniel Otykier" ?>
+  <?define AppUrlHelpLink = "https://tabulareditor.com" ?>
+  <?define AppUrlInfoAbout = "www.kapacity.dk" ?>
+  <?define AppInstallFolder = "Tabular Editor" ?>
+  <?define AppExecutableName = "TabularEditor.exe" ?>
+  
+  <Product Id="*" Name="$(var.ProductName)" Language="!(loc.ProductLanguage)" Version="$(var.ProductVersion)" Manufacturer="$(var.ProductManufacturer)" UpgradeCode="{E20734F5-CD2A-4A76-AB20-014819FCDE35}">
+
+    <Package Platform="x86" InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Manufacturer="$(var.PackageManufacturer)" Description="!(loc.PackageDescription)" Comments="!(loc.PackageComments)" />
+    <MajorUpgrade AllowSameVersionUpgrades="yes" AllowDowngrades="no" DowngradeErrorMessage="!(loc.MajorUpgradeDowngradeErrorMessage)" Schedule="afterInstallValidate" />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+    <Binary Id="BinaryCorrectPbiTool" SourceFile="assets\CorrectPbiTool.vbs" />
+
+    <Feature Id="DefaultFeature" Title="$(var.ProductName)" Level="1">
+      <ComponentRef Id="app.exe" />
+      <ComponentRef Id="pbitool.json" />
+      <ComponentRef Id="DesktopShortcut" />
+      <ComponentRef Id="ProgramMenuShortcut" />
+      <ComponentGroupRef Id="AppComponents" />
+    </Feature>
+
+    <Icon Id="app.ico" SourceFile="$(var.PublishFolder)\$(var.AppExecutableName)" />
+
+    <UIRef Id="Custom_WixUI_InstallDir" />
+    
+    <WixVariable Id="WixUIDialogBmp" Value="assets\background.bmp" />
+    <WixVariable Id="WixUIBannerBmp" Value="assets\banner.bmp" />
+    <WixVariable Id="WixUILicenseRtf" Value="$(var.RootFolder)\TabularEditor-license.rtf" />
+     
+    <Property Id="ARPPRODUCTICON">app.ico</Property>
+    <Property Id="ARPCONTACT">$(var.PackageManufacturer)</Property>
+    <Property Id="ARPHELPLINK">$(var.AppUrlHelpLink)</Property>
+    <Property Id="ARPURLINFOABOUT">$(var.AppUrlInfoAbout)</Property>
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+<!-- 
+    Uncoment to set default checkbox status to checked
+    <Property Id="CREATEDESKTOPSHORTCUT" Value="1" />
+    <Property Id="CREATEPROGRAMMENUSHORTCUT" Value="1" />
+-->
+    <CustomAction Id="CustomActionCorrectPbiTool" BinaryKey="BinaryCorrectPbiTool" VBScriptCall="" Execute="commit" Impersonate="no" />
+    <CustomAction Id="CustomActionCorrectPbiTool.SetProperty" Property="CustomActionCorrectPbiTool" Value="[INSTALLFOLDER]" />
+    
+    <InstallExecuteSequence>
+      <Custom Action="CustomActionCorrectPbiTool.SetProperty" After="InstallFiles" />
+      <Custom Action="CustomActionCorrectPbiTool" After="CustomActionCorrectPbiTool.SetProperty">NOT Installed AND NOT REMOVE</Custom>
+    </InstallExecuteSequence>
+    
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="$(var.AppInstallFolder)" />
+      </Directory>
+      
+      <Directory Id="DesktopFolder" Name="Desktop" />
+      <Directory Id="ProgramMenuFolder" Name="ProgramMenu" />
+      
+      <Directory Id="CommonFilesFolder">
+        <Directory Id="MicrosoftShared" Name="Microsoft Shared">
+          <Directory Id="PowerBIDesktop" Name="Power BI Desktop">
+            <Directory Id="POWERBIEXTERNALTOOLSFOLDER" Name="External Tools" />
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <DirectoryRef Id="DesktopFolder">
+      <Component Id="DesktopShortcut" Guid="{F2753BFB-8041-44F3-9A43-78D69990188E}">
+        <Condition><![CDATA[CREATEDESKTOPSHORTCUT = 1]]></Condition>
+        <Shortcut Id="DesktopShortcut" Directory="DesktopFolder" Name="$(var.ProductName)" Target="[INSTALLFOLDER]$(var.AppExecutableName)" />
+        <RegistryValue Root="HKCU" Key="Software\[Manufacturer]\$(var.ProductName)" Name="installed" Value="1" Type="integer" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+    
+    <DirectoryRef Id="ProgramMenuFolder">
+      <Component Id="ProgramMenuShortcut" Guid="{14ACD56C-F4CD-430A-94CD-6AB2584D9E90}">
+        <Condition><![CDATA[CREATEPROGRAMMENUSHORTCUT = 1]]></Condition>
+        <Shortcut Id="ProgramMenuShortcut" Directory="ProgramMenuFolder" Name="$(var.ProductName)" Target="[INSTALLFOLDER]$(var.AppExecutableName)" />
+        <RegistryValue Root="HKCU" Key="Software\[Manufacturer]\$(var.ProductName)" Name="installed" Value="1" Type="integer" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="POWERBIEXTERNALTOOLSFOLDER">
+      <Component Id="pbitool.json" Guid="{D09A259B-21E5-4C57-8B4B-D7E7BD18625B}">
+        <File Id="pbitool.json" Name="tabulareditor.pbitool.json" Source="$(var.RootFolder)\TabularEditor\tabulareditor.pbitool.json" KeyPath="yes" />
+        <RemoveFile Id="REMOVEPOWERBIEXTERNALTOOL" Name="tabulareditor.pbitool.json" On="uninstall" />
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="app.exe" Guid="{41F7A44E-D920-40DD-A5A0-636904A02FA8}">
+        <File Id="app.exe" Name="$(var.AppExecutableName)" Source="$(var.PublishFolder)\$(var.AppExecutableName)" KeyPath="yes" Checksum="yes" />
+        <RemoveFile Id="REMOVEALL" Directory="INSTALLFOLDER" Name="*.*" On="both" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+
+  <Fragment>
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="cmpB34EB2653F5E44F689E9893120FB049F" Guid="{B34EB265-3F5E-44F6-89E9-893120FB049F}">
+        <File Id="filB34EB2653F5E44F689E9893120FB049F" KeyPath="yes" Source="$(var.RootFolder)\license-FastWildcardMatching.txt" />
+      </Component>
+      <Component Id="cmp47C8ED518AD14F4EADAB74772F9017A3" Guid="{47C8ED51-8AD1-4F4E-ADAB-74772F9017A3}">
+        <File Id="fil47C8ED518AD14F4EADAB74772F9017A3" KeyPath="yes" Source="$(var.RootFolder)\license-TreeViewAdv.txt" />
+      </Component>
+      <Component Id="cmp0FC99A4419024A16993D73F00E761D82" Guid="{0FC99A44-1902-4A16-993D-73F00E761D82}">
+        <File Id="fil0FC99A4419024A16993D73F00E761D82" KeyPath="yes" Source="$(var.RootFolder)\TabularEditor-license.rtf" />
+      </Component>
+      <Component Id="cmp773C9762DFA94CD1B231DA30A78FCF89" Guid="{773C9762-DFA9-4CD1-B231-DA30A78FCF89}">
+        <File Id="fil773C9762DFA94CD1B231DA30A78FCF89" KeyPath="yes" Source="$(var.RootFolder)\LICENSE" Name="license-TabularEditor.txt" />
+      </Component>
+      <Component Id="cmp1E459A17CA9A430EA83C8B7E357B6224" Guid="{1E459A17-CA9A-430E-A83C-8B7E357B6224}">
+        <File Id="fil1E459A17CA9A430EA83C8B7E357B6224" KeyPath="yes" Source="$(var.PublishFolder)\Microsoft.AnalysisServices.Core.dll" />
+      </Component>
+      <Component Id="cmp9D8A3FDF468F49C59585B5172591FCF4" Guid="{9D8A3FDF-468F-49C5-9585-B5172591FCF4}">
+        <File Id="fil9D8A3FDF468F49C59585B5172591FCF4" KeyPath="yes" Source="$(var.PublishFolder)\Microsoft.AnalysisServices.Tabular.dll" />
+      </Component>
+      <Component Id="cmpB47216DDEADE427FA72603C5F678A79C" Guid="{B47216DD-EADE-427F-A726-03C5F678A79C}">
+        <File Id="filB47216DDEADE427FA72603C5F678A79C" KeyPath="yes" Source="$(var.PublishFolder)\Microsoft.AnalysisServices.Tabular.Json.dll" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="AppComponents">
+      <ComponentRef Id="cmpB34EB2653F5E44F689E9893120FB049F" />
+      <ComponentRef Id="cmp773C9762DFA94CD1B231DA30A78FCF89" />
+      <ComponentRef Id="cmp47C8ED518AD14F4EADAB74772F9017A3" />
+      <ComponentRef Id="cmp0FC99A4419024A16993D73F00E761D82" />
+      <ComponentRef Id="cmp1E459A17CA9A430EA83C8B7E357B6224" />
+      <ComponentRef Id="cmp9D8A3FDF468F49C59585B5172591FCF4" />
+      <ComponentRef Id="cmpB47216DDEADE427FA72603C5F678A79C" />
+    </ComponentGroup>
+  </Fragment>
+
+  <!-- https://github.com/wixtoolset/wix3/blob/develop/src/ext/UIExtension/wixlib/WixUI_InstallDir.wxs -->
+  <Fragment>
+    <UI Id="Custom_WixUI_InstallDir">
+      <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />
+      <TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="12" />
+      <TextStyle Id="WixUI_Font_Title" FaceName="Tahoma" Size="9" Bold="yes" />
+
+      <Property Id="DefaultUIFont" Value="WixUI_Font_Normal" />
+      <Property Id="WixUI_Mode" Value="InstallDir" />
+
+      <DialogRef Id="BrowseDlg" />
+      <DialogRef Id="DiskCostDlg" />
+      <DialogRef Id="ErrorDlg" />
+      <DialogRef Id="FatalError" />
+      <DialogRef Id="FilesInUse" />
+      <DialogRef Id="MsiRMFilesInUse" />
+      <DialogRef Id="PrepareDlg" />
+      <DialogRef Id="ProgressDlg" />
+      <DialogRef Id="ResumeDlg" />
+      <DialogRef Id="UserExit" />
+
+      <Publish Dialog="BrowseDlg" Control="OK" Event="DoAction" Value="WixUIValidatePath" Order="3">1</Publish>
+      <Publish Dialog="BrowseDlg" Control="OK" Event="SpawnDialog" Value="InvalidDirDlg" Order="4"><![CDATA[NOT WIXUI_DONTVALIDATEPATH AND WIXUI_INSTALLDIR_VALID<>"1"]]></Publish>
+
+      <Publish Dialog="ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999">1</Publish>
+
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="LicenseAgreementDlg">NOT Installed</Publish>
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg">Installed AND PATCH</Publish>
+
+      <Publish Dialog="LicenseAgreementDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg">1</Publish>
+      <Publish Dialog="LicenseAgreementDlg" Control="Next" Event="NewDialog" Value="Custom_InstallDirDlg">LicenseAccepted = "1"</Publish>
+
+      <Publish Dialog="Custom_InstallDirDlg" Control="Back" Event="NewDialog" Value="LicenseAgreementDlg">1</Publish>
+      <Publish Dialog="Custom_InstallDirDlg" Control="Next" Event="SetTargetPath" Value="[WIXUI_INSTALLDIR]" Order="1">1</Publish>
+      <Publish Dialog="Custom_InstallDirDlg" Control="Next" Event="DoAction" Value="WixUIValidatePath" Order="2">NOT WIXUI_DONTVALIDATEPATH</Publish>
+      <Publish Dialog="Custom_InstallDirDlg" Control="Next" Event="SpawnDialog" Value="InvalidDirDlg" Order="3"><![CDATA[NOT WIXUI_DONTVALIDATEPATH AND WIXUI_INSTALLDIR_VALID<>"1"]]></Publish>
+      <Publish Dialog="Custom_InstallDirDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" Order="4">WIXUI_DONTVALIDATEPATH OR WIXUI_INSTALLDIR_VALID="1"</Publish>
+      <Publish Dialog="Custom_InstallDirDlg" Control="ChangeFolder" Property="_BrowseProperty" Value="[WIXUI_INSTALLDIR]" Order="1">1</Publish>
+      <Publish Dialog="Custom_InstallDirDlg" Control="ChangeFolder" Event="SpawnDialog" Value="BrowseDlg" Order="2">1</Publish>
+
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="Custom_InstallDirDlg" Order="1">NOT Installed</Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" Order="2">Installed AND NOT PATCH</Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="2">Installed AND PATCH</Publish>
+
+      <Publish Dialog="MaintenanceWelcomeDlg" Control="Next" Event="NewDialog" Value="MaintenanceTypeDlg">1</Publish>
+
+      <Publish Dialog="MaintenanceTypeDlg" Control="RepairButton" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+      <Publish Dialog="MaintenanceTypeDlg" Control="RemoveButton" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+      <Publish Dialog="MaintenanceTypeDlg" Control="Back" Event="NewDialog" Value="MaintenanceWelcomeDlg">1</Publish>
+
+      <Property Id="ARPNOMODIFY" Value="1" />
+    </UI>
+
+    <UIRef Id="WixUI_Common" />
+  </Fragment>
+  
+  <!-- https://github.com/wixtoolset/wix3/blob/develop/src/ext/UIExtension/wixlib/InstallDirDlg.wxs -->
+  <Fragment>
+    <UI>
+      <Dialog Id="Custom_InstallDirDlg" Width="370" Height="270" Title="!(loc.InstallDirDlg_Title)">
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="!(loc.WixUIBack)" />
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
+          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+
+        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes" Text="!(loc.InstallDirDlgDescription)" />
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes" Text="!(loc.InstallDirDlgTitle)" />
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="!(loc.InstallDirDlgBannerBitmap)" />
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        
+        <Control Id="DesktopShortcut" Type="CheckBox" X="20" Y="160" Width="320" Height="18" Property="CREATEDESKTOPSHORTCUT" Text="!(loc.CreateDesktopShortcut)" CheckBoxValue="1" TabSkip="no" />
+        <Control Id="ProgramMenuShortcut" Type="CheckBox" X="20" Y="180" Width="320" Height="18" Property="CREATEPROGRAMMENUSHORTCUT" Text="!(loc.CreateProgramMenuShortcut)" CheckBoxValue="1" TabSkip="no" />
+
+        <Control Id="FolderLabel" Type="Text" X="20" Y="60" Width="290" Height="30" NoPrefix="yes" Text="!(loc.InstallDirDlgFolderLabel)" />
+        <Control Id="Folder" Type="PathEdit" X="20" Y="100" Width="320" Height="18" Property="WIXUI_INSTALLDIR" Indirect="yes" />
+        <Control Id="ChangeFolder" Type="PushButton" X="20" Y="120" Width="56" Height="17" Text="!(loc.InstallDirDlgChange)" />
+      </Dialog>
+    </UI>
+  </Fragment>
+  
+</Wix>
