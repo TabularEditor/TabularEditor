@@ -11,8 +11,8 @@ namespace TabularEditor.UIServices
 {
     public static class UpdateService
     {
-        public const string VERSION_MANIFEST_URL = "https://raw.githubusercontent.com/otykier/TabularEditor/master/TabularEditor/version.txt";
-        public const string DOWNLOAD_UPDATE_URL = "https://github.com/otykier/TabularEditor/releases/latest";
+        public const string VERSION_MANIFEST_URL = "https://raw.githubusercontent.com/TabularEditor/TabularEditor/2.16.1/TabularEditor/version.txt";
+        public const string DOWNLOAD_UPDATE_URL = "https://github.com/TabularEditor/TabularEditor/releases/latest";
 
         public static Version CurrentBuild { get; } = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
         public static Version AvailableBuild { get; private set; } = null;
