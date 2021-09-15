@@ -630,13 +630,30 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
             // Auto-load the file specified as command line arguments:
             var args = Environment.GetCommandLineArgs();
-            if (args.Length == 2 && (File.Exists(args[1]) || File.Exists(args[1] + "\\database.json")))
+            var modelSource = CommandLineHandler.GetModelSourceFromCLI(args, out _);
+            if (modelSource == CommandLineHandler.ModelSource.File && (File.Exists(args[1]) || File.Exists(args[1] + "\\database.json")))
             {
                 UI.File_Open(args[1]);
             }
-            if (args.Length == 3)
+            else if (modelSource == CommandLineHandler.ModelSource.ServerAndDatabase)
             {
                 UI.Database_Open(args[1], args[2]);
+            }
+            else if (modelSource == CommandLineHandler.ModelSource.SingleLocalInstance)
+            {
+                var localInstances = PowerBIHelper.Instances;
+                if(localInstances.Count == 1)
+                {
+                    UI.Database_Open($"localhost:{localInstances[0].Port}", "");
+                }
+            }
+            else if (modelSource == CommandLineHandler.ModelSource.NamedLocalInstance)
+            {
+                var localInstance = PowerBIHelper.Instances.FirstOrDefault(i => i.Name.EqualsI(args[2]));
+                if (localInstance != null)
+                {
+                    UI.Database_Open($"localhost:{localInstance.Port}", "");
+                }
             }
         }
 

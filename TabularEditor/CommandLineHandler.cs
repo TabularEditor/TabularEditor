@@ -352,34 +352,76 @@ namespace TabularEditor
             }
         }
 
-        bool IsLocalSwitch(string arg)
+        private static bool IsLocalSwitch(string arg)
         {
             return arg.EqualsI("-L") || arg.EqualsI("-LOCAL");
         }
-        bool IsLocalSwitch(int argIndex)
+        private static bool IsLocalSwitch(IList<string> argList, int argIndex)
         {   
             return argList.Count > argIndex && IsLocalSwitch(argList[argIndex]);
+        }
+        private static bool IsSwitch(IList<string> argList, int argIndex)
+        {
+            return argList.Count > argIndex && argList[argIndex].StartsWith("-");
+        }
+
+        public enum ModelSource
+        {
+            None,
+            File,
+            ServerAndDatabase,
+            SingleLocalInstance,
+            NamedLocalInstance
+        }
+
+        static public ModelSource GetModelSourceFromCLI(IList<string> args, out bool additionalArgs)
+        {
+            additionalArgs = false;
+            if (args.Count == 2)
+            {
+                if (IsLocalSwitch(args, 1)) return ModelSource.SingleLocalInstance;
+                else return ModelSource.File;
+            }
+            else if (args.Count > 2)
+            {
+                additionalArgs = IsSwitch(args, 2) || IsSwitch(args, 3);
+                if (IsLocalSwitch(args, 1))
+                {
+                    return IsSwitch(args, 2) ? ModelSource.SingleLocalInstance : ModelSource.NamedLocalInstance;
+                }
+                else if (IsSwitch(args, 1))
+                {
+                    OutputUsage();
+                    throw new CommandLineException();
+                }
+                else
+                {
+                    return IsSwitch(args, 2) ? ModelSource.File : ModelSource.ServerAndDatabase;
+                }
+            }
+            else
+                return ModelSource.None;
         }
 
         void LoadModel()
         {
-            if ((argList.Count == 2 || argList[2].StartsWith("-")) && !IsLocalSwitch(1))
+            var modelSource = GetModelSourceFromCLI(argList, out bool additionalArgs);
+            if(modelSource == ModelSource.None || !additionalArgs)
             {
-                LoadModelFromFile(argList[1]);
-            }
-            else if ((argList.Count == 3 || argList[3].StartsWith("-")) || IsLocalSwitch(1))
-            {
-                LoadModelFromServer(argList[1], argList.Count > 2 && !argList[2].StartsWith("-") ? argList[2] : "");
-            }
-            else
-            {
-                // Otherwise, it's nonsensical
                 LaunchUi = true;
                 throw new CommandLineException();
             }
+            else if(modelSource == ModelSource.File)
+            {
+                LoadModelFromFile(argList[1]);
+            }
+            else
+            {
+                LoadModelFromServer(argList[1], IsSwitch(argList, 2) ? "" : argList[2]);
+            }
         }
 
-        void OutputUsage()
+        static void OutputUsage()
         {
             Console.WriteLine(@"Usage:
 
