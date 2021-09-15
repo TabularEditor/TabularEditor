@@ -391,8 +391,7 @@ namespace TabularEditor
                 }
                 else if (IsSwitch(args, 1))
                 {
-                    OutputUsage();
-                    throw new CommandLineException();
+                    return ModelSource.None;
                 }
                 else
                 {
