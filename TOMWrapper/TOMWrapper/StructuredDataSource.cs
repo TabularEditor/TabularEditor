@@ -1,15 +1,8 @@
-﻿extern alias json;
-
-using json::Newtonsoft.Json.Linq;
-using System;
+﻿using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
-using System.IO;
-using System.IO.Compression;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.PropertyGridUI.CollectionEditors;
 using TabularEditor.TOMWrapper.Undo;
@@ -127,6 +120,26 @@ namespace TabularEditor.TOMWrapper
         {
             get { return MetadataObject.ConnectionDetails.Address.ContentType; }
             set { SetValue(ContentType, value, v => { MetadataObject.ConnectionDetails.Address.ContentType = (string)v; }); }
+        }
+
+        [Category("Connection Details"), Description("Native query (typically a SQL statement) to be sent to the source"), IntelliSense("Native query (typically a SQL statement) to be sent to the source")]
+        public string Query
+        {
+            get
+            {
+                var json = MetadataObject.ConnectionDetails?.ToJson();
+                if (string.IsNullOrEmpty(json)) return null;
+                return JObject.Parse(json)["query"]?.ToString(Newtonsoft.Json.Formatting.None);
+            }
+            set
+            {
+                SetValue(ContentType, value, v =>
+                {
+                    var json = MetadataObject.ConnectionDetails?.ToJson();
+                    var jObj = string.IsNullOrEmpty(json) ? new JObject() : JObject.Parse(json);
+                    jObj["query"] = (string)v; MetadataObject.ConnectionDetails.ParseJson(jObj.ToString());
+                });
+            }
         }
         private bool ShouldSerializeContentType() { return false; }
 
@@ -266,12 +279,14 @@ namespace TabularEditor.TOMWrapper
                         {
                             TomCredential[index] = result;
                             dataSource.Handler.UndoManager.Add(new UndoCredentialAction(dataSource, index, value as string, oldValue as string));
+                            dataSource.OnPropertyChanged(index, oldValue, value);
                         }
                     }
                     else
                     {
                         TomCredential[index] = value;
                         dataSource.Handler.UndoManager.Add(new UndoCredentialAction(dataSource, index, value as string, oldValue as string));
+                        dataSource.OnPropertyChanged(index, oldValue, value);
                     }
                 }
             }
@@ -312,16 +327,24 @@ namespace TabularEditor.TOMWrapper
 
             public object this[string index]
             {
-                get => TomOptions[index];
+                get
+                {
+                    var json = TomOptions?.ToJson();
+                    if (string.IsNullOrEmpty(json)) return null;
+                    return JObject.Parse(json)[index]?.ToString(Newtonsoft.Json.Formatting.None);
+                }
                 set
                 {
-                    if (TomOptions[index] == value) return;
-                    var oldValue = TomOptions[index];
-                    TomOptions[index] = value;
+                    var oldValue = this[index];
+                    if (oldValue == value) return;
+
+                    var json = TomOptions?.ToJson();
+                    var jOptions = string.IsNullOrEmpty(json) ? new JObject() : JObject.Parse(json);
+                    jOptions[index] = JToken.Parse(value.ToString());
+                    TomOptions.ParseJson(jOptions.ToString());
                     dataSource.Handler.UndoManager.Add(new UndoDataSourceOptionsAction(dataSource, index, value as string, oldValue as string));
                 }
             }
-
 
             public string GetDisplayName(string key)
             {
@@ -407,7 +430,7 @@ namespace TabularEditor.TOMWrapper
                     // For some reason, "options" throws a System.NotImplementedException in Microsoft.AnalysisServices.Tabular.CustomJsonPropertyHelper
                     if (index == "options")
                     {
-                        return JObject.Parse(dataSource.MetadataObject.ConnectionDetails.ToJson())["address"]["options"].ToString();
+                        return JObject.Parse(dataSource.MetadataObject.ConnectionDetails.ToJson())["address"]?["options"]?.ToString();
                     }
                     else
                         return TomAddress[index];
@@ -421,7 +444,14 @@ namespace TabularEditor.TOMWrapper
                     if (index == "options")
                     {
                         var jObj = JObject.Parse(dataSource.MetadataObject.ConnectionDetails.ToJson());
-                        jObj["address"]["options"] = JObject.Parse(value.ToString());
+                        if (string.IsNullOrEmpty(value?.ToString()))
+                        {
+                            (jObj["address"] as JObject)?.Remove("options");
+                        }
+                        else
+                        {
+                            jObj["address"]["options"] = JObject.Parse(value.ToString());
+                        }
                         dataSource.MetadataObject.ConnectionDetails.ParseJson(jObj.ToString());
                     }
                     else
