@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PreferencesForm));
             System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Data Sources");
+            System.Windows.Forms.TreeNode treeNode25 = new System.Windows.Forms.TreeNode("Shared Expressions");
             System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Perspectives");
             System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Relationships");
             System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Roles");
@@ -49,6 +50,7 @@
             treeNode10});
             System.Windows.Forms.TreeNode treeNode12 = new System.Windows.Forms.TreeNode("Translations");
             System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("Data Sources");
+            System.Windows.Forms.TreeNode treeNode26 = new System.Windows.Forms.TreeNode("Shared Expressions");
             System.Windows.Forms.TreeNode treeNode14 = new System.Windows.Forms.TreeNode("Perspectives");
             System.Windows.Forms.TreeNode treeNode15 = new System.Windows.Forms.TreeNode("Relationships");
             System.Windows.Forms.TreeNode treeNode16 = new System.Windows.Forms.TreeNode("Roles");
@@ -1021,6 +1023,9 @@
             treeNode1.Checked = true;
             treeNode1.Name = "Data Sources";
             treeNode1.Text = "Data Sources";
+            treeNode25.Checked = true;
+            treeNode25.Name = "Shared Expressions";
+            treeNode25.Text = "Shared Expressions";
             treeNode2.Checked = true;
             treeNode2.Name = "Perspectives";
             treeNode2.Text = "Perspectives";
@@ -1055,6 +1060,7 @@
             treeNode12.Text = "Translations";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode1,
+            treeNode25,
             treeNode2,
             treeNode3,
             treeNode4,
@@ -1153,6 +1159,9 @@
             treeNode13.Checked = true;
             treeNode13.Name = "Data Sources";
             treeNode13.Text = "Data Sources";
+            treeNode26.Checked = true;
+            treeNode26.Name = "Shared Expressions";
+            treeNode26.Text = "Shared Expressions";
             treeNode14.Checked = true;
             treeNode14.Name = "Perspectives";
             treeNode14.Text = "Perspectives";
@@ -1187,6 +1196,7 @@
             treeNode24.Text = "Translations";
             this.treeView2.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode13,
+            treeNode26,
             treeNode14,
             treeNode15,
             treeNode16,
