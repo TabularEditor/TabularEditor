@@ -545,6 +545,8 @@ namespace TabularEditor.BestPracticeAnalyzer
                     return model.CalculationGroups.AsQueryable();
                 case RuleScope.CalculationItem:
                     return model.CalculationGroups.SelectMany(cg => cg.CalculationItems).AsQueryable();
+                case RuleScope.ModelRoleMember:
+                    return model.Roles.SelectMany(r => r.Members).AsQueryable();
                 default:
                     return Enumerable.Empty<TabularNamedObject>().AsQueryable();
             }

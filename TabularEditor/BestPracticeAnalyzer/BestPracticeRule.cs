@@ -35,7 +35,8 @@ namespace TabularEditor.BestPracticeAnalyzer
         ModelRole               = 0x40000,
         TablePermission         = 0x80000,
         CalculationGroup        = 0x100000,
-        CalculationItem         = 0x200000
+        CalculationItem         = 0x200000,
+        ModelRoleMember         = 0x400000
     }
 
     public static class RuleScopeHelper
@@ -89,6 +90,7 @@ namespace TabularEditor.BestPracticeAnalyzer
                 //case RuleScope.CalculationGroupAttribute: return typeof(CalculationGroupAttribute);
                 case RuleScope.CalculationItem: return typeof(CalculationItem);
                 case RuleScope.TablePermission: return typeof(TablePermission);
+                case RuleScope.ModelRoleMember: return typeof(ModelRoleMember);
                 default:
                     throw new InvalidOperationException("Unknown scope type");
             }
