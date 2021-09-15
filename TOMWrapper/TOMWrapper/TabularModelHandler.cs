@@ -227,7 +227,7 @@ namespace TabularEditor.TOMWrapper
             var connectionString = TabularConnection.GetConnectionString(serverName, applicationName);
             server.Connect(connectionString);
 
-            if (databaseName == null)
+            if (string.IsNullOrEmpty(databaseName))
             {
                 if (server.Databases.Count >= 1) database = server.Databases[0];
                 else throw new InvalidOperationException("This instance does not contain any databases, or the user does not have access.");
