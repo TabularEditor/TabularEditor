@@ -1,15 +1,8 @@
-﻿extern alias json;
-
-using json::Newtonsoft.Json;
-using Microsoft.Data.ConnectionUI;
+﻿using Microsoft.Data.ConnectionUI;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
 using TabularEditor.UI.Actions;

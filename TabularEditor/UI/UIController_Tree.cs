@@ -1,16 +1,10 @@
-﻿extern alias json;
-
-using Aga.Controls.Tree;
-using json.Newtonsoft.Json.Linq;
+﻿using Aga.Controls.Tree;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper;
 using TabularEditor.TOMWrapper.Serialization;
 using TabularEditor.TOMWrapper.Utils;

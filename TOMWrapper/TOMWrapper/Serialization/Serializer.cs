@@ -1,18 +1,12 @@
-﻿extern alias json;
-
-using json.Newtonsoft.Json;
-using json.Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using System.Collections;
-using TabularEditor.TOMWrapper;
-using json::Newtonsoft.Json.Serialization;
-using TabularEditor.TOMWrapper.PowerBI;
+using Newtonsoft.Json.Serialization;
 
 namespace TabularEditor.TOMWrapper.Serialization
 {

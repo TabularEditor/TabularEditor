@@ -1,6 +1,4 @@
-﻿extern alias json;
-
-using System;
+﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +10,10 @@ using System.Reflection;
 using System.IO;
 using System.IO.Compression;
 using System.Diagnostics;
-using System.Windows.Forms;
 using TabularEditor.UI.Actions;
 using TabularEditor.Scripting;
 using TabularEditor.TextServices;
-using json::Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.Runtime.InteropServices;
 
 namespace TabularEditor

@@ -5,15 +5,10 @@
  * Please review their license here: 
  * https://github.com/DaxStudio/DaxStudio/blob/master/license.rtf
  */
-
-extern alias json;
-
-using json.Newtonsoft.Json;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Threading.Tasks;
-using TabularEditor.TOMWrapper;
 using TabularEditor.UIServices;
 
 namespace TabularEditor.Dax

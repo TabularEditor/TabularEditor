@@ -1,22 +1,14 @@
-﻿extern alias json;
-
-using Aga.Controls.Tree;
+﻿using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
-using json.Newtonsoft.Json;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.IO;
 using System.Linq;
 using System.Linq.Dynamic;
-using System.Linq.Expressions;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using TabularEditor.TOMWrapper;
-using TabularEditor.UI;
-using TabularEditor.UIServices;
 
 namespace TabularEditor.BestPracticeAnalyzer
 {

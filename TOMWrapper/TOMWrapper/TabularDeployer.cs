@@ -1,14 +1,11 @@
-﻿extern alias json;
-
-using Microsoft.AnalysisServices;
-using json.Newtonsoft.Json.Linq;
+﻿using Microsoft.AnalysisServices;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using System.Threading;
 

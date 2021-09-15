@@ -1,16 +1,9 @@
-﻿extern alias json;
-
-using Microsoft.AnalysisServices.Tabular;
-using json.Newtonsoft.Json;
-using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper.Undo;
-using System.Text;
-using System.IO;
 using TabularEditor.TOMWrapper.Linguistics;
 
 namespace TabularEditor.TOMWrapper

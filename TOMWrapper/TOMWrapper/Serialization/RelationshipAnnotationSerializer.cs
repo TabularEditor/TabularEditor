@@ -1,12 +1,7 @@
-﻿extern alias json;
-
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TOM = Microsoft.AnalysisServices.Tabular;
-using json::Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace TabularEditor.TOMWrapper.Serialization
 {
@@ -25,10 +20,10 @@ namespace TabularEditor.TOMWrapper.Serialization
 
         public static void StoreRelationshipsAsAnnotations(Table table, bool hasRelationshipVariations)
         {
-            table.SetAnnotation(AnnotationHelper.ANN_RELATIONSHIPS, table.GetRelationshipsJson(json.Newtonsoft.Json.Formatting.Indented, hasRelationshipVariations), false);
+            table.SetAnnotation(AnnotationHelper.ANN_RELATIONSHIPS, table.GetRelationshipsJson(Newtonsoft.Json.Formatting.Indented, hasRelationshipVariations), false);
         }
 
-        public static string GetRelationshipsJson(this Table table, json.Newtonsoft.Json.Formatting format, bool hasRelationshipVariations)
+        public static string GetRelationshipsJson(this Table table, Newtonsoft.Json.Formatting format, bool hasRelationshipVariations)
         {
             JArray rels = new JArray();
             foreach (var rel in table.Model.Relationships.Where(r => r.FromTable == table)

@@ -1,21 +1,16 @@
-﻿extern alias json;
-
-using json::Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Microsoft.Data.ConnectionUI;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using TabularEditor.UI.Dialogs;
 using SC = System.Data.SqlClient;
 
 namespace TabularEditor.UIServices
 {
-        public enum ProviderType
+    public enum ProviderType
         {
             Sql,
             OleDb,

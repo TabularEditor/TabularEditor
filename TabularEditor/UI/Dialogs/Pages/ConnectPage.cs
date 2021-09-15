@@ -1,21 +1,14 @@
-﻿extern alias json;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.AnalysisServices.Tabular;
 using TabularEditor.TOMWrapper;
 using TabularEditor.UIServices;
-using System.Drawing.Imaging;
 using System.IO;
-using json.Newtonsoft.Json.Linq;
-using json.Newtonsoft.Json;
+using Newtonsoft.Json;
 
 namespace TabularEditor.UI.Dialogs.Pages
 {

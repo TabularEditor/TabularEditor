@@ -1,8 +1,4 @@
-﻿extern alias json;
-
-using json.Newtonsoft.Json.Linq;
-using System;
-using System.Linq;
+﻿using Newtonsoft.Json.Linq;
 
 namespace TabularEditor.TOMWrapper
 {

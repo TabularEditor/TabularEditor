@@ -1,13 +1,9 @@
-﻿extern alias json;
-
-using json::Newtonsoft.Json;
-using json::Newtonsoft.Json.Converters;
-using json::Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TabularEditor.TOMWrapper.Linguistics
 {

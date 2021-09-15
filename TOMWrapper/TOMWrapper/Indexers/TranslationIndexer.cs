@@ -1,7 +1,5 @@
-﻿extern alias json;
-
-using Microsoft.AnalysisServices.Tabular;
-using json.Newtonsoft.Json;
+﻿using Microsoft.AnalysisServices.Tabular;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
