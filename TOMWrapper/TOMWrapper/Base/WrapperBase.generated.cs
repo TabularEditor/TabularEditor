@@ -62,6 +62,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string DISPLAYORDINAL = "DisplayOrdinal";
 	    public const string ENCODINGHINT = "EncodingHint";
 	    public const string ERRORMESSAGE = "ErrorMessage";
+	    public const string EVALUATIONBEHAVIOR = "EvaluationBehavior";
 	    public const string EXCLUDEFROMMODELREFRESH = "ExcludeFromModelRefresh";
 	    public const string EXPRESSION = "Expression";
 	    public const string EXPRESSIONS = "Expressions";
@@ -503,6 +504,14 @@ namespace TabularEditor.TOMWrapper
         Quarter = 2,
         Year = 3,
         Invalid = -1,
+	}
+	/// <summary>
+///             Evaluation behavior for calculated column.
+///             </summary><remarks>This enum is only supported when the compatibility level of the database is at Preview or above.</remarks>
+	public enum EvaluationBehavior {    
+        Automatic = 1,
+        Static = 2,
+        Dynamic = 3,
 	}
   
 	/// <summary>
@@ -1399,6 +1408,30 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeExpression() { return false; }
+/// <summary>
+///             Evaluation behavior for calculated column.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at Preview or above.</remarks>
+		[DisplayName("Evaluation Behavior")]
+		[Category("Options"),Description(@"Evaluation behavior for calculated column."),IntelliSense(@"Evaluation behavior for calculated column.")]
+		public EvaluationBehavior EvaluationBehavior {
+			get {
+			    return (EvaluationBehavior)MetadataObject.EvaluationBehavior;
+			}
+			set {
+				
+				var oldValue = EvaluationBehavior;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EVALUATIONBEHAVIOR, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.EvaluationBehavior = (TOM.EvaluationBehavior)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EVALUATIONBEHAVIOR, oldValue, newValue));
+				OnPropertyChanged(Properties.EVALUATIONBEHAVIOR, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeEvaluationBehavior() { return false; }
 
 		internal static CalculatedColumn CreateFromMetadata(Table parent, TOM.CalculatedColumn metadataObject) {
             // Generate a new LineageTag if an object with the provided lineage tag already exists:
@@ -1526,6 +1559,8 @@ namespace TabularEditor.TOMWrapper
 			switch (propertyName) {
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.EVALUATIONBEHAVIOR:
+					return false;
 				case Properties.PARENT:
 					return false;
 				
