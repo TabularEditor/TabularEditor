@@ -257,65 +257,119 @@ namespace TabularEditor
             }
         }
 
-        void LoadModel()
+        void LoadModelFromFile(string file)
         {
-            if (argList.Count == 2 || argList[2].StartsWith("-"))
+            // File argument provided (either alone or with switches), i.e.:
+            //      TabularEditor.exe myfile.bim
+            //      TabularEditor.exe myfile.bim -...
+
+            if (!File.Exists(argList[1]) && !File.Exists(argList[1] + "\\database.json"))
             {
-                // File argument provided (either alone or with switches), i.e.:
-                //      TabularEditor.exe myfile.bim
-                //      TabularEditor.exe myfile.bim -...
-
-                if (!File.Exists(argList[1]) && !File.Exists(argList[1] + "\\database.json"))
-                {
-                    Error("File not found: {0}", argList[1]);
-                    throw new CommandLineException();
-                }
-                else
-                {
-                    // If nothing else was specified on the command-line, open the UI:
-                    if (argList.Count == 2)
-                    {
-                        LaunchUi = true;
-                        throw new CommandLineException();
-                    }
-                }
-
-                try
-                {
-                    // Load model:
-                    Console.WriteLine("Loading model...");
-                    Handler = new TOMWrapper.TabularModelHandler(argList[1]);
-                }
-                catch (Exception e)
-                {
-                    Error("Error loading file: " + e.Message);
-                    throw new CommandLineException();
-                }
-
+                Error("File not found: {0}", argList[1]);
+                throw new CommandLineException();
             }
-            else if (argList.Count == 3 || argList[3].StartsWith("-"))
+            else
             {
-                // Server + Database argument provided (either alone or with switches), i.e.:
-                //      TabularEditor.exe localhost AdventureWorks
-                //      TabularEditor.exe localhost AdventureWorks -...
                 // If nothing else was specified on the command-line, open the UI:
-                if (argList.Count == 3)
+                if (argList.Count == 2)
                 {
                     LaunchUi = true;
                     throw new CommandLineException();
                 }
+            }
 
-                try
+            try
+            {
+                // Load model:
+                Console.WriteLine("Loading model...");
+                var settings = new TabularModelHandlerSettings { AutoFixup = true, ChangeDetectionLocalServers = false, PBIFeaturesOnly = false };
+                Handler = new TOMWrapper.TabularModelHandler(argList[1], settings);
+            }
+            catch (Exception e)
+            {
+                Error("Error loading file: " + e.Message);
+                throw new CommandLineException();
+            }
+        }
+
+        void LoadModelFromServer(string server, string database)
+        {
+            // Server + Database argument provided (either alone or with switches), i.e.:
+            //      TabularEditor.exe localhost AdventureWorks
+            //      TabularEditor.exe localhost AdventureWorks -...
+            // If nothing else was specified on the command-line, open the UI:
+            if (argList.Count == 3 && !argList[2].StartsWith("-"))
+            {
+                LaunchUi = true;
+                throw new CommandLineException();
+            }
+
+            try
+            {
+                // Load model:
+                var settings = new TabularModelHandlerSettings { AutoFixup = true, ChangeDetectionLocalServers = false, PBIFeaturesOnly = false };
+                if (IsLocalSwitch(server))
                 {
-                    // Load model:
-                    Console.WriteLine("Loading model...");
-                    Handler = new TOMWrapper.TabularModelHandler(argList[1], argList[2]);
+                    var localInstances = PowerBIHelper.Instances;
+                    if (localInstances.Count == 1 && string.IsNullOrEmpty(database))
+                    {
+                        server = $"localhost:{localInstances[0].Port}";
+                        database = "";
+                    }
+                    else if (localInstances.Count == 0)
+                    {
+                        Error("No local instances of Power BI Desktop detected.");
+                        throw new CommandLineException();
+                    }
+                    else
+                    {
+                        if (string.IsNullOrEmpty(database))
+                        {
+                            Error("Multiple instances of Power BI Desktop detected. Please specify instance name. Available instances:");
+                            foreach (var instance in localInstances) Console.WriteLine($"    localhost:{instance.Port}.{instance.Name}");
+                            throw new CommandLineException();
+                        }
+                        var targetInstance = localInstances.FirstOrDefault(i => i.Name.EqualsI(database));
+                        if (targetInstance == null)
+                        {
+                            Error($"No instance of Power BI Desktop with name {database} detected. Available instances:");
+                            foreach (var instance in localInstances) Console.WriteLine($"    localhost:{instance.Port}.{instance.Name}");
+                            throw new CommandLineException();
+                        }
+                        server = $"localhost:{targetInstance.Port}";
+                        
+                        database = "";
+                    }
                 }
-                catch (Exception e)
-                {
+                Console.WriteLine($"Loading model from server {server}...");
+                Handler = new TabularModelHandler(server, database, settings);
+            }
+            catch (Exception e)
+            {
+                if (!(e is CommandLineException))
                     Error("Error loading model: " + e.Message);
-                    throw new CommandLineException();
-                }
+                throw new CommandLineException();
+            }
+        }
+
+        bool IsLocalSwitch(string arg)
+        {
+            return arg.EqualsI("-L") || arg.EqualsI("-LOCAL");
+        }
+        bool IsLocalSwitch(int argIndex)
+        {   
+            return argList.Count > argIndex && IsLocalSwitch(argList[argIndex]);
+        }
+
+        void LoadModel()
+        {
+            if ((argList.Count == 2 || argList[2].StartsWith("-")) && !IsLocalSwitch(1))
+            {
+                LoadModelFromFile(argList[1]);
+            }
+            else if ((argList.Count == 3 || argList[3].StartsWith("-")) || IsLocalSwitch(1))
+            {
+                LoadModelFromServer(argList[1], argList.Count > 2 && !argList[2].StartsWith("-") ? argList[2] : "");
             }
             else
             {
@@ -329,7 +383,7 @@ namespace TabularEditor
         {
             Console.WriteLine(@"Usage:
 
-TABULAREDITOR ( file | server database ) [-S script1 [script2] [...]]
+TABULAREDITOR ( file | server database | -L [name] ) [-S script1 [script2] [...]]
     [-SC] [-A [rules] | -AX rules] [(-B | -F) output [id]] [-V] [-T resultsfile]
     [-D [server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]]
         [-P [-Y]] [-R [-M]]]
@@ -337,7 +391,11 @@ TABULAREDITOR ( file | server database ) [-S script1 [script2] [...]]
 
 file                Full path of the Model.bim file or database.json model folder to load.
 server              Server\instance name or connection string from which to load the model
-database            Database ID of the model to load
+database            Database ID of the model to load. If blank ("") picks the first available
+                      database on the server.
+-L / -LOCAL         Connects to a Power BI Desktop (local) instance of Analysis Services. If no
+                      name is specified, this assumes that exactly 1 instance is running. Otherwise,
+                      name should match the name of the .pbix file loaded in Power BI Desktop.
 -S / -SCRIPT        Execute the specified script on the model after loading.
   scriptN             Full path of one or more files containing a C# script to execute or an inline
                       script.
@@ -712,11 +770,11 @@ database            Database ID of the model to load
                 }
             }
         }
+    }
 
-        class CommandLineException : Exception
-        {
+    class CommandLineException : Exception
+    {
 
-        }
     }
 
 }
