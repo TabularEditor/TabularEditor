@@ -54,28 +54,6 @@ namespace TabularEditor.TOMWrapper
         protected override void Init()
         {
             base.Init();
-
-            UpdateLsdlLanguage();
-        }
-
-        private void UpdateLsdlLanguage()
-        {
-            if (ContentType == TOMWrapper.ContentType.Json && !string.IsNullOrEmpty(Content))
-            {
-                try
-                {
-                    var jLsdl = JObject.Parse(Content);
-                    if (jLsdl["Language"].ToString() != this.Name)
-                    {
-                        jLsdl["Language"] = this.Name;
-                        Content = jLsdl.ToString(Formatting.None);
-                    }
-                }
-                catch
-                {
-
-                }
-            }
         }
 
         internal override bool IsBrowsable(string propertyName)
@@ -233,7 +211,6 @@ namespace TabularEditor.TOMWrapper
             if (propertyName == Properties.NAME)
             {
                 base.OnPropertyChanged("DisplayName", null, newValue);
-                UpdateLsdlLanguage();
             }
         }
 
