@@ -73,8 +73,20 @@ namespace TabularEditor.BestPracticeAnalyzer
             if(sfd.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 parent.Enabled = true;
+
+                try
+                {
+                    File.WriteAllText(sfd.FileName, "[]");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Unable to create rule file", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return false;
+                }
+
                 var fileName = localPathCheckBox.Visible && localPathCheckBox.IsChecked
                     ? FileSystemHelper.GetRelativePath(analyzer.BasePath, sfd.FileName) : sfd.FileName;
+
                 if (!analyzer.ExternalRuleCollections.Any(
                     rc => rc.FilePath != null && FileSystemHelper.GetAbsolutePath(analyzer.BasePath, rc.FilePath).EqualsI(sfd.FileName)
                     ))
@@ -120,6 +132,7 @@ namespace TabularEditor.BestPracticeAnalyzer
                 parent.Enabled = true;
                 var fileName = localPathCheckBox.Visible && localPathCheckBox.IsChecked
                     ? FileSystemHelper.GetRelativePath(startDir, sfd.FileName) : sfd.FileName;
+
                 if (!analyzer.ExternalRuleCollections.Any(
                     rc => rc.FilePath != null && FileSystemHelper.GetAbsolutePath(analyzer.BasePath, rc.FilePath).EqualsI(sfd.FileName)
                     ))
