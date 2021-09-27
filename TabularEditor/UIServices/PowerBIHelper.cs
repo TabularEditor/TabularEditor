@@ -125,32 +125,32 @@ namespace TabularEditor.UIServices
         public static void Refresh()
         {
             _instances.Clear();
-
-            var tcpTable = ManagedIpHelper.GetExtendedTcpTable();
-
-            foreach (var proc in Process.GetProcessesByName("msmdsrv"))
+            try
             {
-                int _port = 0;
-                LocalInstanceType _icon = LocalInstanceType.PowerBI;
-                var parent = proc.GetParent();
 
-                // exit here if the parent == "services" then this is a SSAS instance
-                if (parent.ProcessName.Equals("services", StringComparison.OrdinalIgnoreCase)) continue;
+                var tcpTable = ManagedIpHelper.GetExtendedTcpTable();
 
-                // if the process was launched from Visual Studio change the icon
-                if (parent.ProcessName == "devenv") _icon = LocalInstanceType.Devenv;
-
-                // get the window title so that we can parse out the file name
-                var parentTitle = parent.MainWindowTitle;
-                if (parentTitle.Length == 0)
+                foreach (var proc in Process.GetProcessesByName("msmdsrv"))
                 {
-                    // for minimized windows we need to use some Win32 api calls to get the title
-                    parentTitle = GetWindowTitle(parent.Id);
-                }
+                    int _port = 0;
+                    LocalInstanceType _icon = LocalInstanceType.PowerBI;
+                    var parent = proc.GetParent();
 
-                // try and get the tcp port from the Win32 TcpTable API
-                try
-                {
+                    // exit here if the parent == "services" then this is a SSAS instance
+                    if (parent.ProcessName.Equals("services", StringComparison.OrdinalIgnoreCase)) continue;
+
+                    // if the process was launched from Visual Studio change the icon
+                    if (parent.ProcessName == "devenv") _icon = LocalInstanceType.Devenv;
+
+                    // get the window title so that we can parse out the file name
+                    var parentTitle = parent.MainWindowTitle;
+                    if (parentTitle.Length == 0)
+                    {
+                        // for minimized windows we need to use some Win32 api calls to get the title
+                        parentTitle = GetWindowTitle(parent.Id);
+                    }
+
+                    // try and get the tcp port from the Win32 TcpTable API
                     var tcpRow = tcpTable.SingleOrDefault((r) => r.ProcessId == proc.Id && r.State == TcpState.Listen && IPAddress.IsLoopback(r.LocalEndPoint.Address));
                     if (tcpRow != null)
                     {
@@ -164,12 +164,13 @@ namespace TabularEditor.UIServices
                         //Log.Debug("{class} {method} PowerBI port not found for process: {processName} PID: {pid}", "PowerBIHelper", "Refresh", proc.ProcessName, proc.Id);
                     }
                 }
-                catch (Exception ex)
-                {
-                    //Log.Error("{class} {Method} {Error} {StackTrace}", "PowerBIHelper", "Refresh", ex.Message, ex.StackTrace);
-                }
-            }
 
+                throw new NullReferenceException();
+            }
+            catch(Exception ex)
+            {
+                
+            }
         }
 
 
