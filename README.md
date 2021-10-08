@@ -38,4 +38,4 @@ View the article on www.kapacity.dk/tabular-editor for a general presentation of
 
 ## Roadmap
 
-View the full roadmap for upcoming features [here](https://docs.tabulareditor.com/Roadmap.html).
+View the full roadmap for upcoming features [here](https://docs.tabulareditor.com/te3/other/roadmap.html).
