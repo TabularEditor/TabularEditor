@@ -1,6 +1,6 @@
 ---
 name: Question / Advice needed
-about: Not sure how to do something? Ask your questions here
+about: Not sure how to do something? Ask your questions here. Tabular Editor 2.x only.
 title: ''
 labels: question
 assignees: ''
