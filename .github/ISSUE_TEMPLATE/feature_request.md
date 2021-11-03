@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an idea for this project
+about: Suggest an idea for this project. Tabular Editor 2.x only.
 title: ''
 labels: enhancement
 assignees: ''
