@@ -7,6 +7,8 @@ assignees: ''
 
 ---
 
+!!! For Tabular Editor 3 questions, go here --> https://github.com/TabularEditor/TabularEditor3/issues !!!
+
 **What are you trying to achieve?**
 Provide a brief background description of the problem you're trying to solve. Include information about the semantic engine you're working on (Power BI Desktop, Azure Analysis Services, etc.), as not everything is possible across engines.
 
