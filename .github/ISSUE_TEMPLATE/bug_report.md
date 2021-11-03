@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Let us know if something is expected to work, but doesn't
+about: Let us know if something is expected to work, but doesn't. **Tabular Editor 2.x only**
 title: ''
 labels: bug
 assignees: ''
