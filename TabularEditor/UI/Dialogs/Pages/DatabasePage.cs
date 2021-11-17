@@ -212,7 +212,10 @@ namespace TabularEditor.UI.Dialogs.Pages
                 }
                 while(reader.Read())
                 {
-                    
+                    // If multi-dimensional and tabular servers are installed side-by-side, we may have
+                    // records where the COMPATIBILITY_LEVEL column is null - filter these away:
+                    if (reader.IsDBNull(reader.GetOrdinal("COMPATIBILITY_LEVEL"))) continue;
+
                     result.Add(new DatabaseInfo
                     {
                         ID = reader.GetString(reader.GetOrdinal("DATABASE_ID")),
