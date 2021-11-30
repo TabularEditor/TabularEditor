@@ -10,6 +10,7 @@ using TabularEditor.Scripting;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using TabularEditor.UIServices;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace TabularEditor
 {
@@ -639,7 +640,7 @@ database            Database ID of the model to load. If blank ("") picks the fi
                     Console.WriteLine("Generating XMLA/TMSL script...");
                     var s = new TOM.Server();
                     s.Connect(cs);
-                    var xmla = TabularDeployer.GetTMSL(Handler.Database, s, databaseID, options);
+                    var xmla = Handler.TabularDeployer.GetTMSL(Handler.Database, s, databaseID, options);
                     using (var sw = new StreamWriter(xmla_script_file))
                     {
                         sw.Write(xmla);
@@ -650,7 +651,7 @@ database            Database ID of the model to load. If blank ("") picks the fi
                 {
                     Console.WriteLine("Deploying...");
                     Handler.Model.UpdateDeploymentMetadata(DeploymentModeMetadata.CLI);
-                    var deploymentResult = TabularDeployer.Deploy(Handler, cs, databaseID, options);
+                    var deploymentResult = Handler.TabularDeployer.Deploy(Handler.Database, cs, databaseID, options, CancellationToken.None);
                     Console.WriteLine("Deployment succeeded.");
                     foreach (var err in deploymentResult.Issues) if (errorOnDaxErr) Error(err); else Warning(err);
                     foreach (var err in deploymentResult.Warnings) Warning(err);

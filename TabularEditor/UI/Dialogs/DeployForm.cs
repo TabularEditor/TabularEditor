@@ -202,7 +202,7 @@ namespace TabularEditor.UI.Dialogs
             tmslForm.Text = "TMSL Script";
             using (new Hourglass())
             {
-                tmslForm.txtCode.Text = TabularDeployer.GetTMSL(Handler.Database,
+                tmslForm.txtCode.Text = (new TabularDeployer()).GetTMSL(Handler.Database,
                     DeployTargetServer, DeployTargetDatabaseName, DeployOptions);
             }
             tmslForm.ShowDialog();

@@ -79,10 +79,13 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Utils\DbConnectionStringBuilderExtension.cs" />
     <Compile Include="PropertyGridUI\AlternateOfEditor.cs" />
     <Compile Include="PropertyGridUI\Converters\ConnectionStringConverter.cs" />
     <Compile Include="PropertyGridUI\Converters\NamedExpressionConverter.cs" />
     <Compile Include="PropertyGridUI\PropertyActionAttribute.cs" />
+    <Compile Include="TOMWrapper\TabularModelHandlerExtension.cs" />
+    <Compile Include="Utils\ITabularDeployer.cs" />
     <Compile Include="TOMWrapper\PolicyRangePartition.cs" />
     <Compile Include="TOMWrapper\EntityPartition.cs" />
     <Compile Include="TOMWrapper\Indexers\SynonymIndexer.cs" />
@@ -212,7 +215,7 @@
     <Compile Include="TOMWrapper\Table.cs" />
     <Compile Include="TOMWrapper\TabularCommonActions.cs" />
     <Compile Include="TOMWrapper\TabularConnection.cs" />
-    <Compile Include="TOMWrapper\TabularDeployer.cs" />
+    <Compile Include="Utils\TabularDeployer.cs" />
     <Compile Include="TOMWrapper\AnnotationHelper.cs" />
     <Compile Include="TOMWrapper\Variation.cs" />
     <Compile Include="UndoFramework\IUndoAction.cs" />

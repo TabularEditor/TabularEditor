@@ -777,5 +777,14 @@ namespace TabularEditor.TOMWrapper
             var sourceType = GetSourceType(table);
             return sourceType == TOM.PartitionSourceType.Calculated;
         }
+        public static bool IsImported(this TOM.Table table)
+        {
+            var sourceType = GetSourceType(table);
+            return sourceType == TOM.PartitionSourceType.M || sourceType == TOM.PartitionSourceType.Query || sourceType == TOM.PartitionSourceType.PolicyRange;
+        }
+        public static bool IsImported(this Table table)
+        {
+            return table.MetadataObject.IsImported();
+        }
     }
 }

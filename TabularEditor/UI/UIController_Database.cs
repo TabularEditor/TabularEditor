@@ -34,7 +34,7 @@ namespace TabularEditor.UI
             if (Preferences.Current.BackupOnSave)
             {
                 var backupFilename = string.Format("{0}\\Backup_{1}_{2}.zip", Preferences.Current.BackupLocation, Handler.Database.Name, DateTime.Now.ToString("yyyyMMddhhmmssfff"));
-                TabularDeployer.SaveModelMetadataBackup(f.DeployTargetConnectionString, f.DeployTargetDatabaseName, backupFilename);
+                Handler.TabularDeployer.SaveModelMetadataBackup(f.DeployTargetConnectionString, f.DeployTargetDatabaseName, backupFilename);
             }
 
 
@@ -53,7 +53,7 @@ namespace TabularEditor.UI
                         try
                         {
                             Handler.Model.UpdateDeploymentMetadata(DeploymentModeMetadata.WizardUI);
-                            TabularDeployer.Deploy(Handler, f.DeployTargetConnectionString, f.DeployTargetDatabaseName, f.DeployOptions, df.CancelToken);
+                            Handler.TabularDeployer.Deploy(Handler.Database, f.DeployTargetConnectionString, f.DeployTargetDatabaseName, f.DeployOptions, df.CancelToken);
                         }
                         catch (Exception ex)
                         {
@@ -195,7 +195,7 @@ namespace TabularEditor.UI
                     var backupFilename = string.Format("{0}\\Backup_{1}_{2}.zip", Preferences.Current.BackupLocation, Handler.Database.Name, DateTime.Now.ToString("yyyyMMddhhmmssfff"));
                     try
                     {
-                        TabularDeployer.SaveModelMetadataBackup(Handler.Database.Server.ConnectionString, Handler.Database.ID, backupFilename);
+                        Handler.TabularDeployer.SaveModelMetadataBackup(Handler.Database.Server.ConnectionString, Handler.Database.ID, backupFilename);
                     }
                     catch (Exception e)
                     {

@@ -8,12 +8,13 @@ using System.Linq;
 using System.Text;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using System.Threading;
+using TabularEditor.PropertyGridUI.Converters;
 
 namespace TabularEditor.TOMWrapper.Utils
 {
-    public class TabularDeployer
+    public class TabularDeployer : ITabularDeployer
     {
-        public static string GetTMSL(TOM.Database db, TOM.Server server, string targetDatabaseName, DeploymentOptions options, bool includeRestricted = false)
+        public string GetTMSL(TOM.Database db, TOM.Server server, string targetDatabaseName, DeploymentOptions options, bool includeRestricted = false)
         {
             if (db == null) throw new ArgumentNullException("db");
             if (string.IsNullOrWhiteSpace(targetDatabaseName)) throw new ArgumentNullException("targetDatabaseName");
@@ -21,10 +22,12 @@ namespace TabularEditor.TOMWrapper.Utils
 
             if (server.Databases.ContainsName(targetDatabaseName) && options.DeployMode == DeploymentMode.CreateDatabase) throw new ArgumentException("The specified database already exists.");
 
+            options.RemoveRoleMemberIds = server.IsAzure(); // Role member MemberID properties must not be assigned when deploying to Azure / Power BI.
+
             string tmsl;
 
             db.AddTabularEditorTag();
-            if (!server.Databases.ContainsName(targetDatabaseName)) tmsl = DeployNewTMSL(db, targetDatabaseName, options, includeRestricted, server.CompatibilityMode);
+            if (!server.Databases.ContainsName(targetDatabaseName)) tmsl = GetDeployNewTMSL(db, targetDatabaseName, options, includeRestricted, server.CompatibilityMode);
             else tmsl = DeployExistingTMSL(db, server, targetDatabaseName, options, includeRestricted, server.CompatibilityMode);
 
             return tmsl;
@@ -32,19 +35,14 @@ namespace TabularEditor.TOMWrapper.Utils
 
         public static DeploymentResult Deploy(TabularModelHandler handler, string targetConnectionString, string targetDatabaseName)
         {
-            return Deploy(handler.Database, targetConnectionString, targetDatabaseName, DeploymentOptions.Default, CancellationToken.None);
+            return (new TabularDeployer()).Deploy(handler.Database, targetConnectionString, targetDatabaseName, DeploymentOptions.Default, CancellationToken.None);
         }
-        public static DeploymentResult Deploy(TabularModelHandler handler, string targetConnectionString, string targetDatabaseName, DeploymentOptions options, CancellationToken cancellationToken = default(CancellationToken))
+        public static DeploymentResult Deploy(TabularModelHandler handler, string targetConnectionString, string targetDatabaseName, DeploymentOptions options)
         {
-            return Deploy(handler.Database, targetConnectionString, targetDatabaseName, options, cancellationToken);
+            return (new TabularDeployer()).Deploy(handler.Database, targetConnectionString, targetDatabaseName, options, CancellationToken.None);
         }
 
-        internal static DeploymentResult Deploy(TOM.Database db, string targetConnectionString, string targetDatabaseName)
-        {
-            return Deploy(db, targetConnectionString, targetDatabaseName, DeploymentOptions.Default, CancellationToken.None);
-        }
-
-        public static void SaveModelMetadataBackup(string connectionString, string targetDatabaseName, string backupFilePath)
+        public void SaveModelMetadataBackup(string connectionString, string targetDatabaseName, string backupFilePath)
         {
             using (var s = new TOM.Server())
             {
@@ -60,7 +58,7 @@ namespace TabularEditor.TOMWrapper.Utils
             }
         }
 
-        public static void WriteZip(string fileName, string content)
+        public void WriteZip(string fileName, string content)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(fileName));
             using (var fileStream = new FileStream(fileName, FileMode.CreateNew))
@@ -85,24 +83,30 @@ namespace TabularEditor.TOMWrapper.Utils
         /// <param name="targetConnectionString"></param>
         /// <param name="targetDatabaseName"></param>
         /// <param name="options"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        internal static DeploymentResult Deploy(TOM.Database db, string targetConnectionString, string targetDatabaseName, DeploymentOptions options, CancellationToken cancellationToken)
+        public DeploymentResult Deploy(TOM.Database db, string targetConnectionString, string targetDatabaseName, DeploymentOptions options, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(targetConnectionString)) throw new ArgumentNullException("targetConnectionString");
             var destinationServer = new TOM.Server();
             destinationServer.Connect(targetConnectionString);
+
             if (!destinationServer.SupportedCompatibilityLevels.Contains(db.CompatibilityLevel.ToString()))
                 throw new DeploymentException($"The specified server does not support Compatibility Level {db.CompatibilityLevel}");
 
             var tmsl = GetTMSL(db, destinationServer, targetDatabaseName, options, true);
-            cancellationToken.Register(destinationServer.CancelCommand);
+            if (cancellationToken.IsCancellationRequested) throw new DeploymentException("Deployment cancelled.");
+            cancellationToken.Register(() =>
+                destinationServer.CancelCommand()
+            );
+            LastExecutedTmsl = tmsl;
             var result = destinationServer.Execute(tmsl);
 
             if (result.ContainsErrors)
             {
                 throw new DeploymentException(string.Join("\n", result.Cast<XmlaResult>().SelectMany(r => r.Messages.Cast<XmlaMessage>().Select(m => m.Description)).ToArray()));
             }
-            
+
             // Refresh the server object to make sure we get an updated list of databases, in case a new database was made:
             destinationServer.Refresh();
 
@@ -112,7 +116,9 @@ namespace TabularEditor.TOMWrapper.Utils
             return GetLastDeploymentResults(deployedDB);
         }
 
-        public static DeploymentResult GetLastDeploymentResults(TOM.Database database)
+        public string LastExecutedTmsl { get; private set; }
+
+        public DeploymentResult GetLastDeploymentResults(TOM.Database database)
         {
             return
                 new DeploymentResult(
@@ -137,10 +143,15 @@ namespace TabularEditor.TOMWrapper.Utils
 
         internal static string DeployNewTMSL(TOM.Database db, string targetDatabaseName, DeploymentOptions options, bool includeRestricted, Microsoft.AnalysisServices.CompatibilityMode compatibilityMode)
         {
+            return (new TabularDeployer()).GetDeployNewTMSL(db, targetDatabaseName, options, includeRestricted, compatibilityMode);
+        }
+
+        internal string GetDeployNewTMSL(TOM.Database db, string targetDatabaseName, DeploymentOptions options, bool includeRestricted, Microsoft.AnalysisServices.CompatibilityMode compatibilityMode)
+        {
             var rawTmsl = TOM.JsonScripter.ScriptCreateOrReplace(db, includeRestricted);
 
             var jTmsl = JObject.Parse(rawTmsl);
-            if(jTmsl["createOrReplace"]["database"]["compatibilityMode"] != null)
+            if (jTmsl["createOrReplace"]["database"]["compatibilityMode"] != null)
             {
                 jTmsl["createOrReplace"]["database"]["compatibilityMode"] = compatibilityMode.ToString();
             }
@@ -148,7 +159,114 @@ namespace TabularEditor.TOMWrapper.Utils
             return jTmsl.TransformCreateTmsl(targetDatabaseName, options).FixCalcGroupMetadata(db).ToString();
         }
 
-        
+        internal static void RemoveRoleMemberIDs(JObject model)
+        {
+            if (model["roles"] is JArray roles && roles.Count > 0)
+            {
+                foreach (var role in roles)
+                {
+                    if (role["members"] is JArray members && members.Count > 0)
+                    {
+                        foreach (JObject member in members) member.Remove("memberId");
+                    }
+                }
+            }
+        }
+        private static void ReplaceRolesFromDestination(JObject sourceModel, TOM.Model destinationModel)
+        {
+            var roles = new JArray();
+            sourceModel["roles"] = roles;
+            foreach (var role in destinationModel.Roles)
+                roles.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(role)));
+        }
+        private static void ReplaceRoleMembersFromDestination(JObject sourceModel, TOM.Model destinationModel)
+        {
+            if (sourceModel["roles"] is JArray roles && roles.Count > 0)
+            {
+                foreach (var role in roles)
+                {
+                    var members = new JArray();
+                    role["members"] = members;
+
+                    // Remove members if present and add original:
+                    var roleName = role["name"].Value<string>();
+                    if (destinationModel.Roles.Contains(roleName))
+                    {
+                        foreach (var member in destinationModel.Roles[roleName].Members)
+                            members.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(member)));
+                    }
+                }
+            }
+        }
+
+        private void ReplaceDataSourcesFromDestination(JObject sourceModel, TOM.Model destinationModel)
+        {
+            // Replace existing data sources with those in the target DB:
+            if (sourceModel["dataSources"] is JArray dataSources)
+            {
+                foreach (var destinationDataSource in destinationModel.DataSources)
+                {
+                    dataSources.FirstOrDefault(d => d.Value<string>("name").EqualsI(destinationDataSource.Name))?.Remove();
+
+                    dataSources.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(destinationDataSource, new TOM.SerializeOptions { IncludeRestrictedInformation = true })));
+                }
+            }
+        }
+
+        private void ReplacePartitionsFromDestination(JObject sourceModel, TOM.TableCollection sourceModelTables, TOM.Model destinationModel, DeploymentOptions options)
+        {
+            if (sourceModel["tables"] is JArray tables)
+            {
+                foreach (var table in tables)
+                {
+                    var tableName = table["name"].Value<string>();
+                    if (destinationModel.Tables.Contains(tableName))
+                    {
+                        // Use destination partitions only if both source and destination tables are imported:
+                        if (!(sourceModelTables[tableName].IsImported() && destinationModel.Tables[tableName].IsImported())) continue;
+
+                        var t = destinationModel.Tables[tableName];
+
+                        // If destination partition is not a policyrange
+                        if (!options.DeployPartitions || (options.SkipRefreshPolicyPartitions && t.GetSourceType() == TOM.PartitionSourceType.PolicyRange))
+                        {
+                            // Retain existing partitions on destination:
+                            var partitions = new JArray();
+                            table["partitions"] = partitions;
+                            foreach (var pt in t.Partitions) partitions.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(pt)));
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This method transforms a JObject representing a CreateOrReplace TMSL script, so that the script points
+        /// to the correct database to be overwritten, and that the correct ID and Name properties are set. In
+        /// addition, the method will replace any Roles, RoleMembers, Data Sources and Partitions in the TMSL with
+        /// the corresponding TMSL from the specified orgDb, depending on the provided DeploymentOptions.
+        /// </summary>
+        public JObject TransformCreateOrReplaceTmsl(JObject tmslJObj, TOM.Database db, TOM.Database destDb, DeploymentOptions options)
+        {
+            // Deployment target / existing database (note that TMSL uses the NAME of an existing database, not the ID, to identify the object)
+            tmslJObj["createOrReplace"]["object"]["database"] = destDb.Name;
+            tmslJObj["createOrReplace"]["database"]["id"] = destDb.ID;
+            tmslJObj["createOrReplace"]["database"]["name"] = destDb.Name;
+
+            var model = tmslJObj.SelectToken("createOrReplace.database.model") as JObject;
+
+            if (!options.DeployRoles) ReplaceRolesFromDestination(model, destDb.Model);
+            else if (!options.DeployRoleMembers) ReplaceRoleMembersFromDestination(model, destDb.Model);
+
+            if (options.RemoveRoleMemberIds) RemoveRoleMemberIDs(model);
+
+            if (!options.DeployConnections) ReplaceDataSourcesFromDestination(model, destDb.Model);
+
+            if (!options.DeployPartitions || options.SkipRefreshPolicyPartitions) ReplacePartitionsFromDestination(model, db.Model.Tables, destDb.Model, options);
+
+            return tmslJObj;
+        }
+
 
         private static JToken GetNamedObj(JToken collection, string objectName)
         {
@@ -156,7 +274,7 @@ namespace TabularEditor.TOMWrapper.Utils
             return (collection as JArray).FirstOrDefault(t => t.Value<string>("name").EqualsI(objectName));
         }
 
-        internal static string DeployExistingTMSL(TOM.Database db, TOM.Server server, string destinationName, DeploymentOptions options, bool includeRestricted, Microsoft.AnalysisServices.CompatibilityMode compatibilityMode)
+        internal string DeployExistingTMSL(TOM.Database db, TOM.Server server, string destinationName, DeploymentOptions options, bool includeRestricted, Microsoft.AnalysisServices.CompatibilityMode compatibilityMode)
         {
             var orgDb = server.Databases.GetByName(destinationName);
             orgDb.Refresh(true);
@@ -165,7 +283,7 @@ namespace TabularEditor.TOMWrapper.Utils
             var newTables = db.Model.Tables;
 
             var tmslJson = TOM.JsonScripter.ScriptCreateOrReplace(db, includeRestricted);
-            var tmsl = JObject.Parse(tmslJson).TransformCreateOrReplaceTmsl(db, orgDb, options).FixCalcGroupMetadata(db);
+            var tmsl = TransformCreateOrReplaceTmsl(JObject.Parse(tmslJson), db, orgDb, options).FixCalcGroupMetadata(db);
             if (tmsl["createOrReplace"]["database"]["compatibilityMode"] != null)
             {
                 tmsl["createOrReplace"]["database"]["compatibilityMode"] = compatibilityMode.ToString();
@@ -190,14 +308,14 @@ namespace TabularEditor.TOMWrapper.Utils
                     // Note, we should be careful not to remove any objects that can hold
                     // processed data:
                     if (tmslModel["perspectives"] != null) foreach (JObject perspective in tmslModel["perspectives"])
-                        GetNamedObj(perspective["tables"], newTable.Name)?.Remove();
+                            GetNamedObj(perspective["tables"], newTable.Name)?.Remove();
                     if (tmslModel["cultures"] != null) foreach (JObject culture in tmslModel["cultures"])
-                        GetNamedObj(culture["translations"]?["model"]?["tables"], newTable.Name)?.Remove();
+                            GetNamedObj(culture["translations"]?["model"]?["tables"], newTable.Name)?.Remove();
                     if (tmslModel["relationships"] != null) foreach (JObject relationship in tmslModel["relationships"].Where(r => r.Value<string>("fromTable").EqualsI(newTable.Name)
                     || r.Value<string>("toTable").EqualsI(newTable.Name)).ToList())
-                        relationship.Remove();
+                            relationship.Remove();
                     if (tmslModel["roles"] != null) foreach (JObject modelRole in tmslModel["roles"])
-                        GetNamedObj(modelRole["tablePermissions"], newTable.Name)?.Remove();
+                            GetNamedObj(modelRole["tablePermissions"], newTable.Name)?.Remove();
                     // Todo: Variants, Alternates, (other objects that can reference a table?)
 
                     needsTwoStepCreateOrReplace = true;
@@ -206,45 +324,45 @@ namespace TabularEditor.TOMWrapper.Utils
 
                 foreach (var newColumn in newTable.Columns)
                 {
-                    if (newColumn.Type == TOM.ColumnType.RowNumber 
+                    if (newColumn.Type == TOM.ColumnType.RowNumber
                         || newColumn.Type == TOM.ColumnType.CalculatedTableColumn
                         || !orgTable.Columns.ContainsName(newColumn.Name)) continue;
                     var orgColumn = orgTable.Columns[newColumn.Name];
 
                     // Remove columns that were changed from calculated to data or vice versa:
-                    if(orgColumn.Type != newColumn.Type)
+                    if (orgColumn.Type != newColumn.Type)
                     {
                         var table = GetNamedObj(tmslModel["tables"], newTable.Name);
                         GetNamedObj(table["columns"], newColumn.Name).Remove();
 
                         // Make sure we remove all references to this column as well:
                         if (tmslModel["perspectives"] != null) foreach (JObject perspective in tmslModel["perspectives"])
-                        {
-                            var tablePerspective = GetNamedObj(perspective["tables"], newTable.Name);
-                            if (tablePerspective == null) continue;
-                            GetNamedObj(tablePerspective["columns"], newColumn.Name)?.Remove();
-                        }
-                        if(tmslModel["cultures"] != null) foreach (JObject culture in tmslModel["cultures"])
-                        {
-                            var tableTranslation = GetNamedObj(culture["translations"]?["model"]?["tables"], newTable.Name);
-                            if (tableTranslation == null) continue;
-                            GetNamedObj(tableTranslation["columns"], newColumn.Name)?.Remove();
-                        }
-                        if(table["columns"] != null) foreach (JObject column in table["columns"].Where(c => c.Value<string>("sortByColumn").EqualsI(newColumn.Name)))
-                        {
-                            column["sortByColumn"].Remove();
-                        }
+                            {
+                                var tablePerspective = GetNamedObj(perspective["tables"], newTable.Name);
+                                if (tablePerspective == null) continue;
+                                GetNamedObj(tablePerspective["columns"], newColumn.Name)?.Remove();
+                            }
+                        if (tmslModel["cultures"] != null) foreach (JObject culture in tmslModel["cultures"])
+                            {
+                                var tableTranslation = GetNamedObj(culture["translations"]?["model"]?["tables"], newTable.Name);
+                                if (tableTranslation == null) continue;
+                                GetNamedObj(tableTranslation["columns"], newColumn.Name)?.Remove();
+                            }
+                        if (table["columns"] != null) foreach (JObject column in table["columns"].Where(c => c.Value<string>("sortByColumn").EqualsI(newColumn.Name)))
+                            {
+                                column["sortByColumn"].Remove();
+                            }
                         if (table["hierarchies"] != null) foreach (JObject hierarchy in table["hierarchies"].Where(h => h["levels"].Any(l => l.Value<string>("column").EqualsI(newColumn.Name))).ToList())
-                        {
-                            hierarchy.Remove();
-                        }
+                            {
+                                hierarchy.Remove();
+                            }
                         if (tmslModel["relationships"] != null) foreach (JObject relationship in tmslModel["relationships"].Where(r => r.Value<string>("fromColumn").EqualsI(newColumn.Name)
                         || r.Value<string>("toColumn").EqualsI(newColumn.Name)).ToList())
-                        {
-                            relationship.Remove();
-                        }
+                            {
+                                relationship.Remove();
+                            }
                         if (tmslModel["roles"] != null) foreach (JObject modelRole in tmslModel["roles"])
-                            GetNamedObj(modelRole["tablePermissions"], newTable.Name)?.Remove();
+                                GetNamedObj(modelRole["tablePermissions"], newTable.Name)?.Remove();
                         // Todo: Variants, Alternates, (other objects that can reference a column?)
 
                         needsTwoStepCreateOrReplace = true;
@@ -253,7 +371,7 @@ namespace TabularEditor.TOMWrapper.Utils
                 }
             }
 
-            if(needsTwoStepCreateOrReplace)
+            if (needsTwoStepCreateOrReplace)
             {
                 return new JObject(
                     new JProperty("sequence",
@@ -266,9 +384,9 @@ namespace TabularEditor.TOMWrapper.Utils
         }
     }
 
-    public class DeploymentException: Exception
+    public class DeploymentException : Exception
     {
-        public DeploymentException(string message): base(message)
+        public DeploymentException(string message) : base(message)
         {
 
         }
@@ -296,6 +414,8 @@ namespace TabularEditor.TOMWrapper.Utils
         public bool SkipRefreshPolicyPartitions = false;
         public bool DeployRoles = true;
         public bool DeployRoleMembers = false;
+        public bool ThrowIfEnterprise = false;
+        public bool RemoveRoleMemberIds = false;
 
         /// <summary>
         /// Default deployment. Does not overwrite connections, partitions or role members.
@@ -314,13 +434,16 @@ namespace TabularEditor.TOMWrapper.Utils
 
         public DeploymentOptions Clone()
         {
-            return new DeploymentOptions {
+            return new DeploymentOptions
+            {
                 DeployMode = this.DeployMode,
                 DeployConnections = this.DeployConnections,
                 DeployPartitions = this.DeployPartitions,
                 DeployRoleMembers = this.DeployRoleMembers,
                 DeployRoles = this.DeployRoles,
-                SkipRefreshPolicyPartitions = this.SkipRefreshPolicyPartitions
+                SkipRefreshPolicyPartitions = this.SkipRefreshPolicyPartitions,
+                ThrowIfEnterprise = this.ThrowIfEnterprise,
+                RemoveRoleMemberIds = this.RemoveRoleMemberIds
             };
         }
     }
@@ -375,102 +498,6 @@ namespace TabularEditor.TOMWrapper.Utils
         }
 
         /// <summary>
-        /// This method transforms a JObject representing a CreateOrReplace TMSL script, so that the script points
-        /// to the correct database to be overwritten, and that the correct ID and Name properties are set. In
-        /// addition, the method will replace any Roles, RoleMembers, Data Sources and Partitions in the TMSL with
-        /// the corresponding TMSL from the specified orgDb, depending on the provided DeploymentOptions.
-        /// </summary>
-        public static JObject TransformCreateOrReplaceTmsl(this JObject tmslJObj, TOM.Database db, TOM.Database destDb, DeploymentOptions options)
-        {
-            // Deployment target / existing database (note that TMSL uses the NAME of an existing database, not the ID, to identify the object)
-            tmslJObj["createOrReplace"]["object"]["database"] = destDb.Name;
-            tmslJObj["createOrReplace"]["database"]["id"] = destDb.ID;
-            tmslJObj["createOrReplace"]["database"]["name"] = destDb.Name;
-
-            var model = tmslJObj.SelectToken("createOrReplace.database.model");
-
-            var roles = model["roles"] as JArray;
-            if (!options.DeployRoles)
-            {
-                // Remove roles if present and add original:
-                roles = new JArray();
-                model["roles"] = roles;
-                foreach (var role in destDb.Model.Roles) roles.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(role)));
-            }
-            else if (roles != null && !options.DeployRoleMembers)
-            {
-                foreach (var role in roles)
-                {
-                    var members = new JArray();
-                    role["members"] = members;
-                    
-                    // Remove members if present and add original:
-                    var roleName = role["name"].Value<string>();
-                    if (destDb.Model.Roles.Contains(roleName))
-                    {
-                        foreach (var member in destDb.Model.Roles[roleName].Members)
-                            members.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(member)));
-                    }
-                }
-            }
-            else if (roles != null && options.DeployRoleMembers)
-            {
-                foreach (var role in roles)
-                {
-                    if (role["members"] is JArray members)
-                    {
-                        foreach (JObject member in members)
-                        {
-                            if (member.TryGetValue("identityProvider", out JToken value) && value.ToString() == "AzureAD")
-                            {
-                                member.Remove("memberId");
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (!options.DeployConnections)
-            {
-                // Replace existing data sources with those in the target DB:
-                // TODO: Can we do anything to retain credentials on PowerQuery data sources?
-                var dataSources = model["dataSources"] as JArray;
-                foreach (var orgDataSource in destDb.Model.DataSources)
-                {
-                    dataSources.FirstOrDefault(d => d.Value<string>("name").EqualsI(orgDataSource.Name))?.Remove();
-                    dataSources.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(orgDataSource)));
-                }
-            }
-
-            if (!options.DeployPartitions || options.SkipRefreshPolicyPartitions)
-            {
-                var tables = tmslJObj.SelectToken("createOrReplace.database.model.tables") as JArray;
-                foreach (var table in tables)
-                {
-                    var tableName = table["name"].Value<string>();
-                    if (db.Model.Tables[tableName].IsCalculatedOrCalculationGroup()) continue;
-
-                    if (destDb.Model.Tables.Contains(tableName))
-                    {
-                        var t = destDb.Model.Tables[tableName];
-                        if (t.IsCalculatedOrCalculationGroup()) continue;
-
-                        // If destination partition is not a policyrange
-                        if (!options.DeployPartitions || (options.SkipRefreshPolicyPartitions && t.GetSourceType() == TOM.PartitionSourceType.PolicyRange))
-                        {
-                            // Retain existing partitions on destination:
-                            var partitions = new JArray();
-                            table["partitions"] = partitions;
-                            foreach (var pt in t.Partitions) partitions.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(pt)));
-                        }
-                    }
-                }
-            }
-
-            return tmslJObj;
-        }
-
-        /// <summary>
         /// This method transforms a JObject representing a Create TMSL script, so that the database is deployed
         /// using the proper ID and Name values. In addition, of the DeploymentOptions specify that roles should
         /// not be deployed, they are stripped from the TMSL script.
@@ -481,35 +508,25 @@ namespace TabularEditor.TOMWrapper.Utils
             tmslJObj["createOrReplace"]["database"]["id"] = targetDatabaseName;
             tmslJObj["createOrReplace"]["database"]["name"] = targetDatabaseName;
 
-            var roles = tmslJObj.SelectToken("createOrReplace.database.model.roles") as JArray;
+            var model = tmslJObj.SelectToken("createOrReplace.database.model") as JObject;
+            var roles = model["roles"] as JArray;
             if (!options.DeployRoles)
             {
                 // Remove roles if present
                 if (roles != null) roles.Clear();
             }
-            else if (roles != null && !options.DeployRoleMembers)
+            else if (roles != null && roles.Count > 0)
             {
-                foreach (var role in roles)
+                if (!options.DeployRoleMembers)
                 {
-                    var members = new JArray();
-                    role["members"] = members;
-                }
-            }
-            else if (roles != null && options.DeployRoleMembers)
-            {
-                foreach (var role in roles)
-                {
-                    if (role["members"] is JArray members)
+                    // Remove role members completely if DeployRoleMembers = false:
+                    foreach (var role in roles)
                     {
-                        foreach (JObject member in members)
-                        {
-                            if (member.TryGetValue("identityProvider", out JToken value) && value.ToString() == "AzureAD")
-                            {
-                                member.Remove("memberId");
-                            }
-                        }
+                        var members = new JArray();
+                        role["members"] = members;
                     }
                 }
+                else if (options.RemoveRoleMemberIds) TabularDeployer.RemoveRoleMemberIDs(model);
             }
 
             return tmslJObj;
