@@ -55,6 +55,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string DEFAULTPOWERBIDATASOURCEVERSION = "DefaultPowerBIDataSourceVersion";
 	    public const string DESCRIPTION = "Description";
 	    public const string DETAILROWSDEFINITION = "DetailRowsDefinition";
+	    public const string DISABLEAUTOEXISTS = "DisableAutoExists";
 	    public const string DISCOURAGECOMPOSITEMODELS = "DiscourageCompositeModels";
 	    public const string DISCOURAGEIMPLICITMEASURES = "DiscourageImplicitMeasures";
 	    public const string DISCOURAGEREPORTMEASURES = "DiscourageReportMeasures";
@@ -8475,6 +8476,30 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeDiscourageCompositeModels() { return false; }
 /// <summary>
+///             Disable auto exists behavior for SummarizeColumns
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1566 or above.</remarks>
+		[DisplayName("Disable Auto Exists")]
+		[Category("Options"),Description(@"Disable auto exists behavior for SummarizeColumns"),IntelliSense(@"Disable auto exists behavior for SummarizeColumns")]
+		public int DisableAutoExists {
+			get {
+			    return MetadataObject.DisableAutoExists;
+			}
+			set {
+				
+				var oldValue = DisableAutoExists;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.DISABLEAUTOEXISTS, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.DisableAutoExists = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISABLEAUTOEXISTS, oldValue, newValue));
+				OnPropertyChanged(Properties.DISABLEAUTOEXISTS, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeDisableAutoExists() { return false; }
+/// <summary>
 ///             A reference to a default measure.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("Default Measure")]
@@ -8656,6 +8681,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.DEFAULTPOWERBIDATASOURCEVERSION:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1450 : Handler.CompatibilityLevel >= 1450;
+				case Properties.DISABLEAUTOEXISTS:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1566 : Handler.CompatibilityLevel >= 1566;
 				case Properties.DISCOURAGECOMPOSITEMODELS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1560 : Handler.CompatibilityLevel >= 1560;
 				case Properties.DISCOURAGEIMPLICITMEASURES:
