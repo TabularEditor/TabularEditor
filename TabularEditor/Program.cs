@@ -35,7 +35,7 @@ namespace TabularEditor
                 CommandLine.HandleCommandLine(args);
                 Environment.ExitCode = CommandLine.ErrorCount > 0 ? 1 : 0;
 
-                if (CommandLine.EnableVSTS)
+                if (CommandLine.LoggingMode == LoggingMode.Vsts)
                 {
                     Console.WriteLine("##vso[task.complete result={0};]Done.", CommandLine.ErrorCount > 0 ? "Failed" : ((CommandLine.WarningCount > 0) ? "SucceededWithIssues" : "Succeeded"));
                 }

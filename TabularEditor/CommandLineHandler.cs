@@ -20,61 +20,56 @@ namespace TabularEditor
         void Warning(string errorMessage, params object[] args);
         bool CommandLineMode { get; }
         void HandleCommandLine(string[] args);
-        bool EnableVSTS { get; }
+        LoggingMode LoggingMode { get; }
         int ErrorCount { get; }
         int WarningCount { get; }
         bool LaunchUi { get; }
     }
 
+    enum LoggingMode
+    {
+        None,
+        Vsts,
+        GitHub
+    }
+
     internal class CommandLineHandler: ICommandLineHandler
     {
-        public bool EnableVSTS { get; private set; }
+        public LoggingMode LoggingMode { get; private set; }
         public int ErrorCount { get; private set; } = 0;
         public int WarningCount { get; private set; } = 0;
         public bool LaunchUi { get; private set; } = false;
         public bool CommandLineMode { get; private set; } = false;
 
+        private void Log(string logMessage, params object[] args)
+        {
+            if (args.Length == 0) Console.WriteLine(logMessage);
+            else Console.WriteLine(logMessage, args);
+        }
+
         public void Error(string errorMessage, params object[] args)
         {
-            if (EnableVSTS)
-            {
-                if (args.Length == 0)
-                    Console.WriteLine("##vso[task.logissue type=error;]" + errorMessage);
-                else
-                    Console.WriteLine("##vso[task.logissue type=error;]" + errorMessage, args);
-            }
-            else
-                if (args.Length == 0)
-                Console.WriteLine(errorMessage);
-            else
-                Console.WriteLine(errorMessage, args);
+            if (LoggingMode == LoggingMode.Vsts) Log("##vso[task.logissue type=error;]" + errorMessage, args);
+            else if (LoggingMode == LoggingMode.GitHub) Log("::error:: " + errorMessage, args);
+            else Log(errorMessage, args);
 
             ErrorCount++;
         }
-        public void Warning(string errorMessage, params object[] args)
+        public void Warning(string warningMessage, params object[] args)
         {
-            if (EnableVSTS)
-            {
-                if (args.Length == 0)
-                    Console.WriteLine("##vso[task.logissue type=warning;]" + errorMessage);
-                else
-                    Console.WriteLine("##vso[task.logissue type=warning;]" + errorMessage, args);
-            }
-            else
-                if (args.Length == 0)
-                Console.WriteLine(errorMessage);
-            else
-                Console.WriteLine(errorMessage, args);
+            if (LoggingMode == LoggingMode.Vsts) Log("##vso[task.logissue type=warning;]" + warningMessage, args);
+            else if (LoggingMode == LoggingMode.GitHub) Log("::warning:: " + warningMessage, args);
+            else Log(warningMessage, args);
 
             WarningCount++;
         }
 
         private void ErrorX(string errorMessage, string sourcePath, int line, int column, string code, params object[] args)
         {
-            if (EnableVSTS)
-            {
+            if (LoggingMode == LoggingMode.Vsts)
                 Console.WriteLine(string.Format("##vso[task.logissue type=error;sourcepath={0};linenumber={1};columnnumber={2};code={3}]{4}", sourcePath, line, column, code, errorMessage), args);
-            }
+            else if (LoggingMode == LoggingMode.GitHub)
+                Console.WriteLine(string.Format("::error file={0},line={1},col={2}:: {3}", sourcePath, line, column, errorMessage), args);
             else
                 Console.WriteLine(string.Format("Error {0} on line {1}, col {2}: {3}", code, line, column, errorMessage));
 
@@ -116,7 +111,16 @@ namespace TabularEditor
                 return;
             }
 
-            EnableVSTS = upperArgList.IndexOf("-VSTS") > -1 || upperArgList.IndexOf("-V") > -1;
+            var vstsLogging = upperArgList.IndexOf("-VSTS") > -1 || upperArgList.IndexOf("-V") > -1;
+            var githubLogging = upperArgList.IndexOf("-GITHUB") > -1 || upperArgList.IndexOf("-G") > -1;
+            if(vstsLogging && githubLogging)
+            {
+                Error("Invalid argument syntax (choose either -V/-VSTS or -G/-GITHUB, not both)");
+                OutputUsage();
+                return;
+            }
+            LoggingMode = vstsLogging ? LoggingMode.Vsts : githubLogging ? LoggingMode.GitHub : LoggingMode.None;
+
             warnOnUnprocessed = upperArgList.IndexOf("-WARN") > -1 || upperArgList.IndexOf("-W") > -1;
             errorOnDaxErr = upperArgList.IndexOf("-ERR") > -1 || upperArgList.IndexOf("-E") > -1;
 
@@ -426,7 +430,7 @@ namespace TabularEditor
             Console.WriteLine(@"Usage:
 
 TABULAREDITOR ( file | server database | -L [name] ) [-S script1 [script2] [...]]
-    [-SC] [-A [rules] | -AX rules] [(-B | -F) output [id]] [-V] [-T resultsfile]
+    [-SC] [-A [rules] | -AX rules] [(-B | -F) output [id]] [-V | -G] [-T resultsfile]
     [-D [server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]]
         [-P [-Y]] [-R [-M]]]
         [-X xmla_script]] [-W] [-E]]
@@ -457,6 +461,7 @@ database            Database ID of the model to load. If blank ("") picks the fi
   output              Full path of the folder to save to. Folder is created if it does not exist.
   id                  Optional id/name to assign to the Database object when saving.
 -V / -VSTS          Output Visual Studio Team Services logging commands.
+-G / -GITHUB        Output GitHub Actions workflow commands.
 -T / -TRX         Produces a VSTEST (trx) file with details on the execution.
   resultsfile       File name of the VSTEST XML file.
 -D / -DEPLOY        Command-line deployment
