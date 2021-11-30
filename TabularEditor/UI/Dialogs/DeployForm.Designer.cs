@@ -53,11 +53,12 @@
             this.btnTMSL = new System.Windows.Forms.Button();
             this.tvSummary = new System.Windows.Forms.TreeView();
             this.page3 = new System.Windows.Forms.Panel();
-            this.chkDeployStructure = new System.Windows.Forms.CheckBox();
+            this.chkDeployModel = new System.Windows.Forms.CheckBox();
             this.chkDeployPartitions = new System.Windows.Forms.CheckBox();
+            this.chkDeployRefreshPolicyPartitions = new System.Windows.Forms.CheckBox();
             this.chkDeployRoleMembers = new System.Windows.Forms.CheckBox();
             this.chkDeployRoles = new System.Windows.Forms.CheckBox();
-            this.chkDeployConnections = new System.Windows.Forms.CheckBox();
+            this.chkDeployDataSources = new System.Windows.Forms.CheckBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.page2 = new TabularEditor.UI.Dialogs.Pages.DatabasePage();
             this.page1 = new TabularEditor.UI.Dialogs.Pages.ConnectPage();
@@ -301,72 +302,84 @@
             // 
             // page3
             // 
-            this.page3.Controls.Add(this.chkDeployStructure);
+            this.page3.Controls.Add(this.chkDeployModel);
             this.page3.Controls.Add(this.chkDeployPartitions);
+            this.page3.Controls.Add(this.chkDeployRefreshPolicyPartitions);
             this.page3.Controls.Add(this.chkDeployRoleMembers);
             this.page3.Controls.Add(this.chkDeployRoles);
-            this.page3.Controls.Add(this.chkDeployConnections);
+            this.page3.Controls.Add(this.chkDeployDataSources);
             this.page3.Location = new System.Drawing.Point(15, 63);
             this.page3.Name = "page3";
             this.page3.Size = new System.Drawing.Size(485, 232);
             this.page3.TabIndex = 2;
             this.page3.Visible = false;
             // 
-            // chkDeployStructure
+            // chkDeployModel
             // 
-            this.chkDeployStructure.AutoSize = true;
-            this.chkDeployStructure.Checked = true;
-            this.chkDeployStructure.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkDeployStructure.Location = new System.Drawing.Point(167, 36);
-            this.chkDeployStructure.Name = "chkDeployStructure";
-            this.chkDeployStructure.Size = new System.Drawing.Size(137, 17);
-            this.chkDeployStructure.TabIndex = 0;
-            this.chkDeployStructure.Text = "Deploy Model Structure";
-            this.chkDeployStructure.UseVisualStyleBackColor = true;
-            this.chkDeployStructure.CheckedChanged += new System.EventHandler(this.chkDeployStructure_CheckedChanged);
+            this.chkDeployModel.AutoSize = true;
+            this.chkDeployModel.Checked = true;
+            this.chkDeployModel.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkDeployModel.Location = new System.Drawing.Point(167, 36);
+            this.chkDeployModel.Name = "chkDeployModel";
+            this.chkDeployModel.Size = new System.Drawing.Size(137, 17);
+            this.chkDeployModel.TabIndex = 0;
+            this.chkDeployModel.Text = "Deploy Model Structure";
+            this.chkDeployModel.UseVisualStyleBackColor = true;
+            this.chkDeployModel.CheckedChanged += new System.EventHandler(this.chkDeployStructure_CheckedChanged);
+            // 
+            // chkDeployDataSources
+            // 
+            this.chkDeployDataSources.AutoSize = true;
+            this.chkDeployDataSources.Location = new System.Drawing.Point(167, 66);
+            this.chkDeployDataSources.Name = "chkDeployDataSources";
+            this.chkDeployDataSources.Size = new System.Drawing.Size(121, 17);
+            this.chkDeployDataSources.TabIndex = 1;
+            this.chkDeployDataSources.Text = "Deploy Data Sources";
+            this.chkDeployDataSources.UseVisualStyleBackColor = true;
             // 
             // chkDeployPartitions
             // 
             this.chkDeployPartitions.AutoSize = true;
-            this.chkDeployPartitions.Location = new System.Drawing.Point(167, 108);
+            this.chkDeployPartitions.Location = new System.Drawing.Point(167, 96);
             this.chkDeployPartitions.Name = "chkDeployPartitions";
             this.chkDeployPartitions.Size = new System.Drawing.Size(135, 17);
             this.chkDeployPartitions.TabIndex = 2;
             this.chkDeployPartitions.Text = "Deploy Table Partitions";
             this.chkDeployPartitions.UseVisualStyleBackColor = true;
+            this.chkDeployPartitions.CheckedChanged += new System.EventHandler(this.chkDeployPartitions_CheckedChanged);
             // 
-            // chkDeployRoleMembers
+            // chkDeployRefreshPolicyPartitions
             // 
-            this.chkDeployRoleMembers.AutoSize = true;
-            this.chkDeployRoleMembers.Location = new System.Drawing.Point(167, 180);
-            this.chkDeployRoleMembers.Name = "chkDeployRoleMembers";
-            this.chkDeployRoleMembers.Size = new System.Drawing.Size(130, 17);
-            this.chkDeployRoleMembers.TabIndex = 4;
-            this.chkDeployRoleMembers.Text = "Deploy Role Members";
-            this.chkDeployRoleMembers.UseVisualStyleBackColor = true;
+            this.chkDeployRefreshPolicyPartitions.AutoSize = true;
+            this.chkDeployRefreshPolicyPartitions.Location = new System.Drawing.Point(187, 126);
+            this.chkDeployRefreshPolicyPartitions.Name = "chkDeployRefreshPolicyPartitions";
+            this.chkDeployRefreshPolicyPartitions.Size = new System.Drawing.Size(135, 17);
+            this.chkDeployRefreshPolicyPartitions.TabIndex = 3;
+            this.chkDeployRefreshPolicyPartitions.Text = "Deploy partitions governed by Incremental Refresh Policies";
+            this.chkDeployRefreshPolicyPartitions.UseVisualStyleBackColor = true;
             // 
             // chkDeployRoles
             // 
             this.chkDeployRoles.AutoSize = true;
             this.chkDeployRoles.Checked = true;
             this.chkDeployRoles.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkDeployRoles.Location = new System.Drawing.Point(167, 144);
+            this.chkDeployRoles.Location = new System.Drawing.Point(167, 156);
             this.chkDeployRoles.Name = "chkDeployRoles";
             this.chkDeployRoles.Size = new System.Drawing.Size(89, 17);
-            this.chkDeployRoles.TabIndex = 3;
+            this.chkDeployRoles.TabIndex = 4;
             this.chkDeployRoles.Text = "Deploy Roles";
             this.chkDeployRoles.UseVisualStyleBackColor = true;
             this.chkDeployRoles.CheckedChanged += new System.EventHandler(this.chkDeployRoles_CheckedChanged);
             // 
-            // chkDeployConnections
+            // chkDeployRoleMembers
             // 
-            this.chkDeployConnections.AutoSize = true;
-            this.chkDeployConnections.Location = new System.Drawing.Point(167, 72);
-            this.chkDeployConnections.Name = "chkDeployConnections";
-            this.chkDeployConnections.Size = new System.Drawing.Size(121, 17);
-            this.chkDeployConnections.TabIndex = 1;
-            this.chkDeployConnections.Text = "Deploy Connections";
-            this.chkDeployConnections.UseVisualStyleBackColor = true;
+            this.chkDeployRoleMembers.AutoSize = true;
+            this.chkDeployRoleMembers.Location = new System.Drawing.Point(187, 186);
+            this.chkDeployRoleMembers.Name = "chkDeployRoleMembers";
+            this.chkDeployRoleMembers.Size = new System.Drawing.Size(130, 17);
+            this.chkDeployRoleMembers.TabIndex = 5;
+            this.chkDeployRoleMembers.Text = "Deploy Role Members";
+            this.chkDeployRoleMembers.UseVisualStyleBackColor = true;
             // 
             // page2
             // 
@@ -454,9 +467,10 @@
         private System.Windows.Forms.Panel page3;
         private System.Windows.Forms.CheckBox chkDeployRoleMembers;
         private System.Windows.Forms.CheckBox chkDeployRoles;
-        private System.Windows.Forms.CheckBox chkDeployConnections;
+        private System.Windows.Forms.CheckBox chkDeployDataSources;
         private System.Windows.Forms.CheckBox chkDeployPartitions;
-        private System.Windows.Forms.CheckBox chkDeployStructure;
+        private System.Windows.Forms.CheckBox chkDeployRefreshPolicyPartitions;
+        private System.Windows.Forms.CheckBox chkDeployModel;
         private System.Windows.Forms.Panel page4;
         private System.Windows.Forms.TreeView tvSummary;
         private System.Windows.Forms.Button btnTMSL;

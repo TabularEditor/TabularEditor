@@ -79,7 +79,19 @@ namespace TabularEditor.UI.Dialogs
             Steps.Add(lblStep2);
             Steps.Add(lblStep3);
             Steps.Add(lblStep4);
+
+            modelHasDataSources = Handler.Model.DataSources.Any();
+            modelHasNonCalculatedPartitions = Handler.Model.Tables.Any(t => t.MetadataObject.IsImported());
+            modelHasRefreshPolicyPartitions = Handler.Model.AllPartitions.Any(p => p.SourceType == TOMWrapper.PartitionSourceType.PolicyRange);
+            modelHasRoles = Handler.Model.Roles.Any();
+            modelHasRoleMembers = Handler.Model.Roles.Any(mr => mr.Members.Any());
         }
+
+        private bool modelHasDataSources;
+        private bool modelHasRefreshPolicyPartitions;
+        private bool modelHasNonCalculatedPartitions;
+        private bool modelHasRoles;
+        private bool modelHasRoleMembers;
 
         private void Page_Validation(object sender, ValidationEventArgs e)
         {
@@ -116,28 +128,20 @@ namespace TabularEditor.UI.Dialogs
             if (_currentPage == 2)
             {
                 DeployOptions.DeployMode = DeployTargetServer.Databases.ContainsName(DeployTargetDatabaseName) ? DeploymentMode.CreateOrAlter : DeploymentMode.CreateDatabase;
-                if (DeployOptions.DeployMode == DeploymentMode.CreateDatabase)
-                {
-                    chkDeployConnections.Checked = true;
-                    chkDeployPartitions.Checked = true;
-                }
-                else if (DeployOptions.DeployMode == DeploymentMode.CreateOrAlter)
-                {
-                    DeployOptions = page2.DatabaseName == PreselectDb ? (DeployOptions ?? new DeploymentOptions()) : new DeploymentOptions();
-                    
-                    chkDeployConnections.Checked = DeployOptions.DeployConnections;
-                    chkDeployPartitions.Checked = DeployOptions.DeployPartitions;
-                    chkDeployRoles.Checked = DeployOptions.DeployRoles;
-                    chkDeployRoleMembers.Checked = DeployOptions.DeployRoleMembers;
-                    
-                }
-                chkDeployPartitions.Enabled = chkDeployConnections.Enabled = DeployOptions.DeployMode == DeploymentMode.CreateOrAlter;
+                SetOptionsEnabledState();
+
+                chkDeployDataSources.Checked = modelHasDataSources;
+                chkDeployPartitions.Checked = modelHasNonCalculatedPartitions;
+                chkDeployRefreshPolicyPartitions.Checked = modelHasRefreshPolicyPartitions;
+                chkDeployRoles.Checked = modelHasRoleMembers;
+                chkDeployRoleMembers.Checked = modelHasRoleMembers;
             }
 
             if (_currentPage == 3)
             {
-                DeployOptions.DeployConnections = chkDeployConnections.Checked;
+                DeployOptions.DeployConnections = chkDeployDataSources.Checked;
                 DeployOptions.DeployPartitions = chkDeployPartitions.Checked;
+                DeployOptions.SkipRefreshPolicyPartitions = !chkDeployRefreshPolicyPartitions.Checked;
                 DeployOptions.DeployRoles = chkDeployRoles.Checked;
                 DeployOptions.DeployRoleMembers = chkDeployRoleMembers.Checked;
 
@@ -149,8 +153,8 @@ namespace TabularEditor.UI.Dialogs
                 n1.Nodes.Add(string.Format("Database: {0}", DeployTargetDatabaseName));
                 n1.Nodes.Add(string.Format("Mode: {0}", DeployOptions.DeployMode == DeploymentMode.CreateDatabase ? "Create new database" : "Deploy to existing database"));
                 var n2 = n.Nodes.Add("Options");
-                if (chkDeployStructure.Checked) n2.Nodes.Add("Deploy Model Structure");
-                if (chkDeployConnections.Checked) n2.Nodes.Add("Deploy Connections");
+                if (chkDeployModel.Checked) n2.Nodes.Add("Deploy Model Structure");
+                if (chkDeployDataSources.Checked) n2.Nodes.Add("Deploy Connections");
                 if (chkDeployPartitions.Checked) n2.Nodes.Add("Deploy Partitions");
                 if (chkDeployRoles.Checked)
                 {
@@ -158,6 +162,37 @@ namespace TabularEditor.UI.Dialogs
                     if (chkDeployRoleMembers.Checked) n3.Nodes.Add("Deploy Role Members");
                 }
                 tvSummary.ExpandAll();
+            }
+        }
+
+        private void SetOptionsEnabledState()
+        {
+            var deployNew = DeployOptions.DeployMode == DeploymentMode.CreateDatabase;
+            chkDeployModel.Enabled = deployNew;
+            btnNext.Enabled = chkDeployModel.Checked;
+
+            var modelHasDataSources = Handler.Model.DataSources.Any();
+            var modelHasNonCalculatedPartitions = Handler.Model.Tables.Any(t => t.MetadataObject.IsImported());
+            var modelHasRefreshPolicyPartitions = Handler.Model.AllPartitions.Any(p => p.SourceType == TOMWrapper.PartitionSourceType.PolicyRange);
+            var modelHasRoles = Handler.Model.Roles.Any();
+            var modelHasRoleMembers = Handler.Model.Roles.Any(mr => mr.Members.Any());
+
+            if (deployNew)
+            {
+                chkDeployDataSources.Enabled = false;
+                chkDeployPartitions.Enabled = false;
+                chkDeployRefreshPolicyPartitions.Enabled = false;
+
+                chkDeployRoles.Enabled = chkDeployModel.Checked && modelHasRoleMembers;
+                chkDeployRoleMembers.Enabled = chkDeployModel.Checked && chkDeployRoles.Checked && modelHasRoleMembers;
+            }
+            else
+            {
+                chkDeployDataSources.Enabled = modelHasDataSources && chkDeployModel.Checked;
+                chkDeployPartitions.Enabled = modelHasNonCalculatedPartitions && chkDeployModel.Checked;
+                chkDeployRefreshPolicyPartitions.Enabled = modelHasNonCalculatedPartitions && modelHasRefreshPolicyPartitions && chkDeployModel.Checked && chkDeployPartitions.Checked;
+                chkDeployRoles.Enabled = modelHasRoles && chkDeployModel.Checked;
+                chkDeployRoleMembers.Enabled = modelHasRoleMembers && chkDeployModel.Checked && chkDeployRoles.Checked;
             }
         }
 
@@ -173,18 +208,17 @@ namespace TabularEditor.UI.Dialogs
 
         private void chkDeployRoles_CheckedChanged(object sender, EventArgs e)
         {
-            chkDeployRoleMembers.Enabled = chkDeployRoles.Checked;
-            if (!chkDeployRoleMembers.Enabled) chkDeployRoleMembers.Checked = false;
+            SetOptionsEnabledState();
+        }
+
+        private void chkDeployPartitions_CheckedChanged(object sender, EventArgs e)
+        {
+            SetOptionsEnabledState();
         }
 
         private void chkDeployStructure_CheckedChanged(object sender, EventArgs e)
         {
-            chkDeployConnections.Enabled = chkDeployStructure.Checked && DeployOptions.DeployMode == DeploymentMode.CreateOrAlter;
-            chkDeployPartitions.Enabled = chkDeployStructure.Checked && DeployOptions.DeployMode == DeploymentMode.CreateOrAlter;
-            chkDeployRoles.Enabled = chkDeployStructure.Checked;
-            chkDeployRoleMembers.Enabled = chkDeployStructure.Checked && chkDeployRoles.Checked;
-
-            btnNext.Enabled = chkDeployStructure.Checked;
+            SetOptionsEnabledState();
         }
 
         public DeploymentOptions DeployOptions { get; set; } = new DeploymentOptions();
