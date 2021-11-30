@@ -47,10 +47,9 @@ namespace TabularEditor.TOMWrapper.Utils
             using (var s = new TOM.Server())
             {
                 s.Connect(connectionString);
-                if (s.Databases.ContainsName(targetDatabaseName))
+                var db = s.Databases.Find(targetDatabaseName) ?? s.Databases.FindByName(targetDatabaseName);
+                if (db != null)
                 {
-                    var db = s.Databases.GetByName(targetDatabaseName);
-
                     var dbcontent = TOM.JsonSerializer.SerializeDatabase(db);
                     WriteZip(backupFilePath, dbcontent);
                 }
