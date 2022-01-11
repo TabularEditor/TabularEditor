@@ -351,6 +351,7 @@ namespace TabularEditor.Scripting
             "microsoft.csharp.dll"
         };
 
+        private readonly static HashSet<string> LoadedCustomAssemblies = new HashSet<string>();
 
         private static CompilerResults Compile(string code, List<string> customAssemblies = null, Action<CompilerErrorCollection, string> errorCallback = null)
         {
@@ -391,6 +392,11 @@ namespace TabularEditor.Scripting
                     }
 
                     // Lastly, include ref as is - compiler will throw an error if not resolved:
+                    if(File.Exists(asm))
+                    {
+                        if (LoadedCustomAssemblies.Add(asm))
+                            Assembly.LoadFrom(asm);
+                    }
                     includeAssemblies.Add(asm);
                 }
             }
