@@ -232,7 +232,7 @@ namespace TabularEditor.TOMWrapper
         {
             if (table.Partitions.FirstOrDefault() is EntityPartition ep) return "DQ over AS";
             var p1 = table.Partitions.FirstOrDefault()?.GetMode() ?? ModeType.Import;
-            return table.Partitions.All(p => p.GetMode() == p1) ? p1.ToString() : "Mixed";
+            return table.Partitions.All(p => p.GetMode() == p1) ? p1.ToString() : "Hybrid";
         }
 
         public static string GetTypeName(this Type type, bool plural = false)
