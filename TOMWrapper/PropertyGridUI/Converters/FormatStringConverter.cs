@@ -201,7 +201,7 @@ namespace TabularEditor.PropertyGridUI
             {
                 try
                 {
-                    return string.Format("{0:" + baseObject.FormatString.Replace("AMPM", "tt") + "}", -1234.567);
+                    return Utils.Vb6.Vb6Format(-1234.567, baseObject.FormatString);
                 }
                 catch
                 {
@@ -217,7 +217,7 @@ namespace TabularEditor.PropertyGridUI
             {
                 try
                 {
-                    return string.Format("{0:" + baseObject.FormatString + "}", DateTime.Now);
+                    return Utils.Vb6.Vb6Format(DateTime.Now, baseObject.FormatString);
                 }
                 catch
                 {

@@ -240,6 +240,7 @@
     <Compile Include="Utils\Scripter.cs" />
     <Compile Include="TOMWrapper\Serialization\SerializeOptions.cs" />
     <Compile Include="TOMWrapper\Serialization\Serializer.cs" />
+    <Compile Include="Utils\Vb6.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="LocateDeadCode.ruleset" />
