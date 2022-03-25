@@ -26,6 +26,9 @@ namespace TabularEditor.Scripting
             ObjectType.KPI,
             ObjectType.Relationship,
             ObjectType.Perspective,
+            ObjectType.CalculationGroup,
+            ObjectType.CalculationGroupTable,
+            ObjectType.CalculationItem
         };
 
         private class Property
