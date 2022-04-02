@@ -185,27 +185,48 @@ namespace TabularEditor.TOMWrapper.Serialization
                 }
             }
 
+            var serializeOptions = new TOM.SerializeOptions()
+            {
+                IgnoreInferredObjects = options.IgnoreInferredObjects,
+                IgnoreTimestamps = options.IgnoreTimestamps,
+                IgnoreInferredProperties = options.IgnoreInferredProperties,
+                SplitMultilineStrings = options.SplitMultilineStrings,
+                IncludeRestrictedInformation = db.Model.Annotations.Contains(ANN_SAVESENSITIVE) && db.Model.Annotations[ANN_SAVESENSITIVE].Value == "1"
+            };
             var serializedDB =
-                TOM.JsonSerializer.SerializeDatabase(db,
-                new TOM.SerializeOptions()
-                {
-                    IgnoreInferredObjects = options.IgnoreInferredObjects,
-                    IgnoreTimestamps = options.IgnoreTimestamps,
-                    IgnoreInferredProperties = options.IgnoreInferredProperties,
-                    SplitMultilineStrings = options.SplitMultilineStrings,
-                    IncludeRestrictedInformation = db.Model.Annotations.Contains(ANN_SAVESENSITIVE) && db.Model.Annotations[ANN_SAVESENSITIVE].Value == "1"
-                });
+                TOM.JsonSerializer.SerializeDatabase(db, serializeOptions);
 
             // Hack: Remove \r characters from multiline strings in the BIM:
             // "1 + 2\r", -> "1 + 2",
-            if(options.SplitMultilineStrings) serializedDB = serializedDB.Replace("\\r\",\r\n", "\",\r\n");
-            if(options.IgnoreLineageTags)
+            if (options.SplitMultilineStrings) serializedDB = serializedDB.Replace("\\r\",\r\n", "\",\r\n");
+
+            var jObject = JObject.Parse(serializedDB);
+            if (options.IgnoreLineageTags)
             {
-                var jObject = JObject.Parse(serializedDB);
                 var lineageTags = jObject.Descendants().OfType<JProperty>().Where(p => p.Name == "lineageTag").ToList();
                 foreach (var lineageTag in lineageTags) lineageTag.Remove();
-                serializedDB = jObject.ToString();
             }
+            // Remove privacy settings if specified:
+            foreach (var obj in jObject.DescendantsAndSelf().OfType<JObject>().ToList())
+            {
+                if (options.IgnorePrivacySettings)
+                {
+                    if (obj.ContainsKey("PrivacySetting")) obj.Remove("PrivacySetting");
+                }
+            }
+            if (!serializeOptions.IncludeRestrictedInformation)
+            {
+                // Remove sensitive properties entirely (since TOM.JsonSerializer.SerializeDatabase would have asterisk'ed their values)
+                foreach (var jDataSource in jObject.SelectTokens("model.dataSources[*]").OfType<JObject>())
+                {
+                    foreach (var jSensitive in jDataSource.Descendants().OfType<JProperty>().Where(p => p.Name.IsOneOf("key", "password", "pwd", "secret")).ToList())
+                    {
+                        jSensitive.Remove();
+                    }
+                }
+            }
+
+            serializedDB = jObject.ToString();
 
             return serializedDB;
         }

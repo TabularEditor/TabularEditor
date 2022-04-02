@@ -60,6 +60,10 @@ namespace TabularEditor.TOMWrapper.Serialization
         public bool IgnoreLineageTags { get; set; } = false;
         public bool ShouldSerializeIgnoreLineageTags() => IgnoreLineageTags;
         public bool SplitMultilineStrings = true;
+
+        public bool IgnorePrivacySettings { get; set; } = false;
+        public bool ShouldSerializeIgnorePrivacySettings() => IgnorePrivacySettings;
+
         public bool PrefixFilenames = false;
         public bool AlsoSaveAsBim { get; set; } = false;
         public bool ShouldSerializeAlsoSaveAsBim() => AlsoSaveAsBim;

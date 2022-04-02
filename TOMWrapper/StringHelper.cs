@@ -124,5 +124,32 @@ namespace TabularEditor
             }
             return sb.ToString();
         }
+
+        public static bool IsOneOf(this string search, StringComparison comparisonType, params string[] searchOptions)
+        {
+            if (search == null) return false;
+            foreach (var opt in searchOptions)
+            {
+                if (search.Equals(opt, comparisonType)) return true;
+            }
+            return false;
+        }
+        public static bool IsOneOf(this string search, params string[] searchOptions)
+        {
+            return search.IsOneOf(StringComparison.OrdinalIgnoreCase, searchOptions);
+        }
+        public static bool ContainsOneOf(this string search, StringComparison comparisonType, params string[] searchOptions)
+        {
+            if (search == null) return false;
+            foreach (var opt in searchOptions)
+            {
+                if (search.IndexOf(opt, comparisonType) >= 0) return true;
+            }
+            return false;
+        }
+        public static bool ContainsOneOf(this string search, params string[] searchOptions)
+        {
+            return search.ContainsOneOf(StringComparison.OrdinalIgnoreCase, searchOptions);
+        }
     }
 }
