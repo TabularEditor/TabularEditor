@@ -27,9 +27,10 @@ namespace TabularEditor.TOMWrapper.Serialization
             private string Sanitize(string fileName)
             {
                 var sb = new StringBuilder();
-                foreach (var c in fileName)
+                for(int i = 0; i < fileName.Length; i++)
                 {
-                    if (InvalidFileChars.Contains(c))
+                    var c = fileName[i];
+                    if (InvalidFileChars.Contains(c) || (i < fileName.Length - 2 && fileName.Substring(i, 3).IsOneOf("%20", "%5F")))
                     {
                         sb.Append("%");
                         sb.Append(((byte)c).ToString("x2"));
@@ -37,6 +38,8 @@ namespace TabularEditor.TOMWrapper.Serialization
                     else sb.Append(c);
                 }
                 var result = sb.ToString();
+                if (result.EndsWith(" ")) result = result.Substring(0, result.Length - 1) + "%20";
+                if (result.StartsWith("_") && ReservedFileNames.Contains(result.Substring(1))) result = "%5F" + result.Substring(1);
                 if (ReservedFileNames.Contains(result)) result = "_" + result;
                 return result;
             }
