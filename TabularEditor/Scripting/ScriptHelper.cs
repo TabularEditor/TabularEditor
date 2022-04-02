@@ -99,9 +99,9 @@ namespace TabularEditor.Scripting
         }
 
         [ScriptMethod]
-        public static void ExecuteCommand(string tmsl)
+        public static void ExecuteCommand(string tmslOrXmla, bool isXmla = false)
         {
-            TabularModelHandler.Singleton.Model.Database.ExecuteCommand(tmsl);
+            TabularModelHandler.Singleton.Model.Database.ExecuteCommand(tmslOrXmla, isXmla);
         }
         #endregion
 

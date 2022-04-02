@@ -56,12 +56,12 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Executes the specified TMSL script against the connected instance of Analysis Services.
         /// </summary>
-        [IntelliSense("Executes the specified TMSL script against the connected instance of Analysis Services.")]
-        public void ExecuteCommand(string tmsl)
+        [IntelliSense("Executes the specified TMSL or XMLA script against the connected instance of Analysis Services.")]
+        public void ExecuteCommand(string tmslOrXmla, bool isXmla = false)
         {
             if (TOMDatabase?.Server == null) throw new NotSupportedException("Cannot execute queries when not connected to Analysis Services");
 
-            var xmla = new XElement("Statement", tmsl).ToString();
+            var xmla = isXmla ? tmslOrXmla : new XElement("Statement", tmslOrXmla).ToString();
             var results = TOMDatabase.Server.Execute(xmla);
             if (results != null && results.ContainsErrors)
             {
