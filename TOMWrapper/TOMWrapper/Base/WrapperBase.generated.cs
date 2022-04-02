@@ -26,6 +26,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string BASETABLE = "BaseTable";
 	    public const string CALCULATIONGROUP = "CalculationGroup";
 	    public const string CALCULATIONITEMS = "CalculationItems";
+	    public const string CHANGEDPROPERTIES = "ChangedProperties";
 	    public const string COLLATION = "Collation";
 	    public const string COLUMN = "Column";
 	    public const string COLUMNORIGIN = "ColumnOrigin";
@@ -64,6 +65,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string ENCODINGHINT = "EncodingHint";
 	    public const string ERRORMESSAGE = "ErrorMessage";
 	    public const string EVALUATIONBEHAVIOR = "EvaluationBehavior";
+	    public const string EXCLUDEDARTIFACTS = "ExcludedArtifacts";
 	    public const string EXCLUDEFROMMODELREFRESH = "ExcludeFromModelRefresh";
 	    public const string EXPRESSION = "Expression";
 	    public const string EXPRESSIONS = "Expressions";
@@ -106,6 +108,8 @@ namespace TabularEditor.TOMWrapper
 	    public const string LINGUISTICMETADATA = "LinguisticMetadata";
 	    public const string MATTRIBUTES = "MAttributes";
 	    public const string MAXCONNECTIONS = "MaxConnections";
+	    public const string MAXPARALLELISMPERQUERY = "MaxParallelismPerQuery";
+	    public const string MAXPARALLELISMPERREFRESH = "MaxParallelismPerRefresh";
 	    public const string MEASURE = "Measure";
 	    public const string MEASURES = "Measures";
 	    public const string MEMBERID = "MemberID";
@@ -2799,6 +2803,8 @@ namespace TabularEditor.TOMWrapper
 				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.ALTERNATEOF:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1460 : Handler.CompatibilityLevel >= 1460;
+				case Properties.CHANGEDPROPERTIES:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1567 : Handler.CompatibilityLevel >= 1567;
 				case Properties.ENCODINGHINT:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.EXTENDEDPROPERTIES:
@@ -4287,8 +4293,8 @@ namespace TabularEditor.TOMWrapper
 
 		private DataSource CreateFromMetadata(TOM.DataSource obj)
 		{
-			if(obj is TOM.ProviderDataSource providerdatasourceObj) return ProviderDataSource.CreateFromMetadata(Model, providerdatasourceObj);
 			if(obj is TOM.StructuredDataSource structureddatasourceObj) return StructuredDataSource.CreateFromMetadata(Model, structureddatasourceObj);
+			if(obj is TOM.ProviderDataSource providerdatasourceObj) return ProviderDataSource.CreateFromMetadata(Model, providerdatasourceObj);
 		    return null;
 		}
 
@@ -5180,6 +5186,10 @@ namespace TabularEditor.TOMWrapper
 			switch (propertyName) {
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.CHANGEDPROPERTIES:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1567 : Handler.CompatibilityLevel >= 1567;
+				case Properties.EXCLUDEDARTIFACTS:
+					return false;
 				case Properties.EXTENDEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.HIDEMEMBERS:
@@ -6794,6 +6804,8 @@ namespace TabularEditor.TOMWrapper
 			switch (propertyName) {
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.CHANGEDPROPERTIES:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1567 : Handler.CompatibilityLevel >= 1567;
 				case Properties.EXTENDEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.LINEAGETAG:
@@ -7636,6 +7648,8 @@ namespace TabularEditor.TOMWrapper
 			switch (propertyName) {
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.CHANGEDPROPERTIES:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1567 : Handler.CompatibilityLevel >= 1567;
 				case Properties.DATACATEGORY:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1455 : Handler.CompatibilityLevel >= 1455;
 				case Properties.DETAILROWSDEFINITION:
@@ -8500,6 +8514,54 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeDisableAutoExists() { return false; }
 /// <summary>
+///             Determines the max possible number of parallel tasks in data refresh, within the resource constraints of the hosting service.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1568 or above.</remarks>
+		[DisplayName("Max Parallelism Per Refresh")]
+		[Category("Options"),Description(@"Determines the max possible number of parallel tasks in data refresh, within the resource constraints of the hosting service."),IntelliSense(@"Determines the max possible number of parallel tasks in data refresh, within the resource constraints of the hosting service.")]
+		public int MaxParallelismPerRefresh {
+			get {
+			    return MetadataObject.MaxParallelismPerRefresh;
+			}
+			set {
+				
+				var oldValue = MaxParallelismPerRefresh;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.MAXPARALLELISMPERREFRESH, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.MaxParallelismPerRefresh = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MAXPARALLELISMPERREFRESH, oldValue, newValue));
+				OnPropertyChanged(Properties.MAXPARALLELISMPERREFRESH, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeMaxParallelismPerRefresh() { return false; }
+/// <summary>
+///             Maximum degree of parallelism for query in formula engine
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1569 or above.</remarks>
+		[DisplayName("Max Parallelism Per Query")]
+		[Category("Options"),Description(@"Maximum degree of parallelism for query in formula engine"),IntelliSense(@"Maximum degree of parallelism for query in formula engine")]
+		public int MaxParallelismPerQuery {
+			get {
+			    return MetadataObject.MaxParallelismPerQuery;
+			}
+			set {
+				
+				var oldValue = MaxParallelismPerQuery;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.MAXPARALLELISMPERQUERY, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.MaxParallelismPerQuery = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MAXPARALLELISMPERQUERY, oldValue, newValue));
+				OnPropertyChanged(Properties.MAXPARALLELISMPERQUERY, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeMaxParallelismPerQuery() { return false; }
+/// <summary>
 ///             A reference to a default measure.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("Default Measure")]
@@ -8689,6 +8751,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1470 : Handler.CompatibilityLevel >= 1470;
 				case Properties.DISCOURAGEREPORTMEASURES:
 					return false;
+				case Properties.EXCLUDEDARTIFACTS:
+					return false;
 				case Properties.EXPRESSIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.EXTENDEDPROPERTIES:
@@ -8697,6 +8761,10 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1465 : Handler.CompatibilityLevel >= 1465;
 				case Properties.MATTRIBUTES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1535 : Handler.CompatibilityLevel >= 1535;
+				case Properties.MAXPARALLELISMPERQUERY:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1569 : Handler.CompatibilityLevel >= 1569;
+				case Properties.MAXPARALLELISMPERREFRESH:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1568 : Handler.CompatibilityLevel >= 1568;
 				case Properties.QUERYGROUPS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1480 : Handler.CompatibilityLevel >= 1480;
 				case Properties.SOURCEQUERYCULTURE:
@@ -12560,6 +12628,8 @@ namespace TabularEditor.TOMWrapper
 			switch (propertyName) {
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.CHANGEDPROPERTIES:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1567 : Handler.CompatibilityLevel >= 1567;
 				case Properties.EXTENDEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.PARENT:
@@ -13744,8 +13814,12 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1460 : Handler.CompatibilityLevel >= 1460;
 				case Properties.CALCULATIONGROUP:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1470 : Handler.CompatibilityLevel >= 1470;
+				case Properties.CHANGEDPROPERTIES:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1567 : Handler.CompatibilityLevel >= 1567;
 				case Properties.DEFAULTDETAILROWSDEFINITION:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
+				case Properties.EXCLUDEDARTIFACTS:
+					return false;
 				case Properties.EXCLUDEFROMMODELREFRESH:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1480 : Handler.CompatibilityLevel >= 1480;
 				case Properties.EXTENDEDPROPERTIES:
@@ -14718,6 +14792,8 @@ namespace TabularEditor.TOMWrapper
 			switch (propertyName) {
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.EXCLUDEDARTIFACTS:
+					return false;
 				case Properties.LINEAGETAG:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1540 : Handler.CompatibilityLevel >= 1540;
 				case Properties.MATTRIBUTES:
