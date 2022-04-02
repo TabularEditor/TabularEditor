@@ -102,7 +102,7 @@ namespace TabularEditor.UIServices
 
             var telemetry = new ModelTelemetry(UIController.Current);
 
-            if (UIController.Current.Handler != null)
+            if (UIController.Current?.Handler != null)
             {
                 telemetry.PopulateServerType();
                 telemetry.PopulateServerInfo();
