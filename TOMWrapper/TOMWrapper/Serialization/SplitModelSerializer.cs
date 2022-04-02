@@ -13,7 +13,11 @@ namespace TabularEditor.TOMWrapper.Serialization
         class FileWriter
         {
             private HashSet<string> CurrentFiles = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
-            private HashSet<char> InvalidFileChars = new HashSet<char>(Path.GetInvalidFileNameChars());
+            private static readonly HashSet<char> InvalidFileChars = new HashSet<char>(Path.GetInvalidFileNameChars());
+            private static readonly HashSet<string> ReservedFileNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
+            };
 
             /// <summary>
             /// Sanitize a string to turn it into a valid file name
@@ -32,7 +36,9 @@ namespace TabularEditor.TOMWrapper.Serialization
                     }
                     else sb.Append(c);
                 }
-                return sb.ToString();
+                var result = sb.ToString();
+                if (ReservedFileNames.Contains(result)) result = "_" + result;
+                return result;
             }
 
             /// <summary>
