@@ -60,13 +60,13 @@ namespace TabularEditor.TOMWrapper.Serialization
                 if (model.Database != null)
                 {
                     if (!model.Database.Name.EqualsI(model.Database.ID)) jobj["id"] = model.Database.ID;
-                    else if (jobj["id"] != null) jobj["id"].Remove();
+                    else if (jobj["id"] != null) jobj["id"].Parent.Remove();
                 }
 
                 if (options.DatabaseNameOverride != null)
                 {
                     jobj["name"] = options.DatabaseNameOverride;
-                    if (jobj["id"] != null) jobj["id"].Remove();
+                    if (jobj["id"] != null) jobj["id"].Parent.Remove();
                 }
 
                 var jModel = jobj["model"] as JObject;
