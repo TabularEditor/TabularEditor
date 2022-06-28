@@ -270,6 +270,9 @@ partial class Rules {
 		string resolveObject = "newValue";
 		if(p.PropertyType.IsClass && p.PropertyType != typeof(string)) {
 			switch(p.Name) {
+				case "ExpressionSource":
+					resolveObject = "value == null ? null : Model.Expressions[value.MetadataObject.Name].MetadataObject";
+					break;
 				case "SortByColumn":
 					resolveObject = "value == null ? null : Table.Columns[value.MetadataObject.Name].MetadataObject";
 					break;
@@ -420,6 +423,7 @@ partial class Rules {
 		if(propertyName == "BaseColumn") return "[TypeConverter(typeof(AllOtherTablesColumnConverter))]";
 		if(propertyName == "BaseTable") return "[TypeConverter(typeof(OtherTablesConverter))]";
 		if(propertyName == "SortByColumn") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(ColumnConverter))]";
+		if(propertyName == "ExpressionSource") return "[TypeConverter(typeof(NamedExpressionConverter))]";
 		if(propertyName == "DefaultColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
 		if(propertyName == "DefaultHierarchy") return "[TypeConverter(typeof(AllHierarchyConverter))]";
 		if(propertyName == "Relationship") return "[TypeConverter(typeof(AllRelationshipConverter))]";
@@ -499,7 +503,9 @@ partial class Rules {
 		"PowerBIDataSourceVersion",
 		"SummarizationType",
 		"RefreshGranularityType",
-		"EvaluationBehavior"
+		"EvaluationBehavior",
+		"RefreshPolicyMode",
+		"RefreshPolicyType"
 	};
 	public static readonly Type[] EnumTypes = _enumTypes.Select(t => ASType(t)).Where(t => t != null).ToArray();
 

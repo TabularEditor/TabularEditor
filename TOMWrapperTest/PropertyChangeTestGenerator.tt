@@ -1,6 +1,6 @@
 ﻿<#@ template debug="false" hostspecific="true" language="C#" #>
 <#@ assembly name="System.Core" #>
-<#@ assembly name="$(ProjectDir)\..\packages\Microsoft.AnalysisServices.retail.amd64.19.18.0\lib\net45\Microsoft.AnalysisServices.Tabular.dll" #>
+<#@ assembly name="$(ProjectDir)\..\packages\Microsoft.AnalysisServices.retail.amd64.19.42.0.4\lib\net45\Microsoft.AnalysisServices.Tabular.dll" #>
 <#@ assembly name="$(ProjectDir)\..\TOMWrapper\bin\Debug\TOMWrapper.dll" #>
 <#@ assembly name="EnvDTE" #>
 <#@ import namespace="System.IO" #>
@@ -38,6 +38,7 @@ var exceptions = new List<(Type, string)>(){
     (typeof(CalculationGroupTable), "RollingWindowPeriods"),
     (typeof(CalculationGroupTable), "PollingExpression"),
     (typeof(CalculationGroupTable), "SourceExpression"),
+    (typeof(CalculationGroupTable), "Mode"),
     
     (typeof(CalculatedTable), "IncrementalGranularity"),
     (typeof(CalculatedTable), "IncrementalPeriodsOffset"),
@@ -47,6 +48,11 @@ var exceptions = new List<(Type, string)>(){
     (typeof(CalculatedTable), "RollingWindowPeriods"),
     (typeof(CalculatedTable), "PollingExpression"),
     (typeof(CalculatedTable), "SourceExpression"),
+    (typeof(CalculatedTable), "Mode"),
+
+    (typeof(MPartition), "Attributes"),
+
+    (typeof(CalculatedColumn), "EvaluationBehavior"),
 };
 
 var valueExceptions = new List<object>() 
@@ -60,11 +66,11 @@ var valueExceptions = new List<object>()
 var modelPath = Host.ResolvePath("TestData\\AllProperties.bim");
 var modelHandler = new TabularModelHandler(modelPath);
 var typesList = modelHandler.WrapperLookup.Values.OfType<TabularObject>().Select(v => (v.GetType(), v.GetLinqPath(), v)).ToList();
-var types = new Dictionary<Type, string>();
+var types = new Dictionary<Type, (string Path,TabularObject Obj)>();
 foreach(var type in typesList) 
 {
     if(type.Item3 is Partition pt && (pt.Table is CalculationGroupTable || pt.Table is CalculatedTable)) continue;
-    types[type.Item1] = type.Item2;
+    types[type.Item1] = (type.Item2, type.Item3);
 }
 
 /*var types = new Dictionary<Type, string>() { 
@@ -97,7 +103,7 @@ foreach(var prop in type.Key.GetProperties(BindingFlags.Instance | BindingFlags.
         {
             var handler = new TabularModelHandler("TestData\\AllProperties.bim");
             var Model = handler.Model;
-            var obj = <#= type.Value #>;
+            var obj = <#= type.Value.Path #>;
             var orgValue = obj.<#= prop.Name #>;
             var value = orgValue;
 <# foreach(var value in change[prop.PropertyType]) { #>
@@ -136,7 +142,7 @@ foreach(var prop in type.Key.GetProperties(BindingFlags.Instance | BindingFlags.
         {
             var handler = new TabularModelHandler("TestData\\AllProperties.bim");
             var Model = handler.Model;
-            var obj = <#= type.Value #>;
+            var obj = <#= type.Value.Path #>;
             var orgValue = obj.<#= prop.Name #>;
 <# foreach(var value in Enum.GetValues(prop.PropertyType)) { 
     if(valueExceptions.Contains(value) || Enum.GetName(prop.PropertyType, value) == "Default") continue;

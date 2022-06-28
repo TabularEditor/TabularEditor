@@ -520,6 +520,102 @@ namespace TabularEditor.TOMWrapper.GeneratedTests
             }
         }
         [TestMethod]
+        public void ModelDisableAutoExistsTest()
+        {
+            var handler = new TabularModelHandler("TestData\\AllProperties.bim");
+            var Model = handler.Model;
+            var obj = Model;
+            var orgValue = obj.DisableAutoExists;
+            var value = orgValue;
+
+            value = 123;
+            if(obj.DisableAutoExists != value)
+            {
+                obj.DisableAutoExists = value;
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.DisableAutoExists);
+
+                handler.UndoManager.Redo();
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(value, obj.DisableAutoExists);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.DisableAutoExists);
+            }
+        }
+        [TestMethod]
+        public void ModelMaxParallelismPerRefreshTest()
+        {
+            var handler = new TabularModelHandler("TestData\\AllProperties.bim");
+            var Model = handler.Model;
+            var obj = Model;
+            var orgValue = obj.MaxParallelismPerRefresh;
+            var value = orgValue;
+
+            value = 123;
+            if(obj.MaxParallelismPerRefresh != value)
+            {
+                obj.MaxParallelismPerRefresh = value;
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.MaxParallelismPerRefresh);
+
+                handler.UndoManager.Redo();
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(value, obj.MaxParallelismPerRefresh);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.MaxParallelismPerRefresh);
+            }
+        }
+        [TestMethod]
+        public void ModelMaxParallelismPerQueryTest()
+        {
+            var handler = new TabularModelHandler("TestData\\AllProperties.bim");
+            var Model = handler.Model;
+            var obj = Model;
+            var orgValue = obj.MaxParallelismPerQuery;
+            var value = orgValue;
+
+            value = 123;
+            if(obj.MaxParallelismPerQuery != value)
+            {
+                obj.MaxParallelismPerQuery = value;
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.MaxParallelismPerQuery);
+
+                handler.UndoManager.Redo();
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(value, obj.MaxParallelismPerQuery);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.MaxParallelismPerQuery);
+            }
+        }
+        [TestMethod]
         public void ModelFastCombineTest()
         {
             var handler = new TabularModelHandler("TestData\\AllProperties.bim");
@@ -1627,6 +1723,38 @@ namespace TabularEditor.TOMWrapper.GeneratedTests
                 Assert.AreEqual(0, handler.UndoManager.UndoSteps);
                 Assert.AreEqual(1, handler.UndoManager.RedoSteps);
                 Assert.AreEqual(orgValue, obj.ContentType);
+            }
+        }
+        [TestMethod]
+        public void StructuredDataSourceQueryTest()
+        {
+            var handler = new TabularModelHandler("TestData\\AllProperties.bim");
+            var Model = handler.Model;
+            var obj = (Model.DataSources["PowerQueryDataSource"] as StructuredDataSource);
+            var orgValue = obj.Query;
+            var value = orgValue;
+
+            value = "fr-FR";
+            if(obj.Query != value)
+            {
+                obj.Query = value;
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.Query);
+
+                handler.UndoManager.Redo();
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(value, obj.Query);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.Query);
             }
         }
         [TestMethod]
@@ -2887,6 +3015,88 @@ namespace TabularEditor.TOMWrapper.GeneratedTests
             }
         }
         [TestMethod]
+        public void TableModeTest()
+        {
+            var handler = new TabularModelHandler("TestData\\AllProperties.bim");
+            var Model = handler.Model;
+            var obj = (Model.Tables["Table"] as Table);
+            var orgValue = obj.Mode;
+
+            if(obj.Mode != RefreshPolicyMode.Import)
+            {
+                obj.Mode = RefreshPolicyMode.Import;
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(orgValue, obj.Mode);
+
+                handler.UndoManager.Redo();
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(RefreshPolicyMode.Import, obj.Mode);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(orgValue, obj.Mode);
+            }
+
+            if(obj.Mode != RefreshPolicyMode.Hybrid)
+            {
+                obj.Mode = RefreshPolicyMode.Hybrid;
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(orgValue, obj.Mode);
+
+                handler.UndoManager.Redo();
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(RefreshPolicyMode.Hybrid, obj.Mode);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(orgValue, obj.Mode);
+            }
+        }    
+        [TestMethod]
+        public void TablePolicyTypeTest()
+        {
+            var handler = new TabularModelHandler("TestData\\AllProperties.bim");
+            var Model = handler.Model;
+            var obj = (Model.Tables["Table"] as Table);
+            var orgValue = obj.PolicyType;
+
+            if(obj.PolicyType != RefreshPolicyType.Basic)
+            {
+                obj.PolicyType = RefreshPolicyType.Basic;
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(orgValue, obj.PolicyType);
+
+                handler.UndoManager.Redo();
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(RefreshPolicyType.Basic, obj.PolicyType);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(orgValue, obj.PolicyType);
+            }
+        }    
+        [TestMethod]
         public void TableRollingWindowGranularityTest()
         {
             var handler = new TabularModelHandler("TestData\\AllProperties.bim");
@@ -4094,6 +4304,61 @@ namespace TabularEditor.TOMWrapper.GeneratedTests
             }
         }    
         [TestMethod]
+        public void DataColumnIsDataTypeInferredTest()
+        {
+            var handler = new TabularModelHandler("TestData\\AllProperties.bim");
+            var Model = handler.Model;
+            var obj = (Model.Tables["CalculationGroup"].Columns["Ordinal"] as DataColumn);
+            var orgValue = obj.IsDataTypeInferred;
+            var value = orgValue;
+
+            value = true;
+            if(obj.IsDataTypeInferred != value)
+            {
+                obj.IsDataTypeInferred = value;
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.IsDataTypeInferred);
+
+                handler.UndoManager.Redo();
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(value, obj.IsDataTypeInferred);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.IsDataTypeInferred);
+            }
+
+            value = false;
+            if(obj.IsDataTypeInferred != value)
+            {
+                obj.IsDataTypeInferred = value;
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.IsDataTypeInferred);
+
+                handler.UndoManager.Redo();
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(value, obj.IsDataTypeInferred);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.IsDataTypeInferred);
+            }
+        }
+        [TestMethod]
         public void DataColumnDataCategoryTest()
         {
             var handler = new TabularModelHandler("TestData\\AllProperties.bim");
@@ -5268,61 +5533,6 @@ namespace TabularEditor.TOMWrapper.GeneratedTests
 	public class CalculatedColumnGeneratedTests
 	{
         [TestMethod]
-        public void CalculatedColumnIsDataTypeInferredTest()
-        {
-            var handler = new TabularModelHandler("TestData\\AllProperties.bim");
-            var Model = handler.Model;
-            var obj = (Model.Tables["Table"].Columns["CC1"] as CalculatedColumn);
-            var orgValue = obj.IsDataTypeInferred;
-            var value = orgValue;
-
-            value = true;
-            if(obj.IsDataTypeInferred != value)
-            {
-                obj.IsDataTypeInferred = value;
-                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
-                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
-
-                handler.UndoManager.Undo();
-                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
-                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
-                Assert.AreEqual(orgValue, obj.IsDataTypeInferred);
-
-                handler.UndoManager.Redo();
-                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
-                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
-                Assert.AreEqual(value, obj.IsDataTypeInferred);
-
-                handler.UndoManager.Undo();
-                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
-                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
-                Assert.AreEqual(orgValue, obj.IsDataTypeInferred);
-            }
-
-            value = false;
-            if(obj.IsDataTypeInferred != value)
-            {
-                obj.IsDataTypeInferred = value;
-                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
-                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
-
-                handler.UndoManager.Undo();
-                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
-                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
-                Assert.AreEqual(orgValue, obj.IsDataTypeInferred);
-
-                handler.UndoManager.Redo();
-                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
-                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
-                Assert.AreEqual(value, obj.IsDataTypeInferred);
-
-                handler.UndoManager.Undo();
-                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
-                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
-                Assert.AreEqual(orgValue, obj.IsDataTypeInferred);
-            }
-        }
-        [TestMethod]
         public void CalculatedColumnExpressionTest()
         {
             var handler = new TabularModelHandler("TestData\\AllProperties.bim");
@@ -5538,6 +5748,61 @@ namespace TabularEditor.TOMWrapper.GeneratedTests
                 Assert.AreEqual(orgValue, obj.DataType);
             }
         }    
+        [TestMethod]
+        public void CalculatedColumnIsDataTypeInferredTest()
+        {
+            var handler = new TabularModelHandler("TestData\\AllProperties.bim");
+            var Model = handler.Model;
+            var obj = (Model.Tables["Table"].Columns["CC1"] as CalculatedColumn);
+            var orgValue = obj.IsDataTypeInferred;
+            var value = orgValue;
+
+            value = true;
+            if(obj.IsDataTypeInferred != value)
+            {
+                obj.IsDataTypeInferred = value;
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.IsDataTypeInferred);
+
+                handler.UndoManager.Redo();
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(value, obj.IsDataTypeInferred);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.IsDataTypeInferred);
+            }
+
+            value = false;
+            if(obj.IsDataTypeInferred != value)
+            {
+                obj.IsDataTypeInferred = value;
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.IsDataTypeInferred);
+
+                handler.UndoManager.Redo();
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(value, obj.IsDataTypeInferred);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.IsDataTypeInferred);
+            }
+        }
         [TestMethod]
         public void CalculatedColumnDataCategoryTest()
         {
@@ -8352,6 +8617,36 @@ namespace TabularEditor.TOMWrapper.GeneratedTests
             }
         }
         [TestMethod]
+        public void CalculatedTablePolicyTypeTest()
+        {
+            var handler = new TabularModelHandler("TestData\\AllProperties.bim");
+            var Model = handler.Model;
+            var obj = (Model.Tables["CalcTable"] as CalculatedTable);
+            var orgValue = obj.PolicyType;
+
+            if(obj.PolicyType != RefreshPolicyType.Basic)
+            {
+                obj.PolicyType = RefreshPolicyType.Basic;
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(orgValue, obj.PolicyType);
+
+                handler.UndoManager.Redo();
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(RefreshPolicyType.Basic, obj.PolicyType);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(orgValue, obj.PolicyType);
+            }
+        }    
+        [TestMethod]
         public void CalculatedTableEnableRefreshPolicyTest()
         {
             var handler = new TabularModelHandler("TestData\\AllProperties.bim");
@@ -8495,61 +8790,6 @@ namespace TabularEditor.TOMWrapper.GeneratedTests
                 Assert.AreEqual(0, handler.UndoManager.UndoSteps);
                 Assert.AreEqual(1, handler.UndoManager.RedoSteps);
                 Assert.AreEqual(orgValue, obj.IsNameInferred);
-            }
-        }
-        [TestMethod]
-        public void CalculatedTableColumnIsDataTypeInferredTest()
-        {
-            var handler = new TabularModelHandler("TestData\\AllProperties.bim");
-            var Model = handler.Model;
-            var obj = (Model.Tables["CalcTable"].Columns["Value"] as CalculatedTableColumn);
-            var orgValue = obj.IsDataTypeInferred;
-            var value = orgValue;
-
-            value = true;
-            if(obj.IsDataTypeInferred != value)
-            {
-                obj.IsDataTypeInferred = value;
-                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
-                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
-
-                handler.UndoManager.Undo();
-                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
-                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
-                Assert.AreEqual(orgValue, obj.IsDataTypeInferred);
-
-                handler.UndoManager.Redo();
-                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
-                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
-                Assert.AreEqual(value, obj.IsDataTypeInferred);
-
-                handler.UndoManager.Undo();
-                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
-                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
-                Assert.AreEqual(orgValue, obj.IsDataTypeInferred);
-            }
-
-            value = false;
-            if(obj.IsDataTypeInferred != value)
-            {
-                obj.IsDataTypeInferred = value;
-                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
-                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
-
-                handler.UndoManager.Undo();
-                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
-                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
-                Assert.AreEqual(orgValue, obj.IsDataTypeInferred);
-
-                handler.UndoManager.Redo();
-                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
-                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
-                Assert.AreEqual(value, obj.IsDataTypeInferred);
-
-                handler.UndoManager.Undo();
-                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
-                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
-                Assert.AreEqual(orgValue, obj.IsDataTypeInferred);
             }
         }
         [TestMethod]
@@ -8768,6 +9008,61 @@ namespace TabularEditor.TOMWrapper.GeneratedTests
                 Assert.AreEqual(orgValue, obj.DataType);
             }
         }    
+        [TestMethod]
+        public void CalculatedTableColumnIsDataTypeInferredTest()
+        {
+            var handler = new TabularModelHandler("TestData\\AllProperties.bim");
+            var Model = handler.Model;
+            var obj = (Model.Tables["CalcTable"].Columns["Value"] as CalculatedTableColumn);
+            var orgValue = obj.IsDataTypeInferred;
+            var value = orgValue;
+
+            value = true;
+            if(obj.IsDataTypeInferred != value)
+            {
+                obj.IsDataTypeInferred = value;
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.IsDataTypeInferred);
+
+                handler.UndoManager.Redo();
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(value, obj.IsDataTypeInferred);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.IsDataTypeInferred);
+            }
+
+            value = false;
+            if(obj.IsDataTypeInferred != value)
+            {
+                obj.IsDataTypeInferred = value;
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.IsDataTypeInferred);
+
+                handler.UndoManager.Redo();
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(value, obj.IsDataTypeInferred);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.IsDataTypeInferred);
+            }
+        }
         [TestMethod]
         public void CalculatedTableColumnDataCategoryTest()
         {
@@ -10352,6 +10647,36 @@ namespace TabularEditor.TOMWrapper.GeneratedTests
             }
         }
         [TestMethod]
+        public void CalculationGroupTablePolicyTypeTest()
+        {
+            var handler = new TabularModelHandler("TestData\\AllProperties.bim");
+            var Model = handler.Model;
+            var obj = (Model.Tables["CalculationGroup"] as CalculationGroupTable);
+            var orgValue = obj.PolicyType;
+
+            if(obj.PolicyType != RefreshPolicyType.Basic)
+            {
+                obj.PolicyType = RefreshPolicyType.Basic;
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(orgValue, obj.PolicyType);
+
+                handler.UndoManager.Redo();
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(RefreshPolicyType.Basic, obj.PolicyType);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(orgValue, obj.PolicyType);
+            }
+        }    
+        [TestMethod]
         public void CalculationGroupTableEnableRefreshPolicyTest()
         {
             var handler = new TabularModelHandler("TestData\\AllProperties.bim");
@@ -11292,6 +11617,38 @@ namespace TabularEditor.TOMWrapper.GeneratedTests
                 Assert.AreEqual(0, handler.UndoManager.UndoSteps);
                 Assert.AreEqual(1, handler.UndoManager.RedoSteps);
                 Assert.AreEqual(orgValue, obj.SourceLineageTag);
+            }
+        }
+        [TestMethod]
+        public void NamedExpressionRemoteParameterNameTest()
+        {
+            var handler = new TabularModelHandler("TestData\\AllProperties.bim");
+            var Model = handler.Model;
+            var obj = Model.Expressions["NamedExpr"];
+            var orgValue = obj.RemoteParameterName;
+            var value = orgValue;
+
+            value = "fr-FR";
+            if(obj.RemoteParameterName != value)
+            {
+                obj.RemoteParameterName = value;
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.RemoteParameterName);
+
+                handler.UndoManager.Redo();
+                Assert.AreEqual(1, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(0, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(value, obj.RemoteParameterName);
+
+                handler.UndoManager.Undo();
+                Assert.AreEqual(0, handler.UndoManager.UndoSteps);
+                Assert.AreEqual(1, handler.UndoManager.RedoSteps);
+                Assert.AreEqual(orgValue, obj.RemoteParameterName);
             }
         }
         [TestMethod]

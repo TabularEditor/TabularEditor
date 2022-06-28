@@ -500,6 +500,146 @@ namespace TabularEditor.TOMWrapper.Tests
 		}
 
 		[TestMethod]
+		public void Table_AddMeasure_BaseTest_1200() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1200);
+			tmh.Model.Tables[0].AddMeasure();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddMeasure_UndoTest_1200() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1200);
+			tmh.Model.Tables[0].AddMeasure();
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddMeasure_UndoRedoTest_1200() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1200);
+			tmh.Model.Tables[0].AddMeasure();
+			tmh.UndoManager.Undo();
+			tmh.UndoManager.Redo();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddMeasure_DeleteTest_1200() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1200);
+			var obj = tmh.Model.Tables[0].AddMeasure();
+			obj.Delete();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddMeasure_DeleteUndoTest_1200() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1200);
+			var obj = tmh.Model.Tables[0].AddMeasure();
+			obj.Delete();
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddMeasure_DeleteUndoRedoTest_1200() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1200);
+			var obj = tmh.Model.Tables[0].AddMeasure();
+			obj.Delete();
+			tmh.UndoManager.Undo();
+			tmh.UndoManager.Redo();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddMeasure_DeleteUndoUndoTest_1200() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1200);
+			var obj = tmh.Model.Tables[0].AddMeasure();
+			obj.Delete();
+			tmh.UndoManager.Undo();
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddMeasure_RenameTest_1200() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1200);
+			var obj = tmh.Model.Tables[0].AddMeasure();
+			obj.Name = "ChangeName";
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_BaseTest_1200() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1200);
+			tmh.Model.Tables[0].AddPartition();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_UndoTest_1200() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1200);
+			tmh.Model.Tables[0].AddPartition();
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_UndoRedoTest_1200() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1200);
+			tmh.Model.Tables[0].AddPartition();
+			tmh.UndoManager.Undo();
+			tmh.UndoManager.Redo();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_DeleteTest_1200() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1200);
+			var obj = tmh.Model.Tables[0].AddPartition();
+			obj.Delete();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_DeleteUndoTest_1200() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1200);
+			var obj = tmh.Model.Tables[0].AddPartition();
+			obj.Delete();
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_DeleteUndoRedoTest_1200() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1200);
+			var obj = tmh.Model.Tables[0].AddPartition();
+			obj.Delete();
+			tmh.UndoManager.Undo();
+			tmh.UndoManager.Redo();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_DeleteUndoUndoTest_1200() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1200);
+			var obj = tmh.Model.Tables[0].AddPartition();
+			obj.Delete();
+			tmh.UndoManager.Undo();
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_RenameTest_1200() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1200);
+			var obj = tmh.Model.Tables[0].AddPartition();
+			obj.Name = "ChangeName";
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
 		public void Table_AddCalculatedColumn_BaseTest_1200() {
 			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddCalculatedColumn.bim", 1200);
 			tmh.Model.Tables[0].AddCalculatedColumn();
@@ -707,146 +847,6 @@ namespace TabularEditor.TOMWrapper.Tests
 			obj.Name = "ChangeName";
 			tmh.UndoManager.Undo();
 			tmh.Save("Test_AddHierarchy.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_BaseTest_1200() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1200);
-			tmh.Model.Tables[0].AddMeasure();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_UndoTest_1200() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1200);
-			tmh.Model.Tables[0].AddMeasure();
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_UndoRedoTest_1200() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1200);
-			tmh.Model.Tables[0].AddMeasure();
-			tmh.UndoManager.Undo();
-			tmh.UndoManager.Redo();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_DeleteTest_1200() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1200);
-			var obj = tmh.Model.Tables[0].AddMeasure();
-			obj.Delete();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_DeleteUndoTest_1200() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1200);
-			var obj = tmh.Model.Tables[0].AddMeasure();
-			obj.Delete();
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_DeleteUndoRedoTest_1200() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1200);
-			var obj = tmh.Model.Tables[0].AddMeasure();
-			obj.Delete();
-			tmh.UndoManager.Undo();
-			tmh.UndoManager.Redo();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_DeleteUndoUndoTest_1200() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1200);
-			var obj = tmh.Model.Tables[0].AddMeasure();
-			obj.Delete();
-			tmh.UndoManager.Undo();
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_RenameTest_1200() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1200);
-			var obj = tmh.Model.Tables[0].AddMeasure();
-			obj.Name = "ChangeName";
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_BaseTest_1200() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1200);
-			tmh.Model.Tables[0].AddPartition();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_UndoTest_1200() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1200);
-			tmh.Model.Tables[0].AddPartition();
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_UndoRedoTest_1200() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1200);
-			tmh.Model.Tables[0].AddPartition();
-			tmh.UndoManager.Undo();
-			tmh.UndoManager.Redo();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_DeleteTest_1200() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1200);
-			var obj = tmh.Model.Tables[0].AddPartition();
-			obj.Delete();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_DeleteUndoTest_1200() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1200);
-			var obj = tmh.Model.Tables[0].AddPartition();
-			obj.Delete();
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_DeleteUndoRedoTest_1200() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1200);
-			var obj = tmh.Model.Tables[0].AddPartition();
-			obj.Delete();
-			tmh.UndoManager.Undo();
-			tmh.UndoManager.Redo();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_DeleteUndoUndoTest_1200() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1200);
-			var obj = tmh.Model.Tables[0].AddPartition();
-			obj.Delete();
-			tmh.UndoManager.Undo();
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_RenameTest_1200() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1200);
-			var obj = tmh.Model.Tables[0].AddPartition();
-			obj.Name = "ChangeName";
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
 		}
 
 		[TestMethod]
@@ -1480,6 +1480,146 @@ namespace TabularEditor.TOMWrapper.Tests
 		}
 
 		[TestMethod]
+		public void Table_AddMeasure_BaseTest_1400() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1400);
+			tmh.Model.Tables[0].AddMeasure();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddMeasure_UndoTest_1400() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1400);
+			tmh.Model.Tables[0].AddMeasure();
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddMeasure_UndoRedoTest_1400() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1400);
+			tmh.Model.Tables[0].AddMeasure();
+			tmh.UndoManager.Undo();
+			tmh.UndoManager.Redo();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddMeasure_DeleteTest_1400() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1400);
+			var obj = tmh.Model.Tables[0].AddMeasure();
+			obj.Delete();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddMeasure_DeleteUndoTest_1400() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1400);
+			var obj = tmh.Model.Tables[0].AddMeasure();
+			obj.Delete();
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddMeasure_DeleteUndoRedoTest_1400() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1400);
+			var obj = tmh.Model.Tables[0].AddMeasure();
+			obj.Delete();
+			tmh.UndoManager.Undo();
+			tmh.UndoManager.Redo();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddMeasure_DeleteUndoUndoTest_1400() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1400);
+			var obj = tmh.Model.Tables[0].AddMeasure();
+			obj.Delete();
+			tmh.UndoManager.Undo();
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddMeasure_RenameTest_1400() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1400);
+			var obj = tmh.Model.Tables[0].AddMeasure();
+			obj.Name = "ChangeName";
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_BaseTest_1400() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1400);
+			tmh.Model.Tables[0].AddPartition();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_UndoTest_1400() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1400);
+			tmh.Model.Tables[0].AddPartition();
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_UndoRedoTest_1400() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1400);
+			tmh.Model.Tables[0].AddPartition();
+			tmh.UndoManager.Undo();
+			tmh.UndoManager.Redo();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_DeleteTest_1400() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1400);
+			var obj = tmh.Model.Tables[0].AddPartition();
+			obj.Delete();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_DeleteUndoTest_1400() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1400);
+			var obj = tmh.Model.Tables[0].AddPartition();
+			obj.Delete();
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_DeleteUndoRedoTest_1400() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1400);
+			var obj = tmh.Model.Tables[0].AddPartition();
+			obj.Delete();
+			tmh.UndoManager.Undo();
+			tmh.UndoManager.Redo();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_DeleteUndoUndoTest_1400() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1400);
+			var obj = tmh.Model.Tables[0].AddPartition();
+			obj.Delete();
+			tmh.UndoManager.Undo();
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_RenameTest_1400() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1400);
+			var obj = tmh.Model.Tables[0].AddPartition();
+			obj.Name = "ChangeName";
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
 		public void Table_AddMPartition_BaseTest_1400() {
 			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMPartition.bim", 1400);
 			tmh.Model.Tables[0].AddMPartition();
@@ -1757,146 +1897,6 @@ namespace TabularEditor.TOMWrapper.Tests
 			obj.Name = "ChangeName";
 			tmh.UndoManager.Undo();
 			tmh.Save("Test_AddHierarchy.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_BaseTest_1400() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1400);
-			tmh.Model.Tables[0].AddMeasure();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_UndoTest_1400() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1400);
-			tmh.Model.Tables[0].AddMeasure();
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_UndoRedoTest_1400() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1400);
-			tmh.Model.Tables[0].AddMeasure();
-			tmh.UndoManager.Undo();
-			tmh.UndoManager.Redo();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_DeleteTest_1400() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1400);
-			var obj = tmh.Model.Tables[0].AddMeasure();
-			obj.Delete();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_DeleteUndoTest_1400() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1400);
-			var obj = tmh.Model.Tables[0].AddMeasure();
-			obj.Delete();
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_DeleteUndoRedoTest_1400() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1400);
-			var obj = tmh.Model.Tables[0].AddMeasure();
-			obj.Delete();
-			tmh.UndoManager.Undo();
-			tmh.UndoManager.Redo();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_DeleteUndoUndoTest_1400() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1400);
-			var obj = tmh.Model.Tables[0].AddMeasure();
-			obj.Delete();
-			tmh.UndoManager.Undo();
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_RenameTest_1400() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1400);
-			var obj = tmh.Model.Tables[0].AddMeasure();
-			obj.Name = "ChangeName";
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_BaseTest_1400() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1400);
-			tmh.Model.Tables[0].AddPartition();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_UndoTest_1400() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1400);
-			tmh.Model.Tables[0].AddPartition();
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_UndoRedoTest_1400() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1400);
-			tmh.Model.Tables[0].AddPartition();
-			tmh.UndoManager.Undo();
-			tmh.UndoManager.Redo();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_DeleteTest_1400() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1400);
-			var obj = tmh.Model.Tables[0].AddPartition();
-			obj.Delete();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_DeleteUndoTest_1400() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1400);
-			var obj = tmh.Model.Tables[0].AddPartition();
-			obj.Delete();
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_DeleteUndoRedoTest_1400() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1400);
-			var obj = tmh.Model.Tables[0].AddPartition();
-			obj.Delete();
-			tmh.UndoManager.Undo();
-			tmh.UndoManager.Redo();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_DeleteUndoUndoTest_1400() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1400);
-			var obj = tmh.Model.Tables[0].AddPartition();
-			obj.Delete();
-			tmh.UndoManager.Undo();
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_RenameTest_1400() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1400);
-			var obj = tmh.Model.Tables[0].AddPartition();
-			obj.Name = "ChangeName";
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
 		}
 
 		[TestMethod]
@@ -2600,6 +2600,146 @@ namespace TabularEditor.TOMWrapper.Tests
 		}
 
 		[TestMethod]
+		public void Table_AddMeasure_BaseTest_1500() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1500);
+			tmh.Model.Tables[0].AddMeasure();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddMeasure_UndoTest_1500() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1500);
+			tmh.Model.Tables[0].AddMeasure();
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddMeasure_UndoRedoTest_1500() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1500);
+			tmh.Model.Tables[0].AddMeasure();
+			tmh.UndoManager.Undo();
+			tmh.UndoManager.Redo();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddMeasure_DeleteTest_1500() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1500);
+			var obj = tmh.Model.Tables[0].AddMeasure();
+			obj.Delete();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddMeasure_DeleteUndoTest_1500() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1500);
+			var obj = tmh.Model.Tables[0].AddMeasure();
+			obj.Delete();
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddMeasure_DeleteUndoRedoTest_1500() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1500);
+			var obj = tmh.Model.Tables[0].AddMeasure();
+			obj.Delete();
+			tmh.UndoManager.Undo();
+			tmh.UndoManager.Redo();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddMeasure_DeleteUndoUndoTest_1500() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1500);
+			var obj = tmh.Model.Tables[0].AddMeasure();
+			obj.Delete();
+			tmh.UndoManager.Undo();
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddMeasure_RenameTest_1500() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1500);
+			var obj = tmh.Model.Tables[0].AddMeasure();
+			obj.Name = "ChangeName";
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_BaseTest_1500() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1500);
+			tmh.Model.Tables[0].AddPartition();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_UndoTest_1500() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1500);
+			tmh.Model.Tables[0].AddPartition();
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_UndoRedoTest_1500() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1500);
+			tmh.Model.Tables[0].AddPartition();
+			tmh.UndoManager.Undo();
+			tmh.UndoManager.Redo();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_DeleteTest_1500() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1500);
+			var obj = tmh.Model.Tables[0].AddPartition();
+			obj.Delete();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_DeleteUndoTest_1500() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1500);
+			var obj = tmh.Model.Tables[0].AddPartition();
+			obj.Delete();
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_DeleteUndoRedoTest_1500() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1500);
+			var obj = tmh.Model.Tables[0].AddPartition();
+			obj.Delete();
+			tmh.UndoManager.Undo();
+			tmh.UndoManager.Redo();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_DeleteUndoUndoTest_1500() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1500);
+			var obj = tmh.Model.Tables[0].AddPartition();
+			obj.Delete();
+			tmh.UndoManager.Undo();
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
+		public void Table_AddPartition_RenameTest_1500() {
+			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1500);
+			var obj = tmh.Model.Tables[0].AddPartition();
+			obj.Name = "ChangeName";
+			tmh.UndoManager.Undo();
+			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
+		}
+
+		[TestMethod]
 		public void Table_AddMPartition_BaseTest_1500() {
 			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMPartition.bim", 1500);
 			tmh.Model.Tables[0].AddMPartition();
@@ -2877,146 +3017,6 @@ namespace TabularEditor.TOMWrapper.Tests
 			obj.Name = "ChangeName";
 			tmh.UndoManager.Undo();
 			tmh.Save("Test_AddHierarchy.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_BaseTest_1500() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1500);
-			tmh.Model.Tables[0].AddMeasure();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_UndoTest_1500() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1500);
-			tmh.Model.Tables[0].AddMeasure();
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_UndoRedoTest_1500() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1500);
-			tmh.Model.Tables[0].AddMeasure();
-			tmh.UndoManager.Undo();
-			tmh.UndoManager.Redo();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_DeleteTest_1500() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1500);
-			var obj = tmh.Model.Tables[0].AddMeasure();
-			obj.Delete();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_DeleteUndoTest_1500() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1500);
-			var obj = tmh.Model.Tables[0].AddMeasure();
-			obj.Delete();
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_DeleteUndoRedoTest_1500() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1500);
-			var obj = tmh.Model.Tables[0].AddMeasure();
-			obj.Delete();
-			tmh.UndoManager.Undo();
-			tmh.UndoManager.Redo();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_DeleteUndoUndoTest_1500() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1500);
-			var obj = tmh.Model.Tables[0].AddMeasure();
-			obj.Delete();
-			tmh.UndoManager.Undo();
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddMeasure_RenameTest_1500() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddMeasure.bim", 1500);
-			var obj = tmh.Model.Tables[0].AddMeasure();
-			obj.Name = "ChangeName";
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddMeasure.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_BaseTest_1500() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1500);
-			tmh.Model.Tables[0].AddPartition();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_UndoTest_1500() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1500);
-			tmh.Model.Tables[0].AddPartition();
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_UndoRedoTest_1500() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1500);
-			tmh.Model.Tables[0].AddPartition();
-			tmh.UndoManager.Undo();
-			tmh.UndoManager.Redo();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_DeleteTest_1500() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1500);
-			var obj = tmh.Model.Tables[0].AddPartition();
-			obj.Delete();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_DeleteUndoTest_1500() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1500);
-			var obj = tmh.Model.Tables[0].AddPartition();
-			obj.Delete();
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_DeleteUndoRedoTest_1500() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1500);
-			var obj = tmh.Model.Tables[0].AddPartition();
-			obj.Delete();
-			tmh.UndoManager.Undo();
-			tmh.UndoManager.Redo();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_DeleteUndoUndoTest_1500() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1500);
-			var obj = tmh.Model.Tables[0].AddPartition();
-			obj.Delete();
-			tmh.UndoManager.Undo();
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
-		}
-
-		[TestMethod]
-		public void Table_AddPartition_RenameTest_1500() {
-			var tmh = ObjectHandlingTests.CreateTestModel("Test_AddPartition.bim", 1500);
-			var obj = tmh.Model.Tables[0].AddPartition();
-			obj.Name = "ChangeName";
-			tmh.UndoManager.Undo();
-			tmh.Save("Test_AddPartition.bim", SaveFormat.ModelSchemaOnly, SerializeOptions.Default);
 		}
 	}
 }

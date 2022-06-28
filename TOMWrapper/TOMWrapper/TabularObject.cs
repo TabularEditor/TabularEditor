@@ -247,7 +247,7 @@ namespace TabularEditor.TOMWrapper
             return IsBrowsable(propertyName);
         }
         bool IDynamicPropertyObject.Editable(string propertyName) { return Editable(propertyName); }
-        internal bool Editable(string propertyName)
+        internal virtual bool Editable(string propertyName)
         {
             if (propertyName == Properties.NAME && (this is TabularNamedObject namedObj))
             {

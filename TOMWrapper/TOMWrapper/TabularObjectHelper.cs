@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -24,7 +22,7 @@ namespace TabularEditor.TOMWrapper
         {
             if ((obj is ITabularNamedObject)) return (obj as ITabularNamedObject)?.Name;
 
-            if(obj is TablePermission tp) return tp.Role.Name;
+            if (obj is TablePermission tp) return tp.Role.Name;
 
             return obj.GetTypeName();
         }
@@ -39,44 +37,54 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        public static string LinqEscape(string name)
+        {
+            return name.Escape();
+        }
+
+        private static string Escape(this string name)
+        {
+            return name.Replace(@"\", @"\\").Replace("\"", "\\\"");
+        }
+
         private static string GetLinqPath(this TabularObject obj)
         {
             switch (obj)
             {
                 case KPI kpi:
                     return kpi.Measure.GetLinqPath() + ".KPI";
-                case Model model:
+                case Model _:
                     return "Model";
                 case Column column:
-                    return string.Format("{0}.Columns[\"{1}\"]", column.Table.GetLinqPath(), column.Name);
+                    return string.Format("{0}.Columns[\"{1}\"]", column.Table.GetLinqPath(), column.Name.Escape());
                 case Measure measure:
-                    return string.Format("{0}.Measures[\"{1}\"]", measure.Table.GetLinqPath(), measure.Name);
+                    return string.Format("{0}.Measures[\"{1}\"]", measure.Table.GetLinqPath(), measure.Name.Escape());
                 case Hierarchy hierarchy:
-                    return string.Format("{0}.Hierarchies[\"{1}\"]", hierarchy.Table.GetLinqPath(), hierarchy.Name);
+                    return string.Format("{0}.Hierarchies[\"{1}\"]", hierarchy.Table.GetLinqPath(), hierarchy.Name.Escape());
                 case Partition partition:
                     return string.Format("{0}.Partitions[\"{1}\"]", partition.Table.GetLinqPath(), partition.Name, obj.GetType().Name);
                 case Table table:
-                    return string.Format("Model.Tables[\"{0}\"]", table.Name);
+                    return string.Format("Model.Tables[\"{0}\"]", table.Name.Escape());
                 case Level level:
-                    return string.Format("{0}.Levels[\"{1}\"]", level.Hierarchy.GetLinqPath(), level.Name);
+                    return string.Format("{0}.Levels[\"{1}\"]", level.Hierarchy.GetLinqPath(), level.Name.Escape());
                 case Perspective perspective:
-                    return string.Format("{0}.Perspectives[\"{1}\"]", obj.Model.GetLinqPath(), perspective.Name);
+                    return string.Format("{0}.Perspectives[\"{1}\"]", obj.Model.GetLinqPath(), perspective.Name.Escape());
                 case Culture culture:
-                    return string.Format("{0}.Cultures[\"{1}\"]", obj.Model.GetLinqPath(), culture.Name);
+                    return string.Format("{0}.Cultures[\"{1}\"]", obj.Model.GetLinqPath(), culture.Name.Escape());
                 case DataSource ds:
-                    return string.Format("{0}.DataSources[\"{1}\"]", obj.Model.GetLinqPath(), ds.Name, obj.GetType().Name);
+                    return string.Format("{0}.DataSources[\"{1}\"]", obj.Model.GetLinqPath(), ds.Name, obj.GetType().Name.Escape());
                 case Relationship rel:
-                    return string.Format("{0}.Relationships[{1}]", obj.Model.GetLinqPath(), rel.MetadataIndex, obj.GetType().Name);
+                    return string.Format("{0}.Relationships[{1}]", obj.Model.GetLinqPath(), rel.MetadataIndex, obj.GetType().Name.Escape());
                 case ModelRole role:
-                    return string.Format("{0}.Roles[\"{1}\"]", obj.Model.GetLinqPath(), role.Name);
+                    return string.Format("{0}.Roles[\"{1}\"]", obj.Model.GetLinqPath(), role.Name.Escape());
                 case NamedExpression expression:
-                    return string.Format("{0}.Expressions[\"{1}\"]", obj.Model.GetLinqPath(), expression.Name);
+                    return string.Format("{0}.Expressions[\"{1}\"]", obj.Model.GetLinqPath(), expression.Name.Escape());
                 case TablePermission tp:
-                    return string.Format("{0}.TablePermissions[\"{1}\"]", tp.Role.GetLinqPath(), tp.Table.Name);
+                    return string.Format("{0}.TablePermissions[\"{1}\"]", tp.Role.GetLinqPath(), tp.Table.Name.Escape());
                 case CalculationItem ci:
-                    return string.Format("{0}.CalculationItems[\"{1}\"]", ci.CalculationGroupTable.GetLinqPath(true), ci.Name);
+                    return string.Format("{0}.CalculationItems[\"{1}\"]", ci.CalculationGroupTable.GetLinqPath(true), ci.Name.Escape());
                 case Variation variation:
-                    return string.Format("{0}.Variations[\"{1}\"]", variation.Column.GetLinqPath(), variation.Name);
+                    return string.Format("{0}.Variations[\"{1}\"]", variation.Column.GetLinqPath(), variation.Name.Escape());
                 case CalculationGroup cg:
                     return string.Format("{0}.CalculationGroup", cg.Table.GetLinqPath(true));
                 case AlternateOf altOf:
@@ -106,43 +114,47 @@ namespace TabularEditor.TOMWrapper
                 return GetLinqPath(obj);
         }
 
-        private static string GetObjectPathTableObject(TOM.NamedMetadataObject obj)
+        private static string GetObjectPathTableObject(string collectionName, TOM.NamedMetadataObject obj)
         {
-            var name = obj.Name;
-            if (name.Contains(".")) name = "[" + name + "]";
+            var name = QuotePath(obj.Name);
 
             if (obj.Parent != null)
-                return obj.Parent.GetObjectPath() + "." + name;
+                return obj.Parent.GetObjectPath() + "." + collectionName + "." + name;
             else
                 return name;
         }
 
         public static string GetObjectPath(this TOM.MetadataObject obj)
         {
-            switch (obj.ObjectType) {
+            switch (obj.ObjectType)
+            {
                 case TOM.ObjectType.Model:
                     return "Model";
                 case TOM.ObjectType.Measure:
+                    return GetObjectPathTableObject("M", obj as TOM.NamedMetadataObject);
                 case TOM.ObjectType.Table:
+                    return GetObjectPathTableObject("T", obj as TOM.NamedMetadataObject);
                 case TOM.ObjectType.Column:
+                    return GetObjectPathTableObject("C", obj as TOM.NamedMetadataObject);
                 case TOM.ObjectType.Hierarchy:
-                    return GetObjectPathTableObject(obj as TOM.NamedMetadataObject);
+                    return GetObjectPathTableObject("H", obj as TOM.NamedMetadataObject);
                 case TOM.ObjectType.Level:
                     var level = obj as TOM.Level;
-                    return GetObjectPathTableObject(level.Hierarchy) + "." + level.Name;
+                    return GetObjectPathTableObject("H", level.Hierarchy) + "." + level.Name;
                 case TOM.ObjectType.KPI:
-                    return GetObjectPathTableObject((obj as TOM.KPI).Measure) + ".KPI";
+                    return GetObjectPathTableObject("M", (obj as TOM.KPI).Measure) + ".KPI";
                 case TOM.ObjectType.Variation:
-                    return GetObjectPathTableObject((obj as TOM.Variation).Column) + ".Variations." + QuotePath((obj as TOM.Variation).Name);
+                    return GetObjectPathTableObject("C", (obj as TOM.Variation).Column) + ".Variations." + QuotePath((obj as TOM.Variation).Name);
                 case TOM.ObjectType.Relationship:
                 case TOM.ObjectType.DataSource:
                 case TOM.ObjectType.Role:
                 case TOM.ObjectType.Expression:
                 case TOM.ObjectType.Perspective:
                 case TOM.ObjectType.Culture:
+                case TOM.ObjectType.QueryGroup:
                     return obj.ObjectType.ToString() + "." + QuotePath((obj as TOM.NamedMetadataObject).Name);
                 case TOM.ObjectType.Partition:
-                    return "TablePartition." + QuotePath((obj as TOM.Partition).Table?.Name ?? "") + "." + QuotePath((obj as TOM.Partition).Name);
+                    return GetObjectPathTableObject("P", (obj as TOM.Partition));
                 case TOM.ObjectType.RoleMembership:
                     var mrm = obj as TOM.ModelRoleMember;
                     return GetObjectPath(mrm.Role) + "." + mrm.Name;
@@ -154,7 +166,7 @@ namespace TabularEditor.TOMWrapper
                     return GetObjectPath(tp.Role) + "." + tp.Table.Name;
                 case TOM.ObjectType.CalculationItem:
                     var ci = obj as TOM.CalculationItem;
-                    return GetObjectPath(ci.CalculationGroup) + ".CalculationGroup." + ci.Name;
+                    return GetObjectPath(ci.CalculationGroup.Table) + ".CI." + QuotePath(ci.Name);
                 case TOM.ObjectType.AlternateOf:
                     var ao = obj as TOM.AlternateOf;
                     return GetObjectPath(ao.Column) + ".AlternateOf";
@@ -172,6 +184,107 @@ namespace TabularEditor.TOMWrapper
         public static string GetObjectPath(this TabularObject obj)
         {
             return GetObjectPath(obj.MetadataObject);
+        }
+
+        public static TabularObject ResolveObject(Model model, string path)
+        {
+            var parts = path.Split('.');
+
+            var partsFixed = new List<string>();
+
+            // Objects that have "." in their name, will be enclosed by square brackets. So let's traverse the array
+            // and concatenate any parts between a set of square brackets:
+            string partFraction = null;
+            foreach (var p in parts)
+            {
+                if (partFraction == null)
+                {
+                    if (p.StartsWith("["))
+                    {
+                        if (p.EndsWith("]"))
+                        {
+                            partFraction = p.Substring(1, p.Length - 2);
+                            partsFixed.Add(partFraction.ToLower());
+                            partFraction = null;
+                        }
+                        else
+                            partFraction = p.Substring(1);
+                    }
+                    else
+                        partsFixed.Add(p.ToLower());
+                }
+                else
+                {
+                    if (p.EndsWith("]"))
+                    {
+                        partFraction += "." + p.Substring(0, p.Length - 1);
+                        partsFixed.Add(partFraction.ToLower());
+                        partFraction = null;
+                    }
+                    else
+                        partFraction += "." + p;
+                }
+            }
+            parts = partsFixed.ToArray();
+
+            if (model == null || parts.Length == 0) return null;
+            if (parts.Length == 1 && parts[0] == "model") return model;
+            switch (parts[0])
+            {
+                case "model":
+                    if (parts[1] == "t")
+                    {
+                        var table = model.Tables.FindByName(parts[2]);
+                        if (parts.Length == 3 || table == null) return table;
+                        if (parts.Length == 4 && parts[3] == "calculationgroup" && table is CalculationGroupTable cgt2)
+                            return cgt2.CalculationGroup;
+                        if (parts.Length >= 5)
+                        {
+                            if (parts[3] == "p")
+                            {
+                                return table.Partitions.FindByName(parts[4]);
+                            }
+                            if (parts[3] == "m")
+                            {
+                                var measure = table.Measures.FindByName(parts[4]);
+                                if (parts.Length == 6 && parts[5] == "kpi") return measure?.KPI;
+                                else return measure;
+                            }
+                            if (parts[3] == "c")
+                            {
+                                var column = table.Columns.FindByName(parts[4]);
+                                if (parts.Length == 7 && parts[5] == "variations") return column?.Variations?.FindByName(parts[6]);
+                                else if (parts.Length == 6 && parts[5] == "alternateof") return column?.AlternateOf;
+                                else return column;
+                            }
+                            if (parts[3] == "h")
+                            {
+                                var hierarchy = table.Hierarchies.FindByName(parts[4]);
+                                if (parts.Length == 6) return hierarchy?.Levels.FindByName(parts[5]);
+                                else return hierarchy;
+                            }
+                            if (parts[3] == "ci" && table is CalculationGroupTable cgt && parts.Length == 5)
+                            {
+                                return cgt?.CalculationItems.FindByName(parts[4]);
+                            }
+                        }
+                    }
+                    return null;
+
+                case "relationship": return model.Relationships.FindByName(parts[1]);
+                case "datasource": return model.DataSources.FindByName(parts[1]);
+                case "role":
+                    if (parts.Length == 3) // TablePermission:
+                        return model.Roles.FindByName(parts[1])?.TablePermissions.FindByName(parts[2]);
+                    else // Role:
+                        return model.Roles.FindByName(parts[1]);
+                case "expression": return model.Expressions.FindByName(parts[1]);
+                case "perspective": return model.Perspectives.FindByName(parts[1]);
+                case "culture": return model.Cultures.FindByName(parts[1]);
+
+                default:
+                    return null;
+            }
         }
 
         public static string SplitCamelCase(this string str)
@@ -230,7 +343,7 @@ namespace TabularEditor.TOMWrapper
         }
         public static string GetMode(this Table table)
         {
-            if (table.Partitions.FirstOrDefault() is EntityPartition ep) return "DQ over AS";
+            if (table.Partitions.FirstOrDefault() is EntityPartition) return "DQ over AS";
             var p1 = table.Partitions.FirstOrDefault()?.GetMode() ?? ModeType.Import;
             return table.Partitions.All(p => p.GetMode() == p1) ? p1.ToString() : "Hybrid";
         }

@@ -13,11 +13,13 @@ namespace TabularEditor.PropertyGridUI
     {
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
         {
-            return context.Instance is Partition || context.Instance is Partition[];
+            return context.Instance is Partition || context.Instance is Partition[] || context.Instance is NamedExpression;
         }
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-            return new StandardValuesCollection(Model(context).Expressions.ToList());
+            var expressions = Model(context).Expressions.ToList();
+            if (context.Instance is NamedExpression nEx) expressions.Remove(nEx);
+            return new StandardValuesCollection(expressions);
         }
 
         private Model Model(ITypeDescriptorContext context)

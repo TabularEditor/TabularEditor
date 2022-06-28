@@ -43,7 +43,18 @@ namespace TabularEditor.TOMWrapper
         public string Protocol
         {
             get { return MetadataObject.ConnectionDetails.Protocol; }
-            set { SetValue(Protocol, value, v => { MetadataObject.ConnectionDetails.Protocol = (string)v; }); }
+            set
+            {
+                SetValue(Protocol, value, v => { MetadataObject.ConnectionDetails.Protocol = (string)v; });
+                if (string.IsNullOrEmpty(value) && MetadataObject.ConnectionDetails.IsEmpty)
+                {
+                    MetadataObject.ConnectionDetails["_"] = "";
+                }
+                else
+                {
+                    MetadataObject.ConnectionDetails["_"] = null;
+                }
+            }
         }
         private bool ShouldSerializeProtocol() { return false; }
 
@@ -87,7 +98,18 @@ namespace TabularEditor.TOMWrapper
         public string AuthenticationKind
         {
             get { return MetadataObject.Credential.AuthenticationKind; }
-            set { SetValue(AuthenticationKind, value, v => { MetadataObject.Credential.AuthenticationKind = (string)v; }); }
+            set
+            {
+                SetValue(AuthenticationKind, value, v => { MetadataObject.Credential.AuthenticationKind = (string)v; });
+                if (string.IsNullOrEmpty(value) && MetadataObject.Credential.IsEmpty)
+                {
+                    MetadataObject.Credential["_"] = "";
+                }
+                else
+                {
+                    MetadataObject.Credential["_"] = null;
+                }
+            }
         }
         private bool ShouldSerializeAuthenticationKind() { return false; }
 
@@ -129,11 +151,11 @@ namespace TabularEditor.TOMWrapper
             {
                 var json = MetadataObject.ConnectionDetails?.ToJson();
                 if (string.IsNullOrEmpty(json)) return null;
-                return JObject.Parse(json)["query"]?.ToString(Newtonsoft.Json.Formatting.None);
+                return JObject.Parse(json)["query"]?.Value<string>();
             }
             set
             {
-                SetValue(ContentType, value, v =>
+                SetValue(Query, value, v =>
                 {
                     var json = MetadataObject.ConnectionDetails?.ToJson();
                     var jObj = string.IsNullOrEmpty(json) ? new JObject() : JObject.Parse(json);

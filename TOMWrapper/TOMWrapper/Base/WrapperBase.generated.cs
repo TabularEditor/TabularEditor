@@ -69,6 +69,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string EXCLUDEFROMMODELREFRESH = "ExcludeFromModelRefresh";
 	    public const string EXPRESSION = "Expression";
 	    public const string EXPRESSIONS = "Expressions";
+	    public const string EXPRESSIONSOURCE = "ExpressionSource";
 	    public const string EXTENDEDPROPERTIES = "ExtendedProperties";
 	    public const string FILTEREXPRESSION = "FilterExpression";
 	    public const string FORCEUNIQUENAMES = "ForceUniqueNames";
@@ -289,6 +290,7 @@ namespace TabularEditor.TOMWrapper
         PolicyRange = 6,
         CalculationGroup = 7,
         Inferred = 8,
+        Parquet = 9,
 	}
 	/// <summary>
 ///             Describes the type of data contained in the column. 
@@ -517,6 +519,19 @@ namespace TabularEditor.TOMWrapper
         Automatic = 1,
         Static = 2,
         Dynamic = 3,
+	}
+	/// <summary>
+///             Mode of a refresh policy.
+///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1565 or above.</remarks>
+	public enum RefreshPolicyMode {    
+        Import = 0,
+        Hybrid = 1,
+	}
+	/// <summary>
+///             Specifies the refresh policy type of a table
+///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1450 or above.</remarks>
+	public enum RefreshPolicyType {    
+        Basic = 0,
 	}
   
 	/// <summary>
@@ -14612,7 +14627,7 @@ namespace TabularEditor.TOMWrapper
 		private bool ShouldSerializeSourceLineageTag() { return false; }
 /// <summary>
 ///             The parameter name defined in source model, applicable only for proxy model and empty for local model.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at Preview or above.</remarks>
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1570 or above.</remarks>
 		[DisplayName("Remote Parameter Name")]
 		[Category("Options"),Description(@"The parameter name defined in source model, applicable only for proxy model and empty for local model."),IntelliSense(@"The parameter name defined in source model, applicable only for proxy model and empty for local model.")]
 		public string RemoteParameterName {
@@ -14659,6 +14674,31 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeParameterValuesColumn() { return false; }
+/// <summary>
+///             A reference to the NamedExpression where the parameter associated with the remote model.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1570 or above.</remarks>
+		[DisplayName("Expression Source")]
+		[Category("Options"),Description(@"A reference to the NamedExpression where the parameter associated with the remote model."),IntelliSense(@"A reference to the NamedExpression where the parameter associated with the remote model.")][TypeConverter(typeof(NamedExpressionConverter))]
+		public NamedExpression ExpressionSource {
+			get {
+				if (MetadataObject.ExpressionSource == null) return null;
+			    return Handler.WrapperLookup[MetadataObject.ExpressionSource] as NamedExpression;
+            }
+			set {
+				
+				var oldValue = ExpressionSource;
+				var newValue = value;
+				if (oldValue?.MetadataObject == newValue?.MetadataObject) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXPRESSIONSOURCE, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.ExpressionSource = value == null ? null : Model.Expressions[value.MetadataObject.Name].MetadataObject;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EXPRESSIONSOURCE, oldValue, newValue));
+				OnPropertyChanged(Properties.EXPRESSIONSOURCE, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeExpressionSource() { return false; }
 
 		internal static NamedExpression CreateFromMetadata(Model parent, TOM.NamedExpression metadataObject) {
             // Generate a new LineageTag if an object with the provided lineage tag already exists:
@@ -14794,6 +14834,8 @@ namespace TabularEditor.TOMWrapper
 				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.EXCLUDEDARTIFACTS:
 					return false;
+				case Properties.EXPRESSIONSOURCE:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1570 : Handler.CompatibilityLevel >= 1570;
 				case Properties.LINEAGETAG:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1540 : Handler.CompatibilityLevel >= 1540;
 				case Properties.MATTRIBUTES:
@@ -14803,7 +14845,7 @@ namespace TabularEditor.TOMWrapper
 				case Properties.QUERYGROUP:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1480 : Handler.CompatibilityLevel >= 1480;
 				case Properties.REMOTEPARAMETERNAME:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1570 : Handler.CompatibilityLevel >= 1570;
 				case Properties.SOURCELINEAGETAG:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1550 : Handler.CompatibilityLevel >= 1550;
 				case Properties.PARENT:
@@ -14960,6 +15002,18 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("ParameterValuesColumn"));
 				this.ToList().ForEach(item => { item.ParameterValuesColumn = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the ExpressionSource property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the ExpressionSource property of all objects in the collection at once.")]
+		public NamedExpression ExpressionSource {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("ExpressionSource"));
+				this.ToList().ForEach(item => { item.ExpressionSource = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}

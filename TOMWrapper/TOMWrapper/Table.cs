@@ -622,6 +622,36 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        /// <summary>
+        /// Defines the mode of a refresh policy applied during incremental refresh.
+        /// </summary>
+        [Category("Refresh Policy"), Description("Defines the mode of a refresh policy applied during incremental refresh.")]
+        public RefreshPolicyMode Mode
+        {
+            get => MetadataObject.RefreshPolicy == null ? RefreshPolicyMode.Import : (RefreshPolicyMode)MetadataObject.RefreshPolicy.Mode;
+            set
+            {
+                if (MetadataObject.RefreshPolicy is TOM.RefreshPolicy rp)
+                    SetValue(rp.Mode, (TOM.RefreshPolicyMode)value, v => rp.Mode = v);
+            }
+        }
+        private bool ShouldSerializeMode() { return false; }
+
+        /// <summary>
+        /// Specifies the type of the refresh policy
+        /// </summary>
+        [Category("Refresh Policy"), Description("Specifies the type of the refresh policy")]
+        public RefreshPolicyType PolicyType
+        {
+            get => MetadataObject.RefreshPolicy == null ? RefreshPolicyType.Basic : (RefreshPolicyType)MetadataObject.RefreshPolicy.PolicyType;
+            set
+            {
+                if (MetadataObject.RefreshPolicy is TOM.RefreshPolicy rp)
+                    SetValue(rp.PolicyType, (TOM.RefreshPolicyType)value, v => rp.PolicyType = v);
+            }
+        }
+        private bool ShouldSerializePolicyType() { return false; }
+
         [Category("Refresh Policy"),Description("Target granularity of the rolling window for the whole dataset"),IntelliSense("Target granularity of the rolling window for the whole dataset")]
         public RefreshGranularityType RollingWindowGranularity
         {

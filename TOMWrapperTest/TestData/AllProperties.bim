@@ -1,6 +1,6 @@
 {
   "name": "SemanticModel",
-  "compatibilityLevel": 1562,
+  "compatibilityLevel": 1570,
   "model": {
     "defaultPowerBIDataSourceVersion": "powerBI_V3",
     "discourageImplicitMeasures": true,
