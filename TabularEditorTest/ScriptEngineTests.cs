@@ -8,6 +8,12 @@ namespace TabularEditor
     [TestClass]
     public class ScriptEngineTests
     {
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            ScriptEngine.InitScriptEngine(new List<Assembly>());
+        }
+
         [TestMethod]
         public void AddOutputLineNumbersNoArgsMultiline2()
         {
@@ -89,8 +95,6 @@ x.Output();
         [TestMethod]
         public void ReplaceGlobalMethodCallsNoArgsSingleLine()
         {
-            ScriptEngine.InitScriptEngine(new List<Assembly>());
-
             var original = "Output();";
             var expected = "TabularEditor.Scripting.ScriptHelper.Output();";
             Assert.AreEqual(expected, ScriptEngine.ReplaceGlobalMethodCalls(original));
