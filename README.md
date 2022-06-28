@@ -23,6 +23,9 @@ Please visit [tabulareditor.com](https://tabulareditor.com).
 
 ## Version History
 
+* **2022-06-28** [Version 2.16.7](../../releases/tag/2.16.7) released (digitally signed)
+* **2022-04-03** [Version 2.16.6](../../releases/tag/2.16.6) released (digitally signed)
+* **2021-11-30** [Version 2.16.5](../../releases/tag/2.16.5) released (digitally signed)
 * **2021-09-27** [Version 2.16.4](../../releases/tag/2.16.4) released (digitally signed)
 * **2021-09-15** [Version 2.16.3](../../releases/tag/2.16.3) released (digitally signed)
 * **2021-08-30** [Version 2.16.2](../../releases/tag/2.16.2) released (digitally signed)
