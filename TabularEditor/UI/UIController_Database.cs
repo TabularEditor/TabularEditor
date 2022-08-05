@@ -102,6 +102,17 @@ namespace TabularEditor.UI
 
         private System.Windows.Forms.Timer KeepAliveTimer;
 
+        private void CL1571Check()
+        {
+            if (Handler.Database.CompatibilityMode == Microsoft.AnalysisServices.CompatibilityMode.PowerBI
+                && Handler.Model.Cultures.Any(c => c.ObjectTranslations.Count > 0)
+                && Handler.CompatibilityLevel < 1571)
+            {
+                var mr = MessageBox.Show("This Power BI data model uses metadata translations. For composite models, it is recommended to upgrade the Compatibility Level to at least 1571 to ensure metadata translations are not overwritten from the source.\r\n\r\nDo you want to upgrade the Compatibility Level now?", "Upgrade Compatibility Level?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (mr == DialogResult.Yes) Handler.Database.CompatibilityLevel = 1571;
+            }
+        }
+
         public void Database_Open(string connectionString, string databaseName)
         {
             using (new Hourglass())
@@ -123,6 +134,10 @@ namespace TabularEditor.UI
                         {
                             MessageBox.Show("Editing a Power BI Desktop model that does not use the Enhanced Model Metadata (V3) format is not allowed, unless you enable Experimental Power BI Features under File > Preferences.\n\nTabular Editor will still load the model in read-only mode.", "Power BI Desktop Model Read-only", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         }
+                    }
+                    else
+                    {
+                        CL1571Check();
                     }
 
                     File_Current = null;

@@ -55,9 +55,13 @@ namespace TabularEditor.TOMWrapper
 
         internal override bool IsBrowsable(string propertyName)
         {
-            if(propertyName == nameof(ContentType) || propertyName == nameof(Content))
+            switch(propertyName)
             {
-                return Handler.CompatibilityLevel >= 1465;
+                case nameof(ContentType):
+                case nameof(Content):
+                    return Handler.CompatibilityLevel >= 1465;
+                case nameof(Altered):
+                    return Handler.CompatibilityLevel >= 1571;
             }
             return base.IsBrowsable(propertyName);
         }
@@ -211,10 +215,34 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        [Category("Basic"), Description("Indicates whether all, some, or none of the ObjectTranslations in this Culture have the Altered flag set. Note: Modifying the Altered flag is not an undoable operation.")]
+        public bool? Altered
+        {
+            get
+            {
+                bool hasAltered = false;
+                bool hasNotAltered = false;
+                foreach(var ot in ObjectTranslations)
+                {
+                    if (hasAltered && hasNotAltered) break;
+                    if (ot.Altered) hasAltered = true;
+                    else hasNotAltered = true;
+                }
+                if (hasAltered && hasNotAltered) return null;
+                return hasAltered;
+            }
+            set
+            {
+                if (value == null) return;
+                foreach (var ot in ObjectTranslations) ot.Altered = value.Value;
+            }
+        }
+        public bool ShouldSerializeAltered() => false;
+
         [Browsable(false)]
         public ObjectTranslationCollection ObjectTranslations { get { return MetadataObject.ObjectTranslations; } }
 
-        [TypeConverter(typeof(CultureConverter)), NoMultiselect(), DisplayName("Language")]
+        [TypeConverter(typeof(CultureConverter)), NoMultiselect(), DisplayName("Language"), Category("Basic")]
         public override string Name
         {
             get

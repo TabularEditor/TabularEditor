@@ -89,11 +89,18 @@ namespace Microsoft.AnalysisServices.Tabular.Helper
             }
         }
 
+        public static void SetTranslation(this Culture culture, NamedMetadataObject obj, TranslatedProperty property, string translatedValue)
+        {
+            culture.ObjectTranslations.SetTranslation(obj, property, translatedValue);
+            if (obj.Model.Database.CompatibilityLevel >= 1571 && !string.IsNullOrEmpty(translatedValue))
+                culture.ObjectTranslations[obj, property].Altered = true;
+        }
+
         public static void SetName(this NamedMetadataObject obj, string newName, Culture culture = null)
         {
             if (culture != null)
             {
-                culture.ObjectTranslations.SetTranslation(obj, TranslatedProperty.Caption, newName);
+                culture.SetTranslation(obj, TranslatedProperty.Caption, newName);
             }
             else
             {

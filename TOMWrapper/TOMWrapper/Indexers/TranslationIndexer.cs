@@ -9,6 +9,7 @@ using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper.Undo;
 using System.Text;
 using System.IO;
+using Microsoft.AnalysisServices.Tabular.Helper;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -239,7 +240,7 @@ namespace TabularEditor.TOMWrapper
                     if (t != null) culture.ObjectTranslations.Remove(t);
                 }
                 else
-                    culture.ObjectTranslations.SetTranslation(_tabularObject.MetadataObject, _translatedProperty, value);
+                    culture.MetadataObject.SetTranslation(_tabularObject.MetadataObject as NamedMetadataObject, _translatedProperty, value);
 
                 if (_tabularObject.Handler.Tree.Culture == culture)
                 {

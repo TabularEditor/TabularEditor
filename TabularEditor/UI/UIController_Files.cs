@@ -66,6 +66,8 @@ namespace TabularEditor.UI
                         RecentFiles.Add(fileName);
                         RecentFiles.Save();
                         UI.FormMain.PopulateRecentFilesList();
+
+                        CL1571Check();
                     }
                 }
                 catch (Exception ex)
