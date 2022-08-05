@@ -66,6 +66,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string ERRORMESSAGE = "ErrorMessage";
 	    public const string EVALUATIONBEHAVIOR = "EvaluationBehavior";
 	    public const string EXCLUDEDARTIFACTS = "ExcludedArtifacts";
+	    public const string EXCLUDEFROMAUTOMATICAGGREGATIONS = "ExcludeFromAutomaticAggregations";
 	    public const string EXCLUDEFROMMODELREFRESH = "ExcludeFromModelRefresh";
 	    public const string EXPRESSION = "Expression";
 	    public const string EXPRESSIONS = "Expressions";
@@ -13568,6 +13569,30 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeSystemManaged() { return false; }
+/// <summary>
+///             An indication whether the table is excluded from the automatic aggregations feature.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1572 or above.</remarks>
+		[DisplayName("Exclude From Automatic Aggregations")]
+		[Category("Options"),Description(@"An indication whether the table is excluded from the automatic aggregations feature."),IntelliSense(@"An indication whether the table is excluded from the automatic aggregations feature.")]
+		public bool ExcludeFromAutomaticAggregations {
+			get {
+			    return MetadataObject.ExcludeFromAutomaticAggregations;
+			}
+			set {
+				
+				var oldValue = ExcludeFromAutomaticAggregations;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXCLUDEFROMAUTOMATICAGGREGATIONS, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.ExcludeFromAutomaticAggregations = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EXCLUDEFROMAUTOMATICAGGREGATIONS, oldValue, newValue));
+				OnPropertyChanged(Properties.EXCLUDEFROMAUTOMATICAGGREGATIONS, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeExcludeFromAutomaticAggregations() { return false; }
 
         /// <Summary>
 		/// Collection of perspectives in which this Table is visible.
@@ -13835,6 +13860,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.EXCLUDEDARTIFACTS:
 					return false;
+				case Properties.EXCLUDEFROMAUTOMATICAGGREGATIONS:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1572 : Handler.CompatibilityLevel >= 1572;
 				case Properties.EXCLUDEFROMMODELREFRESH:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1480 : Handler.CompatibilityLevel >= 1480;
 				case Properties.EXTENDEDPROPERTIES:
@@ -14044,6 +14071,18 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("SystemManaged"));
 				this.ToList().ForEach(item => { item.SystemManaged = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the ExcludeFromAutomaticAggregations property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the ExcludeFromAutomaticAggregations property of all objects in the collection at once.")]
+		public bool ExcludeFromAutomaticAggregations {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("ExcludeFromAutomaticAggregations"));
+				this.ToList().ForEach(item => { item.ExcludeFromAutomaticAggregations = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}
