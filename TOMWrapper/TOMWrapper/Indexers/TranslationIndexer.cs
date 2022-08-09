@@ -222,19 +222,14 @@ namespace TabularEditor.TOMWrapper
                 var oldValue = GetTrans(culture)?.Value;
                 if (value == oldValue) return;
 
-                _tabularObject.Handler.UndoManager.Add(
-                    new UndoPropertyChangedAction(_tabularObject, GetPropertyName(), oldValue, value, culture.Name));
-
                 // A null value removes the translation completely (typically when the object is deleted):
                 if (value == null)
                 {
                     var t = GetTrans(culture);
                     if (t != null) culture.ObjectTranslations.Remove(GetTrans(culture));
-                    return;
                 }
-
                 // For captions, we don't allow blank translations. In case a blank value is provided, completely remove the translation:
-                if (_translatedProperty == TranslatedProperty.Caption && string.IsNullOrWhiteSpace(value))
+                else if (_translatedProperty == TranslatedProperty.Caption && string.IsNullOrWhiteSpace(value))
                 {
                     var t = GetTrans(culture);
                     if (t != null) culture.ObjectTranslations.Remove(t);
@@ -249,6 +244,9 @@ namespace TabularEditor.TOMWrapper
                     else if (_translatedProperty == TranslatedProperty.Caption)
                         _tabularObject.Handler.UpdateObjectName(_tabularObject as TabularNamedObject);
                 }
+
+                _tabularObject.Handler.UndoManager.Add(
+                    new UndoPropertyChangedAction(_tabularObject, GetPropertyName(), oldValue, value, culture.Name));
             }
         }
         public string this[string cultureName]

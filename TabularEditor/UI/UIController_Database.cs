@@ -102,14 +102,52 @@ namespace TabularEditor.UI
 
         private System.Windows.Forms.Timer KeepAliveTimer;
 
-        private void CL1571Check()
+        /// <summary>
+        /// Check if the CL should be upgraded
+        /// </summary>
+        /// <remarks>
+        /// In order to access the <see cref="TOMWrapper.Culture.Altered"/> property, a model needs a CL of at least 1571.
+        /// If a Power BI "DQ over AS" data model contains any translations, and the CL is less than 1571, this method prompts
+        /// the user if they want to upgrade the CL. If the user responds positively, the CL is immediately upgraded.
+        /// </remarks>
+        private void CL1571TranslationsCheck()
         {
-            if (Handler.Database.CompatibilityMode == Microsoft.AnalysisServices.CompatibilityMode.PowerBI
-                && Handler.Model.Cultures.Any(c => c.ObjectTranslations.Count > 0)
-                && Handler.CompatibilityLevel < 1571)
+            if (CL1571NoPrompt) return;
+
+            // This flow only applies to PBI models with CL < 1571, containing at least one Entity partition (i.e. DQ over AS):
+            if (Handler.Database.CompatibilityMode == Microsoft.AnalysisServices.CompatibilityMode.PowerBI && Handler.CompatibilityLevel < 1571 && Handler.Model.Tables.Any(t => t.SourceType == PartitionSourceType.Entity))
             {
-                var mr = MessageBox.Show("This Power BI data model uses metadata translations. For composite models, it is recommended to upgrade the Compatibility Level to at least 1571 to ensure metadata translations are not overwritten from the source.\r\n\r\nDo you want to upgrade the Compatibility Level now?", "Upgrade Compatibility Level?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (mr == DialogResult.Yes) Handler.Database.CompatibilityLevel = 1571;
+                // Only prompt if the model contains translations:
+                if (Handler.Model.Cultures.Any(c => c.ObjectTranslations.Count > 0))
+                {
+                    var mr = MessageBox.Show("This Power BI data model uses metadata translations. For composite models, it is recommended to upgrade the Compatibility Level to at least 1571 to ensure metadata translations are not overwritten from the source.\r\n\r\nDo you want to upgrade the Compatibility Level now?", "Upgrade Compatibility Level?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (mr == DialogResult.Yes)
+                    {
+                        Handler.Database.CompatibilityLevel = 1571;
+                        foreach (var culture in Handler.Model.Cultures) culture.Altered = true;
+                    }
+                    CL1571NoPrompt = true;
+                }
+            }
+            else
+            {
+                CL1571NoPrompt = true;
+            }
+        }
+        private bool CL1571NoPrompt = false;
+
+        private void PowerBIGovernanceCheck()
+        {
+            if (Handler.IsPbiDesktop)
+            {
+                if (Preferences.Current.AllowUnsupportedPBIFeatures)
+                {
+                    MessageBox.Show("Experimental Power BI features is enabled. You can edit any object and property of this Power BI Desktop model, but be aware that many types of changes ARE NOT CURRENTLY SUPPORTED by Microsoft.\n\nKeep a backup of your .pbix file and proceed at your own risk.", "Power BI Desktop Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else if (Handler.PowerBIGovernance.GovernanceMode == TOMWrapper.PowerBI.PowerBIGovernanceMode.ReadOnly)
+                {
+                    MessageBox.Show("Editing a Power BI Desktop model that does not use the Enhanced Model Metadata (V3) format is not allowed, unless you enable Experimental Power BI Features under File > Preferences.\n\nTabular Editor will still load the model in read-only mode.", "Power BI Desktop Model Read-only", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
         }
 
@@ -123,22 +161,9 @@ namespace TabularEditor.UI
                 try
                 {
                     Handler = new TabularModelHandler(connectionString, databaseName);
-
-                    if (Handler.IsPbiDesktop)
-                    {
-                        if (Preferences.Current.AllowUnsupportedPBIFeatures)
-                        {
-                            MessageBox.Show("Experimental Power BI features is enabled. You can edit any object and property of this Power BI Desktop model, but be aware that many types of changes ARE NOT CURRENTLY SUPPORTED by Microsoft.\n\nKeep a backup of your .pbix file and proceed at your own risk.", "Power BI Desktop Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        }
-                        else if (Handler.PowerBIGovernance.GovernanceMode == TOMWrapper.PowerBI.PowerBIGovernanceMode.ReadOnly)
-                        {
-                            MessageBox.Show("Editing a Power BI Desktop model that does not use the Enhanced Model Metadata (V3) format is not allowed, unless you enable Experimental Power BI Features under File > Preferences.\n\nTabular Editor will still load the model in read-only mode.", "Power BI Desktop Model Read-only", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        }
-                    }
-                    else
-                    {
-                        CL1571Check();
-                    }
+                    PowerBIGovernanceCheck();
+                    CL1571NoPrompt = false;
+                    CL1571TranslationsCheck();
 
                     File_Current = null;
                     File_Directory = null;
@@ -220,6 +245,7 @@ namespace TabularEditor.UI
 
                 try
                 {
+                    CL1571TranslationsCheck();
                     Handler.Model.UpdateDeploymentMetadata(DeploymentModeMetadata.SaveUI);
                     Handler.SaveDB();
                 }
