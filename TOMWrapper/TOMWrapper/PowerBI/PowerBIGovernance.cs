@@ -195,6 +195,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
                     case ObjectType.Measure:
                     case ObjectType.Perspective:
                     case ObjectType.Culture:
+                    case ObjectType.Role:
                         return true;
                     default:
                         return false;
