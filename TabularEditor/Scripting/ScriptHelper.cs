@@ -228,6 +228,8 @@ namespace TabularEditor.Scripting
         [ScriptMethod][Obsolete]
         public static string FormatDax(string dax, bool shortFormat = false, bool skipSpaceAfterFunctionName = false)
         {
+            if (Policies.Instance.DisableWebDaxFormatter) throw new Exception("DAX formatting disabled through policy.");
+
             daxFormatterDirectCalls++;
             if(daxFormatterDirectCalls > 3 && !daxFormatterWarningShown)
             {
@@ -285,12 +287,14 @@ namespace TabularEditor.Scripting
         [ScriptMethod]
         public static void FormatDax(this IDaxDependantObject obj)
         {
+            if (Policies.Instance.DisableWebDaxFormatter) throw new Exception("DAX formatting disabled through policy.");
             objectsFlaggedForFormatting.Add(obj);
         }
 
         [ScriptMethod]
         public static void FormatDax(this IEnumerable<IDaxDependantObject> objects, bool shortFormat = false, bool? skipSpaceAfterFunctionName = null)
         {
+
             // Call DAX Formatter with an array of all expressions to be formatted:
             var objectRefs = new List<Tuple<IDaxDependantObject, DAXProperty>>();
             var expressions = new List<string>();
@@ -308,6 +312,10 @@ namespace TabularEditor.Scripting
                     }
                 }
             }
+            if (expressions.Count == 0) return;
+
+            if (Policies.Instance.DisableWebDaxFormatter) throw new Exception("DAX formatting disabled through policy.");
+
             var formatResult = DaxFormatter.FormatDaxMulti(expressions, false, shortFormat, skipSpaceAfterFunctionName ?? Preferences.Current.DaxFormatterSkipSpaceAfterFunctionName);
 
             // Assign the formatted dax back to the objects:

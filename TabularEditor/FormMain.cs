@@ -418,7 +418,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void actExpressionFormatDAX_Execute(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(txtExpression.Text)) return;
+            if (Policies.Instance.DisableWebDaxFormatter || string.IsNullOrEmpty(txtExpression.Text)) return;
 
             using (var hg = new Hourglass())
             {
@@ -614,6 +614,11 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void FormMain_Shown(object sender, EventArgs e)
         {
+            if (Policies.Instance.DisableWebDaxFormatter)
+            {
+                formatDAXToolStripMenuItem.Visible = false;
+                btnFormatDAX.Visible = false;
+            }
             if (Policies.Instance.DisableCSharpScripts)
             {
                 tabCodeEditors.TabPages.Remove(pgCSharpScript);
