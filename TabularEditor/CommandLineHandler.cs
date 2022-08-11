@@ -755,6 +755,12 @@ database            Database ID of the model to load. If blank ("") picks the fi
 
         void ExecuteScripts()
         {
+            if (Policies.Instance.DisableCSharpScripts)
+            {
+                Error("Script execution disabled through policy.");
+                throw new CommandLineException();
+            }
+
             if (ScriptFiles.Count == 0)
             {
                 Error("No scripts / script files provided");
