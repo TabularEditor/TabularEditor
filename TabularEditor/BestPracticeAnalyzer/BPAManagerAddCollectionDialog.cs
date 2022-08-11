@@ -23,6 +23,15 @@ namespace TabularEditor.BestPracticeAnalyzer
             InitializeComponent();
         }
 
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            if(Policies.Instance.DisableBpaDownload)
+            {
+                rdbUrl.Enabled = false;
+            }
+        }
+
         Analyzer analyzer;
         Form parent;
 

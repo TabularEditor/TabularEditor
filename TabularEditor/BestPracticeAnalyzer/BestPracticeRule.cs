@@ -481,7 +481,8 @@ namespace TabularEditor.BestPracticeAnalyzer
 
             try
             {
-                result.Rules = LoadFromJson(GetUrl(url));
+                if(!Policies.Instance.DisableBpaDownload)
+                    result.Rules = LoadFromJson(GetUrl(url));
             }
             catch (Exception ex) { }
 
