@@ -84,7 +84,7 @@ namespace TabularEditor.UI
                 if (menu.Items.Count > 0 && !(menu.Items[menu.Items.Count - 1] is ToolStripSeparator)) menu.Items.Add(new ToolStripSeparator());
             }
 
-            // Populate the Model menu with all actions at Model context, excluding custom actions:
+            // Populate the Model menu with all actions at Model context, excluding macros:
             ContextMenu_Populate(menu, Context.Model, false);
         }
 
@@ -107,7 +107,7 @@ namespace TabularEditor.UI
         }
 
         private void ContextMenu_Populate(ToolStripDropDown menu, Context contextFilter = Context.Everywhere, 
-            bool allowCustomActions = true, Func<IBaseAction, bool> actionFilter = null)
+            bool allowMacros = true, Func<IBaseAction, bool> actionFilter = null)
         {
             // TODO: Is it really a good idea to instantiate new menu items upon every opening of the menu?
             // Also, this prevents us from using shortcuts, as they won't work until a menu is opened for the first time.
@@ -118,7 +118,7 @@ namespace TabularEditor.UI
             foreach (var action in Actions)
             {
                 if (actionFilter != null && !actionFilter(action)) continue;
-                if (!allowCustomActions && action is CustomAction) continue;
+                if (!allowMacros && action is MacroAction) continue;
                 if (contextFilter != Context.Everywhere && !action.ValidContexts.HasX(contextFilter)) continue;
                 if (contextFilter == Context.Everywhere && !action.ValidContexts.HasX(Selection.Context)) continue;
 
@@ -130,15 +130,11 @@ namespace TabularEditor.UI
             {
                 if (action is IModelAction ma)
                 {
-                    bool enabled;
+                    bool enabled = false;
                     try {
                         enabled = ma.Enabled(null);
                     }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Custom action Enabled error: " + ex.Message);
-                        enabled = false;
-                    }
+                    catch { }
                     if (ma.HideWhenDisabled && !enabled) continue;
 
                     var name = ma.Name;

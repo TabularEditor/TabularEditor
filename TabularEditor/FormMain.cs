@@ -20,7 +20,7 @@ namespace TabularEditor
     {
         public UIController UI;
 
-        private CustomActionJson CurrentCustomAction;
+        private MacroJson CurrentMacro;
 
         public static FormMain Singleton;
 
@@ -42,9 +42,9 @@ namespace TabularEditor
             SetupUIController();
             txtFilter.Control.SetCueBanner("Filter");
 
-            ///// Populate custom actions and samples /////
+            ///// Populate macros and samples /////
             // TODO: Do this somewhere else
-            PopulateCustomActionsDropDown();
+            PopulateMacrosDropDown();
 
             var tutorial = (samplesMenu.DropDownItems.Add("Tutorials") as ToolStripMenuItem).DropDownItems;
             var translations = (samplesMenu.DropDownItems.Add("Translations") as ToolStripMenuItem).DropDownItems;
@@ -96,34 +96,36 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             });
         }
 
-        private void PopulateCustomActionsDropDown()
+        private void PopulateMacrosDropDown()
         {
-            customActionsToolStripMenuItem.DropDownItems.Clear();
-            if (File.Exists(ScriptEngine.CustomActionsJsonPath))
+            macroToolStripMenuItem.DropDownItems.Clear();
+            MacrosJson macros = null;
+            try
             {
-                custActions = CustomActionsJson.LoadFromJson(ScriptEngine.CustomActionsJsonPath);
-                foreach (var action in custActions.Actions)
+                macros = ScriptEngine.GetMacrosJson();
+                foreach (var action in macros.Actions)
                 {
-                    var item = customActionsToolStripMenuItem.DropDownItems.Add(action.Name);
+                    var item = macroToolStripMenuItem.DropDownItems.Add(action.Name);
                     item.ToolTipText = action.Tooltip;
                     item.AutoToolTip = true;
                     item.Tag = action;
                     item.Click += (s, e) =>
-                    {                        
-                        var clickAction = CurrentCustomAction = (CustomActionJson)(s as ToolStripItem).Tag;                        
+                    {
+                        var clickAction = CurrentMacro = (MacroJson)(s as ToolStripItem).Tag;
                         txtAdvanced.Text = clickAction.Execute;
                     };
                 }
             }
+            catch { }
 
-            if (custActions == null || custActions.Actions.Length == 0)
+            if (macros == null || macros.Actions.Length == 0)
             {
-                var item = customActionsToolStripMenuItem.DropDownItems.Add("(No custom actions)");
+                var item = macroToolStripMenuItem.DropDownItems.Add("(No macros)");
                 item.Enabled = false;
             }
         }
 
-        CustomActionsJson custActions = null;
+        MacrosJson macros = null;
 
         /// <summary>
         /// Instantiates the UIController, which will handle advanced UI interactions and host
@@ -390,7 +392,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void actFind_Execute(object sender, EventArgs e)
         {
-            switch (tabControl1.SelectedIndex)
+            switch (tabCodeEditors.SelectedIndex)
             {
                 case 0:
                     txtExpression.ShowFindDialog();
@@ -403,7 +405,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void actReplace_Execute(object sender, EventArgs e)
         {
-            switch (tabControl1.SelectedIndex) {
+            switch (tabCodeEditors.SelectedIndex) {
                 case 0:
                     UI.ExpressionEditor_BeginEdit();
                     txtExpression.ShowReplaceDialog();
@@ -473,6 +475,11 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             UI.ScriptEditor_ExecuteScript(btnUndoErrors.Checked);
         }
 
+        private void actExecuteScript_Update(object sender, UpdateExEventArgs e)
+        {
+            e.Enabled = !Policies.Instance.DisableCSharpScripts && !string.IsNullOrEmpty(txtAdvanced.Text);
+        }
+
         public void FocusFilter()
         {
             txtFilter.Focus();
@@ -493,94 +500,94 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             UI.Database_Deploy();
         }
 
-        private void SaveCustomAction()
+        private void SaveMacro()
         {
             // TODO: Move this somewhere else
-            using (var form = new SaveCustomActionForm())
+            using (var form = new SaveMacroForm())
             {   
-                form.txtName.Text = CurrentCustomAction?.Name;
-                form.txtTooltip.Text = CurrentCustomAction?.Tooltip;
-                form.Context = CurrentCustomAction?.ValidContexts ?? UI.Selection.Context;
+                form.txtName.Text = CurrentMacro?.Name;
+                form.txtTooltip.Text = CurrentMacro?.Tooltip;
+                form.Context = CurrentMacro?.ValidContexts ?? UI.Selection.Context;
              
                 var res = form.ShowDialog();
 
                 if (res == DialogResult.OK)
                 {
-                    var act = new CustomActionJson();
+                    var act = new MacroJson();
                     act.Name = form.txtName.Text;
                     act.Tooltip = form.txtTooltip.Text;
                     act.Execute = txtAdvanced.Text;
                     act.Enabled = "true";
                     act.ValidContexts = form.Context;
                     
-                    ScriptEngine.CompileCustomActions(new CustomActionsJson() { Actions = new[] { act } });
-                    if (ScriptEngine.CustomActionError)
+                    ScriptEngine.CompileMacros(new MacrosJson() { Actions = new[] { act } });
+                    if (ScriptEngine.MacroErrors)
                     {
-                        MessageBox.Show("Compile failed, custom action contains errors and cannot be saved.", "Validation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Compile failed, macro contains errors and cannot be saved.", "Validation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
 
-                    if (custActions == null) custActions = new CustomActionsJson() { Actions = new CustomActionJson[0] };
+                    if (macros == null) macros = new MacrosJson() { Actions = new MacroJson[0] };
 
                     // Remove any existing actions with the same name:
-                    custActions.Actions = custActions.Actions.Where(a => !a.Name.Equals(act.Name, StringComparison.InvariantCultureIgnoreCase)).ToArray();
-                    var toRemove = UI.Actions.OfType<CustomAction>().FirstOrDefault(a => a.BaseName.Equals(act.Name, StringComparison.InvariantCultureIgnoreCase));
+                    macros.Actions = macros.Actions.Where(a => !a.Name.Equals(act.Name, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+                    var toRemove = UI.Actions.OfType<MacroAction>().FirstOrDefault(a => a.BaseName.Equals(act.Name, StringComparison.InvariantCultureIgnoreCase));
                     if (toRemove != null) UI.Actions.Remove(toRemove);
 
-                    var list = custActions.Actions.ToList();
+                    var list = macros.Actions.ToList();
                     list.Add(act);
 
-                    custActions.Actions = list.ToArray();
-                    custActions.SaveToJson(ScriptEngine.CustomActionsJsonPath);
-                    CurrentCustomAction = act;
+                    macros.Actions = list.ToArray();
+                    macros.SaveToJson();
+                    CurrentMacro = act;
 
-                    ScriptEngine.AddCustomActions(UI.Actions);
-                    PopulateCustomActionsDropDown();
+                    ScriptEngine.AddMacros(UI.Actions);
+                    PopulateMacrosDropDown();
                 }
             }
         }
 
-        private void DeleteCurrentCustomAction()
+        private void DeleteCurrentMacro()
         {
-            if (CurrentCustomAction == null)
+            if (CurrentMacro == null)
                 return;
 
-            var dialogResult = MessageBox.Show($"Are you sure you want to delete the custom action [{ CurrentCustomAction.Name }] ?", "Confirm delete action", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            var dialogResult = MessageBox.Show($"Are you sure you want to delete the macro [{ CurrentMacro.Name }] ?", "Confirm delete macro", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (dialogResult != DialogResult.Yes)
                 return;
 
-            if (custActions == null) 
-                custActions = new CustomActionsJson() { Actions = new CustomActionJson[0] };
+            if (macros == null) 
+                macros = new MacrosJson() { Actions = new MacroJson[0] };
 
-            custActions.Actions = custActions.Actions.Where(a => !a.Name.Equals(CurrentCustomAction.Name, StringComparison.InvariantCultureIgnoreCase)).ToArray();
-            var toRemove = UI.Actions.OfType<CustomAction>().FirstOrDefault(a => a.BaseName.Equals(CurrentCustomAction.Name, StringComparison.InvariantCultureIgnoreCase));
+            macros.Actions = macros.Actions.Where(a => !a.Name.Equals(CurrentMacro.Name, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+            var toRemove = UI.Actions.OfType<MacroAction>().FirstOrDefault(a => a.BaseName.Equals(CurrentMacro.Name, StringComparison.InvariantCultureIgnoreCase));
             if (toRemove != null) 
                 UI.Actions.Remove(toRemove);
 
-            custActions.SaveToJson(ScriptEngine.CustomActionsJsonPath);
-            CurrentCustomAction = null;
+            macros.SaveToJson();
+            CurrentMacro = null;
             
-            PopulateCustomActionsDropDown();
+            PopulateMacrosDropDown();
         }
 
-        private void actSaveCustomAction_Execute(object sender, EventArgs e)
+        private void actSaveMacro_Execute(object sender, EventArgs e)
         {
-            SaveCustomAction();
+            SaveMacro();
         }
 
-        private void actSaveCustomAction_Update(object sender, EventArgs e)
+        private void actSaveMacro_Update(object sender, EventArgs e)
         {
-            actSaveCustomAction.Enabled = !string.IsNullOrEmpty(txtAdvanced.Text);
+            actSaveMacro.Enabled = !Policies.Instance.DisableMacros && !string.IsNullOrEmpty(txtAdvanced.Text);
         }
 
-        private void actDeleteCustomAction_Execute(object sender, EventArgs e)
+        private void actDeleteMacro_Execute(object sender, EventArgs e)
         {
-            DeleteCurrentCustomAction();
+            DeleteCurrentMacro();
         }
 
-        private void actDeleteCustomAction_Update(object sender, EventArgs e)
+        private void actDeleteMacro_Update(object sender, EventArgs e)
         {
-            actDeleteCustomAction.Enabled = CurrentCustomAction != null;
+            actDeleteMacro.Enabled = !Policies.Instance.DisableMacros && CurrentMacro != null;
         }
 
 
@@ -607,6 +614,15 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void FormMain_Shown(object sender, EventArgs e)
         {
+            if (Policies.Instance.DisableCSharpScripts)
+            {
+                tabCodeEditors.TabPages.Remove(pgCSharpScript);
+            }
+            if (Policies.Instance.DisableMacros)
+            {
+                macroToolStripSeparator.Visible = false;
+                macroToolStripMenuItem.Visible = false;
+            }
             // Various checks to be performed when the main form is shown
 
             if(!Preferences.Current.IsLoaded)
@@ -619,7 +635,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 Preferences.Current.Save();
             }
 
-            if(Preferences.Current.CheckForUpdates)
+            if(Preferences.Current.CheckForUpdates && !Policies.Instance.DisableUpdates)
             {
                 if(UpdateService.Check(false).UpdateAvailable(Preferences.Current.SkipPatchUpdates))
                 {

@@ -31,11 +31,11 @@ namespace TabularEditor.UI.Actions
         // TODO: Refactor how adding actions with a shortcut works, to avoid singleton references and so on...
         public Dictionary<Keys, Action> ShortcutActions = new Dictionary<Keys, Action>();
 
-        public void RemoveCustomActions()
+        public void RemoveMacros()
         {
             for(var i = this.Count - 1; i >= 0; i--)
             {
-                if (this[i] is CustomAction) this.RemoveAt(i);
+                if (this[i] is MacroAction) this.RemoveAt(i);
             }
         }
 

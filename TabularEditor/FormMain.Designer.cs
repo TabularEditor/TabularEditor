@@ -63,7 +63,7 @@
             this.actReplace = new TabularEditor.UI.UIModelAction();
             this.actExecuteScript = new TabularEditor.UI.UIModelAction();
             this.actDeploy = new TabularEditor.UI.UIModelAction();
-            this.actSaveCustomAction = new Crad.Windows.Forms.Actions.Action();
+            this.actSaveMacro = new Crad.Windows.Forms.Actions.Action();
             this.actCut = new TabularEditor.UI.Actions.CutAction();
             this.actCopy = new TabularEditor.UI.Actions.CopyAction();
             this.actPaste = new TabularEditor.UI.Actions.PasteAction();
@@ -79,7 +79,7 @@
             this.actSearchParent = new TabularEditor.UI.UIModelAction();
             this.actSearchChild = new TabularEditor.UI.UIModelAction();
             this.actOpenBPA = new TabularEditor.UI.UIModelAction();
-            this.actDeleteCustomAction = new Crad.Windows.Forms.Actions.Action();
+            this.actDeleteMacro = new Crad.Windows.Forms.Actions.Action();
             this.toolStripButton8 = new System.Windows.Forms.ToolStripButton();
             this.fileToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.fromDBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -114,7 +114,7 @@
             this.formatDAXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnRun = new System.Windows.Forms.ToolStripButton();
             this.deployToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnSaveCustomAction = new System.Windows.Forms.ToolStripButton();
+            this.btnSaveMacro = new System.Windows.Forms.ToolStripButton();
             this.cutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -150,7 +150,7 @@
             this.longFormatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.shortFormatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.formatShortLineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnDeleteCustomAction = new System.Windows.Forms.ToolStripButton();
+            this.btnDeleteMacro = new System.Windows.Forms.ToolStripButton();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -182,8 +182,8 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabCodeEditors = new System.Windows.Forms.TabControl();
+            this.pgExpressionEditor = new System.Windows.Forms.TabPage();
             this.txtExpression = new UI.Extensions.FCTB.FastColoredTextBox();
             this.lblCurrentMeasure = new System.Windows.Forms.Label();
             this.toolStrip3 = new System.Windows.Forms.ToolStrip();
@@ -194,15 +194,15 @@
             this.toolStripSeparator21 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripLabel4 = new System.Windows.Forms.ToolStripLabel();
             this.cmbExpressionSelector = new System.Windows.Forms.ToolStripComboBox();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.pgCSharpScript = new System.Windows.Forms.TabPage();
             this.txtAdvanced = new UI.Extensions.FCTB.FastColoredTextBox();
             this.toolStrip4 = new System.Windows.Forms.ToolStrip();
             this.toolStripSeparator18 = new System.Windows.Forms.ToolStripSeparator();
             this.btnUndoErrors = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.samplesMenu = new System.Windows.Forms.ToolStripDropDownButton();
-            this.customActionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator17 = new System.Windows.Forms.ToolStripSeparator();
+            this.macroToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.macroToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator20 = new System.Windows.Forms.ToolStripSeparator();
@@ -263,11 +263,11 @@
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
-            this.tabControl1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
+            this.tabCodeEditors.SuspendLayout();
+            this.pgExpressionEditor.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtExpression)).BeginInit();
             this.toolStrip3.SuspendLayout();
-            this.tabPage2.SuspendLayout();
+            this.pgCSharpScript.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtAdvanced)).BeginInit();
             this.toolStrip4.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -308,7 +308,7 @@
             actionsMain.Actions.Add(this.actReplace);
             actionsMain.Actions.Add(this.actExecuteScript);
             actionsMain.Actions.Add(this.actDeploy);
-            actionsMain.Actions.Add(this.actSaveCustomAction);
+            actionsMain.Actions.Add(this.actSaveMacro);
             actionsMain.Actions.Add(this.actCut);
             actionsMain.Actions.Add(this.actCopy);
             actionsMain.Actions.Add(this.actPaste);
@@ -324,7 +324,7 @@
             actionsMain.Actions.Add(this.actSearchParent);
             actionsMain.Actions.Add(this.actSearchChild);
             actionsMain.Actions.Add(this.actOpenBPA);
-            actionsMain.Actions.Add(this.actDeleteCustomAction);
+            actionsMain.Actions.Add(this.actDeleteMacro);
             actionsMain.ContainerControl = this;
             // 
             // actToggleDisplayFolders
@@ -592,6 +592,7 @@
             this.actExecuteScript.Text = "Run script";
             this.actExecuteScript.ToolTipText = "Run script (selection only) (F5)";
             this.actExecuteScript.Execute += new System.EventHandler(this.actExecuteScript_Execute);
+            this.actExecuteScript.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.actExecuteScript_Update);
             // 
             // actDeploy
             // 
@@ -601,12 +602,12 @@
             this.actDeploy.ToolTipText = "Lets you deploy the currently loaded model to an SSAS Tabular Server.";
             this.actDeploy.Execute += new System.EventHandler(this.actDeploy_Execute);
             // 
-            // actSaveCustomAction
+            // actSaveMacro
             // 
-            this.actSaveCustomAction.Image = global::TabularEditor.Resources.add;
-            this.actSaveCustomAction.Text = "Save as Custom Action...";
-            this.actSaveCustomAction.Execute += new System.EventHandler(this.actSaveCustomAction_Execute);
-            this.actSaveCustomAction.Update += new System.EventHandler(this.actSaveCustomAction_Update);
+            this.actSaveMacro.Image = global::TabularEditor.Resources.add;
+            this.actSaveMacro.Text = "Save as Macro...";
+            this.actSaveMacro.Execute += new System.EventHandler(this.actSaveMacro_Execute);
+            this.actSaveMacro.Update += new System.EventHandler(this.actSaveMacro_Update);
             // 
             // actCut
             // 
@@ -726,12 +727,12 @@
             this.actOpenBPA.Text = "&Best Practice Analyzer...";
             this.actOpenBPA.Execute += new System.EventHandler(this.actOpenBPA_Execute);
             // 
-            // actDeleteCustomAction
+            // actDeleteMacro
             // 
-            this.actDeleteCustomAction.Image = global::TabularEditor.Resources.Delete;
-            this.actDeleteCustomAction.Text = "Delete current Custom Action";
-            this.actDeleteCustomAction.Execute += new System.EventHandler(this.actDeleteCustomAction_Execute);
-            this.actDeleteCustomAction.Update += new System.EventHandler(this.actDeleteCustomAction_Update);
+            this.actDeleteMacro.Image = global::TabularEditor.Resources.Delete;
+            this.actDeleteMacro.Text = "Delete current Macro";
+            this.actDeleteMacro.Execute += new System.EventHandler(this.actDeleteMacro_Execute);
+            this.actDeleteMacro.Update += new System.EventHandler(this.actDeleteMacro_Update);
             // 
             // toolStripButton8
             // 
@@ -1144,16 +1145,16 @@
             this.deployToolStripMenuItem.Text = "&Deploy...";
             this.deployToolStripMenuItem.ToolTipText = "Lets you deploy the currently loaded model to an SSAS Tabular Server.";
             // 
-            // btnSaveCustomAction
+            // btnSaveMacro
             // 
-            actionsMain.SetAction(this.btnSaveCustomAction, this.actSaveCustomAction);
-            this.btnSaveCustomAction.AutoToolTip = true;
-            this.btnSaveCustomAction.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnSaveCustomAction.Image = global::TabularEditor.Resources.add;
-            this.btnSaveCustomAction.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnSaveCustomAction.Name = "btnSaveCustomAction";
-            this.btnSaveCustomAction.Size = new System.Drawing.Size(23, 22);
-            this.btnSaveCustomAction.Text = "Save as Custom Action...";
+            actionsMain.SetAction(this.btnSaveMacro, this.actSaveMacro);
+            this.btnSaveMacro.AutoToolTip = true;
+            this.btnSaveMacro.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnSaveMacro.Image = global::TabularEditor.Resources.add;
+            this.btnSaveMacro.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnSaveMacro.Name = "btnSaveMacro";
+            this.btnSaveMacro.Size = new System.Drawing.Size(23, 22);
+            this.btnSaveMacro.Text = "Save as Macro...";
             // 
             // cutToolStripMenuItem
             // 
@@ -1577,17 +1578,17 @@
             this.formatShortLineToolStripMenuItem.Text = "Short line";
             this.formatShortLineToolStripMenuItem.ToolTipText = "Format (short line) using www.daxformatter.com (Ctrl+F6)";
             // 
-            // btnDeleteCustomAction
+            // btnDeleteMacro
             // 
-            actionsMain.SetAction(this.btnDeleteCustomAction, this.actDeleteCustomAction);
-            this.btnDeleteCustomAction.AutoToolTip = true;
-            this.btnDeleteCustomAction.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnDeleteCustomAction.Image = global::TabularEditor.Resources.Delete;
-            this.btnDeleteCustomAction.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnDeleteCustomAction.Name = "btnDeleteCustomAction";
-            this.btnDeleteCustomAction.Size = new System.Drawing.Size(23, 22);
-            this.btnDeleteCustomAction.Text = "Delete current Custom Action";
-            this.btnDeleteCustomAction.ToolTipText = "Delete current Custom Action";
+            actionsMain.SetAction(this.btnDeleteMacro, this.actDeleteMacro);
+            this.btnDeleteMacro.AutoToolTip = true;
+            this.btnDeleteMacro.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnDeleteMacro.Image = global::TabularEditor.Resources.Delete;
+            this.btnDeleteMacro.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnDeleteMacro.Name = "btnDeleteMacro";
+            this.btnDeleteMacro.Size = new System.Drawing.Size(23, 22);
+            this.btnDeleteMacro.Text = "Delete current Macro";
+            this.btnDeleteMacro.ToolTipText = "Delete current Macro";
             // 
             // preferencesToolStripMenuItem
             // 
@@ -1882,7 +1883,7 @@
             // 
             // splitContainer2.Panel1
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.tabControl1);
+            this.splitContainer2.Panel1.Controls.Add(this.tabCodeEditors);
             // 
             // splitContainer2.Panel2
             // 
@@ -1891,28 +1892,28 @@
             this.splitContainer2.SplitterDistance = 273;
             this.splitContainer2.TabIndex = 15;
             // 
-            // tabControl1
+            // tabCodeEditors
             // 
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.Location = new System.Drawing.Point(0, 0);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(658, 273);
-            this.tabControl1.TabIndex = 2;
+            this.tabCodeEditors.Controls.Add(this.pgExpressionEditor);
+            this.tabCodeEditors.Controls.Add(this.pgCSharpScript);
+            this.tabCodeEditors.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabCodeEditors.Location = new System.Drawing.Point(0, 0);
+            this.tabCodeEditors.Name = "tabCodeEditors";
+            this.tabCodeEditors.SelectedIndex = 0;
+            this.tabCodeEditors.Size = new System.Drawing.Size(658, 273);
+            this.tabCodeEditors.TabIndex = 2;
             // 
-            // tabPage1
+            // pgExpressionEditor
             // 
-            this.tabPage1.Controls.Add(this.txtExpression);
-            this.tabPage1.Controls.Add(this.lblCurrentMeasure);
-            this.tabPage1.Controls.Add(this.toolStrip3);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(650, 247);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Expression Editor";
+            this.pgExpressionEditor.Controls.Add(this.txtExpression);
+            this.pgExpressionEditor.Controls.Add(this.lblCurrentMeasure);
+            this.pgExpressionEditor.Controls.Add(this.toolStrip3);
+            this.pgExpressionEditor.Location = new System.Drawing.Point(4, 22);
+            this.pgExpressionEditor.Name = "pgExpressionEditor";
+            this.pgExpressionEditor.Padding = new System.Windows.Forms.Padding(3);
+            this.pgExpressionEditor.Size = new System.Drawing.Size(650, 247);
+            this.pgExpressionEditor.TabIndex = 0;
+            this.pgExpressionEditor.Text = "Expression Editor";
             // 
             // txtExpression
             // 
@@ -2034,16 +2035,16 @@
             this.cmbExpressionSelector.Name = "cmbExpressionSelector";
             this.cmbExpressionSelector.Size = new System.Drawing.Size(190, 25);
             // 
-            // tabPage2
+            // pgCSharpScript
             // 
-            this.tabPage2.Controls.Add(this.txtAdvanced);
-            this.tabPage2.Controls.Add(this.toolStrip4);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(650, 247);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Advanced Scripting";
+            this.pgCSharpScript.Controls.Add(this.txtAdvanced);
+            this.pgCSharpScript.Controls.Add(this.toolStrip4);
+            this.pgCSharpScript.Location = new System.Drawing.Point(4, 22);
+            this.pgCSharpScript.Name = "pgCSharpScript";
+            this.pgCSharpScript.Padding = new System.Windows.Forms.Padding(3);
+            this.pgCSharpScript.Size = new System.Drawing.Size(650, 247);
+            this.pgCSharpScript.TabIndex = 1;
+            this.pgCSharpScript.Text = "C# Script";
             // 
             // txtAdvanced
             // 
@@ -2098,8 +2099,8 @@
             this.btnUndoErrors,
             this.toolStripSeparator11,
             this.samplesMenu,
-            this.btnSaveCustomAction,
-            this.btnDeleteCustomAction,
+            this.btnSaveMacro,
+            this.btnDeleteMacro,
             this.toolStripSeparator10,
             this.toolStripButton11,
             this.toolStripButton12,
@@ -2142,23 +2143,23 @@
             // 
             this.samplesMenu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.samplesMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.customActionsToolStripMenuItem,
-            this.toolStripSeparator17});
+            this.macroToolStripMenuItem,
+            this.macroToolStripSeparator});
             this.samplesMenu.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.samplesMenu.Name = "samplesMenu";
             this.samplesMenu.Size = new System.Drawing.Size(64, 22);
             this.samplesMenu.Text = "Samples";
             // 
-            // customActionsToolStripMenuItem
+            // macroToolStripMenuItem
             // 
-            this.customActionsToolStripMenuItem.Name = "customActionsToolStripMenuItem";
-            this.customActionsToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-            this.customActionsToolStripMenuItem.Text = "Custom Actions";
+            this.macroToolStripMenuItem.Name = "macroToolStripMenuItem";
+            this.macroToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.macroToolStripMenuItem.Text = "Macros";
             // 
-            // toolStripSeparator17
+            // macroToolStripSeparator
             // 
-            this.toolStripSeparator17.Name = "toolStripSeparator17";
-            this.toolStripSeparator17.Size = new System.Drawing.Size(156, 6);
+            this.macroToolStripSeparator.Name = "macroToolStripSeparator";
+            this.macroToolStripSeparator.Size = new System.Drawing.Size(156, 6);
             // 
             // toolStripSeparator10
             // 
@@ -2642,14 +2643,14 @@
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
-            this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
+            this.tabCodeEditors.ResumeLayout(false);
+            this.pgExpressionEditor.ResumeLayout(false);
+            this.pgExpressionEditor.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtExpression)).EndInit();
             this.toolStrip3.ResumeLayout(false);
             this.toolStrip3.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
-            this.tabPage2.PerformLayout();
+            this.pgCSharpScript.ResumeLayout(false);
+            this.pgCSharpScript.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtAdvanced)).EndInit();
             this.toolStrip4.ResumeLayout(false);
             this.toolStrip4.PerformLayout();
@@ -2681,9 +2682,9 @@
         private System.Windows.Forms.ContextMenuStrip tvMenu;
         private System.Windows.Forms.ToolStripStatusLabel lblScriptStatus;
         private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabControl tabCodeEditors;
+        private System.Windows.Forms.TabPage pgExpressionEditor;
+        private System.Windows.Forms.TabPage pgCSharpScript;
         private System.Windows.Forms.ToolStrip toolStrip4;
         private System.Windows.Forms.ToolStripDropDownButton samplesMenu;
         private System.Windows.Forms.ToolStripButton btnRun;
@@ -2781,11 +2782,11 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator16;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem9;
         private UI.UIModelAction actExecuteScript;
-        private System.Windows.Forms.ToolStripButton btnSaveCustomAction;
+        private System.Windows.Forms.ToolStripButton btnSaveMacro;
         private UI.UIModelAction actDeploy;
-        private System.Windows.Forms.ToolStripMenuItem customActionsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator17;
-        private Crad.Windows.Forms.Actions.Action actSaveCustomAction;
+        private System.Windows.Forms.ToolStripMenuItem macroToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator macroToolStripSeparator;
+        private Crad.Windows.Forms.Actions.Action actSaveMacro;
         public System.Windows.Forms.ToolStripMenuItem modelToolStripMenuItem;
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodeTextBox1;
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodeTextBox2;
@@ -2881,8 +2882,8 @@
         private System.Windows.Forms.ToolStripMenuItem shortFormatToolStripMenuItem;
         private UI.UIModelAction actExpressionFormatDAXShort;
         private System.Windows.Forms.ToolStripMenuItem formatShortLineToolStripMenuItem;
-        private System.Windows.Forms.ToolStripButton btnDeleteCustomAction;
-        private Crad.Windows.Forms.Actions.Action actDeleteCustomAction;
+        private System.Windows.Forms.ToolStripButton btnDeleteMacro;
+        private Crad.Windows.Forms.Actions.Action actDeleteMacro;
     }
 }
 

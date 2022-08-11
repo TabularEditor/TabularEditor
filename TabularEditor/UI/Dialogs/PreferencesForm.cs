@@ -215,7 +215,9 @@ namespace TabularEditor.UI.Dialogs
             chkAutoBackup.Checked = Preferences.Current.BackupOnSave;
             txtBackupPath.Text = Preferences.Current.BackupLocation;
 
-            chkAutoUpdate.Checked = Preferences.Current.CheckForUpdates;
+            chkAutoUpdate.Checked = Preferences.Current.CheckForUpdates && !Policies.Instance.DisableUpdates;
+            chkAutoUpdate.Enabled = !Policies.Instance.DisableUpdates;
+            btnVersionCheck.Enabled = !Policies.Instance.DisableUpdates;
             chkSkipPatch.Checked = Preferences.Current.SkipPatchUpdates;
             chkSkipPatch.Enabled = chkAutoUpdate.Checked;
 

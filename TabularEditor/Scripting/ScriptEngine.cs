@@ -15,6 +15,7 @@ using TabularEditor.Scripting;
 using TabularEditor.TextServices;
 using Newtonsoft.Json;
 using System.Runtime.InteropServices;
+using TabularEditor.UIServices;
 
 namespace TabularEditor
 {
@@ -44,7 +45,8 @@ namespace TabularEditor
         static readonly string NewtonsoftJsonDllPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\newtonsoft.json.dll";
         static readonly string TomDllPath = Assembly.GetAssembly(typeof(Microsoft.AnalysisServices.Tabular.Database)).Location;
         public static readonly string CustomActionsJsonPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\CustomActions.json";
-        public static readonly string CustomActionsErrorLogPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\CustomActionsError.log";
+        public static readonly string MacrosJsonPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\MacroActions.json";
+        public static readonly string MacrosErrorLogPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\MacroCompilationErrors.log";
 
         internal static string AddOutputLineNumbers(string script)
         {
@@ -59,19 +61,19 @@ namespace TabularEditor
             methodCalls.AddRange(tokens.FindMethodCall("Warning", 1)); // Find all single-parameter calls to "Warning";
             methodCalls.AddRange(tokens.FindMethodCall("Error", 1)); // Find all single-parameter calls to "Error";
 
-            // Build map of Custom Actions:
+            // Build map of Macros:
             var lines = script.Split('\n').ToList();
-            var customActionsMap = new List<int>();
+            var macrosMap = new List<int>();
             for(int i = 0; i < lines.Count; i++)
             {
-                if (lines[i].StartsWith(CUSTOMACTIONS_CODEINDICATOR)) customActionsMap.Add(i + 1);
+                if (lines[i].StartsWith(MACROS_CODEINDICATOR)) macrosMap.Add(i + 1);
             }
 
             var sb = new StringBuilder();
             var pos = 0;
             foreach (var call in methodCalls.OrderBy(n => n.StartToken.StartIndex))
             {
-                int actionOffset = customActionsMap.LastOrDefault(c => c < call.StopToken.Line);
+                int actionOffset = macrosMap.LastOrDefault(c => c < call.StopToken.Line);
                 sb.Append(script.Substring(pos, call.StopToken.StartIndex - pos));
                 if (call.ParamCount > 0) sb.Append(",");
                 sb.Append(call.StartToken.Line - actionOffset);
@@ -196,9 +198,9 @@ namespace TabularEditor.Scripting
                 return delegateCode;
         }
 
-        private const string CUSTOMACTIONS_CODEINDICATOR = "/* <#CUSTOMACTION#> */";
+        private const string MACROS_CODEINDICATOR = "/* <#MACROACTION#> */";
 
-        private static string GetCustomActionsCode(CustomActionsJson actions)
+        private static string GetMacrosCode(MacrosJson actions)
         {
             var t1 = new string(' ', 4);
             var t2 = new string(' ', 8);
@@ -207,26 +209,26 @@ namespace TabularEditor.Scripting
             var sb = new StringBuilder();
             sb.AppendLine(@"namespace TabularEditor.Scripting
 {
-    public static class CustomActions 
+    public static class MacroActions 
     {
-        public static void __CreateCustomActions(IList<TabularEditor.UI.Actions.IBaseAction> __am)
+        public static void __CreateMacroActions(IList<TabularEditor.UI.Actions.IBaseAction> __am)
         {"
 );
             for (var ix = 0; ix < actions.Actions.Length; ix++)
             {
-                sb.Append(t3 + "__am.Add(__CustomAction");
+                sb.Append(t3 + "__am.Add(__MacroAction");
                 sb.Append(ix);
                 sb.AppendLine("());");
             }
-            CustomActionCount = actions.Actions.Length;
+            MacrosCount = actions.Actions.Length;
             var i = 0;
             sb.AppendLine(t2 + "}"); // End Method
             foreach (var act in actions.Actions)
             {
-                sb.Append(t2 + "private static TabularEditor.UI.Actions.CustomAction __CustomAction");
+                sb.Append(t2 + "private static TabularEditor.UI.Actions.MacroAction __MacroAction");
                 sb.Append(i);
                 sb.AppendLine("() {");
-                sb.AppendLine(t3 + "var __act = new TabularEditor.UI.Actions.CustomAction(");
+                sb.AppendLine(t3 + "var __act = new TabularEditor.UI.Actions.MacroAction(");
 
                 // EnabledDelegate:
                 sb.Append(t4 + "(Selected, Model) => ");
@@ -235,7 +237,7 @@ namespace TabularEditor.Scripting
 
                 // ExecuteDelegate:
                 sb.AppendLine(t4 + "(Selected, Model) => {");
-                sb.AppendLine(CUSTOMACTIONS_CODEINDICATOR);
+                sb.AppendLine(MACROS_CODEINDICATOR);
                 sb.AppendLine(act.CleansedCode);
                 sb.AppendLine(t4 + "},");
 
@@ -267,7 +269,7 @@ namespace TabularEditor.Scripting
             return sb.ToString();
         }
 
-        public static void CompileCustomActions(CustomActionsJson actions)
+        public static void CompileMacros(MacrosJson actions)
         {
             if (actions == null || actions.Actions.Length == 0) return;
 
@@ -283,7 +285,7 @@ namespace TabularEditor.Scripting
                 usings.AddRange(actionUsings);
             }
 
-            var code = GetCustomActionsCode(actions);
+            var code = GetMacrosCode(actions);
             code = AddOutputLineNumbers(code);
             code = ReplaceGlobalMethodCalls(code);
 
@@ -291,22 +293,22 @@ namespace TabularEditor.Scripting
 
             var result = Compile(code, assemblyRefs, errorCallback);
 
-            CustomActionError = result.Errors.Count > 0;
+            MacroErrors = result.Errors.Count > 0;
 
-            if (!CustomActionError)
+            if (!MacroErrors)
             {
                 var assembly = result.CompiledAssembly;
-                var type = assembly.GetType("TabularEditor.Scripting.CustomActions");
-                var method = type.GetMethod("__CreateCustomActions");
-                AddCustomActions = (Action<IList<IBaseAction>>)Delegate.CreateDelegate(typeof(Action<IList<IBaseAction>>), method);
+                var type = assembly.GetType("TabularEditor.Scripting.MacroActions");
+                var method = type.GetMethod("__CreateMacroActions");
+                AddMacros = (Action<IList<IBaseAction>>)Delegate.CreateDelegate(typeof(Action<IList<IBaseAction>>), method);
             }
 
             sw.Stop();
-            CustomActionCompiletime = sw.ElapsedMilliseconds;
+            MacroCompileTime = sw.ElapsedMilliseconds;
 
             void errorCallback(CompilerErrorCollection errors, string source)
             {
-                Console.WriteLine("Could not compile Custom Actions.");
+                Console.WriteLine("Could not compile macros.");
 
                 var messages = errors.Cast<CompilerError>()
                     .Select(e => $"({ e.Line + errors.Count },{ e.Column }) { (e.IsWarning ? "warning" : "error") } {e.ErrorNumber}: {e.ErrorText}").ToList();
@@ -315,20 +317,20 @@ namespace TabularEditor.Scripting
                 try
                 {
                     messages.Add(source);
-                    File.WriteAllLines(CustomActionsErrorLogPath, messages);
+                    File.WriteAllLines(MacrosErrorLogPath, messages);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Failed to write to file [{ CustomActionsErrorLogPath }] { ex }");
+                    Console.WriteLine($"Failed to write to file [{ MacrosErrorLogPath }] { ex }");
                 }
             }
         }
 
-        public static long CustomActionCompiletime { get; private set; } = -1;
-        public static int CustomActionCount { get; private set; } = 0;
-        public static bool CustomActionError { get; private set; } = false;
+        public static long MacroCompileTime { get; private set; } = -1;
+        public static int MacrosCount { get; private set; } = 0;
+        public static bool MacroErrors { get; private set; } = false;
 
-        public static Action<IList<IBaseAction>> AddCustomActions { get; private set; } = null;
+        public static Action<IList<IBaseAction>> AddMacros { get; private set; } = null;
 
         private static readonly string[] defaultUsings = new string[]
         {
@@ -545,20 +547,26 @@ namespace TabularEditor.Scripting
             }
         }
 
-        private static void InitCustomActions()
+        public static MacrosJson GetMacrosJson()
+        {
+            var jsonPath = File.Exists(MacrosJsonPath) ? MacrosJsonPath
+                : File.Exists(CustomActionsJsonPath) ? CustomActionsJsonPath
+                : null;
+            if (jsonPath != null)
+            {
+                Console.WriteLine("Loading macros from: " + jsonPath);
+                return MacrosJson.LoadFromJson(jsonPath);
+            }
+            return null;
+        }
+
+        private static void InitMacros()
         {
             try
             {
-                if (File.Exists(CustomActionsJsonPath))
-                {
-                    Console.WriteLine("Loading custom actions from: " + CustomActionsJsonPath);
-                    var actions = CustomActionsJson.LoadFromJson(CustomActionsJsonPath);
-                    CompileCustomActions(actions);
-                }
-                else
-                {
-                    ScriptEngineStatus = "File not found: " + CustomActionsJsonPath;
-                }
+                var actions = GetMacrosJson();
+                if (actions == null) return;
+                CompileMacros(actions);
             }
             catch (Exception ex)
             {
@@ -582,14 +590,16 @@ namespace TabularEditor.Scripting
 
         /// <summary>
         /// This method ensures that the TOMWrapper.dll file exists (needed for Advanced scripting).
-        /// Furthermore, if a CustomActions.json file is provided, it is compiled into memory and
+        /// Furthermore, if a MacroActions.json file is provided, it is compiled into memory and
         /// loaded to the action manager.
         /// </summary>
         public static void InitScriptEngine(IList<Assembly> plugins)
         {
             InitPlugins(plugins);
             FindScriptMethods(plugins.Concat(Enumerable.Repeat(typeof(ScriptHelper).Assembly, 1)));
-            InitCustomActions();
+
+            if(!Policies.Instance.DisableMacros)
+                InitMacros();
         }
 
         public static string ScriptEngineStatus { get; private set; }

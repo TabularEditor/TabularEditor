@@ -102,7 +102,6 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
 
         /// <summary>
         /// Make sure that the TOMWrapper.dll is available in the current user's temp folder.
-        /// Also, compiles current user's CustomActions.xml and loads them into the editor.
         /// </summary>
         static void SetupLibraries(IList<Assembly> plugins)
         {

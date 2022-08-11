@@ -236,6 +236,7 @@
     <Compile Include="UIServices\IDaxFormatterProxy.cs" />
     <Compile Include="UIServices\LinqExtensions.cs" />
     <Compile Include="UIServices\ManagedIpHelper.cs" />
+    <Compile Include="UIServices\Policies.cs" />
     <Compile Include="UIServices\PowerBIHelper.cs" />
     <Compile Include="UIServices\Preferences.cs" />
     <Compile Include="UIServices\ProxyCache.cs" />
@@ -266,8 +267,8 @@
     <Compile Include="UI\Actions\CopyAction.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\Actions\CustomAction.cs" />
-    <Compile Include="UI\Actions\CustomActionsJson.cs" />
+    <Compile Include="UI\Actions\MacroAction.cs" />
+    <Compile Include="UI\Actions\MacrosJson.cs" />
     <Compile Include="UI\Actions\ITextBox.cs" />
     <Compile Include="UI\Actions\ModelAction.cs" />
     <Compile Include="UI\Actions\ModelActionManager.cs" />
@@ -404,11 +405,11 @@
     <Compile Include="UI\Dialogs\ReplaceForm.Designer.cs">
       <DependentUpon>ReplaceForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\Dialogs\SaveCustomActionForm.cs">
+    <Compile Include="UI\Dialogs\SaveMacroForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\Dialogs\SaveCustomActionForm.Designer.cs">
-      <DependentUpon>SaveCustomActionForm.cs</DependentUpon>
+    <Compile Include="UI\Dialogs\SaveMacroForm.Designer.cs">
+      <DependentUpon>SaveMacroForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Dialogs\SelectDatabaseForm.cs">
       <SubType>Form</SubType>
@@ -704,8 +705,8 @@
     <EmbeddedResource Include="UI\Dialogs\ReplaceForm.resx">
       <DependentUpon>ReplaceForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\SaveCustomActionForm.resx">
-      <DependentUpon>SaveCustomActionForm.cs</DependentUpon>
+    <EmbeddedResource Include="UI\Dialogs\SaveMacroForm.resx">
+      <DependentUpon>SaveMacroForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\SchemaDiffDialog.resx">
       <DependentUpon>SchemaDiffDialog.cs</DependentUpon>

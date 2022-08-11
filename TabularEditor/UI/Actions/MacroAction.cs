@@ -9,9 +9,9 @@ using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.UI.Actions
 {
-    public class CustomAction : Action
+    public class MacroAction : Action
     {
-        public CustomAction(EnabledDelegate enabled, ExecuteDelegate execute, string name, bool hideWhenDisabled = true, Context validContexts = Context.SingularObjects) : base(enabled, execute, (a,b) => name, hideWhenDisabled, validContexts)
+        public MacroAction(EnabledDelegate enabled, ExecuteDelegate execute, string name, bool hideWhenDisabled = true, Context validContexts = Context.SingularObjects) : base(enabled, execute, (a,b) => name, hideWhenDisabled, validContexts)
         {
         }
 
@@ -21,7 +21,7 @@ namespace TabularEditor.UI.Actions
             {
                 var n = base.Name;
                 if (n.Contains(@"\")) return n;
-                else return @"Custom actions\" + n;
+                else return @"Macros\" + n;
             }
         }
         public string BaseName
@@ -42,7 +42,7 @@ namespace TabularEditor.UI.Actions
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error executing custom action", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(ex.Message, "Error executing macro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             finally
             {

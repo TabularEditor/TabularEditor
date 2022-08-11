@@ -1,6 +1,6 @@
 ﻿namespace TabularEditor.UI.Dialogs
 {
-    partial class SaveCustomActionForm
+    partial class SaveMacroForm
     {
         /// <summary>
         /// Required designer variable.
@@ -68,7 +68,7 @@
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(400, 33);
             this.linkLabel1.TabIndex = 7;
-            this.linkLabel1.Text = "Actions are stored in your %AppData%\\Local\\TabularEditor folder. See the online d" +
+            this.linkLabel1.Text = "Macros are stored in your %AppData%\\Local\\TabularEditor folder. See the online d" +
     "ocumentation for more information.";
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
@@ -78,7 +78,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(409, 18);
             this.label3.TabIndex = 5;
-            this.label3.Text = "Choose the context for which this action will be available (select at least 1):";
+            this.label3.Text = "Choose the context for which this macro will be available (select at least 1):";
             // 
             // chkListboxContexts
             // 
@@ -127,7 +127,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(409, 18);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Provide a name for your custom action. Use backslashes (\\) to create subfolders.";
+            this.label1.Text = "Provide a name for your macro. Use backslashes (\\) to create subfolders.";
             // 
             // btnCancel
             // 
@@ -152,7 +152,7 @@
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
             // 
-            // SaveCustomActionForm
+            // SaveMacroForm
             // 
             this.AcceptButton = this.btnOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -165,8 +165,8 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "SaveCustomActionForm";
-            this.Text = "Save Custom Action";
+            this.Name = "SaveMacroForm";
+            this.Text = "Save Macro";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);

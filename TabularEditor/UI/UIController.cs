@@ -62,15 +62,15 @@ namespace TabularEditor.UI
 
             Actions = new ModelActionManager();
             Actions.CreateStandardActions();
-            if (ScriptEngine.AddCustomActions != null)
+            if (ScriptEngine.AddMacros != null)
             {
                 Actions.Add(new Separator());
-                ScriptEngine.AddCustomActions?.Invoke(Actions);
-                UI.StatusExLabel.Text = string.Format("Successfully loaded {0} custom action{1}. Compilation took {2} seconds.",
-                    ScriptEngine.CustomActionCount, ScriptEngine.CustomActionCount == 1 ? "" : "s", ScriptEngine.CustomActionCompiletime / 1000m);
+                ScriptEngine.AddMacros?.Invoke(Actions);
+                UI.StatusExLabel.Text = string.Format("Successfully loaded {0} macro{1}. Compilation took {2} seconds.",
+                    ScriptEngine.MacrosCount, ScriptEngine.MacrosCount == 1 ? "" : "s", ScriptEngine.MacroCompileTime / 1000m);
             } else
             {
-                if (ScriptEngine.CustomActionError) UI.StatusExLabel.Text = "Failed loading custom actions. See CustomActionsError.log for more details.";
+                if (ScriptEngine.MacroErrors) UI.StatusExLabel.Text = "Failed loading macros. See MacroCompilationErrors.log for more details.";
             }
 
             foreach (var plugin in Program.Plugins)

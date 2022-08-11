@@ -411,8 +411,8 @@ namespace TabularEditor.Scripting
         }
         #endregion
 
-        #region Custom actions
-        [ScriptMethod, IntelliSense("Invoke the custom action with the given name.")]
+        #region Macros
+        [ScriptMethod, IntelliSense("Invoke the macro with the given name.")]
         public static void CustomAction(string actionName)
         {
             var act = GetCustomActions().FirstOrDefault(a => a.BaseName == actionName);
@@ -420,10 +420,10 @@ namespace TabularEditor.Scripting
             {
                 act.ExecuteInScript(null);
             }
-            else throw new InvalidOperationException(string.Format("There is no Custom Action with the name '{0}'.", actionName));
+            else throw new InvalidOperationException(string.Format("There is no macro with the name '{0}'.", actionName));
         }
 
-        [ScriptMethod, IntelliSense("Invoke the custom action on the given set of objects with the given name.")]
+        [ScriptMethod, IntelliSense("Invoke the macro with the given name, on the given set of objects.")]
         public static void CustomAction(this IEnumerable<ITabularNamedObject> selection, string actionName)
         {
             var act = GetCustomActions().FirstOrDefault(a => a.BaseName == actionName);
@@ -431,10 +431,10 @@ namespace TabularEditor.Scripting
             {
                 act.ExecuteWithSelection(null, selection);
             }
-            else throw new InvalidOperationException(string.Format("There is no Custom Action with the name '{0}'.", actionName));
+            else throw new InvalidOperationException(string.Format("There is no macro with the name '{0}'.", actionName));
         }
 
-        [ScriptMethod, IntelliSense("Invoke the custom action on the given object with the given name.")]
+        [ScriptMethod, IntelliSense("Invoke the macro on the given object with the given name.")]
         public static void CustomAction(this ITabularNamedObject selection, string actionName)
         {
             var act = GetCustomActions().FirstOrDefault(a => a.BaseName == actionName);
@@ -442,22 +442,22 @@ namespace TabularEditor.Scripting
             {
                 act.ExecuteWithSelection(null, Enumerable.Repeat(selection, 1));
             }
-            else throw new InvalidOperationException(string.Format("There is no Custom Action with the name '{0}'.", actionName));
+            else throw new InvalidOperationException(string.Format("There is no macro with the name '{0}'.", actionName));
         }
 
-        private static List<IBaseAction> commandLineCustomActions;
+        private static List<IBaseAction> commandLineMacros;
 
-        private static IEnumerable<CustomAction> GetCustomActions()
+        private static IEnumerable<MacroAction> GetCustomActions()
         {
             if (UI.UIController.Current != null)
-                return UI.UIController.Current.Actions.OfType<CustomAction>();
+                return UI.UIController.Current.Actions.OfType<MacroAction>();
 
-            if (commandLineCustomActions == null)
+            if (commandLineMacros == null)
             {
-                commandLineCustomActions = new List<IBaseAction>();
-                ScriptEngine.AddCustomActions(commandLineCustomActions);
+                commandLineMacros = new List<IBaseAction>();
+                ScriptEngine.AddMacros(commandLineMacros);
             }
-            return commandLineCustomActions.OfType<CustomAction>();
+            return commandLineMacros.OfType<MacroAction>();
         }
         #endregion
     }

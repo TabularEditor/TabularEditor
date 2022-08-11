@@ -112,7 +112,6 @@ namespace TabularEditor.UI.Actions
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Custom action error: " + ex.Message);
                 return false;
             }
         }

@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace TabularEditor.UI.Dialogs
 {
-    public partial class SaveCustomActionForm : Form
+    public partial class SaveMacroForm : Form
     {
         public Context Context
         {
@@ -34,11 +34,11 @@ namespace TabularEditor.UI.Dialogs
             }
         }
 
-        public SaveCustomActionForm()
+        public SaveMacroForm()
         {
             InitializeComponent();
 
-            linkLabel1.Links.Add(27, 29, Path.GetDirectoryName(ScriptEngine.CustomActionsJsonPath));
+            linkLabel1.Links.Add(27, 29, Path.GetDirectoryName(ScriptEngine.MacrosJsonPath));
             linkLabel1.Links.Add(73, 20, "https://docs.tabulareditor.com/Custom-Actions.html");
 
             chkListboxContexts.Items.AddRange(
