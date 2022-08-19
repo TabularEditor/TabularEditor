@@ -417,6 +417,18 @@ namespace TabularEditor.Scripting
             var caption = string.Format("Objects with errors ({0})", items.Count());
             ScriptOutputForm.ShowObject(items, caption, true);
         }
+
+        #endregion
+        #region TE3 compatibility
+        // The methods/properties below are no-op since TE2 does not use a wait form
+        [ScriptMethod]
+        public static bool WaitFormVisible { get; set; }
+
+        [ScriptMethod]
+        public static void SuspendWaitForm(System.Action action) => action();
+
+        [ScriptMethod]
+        public static T SuspendWaitForm<T>(System.Func<T> action) => action();
         #endregion
 
         #region Macros

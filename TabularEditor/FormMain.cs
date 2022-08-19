@@ -99,7 +99,6 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void PopulateMacrosDropDown()
         {
             macroToolStripMenuItem.DropDownItems.Clear();
-            MacrosJson macros = null;
             try
             {
                 macros = ScriptEngine.GetMacrosJson();
