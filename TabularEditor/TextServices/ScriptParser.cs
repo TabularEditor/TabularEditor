@@ -359,6 +359,25 @@ namespace TabularEditor.TextServices
 
     public static class ScriptParserHelper
     {
+        public static List<MethodCall> FindGlobalPropertyRefs(this IList<IToken> tokens, HashSet<string> names)
+        {
+            var result = new List<MethodCall>();
+            for(int i = 0; i < tokens.Count; i++)
+            {
+                if (tokens[i].Type == CSharpLexer.IDENTIFIER && names.Contains(tokens[i].Text))
+                {
+                    for(int j = i - 1; j >= 0; j--)
+                    {
+                        if (tokens[j].Channel == CSharpLexer.Hidden) continue;
+                        if (tokens[j].Type == CSharpLexer.DOT) break;
+                        result.Add(new MethodCall { StartToken = tokens[i], StopToken = tokens[i] });
+                        break;
+                    }
+                }
+            }
+            return result;
+        }
+
         /// <summary>
         /// Loops through the tokens and returns all tokens matching the pattern: IDENTIFIER(*)
         /// These indicate method calls.

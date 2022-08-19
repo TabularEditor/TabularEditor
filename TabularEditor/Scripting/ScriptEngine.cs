@@ -133,17 +133,20 @@ namespace TabularEditor
 
             // Replace method calls: Output() --> Output(<linenumber>)
             var methodCalls = tokens.FindMethodCall();
+            var propertyRefs = tokens.FindGlobalPropertyRefs(ScriptProperties.Keys.ToHashSet());
+            var methodCallsAndPropertyRefs = methodCalls.Where(t => ScriptMethods.ContainsKey(t.StartToken.Text))
+                .Concat(propertyRefs).OrderBy(c => c.StartToken.TokenIndex).ToList();
             var sb = new StringBuilder();
             var pos = 0;
-            foreach (var call in methodCalls.Where(t => ScriptMethods.ContainsKey(t.StartToken.Text)))
+            foreach (var call in methodCallsAndPropertyRefs)
             {
                 if(call.StartToken.TokenIndex == 0 || tokens[call.StartToken.TokenIndex - 1].Type != CSharpLexer.DOT)
                 {
-                    var method = ScriptMethods[call.StartToken.Text];
+                    var member = ScriptMethods.ContainsKey(call.StartToken.Text) ? (MemberInfo)ScriptMethods[call.StartToken.Text] : ScriptProperties[call.StartToken.Text];
 
                     // Global method called directly:
                     sb.Append(script.Substring(pos, call.StartToken.StartIndex - pos));
-                    sb.Append(method.DeclaringType.FullName);
+                    sb.Append(member.DeclaringType.FullName);
                     sb.Append(".");
 
                     pos = call.StartToken.StartIndex;
@@ -576,15 +579,19 @@ namespace TabularEditor.Scripting
         }
 
         public static Dictionary<string, MethodInfo> ScriptMethods = new Dictionary<string, MethodInfo>();
+        public static Dictionary<string, PropertyInfo> ScriptProperties = new Dictionary<string, PropertyInfo>();
 
         private static void FindScriptMethods(IEnumerable<Assembly> assemblies)
         {
             foreach(var asm in assemblies)
             {
-                asm.GetTypes()
-                    .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.Static))
+                var types = asm.GetTypes();
+                types.SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.Static))
                     .Where(m => m.GetCustomAttributes(typeof(ScriptMethodAttribute), false).Length > 0)
                     .ToList().ForEach(mi => { if (!ScriptMethods.ContainsKey(mi.Name)) ScriptMethods.Add(mi.Name, mi); });
+                types.SelectMany(t => t.GetProperties(BindingFlags.Public | BindingFlags.Static))
+                    .Where(m => m.GetCustomAttributes(typeof(ScriptMethodAttribute), false).Length > 0)
+                    .ToList().ForEach(mi => { if (!ScriptProperties.ContainsKey(mi.Name)) ScriptProperties.Add(mi.Name, mi); });
             }
         }
 
