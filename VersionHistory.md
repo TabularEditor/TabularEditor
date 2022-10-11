@@ -24,13 +24,13 @@
 * **2018-10-05** [Version 2.7.4](../../../releases/tag/2.7.4) released
 
 ## 2.8.X
-* **2019-01-23** [Version 2.8](../../../releases/tag/2.8) released
-* **2019-03-01** [Version 2.8.1](../../../releases/tag/2.8.1) released
-* **2019-04-19** [Version 2.8.2](../../../releases/tag/2.8.2) released
-* **2019-05-16** [Version 2.8.3](../../../releases/tag/2.8.3) released
-* **2019-07-30** [Version 2.8.4](../../../releases/tag/2.8.4) released
-* **2019-08-14** [Version 2.8.5](../../../releases/tag/2.8.5) released
-* **2019-10-16** [Version 2.8.6](../../../releases/tag/2.8.6) released
+* **2019-01-23** [Version 2.8](../../releases/tag/2.8) released
+* **2019-03-01** [Version 2.8.1](../../releases/tag/2.8.1) released
+* **2019-04-19** [Version 2.8.2](../../releases/tag/2.8.2) released
+* **2019-05-16** [Version 2.8.3](../../releases/tag/2.8.3) released
+* **2019-07-30** [Version 2.8.4](../../releases/tag/2.8.4) released
+* **2019-08-14** [Version 2.8.5](../../releases/tag/2.8.5) released
+* **2019-10-16** [Version 2.8.6](../../releases/tag/2.8.6) released
 
 ## 2.9.X
 * **2019-12-07** [Version 2.9.0](../../../releases/tag/2.9.0) released
