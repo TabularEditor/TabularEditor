@@ -50,6 +50,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string DEFAULTCOLUMN = "DefaultColumn";
 	    public const string DEFAULTDATAVIEW = "DefaultDataView";
 	    public const string DEFAULTDETAILROWSDEFINITION = "DefaultDetailRowsDefinition";
+	    public const string DEFAULTEXPRESSION = "DefaultExpression";
 	    public const string DEFAULTHIERARCHY = "DefaultHierarchy";
 	    public const string DEFAULTMEASURE = "DefaultMeasure";
 	    public const string DEFAULTMODE = "DefaultMode";
@@ -129,6 +130,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string ORDINAL = "Ordinal";
 	    public const string PARAMETERVALUESCOLUMN = "ParameterValuesColumn";
 	    public const string PARENT = "Parent";
+	    public const string PARTITIONINGHINT = "PartitioningHint";
 	    public const string PARTITIONS = "Partitions";
 	    public const string PASSWORD = "Password";
 	    public const string PERSPECTIVES = "Perspectives";
@@ -7673,7 +7675,7 @@ namespace TabularEditor.TOMWrapper
 				case Properties.EXTENDEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.FORMATSTRINGDEFINITION:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1601 : Handler.CompatibilityLevel >= 1601;
 				case Properties.LINEAGETAG:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1540 : Handler.CompatibilityLevel >= 1540;
 				case Properties.SOURCELINEAGETAG:
@@ -10435,6 +10437,8 @@ namespace TabularEditor.TOMWrapper
 				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.EXTENDEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
+				case Properties.PARTITIONINGHINT:
+					return false;
 				case Properties.QUERYGROUP:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1480 : Handler.CompatibilityLevel >= 1480;
 				case Properties.RETAINDATATILLFORCECALCULATE:
@@ -15331,6 +15335,8 @@ namespace TabularEditor.TOMWrapper
 			switch (propertyName) {
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.DEFAULTEXPRESSION:
+					return false;
 				
 				default:
 					return true;

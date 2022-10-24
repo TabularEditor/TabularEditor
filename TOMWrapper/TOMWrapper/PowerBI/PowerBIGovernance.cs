@@ -147,6 +147,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
                     case Properties.DEFAULTDETAILROWSEXPRESSION:
                     case Properties.DESCRIPTION:
                     case Properties.FORMATSTRING:
+                    case Properties.FORMATSTRINGEXPRESSION:
                     case Properties.SUMMARIZEBY:
                     case Properties.DATACATEGORY:
                     case Properties.DISPLAYFOLDER:

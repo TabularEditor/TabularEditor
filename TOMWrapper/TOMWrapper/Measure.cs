@@ -62,11 +62,11 @@ namespace TabularEditor.TOMWrapper
                     errorMessage += "Detail rows expression: " + MetadataObject.DetailRowsDefinition.ErrorMessage;
                 }
 
-                /*if (Handler.CompatibilityLevel >= 1470 && !string.IsNullOrEmpty(MetadataObject.FormatStringDefinition?.ErrorMessage))
+                if (Handler.CompatibilityLevel >= 1601 && !string.IsNullOrEmpty(MetadataObject.FormatStringDefinition?.ErrorMessage))
                 {
                     if (errorMessage != "") errorMessage += "\r\n";
                     errorMessage += "Format string expression: " + MetadataObject.FormatStringDefinition.ErrorMessage;
-                }*/
+                }
 
                 return errorMessage;
             }
@@ -284,8 +284,8 @@ namespace TabularEditor.TOMWrapper
         }
         public bool ShouldSerializeDetailRowsExpression() { return false; }
 
-        /*[DisplayName("Format String Expression")]
-        [Category("Options"), IntelliSense("A DAX expression that returns a Format String for this measure.")]
+        [DisplayName("Format String Expression")]
+        [Category("Options"), IntelliSense("DAX expression that specifies the format of the cell content.")]
         [Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public string FormatStringExpression
         {
@@ -297,22 +297,25 @@ namespace TabularEditor.TOMWrapper
             {
                 var oldValue = FormatStringExpression;
 
-                if (oldValue == value || oldValue == null && string.IsNullOrEmpty(value)) return;
+                if (oldValue == value || (oldValue == null && value == string.Empty)) return;
 
                 bool undoable = true;
                 bool cancel = false;
                 OnPropertyChanging(Properties.FORMATSTRINGEXPRESSION, value, ref undoable, ref cancel);
                 if (cancel) return;
 
-                if (MetadataObject.FormatStringDefinition == null) MetadataObject.FormatStringDefinition = new TOM.FormatStringDefinition();
-                MetadataObject.FormatStringDefinition.Expression = value;
-                if (string.IsNullOrWhiteSpace(value)) MetadataObject.FormatStringDefinition = null;
+                if (MetadataObject.FormatStringDefinition == null && !string.IsNullOrEmpty(value))
+                    MetadataObject.FormatStringDefinition = new TOM.FormatStringDefinition();
+                if (!string.IsNullOrEmpty(value))
+                    MetadataObject.FormatStringDefinition.Expression = value;
+                if (string.IsNullOrWhiteSpace(value) && MetadataObject.FormatStringDefinition != null)
+                    MetadataObject.FormatStringDefinition = null;
 
                 if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FORMATSTRINGEXPRESSION, oldValue, value));
                 OnPropertyChanged(Properties.FORMATSTRINGEXPRESSION, oldValue, value);
             }
         }
-        public bool ShouldSerializeFormatStringExpression() { return false; }*/
+        public bool ShouldSerializeFormatStringExpression() { return false; }
 
 
         [Browsable(false)]
