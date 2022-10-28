@@ -351,6 +351,8 @@ namespace TabularEditor.Scripting
                 assemblyRefs.AddRange(actionAssemblyRefs);
                 usings.AddRange(actionUsings);
             }
+            assemblyRefs = new List<string>(assemblyRefs.Distinct());
+            usings = new List<string>(usings.Distinct());
 
             var code = GetMacrosCode(macroDetails);
             code = AddOutputLineNumbers(code);
