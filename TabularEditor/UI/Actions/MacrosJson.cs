@@ -48,8 +48,6 @@ namespace TabularEditor.UI.Actions
         public string Name;
         public string Enabled;
         public string Execute;
-        [JsonIgnore]
-        public string CleansedCode;
         public string Tooltip;
         [JsonConverter(typeof(StringEnumConverter))]
         public Context ValidContexts = Context.SingularObjects;

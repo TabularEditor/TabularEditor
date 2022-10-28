@@ -48,6 +48,55 @@ namespace TabularEditor
         public static readonly string MacrosJsonPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\MacroActions.json";
         public static readonly string MacrosErrorLogPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\MacroCompilationErrors.log";
 
+        internal static string ExtractTypeDefs(string script, out List<string> typeDefs)
+        {
+            var typeDefsIx = new List<(int, int)>();
+            typeDefs = new List<string>();
+
+            var parser = new TextServices.ScriptParser();
+            parser.Lex(script);
+            var tokens = parser.GetTokens();
+
+            var braces = 0;
+            var lastClosingBracePos = -1;
+            var currentTypeDefStart = -1;
+            foreach(var t in tokens)
+            {
+                if (braces == 0 && currentTypeDefStart == -1 && t.Type == CSharpLexer.SEMICOLON) lastClosingBracePos = t.StartIndex;
+                if (t.Type == CSharpLexer.OPEN_BRACE) braces++;
+                if (t.Type == CSharpLexer.CLOSE_BRACE)
+                {
+                    braces--;
+                    if(braces == 0 && currentTypeDefStart > -1)
+                    {
+                        typeDefsIx.Add((currentTypeDefStart,t.StartIndex));
+                        currentTypeDefStart = -1;
+                    }
+                    lastClosingBracePos = t.StartIndex;
+                }
+                
+                if(braces == 0 && currentTypeDefStart == -1 && (t.Type == CSharpLexer.ENUM || t.Type == CSharpLexer.CLASS || t.Type == CSharpLexer.STRUCT || t.Type == CSharpLexer.INTERFACE))
+                {
+                    currentTypeDefStart = lastClosingBracePos + 1;
+                }
+            }
+
+            if(typeDefsIx.Count > 0)
+            {
+                var sb = new StringBuilder();
+                for(var i = 0; i < typeDefsIx.Count; i++)
+                {
+                    var lastIx = i == 0 ? 0 : typeDefsIx[i - 1].Item2 + 1;
+                    sb.Append(script.Substring(lastIx, typeDefsIx[i].Item1 - lastIx));
+                    typeDefs.Add(script.Substring(typeDefsIx[i].Item1, typeDefsIx[i].Item2 - typeDefsIx[i].Item1 + 1).Trim());
+                }
+                sb.Append(script.Substring(typeDefsIx.Last().Item2 + 1));
+                return sb.ToString();
+            }
+
+            return script;
+        }
+
         internal static string AddOutputLineNumbers(string script)
         {
             var parser = new TextServices.ScriptParser();
@@ -161,6 +210,7 @@ namespace TabularEditor
             script = ParseAssemblyRefsAndUsings(script, out List<string> assemblyRefs, out List<string> usings);
             script = AddOutputLineNumbers(script);
             script = ReplaceGlobalMethodCalls(script);
+            script = ExtractTypeDefs(script, out List<string> types).Trim();
 
 
             var code = string.Format(@"{0}
@@ -175,7 +225,8 @@ namespace TabularEditor.Scripting
 #line default
         }}
     }}
-}}", string.Join(Environment.NewLine, usings), script);
+    {2}
+}}", string.Join(Environment.NewLine, usings), script, string.Join(Environment.NewLine, types));
 
             compilerResults = Compile(code, assemblyRefs);
 
@@ -203,7 +254,7 @@ namespace TabularEditor.Scripting
 
         private const string MACROS_CODEINDICATOR = "/* <#MACROACTION#> */";
 
-        private static string GetMacrosCode(MacrosJson actions)
+        private static string GetMacrosCode(List<(MacroJson macro, string CleansedCode, List<string> CustomTypes)> macroDetails)
         {
             var t1 = new string(' ', 4);
             var t2 = new string(' ', 8);
@@ -217,20 +268,18 @@ namespace TabularEditor.Scripting
         public static void __CreateMacroActions(IList<TabularEditor.UI.Actions.IBaseAction> __am)
         {"
 );
-            for (var ix = 0; ix < actions.Actions.Length; ix++)
+            MacrosCount = macroDetails.Count;
+            for (var ix = 0; ix < MacrosCount; ix++)
             {
-                sb.Append(t3 + "__am.Add(__MacroAction");
-                sb.Append(ix);
-                sb.AppendLine("());");
+                sb.AppendLine($"{t3}__am.Add(__CreateMacroAction{ix}());");
             }
-            MacrosCount = actions.Actions.Length;
             var i = 0;
             sb.AppendLine(t2 + "}"); // End Method
-            foreach (var act in actions.Actions)
+            for (var ix = 0; ix < MacrosCount; ix++)
             {
-                sb.Append(t2 + "private static TabularEditor.UI.Actions.MacroAction __MacroAction");
-                sb.Append(i);
-                sb.AppendLine("() {");
+                var act = macroDetails[ix].macro;
+                sb.AppendLine($"{t2}private static TabularEditor.UI.Actions.MacroAction __CreateMacroAction{i}()");
+                sb.AppendLine("{");
                 sb.AppendLine(t3 + "var __act = new TabularEditor.UI.Actions.MacroAction(");
 
                 // EnabledDelegate:
@@ -239,10 +288,7 @@ namespace TabularEditor.Scripting
                 sb.AppendLine(",");
 
                 // ExecuteDelegate:
-                sb.AppendLine(t4 + "(Selected, Model) => {");
-                sb.AppendLine(MACROS_CODEINDICATOR);
-                sb.AppendLine(act.CleansedCode);
-                sb.AppendLine(t4 + "},");
+                sb.AppendLine(t4 + $"__MacroAction{i}.Execute,");
 
                 // Name:
                 sb.AppendLine(t4 + "@\"" + act.Name.Replace("\"", "\"\"") + "\");");
@@ -265,6 +311,20 @@ namespace TabularEditor.Scripting
                 i++;
             }
             sb.AppendLine(t1 + "}"); // End Class
+
+            for (var ix = 0; ix < MacrosCount; ix++)
+            {
+                sb.AppendLine($"{t1}static class __MacroAction{ix}");
+                sb.AppendLine(t1 + "{");
+                sb.AppendLine($"{t2}public static void Execute(TabularEditor.UI.UITreeSelection Selected,TabularEditor.TOMWrapper.Model Model)");
+                sb.AppendLine(t2 + "{");
+                sb.AppendLine(MACROS_CODEINDICATOR);
+                sb.AppendLine(macroDetails[ix].CleansedCode);
+                sb.AppendLine(t2 + "}");
+                sb.AppendLine(string.Join(Environment.NewLine, macroDetails[ix].CustomTypes));
+                sb.AppendLine(t1 + "}");
+            }
+
             sb.AppendLine("}"); // End Namespace
 
             //            Add(new Action(calcContext, (s, m) => s.Table.AddMeasure(displayFolder: s.DisplayFolder).Edit(), (s, m) => @"Create New\Measure"));
@@ -281,14 +341,18 @@ namespace TabularEditor.Scripting
 
             var assemblyRefs = new List<string>();
             var usings = new List<string>();
+            var macroDetails = new List<(MacroJson macro, string CleansedCode, List<string> CustomTypes)>();
             foreach(var act in actions.Actions)
             {
-                act.CleansedCode = ParseAssemblyRefsAndUsings(act.Execute, out List<string> actionAssemblyRefs, out List<string> actionUsings);
+                var cleansedCode = ParseAssemblyRefsAndUsings(act.Execute, out List<string> actionAssemblyRefs, out List<string> actionUsings);
+                cleansedCode = ExtractTypeDefs(cleansedCode, out List<string> typeDefs);
+                macroDetails.Add((act, cleansedCode, typeDefs));
+
                 assemblyRefs.AddRange(actionAssemblyRefs);
                 usings.AddRange(actionUsings);
             }
 
-            var code = GetMacrosCode(actions);
+            var code = GetMacrosCode(macroDetails);
             code = AddOutputLineNumbers(code);
             code = ReplaceGlobalMethodCalls(code);
 
@@ -427,6 +491,7 @@ namespace TabularEditor.Scripting
             {
                 providerOptions["CompilerDirectoryPath"] = UIServices.Preferences.Current.ScriptCompilerDirectoryPath;
             }
+            
             return new CSharpCodeProvider(providerOptions);
         }
         private static CompilerParameters GetCompilerParametersWithPreferences(IEnumerable<string> includeAssemblies)
