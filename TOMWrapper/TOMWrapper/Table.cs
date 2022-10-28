@@ -118,6 +118,22 @@ namespace TabularEditor.TOMWrapper
         }
 
         /// <summary>
+        /// Adds a new entity partition to the table and returns a reference to the partition.
+        /// </summary>
+        /// <param name="name">The name of the partition</param>
+        /// <param name="entityName">The entity name to assign to the partition.</param>
+        /// <returns>A reference to the newly added partition.</returns>
+        [IntelliSense("Adds a new M partition to the table and returns a reference to the partition."), Tests.GenerateTest(), Tests.CompatibilityLevel(1400)]
+        public EntityPartition AddEntityPartition(string name = null, string entityName = null)
+        {
+            Handler.BeginUpdate("add partition");
+            var partition = EntityPartition.CreateNew(this, name);
+            if (!string.IsNullOrEmpty(entityName)) partition.EntityName = entityName;
+            Handler.EndUpdate();
+            return partition;
+        }
+
+        /// <summary>
         /// Adds a new calculated column to the table and returns a reference to the column.
         /// </summary>
         /// <param name="name">The name of the column</param>
