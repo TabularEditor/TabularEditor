@@ -23,22 +23,25 @@ Please visit [tabulareditor.com](https://tabulareditor.com).
 
 ## Version History
 
-* **2022-06-28** [Version 2.16.7](../../releases/tag/2.16.7) released (digitally signed)
-* **2022-04-03** [Version 2.16.6](../../releases/tag/2.16.6) released (digitally signed)
-* **2021-11-30** [Version 2.16.5](../../releases/tag/2.16.5) released (digitally signed)
-* **2021-09-27** [Version 2.16.4](../../releases/tag/2.16.4) released (digitally signed)
-* **2021-09-15** [Version 2.16.3](../../releases/tag/2.16.3) released (digitally signed)
-* **2021-08-30** [Version 2.16.2](../../releases/tag/2.16.2) released (digitally signed)
-* **2021-05-19** [Version 2.16.1](../../releases/tag/2.16.1) released (digitally signed)
-* **2021-04-21** [Version 2.16.0](../../releases/tag/2.16.0) released (digitally signed)
-* **2021-04-07** [Version 2.15.3](../../releases/tag/2.15.3) released (digitally signed)
-* **2021-03-25** [Version 2.15.2](../../releases/tag/2.15.2) released (digitally signed)
-* **2021-03-19** [Version 2.15.1](../../releases/tag/2.15.1) released (digitally signed)
-* **2021-03-01** [Version 2.14.2](../../releases/tag/2.14.2) released (digitally signed)
-* **2021-02-11** [Version 2.14.1](../../releases/tag/2.14.1) released (digitally signed)
-* **2021-02-01** [Version 2.14.0](../../releases/tag/2.14.0) released (digitally signed)
-* **2020-12-04** [Version 2.13.2](../../releases/tag/2.13.2) released (digitally signed)
-* **2020-11-25** [Version 2.13.1](../../releases/tag/2.13.1) released (digitally signed)
-* **2020-11-16** [Version 2.13.0](../../releases/tag/2.13.0) released (digitally signed)
+* **2022-10-28** [Version 2.17.2](../../releases/tag/2.17.2) released
+* **2022-08-19** [Version 2.17.1](../../releases/tag/2.17.1) released
+* **2022-08-11** [Version 2.17.0](../../releases/tag/2.17.0) released
+* **2022-06-28** [Version 2.16.7](../../releases/tag/2.16.7) released
+* **2022-04-03** [Version 2.16.6](../../releases/tag/2.16.6) released
+* **2021-11-30** [Version 2.16.5](../../releases/tag/2.16.5) released
+* **2021-09-27** [Version 2.16.4](../../releases/tag/2.16.4) released
+* **2021-09-15** [Version 2.16.3](../../releases/tag/2.16.3) released
+* **2021-08-30** [Version 2.16.2](../../releases/tag/2.16.2) released
+* **2021-05-19** [Version 2.16.1](../../releases/tag/2.16.1) released
+* **2021-04-21** [Version 2.16.0](../../releases/tag/2.16.0) released
+* **2021-04-07** [Version 2.15.3](../../releases/tag/2.15.3) released
+* **2021-03-25** [Version 2.15.2](../../releases/tag/2.15.2) released
+* **2021-03-19** [Version 2.15.1](../../releases/tag/2.15.1) released
+* **2021-03-01** [Version 2.14.2](../../releases/tag/2.14.2) released
+* **2021-02-11** [Version 2.14.1](../../releases/tag/2.14.1) released
+* **2021-02-01** [Version 2.14.0](../../releases/tag/2.14.0) released
+* **2020-12-04** [Version 2.13.2](../../releases/tag/2.13.2) released
+* **2020-11-25** [Version 2.13.1](../../releases/tag/2.13.1) released
+* **2020-11-16** [Version 2.13.0](../../releases/tag/2.13.0) released
 
 [Full version history](/VersionHistory.md)
