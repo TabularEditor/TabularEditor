@@ -191,6 +191,7 @@ namespace TabularEditor.UI
 
         private void Handler_OnExternalChange(object sender, ExternalChangeEventArgs e)
         {
+            if (UI.FormMain.IsDisposed) return;
             UI.FormMain.Invoke(new Action(() => {
 
                 if (Handler.HasUnsavedChanges)
