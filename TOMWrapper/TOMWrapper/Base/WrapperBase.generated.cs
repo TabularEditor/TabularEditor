@@ -42,6 +42,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string DATAACCESSOPTIONS = "DataAccessOptions";
 	    public const string DATABASE = "Database";
 	    public const string DATACATEGORY = "DataCategory";
+	    public const string DATACOVERAGEDEFINITION = "DataCoverageDefinition";
 	    public const string DATASOURCEDEFAULTMAXCONNECTIONS = "DataSourceDefaultMaxConnections";
 	    public const string DATASOURCES = "DataSources";
 	    public const string DATASOURCEVARIABLESOVERRIDEBEHAVIOR = "DataSourceVariablesOverrideBehavior";
@@ -58,6 +59,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string DESCRIPTION = "Description";
 	    public const string DETAILROWSDEFINITION = "DetailRowsDefinition";
 	    public const string DISABLEAUTOEXISTS = "DisableAutoExists";
+	    public const string DISABLESYSTEMDEFAULTEXPRESSION = "DisableSystemDefaultExpression";
 	    public const string DISCOURAGECOMPOSITEMODELS = "DiscourageCompositeModels";
 	    public const string DISCOURAGEIMPLICITMEASURES = "DiscourageImplicitMeasures";
 	    public const string DISCOURAGEREPORTMEASURES = "DiscourageReportMeasures";
@@ -130,7 +132,6 @@ namespace TabularEditor.TOMWrapper
 	    public const string ORDINAL = "Ordinal";
 	    public const string PARAMETERVALUESCOLUMN = "ParameterValuesColumn";
 	    public const string PARENT = "Parent";
-	    public const string PARTITIONINGHINT = "PartitioningHint";
 	    public const string PARTITIONS = "Partitions";
 	    public const string PASSWORD = "Password";
 	    public const string PERSPECTIVES = "Perspectives";
@@ -8580,6 +8581,30 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeMaxParallelismPerQuery() { return false; }
 /// <summary>
+///             Disable system defined default expression behavior for calculation groups.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at Internal or above.</remarks>
+		[DisplayName("Disable System Default Expression")]
+		[Category("Options"),Description(@"Disable system defined default expression behavior for calculation groups."),IntelliSense(@"Disable system defined default expression behavior for calculation groups.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		public bool DisableSystemDefaultExpression {
+			get {
+			    return MetadataObject.DisableSystemDefaultExpression;
+			}
+			set {
+				
+				var oldValue = DisableSystemDefaultExpression;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.DISABLESYSTEMDEFAULTEXPRESSION, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.DisableSystemDefaultExpression = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISABLESYSTEMDEFAULTEXPRESSION, oldValue, newValue));
+				OnPropertyChanged(Properties.DISABLESYSTEMDEFAULTEXPRESSION, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeDisableSystemDefaultExpression() { return false; }
+/// <summary>
 ///             A reference to a default measure.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("Default Measure")]
@@ -8763,6 +8788,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1450 : Handler.CompatibilityLevel >= 1450;
 				case Properties.DISABLEAUTOEXISTS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1566 : Handler.CompatibilityLevel >= 1566;
+				case Properties.DISABLESYSTEMDEFAULTEXPRESSION:
+					return false;
 				case Properties.DISCOURAGECOMPOSITEMODELS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1560 : Handler.CompatibilityLevel >= 1560;
 				case Properties.DISCOURAGEIMPLICITMEASURES:
@@ -10435,10 +10462,10 @@ namespace TabularEditor.TOMWrapper
 			switch (propertyName) {
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.DATACOVERAGEDEFINITION:
+					return false;
 				case Properties.EXTENDEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
-				case Properties.PARTITIONINGHINT:
-					return false;
 				case Properties.QUERYGROUP:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1480 : Handler.CompatibilityLevel >= 1480;
 				case Properties.RETAINDATATILLFORCECALCULATE:
