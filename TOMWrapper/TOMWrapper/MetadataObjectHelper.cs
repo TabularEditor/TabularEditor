@@ -13,6 +13,16 @@ namespace Microsoft.AnalysisServices.Tabular.Helper
     /// </summary>
     internal static class MetadataObjectHelper
     {
+        public static bool IsNullOrEmpty(this FormatStringDefinition value)
+        {
+            return value == null || string.IsNullOrEmpty(value.Expression);
+        }
+        public static bool IsNullOrEmpty(this CalculationExpression value)
+        {
+            return value == null
+                || (string.IsNullOrEmpty(value.Expression) && string.IsNullOrEmpty(value.Description) && value.FormatStringDefinition.IsNullOrEmpty());
+        }
+
         private static bool IsTranslatable(this NamedMetadataObject obj)
         {
             switch (obj.ObjectType)

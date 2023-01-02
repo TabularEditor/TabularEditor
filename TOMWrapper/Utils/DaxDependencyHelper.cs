@@ -49,6 +49,15 @@ namespace TabularEditor.TOMWrapper.Utils
                     yield return DAXProperty.DetailRowsExpression;
                 }
                 if (obj.ObjectType == ObjectType.Table) yield return DAXProperty.DefaultDetailRowsExpression;
+                if (obj.ObjectType == ObjectType.CalculationGroupTable)
+                {
+                    yield return DAXProperty.DefaultDetailRowsExpression;
+                    if(TabularModelHandler.Singleton.CompatibilityLevel >= CalculationGroupTable.DefaultExpressionRequiredCompatibilityLevel)
+                    {
+                        yield return DAXProperty.DefaultExpression;
+                        yield return DAXProperty.DefaultFormatStringExpression;
+                    }
+                }
             }
             if (obj is KPI)
             {
@@ -111,6 +120,11 @@ namespace TabularEditor.TOMWrapper.Utils
                 {
                     return Properties.DEFAULTDETAILROWSEXPRESSION;
                 }
+                if (obj is CalculationGroupTable cgt)
+                {
+                    if (property == DAXProperty.DefaultExpression) return nameof(cgt.DefaultExpression);
+                    if (property == DAXProperty.DefaultFormatStringExpression) return nameof(cgt.DefaultFormatStringExpression);
+                }
             }
 
             throw new ArgumentException(string.Format(Messages.InvalidExpressionProperty, obj.GetTypeName(), property), "property");
@@ -152,6 +166,11 @@ namespace TabularEditor.TOMWrapper.Utils
                 if (obj is Table && property == DAXProperty.DefaultDetailRowsExpression)
                 {
                     return (obj as Table).DefaultDetailRowsExpression;
+                }
+                if (obj is CalculationGroupTable cgt)
+                {
+                    if (property == DAXProperty.DefaultExpression) return cgt.DefaultExpression;
+                    if (property == DAXProperty.DefaultFormatStringExpression) return cgt.DefaultFormatStringExpression;
                 }
             }
 
@@ -202,7 +221,11 @@ namespace TabularEditor.TOMWrapper.Utils
                 if (property == DAXProperty.Expression) { ci.Expression = expression; return; }
                 if (property == DAXProperty.FormatStringExpression) { ci.FormatStringExpression = expression; return; }
             }
-
+            if (obj is CalculationGroupTable cgt)
+            {
+                if (property == DAXProperty.DefaultExpression) { cgt.DefaultExpression = expression; return; }
+                if (property == DAXProperty.DefaultFormatStringExpression) { cgt.DefaultFormatStringExpression = expression; return; }
+            }
 
             throw new ArgumentException(string.Format(Messages.InvalidExpressionProperty, obj.GetTypeName(), property), "property");
         }

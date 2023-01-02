@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper.Undo;
 using TOM = Microsoft.AnalysisServices.Tabular;
+using System.ComponentModel.Design;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -221,10 +222,44 @@ namespace TabularEditor.TOMWrapper
         [Category("Metadata"),DisplayName("Calculation Group Annotations"),Description("Annotations on the Calculation Group object."),NoMultiselect,Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
         public AnnotationCollection CalculationGroupAnnotations { get { return CalculationGroup.Annotations; } }
 
+        /// <summary>
+        /// The expression defined on this object will be applied to the selected measure in DAX queries, when no calculation items can be applied.
+        /// </summary>
+        [Category("Options"),DisplayName("Default Expression"),Description("The expression defined on this object will be applied to the selected measure in DAX queries, when no calculation items can be applied."),Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
+        public string DefaultExpression
+        {
+            get => CalculationGroup.DefaultExpression;
+            set => CalculationGroup.DefaultExpression = value;
+        }
+
+        /// <summary>
+        /// The format string expression defined on this object will be applied to the selected measure in DAX queries, when no calculation items can be applied.
+        /// </summary>
+        [Category("Options"), DisplayName("Default Format String Expression"), Description("The format string expression defined on this object will be applied to the selected measure in DAX queries, when no calculation items can be applied."), Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
+        public string DefaultFormatStringExpression
+        {
+            get => CalculationGroup.DefaultFormatStringExpression;
+            set => CalculationGroup.DefaultFormatStringExpression = value;
+        }
+
+        /// <summary>
+        /// The description of the CalculationExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+        /// </summary>
+        [Category("Options"), DisplayName("Default Expression Description"), Description("The description of the CalculationExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")]
+        public string DefaultExpressionDescription
+        {
+            get => CalculationGroup.DefaultExpressionDescription;
+            set => CalculationGroup.DefaultExpressionDescription = value;
+        }
+
         protected override void Init()
         {
             if (MetadataObject.CalculationGroup != null)
+            {
                 CalculationGroup = CalculationGroup.CreateFromMetadata(this, MetadataObject.CalculationGroup);
+                CalculationGroup.PropertyChanging += (s, e) => RaisePropertyChanging(e.PropertyName);
+                CalculationGroup.PropertyChanged += (s, e) => RaisePropertyChanged(e.PropertyName);
+            }
             base.Init();
         }
 
@@ -259,29 +294,18 @@ namespace TabularEditor.TOMWrapper
                 case Properties.TRANSLATEDNAMES:
                 case Properties.TRANSLATEDDESCRIPTIONS:
                 case Properties.INPERSPECTIVE:
+                case Properties.DEFAULTDETAILROWSEXPRESSION:
                     return true;
+                case nameof(DefaultExpression):
+                case nameof(DefaultFormatStringExpression):
+                case nameof(DefaultExpressionDescription):
+                    return Handler.CompatibilityLevel >= DefaultExpressionRequiredCompatibilityLevel;
                 default:
                     return false;
             }
         }
-    }
 
-    public partial class CalculationGroup
-    {
-        internal static CalculationGroup CreateFromMetadata(Table parent, TOM.CalculationGroup metadataObject)
-        {
-            var obj = new CalculationGroup(metadataObject);
-            parent.MetadataObject.CalculationGroup = metadataObject;
-
-            obj.Init();
-
-            return obj;
-        }
-        
-        public override string ToString()
-        {
-            return "Calculation Group";
-        }
+        public const int DefaultExpressionRequiredCompatibilityLevel = int.MaxValue;
     }
 
     internal static partial class Properties

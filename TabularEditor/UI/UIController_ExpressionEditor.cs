@@ -206,6 +206,7 @@ namespace TabularEditor.UI
                     case ObjectType.CalculationItem:
                     case ObjectType.Measure:
                     case ObjectType.Table:
+                    case ObjectType.CalculationGroupTable:
                     case ObjectType.Column:
                     case ObjectType.KPI:
                     case ObjectType.TablePermission:
