@@ -3,7 +3,7 @@ lexer grammar DAXLexer;
 channels { COMMENTS_CHANNEL, KEYWORD_CHANNEL }
 
 SINGLE_LINE_COMMENT:     ( '//' | '--' )  InputCharacter*    -> channel(COMMENTS_CHANNEL);
-DELIMITED_COMMENT:       '/*'  .*? '*/'           -> channel(COMMENTS_CHANNEL);
+DELIMITED_COMMENT:       '/*' ( DELIMITED_COMMENT | '/' ~'*' | ~'/' )*? ( '*/' | EOF )  -> channel(COMMENTS_CHANNEL);
 
 WHITESPACES:   (Whitespace | NewLine)+            -> channel(HIDDEN);
 
@@ -353,7 +353,15 @@ YIELD:                                    'YIELD'                               
 YIELDDISC:                                'YIELDDISC'                              -> channel(KEYWORD_CHANNEL);
 YIELDMAT:                                 'YIELDMAT'                               -> channel(KEYWORD_CHANNEL);
 
+SAMPLEAXISWITHLOCALMINMAX:				  'SAMPLEAXISWITHLOCALMINMAX'			   -> channel(KEYWORD_CHANNEL);
+EVALUATEANDLOG:							  'EVALUATEANDLOG'						   -> channel(KEYWORD_CHANNEL);
+OFFSET:									  'OFFSET'								   -> channel(KEYWORD_CHANNEL);
+INDEX:									  'INDEX'								   -> channel(KEYWORD_CHANNEL);
+WINDOW:									  'WINDOW'								   -> channel(KEYWORD_CHANNEL);
+ORDERBY:								  'ORDERBY'								   -> channel(KEYWORD_CHANNEL);
+PARTITIONBY:							  'PARTITIONBY'							   -> channel(KEYWORD_CHANNEL);
 EXTERNALMEASURE:                          'EXTERNALMEASURE'                        -> channel(KEYWORD_CHANNEL);
+KMEANSCLUSTERING:                         'KMEANSCLUSTERING'                       -> channel(KEYWORD_CHANNEL);
 
 // Statements:
 DEFINE:                                  'DEFINE'                                  -> channel(KEYWORD_CHANNEL);
@@ -377,6 +385,8 @@ WEEK:                                    'WEEK'                                 
 BOTH:                                    'BOTH'                                    -> channel(KEYWORD_CHANNEL);
 NONE:                                    'NONE'                                    -> channel(KEYWORD_CHANNEL);
 ONEWAY:                                  'ONEWAY'                                  -> channel(KEYWORD_CHANNEL);
+ONEWAYRIGHTFILTERSLEFT:                  'ONEWAY_RIGHTFILTERSLEFT'                 -> channel(KEYWORD_CHANNEL);
+ONEWAYLEFTFILTERSRIGHT:                  'ONEWAY_LEFTFILTERSRIGHT'                 -> channel(KEYWORD_CHANNEL);
 
 // DATATABLE type arguments (in addition to Currency, which is also a function):
 INTEGER:                                 'INTEGER'                                 -> channel(KEYWORD_CHANNEL);
@@ -384,7 +394,14 @@ DOUBLE:                                  'DOUBLE'                               
 STRING:                                  'STRING'                                  -> channel(KEYWORD_CHANNEL);
 BOOLEAN:                                 'BOOLEAN'                                 -> channel(KEYWORD_CHANNEL);
 DATETIME:                                'DATETIME'                                -> channel(KEYWORD_CHANNEL);
+VARIANT:                                 'VARIANT'                                 -> channel(KEYWORD_CHANNEL);
 
+TEXT:                                    'TEXT'                                    -> channel(KEYWORD_CHANNEL);
+ALPHABETICAL:                            'ALPHABETICAL'                            -> channel(KEYWORD_CHANNEL);
+KEEP:									 'KEEP'									   -> channel(KEYWORD_CHANNEL);
+REL:									 'REL'									   -> channel(KEYWORD_CHANNEL);
+
+DATE_LITERAL:          'DT"' (~'"' | '""')* '"' {Text = Text.Substring(3, Text.Length - 4);};
 INTEGER_LITERAL:       [0-9]+;
 REAL_LITERAL:          [0-9]* '.' [0-9]+;
 STRING_LITERAL:        '"' (~'"' | '""')* '"' {Text = Text.Substring(1, Text.Length - 2);};
