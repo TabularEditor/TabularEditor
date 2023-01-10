@@ -1584,7 +1584,7 @@ namespace TabularEditor.TOMWrapper
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.EVALUATIONBEHAVIOR:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.PARENT:
 					return false;
 				
@@ -5208,7 +5208,7 @@ namespace TabularEditor.TOMWrapper
 				case Properties.CHANGEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1567 : Handler.CompatibilityLevel >= 1567;
 				case Properties.EXCLUDEDARTIFACTS:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.EXTENDEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.HIDEMEMBERS:
@@ -8582,7 +8582,7 @@ namespace TabularEditor.TOMWrapper
 		private bool ShouldSerializeMaxParallelismPerQuery() { return false; }
 /// <summary>
 ///             Disable system defined default expression behavior for calculation groups.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at Internal or above.</remarks>
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at Preview or above.</remarks>
 		[DisplayName("Disable System Default Expression")]
 		[Category("Options"),Description(@"Disable system defined default expression behavior for calculation groups."),IntelliSense(@"Disable system defined default expression behavior for calculation groups.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public bool DisableSystemDefaultExpression {
@@ -8773,7 +8773,7 @@ namespace TabularEditor.TOMWrapper
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.ANALYTICSAIMETADATA:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.AUTOMATICAGGREGATIONOPTIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1564 : Handler.CompatibilityLevel >= 1564;
 				case Properties.DATAACCESSOPTIONS:
@@ -8789,7 +8789,7 @@ namespace TabularEditor.TOMWrapper
 				case Properties.DISABLEAUTOEXISTS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1566 : Handler.CompatibilityLevel >= 1566;
 				case Properties.DISABLESYSTEMDEFAULTEXPRESSION:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.DISCOURAGECOMPOSITEMODELS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1560 : Handler.CompatibilityLevel >= 1560;
 				case Properties.DISCOURAGEIMPLICITMEASURES:
@@ -8797,7 +8797,7 @@ namespace TabularEditor.TOMWrapper
 				case Properties.DISCOURAGEREPORTMEASURES:
 					return false;
 				case Properties.EXCLUDEDARTIFACTS:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.EXPRESSIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.EXTENDEDPROPERTIES:
@@ -13890,7 +13890,7 @@ namespace TabularEditor.TOMWrapper
 				case Properties.DEFAULTDETAILROWSDEFINITION:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.EXCLUDEDARTIFACTS:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.EXCLUDEFROMAUTOMATICAGGREGATIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1572 : Handler.CompatibilityLevel >= 1572;
 				case Properties.EXCLUDEFROMMODELREFRESH:
@@ -14903,7 +14903,7 @@ namespace TabularEditor.TOMWrapper
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.EXCLUDEDARTIFACTS:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.EXPRESSIONSOURCE:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1570 : Handler.CompatibilityLevel >= 1570;
 				case Properties.LINEAGETAG:
@@ -15363,7 +15363,7 @@ namespace TabularEditor.TOMWrapper
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.DEFAULTEXPRESSION:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				
 				default:
 					return true;

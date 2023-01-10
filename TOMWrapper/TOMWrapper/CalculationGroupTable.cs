@@ -305,7 +305,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public const int DefaultExpressionRequiredCompatibilityLevel = int.MaxValue;
+        public const int DefaultExpressionRequiredCompatibilityLevel = 1000000;
     }
 
     internal static partial class Properties
