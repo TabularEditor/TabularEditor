@@ -429,7 +429,7 @@ namespace TabularEditor.BestPracticeAnalyzer
 
                     if (ruleResults.Count == 0)
                         Program.testRun.Pass("Best Practice Analysis", rule.Name, GetNUnitRuleProps(rule));
-                    else if (ruleResults.Count == 1 && !ruleResults[0].RuleEnabled)
+                    else if ((ruleResults.Count == 1 && !ruleResults[0].RuleEnabled) || (ruleResults.Count == 1 && ruleResults[0].InvalidCompatibilityLevel))
                         Program.testRun.Skip("Best Practice Analysis", rule.Name, GetNUnitRuleProps(rule));
                     else if (ruleResults.Count == 1 && ruleResults[0].RuleHasError)
                         Program.testRun.Inconclude("Best Practice Analysis", rule.Name, GetNUnitRuleProps(rule, ruleResults[0].RuleError));
