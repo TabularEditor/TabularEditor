@@ -193,6 +193,13 @@ namespace TabularEditor.TOMWrapper
 
 	internal static class ObjectMetadata
 	{
+		// If any of the following properties are present in the model, the JSON must be deserialized with CompatibilityMode = PowerBi:
+	    public static readonly HashSet<string> PbiOnlyProperties = new string[] {
+	        "Sets",                                    // Pbi: 1400, Box: Unsupported
+	        "RelatedColumnDetails",                    // Pbi: 1400, Box: Unsupported
+	        "PerspectiveSets",                         // Pbi: 1400, Box: Unsupported
+		}.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
 		private static readonly Dictionary<Type, Type> TOMMap = new Dictionary<Type, Type>() {
             { typeof(Variation) , typeof(TOM.Variation) },
             { typeof(StructuredDataSource) , typeof(TOM.StructuredDataSource) },

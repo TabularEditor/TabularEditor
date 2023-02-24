@@ -97,15 +97,36 @@ namespace TabularEditor.TOMWrapper
         {
             1200,
             1400,
-            1500
+            1500,
+            1600
         };
 
         private bool IsPbiCompatibilityMode(string tomJson)
         {
             // Use PBI CompatibilityMode when model is one of the non-standard CL's, or if V3 metadata is enabled:
-            var model = JObject.Parse(tomJson);
-            if (model.SelectToken("compatibilityLevel") is JToken compatLevel && !analysisServicesStandardCompatLevels.Contains((int)compatLevel)) return true;
-            if (model.SelectToken("model.defaultPowerBIDataSourceVersion") is JToken dataSourceVersion && (string)dataSourceVersion == "powerBI_V3") return true;
+            using (var reader = new JsonTextReader(new StringReader(tomJson)))
+            {
+                while (reader.Read())
+                {
+                    if (reader.TokenType == JsonToken.PropertyName)
+                    {
+                        switch ((string)reader.Value)
+                        {
+                            case "compatibilityLevel":
+                                reader.Read();
+                                if (!analysisServicesStandardCompatLevels.Contains((int)((long)reader.Value))) return true;
+                                break;
+                            case "defaultPowerBIDataSourceVersion":
+                                reader.Read();
+                                if ((string)reader.Value == "powerBI_V3") return true;
+                                break;
+                            default:
+                                if (ObjectMetadata.PbiOnlyProperties.Contains((string)reader.Value)) return true;
+                                break;
+                        }
+                    }
+                }
+            }
             return false;
         }
 

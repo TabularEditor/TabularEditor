@@ -45,6 +45,27 @@ namespace TabularEditor.TOMWrapper
 
 	internal static class ObjectMetadata
 	{
+		// If any of the following properties are present in the model, the JSON must be deserialized with CompatibilityMode = PowerBi:
+	    public static readonly HashSet<string> PbiOnlyProperties = new string[] {
+<# foreach(var p in typeof(Model).Assembly
+		.GetTypes()
+		.SelectMany(t => t.GetProperties())
+		.Where(p => p.GetCustomAttributes() is object[] objArray && objArray.Length == 1 && objArray[0].GetType().Name == "CompatibilityRequirementAttribute"
+			&& objArray[0].GetType().GetProperty("Pbi").GetValue(objArray[0]) != null && objArray[0].GetType().GetProperty("Box").GetValue(objArray[0]).ToString() == "Unsupported"
+		)
+		.Select(p => 
+		    {
+		        var compReqAttr = p.GetCustomAttributes().First();
+				var compReqAttrType = compReqAttr.GetType();
+				var pbi = compReqAttrType.GetProperty("Pbi").GetValue(compReqAttr);
+				var box = compReqAttrType.GetProperty("Box").GetValue(compReqAttr);
+				return $"\"{p.Name}\",{new string(' ', 40-p.Name.Length)}// Pbi: {pbi}, Box: {box}";
+			})
+		.Distinct()) { #>
+	        <#=p#>
+<# } #>
+		}.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
 		private static readonly Dictionary<Type, Type> TOMMap = new Dictionary<Type, Type>() {
 <# foreach(var t in Rules.ObjectTypes.Keys) { #>
             { typeof(<#= t.Name #>) , typeof(TOM.<#= t.Name #>) },

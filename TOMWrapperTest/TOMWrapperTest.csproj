@@ -92,6 +92,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="DeserializerTests.cs" />
     <Compile Include="FixUpTests.cs" />
     <Compile Include="FluentPropertyGridTest.cs" />
     <Compile Include="ObjectCreationTests.cs" />
@@ -165,6 +166,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="TestData\CalcGroupOrderTest.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\model-lineageTags.bim">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\model-relatedColumnDetails.bim">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="TestData\NewDeserializer.bim">
