@@ -8589,7 +8589,7 @@ namespace TabularEditor.TOMWrapper
 		private bool ShouldSerializeMaxParallelismPerQuery() { return false; }
 /// <summary>
 ///             Disable system defined default expression behavior for calculation groups.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at Internal or above.</remarks>
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at Preview or above.</remarks>
 		[DisplayName("Disable System Default Expression")]
 		[Category("Options"),Description(@"Disable system defined default expression behavior for calculation groups."),IntelliSense(@"Disable system defined default expression behavior for calculation groups.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public bool DisableSystemDefaultExpression {
@@ -10470,7 +10470,7 @@ namespace TabularEditor.TOMWrapper
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.DATACOVERAGEDEFINITION:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1603 : Handler.CompatibilityLevel >= 1603;
 				case Properties.EXTENDEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.QUERYGROUP:
