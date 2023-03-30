@@ -123,6 +123,7 @@ namespace TabularEditor.TOMWrapper
         int GetAnnotationsCount();
         IEnumerable<string> GetAnnotations();
         AnnotationCollection Annotations { get; }
+        void ClearAnnotations();
     }
 
     internal interface IInternalAnnotationObject: IAnnotationObject
