@@ -59,8 +59,10 @@
             this.tvResults = new Aga.Controls.Tree.TreeViewAdv();
             this.colObject = new Aga.Controls.Tree.TreeColumn();
             this.colType = new Aga.Controls.Tree.TreeColumn();
+            this.colSeverity = new Aga.Controls.Tree.TreeColumn();
             this.txtObjectName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.txtObjectType = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.txtSeverity = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.menContext.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -71,8 +73,9 @@
             this.splitter1.Cursor = System.Windows.Forms.Cursors.HSplit;
             this.splitter1.Dock = System.Windows.Forms.DockStyle.Top;
             this.splitter1.Location = new System.Drawing.Point(0, 25);
+            this.splitter1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(379, 3);
+            this.splitter1.Size = new System.Drawing.Size(505, 4);
             this.splitter1.TabIndex = 4;
             this.splitter1.TabStop = false;
             // 
@@ -88,7 +91,7 @@
             this.bpaResultSep2,
             this.bpaResultCopy});
             this.menContext.Name = "contextMenuStrip1";
-            this.menContext.Size = new System.Drawing.Size(169, 120);
+            this.menContext.Size = new System.Drawing.Size(170, 148);
             this.menContext.Opening += new System.ComponentModel.CancelEventHandler(this.menContext_Opening);
             // 
             // bpaResultGoTo
@@ -96,7 +99,7 @@
             this.bpaResultGoTo.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.bpaResultGoTo.Image = global::TabularEditor.Resources.GoToDefinition_16x;
             this.bpaResultGoTo.Name = "bpaResultGoTo";
-            this.bpaResultGoTo.Size = new System.Drawing.Size(168, 22);
+            this.bpaResultGoTo.Size = new System.Drawing.Size(169, 22);
             this.bpaResultGoTo.Text = "Go to object...";
             this.bpaResultGoTo.Click += new System.EventHandler(this.btnGoto_Click);
             // 
@@ -104,27 +107,27 @@
             // 
             this.bpaResultIgnore.Image = global::TabularEditor.Resources.CloakHide_16x;
             this.bpaResultIgnore.Name = "bpaResultIgnore";
-            this.bpaResultIgnore.Size = new System.Drawing.Size(168, 22);
+            this.bpaResultIgnore.Size = new System.Drawing.Size(169, 22);
             this.bpaResultIgnore.Text = "Ignore rule";
             this.bpaResultIgnore.Click += new System.EventHandler(this.bpaResultIgnore_Click);
             // 
             // bpaResultUnignore
             // 
             this.bpaResultUnignore.Name = "bpaResultUnignore";
-            this.bpaResultUnignore.Size = new System.Drawing.Size(168, 22);
+            this.bpaResultUnignore.Size = new System.Drawing.Size(169, 22);
             this.bpaResultUnignore.Text = "Unignore rule";
             this.bpaResultUnignore.Click += new System.EventHandler(this.bpaResultUnignore_Click);
             // 
             // bpaResultGoToSep
             // 
             this.bpaResultGoToSep.Name = "bpaResultGoToSep";
-            this.bpaResultGoToSep.Size = new System.Drawing.Size(165, 6);
+            this.bpaResultGoToSep.Size = new System.Drawing.Size(166, 6);
             // 
             // bpaResultScript
             // 
             this.bpaResultScript.Image = global::TabularEditor.Resources.Script_16x;
             this.bpaResultScript.Name = "bpaResultScript";
-            this.bpaResultScript.Size = new System.Drawing.Size(168, 22);
+            this.bpaResultScript.Size = new System.Drawing.Size(169, 22);
             this.bpaResultScript.Text = "Generate fix script";
             this.bpaResultScript.Click += new System.EventHandler(this.btnScript_Click);
             // 
@@ -132,19 +135,19 @@
             // 
             this.bpaResultFix.Image = global::TabularEditor.Resources.Repair_16x;
             this.bpaResultFix.Name = "bpaResultFix";
-            this.bpaResultFix.Size = new System.Drawing.Size(168, 22);
+            this.bpaResultFix.Size = new System.Drawing.Size(169, 22);
             this.bpaResultFix.Text = "Apply fix";
             this.bpaResultFix.Click += new System.EventHandler(this.btnFix_Click);
             // 
             // bpaResultSep2
             // 
             this.bpaResultSep2.Name = "bpaResultSep2";
-            this.bpaResultSep2.Size = new System.Drawing.Size(165, 6);
+            this.bpaResultSep2.Size = new System.Drawing.Size(166, 6);
             // 
             // bpaResultCopy
             // 
             this.bpaResultCopy.Name = "bpaResultCopy";
-            this.bpaResultCopy.Size = new System.Drawing.Size(168, 22);
+            this.bpaResultCopy.Size = new System.Drawing.Size(169, 22);
             this.bpaResultCopy.Text = "Copy to clipboard";
             this.bpaResultCopy.Click += new System.EventHandler(this.btnCopy_Click);
             // 
@@ -152,9 +155,10 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 585);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 725);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(379, 22);
+            this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 19, 0);
+            this.statusStrip1.Size = new System.Drawing.Size(505, 22);
             this.statusStrip1.TabIndex = 7;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -181,7 +185,7 @@
             this.btnExpandAll});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(379, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(505, 25);
             this.toolStrip1.TabIndex = 9;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -313,6 +317,7 @@
             this.tvResults.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tvResults.Columns.Add(this.colObject);
             this.tvResults.Columns.Add(this.colType);
+            this.tvResults.Columns.Add(this.colSeverity);
             this.tvResults.ContextMenuStrip = this.menContext;
             this.tvResults.DefaultToolTipProvider = null;
             this.tvResults.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -323,16 +328,18 @@
             this.tvResults.HideSelection = true;
             this.tvResults.Indent = 0;
             this.tvResults.LineColor = System.Drawing.SystemColors.ControlDark;
-            this.tvResults.Location = new System.Drawing.Point(0, 28);
+            this.tvResults.Location = new System.Drawing.Point(0, 29);
+            this.tvResults.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.tvResults.Model = null;
             this.tvResults.Name = "tvResults";
             this.tvResults.NodeControls.Add(this.txtObjectName);
             this.tvResults.NodeControls.Add(this.txtObjectType);
+            this.tvResults.NodeControls.Add(this.txtSeverity);
             this.tvResults.SelectedNode = null;
             this.tvResults.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.MultiSameParent;
             this.tvResults.ShowLines = false;
             this.tvResults.ShowNodeToolTips = true;
-            this.tvResults.Size = new System.Drawing.Size(379, 557);
+            this.tvResults.Size = new System.Drawing.Size(505, 696);
             this.tvResults.TabIndex = 10;
             this.tvResults.UseColumns = true;
             this.tvResults.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.tvResults_NodeMouseDoubleClick);
@@ -346,7 +353,7 @@
             this.colObject.Header = "Object";
             this.colObject.SortOrder = System.Windows.Forms.SortOrder.None;
             this.colObject.TooltipText = null;
-            this.colObject.Width = 307;
+            this.colObject.Width = 300;
             this.colObject.WidthChanged += new System.EventHandler(this.colObject_WidthChanged);
             // 
             // colType
@@ -355,6 +362,14 @@
             this.colType.SortOrder = System.Windows.Forms.SortOrder.None;
             this.colType.TooltipText = null;
             this.colType.Width = 70;
+            // 
+            // colSeverity
+            // 
+            this.colSeverity.Header = "Severity";
+            this.colSeverity.HideOnFullRow = false;
+            this.colSeverity.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.colSeverity.TooltipText = null;
+            this.colSeverity.Width = 70;
             // 
             // txtObjectName
             // 
@@ -377,17 +392,27 @@
             this.txtObjectType.UseCompatibleTextRendering = true;
             this.txtObjectType.DrawText += new System.EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(this.txtObjectType_DrawText);
             // 
+            // txtSeverity
+            // 
+            this.txtSeverity.DataPropertyName = "Severity";
+            this.txtSeverity.DisplayHiddenContentInToolTip = false;
+            this.txtSeverity.LeftMargin = 3;
+            this.txtSeverity.ParentColumn = this.colSeverity;
+            this.txtSeverity.UseCompatibleTextRendering = true;
+            this.txtSeverity.DrawText += new System.EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(this.txtSeverity_DrawText);
+            // 
             // BPAForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(379, 607);
+            this.ClientSize = new System.Drawing.Size(505, 747);
             this.Controls.Add(this.tvResults);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.toolStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MinimumSize = new System.Drawing.Size(290, 130);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.MinimumSize = new System.Drawing.Size(381, 151);
             this.Name = "BPAForm";
             this.Text = "Best Practice Analyzer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.BPAForm_FormClosing);
@@ -433,5 +458,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripButton btnCollapseAll;
         private System.Windows.Forms.ToolStripButton btnExpandAll;
+        private Aga.Controls.Tree.TreeColumn colSeverity;
+        private Aga.Controls.Tree.NodeControls.NodeTextBox txtSeverity;
     }
 }

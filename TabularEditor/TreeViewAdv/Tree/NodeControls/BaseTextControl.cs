@@ -187,7 +187,7 @@ namespace Aga.Controls.Tree.NodeControls
             if (fullRowDraw)
             {
                 bounds.X = bounds.X - 5;
-                bounds.Width = (Parent.UseColumns ? Parent.Columns.Sum(c => c.Width) : Parent.ClientRectangle.Width) - bounds.X;
+                bounds.Width = (Parent.UseColumns ? Parent.Columns.Where(c => c.HideOnFullRow).Sum(c => c.Width) : Parent.ClientRectangle.Width) - bounds.X;
                 context.Graphics.SetClip(bounds);
             }
 
