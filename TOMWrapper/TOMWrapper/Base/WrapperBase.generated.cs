@@ -379,6 +379,7 @@ namespace TabularEditor.TOMWrapper
         Default = 2,
         Push = 3,
         Dual = 4,
+        DirectLake = 5,
 	}
 	/// <summary>
 ///             Determines which partitions are to be selected to run queries against the model.
@@ -7893,12 +7894,10 @@ namespace TabularEditor.TOMWrapper
 		}
 
 /// <summary>
-///             Returns the status of local changes made to the model, which haven't been saved to the server.
-///             <para>If the model is not connected, this value is always <b>False</b>.</para></summary>
+///             Gets an indication if the model has local changes that have not been saved to the engine yet.
+///             </summary><value>True, if the model has local changes; otherwise, false.</value><remarks>A disconnected model, will always return a value of <b>false</b>.</remarks>
 		[DisplayName("Has Local Changes")]
-		[Category("Options"),Description(@"Returns the status of local changes made to the model, which haven't been saved to the server.
-            <para>If the model is not connected, this value is always <b>False</b>.</para>"),IntelliSense(@"Returns the status of local changes made to the model, which haven't been saved to the server.
-            <para>If the model is not connected, this value is always <b>False</b>.</para>")]
+		[Category("Options"),Description(@"Gets an indication if the model has local changes that have not been saved to the engine yet."),IntelliSense(@"Gets an indication if the model has local changes that have not been saved to the engine yet.")]
 		public bool HasLocalChanges {
 			get {
 			    return MetadataObject.HasLocalChanges;
