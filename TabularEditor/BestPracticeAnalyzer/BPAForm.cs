@@ -307,7 +307,7 @@ namespace TabularEditor.UI.Dialogs
         private void AutofitColObject()
         {
             treeViewResizing = true;
-            colObject.Width = tvResults.ClientRectangle.Width - colType.Width -
+            colObject.Width = tvResults.ClientRectangle.Width - colType.Width - colSeverity.Width -
                 (tvResults.VerticalScrollbarVisible ? SystemInformation.VerticalScrollBarWidth : 0);
             treeViewResizing = false;
         }
@@ -545,6 +545,14 @@ namespace TabularEditor.UI.Dialogs
         {
             tvResults.CollapseAll();
             AutofitColObject();
+        }
+
+        private void txtSeverity_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
+        {
+            if (e.Node.Tag is AnalyzerResult result)
+            {
+                if (result.Ignored) e.TextColor = e.Context.DrawSelection == DrawSelectionMode.None ? SystemColors.GrayText : Color.Silver;
+            }
         }
     }
 }
