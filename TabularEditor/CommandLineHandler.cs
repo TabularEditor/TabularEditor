@@ -159,6 +159,8 @@ namespace TabularEditor
 
             string saveToFolderOutputPath = null;
             string saveToFolderReplaceId = null;
+            string saveToTmdlOutputPath = null;
+            string saveToTmdlReplaceId = null;
 
             var doSaveToFolder = upperArgList.IndexOf("-FOLDER");
             if (doSaveToFolder == -1) doSaveToFolder = upperArgList.IndexOf("-F");
@@ -174,6 +176,21 @@ namespace TabularEditor
                 if (doSaveToFolder + 2 < argList.Count && !argList[doSaveToFolder + 2].StartsWith("-")) saveToFolderReplaceId = argList[doSaveToFolder + 2];
                 var directoryName = new FileInfo(saveToFolderOutputPath).Directory.FullName;
                 Directory.CreateDirectory(saveToFolderOutputPath);
+            }
+
+            var doSaveToTmdl = upperArgList.IndexOf("-TMDL");
+            if (doSaveToTmdl > -1)
+            {
+                if (upperArgList.Count <= doSaveToTmdl)
+                {
+                    Error("Invalid argument syntax.\n");
+                    OutputUsage();
+                    return;
+                }
+                saveToTmdlOutputPath = argList[doSaveToTmdl + 1];
+                if (doSaveToTmdl + 2 < argList.Count && !argList[doSaveToTmdl + 2].StartsWith("-")) saveToTmdlReplaceId = argList[doSaveToTmdl + 2];
+                var directoryName = new FileInfo(saveToTmdlOutputPath).Directory.FullName;
+                Directory.CreateDirectory(saveToTmdlOutputPath);
             }
 
             string buildOutputPath = null;
@@ -203,6 +220,20 @@ namespace TabularEditor
                 return;
             }
 
+            if (doSaveToTmdl > -1 && doSave > -1)
+            {
+                Error("-TMDL and -BUILD arguments are mutually exclusive.\n");
+                OutputUsage();
+                return;
+            }
+
+            if (doSaveToTmdl > -1 && doSaveToFolder > -1)
+            {
+                Error("-TMDL and -FOLDER arguments are mutually exclusive.\n");
+                OutputUsage();
+                return;
+            }
+
             if (doScript > -1) ExecuteScripts();
 
             if (doCheckDs > -1)
@@ -220,10 +251,18 @@ namespace TabularEditor
             else if (!string.IsNullOrEmpty(saveToFolderOutputPath))
             {
                 Console.WriteLine("Saving Model.bim file to Folder Output Path ...");
-                if (buildReplaceId != null) { Handler.Database.Name = buildReplaceId; Handler.Database.ID = buildReplaceId; }
+                if (saveToFolderReplaceId != null) { Handler.Database.Name = saveToFolderReplaceId; Handler.Database.ID = saveToFolderReplaceId; }
 
                 //Note the last parameter, we use whatever SerializeOptions are already in the file
                 Handler.Save(saveToFolderOutputPath, SaveFormat.TabularEditorFolder, null, true);
+            }
+            else if (!string.IsNullOrEmpty(saveToTmdlOutputPath))
+            {
+                Console.WriteLine("Saving Model.bim file to TMDL ...");
+                if (saveToTmdlReplaceId != null) { Handler.Database.Name = saveToFolderReplaceId; Handler.Database.ID = saveToFolderReplaceId; }
+
+                //Note the last parameter, we use whatever SerializeOptions are already in the file
+                Handler.Save(saveToTmdlOutputPath, SaveFormat.TMDL, null, true);
             }
 
             var doAnalyze = upperArgList.IndexOf("-ANALYZE");
@@ -430,7 +469,7 @@ namespace TabularEditor
             Console.WriteLine(@"Usage:
 
 TABULAREDITOR ( file | server database | -L [name] ) [-S script1 [script2] [...]]
-    [-SC] [-A [rules] | -AX rules] [(-B | -F) output [id]] [-V | -G] [-T resultsfile]
+    [-SC] [-A [rules] | -AX rules] [(-B | -F | -TMDL) output [id]] [-V | -G] [-T resultsfile]
     [-D [server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]]
         [-P [-Y]] [-R [-M]]]
         [-X xmla_script]] [-W] [-E]]
@@ -459,6 +498,9 @@ database            Database ID of the model to load. If blank ("") picks the fi
   id                  Optional id/name to assign to the Database object when saving.
 -F / -FOLDER        Saves the model (after optional script execution) as a Folder structure.
   output              Full path of the folder to save to. Folder is created if it does not exist.
+  id                  Optional id/name to assign to the Database object when saving.
+-TMDL               Saves the model (after optional script execution) as a TMDL folder structure.
+  output              Full path of the TMDL folder to save to. Folder is created if it does not exist.
   id                  Optional id/name to assign to the Database object when saving.
 -V / -VSTS          Output Visual Studio Team Services logging commands.
 -G / -GITHUB        Output GitHub Actions workflow commands.

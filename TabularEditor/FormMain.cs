@@ -651,7 +651,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             // Auto-load the file specified as command line arguments:
             var args = Environment.GetCommandLineArgs();
             var modelSource = CommandLineHandler.GetModelSourceFromCLI(args, out _);
-            if (modelSource == CommandLineHandler.ModelSource.File && (File.Exists(args[1]) || File.Exists(args[1] + "\\database.json")))
+            if (modelSource == CommandLineHandler.ModelSource.File && (File.Exists(args[1]) || File.Exists(Path.Combine(args[1],"database.json")) || File.Exists(Path.Combine(args[1],"model.tmd"))))
             {
                 UI.File_Open(args[1]);
             }
