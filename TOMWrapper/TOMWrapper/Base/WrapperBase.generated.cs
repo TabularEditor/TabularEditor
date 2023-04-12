@@ -26,6 +26,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string BASETABLE = "BaseTable";
 	    public const string CALCULATIONGROUP = "CalculationGroup";
 	    public const string CALCULATIONITEMS = "CalculationItems";
+	    public const string CALENDARS = "Calendars";
 	    public const string CHANGEDPROPERTIES = "ChangedProperties";
 	    public const string COLLATION = "Collation";
 	    public const string COLUMN = "Column";
@@ -13891,6 +13892,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1460 : Handler.CompatibilityLevel >= 1460;
 				case Properties.CALCULATIONGROUP:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1470 : Handler.CompatibilityLevel >= 1470;
+				case Properties.CALENDARS:
+					return false;
 				case Properties.CHANGEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1567 : Handler.CompatibilityLevel >= 1567;
 				case Properties.DEFAULTDETAILROWSDEFINITION:
