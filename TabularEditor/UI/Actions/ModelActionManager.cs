@@ -244,19 +244,18 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => Governance.AllowCreate(typeof(ModelRole)) && s.Count == 1, (s, m) => s.ForEach(i => (i as IClonableObject).Clone(null, Preferences.Current.Copy_IncludeTranslations).Edit()), (s, m) => "Duplicate Role", true, Context.Role));
 
             // Batch Rename
-            Add(new Action((s, m) => Governance.AllowEditProperty(s, TOMWrapper.Properties.NAME) && s.DirectCount > 1, (s, m) =>
+            Add(new Action((s, m) => Governance.AllowEditProperty(s.Direct, TOMWrapper.Properties.NAME) && s.DirectCount > 1, (s, m) =>
             {
                 var form = Dialogs.ReplaceForm.Singleton;
-                form.Text = "Batch Rename - (" + s.Summary() + " selected)";
+                form.Text = "Batch Rename - (" + s.Direct.Summary() + " selected)";
                 var res = form.ShowDialog();
                 if (res == DialogResult.Cancel) return;
                 // TODO: Add options for match case and whole word only
-                s.Rename(form.Pattern, form.ReplaceWith, form.RegEx, form.IncludeTranslations);
+                s.Direct.Rename(form.Pattern, form.ReplaceWith, form.RegEx, form.IncludeTranslations);
             }, (s, m) => "Batch Rename...", true, Context.DataObjects | Context.Level | Context.CalculationItem | Context.Partition, Keys.F2) { ToolTip = "Opens a dialog that lets you rename all the selected objects at once. Folders are not renamed, but objects inside folders are."});
 
             // Batch Rename Children
-            Add(new Action((s, m) => Governance.AllowEditProperty(new[] { ObjectType.Measure, ObjectType.Column, ObjectType.Hierarchy, ObjectType.Level }, TOMWrapper.Properties.NAME) 
-                && (s.Context == Context.Table || s.Direct.Any(i => i is Folder) || s.Context == Context.PartitionCollection), (s, m) =>
+            Add(new Action((s, m) => CanBatchRenameChildren(s, m), (s, m) =>
             {
                 var form = Dialogs.ReplaceForm.Singleton;
                 var sel = new UISelectionList<ITabularNamedObject>(
@@ -351,6 +350,12 @@ namespace TabularEditor.UI.Actions
             Add(new RefreshAction(true));
             Add(new RefreshAction(false));
 
+        }
+
+        private bool CanBatchRenameChildren(UITreeSelection s, Model m)
+        {
+            return Governance.AllowEditProperty(s.Concat(s.Tables.SelectMany(t => t.GetChildren())), TOMWrapper.Properties.NAME)
+                && (s.Context == Context.Table || s.Direct.Any(i => i is Folder) || s.Context == Context.PartitionCollection);
         }
 
         public static void SaveScriptToFile(string script)

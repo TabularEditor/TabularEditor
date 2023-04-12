@@ -134,6 +134,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
             else
             {
                 if (type == ObjectType.Database) return false;
+                if (type == ObjectType.Folder) return true;
 
                 // Some properties can be edited regardless of object type in restricted mode:
                 switch (property)
@@ -211,7 +212,9 @@ namespace TabularEditor.TOMWrapper.PowerBI
                 case Properties.DESCRIPTION:
                 case Properties.DATACATEGORY:
                 case Properties.FORMATSTRING:
+                case Properties.FORMATSTRINGEXPRESSION:
                 case Properties.LINEAGETAG:
+                case Properties.NAME:
                     return true;
                 default:
                     return false;
