@@ -304,15 +304,28 @@ namespace TabularEditor.TOMWrapper
                 OnPropertyChanging(Properties.FORMATSTRINGEXPRESSION, value, ref undoable, ref cancel);
                 if (cancel) return;
 
-                if (MetadataObject.FormatStringDefinition == null && !string.IsNullOrEmpty(value))
+                // When setting FormatStringExpression to a non-blank value, we must clear the FormatString, as Analysis Services
+                // does not allow a measure to have both FormatString and FormatStringExpression applied.
+                var transaction = !string.IsNullOrWhiteSpace(value) && !string.IsNullOrEmpty(FormatString);
+                if (transaction)
+                {
+                    Handler.BeginUpdate("Format String Expression");
+                    FormatString = null;
+                }
+
+                if (MetadataObject.FormatStringDefinition == null && !string.IsNullOrWhiteSpace(value))
                     MetadataObject.FormatStringDefinition = new TOM.FormatStringDefinition();
-                if (!string.IsNullOrEmpty(value))
+                if (!string.IsNullOrWhiteSpace(value))
+                {
                     MetadataObject.FormatStringDefinition.Expression = value;
+                }
                 if (string.IsNullOrWhiteSpace(value) && MetadataObject.FormatStringDefinition != null)
                     MetadataObject.FormatStringDefinition = null;
 
                 if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FORMATSTRINGEXPRESSION, oldValue, value));
                 OnPropertyChanged(Properties.FORMATSTRINGEXPRESSION, oldValue, value);
+
+                if (transaction) Handler.EndUpdate();
             }
         }
         public bool ShouldSerializeFormatStringExpression() { return false; }
