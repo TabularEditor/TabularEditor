@@ -37,8 +37,6 @@ namespace TabularEditor.UI.Dialogs
 
         private void CmbSerializationMode_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            UpdateTmdlUi();
-
             if(cmbSerializationMode.SelectedIndex == 1 && !tmdlWarningShown)
             {
                 var td = new TaskDialog();
@@ -53,6 +51,8 @@ namespace TabularEditor.UI.Dialogs
                 tmdlWarningShown = true;
                 if (result == TaskDialogResult.Cancel) cmbSerializationMode.SelectedIndex = 0;
             }
+
+            UpdateTmdlUi();
         }
 
         private void Td_HyperlinkClick(object sender, TaskDialogHyperlinkClickedEventArgs e)
