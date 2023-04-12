@@ -178,6 +178,11 @@ namespace TabularEditor.UI
                         actSave.ToolTipText = "Saves the changes back to the currently loaded model folder structure (Ctrl+S)";
                         actSave.Image = Resources.SaveFolderTree;
                         break;
+                    case TOMWrapper.ModelSourceType.TMDL:
+                        actSave.Text = "&Save";
+                        actSave.ToolTipText = "Saves the changes back to the currently loaded TMDL folder structure (Ctrl+S)";
+                        actSave.Image = Resources.SaveFolderTree;
+                        break;
                     case TOMWrapper.ModelSourceType.Pbit:
                         actSave.Text = "&Save";
                         actSave.ToolTipText = "Saves the changes back to the currently loaded Power BI Template (Ctrl+S)";
@@ -283,7 +288,7 @@ namespace TabularEditor.UI
             ExpressionEditor_AcceptEdit();
 
             // Save as a Folder structure:
-            var saveFormat = SaveFormat.TabularEditorFolder;
+            var saveFormat = Preferences.Current.UseTMDL ? SaveFormat.TMDL : SaveFormat.TabularEditorFolder;
 
             // This flag indicates whether we're currently connected to a database:
             var connectedToDatabase = Handler.SourceType == ModelSourceType.Database;
@@ -311,7 +316,7 @@ namespace TabularEditor.UI
             var serializationOptions = Preferences.Current.GetSerializeOptions(LocalInstance?.Type == LocalInstanceType.PowerBI ? LocalInstance.Name : null);
 
             // Only show the "Use serialize options from annotations" checkbox when the current model has these annotations:
-            var showSfa = Handler.HasSerializeOptions;
+            var showSfa = Handler.HasSerializeOptions && saveFormat == SaveFormat.TabularEditorFolder;
 
             using (var dialog = SaveAsDialog.CreateFolderDialog(showSfa))
             {
@@ -383,6 +388,7 @@ namespace TabularEditor.UI
                         break;
 
                     case ModelSourceType.Folder:
+                    case ModelSourceType.TMDL:
                         if (GetLastDirChange(File_Current, File_LastWrite) > File_LastWrite)
                         {
                             var mr = MessageBox.Show("Changes were made to the currently loaded folder structure after the model was loaded in Tabular Editor. Overwrite these changes?", "Overwriting folder structure changes", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
@@ -390,7 +396,7 @@ namespace TabularEditor.UI
                         }
                         try
                         {
-                            Handler.Save(File_Current, SaveFormat.TabularEditorFolder, null, true, true);
+                            Handler.Save(File_Current, File_SaveMode == ModelSourceType.TMDL ? SaveFormat.TMDL : SaveFormat.TabularEditorFolder, null, true, true);
                             File_LastWrite = GetLastDirChange(File_Current);
                             if (Handler.SerializeOptions.AlsoSaveAsBim)
                             {

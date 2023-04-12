@@ -46,6 +46,8 @@ namespace TabularEditor.UIServices
 
         public bool UsePowerQueryPartitionsByDefault = false;
 
+        public bool UseTMDL = false; // TODO: Set this to true (to use TMDL as the default folder format) once TMDL is out of preview.
+
         /// <summary>
         /// Stores an encrypted version of the user password. Use the string Decrypt() extension method to decrypt.
         /// </summary>

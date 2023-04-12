@@ -134,6 +134,7 @@
     </Compile>
     <Compile Include="UndoManagerTests.cs" />
     <Compile Include="ExternalChangeTests.cs" />
+    <Compile Include="DatabaseHelperTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="PropertyChangeTestGenerator.tt">

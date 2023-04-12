@@ -25,6 +25,10 @@ namespace TabularEditor.TOMWrapper
             // If the file extension is .pbit, assume Power BI template:
             if (file.Exists && file.Extension.EqualsI(".pbit")) LoadPowerBiTemplateFile(path);
 
+            // TMDL:
+            else if (file.Exists && file.Extension.EqualsI(".tmd")) LoadTMDL(path);
+            else if (Directory.Exists(path) && File.Exists(Path.Combine(path, "model.tmd"))) LoadTMDL(Path.Combine(path, "model.tmd"));
+
             // If the file name is "database.json" or path is a directory, assume Split Model:
             else if ((file.Exists && file.Name.EqualsI("database.json")) || Directory.Exists(path)) LoadSplitModelFiles(path);
 
@@ -64,6 +68,27 @@ namespace TabularEditor.TOMWrapper
 
             pbit = new PowerBiTemplate(path);
             InitModelFromJson(pbit.ModelJson);
+        }
+
+        private void LoadTMDL(string path)
+        {
+            SourceType = ModelSourceType.TMDL;
+            if (File.Exists(path)) path = new FileInfo(path).DirectoryName;
+            Source = path;
+
+            try
+            {
+                var model = TOM.TmdlSerializer.DeserializeModel(path);
+                database = model.Database as TOM.Database;
+                Status = "Model loaded successfully.";
+                Init();
+
+                _serializeOptions = SerializeOptions;
+            }
+            catch(Exception ex)
+            {
+                throw new Exception($"{ex.GetType().Name} encountered while deserializing TMDL: {ex.Message}");
+            }
         }
 
         private void LoadModelFile(string path)
@@ -206,10 +231,9 @@ namespace TabularEditor.TOMWrapper
                         Model.SaveToFolder(path, options);
                         break;
 
-                    case SaveFormat.VisualStudioProject:
-                        // TODO
-                        throw new NotImplementedException();
-                        // break;
+                    case SaveFormat.TMDL:
+                        SaveTmdl(path, options);
+                        break;
                 }
 
                 if (resetCheckpoint) UndoManager.SetCheckpoint();
@@ -244,6 +268,31 @@ namespace TabularEditor.TOMWrapper
             // Save to .pbit file:
             pbit.ModelJson = dbcontent;
             pbit.SaveAs(fileName);
+        }
+
+        private void SaveTmdl(string path, SerializeOptions options)
+        {
+            var db = Model.Database.TOMDatabase;
+            db.RemoveTabularEditorTag();
+            var orgDbName = db.Name;
+            var orgDbId = db.ID;
+
+            db.Name = Model.Database?.Name ?? "SemanticModel";
+            if (Model.Database != null)
+            {
+                if (!Model.Database.Name.EqualsI(Model.Database.ID)) db.SetID(Model.Database.ID);
+                else if (orgDbId != null) db.SetID(null);
+            }
+
+            if (options.DatabaseNameOverride != null)
+            {
+                db.SetName(options.DatabaseNameOverride);
+                db.SetID(null);
+            }
+            TOM.TmdlSerializer.SerializeModel(Model.MetadataObject, path);
+
+            db.SetName(orgDbName);
+            db.SetID(orgDbId);
         }
 
         private void SaveFile(string fileName, SerializeOptions options)

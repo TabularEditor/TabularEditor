@@ -20,14 +20,14 @@ namespace TabularEditor.TOMWrapper
         PowerBiTemplate,
 
         /// <summary>
-        /// Saves the Model Schema together with a Visual Studio Tabular Project file and user settings file
-        /// </summary>
-        VisualStudioProject,
-
-        /// <summary>
         /// Saves the Model Schema as a Tabular Editor folder structure
         /// </summary>
-        TabularEditorFolder
+        TabularEditorFolder,
+
+        /// <summary>
+        /// Tabular Model Definition Language
+        /// </summary>
+        TMDL
     }
 
     public enum ModelSourceType
@@ -46,6 +46,11 @@ namespace TabularEditor.TOMWrapper
         /// Model.bim exploded into a folder structure by Tabular Editor
         /// </summary>
         Folder,
+
+        /// <summary>
+        /// Tabular Model Definition Language
+        /// </summary>
+        TMDL,
 
         /// <summary>
         /// Power BI Template file (.pbit)
