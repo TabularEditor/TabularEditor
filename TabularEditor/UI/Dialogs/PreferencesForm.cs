@@ -44,7 +44,7 @@ namespace TabularEditor.UI.Dialogs
                 var td = new TaskDialog();
                 td.HyperlinksEnabled = true;
                 td.Caption = "TMDL preview";
-                td.Text = "TMDL (Tabular Model Definition Language) is currently in preview. Some features (such as metadata translations) are currently not supported. See the <a href=\"https://learn.microsoft.com/en-us/analysis-services/tmdl/tmdl-overview\">official TMDL documentation</a> for more information.\n\nUse TMDL as the default Save to Folder format in Tabular Editor?";
+                td.Text = "TMDL (Tabular Model Definition Language) is currently in preview. Some objects (such as metadata translations, Provider Data Sources, role members) are currently not supported. See the <a href=\"https://learn.microsoft.com/en-us/analysis-services/tmdl/tmdl-overview\">official TMDL documentation</a> for more information.\n\nUse TMDL as the default Save to Folder format in Tabular Editor?";
                 td.Icon = TaskDialogStandardIcon.Information;
                 td.FooterIcon = TaskDialogStandardIcon.None;
                 td.HyperlinkClick += Td_HyperlinkClick;
