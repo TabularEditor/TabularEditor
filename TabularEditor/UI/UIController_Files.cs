@@ -343,7 +343,7 @@ namespace TabularEditor.UI
                             // If working with a file, change the current file pointer:
                             if (changeFilePointer)
                             {
-                                File_SaveMode = ModelSourceType.Folder;
+                                File_SaveMode = saveFormat == SaveFormat.TabularEditorFolder ? ModelSourceType.Folder : ModelSourceType.TMDL;
                                 File_Current = dialog.FileName;
                                 File_Directory = FileSystemHelper.DirectoryFromPath(File_Current);
                                 File_LastWrite = GetLastDirChange(File_Current);
