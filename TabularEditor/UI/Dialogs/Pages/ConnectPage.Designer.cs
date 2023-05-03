@@ -52,6 +52,7 @@
             this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
             this.imageList1.Images.SetKeyName(0, "devenv");
             this.imageList1.Images.SetKeyName(1, "powerbi");
+            this.imageList1.Images.SetKeyName(2, "analysisservices");
             // 
             // comboBox1
             // 
@@ -61,9 +62,10 @@
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.ItemHeight = 20;
-            this.comboBox1.Location = new System.Drawing.Point(90, 26);
+            this.comboBox1.Location = new System.Drawing.Point(120, 32);
+            this.comboBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(341, 26);
+            this.comboBox1.Size = new System.Drawing.Size(453, 26);
             this.comboBox1.TabIndex = 1;
             this.comboBox1.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.comboBox1_DrawItem);
             this.comboBox1.DropDown += new System.EventHandler(this.comboBox1_DropDown);
@@ -72,18 +74,20 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(0, 32);
+            this.label1.Location = new System.Drawing.Point(0, 39);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(79, 13);
+            this.label1.Size = new System.Drawing.Size(97, 16);
             this.label1.TabIndex = 53;
             this.label1.Text = "Local instance:";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(0, 3);
+            this.label2.Location = new System.Drawing.Point(0, 4);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(41, 13);
+            this.label2.Size = new System.Drawing.Size(51, 16);
             this.label2.TabIndex = 49;
             this.label2.Text = "Server:";
             // 
@@ -96,17 +100,19 @@
             this.panel1.Controls.Add(this.txtPassword);
             this.panel1.Controls.Add(this.label3);
             this.panel1.Controls.Add(this.txtUsername);
-            this.panel1.Location = new System.Drawing.Point(0, 54);
+            this.panel1.Location = new System.Drawing.Point(0, 66);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(325, 100);
+            this.panel1.Size = new System.Drawing.Size(433, 123);
             this.panel1.TabIndex = 54;
             // 
             // rdbUsernamePassword
             // 
             this.rdbUsernamePassword.AutoSize = true;
-            this.rdbUsernamePassword.Location = new System.Drawing.Point(90, 27);
+            this.rdbUsernamePassword.Location = new System.Drawing.Point(120, 33);
+            this.rdbUsernamePassword.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.rdbUsernamePassword.Name = "rdbUsernamePassword";
-            this.rdbUsernamePassword.Size = new System.Drawing.Size(143, 17);
+            this.rdbUsernamePassword.Size = new System.Drawing.Size(178, 20);
             this.rdbUsernamePassword.TabIndex = 1;
             this.rdbUsernamePassword.Text = "Username and Password";
             this.rdbUsernamePassword.UseVisualStyleBackColor = true;
@@ -116,9 +122,10 @@
             // 
             this.rdbIntegrated.AutoSize = true;
             this.rdbIntegrated.Checked = true;
-            this.rdbIntegrated.Location = new System.Drawing.Point(90, 4);
+            this.rdbIntegrated.Location = new System.Drawing.Point(120, 5);
+            this.rdbIntegrated.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.rdbIntegrated.Name = "rdbIntegrated";
-            this.rdbIntegrated.Size = new System.Drawing.Size(205, 17);
+            this.rdbIntegrated.Size = new System.Drawing.Size(250, 20);
             this.rdbIntegrated.TabIndex = 0;
             this.rdbIntegrated.TabStop = true;
             this.rdbIntegrated.Text = "Windows Integrated or Azure AD login";
@@ -128,47 +135,52 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(0, 6);
+            this.label5.Location = new System.Drawing.Point(0, 7);
+            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(78, 13);
+            this.label5.Size = new System.Drawing.Size(94, 16);
             this.label5.TabIndex = 59;
             this.label5.Text = "Authentication:";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(0, 80);
+            this.label4.Location = new System.Drawing.Point(0, 98);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(56, 13);
+            this.label4.Size = new System.Drawing.Size(71, 16);
             this.label4.TabIndex = 58;
             this.label4.Text = "Password:";
             // 
             // txtPassword
             // 
             this.txtPassword.Enabled = false;
-            this.txtPassword.Location = new System.Drawing.Point(90, 77);
-            this.txtPassword.MaximumSize = new System.Drawing.Size(180, 20);
+            this.txtPassword.Location = new System.Drawing.Point(120, 95);
+            this.txtPassword.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtPassword.MaximumSize = new System.Drawing.Size(239, 20);
             this.txtPassword.Name = "txtPassword";
-            this.txtPassword.Size = new System.Drawing.Size(180, 20);
+            this.txtPassword.Size = new System.Drawing.Size(239, 22);
             this.txtPassword.TabIndex = 3;
             this.txtPassword.UseSystemPasswordChar = true;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(0, 54);
+            this.label3.Location = new System.Drawing.Point(0, 66);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(58, 13);
+            this.label3.Size = new System.Drawing.Size(74, 16);
             this.label3.TabIndex = 57;
             this.label3.Text = "Username:";
             // 
             // txtUsername
             // 
             this.txtUsername.Enabled = false;
-            this.txtUsername.Location = new System.Drawing.Point(90, 51);
-            this.txtUsername.MaximumSize = new System.Drawing.Size(180, 20);
+            this.txtUsername.Location = new System.Drawing.Point(120, 63);
+            this.txtUsername.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtUsername.MaximumSize = new System.Drawing.Size(239, 20);
             this.txtUsername.Name = "txtUsername";
-            this.txtUsername.Size = new System.Drawing.Size(180, 20);
+            this.txtUsername.Size = new System.Drawing.Size(239, 22);
             this.txtUsername.TabIndex = 2;
             this.txtUsername.TextChanged += new System.EventHandler(this.ValidateUI);
             // 
@@ -177,9 +189,10 @@
             this.txtServer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtServer.FormattingEnabled = true;
-            this.txtServer.Location = new System.Drawing.Point(90, 0);
+            this.txtServer.Location = new System.Drawing.Point(120, 0);
+            this.txtServer.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtServer.Name = "txtServer";
-            this.txtServer.Size = new System.Drawing.Size(341, 21);
+            this.txtServer.Size = new System.Drawing.Size(453, 24);
             this.txtServer.TabIndex = 0;
             this.txtServer.SelectionChangeCommitted += new System.EventHandler(this.txtServer_SelectionChangeCommitted);
             this.txtServer.TextUpdate += new System.EventHandler(this.ValidateUI);
@@ -187,16 +200,17 @@
             // 
             // ConnectPage
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.txtServer);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label2);
-            this.MinimumSize = new System.Drawing.Size(270, 151);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.MinimumSize = new System.Drawing.Size(360, 186);
             this.Name = "ConnectPage";
-            this.Size = new System.Drawing.Size(431, 151);
+            this.Size = new System.Drawing.Size(575, 186);
             this.Load += new System.EventHandler(this.ConnectPage_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

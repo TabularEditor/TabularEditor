@@ -85,7 +85,8 @@ namespace TabularEditor.UIServices
     {
         None = 0,
         Devenv = 1,
-        PowerBI = 2
+        PowerBI = 2,
+        AnalysisServices = 3
     }
     public class LocalInstance
     {
@@ -128,48 +129,50 @@ namespace TabularEditor.UIServices
             try
             {
 
-                var tcpTable = ManagedIpHelper.GetExtendedTcpTable();
+                var tcpTable = ManagedIpHelper.GetExtendedTcpTable(false).Where(tcp =>
+                    tcp.State == TcpState.Listen
+                    && (
+                        IPAddress.IsLoopback(tcp.LocalEndPoint.Address)
+                        || tcp.LocalEndPoint.Address.Equals(IPAddress.Parse("0.0.0.0"))
+                    ));
 
                 foreach (var proc in Process.GetProcessesByName("msmdsrv"))
                 {
                     int _port = 0;
-                    LocalInstanceType _icon = LocalInstanceType.PowerBI;
+                    LocalInstanceType _icon;
                     var parent = proc.GetParent();
-
-                    // exit here if the parent == "services" then this is a SSAS instance
-                    if (parent.ProcessName.Equals("services", StringComparison.OrdinalIgnoreCase)) continue;
-
-                    // if the process was launched from Visual Studio change the icon
-                    if (parent.ProcessName == "devenv") _icon = LocalInstanceType.Devenv;
-
-                    // get the window title so that we can parse out the file name
-                    var parentTitle = parent.MainWindowTitle;
-                    if (parentTitle.Length == 0)
+                    var parentTitle = "Analysis Services";
+                    if (parent == null || parent.ProcessName.Equals("services", StringComparison.OrdinalIgnoreCase))
                     {
-                        // for minimized windows we need to use some Win32 api calls to get the title
-                        parentTitle = GetWindowTitle(parent.Id);
-                    }
-
-                    // try and get the tcp port from the Win32 TcpTable API
-                    var tcpRow = tcpTable.SingleOrDefault((r) => r.ProcessId == proc.Id && r.State == TcpState.Listen && IPAddress.IsLoopback(r.LocalEndPoint.Address));
-                    if (tcpRow != null)
-                    {
-                        _port = tcpRow.LocalEndPoint.Port;
-                        _portSet = true;
-                        _instances.Add(new LocalInstance(parentTitle, _port, _icon));
-                        //Log.Debug("{class} {method} PowerBI found on port: {port}", "PowerBIHelper", "Refresh", _port);
+                        // exit here if the parent is null or parent == "services" then this is a SSAS instance
+                        _icon = LocalInstanceType.AnalysisServices;
                     }
                     else
                     {
-                        //Log.Debug("{class} {method} PowerBI port not found for process: {processName} PID: {pid}", "PowerBIHelper", "Refresh", proc.ProcessName, proc.Id);
-                    }
-                }
+                        // if the process was launched from Visual Studio change the icon
+                        _icon = parent.ProcessName == "devenv" ? LocalInstanceType.Devenv :
+                            // otherwise must be a PBI Desktop instance
+                            LocalInstanceType.PowerBI;
 
-                throw new NullReferenceException();
+                        parentTitle = parent.MainWindowTitle;
+                        // get the window title so that we can parse out the file name
+                        if (parentTitle.Length == 0)
+                        {
+                            // for minimized windows we need to use some Win32 api calls to get the title
+                            parentTitle = GetWindowTitle(parent.Id);
+                        }
+                    }
+                    // try and get the tcp port from the Win32 TcpTable API
+                    var tcpRow = tcpTable.SingleOrDefault(r => r.ProcessId == proc.Id);
+
+                    if (tcpRow == null) continue;
+                    _port = tcpRow.LocalEndPoint.Port;
+                    _portSet = true;
+                    _instances.Add(new LocalInstance(parentTitle, _port, _icon));
+                }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                
             }
         }
 
