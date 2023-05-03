@@ -1049,7 +1049,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Variation>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -1351,7 +1351,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.StructuredDataSource>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -1557,7 +1557,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.CalculatedColumn>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -1775,7 +1775,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.CalculatedTableColumn>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -2762,7 +2762,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Column>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -3565,7 +3565,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Culture>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -3816,7 +3816,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.DataColumn>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -4221,7 +4221,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.DataSource>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -4502,7 +4502,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.ExternalModelRoleMember>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -5142,7 +5142,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Hierarchy>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -5925,7 +5925,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.KPI>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -6212,7 +6212,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.AlternateOf>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -6787,7 +6787,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Level>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -7627,7 +7627,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Measure>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -8652,7 +8652,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Model>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -9259,7 +9259,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.ModelRole>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -9794,7 +9794,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.ModelRoleMember>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -10428,7 +10428,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Partition>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -11128,7 +11128,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Set>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -11721,7 +11721,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Perspective>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -12127,7 +12127,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.ProviderDataSource>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -12641,7 +12641,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Relationship>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -13020,7 +13020,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.SingleColumnRelationship>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -13772,7 +13772,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Table>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -14218,7 +14218,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.WindowsModelRoleMember>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -14870,7 +14870,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.NamedExpression>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -15316,7 +15316,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.CalculationGroup>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -15559,7 +15559,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.CalculationItem>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -16161,7 +16161,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.TablePermission>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }

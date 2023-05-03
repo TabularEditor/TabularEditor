@@ -626,7 +626,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.<#=t.Name#>>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }

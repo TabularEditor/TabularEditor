@@ -17,7 +17,7 @@ namespace TabularEditor.TOMWrapper.Undo
             _objs = content.Select(o => new Tuple<TabularNamedObject, Type, string>(
                 o, 
                 o.MetadataObject.GetType(), 
-                TOM.JsonSerializer.SerializeObject(o.MetadataObject))).ToArray();
+                TOM.JsonSerializer.SerializeObject(o.MetadataObject, TabularObject.RenewMetadataOptions, o.Handler.CompatibilityLevel, o.Handler.Database.CompatibilityMode))).ToArray();
         }
 
         public string ActionName { get { return "clear"; } }
