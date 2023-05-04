@@ -192,13 +192,6 @@ namespace TabularEditor.TOMWrapper
             return CreateFromMetadata(parent, metadataObject);
         }
 
-        /*
-        [Browsable(false)]
-        public CalculationGroupAttribute NameField { get; private set; }
-        [Browsable(false)]
-        public CalculationGroupAttribute OrdinalField { get; private set; }
-        */
-
         CalculationGroupTable(TOM.Table table) : base(table)
         {
 
@@ -223,33 +216,62 @@ namespace TabularEditor.TOMWrapper
         public AnnotationCollection CalculationGroupAnnotations { get { return CalculationGroup.Annotations; } }
 
         /// <summary>
-        /// The expression defined on this object will be applied to the selected measure in DAX queries, when no calculation items can be applied.
+        /// The expression defined on this object will be applied to the selected measure in DAX queries, when multiple calculation items are aplied.
         /// </summary>
-        [Category("Options"),DisplayName("Default Expression"),Description("The expression defined on this object will be applied to the selected measure in DAX queries, when no calculation items can be applied."),Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
-        public string DefaultExpression
+        [Category("Options"),DisplayName("Multi-selection Expression"),Description("The expression defined on this object will be applied to the selected measure in DAX queries, when multiple calculation items are applied."),Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
+        public string MultiSelectionExpression
         {
-            get => CalculationGroup.DefaultExpression;
-            set => CalculationGroup.DefaultExpression = value;
+            get => CalculationGroup.MultiSelectionExpression;
+            set => CalculationGroup.MultiSelectionExpression = value;
         }
 
         /// <summary>
-        /// The format string expression defined on this object will be applied to the selected measure in DAX queries, when no calculation items can be applied.
+        /// The format string expression defined on this object will be applied to the selected measure in DAX queries, when multiple calculation items are aplied.
         /// </summary>
-        [Category("Options"), DisplayName("Default Format String Expression"), Description("The format string expression defined on this object will be applied to the selected measure in DAX queries, when no calculation items can be applied."), Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
-        public string DefaultFormatStringExpression
+        [Category("Options"), DisplayName("Multi-selection Format String Expression"), Description("The format string expression defined on this object will be applied to the selected measure in DAX queries, when multiple calculation items are applied."), Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
+        public string MultiSelectionFormatStringExpression
         {
-            get => CalculationGroup.DefaultFormatStringExpression;
-            set => CalculationGroup.DefaultFormatStringExpression = value;
+            get => CalculationGroup.MultiSelectionFormatStringExpression;
+            set => CalculationGroup.MultiSelectionFormatStringExpression = value;
         }
 
         /// <summary>
         /// The description of the CalculationExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
         /// </summary>
-        [Category("Options"), DisplayName("Default Expression Description"), Description("The description of the CalculationExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")]
-        public string DefaultExpressionDescription
+        [Category("Options"), DisplayName("Multi-selection Expression Description"), Description("The description of the CalculationExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")]
+        public string MultiSelectionExpressionDescription
         {
-            get => CalculationGroup.DefaultExpressionDescription;
-            set => CalculationGroup.DefaultExpressionDescription = value;
+            get => CalculationGroup.MultiSelectionExpressionDescription;
+            set => CalculationGroup.MultiSelectionExpressionDescription = value;
+        }
+        /// <summary>
+        /// The expression defined on this object will be applied to the selected measure in DAX queries, when no calculation items are applied.
+        /// </summary>
+        [Category("Options"), DisplayName("No-selection Expression"), Description("The expression defined on this object will be applied to the selected measure in DAX queries, when no calculation items are applied."), Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
+        public string NoSelectionExpression
+        {
+            get => CalculationGroup.NoSelectionExpression;
+            set => CalculationGroup.NoSelectionExpression = value;
+        }
+
+        /// <summary>
+        /// The format string expression defined on this object will be applied to the selected measure in DAX queries, when no calculation items are applied.
+        /// </summary>
+        [Category("Options"), DisplayName("No-selection Format String Expression"), Description("The format string expression defined on this object will be applied to the selected measure in DAX queries, when no calculation items are applied."), Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
+        public string NoSelectionFormatStringExpression
+        {
+            get => CalculationGroup.NoSelectionFormatStringExpression;
+            set => CalculationGroup.NoSelectionFormatStringExpression = value;
+        }
+
+        /// <summary>
+        /// The description of the CalculationExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+        /// </summary>
+        [Category("Options"), DisplayName("No-selection Expression Description"), Description("The description of the CalculationExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")]
+        public string NoSelectionExpressionDescription
+        {
+            get => CalculationGroup.NoSelectionExpressionDescription;
+            set => CalculationGroup.NoSelectionExpressionDescription = value;
         }
 
         protected override void Init()
@@ -296,9 +318,12 @@ namespace TabularEditor.TOMWrapper
                 case Properties.INPERSPECTIVE:
                 case Properties.DEFAULTDETAILROWSEXPRESSION:
                     return true;
-                case nameof(DefaultExpression):
-                case nameof(DefaultFormatStringExpression):
-                case nameof(DefaultExpressionDescription):
+                case nameof(MultiSelectionExpression):
+                case nameof(MultiSelectionFormatStringExpression):
+                case nameof(MultiSelectionExpressionDescription):
+                case nameof(NoSelectionExpression):
+                case nameof(NoSelectionFormatStringExpression):
+                case nameof(NoSelectionExpressionDescription):
                     return Handler.CompatibilityLevel >= DefaultExpressionRequiredCompatibilityLevel;
                 default:
                     return false;

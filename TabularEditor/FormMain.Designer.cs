@@ -2033,7 +2033,7 @@
             this.cmbExpressionSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbExpressionSelector.Enabled = false;
             this.cmbExpressionSelector.Name = "cmbExpressionSelector";
-            this.cmbExpressionSelector.Size = new System.Drawing.Size(190, 25);
+            this.cmbExpressionSelector.Size = new System.Drawing.Size(240, 25);
             // 
             // pgCSharpScript
             // 

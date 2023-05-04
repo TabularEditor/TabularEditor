@@ -26,6 +26,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string BASETABLE = "BaseTable";
 	    public const string CALCULATIONGROUP = "CalculationGroup";
 	    public const string CALCULATIONITEMS = "CalculationItems";
+	    public const string CALENDARS = "Calendars";
 	    public const string CHANGEDPROPERTIES = "ChangedProperties";
 	    public const string COLLATION = "Collation";
 	    public const string COLUMN = "Column";
@@ -51,7 +52,6 @@ namespace TabularEditor.TOMWrapper
 	    public const string DEFAULTCOLUMN = "DefaultColumn";
 	    public const string DEFAULTDATAVIEW = "DefaultDataView";
 	    public const string DEFAULTDETAILROWSDEFINITION = "DefaultDetailRowsDefinition";
-	    public const string DEFAULTEXPRESSION = "DefaultExpression";
 	    public const string DEFAULTHIERARCHY = "DefaultHierarchy";
 	    public const string DEFAULTMEASURE = "DefaultMeasure";
 	    public const string DEFAULTMODE = "DefaultMode";
@@ -125,7 +125,9 @@ namespace TabularEditor.TOMWrapper
 	    public const string MODE = "Mode";
 	    public const string MODELPERMISSION = "ModelPermission";
 	    public const string MODIFIEDTIME = "ModifiedTime";
+	    public const string MULTISELECTIONEXPRESSION = "MultiSelectionExpression";
 	    public const string NAME = "Name";
+	    public const string NOSELECTIONEXPRESSION = "NoSelectionExpression";
 	    public const string OBJECTTRANSLATIONS = "ObjectTranslations";
 	    public const string OBJECTTYPE = "ObjectType";
 	    public const string OPTIONS = "Options";
@@ -372,6 +374,7 @@ namespace TabularEditor.TOMWrapper
         Default = 2,
         Push = 3,
         Dual = 4,
+        DirectLake = 5,
 	}
 	/// <summary>
 ///             Determines which partitions are to be selected to run queries against the model.
@@ -7886,12 +7889,10 @@ namespace TabularEditor.TOMWrapper
 		}
 
 /// <summary>
-///             Returns the status of local changes made to the model, which haven't been saved to the server.
-///             <para>If the model is not connected, this value is always <b>False</b>.</para></summary>
+///             Gets an indication if the model has local changes that have not been saved to the engine yet.
+///             </summary><value>True, if the model has local changes; otherwise, false.</value><remarks>A disconnected model, will always return a value of <b>false</b>.</remarks>
 		[DisplayName("Has Local Changes")]
-		[Category("Options"),Description(@"Returns the status of local changes made to the model, which haven't been saved to the server.
-            <para>If the model is not connected, this value is always <b>False</b>.</para>"),IntelliSense(@"Returns the status of local changes made to the model, which haven't been saved to the server.
-            <para>If the model is not connected, this value is always <b>False</b>.</para>")]
+		[Category("Options"),Description(@"Gets an indication if the model has local changes that have not been saved to the engine yet."),IntelliSense(@"Gets an indication if the model has local changes that have not been saved to the engine yet.")]
 		public bool HasLocalChanges {
 			get {
 			    return MetadataObject.HasLocalChanges;
@@ -10463,7 +10464,7 @@ namespace TabularEditor.TOMWrapper
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.DATACOVERAGEDEFINITION:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1603 : Handler.CompatibilityLevel >= 1603;
 				case Properties.EXTENDEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.QUERYGROUP:
@@ -13885,6 +13886,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1460 : Handler.CompatibilityLevel >= 1460;
 				case Properties.CALCULATIONGROUP:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1470 : Handler.CompatibilityLevel >= 1470;
+				case Properties.CALENDARS:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.CHANGEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1567 : Handler.CompatibilityLevel >= 1567;
 				case Properties.DEFAULTDETAILROWSDEFINITION:
@@ -15362,7 +15365,9 @@ namespace TabularEditor.TOMWrapper
 			switch (propertyName) {
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
-				case Properties.DEFAULTEXPRESSION:
+				case Properties.MULTISELECTIONEXPRESSION:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+				case Properties.NOSELECTIONEXPRESSION:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				
 				default:

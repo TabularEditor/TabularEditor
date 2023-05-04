@@ -102,17 +102,20 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             try
             {
                 macros = ScriptEngine.GetMacrosJson();
-                foreach (var action in macros.Actions)
+                if (macros != null)
                 {
-                    var item = macroToolStripMenuItem.DropDownItems.Add(action.Name);
-                    item.ToolTipText = action.Tooltip;
-                    item.AutoToolTip = true;
-                    item.Tag = action;
-                    item.Click += (s, e) =>
+                    foreach (var action in macros.Actions)
                     {
-                        var clickAction = CurrentMacro = (MacroJson)(s as ToolStripItem).Tag;
-                        txtAdvanced.Text = clickAction.Execute;
-                    };
+                        var item = macroToolStripMenuItem.DropDownItems.Add(action.Name);
+                        item.ToolTipText = action.Tooltip;
+                        item.AutoToolTip = true;
+                        item.Tag = action;
+                        item.Click += (s, e) =>
+                        {
+                            var clickAction = CurrentMacro = (MacroJson)(s as ToolStripItem).Tag;
+                            txtAdvanced.Text = clickAction.Execute;
+                        };
+                    }
                 }
             }
             catch { }

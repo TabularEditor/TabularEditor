@@ -54,8 +54,10 @@ namespace TabularEditor.TOMWrapper.Utils
                     yield return DAXProperty.DefaultDetailRowsExpression;
                     if(TabularModelHandler.Singleton.CompatibilityLevel >= CalculationGroupTable.DefaultExpressionRequiredCompatibilityLevel)
                     {
-                        yield return DAXProperty.DefaultExpression;
-                        yield return DAXProperty.DefaultFormatStringExpression;
+                        yield return DAXProperty.NoSelectionExpression;
+                        yield return DAXProperty.NoSelectionFormatStringExpression;
+                        yield return DAXProperty.MultiSelectionExpression;
+                        yield return DAXProperty.MultiSelectionFormatStringExpression;
                     }
                 }
             }
@@ -122,8 +124,10 @@ namespace TabularEditor.TOMWrapper.Utils
                 }
                 if (obj is CalculationGroupTable cgt)
                 {
-                    if (property == DAXProperty.DefaultExpression) return nameof(cgt.DefaultExpression);
-                    if (property == DAXProperty.DefaultFormatStringExpression) return nameof(cgt.DefaultFormatStringExpression);
+                    if (property == DAXProperty.NoSelectionExpression) return nameof(cgt.NoSelectionExpression);
+                    if (property == DAXProperty.NoSelectionFormatStringExpression) return nameof(cgt.NoSelectionFormatStringExpression);
+                    if (property == DAXProperty.MultiSelectionExpression) return nameof(cgt.MultiSelectionExpression);
+                    if (property == DAXProperty.MultiSelectionFormatStringExpression) return nameof(cgt.MultiSelectionFormatStringExpression);
                 }
             }
 
@@ -169,8 +173,10 @@ namespace TabularEditor.TOMWrapper.Utils
                 }
                 if (obj is CalculationGroupTable cgt)
                 {
-                    if (property == DAXProperty.DefaultExpression) return cgt.DefaultExpression;
-                    if (property == DAXProperty.DefaultFormatStringExpression) return cgt.DefaultFormatStringExpression;
+                    if (property == DAXProperty.NoSelectionExpression) return cgt.NoSelectionExpression;
+                    if (property == DAXProperty.NoSelectionFormatStringExpression) return cgt.NoSelectionFormatStringExpression;
+                    if (property == DAXProperty.MultiSelectionExpression) return cgt.MultiSelectionExpression;
+                    if (property == DAXProperty.MultiSelectionFormatStringExpression) return cgt.MultiSelectionFormatStringExpression;
                 }
             }
 
@@ -223,8 +229,10 @@ namespace TabularEditor.TOMWrapper.Utils
             }
             if (obj is CalculationGroupTable cgt)
             {
-                if (property == DAXProperty.DefaultExpression) { cgt.DefaultExpression = expression; return; }
-                if (property == DAXProperty.DefaultFormatStringExpression) { cgt.DefaultFormatStringExpression = expression; return; }
+                if (property == DAXProperty.NoSelectionExpression) { cgt.NoSelectionExpression = expression; return; }
+                if (property == DAXProperty.NoSelectionFormatStringExpression) { cgt.NoSelectionFormatStringExpression = expression; return; }
+                if (property == DAXProperty.MultiSelectionExpression) { cgt.MultiSelectionExpression = expression; return; }
+                if (property == DAXProperty.MultiSelectionFormatStringExpression) { cgt.MultiSelectionFormatStringExpression = expression; return; }
             }
 
             throw new ArgumentException(string.Format(Messages.InvalidExpressionProperty, obj.GetTypeName(), property), "property");
