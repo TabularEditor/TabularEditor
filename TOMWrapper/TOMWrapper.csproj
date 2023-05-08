@@ -53,7 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\AntlrGrammars\obj\Debug\DAXLexer.cs">
+    <Compile Include="..\AntlrGrammars\obj\Debug\netstandard2.0\DAXLexer.cs">
       <Link>TextServices\DAXLexer.cs</Link>
     </Compile>
     <Compile Include="..\SharedAssemblyInfo.cs">
