@@ -307,7 +307,7 @@ namespace TabularEditor
             //      TabularEditor.exe myfile.bim
             //      TabularEditor.exe myfile.bim -...
 
-            if (!File.Exists(argList[1]) && !File.Exists(argList[1] + "\\database.json"))
+            if (!File.Exists(argList[1]) && !File.Exists(Path.Combine(argList[1], "database.json")) && !File.Exists(Path.Combine(argList[1], "model.tmd")))
             {
                 Error("File not found: {0}", argList[1]);
                 throw new CommandLineException();
