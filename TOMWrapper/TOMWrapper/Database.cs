@@ -30,6 +30,13 @@ namespace TabularEditor.TOMWrapper
             TOMDatabase = db;
             _model = model;
 
+            // When deserializing from TMDL, the CompatibilityMode is not set, so use the defaultPowerBIDataSourceVersion, to determine if a model is a Power BI model or not:
+            if(tomDatabase.CompatibilityMode == Microsoft.AnalysisServices.CompatibilityMode.Unknown)
+            {
+                tomDatabase.CompatibilityMode = model.DefaultPowerBIDataSourceVersion == PowerBIDataSourceVersion.PowerBI_V1
+                    ? Microsoft.AnalysisServices.CompatibilityMode.AnalysisServices
+                    : Microsoft.AnalysisServices.CompatibilityMode.PowerBI;
+            }
             orgName = tomDatabase.Name;
             orgID = tomDatabase.ID;
             orgCompatibilityLevel = tomDatabase.CompatibilityLevel;
