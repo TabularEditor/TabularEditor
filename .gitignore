@@ -2,12 +2,7 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/AntlrGrammars/obj/Debug/*
-!/AntlrGrammars/obj/Debug/DAXLexer.cs
-!/AntlrGrammars/obj/Debug/DAXLexer.tokens
-!/AntlrGrammars/obj/Debug/CSharpLexer.cs
-!/AntlrGrammars/obj/Debug/CSharpLexer.tokens
-/AntlrGrammars/obj/Release/*
+/AntlrGrammars/obj
 /AntlrGrammars/bin
 /AntlrGrammars/CSharpLexer.g4.cs
 /AntlrGrammars/DAXLexer.g4.cs
@@ -49,10 +44,8 @@
 /TabularEditor171122.vsp
 /TabularEditor1.psess
 /DAX functions.xlsx
-/TOMWrapperTest/obj/Debug
-/TOMWrapperTest/bin/Debug
-/TOMWrapperTest/obj/Release
-/TOMWrapperTest/bin/Release
+/TOMWrapperTest/obj
+/TOMWrapperTest/bin
 /packages/Microsoft.AnalysisServices.retail.amd64.CTP2019
 /bin/Debug
 /DevExpressUI/bin/Debug
@@ -62,8 +55,6 @@
 /TabularEditor.3
 /TabularEditor.Shared
 /TabularEditor.UI
-/AntlrGrammars/obj/Debug
-/AntlrGrammars/obj/Release
 *.user
 /Publish/*
 /.cr

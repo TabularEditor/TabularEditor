@@ -42,22 +42,28 @@
       <HintPath>..\packages\Antlr4.Runtime.4.6.6\lib\net45\Antlr4.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AnalysisServices, Version=19.61.1.4, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.61.1.4\lib\net45\Microsoft.AnalysisServices.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.64.0\lib\net45\Microsoft.AnalysisServices.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AnalysisServices.Core, Version=19.61.1.4, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.61.1.4\lib\net45\Microsoft.AnalysisServices.Core.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.64.0\lib\net45\Microsoft.AnalysisServices.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AnalysisServices.SPClient.Interfaces, Version=19.61.1.4, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.61.1.4\lib\net45\Microsoft.AnalysisServices.SPClient.Interfaces.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.64.0\lib\net45\Microsoft.AnalysisServices.SPClient.Interfaces.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AnalysisServices.Tabular, Version=19.61.1.4, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.61.1.4\lib\net45\Microsoft.AnalysisServices.Tabular.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.64.0\lib\net45\Microsoft.AnalysisServices.Tabular.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AnalysisServices.Tabular.Json, Version=19.61.1.4, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.61.1.4\lib\net45\Microsoft.AnalysisServices.Tabular.Json.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AnalysisServices.retail.amd64.19.64.0\lib\net45\Microsoft.AnalysisServices.Tabular.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AnalysisServices.Tabular.Tmdl, Version=19.61.1.4, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.Tmdl.retail.amd64.19.61.1.4-TmdlPreview\lib\net45\Microsoft.AnalysisServices.Tabular.Tmdl.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AnalysisServices.Tabular.Tmdl.retail.amd64.19.64.0-TmdlPreview\lib\net45\Microsoft.AnalysisServices.Tabular.Tmdl.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Identity.Client, Version=4.52.0.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Identity.Client.4.52.0\lib\net461\Microsoft.Identity.Client.dll</HintPath>

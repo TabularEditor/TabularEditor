@@ -52,7 +52,6 @@ namespace TabularEditor.TOMWrapper
 	    public const string DEFAULTCOLUMN = "DefaultColumn";
 	    public const string DEFAULTDATAVIEW = "DefaultDataView";
 	    public const string DEFAULTDETAILROWSDEFINITION = "DefaultDetailRowsDefinition";
-	    public const string DEFAULTEXPRESSION = "DefaultExpression";
 	    public const string DEFAULTHIERARCHY = "DefaultHierarchy";
 	    public const string DEFAULTMEASURE = "DefaultMeasure";
 	    public const string DEFAULTMODE = "DefaultMode";
@@ -126,7 +125,9 @@ namespace TabularEditor.TOMWrapper
 	    public const string MODE = "Mode";
 	    public const string MODELPERMISSION = "ModelPermission";
 	    public const string MODIFIEDTIME = "ModifiedTime";
+	    public const string MULTISELECTIONEXPRESSION = "MultiSelectionExpression";
 	    public const string NAME = "Name";
+	    public const string NOSELECTIONEXPRESSION = "NoSelectionExpression";
 	    public const string OBJECTTRANSLATIONS = "ObjectTranslations";
 	    public const string OBJECTTYPE = "ObjectType";
 	    public const string OPTIONS = "Options";
@@ -15371,7 +15372,9 @@ namespace TabularEditor.TOMWrapper
 			switch (propertyName) {
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
-				case Properties.DEFAULTEXPRESSION:
+				case Properties.MULTISELECTIONEXPRESSION:
+					return false;
+				case Properties.NOSELECTIONEXPRESSION:
 					return false;
 				
 				default:
