@@ -94,3 +94,7 @@
 * **2022-08-19** [Version 2.17.1](../../releases/tag/2.17.1) released
 * **2022-10-28** [Version 2.17.2](../../releases/tag/2.17.2) released
 * **2023-02-24** [Version 2.17.3](../../releases/tag/2.17.3) released
+
+## 2.18.X
+* **2023-04-13** [Version 2.18.1](../../releases/tag/2.18.1) released
+* **2023-05-09** [Version 2.18.2](../../releases/tag/2.18.2) released
