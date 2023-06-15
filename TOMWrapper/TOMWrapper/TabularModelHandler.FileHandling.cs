@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using TabularEditor.TOMWrapper.PowerBI;
 using TabularEditor.TOMWrapper.Serialization;
 using TOM = Microsoft.AnalysisServices.Tabular;
@@ -10,6 +12,48 @@ namespace TabularEditor.TOMWrapper
 {
     public partial class TabularModelHandler
     {
+        private static string GetDatasetFromPbip(string pbipFileOrFolder)
+        {
+            var file = new FileInfo(pbipFileOrFolder);
+            var jPbip = JObject.Parse(File.ReadAllText(pbipFileOrFolder));
+            var reportPaths = (jPbip["artifacts"] as JArray).OfType<JObject>().Where(j => j.ContainsKey("report")).Select(j => j["report"]["path"].ToObject<string>()).ToList();
+            var datasetFiles = new List<string>();
+            if (reportPaths.Count == 0) throw new Exception("The PBIP project folder does not contain any reports.");
+            foreach (var reportPath in reportPaths)
+            {
+                var reportFile = Path.Combine(file.DirectoryName, reportPath, "definition.pbir");
+                if (File.Exists(reportFile))
+                {
+                    var jPbir = JObject.Parse(File.ReadAllText(reportFile));
+                    if (jPbir["datasetReference"]?["byPath"]?["path"]?.ToObject<string>() is string datasetPath)
+                    {
+                        var datasetFile = Path.GetFullPath(Path.Combine(file.DirectoryName, reportPath, datasetPath, "model.bim"));
+                        if (File.Exists(datasetFile))
+                        {
+                            datasetFiles.Add(datasetFile);
+                        }
+                        else
+                        {
+                            throw new FileNotFoundException(datasetFile);
+                        }
+                    }
+                }
+                else
+                {
+                    throw new FileNotFoundException(reportFile);
+                }
+            }
+            if (datasetFiles.Count == 0)
+            {
+                // Manually search directories:
+                datasetFiles.AddRange(Directory.EnumerateFiles(file.DirectoryName, "*.bim", SearchOption.AllDirectories));
+            }
+            if (datasetFiles.Count == 0) throw new Exception("The PBIP project folder does not contain any datasets.");
+            if (datasetFiles.Count > 1) throw new Exception("The PBIP project folder contains multiple datasets. Please open the .bim file directly.");
+
+            return datasetFiles[0];
+        }
+
         /// <summary>
         /// Loads an Analysis Services tabular database (Compatibility Level 1200 or newer) from a file
         /// or folder.
@@ -20,6 +64,23 @@ namespace TabularEditor.TOMWrapper
             _disableUpdates = true;
 
             var file = new FileInfo(path);
+
+            // If the file is a .pbip, find the actual dataset:
+            if (file.Exists && file.Extension.EqualsI(".pbip"))
+            {
+                path = GetDatasetFromPbip(path);
+                file = new FileInfo(path);
+            }
+            else if (Directory.Exists(path))
+            {
+                var pbipFiles = Directory.EnumerateFiles(path, "*.pbip", SearchOption.TopDirectoryOnly).ToList();
+                if (pbipFiles.Count == 1)
+                {
+                    path = GetDatasetFromPbip(pbipFiles[0]);
+                    file = new FileInfo(path);
+                }
+                else if (pbipFiles.Count > 1) throw new Exception("The PBIP project folder contains multiple .pbip files. Please open the .bim file directly.");
+            }
 
             // If the file extension is .pbit, assume Power BI template:
             if (file.Exists && file.Extension.EqualsI(".pbit")) LoadPowerBiTemplateFile(path);
