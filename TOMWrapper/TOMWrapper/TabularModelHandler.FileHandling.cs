@@ -2,7 +2,6 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
-using System.Linq;
 using TabularEditor.TOMWrapper.PowerBI;
 using TabularEditor.TOMWrapper.Serialization;
 using TOM = Microsoft.AnalysisServices.Tabular;
@@ -80,6 +79,7 @@ namespace TabularEditor.TOMWrapper
             {
                 var model = TOM.TmdlSerializer.DeserializeModel(path);
                 database = model.Database as TOM.Database;
+                database.DetermineCompatibilityMode();
                 Status = "Model loaded successfully.";
                 Init();
 
@@ -104,7 +104,7 @@ namespace TabularEditor.TOMWrapper
         {
             try
             {
-                var mode = IsPbiCompatibilityMode(json) ? Microsoft.AnalysisServices.CompatibilityMode.PowerBI : Microsoft.AnalysisServices.CompatibilityMode.AnalysisServices;
+                var mode = PowerBiCompatibilityModeHelper.IsPbiCompatibilityMode(json) ? Microsoft.AnalysisServices.CompatibilityMode.PowerBI : Microsoft.AnalysisServices.CompatibilityMode.AnalysisServices;
                 database = TOM.JsonSerializer.DeserializeDatabase(json, mode: mode);
                 database.CompatibilityMode = mode;
                 Status = "Model loaded successfully.";
@@ -116,43 +116,6 @@ namespace TabularEditor.TOMWrapper
             {
                 throw new Exception($"Unable to load Tabular Model (Compatibility Level 1200+) from {Source}. Error: " + ex.Message);
             }
-        }
-
-        private static readonly int[] analysisServicesStandardCompatLevels = new[]
-        {
-            1200,
-            1400,
-            1500,
-            1600
-        };
-
-        private bool IsPbiCompatibilityMode(string tomJson)
-        {
-            // Use PBI CompatibilityMode when model is one of the non-standard CL's, or if V3 metadata is enabled:
-            using (var reader = new JsonTextReader(new StringReader(tomJson)))
-            {
-                while (reader.Read())
-                {
-                    if (reader.TokenType == JsonToken.PropertyName)
-                    {
-                        switch ((string)reader.Value)
-                        {
-                            case "compatibilityLevel":
-                                reader.Read();
-                                if (!analysisServicesStandardCompatLevels.Contains((int)((long)reader.Value))) return true;
-                                break;
-                            case "defaultPowerBIDataSourceVersion":
-                                reader.Read();
-                                if ((string)reader.Value == "powerBI_V3") return true;
-                                break;
-                            default:
-                                if (ObjectMetadata.PbiOnlyProperties.Contains((string)reader.Value)) return true;
-                                break;
-                        }
-                    }
-                }
-            }
-            return false;
         }
 
         private const string ANN_SERIALIZEOPTIONS = "TabularEditor_SerializeOptions";
