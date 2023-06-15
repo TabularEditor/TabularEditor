@@ -226,9 +226,9 @@ namespace TabularEditor.TOMWrapper.PowerBI
                                 return PBIP;
                             case ObjectType.Column:
                                 if (property == Properties.SOURCECOLUMN) return PBIP;
-                                return true;
+                                return PBIDesktopVersion >= DevMode;
                             case ObjectType.Table:
-                                if (property == Properties.EXPRESSION) return true;
+                                if (property == Properties.EXPRESSION) return PBIDesktopVersion >= DevMode;
                                 return PBIP;
                         }
 

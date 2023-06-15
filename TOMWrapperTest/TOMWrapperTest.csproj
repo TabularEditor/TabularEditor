@@ -163,6 +163,9 @@
     <None Include="TestData\AdventureWorks2.bim">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="TestData\AdvWorks1520v3-DevMode.pbit">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="TestData\AllProperties.bim">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
