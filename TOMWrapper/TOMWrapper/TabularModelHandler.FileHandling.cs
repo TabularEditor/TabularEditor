@@ -39,7 +39,7 @@ namespace TabularEditor.TOMWrapper
             _disableUpdates = false;
 
             UndoManager.Resume();
-            PowerBIGovernance.UpdateGovernanceMode();
+            PowerBIGovernance.UpdateGovernanceMode(path);
         }
 
         private void LoadSplitModelFiles(string path)

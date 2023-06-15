@@ -26,6 +26,7 @@ namespace TabularEditor.TOMWrapper
                 return Table.FolderCache[DisplayFolder];
             }
         }
+        [Browsable(false)]
         public bool IsRemoved => false;
 
         bool ITabularNamedObject.CanEditName() { return Handler.PowerBIGovernance.AllowEditProperty(ObjectType.Measure, Properties.DISPLAYFOLDER); }
