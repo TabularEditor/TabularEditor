@@ -139,7 +139,7 @@ namespace TabularEditor
             bool inBlockComment = false;
             assemblyRefs = new List<string>();
             usings = new List<string>();
-            var lines = script.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            var lines = script.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
             for(int i = 0; i < lines.Length; i++)
             {
                 var trimmedLine = lines[i].Trim();
