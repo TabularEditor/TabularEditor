@@ -63,6 +63,8 @@ namespace TabularEditor.TOMWrapper.Serialization
 
         public bool IgnorePrivacySettings { get; set; } = false;
         public bool ShouldSerializeIgnorePrivacySettings() => IgnorePrivacySettings;
+        public bool IgnoreIncrementalRefreshPartitions { get; set; } = false;
+        public bool ShouldSerializeIgnoreIncrementalRefreshPartitions() => IgnoreIncrementalRefreshPartitions;
 
         public bool PrefixFilenames = false;
         public bool AlsoSaveAsBim { get; set; } = false;
@@ -92,7 +94,8 @@ namespace TabularEditor.TOMWrapper.Serialization
                 && other.AlsoSaveAsBim == AlsoSaveAsBim
                 && other.LocalTranslations == LocalTranslations
                 && other.LocalPerspectives == LocalPerspectives
-                && other.LocalRelationships == LocalRelationships;
+                && other.LocalRelationships == LocalRelationships
+                && other.IgnoreIncrementalRefreshPartitions == IgnoreIncrementalRefreshPartitions;
         }
 
         public override bool Equals(object obj)

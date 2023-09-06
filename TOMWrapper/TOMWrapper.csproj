@@ -229,6 +229,7 @@
     <Compile Include="TOMWrapper\Table.cs" />
     <Compile Include="TOMWrapper\TabularCommonActions.cs" />
     <Compile Include="TOMWrapper\TabularConnection.cs" />
+    <Compile Include="Utils\JObjectExtension.cs" />
     <Compile Include="Utils\TabularDeployer.cs" />
     <Compile Include="TOMWrapper\AnnotationHelper.cs" />
     <Compile Include="TOMWrapper\Variation.cs" />

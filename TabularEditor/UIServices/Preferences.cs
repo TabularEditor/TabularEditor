@@ -38,6 +38,8 @@ namespace TabularEditor.UIServices
         public bool IgnoreInferredProperties = true;
         public bool IgnoreTimestamps = true;
         public bool SplitMultilineStrings = true;
+        public bool IgnoreIncrementalRefreshPartitions = false;
+        public bool IgnorePrivacySettings = false;
         public bool IgnoreLineageTags = false;
 
         public bool ProxyUseSystem = true;
@@ -240,6 +242,8 @@ namespace TabularEditor.UIServices
                 IgnoreInferredProperties = value.IgnoreInferredProperties,
                 IgnoreTimestamps = value.IgnoreTimestamps,
                 IgnoreLineageTags = value.IgnoreLineageTags,
+                IgnoreIncrementalRefreshPartitions = value.IgnoreIncrementalRefreshPartitions,
+                IgnorePrivacySettings = value.IgnorePrivacySettings,
                 SplitMultilineStrings = value.SplitMultilineStrings,
             };
 

@@ -168,6 +168,8 @@ namespace TabularEditor.UI.Dialogs
             chkIgnoreInfObjectsCM.Checked = options.IgnoreInferredObjects;
             chkIgnoreInfPropsCM.Checked = options.IgnoreInferredProperties;
             chkSplitMultilineCM.Checked = options.SplitMultilineStrings;
+            chkIgnorePrivacySettingsCM.Checked = options.IgnorePrivacySettings;
+            chkIgnoreIncrementalRefreshPartitionsCM.Checked = options.IgnoreIncrementalRefreshPartitions;
 
             LoadCheckedNodes(treeView2.Nodes, options.Levels);
             chkPrefixFilesCM.Checked = options.PrefixFilenames;
@@ -197,6 +199,8 @@ namespace TabularEditor.UI.Dialogs
             Preferences.Current.IgnoreInferredObjects = chkIgnoreInfObjects.Checked;
             Preferences.Current.IgnoreInferredProperties = chkIgnoreInfProps.Checked;
             Preferences.Current.SplitMultilineStrings = chkSplitMultiline.Checked;
+            Preferences.Current.IgnorePrivacySettings = chkIgnorePrivacySettings.Checked;
+            Preferences.Current.IgnoreIncrementalRefreshPartitions = chkIgnoreIncrementalRefreshPartitions.Checked;
             Preferences.Current.UseTMDL = cmbSerializationMode.SelectedIndex == 1;
             Preferences.Current.SaveToFolder_PrefixFiles = chkPrefixFiles.Checked;
             Preferences.Current.SaveToFolder_AlsoSaveAsBim = chkAlsoSaveAsBim.Checked;
@@ -236,6 +240,8 @@ namespace TabularEditor.UI.Dialogs
             options.LocalPerspectives = chkLocalPerspectivesCM.Checked;
             options.LocalTranslations = chkLocalTranslationsCM.Checked;
             options.LocalRelationships = chkLocalRelationshipsCM.Checked;
+            options.IgnorePrivacySettings = chkIgnorePrivacySettingsCM.Checked;
+            options.IgnoreIncrementalRefreshPartitions = chkIgnoreIncrementalRefreshPartitionsCM.Checked;
             options.Levels = new HashSet<string>();
             SaveCheckedNodes(treeView2.Nodes, options.Levels);
 
@@ -280,6 +286,8 @@ namespace TabularEditor.UI.Dialogs
             chkIgnoreInfObjects.Checked = Preferences.Current.IgnoreInferredObjects;
             chkIgnoreInfProps.Checked = Preferences.Current.IgnoreInferredProperties;
             chkSplitMultiline.Checked = Preferences.Current.SplitMultilineStrings;
+            chkIgnorePrivacySettings.Checked = Preferences.Current.IgnorePrivacySettings;
+            chkIgnoreIncrementalRefreshPartitions.Checked = Preferences.Current.IgnoreIncrementalRefreshPartitions;
 
             cmbSerializationMode.SelectedIndex = Preferences.Current.UseTMDL ? 1 : 0;
             UpdateTmdlUi();

@@ -100,6 +100,10 @@
             this.chkAnnotateDeploymentMetadata = new System.Windows.Forms.CheckBox();
             this.chkIgnoreLineageTags = new System.Windows.Forms.CheckBox();
             this.chkIgnoreLineageTagsCM = new System.Windows.Forms.CheckBox();
+            this.chkIgnorePrivacySettings = new System.Windows.Forms.CheckBox();
+            this.chkIgnorePrivacySettingsCM = new System.Windows.Forms.CheckBox();
+            this.chkIgnoreIncrementalRefreshPartitions = new System.Windows.Forms.CheckBox();
+            this.chkIgnoreIncrementalRefreshPartitionsCM = new System.Windows.Forms.CheckBox();
             this.chkAlsoSaveAsBim = new System.Windows.Forms.CheckBox();
             this.chkAlsoSaveAsBimCM = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -575,6 +579,54 @@
             this.toolTip1.SetToolTip(this.chkIgnoreLineageTagsCM, "If checked, expressions and other multiline string properties are serialized as a" +
         " JSON array.");
             this.chkIgnoreLineageTagsCM.UseVisualStyleBackColor = true;
+            // 
+            // chkIgnorePrivacySettings
+            // 
+            this.chkIgnorePrivacySettings.AutoSize = true;
+            this.chkIgnorePrivacySettings.Location = new System.Drawing.Point(9, 100);
+            this.chkIgnorePrivacySettings.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.chkIgnorePrivacySettings.Name = "chkIgnorePrivacySettings";
+            this.chkIgnorePrivacySettings.Size = new System.Drawing.Size(171, 24);
+            this.chkIgnorePrivacySettings.TabIndex = 4;
+            this.chkIgnorePrivacySettings.Text = "Ignore privacy settings";
+            this.toolTip1.SetToolTip(this.chkIgnorePrivacySettings, "Older versions of Microsoft.AnalysisServices.Deployment do not support the PrivacySetting property. If you plan to deploy your .asdatabase script with Microsoft.AnalysisServices.Deployment, check this to remove the PrivacySetting property when a model is saved to disk.");
+            this.chkIgnorePrivacySettings.UseVisualStyleBackColor = true;
+            // 
+            // chkIgnorePrivacySettingsCM
+            // 
+            this.chkIgnorePrivacySettingsCM.AutoSize = true;
+            this.chkIgnorePrivacySettingsCM.Location = new System.Drawing.Point(9, 100);
+            this.chkIgnorePrivacySettingsCM.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.chkIgnorePrivacySettingsCM.Name = "chkIgnorePrivacySettingsCM";
+            this.chkIgnorePrivacySettingsCM.Size = new System.Drawing.Size(171, 24);
+            this.chkIgnorePrivacySettingsCM.TabIndex = 5;
+            this.chkIgnorePrivacySettingsCM.Text = "Ignore privacy settings";
+            this.toolTip1.SetToolTip(this.chkIgnorePrivacySettingsCM, "Older versions of Microsoft.AnalysisServices.Deployment do not support the PrivacySetting property. If you plan to deploy your .asdatabase script with Microsoft.AnalysisServices.Deployment, check this to remove the PrivacySetting property when a model is saved to disk.");
+            this.chkIgnorePrivacySettingsCM.UseVisualStyleBackColor = true;
+            // 
+            // chkIgnoreIncrementalRefreshPartitions
+            // 
+            this.chkIgnoreIncrementalRefreshPartitions.AutoSize = true;
+            this.chkIgnoreIncrementalRefreshPartitions.Location = new System.Drawing.Point(9, 100);
+            this.chkIgnoreIncrementalRefreshPartitions.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.chkIgnoreIncrementalRefreshPartitions.Name = "chkIgnoreIncrementalRefreshPartitions";
+            this.chkIgnoreIncrementalRefreshPartitions.Size = new System.Drawing.Size(171, 24);
+            this.chkIgnoreIncrementalRefreshPartitions.TabIndex = 4;
+            this.chkIgnoreIncrementalRefreshPartitions.Text = "Ignore incremental refresh partitions";
+            this.toolTip1.SetToolTip(this.chkIgnoreIncrementalRefreshPartitions, "If checked, partitions governed by incremental refresh, will not be serialized.");
+            this.chkIgnoreIncrementalRefreshPartitions.UseVisualStyleBackColor = true;
+            // 
+            // chkIgnoreIncrementalRefreshPartitionsCM
+            // 
+            this.chkIgnoreIncrementalRefreshPartitionsCM.AutoSize = true;
+            this.chkIgnoreIncrementalRefreshPartitionsCM.Location = new System.Drawing.Point(9, 100);
+            this.chkIgnoreIncrementalRefreshPartitionsCM.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.chkIgnoreIncrementalRefreshPartitionsCM.Name = "chkIgnoreIncrementalRefreshPartitionsCM";
+            this.chkIgnoreIncrementalRefreshPartitionsCM.Size = new System.Drawing.Size(171, 24);
+            this.chkIgnoreIncrementalRefreshPartitionsCM.TabIndex = 5;
+            this.chkIgnoreIncrementalRefreshPartitionsCM.Text = "Ignore incremental refresh partitions";
+            this.toolTip1.SetToolTip(this.chkIgnoreIncrementalRefreshPartitionsCM, "If checked, partitions governed by incremental refresh, will not be serialized.");
+            this.chkIgnoreIncrementalRefreshPartitionsCM.UseVisualStyleBackColor = true;
             // 
             // chkAlsoSaveAsBim
             // 
@@ -1111,6 +1163,8 @@
             this.groupBox2.Controls.Add(this.chkIgnoreInfProps);
             this.groupBox2.Controls.Add(this.chkIgnoreInfObjects);
             this.groupBox2.Controls.Add(this.chkIgnoreTimestamps);
+            this.groupBox2.Controls.Add(this.chkIgnorePrivacySettings);
+            this.groupBox2.Controls.Add(this.chkIgnoreIncrementalRefreshPartitions);
             this.groupBox2.Location = new System.Drawing.Point(9, 59);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox2.Name = "groupBox2";
@@ -1236,6 +1290,8 @@
             this.groupBox8.Controls.Add(this.chkIgnoreInfPropsCM);
             this.groupBox8.Controls.Add(this.chkIgnoreInfObjectsCM);
             this.groupBox8.Controls.Add(this.chkIgnoreTimestampsCM);
+            this.groupBox8.Controls.Add(this.chkIgnorePrivacySettingsCM);
+            this.groupBox8.Controls.Add(this.chkIgnoreIncrementalRefreshPartitionsCM);
             this.groupBox8.Location = new System.Drawing.Point(9, 9);
             this.groupBox8.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox8.Name = "groupBox8";
@@ -1396,6 +1452,10 @@
         private System.Windows.Forms.TextBox txtCompilerPath;
         private System.Windows.Forms.CheckBox chkIgnoreLineageTags;
         private System.Windows.Forms.CheckBox chkIgnoreLineageTagsCM;
+        private System.Windows.Forms.CheckBox chkIgnorePrivacySettings;
+        private System.Windows.Forms.CheckBox chkIgnorePrivacySettingsCM;
+        private System.Windows.Forms.CheckBox chkIgnoreIncrementalRefreshPartitions;
+        private System.Windows.Forms.CheckBox chkIgnoreIncrementalRefreshPartitionsCM;
         private System.Windows.Forms.CheckBox chkAlsoSaveAsBim;
         private System.Windows.Forms.CheckBox chkAlsoSaveAsBimCM;
         private System.Windows.Forms.Label label8;
