@@ -138,7 +138,7 @@ namespace TabularEditor.TOMWrapper
 
             try
             {
-                var model = TOM.TmdlSerializer.DeserializeModel(path);
+                var model = TOM.TmdlSerializer.DeserializeModelFromFolder(path);
                 database = model.Database as TOM.Database;
                 database.DetermineCompatibilityMode();
                 Status = "Model loaded successfully.";
@@ -313,7 +313,7 @@ namespace TabularEditor.TOMWrapper
                 db.SetName(options.DatabaseNameOverride);
                 db.SetID(null);
             }
-            TOM.TmdlSerializer.SerializeModel(Model.MetadataObject, path);
+            TOM.TmdlSerializer.SerializeModelToFolder(Model.MetadataObject, path);
 
             db.SetName(orgDbName);
             db.SetID(orgDbId);

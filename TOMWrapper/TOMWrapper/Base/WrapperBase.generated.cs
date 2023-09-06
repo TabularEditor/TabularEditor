@@ -12194,32 +12194,6 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
-/// <summary>
-///             Gets the destination table in a directional table relationship.
-///             </summary>
-		[DisplayName("To Table")]
-		[Category("Options"),Description(@"Gets the destination table in a directional table relationship."),IntelliSense(@"Gets the destination table in a directional table relationship.")]
-		public Table ToTable {
-			get {
-				if (MetadataObject.ToTable == null) return null;
-			    return Handler.WrapperLookup[MetadataObject.ToTable] as Table;
-            }
-			
-		}
-		private bool ShouldSerializeToTable() { return false; }
-/// <summary>
-///             Gets the starting table in a directional table relationship.
-///             </summary>
-		[DisplayName("From Table")]
-		[Category("Options"),Description(@"Gets the starting table in a directional table relationship."),IntelliSense(@"Gets the starting table in a directional table relationship.")]
-		public Table FromTable {
-			get {
-				if (MetadataObject.FromTable == null) return null;
-			    return Handler.WrapperLookup[MetadataObject.FromTable] as Table;
-            }
-			
-		}
-		private bool ShouldSerializeFromTable() { return false; }
         private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
         ///<summary>Removes all annotations from this object.</summary>
         [IntelliSense("Removes all annotations from this object.")]
@@ -12637,6 +12611,32 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeSecurityFilteringBehavior() { return false; }
+/// <summary>
+///             Gets the starting table in a directional table relationship.
+///             </summary>
+		[DisplayName("From Table")]
+		[Category("Options"),Description(@"Gets the starting table in a directional table relationship."),IntelliSense(@"Gets the starting table in a directional table relationship.")]
+		public Table FromTable {
+			get {
+				if (MetadataObject.FromTable == null) return null;
+			    return Handler.WrapperLookup[MetadataObject.FromTable] as Table;
+            }
+			
+		}
+		private bool ShouldSerializeFromTable() { return false; }
+/// <summary>
+///             Gets the destination table in a directional table relationship.
+///             </summary>
+		[DisplayName("To Table")]
+		[Category("Options"),Description(@"Gets the destination table in a directional table relationship."),IntelliSense(@"Gets the destination table in a directional table relationship.")]
+		public Table ToTable {
+			get {
+				if (MetadataObject.ToTable == null) return null;
+			    return Handler.WrapperLookup[MetadataObject.ToTable] as Table;
+            }
+			
+		}
+		private bool ShouldSerializeToTable() { return false; }
 
 	
         internal override void RenewMetadataObject()
