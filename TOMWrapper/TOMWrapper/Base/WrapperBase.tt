@@ -823,20 +823,24 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 		private <#= t.Name #> CreateFromMetadata(TOM.<#= t.Name #> obj)
 		{
 <# if (t.Name == "Table") { #>
-            if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.Calculated) return CalculatedTable.CreateFromMetadata(Model, obj);
-			else if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.CalculationGroup) return CalculationGroupTable.CreateFromMetadata(Model, obj);
+            if (obj.Partitions.Count == 1 && obj.Partitions[0].SourceType == TOM.PartitionSourceType.Calculated) return CalculatedTable.CreateFromMetadata(Model, obj);
+			else if (obj.Partitions.Count == 1 && obj.Partitions[0].SourceType == TOM.PartitionSourceType.CalculationGroup) return CalculationGroupTable.CreateFromMetadata(Model, obj);
             else return Table.CreateFromMetadata(Model, obj);
 <# } else if (t.Name == "Partition") { #>
 			if(obj.SourceType == TOM.PartitionSourceType.M) return MPartition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
-            else if(obj.SourceType == TOM.PartitionSourceType.Entity) return EntityPartition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
-            else if(obj.SourceType == TOM.PartitionSourceType.PolicyRange) return PolicyRangePartition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
+			else if(obj.SourceType == TOM.PartitionSourceType.Entity) return EntityPartition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
+			else if(obj.SourceType == TOM.PartitionSourceType.PolicyRange) return PolicyRangePartition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
 			else return Partition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
 <# } else
 {
    foreach(var derived in Rules.GetDerivedTypes(t)) { #>
 			if(obj is TOM.<#= derived.Name #> <#= derived.Name.ToLower() #>Obj) return <#= derived.Name #>.CreateFromMetadata(<#= Rules.GetParent(t) #>, <#= derived.Name.ToLower() #>Obj);
-<# }
-} #>		    return null;
+<# } #>
+<# if (t.Name == "Column") { #>
+            else if (obj is TOM.RowNumberColumn) return null;
+<# } #>
+            else throw new ArgumentException("Cannot create object", "obj");
+<# } #>
 		}
 
 		/// <summary>

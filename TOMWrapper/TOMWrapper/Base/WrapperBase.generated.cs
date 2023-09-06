@@ -1151,7 +1151,7 @@ namespace TabularEditor.TOMWrapper
 		private Variation CreateFromMetadata(TOM.Variation obj)
 		{
 			if(obj is TOM.Variation variationObj) return Variation.CreateFromMetadata(Column, variationObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -2910,7 +2910,8 @@ namespace TabularEditor.TOMWrapper
 			if(obj is TOM.DataColumn datacolumnObj) return DataColumn.CreateFromMetadata(Table, datacolumnObj);
 			if(obj is TOM.CalculatedTableColumn calculatedtablecolumnObj) return CalculatedTableColumn.CreateFromMetadata(Table, calculatedtablecolumnObj);
 			if(obj is TOM.CalculatedColumn calculatedcolumnObj) return CalculatedColumn.CreateFromMetadata(Table, calculatedcolumnObj);
-		    return null;
+            else if (obj is TOM.RowNumberColumn) return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -3667,7 +3668,7 @@ namespace TabularEditor.TOMWrapper
 		private Culture CreateFromMetadata(TOM.Culture obj)
 		{
 			if(obj is TOM.Culture cultureObj) return Culture.CreateFromMetadata(Model, cultureObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -4324,7 +4325,7 @@ namespace TabularEditor.TOMWrapper
 		{
 			if(obj is TOM.StructuredDataSource structureddatasourceObj) return StructuredDataSource.CreateFromMetadata(Model, structureddatasourceObj);
 			if(obj is TOM.ProviderDataSource providerdatasourceObj) return ProviderDataSource.CreateFromMetadata(Model, providerdatasourceObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -5297,7 +5298,7 @@ namespace TabularEditor.TOMWrapper
 		private Hierarchy CreateFromMetadata(TOM.Hierarchy obj)
 		{
 			if(obj is TOM.Hierarchy hierarchyObj) return Hierarchy.CreateFromMetadata(Table, hierarchyObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -6906,7 +6907,7 @@ namespace TabularEditor.TOMWrapper
 		private Level CreateFromMetadata(TOM.Level obj)
 		{
 			if(obj is TOM.Level levelObj) return Level.CreateFromMetadata(Hierarchy, levelObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -7760,7 +7761,7 @@ namespace TabularEditor.TOMWrapper
 		private Measure CreateFromMetadata(TOM.Measure obj)
 		{
 			if(obj is TOM.Measure measureObj) return Measure.CreateFromMetadata(Table, measureObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -9395,7 +9396,7 @@ namespace TabularEditor.TOMWrapper
 		private ModelRole CreateFromMetadata(TOM.ModelRole obj)
 		{
 			if(obj is TOM.ModelRole modelroleObj) return ModelRole.CreateFromMetadata(Model, modelroleObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -9897,7 +9898,7 @@ namespace TabularEditor.TOMWrapper
 		{
 			if(obj is TOM.ExternalModelRoleMember externalmodelrolememberObj) return ExternalModelRoleMember.CreateFromMetadata(ModelRole, externalmodelrolememberObj);
 			if(obj is TOM.WindowsModelRoleMember windowsmodelrolememberObj) return WindowsModelRoleMember.CreateFromMetadata(ModelRole, windowsmodelrolememberObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -10536,10 +10537,9 @@ namespace TabularEditor.TOMWrapper
 		private Partition CreateFromMetadata(TOM.Partition obj)
 		{
 			if(obj.SourceType == TOM.PartitionSourceType.M) return MPartition.CreateFromMetadata(Table, obj);
-            else if(obj.SourceType == TOM.PartitionSourceType.Entity) return EntityPartition.CreateFromMetadata(Table, obj);
-            else if(obj.SourceType == TOM.PartitionSourceType.PolicyRange) return PolicyRangePartition.CreateFromMetadata(Table, obj);
+			else if(obj.SourceType == TOM.PartitionSourceType.Entity) return EntityPartition.CreateFromMetadata(Table, obj);
+			else if(obj.SourceType == TOM.PartitionSourceType.PolicyRange) return PolicyRangePartition.CreateFromMetadata(Table, obj);
 			else return Partition.CreateFromMetadata(Table, obj);
-		    return null;
 		}
 
 		/// <summary>
@@ -11229,7 +11229,7 @@ namespace TabularEditor.TOMWrapper
 		private Set CreateFromMetadata(TOM.Set obj)
 		{
 			if(obj is TOM.Set setObj) return Set.CreateFromMetadata(Table, setObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -11831,7 +11831,7 @@ namespace TabularEditor.TOMWrapper
 		private Perspective CreateFromMetadata(TOM.Perspective obj)
 		{
 			if(obj is TOM.Perspective perspectiveObj) return Perspective.CreateFromMetadata(Model, perspectiveObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -12746,7 +12746,7 @@ namespace TabularEditor.TOMWrapper
 		private Relationship CreateFromMetadata(TOM.Relationship obj)
 		{
 			if(obj is TOM.SingleColumnRelationship singlecolumnrelationshipObj) return SingleColumnRelationship.CreateFromMetadata(Model, singlecolumnrelationshipObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -13989,10 +13989,9 @@ namespace TabularEditor.TOMWrapper
 
 		private Table CreateFromMetadata(TOM.Table obj)
 		{
-            if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.Calculated) return CalculatedTable.CreateFromMetadata(Model, obj);
-			else if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.CalculationGroup) return CalculationGroupTable.CreateFromMetadata(Model, obj);
+            if (obj.Partitions.Count == 1 && obj.Partitions[0].SourceType == TOM.PartitionSourceType.Calculated) return CalculatedTable.CreateFromMetadata(Model, obj);
+			else if (obj.Partitions.Count == 1 && obj.Partitions[0].SourceType == TOM.PartitionSourceType.CalculationGroup) return CalculationGroupTable.CreateFromMetadata(Model, obj);
             else return Table.CreateFromMetadata(Model, obj);
-		    return null;
 		}
 
 		/// <summary>
@@ -14986,7 +14985,7 @@ namespace TabularEditor.TOMWrapper
 		private NamedExpression CreateFromMetadata(TOM.NamedExpression obj)
 		{
 			if(obj is TOM.NamedExpression namedexpressionObj) return NamedExpression.CreateFromMetadata(Model, namedexpressionObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -15657,7 +15656,7 @@ namespace TabularEditor.TOMWrapper
 		private CalculationItem CreateFromMetadata(TOM.CalculationItem obj)
 		{
 			if(obj is TOM.CalculationItem calculationitemObj) return CalculationItem.CreateFromMetadata(CalculationGroup, calculationitemObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -16269,7 +16268,7 @@ namespace TabularEditor.TOMWrapper
 		private TablePermission CreateFromMetadata(TOM.TablePermission obj)
 		{
 			if(obj is TOM.TablePermission tablepermissionObj) return TablePermission.CreateFromMetadata(ModelRole, tablepermissionObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>

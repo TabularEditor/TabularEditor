@@ -809,8 +809,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void nodeTextBox5_ValueNeeded(object sender, Aga.Controls.Tree.NodeControls.NodeControlValueEventArgs e)
         {
-            var value = (e.Node.Tag as TOMWrapper.Table)?.Source ??
-                (e.Node.Tag as TOMWrapper.Partition)?.Expression ??
+            var value = 
                 (e.Node.Tag as TOMWrapper.DataColumn)?.SourceColumn ??
                 (e.Node.Tag as TOMWrapper.CalculatedTableColumn)?.SourceColumn ??
                 (e.Node.Tag as TOMWrapper.Level)?.Column?.DaxObjectName ??

@@ -264,7 +264,7 @@ namespace TabularEditor.TOMWrapper
         public string Source {
             get
             {
-                var ds = (MetadataObject.Partitions.FirstOrDefault().Source as TOM.QueryPartitionSource)?.DataSource;
+                var ds = (MetadataObject.Partitions.FirstOrDefault()?.Source as TOM.QueryPartitionSource)?.DataSource;
                 string sourceName = null;
                 if (ds != null) sourceName = (Handler.WrapperLookup[ds] as DataSource)?.Name;
                 return sourceName ?? ds?.Name;
