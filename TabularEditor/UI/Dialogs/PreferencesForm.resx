@@ -141,4 +141,10 @@ using the current date and time as the filename.</value>
 - Client machine
 - Build # of Tabular Editor</value>
   </data>
+  <data name="chkIgnorePrivacySettings.ToolTip" xml:space="preserve">
+    <value>Older versions of Microsoft.AnalysisServices.Deployment do not support the PrivacySetting property. If you plan to deploy your .asdatabase script with Microsoft.AnalysisServices.Deployment, check this to remove the PrivacySetting property when a model is saved to disk.</value>
+  </data>
+  <data name="chkIgnorePrivacySettingsCM.ToolTip" xml:space="preserve">
+    <value>Older versions of Microsoft.AnalysisServices.Deployment do not support the PrivacySetting property. If you plan to deploy your .asdatabase script with Microsoft.AnalysisServices.Deployment, check this to remove the PrivacySetting property when a model is saved to disk.</value>
+  </data>
 </root>
