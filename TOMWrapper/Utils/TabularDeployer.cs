@@ -225,7 +225,9 @@ namespace TabularEditor.TOMWrapper.Utils
 
                         var t = destinationModel.Tables[tableName];
 
-                        // If destination partition is not a policyrange
+                        // Retain existing partitions under any of the following conditions:
+                        // - DeployPartitions is false
+                        // - SkipRefreshPolicyPartitions is true and the table has a refresh policy with a source expression
                         if (!options.DeployPartitions || (options.SkipRefreshPolicyPartitions && t.RefreshPolicy is TOM.BasicRefreshPolicy policy && !string.IsNullOrEmpty(policy.SourceExpression)))
                         {
                             // Retain existing partitions on destination:
