@@ -40,7 +40,7 @@
         "Entry"
         {
         "MsmKey" = "8:_0FF3562CCA8722DC3D820BB35BA06E8D"
-        "OwnerKey" = "8:_CC67A7C1ECCF94BB7355A7F27189FB0D"
+        "OwnerKey" = "8:_C7266C3A0A44EC5323D56293A87A75FD"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -118,7 +118,7 @@
         "Entry"
         {
         "MsmKey" = "8:_448F244414520F127CCE26FF31847522"
-        "OwnerKey" = "8:_CC67A7C1ECCF94BB7355A7F27189FB0D"
+        "OwnerKey" = "8:_C7266C3A0A44EC5323D56293A87A75FD"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -148,7 +148,7 @@
         "Entry"
         {
         "MsmKey" = "8:_47F25212EB1042B2C587CE00D423CCE3"
-        "OwnerKey" = "8:_CC67A7C1ECCF94BB7355A7F27189FB0D"
+        "OwnerKey" = "8:_C7266C3A0A44EC5323D56293A87A75FD"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -160,7 +160,7 @@
         "Entry"
         {
         "MsmKey" = "8:_4DCB8982453F844F0B306754E7AAC1F9"
-        "OwnerKey" = "8:_CC67A7C1ECCF94BB7355A7F27189FB0D"
+        "OwnerKey" = "8:_C7266C3A0A44EC5323D56293A87A75FD"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -232,7 +232,7 @@
         "Entry"
         {
         "MsmKey" = "8:_903CAEF8D1526A7A04D91DE7968AA897"
-        "OwnerKey" = "8:_CC67A7C1ECCF94BB7355A7F27189FB0D"
+        "OwnerKey" = "8:_C7266C3A0A44EC5323D56293A87A75FD"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -292,7 +292,7 @@
         "Entry"
         {
         "MsmKey" = "8:_C2E8A286D1CA1F12F0EF1F8700760643"
-        "OwnerKey" = "8:_CC67A7C1ECCF94BB7355A7F27189FB0D"
+        "OwnerKey" = "8:_C7266C3A0A44EC5323D56293A87A75FD"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -315,7 +315,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_CC67A7C1ECCF94BB7355A7F27189FB0D"
+        "MsmKey" = "8:_C7266C3A0A44EC5323D56293A87A75FD"
         "OwnerKey" = "8:_FC544BBFC4AE4FBCBA61AA486C697C6C"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -358,7 +358,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_CC67A7C1ECCF94BB7355A7F27189FB0D"
+        "OwnerKey" = "8:_C7266C3A0A44EC5323D56293A87A75FD"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1416,14 +1416,14 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_CC67A7C1ECCF94BB7355A7F27189FB0D"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_C7266C3A0A44EC5323D56293A87A75FD"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:TOMWrapper, Version=2.19.8649.25260, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:TOMWrapper, Version=2.20.8650.18688, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_CC67A7C1ECCF94BB7355A7F27189FB0D"
+                    "_C7266C3A0A44EC5323D56293A87A75FD"
                     {
                     "Name" = "8:TOMWrapper.dll"
                     "Attributes" = "3:512"
@@ -1671,15 +1671,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Tabular Editor"
-        "ProductCode" = "8:{6C6EDE68-E831-4402-9E0A-F9C0F0C61259}"
-        "PackageCode" = "8:{97918C5E-CEE5-4CDD-9377-C466C17679B1}"
+        "ProductCode" = "8:{25A48E15-0CEA-4840-8CCB-44870D82434E}"
+        "PackageCode" = "8:{05574C7F-EB5D-46D1-AE9A-9BC8E9920C24}"
         "UpgradeCode" = "8:{E20734F5-CD2A-4A76-AB20-014819FCDE35}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:2.20.0"
+        "ProductVersion" = "8:2.20.1"
         "Manufacturer" = "8:Tabular Editor ApS"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:https://tabulareditor.com"
