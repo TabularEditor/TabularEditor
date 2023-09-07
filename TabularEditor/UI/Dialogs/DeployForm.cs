@@ -172,8 +172,8 @@ namespace TabularEditor.UI.Dialogs
             btnNext.Enabled = chkDeployModel.Checked;
 
             var modelHasDataSources = Handler.Model.DataSources.Any();
-            var modelHasNonCalculatedPartitions = Handler.Model.Tables.Any(t => t.MetadataObject.IsImported());
-            var modelHasRefreshPolicyPartitions = Handler.Model.AllPartitions.Any(p => p.SourceType == TOMWrapper.PartitionSourceType.PolicyRange);
+            var modelHasNonCalculatedPartitions = Handler.Model.Tables.Any(t => t.MetadataObject.IsQueryTable());
+            var modelHasIncrRefresh = Handler.Model.Tables.Any(t => t.EnableRefreshPolicy);
             var modelHasRoles = Handler.Model.Roles.Any();
             var modelHasRoleMembers = Handler.Model.Roles.Any(mr => mr.Members.Any());
 
@@ -190,7 +190,7 @@ namespace TabularEditor.UI.Dialogs
             {
                 chkDeployDataSources.Enabled = modelHasDataSources && chkDeployModel.Checked;
                 chkDeployPartitions.Enabled = modelHasNonCalculatedPartitions && chkDeployModel.Checked;
-                chkDeployRefreshPolicyPartitions.Enabled = modelHasNonCalculatedPartitions && modelHasRefreshPolicyPartitions && chkDeployModel.Checked && chkDeployPartitions.Checked;
+                chkDeployRefreshPolicyPartitions.Enabled = modelHasIncrRefresh && chkDeployModel.Checked && chkDeployPartitions.Checked;
                 chkDeployRoles.Enabled = modelHasRoles && chkDeployModel.Checked;
                 chkDeployRoleMembers.Enabled = modelHasRoleMembers && chkDeployModel.Checked && chkDeployRoles.Checked;
             }

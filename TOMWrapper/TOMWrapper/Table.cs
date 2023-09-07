@@ -828,6 +828,12 @@ namespace TabularEditor.TOMWrapper
             var sourceType = GetSourceType(table);
             return sourceType == TOM.PartitionSourceType.M || sourceType == TOM.PartitionSourceType.Query || sourceType == TOM.PartitionSourceType.PolicyRange;
         }
+        public static bool IsQueryTable(this TOM.Table table)
+        {
+            var sourceType = GetSourceType(table);
+            return sourceType == TOM.PartitionSourceType.M || sourceType == TOM.PartitionSourceType.Query || sourceType == TOM.PartitionSourceType.PolicyRange
+                || (sourceType == TOM.PartitionSourceType.None && table.RefreshPolicy != null);
+        }
         public static bool IsImported(this Table table)
         {
             return table.MetadataObject.IsImported();

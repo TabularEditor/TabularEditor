@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using System.Threading;
-using TabularEditor.PropertyGridUI.Converters;
 
 namespace TabularEditor.TOMWrapper.Utils
 {
@@ -222,12 +221,12 @@ namespace TabularEditor.TOMWrapper.Utils
                     if (destinationModel.Tables.Contains(tableName))
                     {
                         // Use destination partitions only if both source and destination tables are imported:
-                        if (!(sourceModelTables[tableName].IsImported() && destinationModel.Tables[tableName].IsImported())) continue;
+                        if (!(sourceModelTables[tableName].IsQueryTable() && destinationModel.Tables[tableName].IsQueryTable())) continue;
 
                         var t = destinationModel.Tables[tableName];
 
                         // If destination partition is not a policyrange
-                        if (!options.DeployPartitions || (options.SkipRefreshPolicyPartitions && t.GetSourceType() == TOM.PartitionSourceType.PolicyRange))
+                        if (!options.DeployPartitions || (options.SkipRefreshPolicyPartitions && t.RefreshPolicy is TOM.BasicRefreshPolicy policy && !string.IsNullOrEmpty(policy.SourceExpression)))
                         {
                             // Retain existing partitions on destination:
                             var partitions = new JArray();
