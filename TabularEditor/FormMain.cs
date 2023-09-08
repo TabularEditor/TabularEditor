@@ -30,7 +30,7 @@ namespace TabularEditor
             Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en-US");
             InitializeComponent();
 
-            dlgOpenFile.Filter = "All supported files|*.bim;database.json;model.tmd;*.pbit;*.pbip|Tabular Model Files|*.bim;database.json;model.tmd|Power BI Files|*.pbit;*.pbip|All files|*.*";
+            dlgOpenFile.Filter = "All supported files|*.bim;database.json;model.tmd;model.tmdl;*.pbit;*.pbip|Tabular Model Files|*.bim;database.json;model.tmd;model.tmdl|Power BI Files|*.pbit;*.pbip|All files|*.*";
 
             // For some reason, Visual Studio sometimes removes this from the FormMain.Designer.cs, making the
             // colors of the lines look ugly:
@@ -102,17 +102,20 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             try
             {
                 macros = ScriptEngine.GetMacrosJson();
-                foreach (var action in macros.Actions)
+                if (macros?.Actions != null)
                 {
-                    var item = macroToolStripMenuItem.DropDownItems.Add(action.Name);
-                    item.ToolTipText = action.Tooltip;
-                    item.AutoToolTip = true;
-                    item.Tag = action;
-                    item.Click += (s, e) =>
+                    foreach (var action in macros.Actions)
                     {
-                        var clickAction = CurrentMacro = (MacroJson)(s as ToolStripItem).Tag;
-                        txtAdvanced.Text = clickAction.Execute;
-                    };
+                        var item = macroToolStripMenuItem.DropDownItems.Add(action.Name);
+                        item.ToolTipText = action.Tooltip;
+                        item.AutoToolTip = true;
+                        item.Tag = action;
+                        item.Click += (s, e) =>
+                        {
+                            var clickAction = CurrentMacro = (MacroJson)(s as ToolStripItem).Tag;
+                            txtAdvanced.Text = clickAction.Execute;
+                        };
+                    }
                 }
             }
             catch { }
@@ -651,7 +654,10 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             // Auto-load the file specified as command line arguments:
             var args = Environment.GetCommandLineArgs();
             var modelSource = CommandLineHandler.GetModelSourceFromCLI(args, out _);
-            if (modelSource == CommandLineHandler.ModelSource.File && (File.Exists(args[1]) || File.Exists(Path.Combine(args[1],"database.json")) || File.Exists(Path.Combine(args[1],"model.tmd"))))
+            if (modelSource == CommandLineHandler.ModelSource.File && (File.Exists(args[1]) 
+                || File.Exists(Path.Combine(args[1],"database.json")) 
+                || File.Exists(Path.Combine(args[1],"model.tmd"))
+                || File.Exists(Path.Combine(args[1],"model.tmdl"))))
             {
                 UI.File_Open(args[1]);
             }

@@ -2567,7 +2567,7 @@
             // dlgOpenFile
             // 
             this.dlgOpenFile.FileName = "Model.bim";
-            this.dlgOpenFile.Filter = "Tabular Model Files|*.bim;database.json;model.tmd|Power BI Files|*.pbit|All files|*.*";
+            this.dlgOpenFile.Filter = "Tabular Model Files|*.bim;database.json;model.tmd;model.tmdl|Power BI Files|*.pbit|All files|*.*";
             // 
             // _type
             // 

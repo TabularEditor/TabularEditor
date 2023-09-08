@@ -86,8 +86,9 @@ namespace TabularEditor.TOMWrapper
             if (file.Exists && file.Extension.EqualsI(".pbit")) LoadPowerBiTemplateFile(path);
 
             // TMDL:
-            else if (file.Exists && file.Extension.EqualsI(".tmd")) LoadTMDL(path);
+            else if (file.Exists && (file.Extension.EqualsI(".tmd") || file.Extension.EqualsI(".tmdl"))) LoadTMDL(path);
             else if (Directory.Exists(path) && File.Exists(Path.Combine(path, "model.tmd"))) LoadTMDL(Path.Combine(path, "model.tmd"));
+            else if (Directory.Exists(path) && File.Exists(Path.Combine(path, "model.tmdl"))) LoadTMDL(Path.Combine(path, "model.tmdl"));
 
             // If the file name is "database.json" or path is a directory, assume Split Model:
             else if ((file.Exists && file.Name.EqualsI("database.json")) || Directory.Exists(path)) LoadSplitModelFiles(path);
