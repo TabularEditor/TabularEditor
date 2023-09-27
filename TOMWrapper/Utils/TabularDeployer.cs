@@ -264,7 +264,7 @@ namespace TabularEditor.TOMWrapper.Utils
 
             if (!options.DeployPartitions || options.SkipRefreshPolicyPartitions) ReplacePartitionsFromDestination(model, db.Model.Tables, destDb.Model, options);
 
-            if (options.DeployPartitions && !options.SkipRefreshPolicyPartitions)
+            if (options.DeployPartitions)
             {
                 model.CreateDummyPartitionOnIncrRefreshTables();
             }
