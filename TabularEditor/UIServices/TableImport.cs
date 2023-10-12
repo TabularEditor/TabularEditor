@@ -248,6 +248,7 @@ namespace TabularEditor.UIServices
                 {
                     conn.Open();
                     var cmd = new SC.SqlCommand(sql, conn);
+                    cmd.CommandTimeout = 120;
                     var rdr = cmd.ExecuteReader(CommandBehavior.SchemaOnly);
                     return rdr.GetSchemaTable();
                 }
