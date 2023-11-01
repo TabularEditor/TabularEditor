@@ -217,9 +217,7 @@ namespace TabularEditor.TOMWrapper.Tests
     },
     {
       ""type"": ""calculated"",
-      ""name"": ""cc1"",
-      ""dataType"": ""unknown"",
-      ""isDataTypeInferred"": true
+      ""name"": ""cc1""
     }
   ],
   ""partitions"": [
