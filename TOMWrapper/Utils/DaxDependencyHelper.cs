@@ -15,7 +15,16 @@ namespace TabularEditor.TOMWrapper.Utils
         [IntelliSense("Return a list of tokens representing the DAX expression on the current object.")]
         public static IList<DaxToken> Tokenize(this IDaxDependantObject obj)
         {
-            return Tokenize(obj, DAXProperty.Expression);
+            return Tokenize(obj, includeHidden: true);
+        }
+
+        /// <summary>
+        /// Return a list of tokens representing the DAX expression on the current object.
+        /// </summary>
+        [IntelliSense("Return a list of tokens representing the DAX expression on the current object.")]
+        public static IList<DaxToken> Tokenize(this IDaxDependantObject obj, bool includeHidden)
+        {
+            return Tokenize(obj, DAXProperty.Expression, includeHidden);
         }
 
         /// <summary>
@@ -24,15 +33,36 @@ namespace TabularEditor.TOMWrapper.Utils
         [IntelliSense("Return a list of tokens representing the specified DAX property on the current object.")]
         public static IList<DaxToken> Tokenize(this IDaxDependantObject obj, DAXProperty property)
         {
+            return Tokenize(obj, property, includeHidden: true);
+        }
+
+        /// <summary>
+        /// Return a list of tokens representing the specified DAX property on the current object.
+        /// </summary>
+        [IntelliSense("Return a list of tokens representing the specified DAX property on the current object.")]
+        public static IList<DaxToken> Tokenize(this IDaxDependantObject obj, DAXProperty property, bool includeHidden)
+        {
             var result = new List<DaxToken>();
             var dax = obj.GetDAX(property);
             if(string.IsNullOrEmpty(dax)) return result;
             var lexer = new DAXLexer(new DAXCharStream(obj.GetDAX(property), false));
             lexer.RemoveErrorListeners();
             var lexerTokens = lexer.GetAllTokens();
-            for(int i = 0; i < lexerTokens.Count; i++)
+            if (includeHidden)
             {
-                result.Add(new DaxToken(lexerTokens[i], result, i));
+                for (int i = 0; i < lexerTokens.Count; i++)
+                {
+                    result.Add(new DaxToken(lexerTokens[i], result, i));
+                }
+            }
+            else
+            {
+                var i = 0;
+                foreach (var token in lexerTokens)
+                {
+                    if (token.Channel == DAXLexer.COMMENTS_CHANNEL || token.Type == DAXLexer.WHITESPACES) continue;
+                    result.Add(new DaxToken(token, result, i++));
+                }
             }
 
             return result;
