@@ -7,6 +7,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{F7588159-3F24-4BFA-A6F6-551657896C34}</ProjectGuid>
     <OutputType>WinExe</OutputType>
+    <LangVersion>10.0</LangVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TabularEditor</RootNamespace>
     <AssemblyName>TabularEditor</AssemblyName>
@@ -206,8 +207,10 @@
     </Compile>
     <Compile Include="CustomCombobox\OldNewEvent.cs" />
     <Compile Include="CustomCombobox\PopupControl.cs" />
+    <Compile Include="IsExternalInit.cs" />
     <Compile Include="NUnit.cs" />
     <Compile Include="Scripting\PropertySerializer.cs" />
+    <Compile Include="Scripting\ScriptApi.cs" />
     <Compile Include="Scripting\ScriptMethodAttribute.cs" />
     <Compile Include="Strings.Designer.cs">
       <AutoGen>True</AutoGen>
