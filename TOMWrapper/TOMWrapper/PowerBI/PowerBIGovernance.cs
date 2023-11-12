@@ -55,7 +55,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
         public void UpdateGovernanceMode(string fileSourcePath = null)
         {
             string pbipFileName = null;
-            if (fileSourcePath != null)
+            if (handler.SourceType != ModelSourceType.Database && fileSourcePath != null)
             {
                 var fi = new FileInfo(fileSourcePath);
                 if(fi.Exists && fi.Directory.Name.EndsWith("Dataset", StringComparison.OrdinalIgnoreCase))
