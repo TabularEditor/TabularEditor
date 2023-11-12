@@ -7,6 +7,7 @@ using System.Data.Common;
 using System.Linq;
 using TabularEditor.UI.Dialogs;
 using SC = System.Data.SqlClient;
+using TOM = TabularEditor.TOMWrapper;
 
 namespace TabularEditor.UIServices
 {
@@ -248,7 +249,10 @@ namespace TabularEditor.UIServices
                 {
                     conn.Open();
                     var cmd = new SC.SqlCommand(sql, conn);
-                    cmd.CommandTimeout = 120;
+                    if(ModelDataSource != null && ModelDataSource.Timeout != 0)
+                    {
+                        cmd.CommandTimeout = ModelDataSource.Timeout;
+                    }
                     var rdr = cmd.ExecuteReader(CommandBehavior.SchemaOnly);
                     return rdr.GetSchemaTable();
                 }
@@ -362,6 +366,10 @@ namespace TabularEditor.UIServices
                 {
                     conn.Open();
                     var cmd = new System.Data.OleDb.OleDbCommand(sql, conn);
+                    if(ModelDataSource != null && ModelDataSource.Timeout != 0)
+                    {
+                        cmd.CommandTimeout = ModelDataSource.Timeout;
+                    }
                     var rdr = cmd.ExecuteReader(CommandBehavior.SchemaOnly);
                     return rdr.GetSchemaTable();
                 }
@@ -461,6 +469,10 @@ namespace TabularEditor.UIServices
                 {
                     conn.Open();
                     var cmd = new System.Data.Odbc.OdbcCommand(sql, conn);
+                    if (ModelDataSource != null && ModelDataSource.Timeout != 0)
+                    {
+                        cmd.CommandTimeout = ModelDataSource.Timeout;
+                    }
                     var rdr = cmd.ExecuteReader(CommandBehavior.SchemaOnly);
                     return rdr.GetSchemaTable();
                 }
@@ -519,6 +531,8 @@ namespace TabularEditor.UIServices
 
     public abstract class TypedDataSource
     {
+        public TOM.ProviderDataSource ModelDataSource { get; init; }
+
         protected string GetSampleSql(RowLimitClause limitClause, string tableRef, int maxRecords)
         {
             switch(limitClause)
@@ -632,11 +646,11 @@ namespace TabularEditor.UIServices
             var providerName = !string.IsNullOrWhiteSpace(tabularDataSource.Provider) ? tabularDataSource.Provider : csb.ContainsKey("Provider") ? csb["Provider"].ToString() : "";
             var pName = providerName.ToUpper();
 
-            if (pName.Contains("MSADSQL") || pName.Contains("OLEDB")) ds = new OleDbDataSource();
-            else if (pName.Contains("SQLNCLI") || pName.Contains("SQLCLIENT")) ds = new SqlDataSource();
-            else if (pName.Contains("ODBC")) ds = new OdbcDataSource();
-            else if (pName.Contains("ORACLE")) ds = new OracleDataSource();
-            else ds = new OtherDataSource();
+            if (pName.Contains("MSADSQL") || pName.Contains("OLEDB")) ds = new OleDbDataSource() { ModelDataSource = tabularDataSource };
+            else if (pName.Contains("SQLNCLI") || pName.Contains("SQLCLIENT")) ds = new SqlDataSource() { ModelDataSource = tabularDataSource };
+            else if (pName.Contains("ODBC")) ds = new OdbcDataSource() { ModelDataSource = tabularDataSource };
+            else if (pName.Contains("ORACLE")) ds = new OracleDataSource() { ModelDataSource = tabularDataSource };
+            else ds = new OtherDataSource() { ModelDataSource = tabularDataSource };
 
             ds.NeedsPassword = needsPassword;
             if (needsPassword) ds.MissingPwdConnectionString = tabularDataSource.ConnectionString;

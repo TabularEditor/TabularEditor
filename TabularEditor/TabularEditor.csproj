@@ -48,6 +48,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <CodeAnalysisRuleSet>..\TOMWrapper\LocateDeadCode.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
+    <LangVersion>10.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -206,6 +207,7 @@
     </Compile>
     <Compile Include="CustomCombobox\OldNewEvent.cs" />
     <Compile Include="CustomCombobox\PopupControl.cs" />
+    <Compile Include="IsExternalInit.cs" />
     <Compile Include="NUnit.cs" />
     <Compile Include="Scripting\PropertySerializer.cs" />
     <Compile Include="Scripting\ScriptMethodAttribute.cs" />
