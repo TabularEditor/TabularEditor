@@ -15407,9 +15407,9 @@ namespace TabularEditor.TOMWrapper
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.MULTIPLEOREMPTYSELECTIONEXPRESSION:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1605 : Handler.CompatibilityLevel >= 1605;
 				case Properties.NOSELECTIONEXPRESSION:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1605 : Handler.CompatibilityLevel >= 1605;
 				
 				default:
 					return true;
