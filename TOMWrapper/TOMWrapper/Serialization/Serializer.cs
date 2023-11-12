@@ -121,7 +121,7 @@ namespace TabularEditor.TOMWrapper.Serialization
             {
                 jObj = JObject.Parse(json);
             }
-            catch (JsonReaderException jex)
+            catch (JsonReaderException)
             {
                 return null;
             }

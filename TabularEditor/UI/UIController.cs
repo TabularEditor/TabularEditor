@@ -368,7 +368,7 @@ namespace TabularEditor.UI
             UI.PropertyGrid.Refresh();
         }
 
-        private void UpdateUIText(bool clearText = true)
+        private void UpdateUIText()
         {
             var appName = $"{ Application.ProductName } { Application.ProductVersion }";
 

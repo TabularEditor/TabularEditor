@@ -139,7 +139,6 @@ namespace TabularEditor.UIServices
         public bool BackupOnSave { get { return !string.IsNullOrWhiteSpace(BackupLocation); } }
 
         public static readonly string PREFERENCES_PATH = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\Preferences.json";
-        public static readonly string PREFERENCES_PATH_OLD = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\TabularEditor\Preferences.json";
         private static Preferences _current = null;
         public static Preferences Current
         {
@@ -178,10 +177,7 @@ namespace TabularEditor.UIServices
             _current = Default;
             try
             {
-                string path;
-                if (File.Exists(PREFERENCES_PATH)) path = PREFERENCES_PATH;
-                else if (File.Exists(PREFERENCES_PATH_OLD)) path = PREFERENCES_PATH_OLD;
-                else return;
+                if (!File.Exists(PREFERENCES_PATH)) return;
 
                 var json = File.ReadAllText(PREFERENCES_PATH, Encoding.Default);
                 _current = Load(json);
@@ -206,7 +202,7 @@ namespace TabularEditor.UIServices
                 File.WriteAllText(PREFERENCES_PATH, json, Encoding.Default);
                 IsLoaded = true;
             }
-            catch (IOException ex)
+            catch (IOException)
             {
                 // Should only raise exception when several instances of Tabular Editor are closed simultaneously
                 // In that case - first instance closed, wins. All others silently absorb the IOException.

@@ -116,7 +116,6 @@ namespace TabularEditor.TOMWrapper
         private bool CanRemoveKPI() => KPI != null;
 
         private KPI KPIBackup;
-        private bool _needsValidation = false;
 
         internal override void RemoveReferences()
         {
@@ -187,7 +186,6 @@ namespace TabularEditor.TOMWrapper
                 case Properties.DETAILROWSEXPRESSION:
                 case Properties.FORMATSTRINGEXPRESSION:
                 case Properties.EXPRESSION:
-                    _needsValidation = true;
                     FormulaFixup.BuildDependencyTree(this);
                     break;
 

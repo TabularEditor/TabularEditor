@@ -105,7 +105,7 @@ namespace TabularEditor.UIServices
                     Name = name;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //Log.Error("{class} {method} {message} {stacktrace}", "PowerBIInstance", "ctor", ex.Message, ex.StackTrace);
                 Name = name;
@@ -171,7 +171,7 @@ namespace TabularEditor.UIServices
                     _instances.Add(new LocalInstance(parentTitle, _port, _icon));
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
         }

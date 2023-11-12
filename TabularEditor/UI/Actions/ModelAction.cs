@@ -110,7 +110,7 @@ namespace TabularEditor.UI.Actions
             {
                 return ui.Handler != null /*&& ValidContexts.HasFlag(ui.Selection.Context)*/ && _enabled(ui.Selection, ui.Handler.Model);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
