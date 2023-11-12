@@ -274,8 +274,8 @@ namespace TabularEditor.TOMWrapper.Utils
         FormatStringExpression = 6,
         NoSelectionExpression = 7,
         NoSelectionFormatStringExpression = 8,
-        MultiSelectionExpression = 9,
-        MultiSelectionFormatStringExpression = 10
+        MultipleOrEmptySelectionExpression = 9,
+        MultipleOrEmptySelectionFormatStringExpression = 10
     }
 
     public static class DAXPropertyHelper

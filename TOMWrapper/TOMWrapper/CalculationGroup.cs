@@ -19,95 +19,95 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// The expression defined on this object will be applied to the selected measure in DAX queries, when multiple calculation items are applied.
         /// </summary>
-        public string MultiSelectionExpression
+        public string MultipleOrEmptySelectionExpression
         {
             get
             {
-                return MetadataObject.MultiSelectionExpression?.Expression;
+                return MetadataObject.MultipleOrEmptySelectionExpression?.Expression;
             }
             set
             {
-                var oldValue = MultiSelectionExpression;
+                var oldValue = MultipleOrEmptySelectionExpression;
                 if (oldValue == value || (oldValue == null && string.IsNullOrEmpty(value))) return;
 
                 bool undoable = true;
                 bool cancel = false;
-                OnPropertyChanging(nameof(MultiSelectionExpression), value, ref undoable, ref cancel);
+                OnPropertyChanging(nameof(MultipleOrEmptySelectionExpression), value, ref undoable, ref cancel);
                 if (cancel) return;
 
-                if (MetadataObject.MultiSelectionExpression == null && !string.IsNullOrEmpty(value))
-                    MetadataObject.MultiSelectionExpression = new TOM.CalculationExpression();
-                if (MetadataObject.MultiSelectionExpression != null)
-                    MetadataObject.MultiSelectionExpression.Expression = value;
+                if (MetadataObject.MultipleOrEmptySelectionExpression == null && !string.IsNullOrEmpty(value))
+                    MetadataObject.MultipleOrEmptySelectionExpression = new TOM.CalculationGroupExpression();
+                if (MetadataObject.MultipleOrEmptySelectionExpression != null)
+                    MetadataObject.MultipleOrEmptySelectionExpression.Expression = value;
                 ClearDefaultExpressionIfEmpty();
 
-                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(MultiSelectionExpression), oldValue, value));
-                OnPropertyChanged(nameof(MultiSelectionExpression), oldValue, value);
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(MultipleOrEmptySelectionExpression), oldValue, value));
+                OnPropertyChanged(nameof(MultipleOrEmptySelectionExpression), oldValue, value);
             }
         }
 
         /// <summary>
-        /// The description of the CalculationExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+        /// The description of the CalculationGroupExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
         /// </summary>
-        public string MultiSelectionExpressionDescription
+        public string MultipleOrEmptySelectionDescription
         {
             get
             {
-                return MetadataObject.MultiSelectionExpression?.Description;
+                return MetadataObject.MultipleOrEmptySelectionExpression?.Description;
             }
             set
             {
-                var oldValue = MultiSelectionExpressionDescription;
+                var oldValue = MultipleOrEmptySelectionDescription;
                 if (oldValue == value || (oldValue == null && string.IsNullOrEmpty(value))) return;
 
                 bool undoable = true;
                 bool cancel = false;
-                OnPropertyChanging(nameof(MultiSelectionExpressionDescription), value, ref undoable, ref cancel);
+                OnPropertyChanging(nameof(MultipleOrEmptySelectionDescription), value, ref undoable, ref cancel);
                 if (cancel) return;
 
-                if (MetadataObject.MultiSelectionExpression == null && !string.IsNullOrEmpty(value))
-                    MetadataObject.MultiSelectionExpression = new TOM.CalculationExpression();
-                if (MetadataObject.MultiSelectionExpression != null)
-                    MetadataObject.MultiSelectionExpression.Description = value;
+                if (MetadataObject.MultipleOrEmptySelectionExpression == null && !string.IsNullOrEmpty(value))
+                    MetadataObject.MultipleOrEmptySelectionExpression = new TOM.CalculationGroupExpression();
+                if (MetadataObject.MultipleOrEmptySelectionExpression != null)
+                    MetadataObject.MultipleOrEmptySelectionExpression.Description = value;
                 ClearDefaultExpressionIfEmpty();
 
-                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(MultiSelectionExpressionDescription), oldValue, value));
-                OnPropertyChanged(nameof(MultiSelectionExpressionDescription), oldValue, value);
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(MultipleOrEmptySelectionDescription), oldValue, value));
+                OnPropertyChanged(nameof(MultipleOrEmptySelectionDescription), oldValue, value);
             }
         }
 
         /// <summary>
         /// The format string expression defined on this object will be applied to the selected measure in DAX queries, when multiple calculation items are applied.
         /// </summary>
-        public string MultiSelectionFormatStringExpression
+        public string MultipleOrEmptySelectionFormatStringExpression
         {
             get
             {
-                return MetadataObject.MultiSelectionExpression?.FormatStringDefinition?.Expression;
+                return MetadataObject.MultipleOrEmptySelectionExpression?.FormatStringDefinition?.Expression;
             }
             set
             {
-                var oldValue = MultiSelectionFormatStringExpression;
+                var oldValue = MultipleOrEmptySelectionFormatStringExpression;
                 if (oldValue == value || (oldValue == null && string.IsNullOrEmpty(value))) return;
 
                 bool undoable = true;
                 bool cancel = false;
-                OnPropertyChanging(nameof(MultiSelectionFormatStringExpression), value, ref undoable, ref cancel);
+                OnPropertyChanging(nameof(MultipleOrEmptySelectionFormatStringExpression), value, ref undoable, ref cancel);
                 if (cancel) return;
 
                 if (!string.IsNullOrEmpty(value))
                 {
-                    if (MetadataObject.MultiSelectionExpression == null)
-                        MetadataObject.MultiSelectionExpression = new TOM.CalculationExpression();
-                    if (MetadataObject.MultiSelectionExpression.FormatStringDefinition == null)
-                        MetadataObject.MultiSelectionExpression.FormatStringDefinition = new TOM.FormatStringDefinition();
+                    if (MetadataObject.MultipleOrEmptySelectionExpression == null)
+                        MetadataObject.MultipleOrEmptySelectionExpression = new TOM.CalculationGroupExpression();
+                    if (MetadataObject.MultipleOrEmptySelectionExpression.FormatStringDefinition == null)
+                        MetadataObject.MultipleOrEmptySelectionExpression.FormatStringDefinition = new TOM.FormatStringDefinition();
                 }
-                if (MetadataObject.MultiSelectionExpression != null && MetadataObject.MultiSelectionExpression.FormatStringDefinition != null)
-                    MetadataObject.MultiSelectionExpression.FormatStringDefinition.Expression = value;
+                if (MetadataObject.MultipleOrEmptySelectionExpression != null && MetadataObject.MultipleOrEmptySelectionExpression.FormatStringDefinition != null)
+                    MetadataObject.MultipleOrEmptySelectionExpression.FormatStringDefinition.Expression = value;
                 ClearDefaultExpressionIfEmpty();
 
-                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(MultiSelectionFormatStringExpression), oldValue, value));
-                OnPropertyChanged(nameof(MultiSelectionFormatStringExpression), oldValue, value);
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(MultipleOrEmptySelectionFormatStringExpression), oldValue, value));
+                OnPropertyChanged(nameof(MultipleOrEmptySelectionFormatStringExpression), oldValue, value);
             }
         }
 
@@ -131,7 +131,7 @@ namespace TabularEditor.TOMWrapper
                 if (cancel) return;
 
                 if (MetadataObject.NoSelectionExpression == null && !string.IsNullOrEmpty(value))
-                    MetadataObject.NoSelectionExpression = new TOM.CalculationExpression();
+                    MetadataObject.NoSelectionExpression = new TOM.CalculationGroupExpression();
                 if (MetadataObject.NoSelectionExpression != null)
                     MetadataObject.NoSelectionExpression.Expression = value;
                 ClearDefaultExpressionIfEmpty();
@@ -142,7 +142,7 @@ namespace TabularEditor.TOMWrapper
         }
 
         /// <summary>
-        /// The description of the CalculationExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+        /// The description of the CalculationGroupExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
         /// </summary>
         public string NoSelectionExpressionDescription
         {
@@ -161,7 +161,7 @@ namespace TabularEditor.TOMWrapper
                 if (cancel) return;
 
                 if (MetadataObject.NoSelectionExpression == null && !string.IsNullOrEmpty(value))
-                    MetadataObject.NoSelectionExpression = new TOM.CalculationExpression();
+                    MetadataObject.NoSelectionExpression = new TOM.CalculationGroupExpression();
                 if (MetadataObject.NoSelectionExpression != null)
                     MetadataObject.NoSelectionExpression.Description = value;
                 ClearDefaultExpressionIfEmpty();
@@ -193,7 +193,7 @@ namespace TabularEditor.TOMWrapper
                 if (!string.IsNullOrEmpty(value))
                 {
                     if (MetadataObject.NoSelectionExpression == null)
-                        MetadataObject.NoSelectionExpression = new TOM.CalculationExpression();
+                        MetadataObject.NoSelectionExpression = new TOM.CalculationGroupExpression();
                     if (MetadataObject.NoSelectionExpression.FormatStringDefinition == null)
                         MetadataObject.NoSelectionExpression.FormatStringDefinition = new TOM.FormatStringDefinition();
                 }
@@ -208,8 +208,8 @@ namespace TabularEditor.TOMWrapper
 
         private void ClearDefaultExpressionIfEmpty()
         {
-            if (MetadataObject.MultiSelectionExpression.IsNullOrEmpty())
-                MetadataObject.MultiSelectionExpression = null;
+            if (MetadataObject.MultipleOrEmptySelectionExpression.IsNullOrEmpty())
+                MetadataObject.MultipleOrEmptySelectionExpression = null;
         }
 
         public override string ToString()

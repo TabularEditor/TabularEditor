@@ -86,8 +86,8 @@ namespace TabularEditor.TOMWrapper.Utils
                     {
                         yield return DAXProperty.NoSelectionExpression;
                         yield return DAXProperty.NoSelectionFormatStringExpression;
-                        yield return DAXProperty.MultiSelectionExpression;
-                        yield return DAXProperty.MultiSelectionFormatStringExpression;
+                        yield return DAXProperty.MultipleOrEmptySelectionExpression;
+                        yield return DAXProperty.MultipleOrEmptySelectionFormatStringExpression;
                     }
                 }
             }
@@ -156,8 +156,8 @@ namespace TabularEditor.TOMWrapper.Utils
                 {
                     if (property == DAXProperty.NoSelectionExpression) return nameof(cgt.NoSelectionExpression);
                     if (property == DAXProperty.NoSelectionFormatStringExpression) return nameof(cgt.NoSelectionFormatStringExpression);
-                    if (property == DAXProperty.MultiSelectionExpression) return nameof(cgt.MultiSelectionExpression);
-                    if (property == DAXProperty.MultiSelectionFormatStringExpression) return nameof(cgt.MultiSelectionFormatStringExpression);
+                    if (property == DAXProperty.MultipleOrEmptySelectionExpression) return nameof(cgt.MultipleOrEmptySelectionExpression);
+                    if (property == DAXProperty.MultipleOrEmptySelectionFormatStringExpression) return nameof(cgt.MultipleOrEmptySelectionFormatStringExpression);
                 }
             }
 
@@ -205,8 +205,8 @@ namespace TabularEditor.TOMWrapper.Utils
                 {
                     if (property == DAXProperty.NoSelectionExpression) return cgt.NoSelectionExpression;
                     if (property == DAXProperty.NoSelectionFormatStringExpression) return cgt.NoSelectionFormatStringExpression;
-                    if (property == DAXProperty.MultiSelectionExpression) return cgt.MultiSelectionExpression;
-                    if (property == DAXProperty.MultiSelectionFormatStringExpression) return cgt.MultiSelectionFormatStringExpression;
+                    if (property == DAXProperty.MultipleOrEmptySelectionExpression) return cgt.MultipleOrEmptySelectionExpression;
+                    if (property == DAXProperty.MultipleOrEmptySelectionFormatStringExpression) return cgt.MultipleOrEmptySelectionFormatStringExpression;
                 }
             }
 
@@ -261,8 +261,8 @@ namespace TabularEditor.TOMWrapper.Utils
             {
                 if (property == DAXProperty.NoSelectionExpression) { cgt.NoSelectionExpression = expression; return; }
                 if (property == DAXProperty.NoSelectionFormatStringExpression) { cgt.NoSelectionFormatStringExpression = expression; return; }
-                if (property == DAXProperty.MultiSelectionExpression) { cgt.MultiSelectionExpression = expression; return; }
-                if (property == DAXProperty.MultiSelectionFormatStringExpression) { cgt.MultiSelectionFormatStringExpression = expression; return; }
+                if (property == DAXProperty.MultipleOrEmptySelectionExpression) { cgt.MultipleOrEmptySelectionExpression = expression; return; }
+                if (property == DAXProperty.MultipleOrEmptySelectionFormatStringExpression) { cgt.MultipleOrEmptySelectionFormatStringExpression = expression; return; }
             }
 
             throw new ArgumentException(string.Format(Messages.InvalidExpressionProperty, obj.GetTypeName(), property), "property");

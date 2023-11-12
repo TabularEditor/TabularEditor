@@ -17,7 +17,7 @@ namespace Microsoft.AnalysisServices.Tabular.Helper
         {
             return value == null || string.IsNullOrEmpty(value.Expression);
         }
-        public static bool IsNullOrEmpty(this CalculationExpression value)
+        public static bool IsNullOrEmpty(this CalculationGroupExpression value)
         {
             return value == null
                 || (string.IsNullOrEmpty(value.Expression) && string.IsNullOrEmpty(value.Description) && value.FormatStringDefinition.IsNullOrEmpty());

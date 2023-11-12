@@ -218,31 +218,31 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// The expression defined on this object will be applied to the selected measure in DAX queries, when multiple calculation items are aplied.
         /// </summary>
-        [Category("Options"),DisplayName("Multi-selection Expression"),Description("The expression defined on this object will be applied to the selected measure in DAX queries, when multiple calculation items are applied."),Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
-        public string MultiSelectionExpression
+        [Category("Options"),DisplayName("Multiple or Empty Selection Expression"),Description("The expression defined on this object will be applied to the selected measure in DAX queries, when multiple calculation items are applied."),Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
+        public string MultipleOrEmptySelectionExpression
         {
-            get => CalculationGroup.MultiSelectionExpression;
-            set => CalculationGroup.MultiSelectionExpression = value;
+            get => CalculationGroup.MultipleOrEmptySelectionExpression;
+            set => CalculationGroup.MultipleOrEmptySelectionExpression = value;
         }
 
         /// <summary>
         /// The format string expression defined on this object will be applied to the selected measure in DAX queries, when multiple calculation items are aplied.
         /// </summary>
-        [Category("Options"), DisplayName("Multi-selection Format String Expression"), Description("The format string expression defined on this object will be applied to the selected measure in DAX queries, when multiple calculation items are applied."), Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
-        public string MultiSelectionFormatStringExpression
+        [Category("Options"), DisplayName("Multiple or Empty Selection Format String Expression"), Description("The format string expression defined on this object will be applied to the selected measure in DAX queries, when multiple calculation items are applied."), Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
+        public string MultipleOrEmptySelectionFormatStringExpression
         {
-            get => CalculationGroup.MultiSelectionFormatStringExpression;
-            set => CalculationGroup.MultiSelectionFormatStringExpression = value;
+            get => CalculationGroup.MultipleOrEmptySelectionFormatStringExpression;
+            set => CalculationGroup.MultipleOrEmptySelectionFormatStringExpression = value;
         }
 
         /// <summary>
-        /// The description of the CalculationExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+        /// The description of the CalculationGroupExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
         /// </summary>
-        [Category("Options"), DisplayName("Multi-selection Expression Description"), Description("The description of the CalculationExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")]
-        public string MultiSelectionExpressionDescription
+        [Category("Options"), DisplayName("Multiple or Empty Selection Expression Description"), Description("The description of the CalculationGroupExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")]
+        public string MultipleOrEmptySelectionDescription
         {
-            get => CalculationGroup.MultiSelectionExpressionDescription;
-            set => CalculationGroup.MultiSelectionExpressionDescription = value;
+            get => CalculationGroup.MultipleOrEmptySelectionDescription;
+            set => CalculationGroup.MultipleOrEmptySelectionDescription = value;
         }
         /// <summary>
         /// The expression defined on this object will be applied to the selected measure in DAX queries, when no calculation items are applied.
@@ -265,9 +265,9 @@ namespace TabularEditor.TOMWrapper
         }
 
         /// <summary>
-        /// The description of the CalculationExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+        /// The description of the CalculationGroupExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
         /// </summary>
-        [Category("Options"), DisplayName("No-selection Expression Description"), Description("The description of the CalculationExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")]
+        [Category("Options"), DisplayName("No-selection Expression Description"), Description("The description of the CalculationGroupExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")]
         public string NoSelectionExpressionDescription
         {
             get => CalculationGroup.NoSelectionExpressionDescription;
@@ -318,9 +318,9 @@ namespace TabularEditor.TOMWrapper
                 case Properties.INPERSPECTIVE:
                 case Properties.DEFAULTDETAILROWSEXPRESSION:
                     return true;
-                case nameof(MultiSelectionExpression):
-                case nameof(MultiSelectionFormatStringExpression):
-                case nameof(MultiSelectionExpressionDescription):
+                case nameof(MultipleOrEmptySelectionExpression):
+                case nameof(MultipleOrEmptySelectionFormatStringExpression):
+                case nameof(MultipleOrEmptySelectionDescription):
                 case nameof(NoSelectionExpression):
                 case nameof(NoSelectionFormatStringExpression):
                 case nameof(NoSelectionExpressionDescription):
@@ -330,7 +330,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        public const int DefaultExpressionRequiredCompatibilityLevel = 1000000;
+        public const int DefaultExpressionRequiredCompatibilityLevel = 1605;
     }
 
     internal static partial class Properties
