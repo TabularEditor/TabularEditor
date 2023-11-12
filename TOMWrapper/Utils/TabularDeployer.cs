@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using System.Threading;
-using TabularEditor.PropertyGridUI.Converters;
 
 namespace TabularEditor.TOMWrapper.Utils
 {
@@ -222,12 +221,14 @@ namespace TabularEditor.TOMWrapper.Utils
                     if (destinationModel.Tables.Contains(tableName))
                     {
                         // Use destination partitions only if both source and destination tables are imported:
-                        if (!(sourceModelTables[tableName].IsImported() && destinationModel.Tables[tableName].IsImported())) continue;
+                        if (!(sourceModelTables[tableName].IsQueryTable() && destinationModel.Tables[tableName].IsQueryTable())) continue;
 
                         var t = destinationModel.Tables[tableName];
 
-                        // If destination partition is not a policyrange
-                        if (!options.DeployPartitions || (options.SkipRefreshPolicyPartitions && t.GetSourceType() == TOM.PartitionSourceType.PolicyRange))
+                        // Retain existing partitions under any of the following conditions:
+                        // - DeployPartitions is false
+                        // - SkipRefreshPolicyPartitions is true and the table has a refresh policy with a source expression
+                        if (!options.DeployPartitions || (options.SkipRefreshPolicyPartitions && t.RefreshPolicy is TOM.BasicRefreshPolicy policy && !string.IsNullOrEmpty(policy.SourceExpression)))
                         {
                             // Retain existing partitions on destination:
                             var partitions = new JArray();
@@ -262,6 +263,11 @@ namespace TabularEditor.TOMWrapper.Utils
             if (!options.DeployConnections) ReplaceDataSourcesFromDestination(model, destDb.Model);
 
             if (!options.DeployPartitions || options.SkipRefreshPolicyPartitions) ReplacePartitionsFromDestination(model, db.Model.Tables, destDb.Model, options);
+
+            if (options.DeployPartitions)
+            {
+                model.CreateDummyPartitionOnIncrRefreshTables();
+            }
 
             return tmslJObj;
         }
@@ -528,7 +534,39 @@ namespace TabularEditor.TOMWrapper.Utils
                 else if (options.RemoveRoleMemberIds) TabularDeployer.RemoveRoleMemberIDs(model);
             }
 
+            model.CreateDummyPartitionOnIncrRefreshTables();
+
             return tmslJObj;
+        }
+
+        public static void CreateDummyPartitionOnIncrRefreshTables(this JObject model)
+        {
+            // If a model contains refresh policy tables without partitions, add a dummy partition here, to prevent the deployment from failing:
+            var tables = model["tables"] as JArray;
+            if (tables != null)
+            {
+                foreach (JObject table in tables)
+                {
+                    if (table.ContainsKey("refreshPolicy") && table["refreshPolicy"] is JObject rpObj && rpObj["sourceExpression"] != null && (!table.ContainsKey("partitions") || table["partitions"] is JArray partitions && partitions.Count == 0))
+                    {
+                        string srcExpression;
+                        if (rpObj["sourceExpression"] is JValue jv && jv.Value is string srcExpr) srcExpression = srcExpr;
+                        else if (rpObj["sourceExpression"] is JArray jArr) srcExpression = string.Join(Environment.NewLine, jArr.Select(o => o.ToString()));
+                        else continue;
+                        var partition = JObject.FromObject(new
+                        {
+                            name = Guid.NewGuid().ToString(),
+                            mode = "import",
+                            source = new
+                            {
+                                type = "m",
+                                expression = srcExpression
+                            }
+                        });
+                        table["partitions"] = new JArray(partition);
+                    }
+                }
+            }
         }
     }
 

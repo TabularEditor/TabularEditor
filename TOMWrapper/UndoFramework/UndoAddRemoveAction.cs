@@ -21,7 +21,7 @@ namespace TabularEditor.TOMWrapper.Undo
         public UndoAddRemoveAction(ITabularObjectCollection collection, TabularNamedObject obj, UndoAddRemoveActionType actionType)
         {
             _tomObjectType = obj.MetadataObject.GetType();
-            _json = Microsoft.AnalysisServices.Tabular.JsonSerializer.SerializeObject(obj.MetadataObject, TabularObject.RenewMetadataOptions);
+            _json = Microsoft.AnalysisServices.Tabular.JsonSerializer.SerializeObject(obj.MetadataObject, TabularObject.RenewMetadataOptions, obj.Handler.CompatibilityLevel, obj.Handler.Database.CompatibilityMode);
             _collection = collection;
             _obj = obj;
             _actionType = actionType;

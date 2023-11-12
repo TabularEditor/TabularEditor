@@ -207,5 +207,23 @@ namespace TabularEditor.TOMWrapper
         {
             return handler.Model.MetadataObject.Annotations.Contains(TabularEditorTag);
         }
+        
+        /// <summary>
+        /// Sets the internal database ID through reflection (used before serializing to file)
+        /// </summary>
+        public static void SetID(this TOM.Database database, string id)
+        {
+            var idInfo = typeof(Microsoft.AnalysisServices.NamedComponent).GetField("id", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            idInfo.SetValue(database, id);
+        }
+
+        /// <summary>
+        /// Sets the internal database name through reflection (used before serializing to file)
+        /// </summary>
+        public static void SetName(this TOM.Database database, string name)
+        {
+            var componentNameInfo = typeof(Microsoft.AnalysisServices.NamedComponent).GetField("componentName", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            componentNameInfo.SetValue(database, name);
+        }
     }
 }

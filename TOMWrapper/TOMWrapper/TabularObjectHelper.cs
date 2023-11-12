@@ -269,6 +269,19 @@ namespace TabularEditor.TOMWrapper
                             }
                         }
                     }
+                    else
+                    {
+                        // Fallback to the old path format: "Model.Dates.Date":
+                        var table = model.Tables.FindByName(parts[1]);
+                        if (parts.Length == 2 || table == null) return table;
+                        if (table.Columns.FindByName(parts[2]) is Column c) return c;
+                        if (table.Measures.FindByName(parts[2]) is Measure m) return m;
+                        if (table.Hierarchies.FindByName(parts[2]) is Hierarchy h)
+                        {
+                            if (parts.Length == 3) return h;
+                            return h.Levels.FindByName(parts[3]);
+                        }
+                    }
                     return null;
 
                 case "relationship": return model.Relationships.FindByName(parts[1]);

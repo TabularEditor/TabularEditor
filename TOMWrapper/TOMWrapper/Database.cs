@@ -29,7 +29,6 @@ namespace TabularEditor.TOMWrapper
             var db = tomDatabase as TOM.Database;
             TOMDatabase = db;
             _model = model;
-
             orgName = tomDatabase.Name;
             orgID = tomDatabase.ID;
             orgCompatibilityLevel = tomDatabase.CompatibilityLevel;

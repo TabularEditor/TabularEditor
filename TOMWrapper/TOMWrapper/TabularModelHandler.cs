@@ -37,7 +37,7 @@ namespace TabularEditor.TOMWrapper
 
         private void UpdateSettings()
         {
-            PowerBIGovernance.UpdateGovernanceMode();
+            PowerBIGovernance.UpdateGovernanceMode(Source);
             _tree?.OnStructureChanged();
             
             if(trace != null)

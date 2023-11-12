@@ -264,7 +264,7 @@ namespace TabularEditor.TOMWrapper
                 if (!Handler.PowerBIGovernance.AllowEditName(namedObj)) return false;
             }
             else 
-                if (!Handler.PowerBIGovernance.AllowEditProperty(ObjectType, propertyName)) return false;
+                if (!Handler.PowerBIGovernance.AllowEditProperty(ObjectType, propertyName, this)) return false;
 
             return IsEditable(propertyName);
         }

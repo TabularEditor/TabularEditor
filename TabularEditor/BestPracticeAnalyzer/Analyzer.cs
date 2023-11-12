@@ -166,11 +166,11 @@ namespace TabularEditor.BestPracticeAnalyzer
 
     public class AnalyzerResult
     {
-        public bool RuleEnabled { get; set; } = true;
+        public bool RuleEnabled { get; init; } = true;
         public bool RuleHasError { get { return !string.IsNullOrEmpty(RuleError); } }
-        public bool InvalidCompatibilityLevel { get; set; }
-        public string RuleError { get; set; }
-        public RuleScope RuleErrorScope { get; set; }
+        public bool InvalidCompatibilityLevel { get; init; }
+        public string RuleError { get; init; }
+        public RuleScope RuleErrorScope { get; init; }
         public string ObjectType => RuleHasError ? "Error" : Object.GetTypeName();
         public string ObjectName
         {
@@ -184,8 +184,8 @@ namespace TabularEditor.BestPracticeAnalyzer
             }
         }
         public string RuleName { get { return Rule.Name; } }
-        public ITabularNamedObject Object { get; set; }
-        public BestPracticeRule Rule { get; set; }
+        public ITabularNamedObject Object { get; init; }
+        public BestPracticeRule Rule { get; init; }
         public bool CanFix { get { return Rule.FixExpression != null; } }
         /// <summary>
         /// Indicates whether this rule should be ignored on this particular object
@@ -429,7 +429,7 @@ namespace TabularEditor.BestPracticeAnalyzer
 
                     if (ruleResults.Count == 0)
                         Program.testRun.Pass("Best Practice Analysis", rule.Name, GetNUnitRuleProps(rule));
-                    else if (ruleResults.Count == 1 && !ruleResults[0].RuleEnabled)
+                    else if ((ruleResults.Count == 1 && !ruleResults[0].RuleEnabled) || (ruleResults.Count == 1 && ruleResults[0].InvalidCompatibilityLevel))
                         Program.testRun.Skip("Best Practice Analysis", rule.Name, GetNUnitRuleProps(rule));
                     else if (ruleResults.Count == 1 && ruleResults[0].RuleHasError)
                         Program.testRun.Inconclude("Best Practice Analysis", rule.Name, GetNUnitRuleProps(rule, ruleResults[0].RuleError));

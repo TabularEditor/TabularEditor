@@ -1,0 +1,54 @@
+{
+  "name": "SemanticModel",
+  "compatibilityLevel": 1600,
+  "model": {
+    "tables": [
+      {
+        "name": "New Calculated Table",
+		"lineageTag": "abc",
+        "columns": [
+          {
+            "type": "calculatedTableColumn",
+            "name": "Value1",
+            "dataType": "int64",
+            "isNameInferred": true,
+            "isDataTypeInferred": true,
+            "sourceColumn": "[Value1]"
+          },
+          {
+            "type": "calculatedTableColumn",
+            "name": "Value2",
+            "dataType": "int64",
+            "isNameInferred": true,
+            "isDataTypeInferred": true,
+            "sourceColumn": "[Value2]"
+          },
+          {
+            "type": "calculatedTableColumn",
+            "name": "Value3",
+            "dataType": "int64",
+            "isNameInferred": true,
+            "isDataTypeInferred": true,
+            "sourceColumn": "[Value3]"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "New Calculated Table",
+            "mode": "import",
+            "source": {
+              "type": "calculated",
+              "expression": "{(1,2,3)}"
+            }
+          }
+        ]
+      }
+    ],
+    "annotations": [
+      {
+        "name": "TabularEditor_SerializeOptions",
+        "value": "{\"IgnoreInferredObjects\":true,\"IgnoreInferredProperties\":true,\"IgnoreTimestamps\":true,\"SplitMultilineStrings\":true,\"PrefixFilenames\":false,\"LocalTranslations\":false,\"LocalPerspectives\":false,\"LocalRelationships\":false,\"Levels\":[\"Data Sources\",\"Shared Expressions\",\"Perspectives\",\"Relationships\",\"Roles\",\"Tables\",\"Tables/Columns\",\"Tables/Hierarchies\",\"Tables/Measures\",\"Tables/Partitions\",\"Tables/Calculation Items\",\"Translations\"]}"
+      }
+    ]
+  }
+}

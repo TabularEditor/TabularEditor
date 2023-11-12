@@ -38,6 +38,8 @@ namespace TabularEditor.UIServices
         public bool IgnoreInferredProperties = true;
         public bool IgnoreTimestamps = true;
         public bool SplitMultilineStrings = true;
+        public bool IgnoreIncrementalRefreshPartitions = false;
+        public bool IgnorePrivacySettings = false;
         public bool IgnoreLineageTags = false;
 
         public bool ProxyUseSystem = true;
@@ -45,6 +47,8 @@ namespace TabularEditor.UIServices
         public string ProxyUser = string.Empty;
 
         public bool UsePowerQueryPartitionsByDefault = false;
+
+        public bool UseTMDL = false; // TODO: Set this to true (to use TMDL as the default folder format) once TMDL is out of preview.
 
         /// <summary>
         /// Stores an encrypted version of the user password. Use the string Decrypt() extension method to decrypt.
@@ -238,6 +242,8 @@ namespace TabularEditor.UIServices
                 IgnoreInferredProperties = value.IgnoreInferredProperties,
                 IgnoreTimestamps = value.IgnoreTimestamps,
                 IgnoreLineageTags = value.IgnoreLineageTags,
+                IgnoreIncrementalRefreshPartitions = value.IgnoreIncrementalRefreshPartitions,
+                IgnorePrivacySettings = value.IgnorePrivacySettings,
                 SplitMultilineStrings = value.SplitMultilineStrings,
             };
 

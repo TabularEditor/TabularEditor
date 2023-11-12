@@ -141,6 +141,17 @@ namespace Aga.Controls.Tree
 			}
 		}
 
+        private bool _hideOnFullRow = true;
+        [DefaultValue(true)]
+        public bool HideOnFullRow
+        {
+            get { return _hideOnFullRow; }
+            set
+            {
+                _hideOnFullRow = value;
+            }
+        }
+
 		private HorizontalAlignment _textAlign = HorizontalAlignment.Left;
 		[DefaultValue(HorizontalAlignment.Left)]
 		public HorizontalAlignment TextAlign

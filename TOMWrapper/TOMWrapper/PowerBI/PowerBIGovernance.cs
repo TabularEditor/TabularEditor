@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,8 @@ namespace TabularEditor.TOMWrapper.PowerBI
         private static readonly Version Base = new Version(1, 0, 0, 0);
         private static readonly Version OLSSupport = new Version(2, 88, 0, 0);
         private static readonly Version RoleModdingSupport = new Version(2, 90, 0, 0);
+        private static readonly Version DevMode = new Version(2, 118, 0, 0);
+        private static readonly Version DevModePbip = new Version(9992, 118, 999, 999);
 
         // Defines a list of object types that can be removed/added from/to a Power BI data model:
         private Dictionary<Type, Version> Manipulatable = new Dictionary<Type,Version>() {
@@ -27,7 +30,19 @@ namespace TabularEditor.TOMWrapper.PowerBI
             { typeof(Perspective), Base },
             { typeof(Culture), Base },
             { typeof(TablePermission), OLSSupport },
-            { typeof(ModelRole), RoleModdingSupport }
+            { typeof(ModelRole), RoleModdingSupport },
+
+            { typeof(CalculatedColumn), DevMode },
+            { typeof(CalculatedTableColumn), DevMode },
+            { typeof(CalculatedTable), DevMode },
+            { typeof(Hierarchy), DevMode },
+            { typeof(Relationship), DevMode },
+            { typeof(SingleColumnRelationship), DevMode },
+
+            { typeof(Column), DevModePbip },
+            { typeof(DataColumn), DevModePbip },
+            { typeof(Table), DevModePbip },
+            { typeof(NamedExpression), DevModePbip }
         };
 
         private readonly TabularModelHandler handler;
@@ -37,13 +52,24 @@ namespace TabularEditor.TOMWrapper.PowerBI
             this.handler = handler;
         }
 
-        public void UpdateGovernanceMode()
+        public void UpdateGovernanceMode(string fileSourcePath = null)
         {
+            string pbipFileName = null;
+            if (fileSourcePath != null)
+            {
+                var fi = new FileInfo(fileSourcePath);
+                if(fi.Exists && fi.Directory.Name.EndsWith("Dataset", StringComparison.OrdinalIgnoreCase))
+                {
+                    pbipFileName = Path.Combine(fi.Directory.Parent.FullName, fi.Directory.Name.Replace(".Dataset", ".pbip", StringComparison.OrdinalIgnoreCase));
+                }
+            }
+            PBIP = pbipFileName != null && File.Exists(pbipFileName);
+
             PBIDesktopVersion = new Version();
             PBIDesktopVersionSimple = 0.0M;
             if (handler.Database == null) return;
 
-            if (handler.Settings.PBIFeaturesOnly && (handler.SourceType == ModelSourceType.Pbit || IsPBIDesktop(handler.Database)))
+            if (handler.Settings.PBIFeaturesOnly && (PBIP || handler.SourceType == ModelSourceType.Pbit || IsPBIDesktop(handler.Database)))
             {
                 if (handler.Database.Model.DefaultPowerBIDataSourceVersion == Microsoft.AnalysisServices.Tabular.PowerBIDataSourceVersion.PowerBI_V3)
                     GovernanceMode = PowerBIGovernanceMode.V3Restricted;
@@ -84,6 +110,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
             get => GovernanceEffective ? internalGovernanceMode : PowerBIGovernanceMode.Unrestricted;
             set => internalGovernanceMode = value;
         }
+        public bool PBIP { get; private set; }
         public Version PBIDesktopVersion { get; private set; }
         public decimal PBIDesktopVersionSimple { get; private set; }
 
@@ -102,7 +129,17 @@ namespace TabularEditor.TOMWrapper.PowerBI
         {
             if (GovernanceMode == PowerBIGovernanceMode.Unrestricted) return true;
             else if (GovernanceMode == PowerBIGovernanceMode.ReadOnly) return false;
-            else return Manipulatable.TryGetValue(type, out Version minVersion) && minVersion <= PBIDesktopVersion;
+            else return IsManipulatable(type);
+        }
+
+        private bool IsManipulatable(Type type)
+        {
+            if(Manipulatable.TryGetValue(type, out Version minVersion))
+            {
+                if (minVersion <= PBIDesktopVersion) return true;
+                if (minVersion == DevModePbip && PBIP) return true;
+            }
+            return false;
         }
 
         public bool AllowCreate(IEnumerable<ITabularObject> objects)
@@ -114,7 +151,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
         {
             if (GovernanceMode == PowerBIGovernanceMode.Unrestricted) return true;
             else if (GovernanceMode == PowerBIGovernanceMode.ReadOnly) return false;
-            else return Manipulatable.TryGetValue(type, out Version minVersion) && minVersion <= PBIDesktopVersion;
+            else return IsManipulatable(type);
         }
 
         public bool AllowDelete(IEnumerable<ITabularObject> objects)
@@ -127,13 +164,14 @@ namespace TabularEditor.TOMWrapper.PowerBI
             return true; // Show all groups - but some properties will remain read-only
         }
 
-        public bool AllowEditProperty(ObjectType type, string property)
+        public bool AllowEditProperty(ObjectType type, string property, TabularObject objInstance = null)
         {
             if (GovernanceMode == PowerBIGovernanceMode.Unrestricted) return true;
             else if (GovernanceMode == PowerBIGovernanceMode.ReadOnly) return false;
             else
             {
                 if (type == ObjectType.Database) return false;
+                if (type == ObjectType.Folder) return true;
 
                 // Some properties can be edited regardless of object type in restricted mode:
                 switch (property)
@@ -170,13 +208,30 @@ namespace TabularEditor.TOMWrapper.PowerBI
 
                 switch (type)
                 {
-                    case ObjectType.Measure: return AllowRestrictedEditMeasureProperty(property);
-                    case ObjectType.KPI: return AllowRestrictedEditKpiProperty(property);
+                    case ObjectType.Measure: 
+                        return PBIDesktopVersion >= DevMode ? true : AllowRestrictedEditMeasureProperty(property);
+                    case ObjectType.KPI: 
+                        return PBIDesktopVersion >= DevMode ? true : AllowRestrictedEditKpiProperty(property);
                     case ObjectType.CalculationGroupTable:
                     case ObjectType.CalculationGroup:
                     case ObjectType.CalculationItem:
-                        return AllowRestrictedEditCalculationGroupItemProperty(property);
+                        return PBIDesktopVersion >= DevMode ? true : AllowRestrictedEditCalculationGroupItemProperty(property);
                     default:
+                        switch (type)
+                        {
+                            case ObjectType.Partition:
+                                if (property == Properties.EXPRESSION && objInstance is Partition p && p.SourceType == PartitionSourceType.Calculated) return PBIDesktopVersion >= DevMode;
+                                return false;
+                            case ObjectType.Expression:
+                                return PBIP;
+                            case ObjectType.Column:
+                                if (property == Properties.SOURCECOLUMN) return PBIP;
+                                return PBIDesktopVersion >= DevMode;
+                            case ObjectType.Table:
+                                if (property == Properties.EXPRESSION) return PBIDesktopVersion >= DevMode;
+                                return PBIP;
+                        }
+
                         return false;
                 }
             }
@@ -190,15 +245,21 @@ namespace TabularEditor.TOMWrapper.PowerBI
                 switch(obj.ObjectType)
                 {
                     // Only allow column renames when parent table is a calc group table in restricted mode:
-                    case ObjectType.Column: return (obj as Column).Table is CalculationGroupTable;
                     case ObjectType.CalculationGroupTable:
                     case ObjectType.CalculationItem:
+                    case ObjectType.Hierarchy:    
                     case ObjectType.Measure:
                     case ObjectType.Perspective:
                     case ObjectType.Culture:
                     case ObjectType.Role:
                         return true;
                     default:
+                        if (obj is CalculatedTable) return true;
+                        if (obj is Table) return PBIP;
+                        if (obj is NamedExpression) return PBIP;
+                        if (obj is DataColumn) return PBIP || (obj as Column).Table is CalculationGroupTable;
+                        if (obj is CalculatedColumn) return true;
+                        if (obj is CalculatedTableColumn) return true;
                         return false;
                 }
         }
@@ -211,7 +272,9 @@ namespace TabularEditor.TOMWrapper.PowerBI
                 case Properties.DESCRIPTION:
                 case Properties.DATACATEGORY:
                 case Properties.FORMATSTRING:
+                case Properties.FORMATSTRINGEXPRESSION:
                 case Properties.LINEAGETAG:
+                case Properties.NAME:
                     return true;
                 default:
                     return false;
@@ -259,9 +322,23 @@ namespace TabularEditor.TOMWrapper.PowerBI
         public bool VisibleProperty(ObjectType type, string property)
         {
             if (GovernanceMode == PowerBIGovernanceMode.Unrestricted) return true;
-            
+
+            if (PBIP)
+            {
+                if (property == nameof(Table.Partitions)) return false;
+                return true;
+            }
+            if (PBIDesktopVersion >= DevMode)
+            {
+                if (type != ObjectType.Table) return true;
+            }
+
             switch(property)
             {
+                case Properties.ANNOTATIONS:
+                case Properties.EXTENDEDPROPERTIES:
+                    return PBIDesktopVersion >= DevMode;
+                case Properties.STATE:
                 case nameof(EntityPartition.EntityName):
                 case nameof(EntityPartition.ExpressionSource):
                 case nameof(MPartition.MExpression):
@@ -293,6 +370,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
                 case Properties.ISACTIVE:
                 case Properties.ISKEY:
                 case Properties.KPI:
+                case Properties.SOURCELINEAGETAG:
                 case Properties.LINEAGETAG:
                 case Properties.SUMMARIZEBY:
                 case Properties.TRANSLATEDDESCRIPTIONS:

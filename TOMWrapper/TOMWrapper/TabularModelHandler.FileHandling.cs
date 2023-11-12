@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using TabularEditor.TOMWrapper.PowerBI;
@@ -11,6 +12,48 @@ namespace TabularEditor.TOMWrapper
 {
     public partial class TabularModelHandler
     {
+        private static string GetDatasetFromPbip(string pbipFileOrFolder)
+        {
+            var file = new FileInfo(pbipFileOrFolder);
+            var jPbip = JObject.Parse(File.ReadAllText(pbipFileOrFolder));
+            var reportPaths = (jPbip["artifacts"] as JArray).OfType<JObject>().Where(j => j.ContainsKey("report")).Select(j => j["report"]["path"].ToObject<string>()).ToList();
+            var datasetFiles = new List<string>();
+            if (reportPaths.Count == 0) throw new Exception("The PBIP project folder does not contain any reports.");
+            foreach (var reportPath in reportPaths)
+            {
+                var reportFile = Path.Combine(file.DirectoryName, reportPath, "definition.pbir");
+                if (File.Exists(reportFile))
+                {
+                    var jPbir = JObject.Parse(File.ReadAllText(reportFile));
+                    if (jPbir["datasetReference"]?["byPath"]?["path"]?.ToObject<string>() is string datasetPath)
+                    {
+                        var datasetFile = Path.GetFullPath(Path.Combine(file.DirectoryName, reportPath, datasetPath, "model.bim"));
+                        if (File.Exists(datasetFile))
+                        {
+                            datasetFiles.Add(datasetFile);
+                        }
+                        else
+                        {
+                            throw new FileNotFoundException(datasetFile);
+                        }
+                    }
+                }
+                else
+                {
+                    throw new FileNotFoundException(reportFile);
+                }
+            }
+            if (datasetFiles.Count == 0)
+            {
+                // Manually search directories:
+                datasetFiles.AddRange(Directory.EnumerateFiles(file.DirectoryName, "*.bim", SearchOption.AllDirectories));
+            }
+            if (datasetFiles.Count == 0) throw new Exception("The PBIP project folder does not contain any datasets.");
+            if (datasetFiles.Count > 1) throw new Exception("The PBIP project folder contains multiple datasets. Please open the .bim file directly.");
+
+            return datasetFiles[0];
+        }
+
         /// <summary>
         /// Loads an Analysis Services tabular database (Compatibility Level 1200 or newer) from a file
         /// or folder.
@@ -22,8 +65,30 @@ namespace TabularEditor.TOMWrapper
 
             var file = new FileInfo(path);
 
+            // If the file is a .pbip, find the actual dataset:
+            if (file.Exists && file.Extension.EqualsI(".pbip"))
+            {
+                path = GetDatasetFromPbip(path);
+                file = new FileInfo(path);
+            }
+            else if (Directory.Exists(path))
+            {
+                var pbipFiles = Directory.EnumerateFiles(path, "*.pbip", SearchOption.TopDirectoryOnly).ToList();
+                if (pbipFiles.Count == 1)
+                {
+                    path = GetDatasetFromPbip(pbipFiles[0]);
+                    file = new FileInfo(path);
+                }
+                else if (pbipFiles.Count > 1) throw new Exception("The PBIP project folder contains multiple .pbip files. Please open the .bim file directly.");
+            }
+
             // If the file extension is .pbit, assume Power BI template:
             if (file.Exists && file.Extension.EqualsI(".pbit")) LoadPowerBiTemplateFile(path);
+
+            // TMDL:
+            else if (file.Exists && (file.Extension.EqualsI(".tmd") || file.Extension.EqualsI(".tmdl"))) LoadTMDL(path);
+            else if (Directory.Exists(path) && File.Exists(Path.Combine(path, "model.tmd"))) LoadTMDL(Path.Combine(path, "model.tmd"));
+            else if (Directory.Exists(path) && File.Exists(Path.Combine(path, "model.tmdl"))) LoadTMDL(Path.Combine(path, "model.tmdl"));
 
             // If the file name is "database.json" or path is a directory, assume Split Model:
             else if ((file.Exists && file.Name.EqualsI("database.json")) || Directory.Exists(path)) LoadSplitModelFiles(path);
@@ -36,7 +101,7 @@ namespace TabularEditor.TOMWrapper
             _disableUpdates = false;
 
             UndoManager.Resume();
-            PowerBIGovernance.UpdateGovernanceMode();
+            PowerBIGovernance.UpdateGovernanceMode(path);
         }
 
         private void LoadSplitModelFiles(string path)
@@ -66,6 +131,28 @@ namespace TabularEditor.TOMWrapper
             InitModelFromJson(pbit.ModelJson);
         }
 
+        private void LoadTMDL(string path)
+        {
+            SourceType = ModelSourceType.TMDL;
+            if (File.Exists(path)) path = new FileInfo(path).DirectoryName;
+            Source = path;
+
+            try
+            {
+                var model = TOM.TmdlSerializer.DeserializeModelFromFolder(path);
+                database = model.Database as TOM.Database;
+                database.DetermineCompatibilityMode();
+                Status = "Model loaded successfully.";
+                Init();
+
+                _serializeOptions = SerializeOptions;
+            }
+            catch(Exception ex)
+            {
+                throw new Exception($"{ex.GetType().Name} encountered while deserializing TMDL: {ex.Message}");
+            }
+        }
+
         private void LoadModelFile(string path)
         {
             SourceType = ModelSourceType.File;
@@ -79,7 +166,7 @@ namespace TabularEditor.TOMWrapper
         {
             try
             {
-                var mode = IsPbiCompatibilityMode(json) ? Microsoft.AnalysisServices.CompatibilityMode.PowerBI : Microsoft.AnalysisServices.CompatibilityMode.AnalysisServices;
+                var mode = PowerBiCompatibilityModeHelper.IsPbiCompatibilityMode(json) ? Microsoft.AnalysisServices.CompatibilityMode.PowerBI : Microsoft.AnalysisServices.CompatibilityMode.AnalysisServices;
                 database = TOM.JsonSerializer.DeserializeDatabase(json, mode: mode);
                 database.CompatibilityMode = mode;
                 Status = "Model loaded successfully.";
@@ -91,22 +178,6 @@ namespace TabularEditor.TOMWrapper
             {
                 throw new Exception($"Unable to load Tabular Model (Compatibility Level 1200+) from {Source}. Error: " + ex.Message);
             }
-        }
-
-        private static readonly int[] analysisServicesStandardCompatLevels = new[]
-        {
-            1200,
-            1400,
-            1500
-        };
-
-        private bool IsPbiCompatibilityMode(string tomJson)
-        {
-            // Use PBI CompatibilityMode when model is one of the non-standard CL's, or if V3 metadata is enabled:
-            var model = JObject.Parse(tomJson);
-            if (model.SelectToken("compatibilityLevel") is JToken compatLevel && !analysisServicesStandardCompatLevels.Contains((int)compatLevel)) return true;
-            if (model.SelectToken("model.defaultPowerBIDataSourceVersion") is JToken dataSourceVersion && (string)dataSourceVersion == "powerBI_V3") return true;
-            return false;
         }
 
         private const string ANN_SERIALIZEOPTIONS = "TabularEditor_SerializeOptions";
@@ -185,10 +256,9 @@ namespace TabularEditor.TOMWrapper
                         Model.SaveToFolder(path, options);
                         break;
 
-                    case SaveFormat.VisualStudioProject:
-                        // TODO
-                        throw new NotImplementedException();
-                        // break;
+                    case SaveFormat.TMDL:
+                        SaveTmdl(path, options);
+                        break;
                 }
 
                 if (resetCheckpoint) UndoManager.SetCheckpoint();
@@ -223,6 +293,31 @@ namespace TabularEditor.TOMWrapper
             // Save to .pbit file:
             pbit.ModelJson = dbcontent;
             pbit.SaveAs(fileName);
+        }
+
+        private void SaveTmdl(string path, SerializeOptions options)
+        {
+            var db = Model.Database.TOMDatabase;
+            db.RemoveTabularEditorTag();
+            var orgDbName = db.Name;
+            var orgDbId = db.ID;
+
+            db.Name = Model.Database?.Name ?? "SemanticModel";
+            if (Model.Database != null)
+            {
+                if (!Model.Database.Name.EqualsI(Model.Database.ID)) db.SetID(Model.Database.ID);
+                else if (orgDbId != null) db.SetID(null);
+            }
+
+            if (options.DatabaseNameOverride != null)
+            {
+                db.SetName(options.DatabaseNameOverride);
+                db.SetID(null);
+            }
+            TOM.TmdlSerializer.SerializeModelToFolder(Model.MetadataObject, path);
+
+            db.SetName(orgDbName);
+            db.SetID(orgDbId);
         }
 
         private void SaveFile(string fileName, SerializeOptions options)

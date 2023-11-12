@@ -20,6 +20,44 @@ namespace TabularEditor.UI.Dialogs
         {
             InitializeComponent();
             chkCopyIncludeOLS.Enabled = true;
+            cmbSerializationMode.SelectionChangeCommitted += CmbSerializationMode_SelectionChangeCommitted;
+        }
+
+        private bool tmdlWarningShown = false;
+
+        private void UpdateTmdlUi()
+        {
+            var useLegacy = cmbSerializationMode.SelectedIndex == 0;
+            chkPrefixFiles.Enabled = useLegacy;
+            chkLocalPerspectives.Enabled = useLegacy;
+            chkLocalRelationships.Enabled = useLegacy;
+            chkLocalTranslations.Enabled = useLegacy;
+            tvDefaultSerialization.Enabled = useLegacy;
+        }
+
+        private void CmbSerializationMode_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            if(cmbSerializationMode.SelectedIndex == 1 && !tmdlWarningShown)
+            {
+                var td = new TaskDialog();
+                td.HyperlinksEnabled = true;
+                td.Caption = "TMDL preview";
+                td.Text = "TMDL (Tabular Model Definition Language) is currently in preview. Some objects (such as metadata translations, Provider Data Sources, role members) are currently not supported. See the <a href=\"https://learn.microsoft.com/en-us/analysis-services/tmdl/tmdl-overview\">official TMDL documentation</a> for more information.\n\nUse TMDL as the default Save to Folder format in Tabular Editor?";
+                td.Icon = TaskDialogStandardIcon.Information;
+                td.FooterIcon = TaskDialogStandardIcon.None;
+                td.HyperlinkClick += Td_HyperlinkClick;
+                td.StandardButtons = TaskDialogStandardButtons.Ok | TaskDialogStandardButtons.Cancel;
+                var result = td.Show();
+                tmdlWarningShown = true;
+                if (result == TaskDialogResult.Cancel) cmbSerializationMode.SelectedIndex = 0;
+            }
+
+            UpdateTmdlUi();
+        }
+
+        private void Td_HyperlinkClick(object sender, TaskDialogHyperlinkClickedEventArgs e)
+        {
+            Process.Start(e.LinkText);
         }
 
         private void SetCurrentModelTabVisible(bool visible)
@@ -130,6 +168,8 @@ namespace TabularEditor.UI.Dialogs
             chkIgnoreInfObjectsCM.Checked = options.IgnoreInferredObjects;
             chkIgnoreInfPropsCM.Checked = options.IgnoreInferredProperties;
             chkSplitMultilineCM.Checked = options.SplitMultilineStrings;
+            chkIgnorePrivacySettingsCM.Checked = options.IgnorePrivacySettings;
+            chkIgnoreIncrementalRefreshPartitionsCM.Checked = options.IgnoreIncrementalRefreshPartitions;
 
             LoadCheckedNodes(treeView2.Nodes, options.Levels);
             chkPrefixFilesCM.Checked = options.PrefixFilenames;
@@ -159,6 +199,9 @@ namespace TabularEditor.UI.Dialogs
             Preferences.Current.IgnoreInferredObjects = chkIgnoreInfObjects.Checked;
             Preferences.Current.IgnoreInferredProperties = chkIgnoreInfProps.Checked;
             Preferences.Current.SplitMultilineStrings = chkSplitMultiline.Checked;
+            Preferences.Current.IgnorePrivacySettings = chkIgnorePrivacySettings.Checked;
+            Preferences.Current.IgnoreIncrementalRefreshPartitions = chkIgnoreIncrementalRefreshPartitions.Checked;
+            Preferences.Current.UseTMDL = cmbSerializationMode.SelectedIndex == 1;
             Preferences.Current.SaveToFolder_PrefixFiles = chkPrefixFiles.Checked;
             Preferences.Current.SaveToFolder_AlsoSaveAsBim = chkAlsoSaveAsBim.Checked;
             Preferences.Current.SaveToFolder_LocalPerspectives = chkLocalPerspectives.Checked;
@@ -180,7 +223,7 @@ namespace TabularEditor.UI.Dialogs
             ProxyCache.ClearProxyCache();
 
             Preferences.Current.SaveToFolder_Levels = new HashSet<string>();
-            SaveCheckedNodes(treeView1.Nodes, Preferences.Current.SaveToFolder_Levels);
+            SaveCheckedNodes(tvDefaultSerialization.Nodes, Preferences.Current.SaveToFolder_Levels);
         }
 
         private void SaveSettingsCM()
@@ -197,6 +240,8 @@ namespace TabularEditor.UI.Dialogs
             options.LocalPerspectives = chkLocalPerspectivesCM.Checked;
             options.LocalTranslations = chkLocalTranslationsCM.Checked;
             options.LocalRelationships = chkLocalRelationshipsCM.Checked;
+            options.IgnorePrivacySettings = chkIgnorePrivacySettingsCM.Checked;
+            options.IgnoreIncrementalRefreshPartitions = chkIgnoreIncrementalRefreshPartitionsCM.Checked;
             options.Levels = new HashSet<string>();
             SaveCheckedNodes(treeView2.Nodes, options.Levels);
 
@@ -234,22 +279,26 @@ namespace TabularEditor.UI.Dialogs
 
             chkAnnotateDeploymentMetadata.Checked = Preferences.Current.AnnotateDeploymentMetadata;
 
-            LoadCheckedNodes(treeView1.Nodes, Preferences.Current.SaveToFolder_Levels);
+            LoadCheckedNodes(tvDefaultSerialization.Nodes, Preferences.Current.SaveToFolder_Levels);
 
             chkIgnoreLineageTags.Checked = Preferences.Current.IgnoreLineageTags;
             chkIgnoreTimestamps.Checked = Preferences.Current.IgnoreTimestamps;
             chkIgnoreInfObjects.Checked = Preferences.Current.IgnoreInferredObjects;
             chkIgnoreInfProps.Checked = Preferences.Current.IgnoreInferredProperties;
             chkSplitMultiline.Checked = Preferences.Current.SplitMultilineStrings;
+            chkIgnorePrivacySettings.Checked = Preferences.Current.IgnorePrivacySettings;
+            chkIgnoreIncrementalRefreshPartitions.Checked = Preferences.Current.IgnoreIncrementalRefreshPartitions;
 
+            cmbSerializationMode.SelectedIndex = Preferences.Current.UseTMDL ? 1 : 0;
+            UpdateTmdlUi();
             chkPrefixFiles.Checked = Preferences.Current.SaveToFolder_PrefixFiles;
             chkAlsoSaveAsBim.Checked = Preferences.Current.SaveToFolder_AlsoSaveAsBim;
             chkLocalPerspectives.Checked = Preferences.Current.SaveToFolder_LocalPerspectives;
             chkLocalTranslations.Checked = Preferences.Current.SaveToFolder_LocalTranslations;
             chkLocalRelationships.Checked = Preferences.Current.SaveToFolder_LocalRelationships;
-            SetNodeVisible("Perspectives", !chkLocalPerspectives.Checked, treeView1);
-            SetNodeVisible("Translations", !chkLocalTranslations.Checked, treeView1);
-            SetNodeVisible("Relationships", !chkLocalRelationships.Checked, treeView1);
+            SetNodeVisible("Perspectives", !chkLocalPerspectives.Checked, tvDefaultSerialization);
+            SetNodeVisible("Translations", !chkLocalTranslations.Checked, tvDefaultSerialization);
+            SetNodeVisible("Relationships", !chkLocalRelationships.Checked, tvDefaultSerialization);
 
             chkSystemProxy.Checked = Preferences.Current.ProxyUseSystem;
             txtProxyAddress.Text = Preferences.Current.ProxyAddress;
@@ -265,6 +314,7 @@ namespace TabularEditor.UI.Dialogs
 
         private void PreferencesForm_Shown(object sender, EventArgs e)
         {
+            tmdlWarningShown = false;
         }
 
         private void PreferencesForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -326,7 +376,7 @@ namespace TabularEditor.UI.Dialogs
 
         private void SetNodeVisible(string nodeKey, bool visible, TreeView treeView)
         {
-            var removedNodes = treeView == treeView1 ? removedNodes1 : removedNodes2;
+            var removedNodes = treeView == tvDefaultSerialization ? removedNodes1 : removedNodes2;
 
             if (treeView.Nodes.ContainsKey(nodeKey))
             {
@@ -350,17 +400,17 @@ namespace TabularEditor.UI.Dialogs
 
         private void chkLocalPerspectives_CheckedChanged(object sender, EventArgs e)
         {
-            SetNodeVisible("Perspectives", !chkLocalPerspectives.Checked, treeView1);
+            SetNodeVisible("Perspectives", !chkLocalPerspectives.Checked, tvDefaultSerialization);
         }
 
         private void chkLocalTranslations_CheckedChanged(object sender, EventArgs e)
         {
-            SetNodeVisible("Translations", !chkLocalTranslations.Checked, treeView1);
+            SetNodeVisible("Translations", !chkLocalTranslations.Checked, tvDefaultSerialization);
         }
 
         private void chkLocalRelationships_CheckedChanged(object sender, EventArgs e)
         {
-            SetNodeVisible("Relationships", !chkLocalRelationships.Checked, treeView1);
+            SetNodeVisible("Relationships", !chkLocalRelationships.Checked, tvDefaultSerialization);
         }
 
         private void chkLocalPerspectivesCM_CheckedChanged(object sender, EventArgs e)

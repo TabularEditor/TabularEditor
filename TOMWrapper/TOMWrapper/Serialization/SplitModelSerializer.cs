@@ -23,8 +23,9 @@ namespace TabularEditor.TOMWrapper.Serialization
             /// Sanitize a string to turn it into a valid file name
             /// </summary>
             /// <param name="fileName"></param>
+            /// <param name="isFolder">Set to true when the name represents a folder (which cannot end with a blank char)</param>
             /// <returns></returns>
-            private string Sanitize(string fileName)
+            private string Sanitize(string fileName, bool isFolder = false)
             {
                 var sb = new StringBuilder();
                 for(int i = 0; i < fileName.Length; i++)
@@ -38,7 +39,7 @@ namespace TabularEditor.TOMWrapper.Serialization
                     else sb.Append(c);
                 }
                 var result = sb.ToString();
-                if (result.EndsWith(" ")) result = result.Substring(0, result.Length - 1) + "%20";
+                if (isFolder && result.EndsWith(" ")) result = result.Substring(0, result.Length - 1) + "%20";
                 if (result.StartsWith("_") && ReservedFileNames.Contains(result.Substring(1))) result = "%5F" + result.Substring(1);
                 if (ReservedFileNames.Contains(result)) result = "_" + result;
                 return result;
@@ -101,8 +102,10 @@ namespace TabularEditor.TOMWrapper.Serialization
                         var annotations = options.Levels.Contains("Tables/Annotations") ? PopArray(t, "annotations") : null;
                         var calculationItems = options.Levels.Contains("Tables/Calculation Items") ? PopArray(t, "calculationGroup.calculationItems") : null;
 
+                        var tableFolderName = Sanitize(table.Name, isFolder: true);
+                        var tablePath = path + "\\tables\\" + (options.PrefixFilenames ? n.ToString("D3") + " " : "") + tableFolderName;
+
                         var tableName = Sanitize(table.Name);
-                        var tablePath = path + "\\tables\\" + (options.PrefixFilenames ? n.ToString("D3") + " " : "") + tableName;
 
                         var p = tablePath + "\\" + tableName + ".json";
                         var fi = new FileInfo(p);

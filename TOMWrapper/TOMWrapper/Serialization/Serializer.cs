@@ -7,6 +7,7 @@ using System.Linq;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using System.Collections;
 using Newtonsoft.Json.Serialization;
+using TabularEditor.Utils;
 
 namespace TabularEditor.TOMWrapper.Serialization
 {
@@ -212,6 +213,20 @@ namespace TabularEditor.TOMWrapper.Serialization
                 if (options.IgnorePrivacySettings)
                 {
                     if (obj.ContainsKey("PrivacySetting")) obj.Remove("PrivacySetting");
+                }
+            }
+            if (options.IgnoreIncrementalRefreshPartitions)
+            {
+                var partitionCollections = jObject.Descendants().OfType<JArray>().Where(o => o.Parent is JProperty jProp && jProp.Name == "partitions").ToList();
+                foreach (var partitionCollection in partitionCollections)
+                {
+                    foreach (var partition in partitionCollection.OfType<JObject>().ToList())
+                    {
+                        if (partition.Has("mode", "import") && partition["source"] is JObject sourceObj && sourceObj.Has("type", "policyRange"))
+                        {
+                            partition.Remove();
+                        }
+                    }
                 }
             }
             if (!serializeOptions.IncludeRestrictedInformation)

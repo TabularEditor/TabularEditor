@@ -505,7 +505,8 @@ partial class Rules {
 		"RefreshGranularityType",
 		"EvaluationBehavior",
 		"RefreshPolicyMode",
-		"RefreshPolicyType"
+		"RefreshPolicyType",
+		"DirectLakeBehavior"
 	};
 	public static readonly Type[] EnumTypes = _enumTypes.Select(t => ASType(t)).Where(t => t != null).ToArray();
 

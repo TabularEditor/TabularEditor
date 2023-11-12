@@ -359,6 +359,8 @@ OFFSET:									  'OFFSET'								   -> channel(KEYWORD_CHANNEL);
 INDEX:									  'INDEX'								   -> channel(KEYWORD_CHANNEL);
 WINDOW:									  'WINDOW'								   -> channel(KEYWORD_CHANNEL);
 ORDERBY:								  'ORDERBY'								   -> channel(KEYWORD_CHANNEL);
+RANK:								      'RANK'								   -> channel(KEYWORD_CHANNEL);
+ROWNUMBER:								  'ROWNUMBER'							   -> channel(KEYWORD_CHANNEL);
 PARTITIONBY:							  'PARTITIONBY'							   -> channel(KEYWORD_CHANNEL);
 EXTERNALMEASURE:                          'EXTERNALMEASURE'                        -> channel(KEYWORD_CHANNEL);
 KMEANSCLUSTERING:                         'KMEANSCLUSTERING'                       -> channel(KEYWORD_CHANNEL);
@@ -377,6 +379,9 @@ ASC:                                     'ASC'                                  
 DESC:                                    'DESC'                                    -> channel(KEYWORD_CHANNEL);
 SKIP_:                                   'SKIP'                                    -> channel(KEYWORD_CHANNEL);
 DENSE:                                   'DENSE'                                   -> channel(KEYWORD_CHANNEL);
+BLANKS:                                  'BLANKS'                                  -> channel(KEYWORD_CHANNEL);
+LAST:                                    'LAST'                                    -> channel(KEYWORD_CHANNEL);
+FIRST:                                   'FIRST'                                   -> channel(KEYWORD_CHANNEL);
 
 // DATEADD / DATEDIFF interval arguments (in addition to Day, Month, Quarter, Year, which are also functions):
 WEEK:                                    'WEEK'                                    -> channel(KEYWORD_CHANNEL);

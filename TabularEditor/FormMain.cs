@@ -30,7 +30,7 @@ namespace TabularEditor
             Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en-US");
             InitializeComponent();
 
-            dlgOpenFile.Filter = "Tabular Model Files|*.bim;database.json;*.pbit|All files|*.*";
+            dlgOpenFile.Filter = "All supported files|*.bim;database.json;model.tmd;model.tmdl;*.pbit;*.pbip|Tabular Model Files|*.bim;database.json;model.tmd;model.tmdl|Power BI Files|*.pbit;*.pbip|All files|*.*";
 
             // For some reason, Visual Studio sometimes removes this from the FormMain.Designer.cs, making the
             // colors of the lines look ugly:
@@ -102,7 +102,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             try
             {
                 macros = ScriptEngine.GetMacrosJson();
-                if (macros != null)
+                if (macros?.Actions != null)
                 {
                     foreach (var action in macros.Actions)
                     {
@@ -654,7 +654,10 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             // Auto-load the file specified as command line arguments:
             var args = Environment.GetCommandLineArgs();
             var modelSource = CommandLineHandler.GetModelSourceFromCLI(args, out _);
-            if (modelSource == CommandLineHandler.ModelSource.File && (File.Exists(args[1]) || File.Exists(args[1] + "\\database.json")))
+            if (modelSource == CommandLineHandler.ModelSource.File && (File.Exists(args[1]) 
+                || File.Exists(Path.Combine(args[1],"database.json")) 
+                || File.Exists(Path.Combine(args[1],"model.tmd"))
+                || File.Exists(Path.Combine(args[1],"model.tmdl"))))
             {
                 UI.File_Open(args[1]);
             }
@@ -812,8 +815,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
         private void nodeTextBox5_ValueNeeded(object sender, Aga.Controls.Tree.NodeControls.NodeControlValueEventArgs e)
         {
-            var value = (e.Node.Tag as TOMWrapper.Table)?.Source ??
-                (e.Node.Tag as TOMWrapper.Partition)?.Expression ??
+            var value = 
                 (e.Node.Tag as TOMWrapper.DataColumn)?.SourceColumn ??
                 (e.Node.Tag as TOMWrapper.CalculatedTableColumn)?.SourceColumn ??
                 (e.Node.Tag as TOMWrapper.Level)?.Column?.DaxObjectName ??

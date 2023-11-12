@@ -4,7 +4,7 @@
 <#@ assembly name="System.Data.Linq" #>
 <#@ assembly name="System.Xml" #>
 <#@ assembly name="System.Xml.Linq" #>
-<#@ assembly name="$(SolutionDir)\packages\DefaultExpressionBits-05-2023\lib\net45\Microsoft.AnalysisServices.Tabular.dll" #>
+<#@ assembly name="$(SolutionDir)\packages\Microsoft.AnalysisServices.retail.amd64.19.69.6.2\lib\net45\Microsoft.AnalysisServices.Tabular.dll" #>
 <#@ assembly name="EnvDTE" #>
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System.Linq" #>
@@ -27,7 +27,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
 <#
-   Rules.XmlDocFile = Host.ResolvePath(@"..\..\..\packages\DefaultExpressionBits-05-2023\lib\net45\Microsoft.AnalysisServices.Tabular.xml");
+   Rules.XmlDocFile = Host.ResolvePath(@"..\..\..\packages\Microsoft.AnalysisServices.retail.amd64.19.69.6.2\lib\net45\Microsoft.AnalysisServices.Tabular.xml");
 
    if(!File.Exists(Rules.XmlDocFile)) {
 	   throw new Exception("Could not locate file: " + Rules.XmlDocFile);
@@ -45,6 +45,27 @@ namespace TabularEditor.TOMWrapper
 
 	internal static class ObjectMetadata
 	{
+		// If any of the following properties are present in the model, the JSON must be deserialized with CompatibilityMode = PowerBi:
+	    public static readonly HashSet<string> PbiOnlyProperties = new string[] {
+<# foreach(var p in typeof(Model).Assembly
+		.GetTypes()
+		.SelectMany(t => t.GetProperties())
+		.Where(p => p.GetCustomAttributes() is object[] objArray && objArray.Length == 1 && objArray[0].GetType().Name == "CompatibilityRequirementAttribute"
+			&& objArray[0].GetType().GetProperty("Pbi").GetValue(objArray[0]) != null && objArray[0].GetType().GetProperty("Box").GetValue(objArray[0]).ToString() == "Unsupported"
+		)
+		.Select(p => 
+		    {
+		        var compReqAttr = p.GetCustomAttributes().First();
+				var compReqAttrType = compReqAttr.GetType();
+				var pbi = compReqAttrType.GetProperty("Pbi").GetValue(compReqAttr);
+				var box = compReqAttrType.GetProperty("Box").GetValue(compReqAttr);
+				return $"\"{p.Name}\",{new string(' ', 40-p.Name.Length)}// Pbi: {pbi}, Box: {box}";
+			})
+		.Distinct()) { #>
+	        <#=p#>
+<# } #>
+		}.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
 		private static readonly Dictionary<Type, Type> TOMMap = new Dictionary<Type, Type>() {
 <# foreach(var t in Rules.ObjectTypes.Keys) { #>
             { typeof(<#= t.Name #>) , typeof(TOM.<#= t.Name #>) },
@@ -605,7 +626,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.<#=t.Name#>>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -802,20 +823,24 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 		private <#= t.Name #> CreateFromMetadata(TOM.<#= t.Name #> obj)
 		{
 <# if (t.Name == "Table") { #>
-            if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.Calculated) return CalculatedTable.CreateFromMetadata(Model, obj);
-			else if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.CalculationGroup) return CalculationGroupTable.CreateFromMetadata(Model, obj);
+            if (obj.Partitions.Count == 1 && obj.Partitions[0].SourceType == TOM.PartitionSourceType.Calculated) return CalculatedTable.CreateFromMetadata(Model, obj);
+			else if (obj.Partitions.Count == 1 && obj.Partitions[0].SourceType == TOM.PartitionSourceType.CalculationGroup) return CalculationGroupTable.CreateFromMetadata(Model, obj);
             else return Table.CreateFromMetadata(Model, obj);
 <# } else if (t.Name == "Partition") { #>
 			if(obj.SourceType == TOM.PartitionSourceType.M) return MPartition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
-            else if(obj.SourceType == TOM.PartitionSourceType.Entity) return EntityPartition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
-            else if(obj.SourceType == TOM.PartitionSourceType.PolicyRange) return PolicyRangePartition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
+			else if(obj.SourceType == TOM.PartitionSourceType.Entity) return EntityPartition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
+			else if(obj.SourceType == TOM.PartitionSourceType.PolicyRange) return PolicyRangePartition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
 			else return Partition.CreateFromMetadata(<#= Rules.GetParent(t) #>, obj);
 <# } else
 {
    foreach(var derived in Rules.GetDerivedTypes(t)) { #>
 			if(obj is TOM.<#= derived.Name #> <#= derived.Name.ToLower() #>Obj) return <#= derived.Name #>.CreateFromMetadata(<#= Rules.GetParent(t) #>, <#= derived.Name.ToLower() #>Obj);
-<# }
-} #>		    return null;
+<# } #>
+<# if (t.Name == "Column") { #>
+            else if (obj is TOM.RowNumberColumn) return null;
+<# } #>
+            else throw new ArgumentException("Cannot create object", "obj");
+<# } #>
 		}
 
 		/// <summary>

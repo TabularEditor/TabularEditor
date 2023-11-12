@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -238,54 +239,10 @@ namespace TabularEditor.UI
         public void Rename(string pattern, string replacement, bool regex = false, bool includeNameTranslations = false)
         {
             var objects = this.ToList();
-            Handler.BeginUpdate("rename" + (objects.Count > 1 ? " objects" : ""));
-
-            int errCount = 0;
-            if (regex)
-            {
-                var rgc = new Regex(pattern, objects.Count > 10 ? RegexOptions.Compiled : RegexOptions.None);
-                foreach (var obj in objects)
-                    try
-                    {
-                        obj.Name = rgc.Replace(obj.Name, replacement);
-                        if(includeNameTranslations && obj is ITranslatableObject)
-                        {
-                            var trans = (obj as ITranslatableObject).TranslatedNames;
-                            foreach (var culture in trans.Keys)
-                            {
-                                if (!string.IsNullOrEmpty(trans[culture])) trans[culture] = rgc.Replace(trans[culture], replacement);
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        errCount++;
-                    }
-            }
-            else
-            {
-                foreach (var obj in objects)
-                    try
-                    {
-                        obj.Name = obj.Name.Replace(pattern, replacement);
-                        if (includeNameTranslations && obj is ITranslatableObject)
-                        {
-                            var trans = (obj as ITranslatableObject).TranslatedNames;
-                            foreach (var culture in trans.Keys)
-                            {
-                                if (!string.IsNullOrEmpty(trans[culture])) trans[culture] = trans[culture].Replace(pattern, replacement);
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        errCount++;
-                    }
-            }
-            if (errCount > 0) System.Windows.Forms.MessageBox.Show(string.Format("{0} item{1} could not be renamed, since the replaced name was invalid.", errCount, errCount > 1 ? "s" : ""), "Errors during batch rename", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-            Handler.EndUpdate();
+            objects.Rename(pattern, replacement, regex, includeNameTranslations);
         }
+
+        
 
         [IntelliSense("Specify a search pattern and a replacement value, that will be applied to the Expression of the objects in the collection.")]
         public void ReplaceExpression(string pattern, string replacement, bool regex = false)
@@ -334,6 +291,62 @@ namespace TabularEditor.UI
             Handler.EndUpdate();
         }
 
-        private TabularModelHandler Handler { get { return UIController.Current.Handler; } }
+        private TabularModelHandler Handler => UIController.Current.Handler;
+    }
+
+    static class UISelectionListExtensions
+    {
+        static TabularModelHandler Handler => UIController.Current.Handler;
+
+        public static void Rename<T>(this IList<T> objects, string pattern, string replacement, bool regex = false, bool includeNameTranslations = false) where T : ITabularNamedObject
+        {
+            Handler.BeginUpdate("rename" + (objects.Count > 1 ? " objects" : ""));
+
+            int errCount = 0;
+            if (regex)
+            {
+                var rgc = new Regex(pattern, objects.Count > 10 ? RegexOptions.Compiled : RegexOptions.None);
+                foreach (var obj in objects)
+                    try
+                    {
+                        obj.Name = rgc.Replace(obj.Name, replacement);
+                        if (includeNameTranslations && obj is ITranslatableObject)
+                        {
+                            var trans = (obj as ITranslatableObject).TranslatedNames;
+                            foreach (var culture in trans.Keys)
+                            {
+                                if (!string.IsNullOrEmpty(trans[culture])) trans[culture] = rgc.Replace(trans[culture], replacement);
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        errCount++;
+                    }
+            }
+            else
+            {
+                foreach (var obj in objects)
+                    try
+                    {
+                        obj.Name = obj.Name.Replace(pattern, replacement);
+                        if (includeNameTranslations && obj is ITranslatableObject)
+                        {
+                            var trans = (obj as ITranslatableObject).TranslatedNames;
+                            foreach (var culture in trans.Keys)
+                            {
+                                if (!string.IsNullOrEmpty(trans[culture])) trans[culture] = trans[culture].Replace(pattern, replacement);
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        errCount++;
+                    }
+            }
+            if (errCount > 0) System.Windows.Forms.MessageBox.Show(string.Format("{0} item{1} could not be renamed, since the replaced name was invalid.", errCount, errCount > 1 ? "s" : ""), "Errors during batch rename", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            Handler.EndUpdate();
+        }
     }
 }

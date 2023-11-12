@@ -58,6 +58,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string DEFAULTPOWERBIDATASOURCEVERSION = "DefaultPowerBIDataSourceVersion";
 	    public const string DESCRIPTION = "Description";
 	    public const string DETAILROWSDEFINITION = "DetailRowsDefinition";
+	    public const string DIRECTLAKEBEHAVIOR = "DirectLakeBehavior";
 	    public const string DISABLEAUTOEXISTS = "DisableAutoExists";
 	    public const string DISABLESYSTEMDEFAULTEXPRESSION = "DisableSystemDefaultExpression";
 	    public const string DISCOURAGECOMPOSITEMODELS = "DiscourageCompositeModels";
@@ -125,7 +126,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string MODE = "Mode";
 	    public const string MODELPERMISSION = "ModelPermission";
 	    public const string MODIFIEDTIME = "ModifiedTime";
-	    public const string MULTISELECTIONEXPRESSION = "MultiSelectionExpression";
+	    public const string MULTIPLEOREMPTYSELECTIONEXPRESSION = "MultipleOrEmptySelectionExpression";
 	    public const string NAME = "Name";
 	    public const string NOSELECTIONEXPRESSION = "NoSelectionExpression";
 	    public const string OBJECTTRANSLATIONS = "ObjectTranslations";
@@ -195,6 +196,13 @@ namespace TabularEditor.TOMWrapper
 
 	internal static class ObjectMetadata
 	{
+		// If any of the following properties are present in the model, the JSON must be deserialized with CompatibilityMode = PowerBi:
+	    public static readonly HashSet<string> PbiOnlyProperties = new string[] {
+	        "RelatedColumnDetails",                    // Pbi: 1400, Box: Unsupported
+	        "PerspectiveSets",                         // Pbi: 1400, Box: Unsupported
+	        "Sets",                                    // Pbi: 1400, Box: Unsupported
+		}.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
 		private static readonly Dictionary<Type, Type> TOMMap = new Dictionary<Type, Type>() {
             { typeof(Variation) , typeof(TOM.Variation) },
             { typeof(StructuredDataSource) , typeof(TOM.StructuredDataSource) },
@@ -539,6 +547,14 @@ namespace TabularEditor.TOMWrapper
 ///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1450 or above.</remarks>
 	public enum RefreshPolicyType {    
         Basic = 0,
+	}
+	/// <summary>
+///             Fallback behavior for Direct Lake models.
+///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1604 or above.</remarks>
+	public enum DirectLakeBehavior {    
+        Automatic = 0,
+        DirectLakeOnly = 1,
+        DirectQueryOnly = 2,
 	}
   
 	/// <summary>
@@ -1043,7 +1059,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Variation>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -1144,7 +1160,7 @@ namespace TabularEditor.TOMWrapper
 		private Variation CreateFromMetadata(TOM.Variation obj)
 		{
 			if(obj is TOM.Variation variationObj) return Variation.CreateFromMetadata(Column, variationObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -1345,7 +1361,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.StructuredDataSource>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -1551,7 +1567,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.CalculatedColumn>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -1587,7 +1603,7 @@ namespace TabularEditor.TOMWrapper
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.EVALUATIONBEHAVIOR:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+					return false;
 				case Properties.PARENT:
 					return false;
 				
@@ -1769,7 +1785,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.CalculatedTableColumn>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -1845,54 +1861,6 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
-/// <summary>
-///             For a DataColumn, specifies the data type. See <see href="https://msdn.microsoft.com/library/gg492146.aspx" /> for a list of supported data types.
-///             </summary>
-		[DisplayName("Data Type")]
-		[Category("Basic"),Description(@"For a DataColumn, specifies the data type. See https://msdn.microsoft.com/library/gg492146.aspx for a list of supported data types."),IntelliSense(@"For a DataColumn, specifies the data type. See https://msdn.microsoft.com/library/gg492146.aspx for a list of supported data types.")][TypeConverter(typeof(DataTypeEnumConverter))]
-		public DataType DataType {
-			get {
-			    return (DataType)MetadataObject.DataType;
-			}
-			set {
-				
-				var oldValue = DataType;
-				var newValue = value;
-				if (oldValue == newValue) return;
-				bool undoable = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.DATATYPE, newValue, ref undoable, ref cancel);
-				if (cancel) return;
-				if (!MetadataObject.IsRemoved) MetadataObject.DataType = (TOM.DataType)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DATATYPE, oldValue, newValue));
-				OnPropertyChanged(Properties.DATATYPE, oldValue, newValue);
-			}
-		}
-		private bool ShouldSerializeDataType() { return false; }
-/// <summary>
-///             A boolean value indicating whether the datatype is inferred.
-///             </summary>
-		[DisplayName("Data Type Inferred")]
-		[Category("Options"),Description(@"A boolean value indicating whether the datatype is inferred."),IntelliSense(@"A boolean value indicating whether the datatype is inferred.")]
-		public bool IsDataTypeInferred {
-			get {
-			    return MetadataObject.IsDataTypeInferred;
-			}
-			set {
-				
-				var oldValue = IsDataTypeInferred;
-				var newValue = value;
-				if (oldValue == newValue) return;
-				bool undoable = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.ISDATATYPEINFERRED, newValue, ref undoable, ref cancel);
-				if (cancel) return;
-				if (!MetadataObject.IsRemoved) MetadataObject.IsDataTypeInferred = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISDATATYPEINFERRED, oldValue, newValue));
-				OnPropertyChanged(Properties.ISDATATYPEINFERRED, oldValue, newValue);
-			}
-		}
-		private bool ShouldSerializeIsDataTypeInferred() { return false; }
         private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
         ///<summary>Removes all annotations from this object.</summary>
         [IntelliSense("Removes all annotations from this object.")]
@@ -2729,6 +2697,54 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeSortByColumn() { return false; }
+/// <summary>
+///             For a DataColumn, specifies the data type. See <see href="https://msdn.microsoft.com/library/gg492146.aspx" /> for a list of supported data types.
+///             </summary>
+		[DisplayName("Data Type")]
+		[Category("Basic"),Description(@"For a DataColumn, specifies the data type. See https://msdn.microsoft.com/library/gg492146.aspx for a list of supported data types."),IntelliSense(@"For a DataColumn, specifies the data type. See https://msdn.microsoft.com/library/gg492146.aspx for a list of supported data types.")][TypeConverter(typeof(DataTypeEnumConverter))]
+		public DataType DataType {
+			get {
+			    return (DataType)MetadataObject.DataType;
+			}
+			set {
+				
+				var oldValue = DataType;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.DATATYPE, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.DataType = (TOM.DataType)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DATATYPE, oldValue, newValue));
+				OnPropertyChanged(Properties.DATATYPE, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeDataType() { return false; }
+/// <summary>
+///             A boolean value indicating whether the datatype is inferred.
+///             </summary>
+		[DisplayName("Data Type Inferred")]
+		[Category("Options"),Description(@"A boolean value indicating whether the datatype is inferred."),IntelliSense(@"A boolean value indicating whether the datatype is inferred.")]
+		public bool IsDataTypeInferred {
+			get {
+			    return MetadataObject.IsDataTypeInferred;
+			}
+			set {
+				
+				var oldValue = IsDataTypeInferred;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ISDATATYPEINFERRED, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.IsDataTypeInferred = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISDATATYPEINFERRED, oldValue, newValue));
+				OnPropertyChanged(Properties.ISDATATYPEINFERRED, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeIsDataTypeInferred() { return false; }
 
         /// <Summary>
 		/// Collection of perspectives in which this Column is visible.
@@ -2756,7 +2772,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Column>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -2900,10 +2916,11 @@ namespace TabularEditor.TOMWrapper
 
 		private Column CreateFromMetadata(TOM.Column obj)
 		{
-			if(obj is TOM.DataColumn datacolumnObj) return DataColumn.CreateFromMetadata(Table, datacolumnObj);
-			if(obj is TOM.CalculatedTableColumn calculatedtablecolumnObj) return CalculatedTableColumn.CreateFromMetadata(Table, calculatedtablecolumnObj);
 			if(obj is TOM.CalculatedColumn calculatedcolumnObj) return CalculatedColumn.CreateFromMetadata(Table, calculatedcolumnObj);
-		    return null;
+			if(obj is TOM.CalculatedTableColumn calculatedtablecolumnObj) return CalculatedTableColumn.CreateFromMetadata(Table, calculatedtablecolumnObj);
+			if(obj is TOM.DataColumn datacolumnObj) return DataColumn.CreateFromMetadata(Table, datacolumnObj);
+            else if (obj is TOM.RowNumberColumn) return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -2918,30 +2935,6 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
-		/// <summary>
-		/// Sets the DataType property of all objects in the collection at once.
-		/// </summary>
-		[Description("Sets the DataType property of all objects in the collection at once.")]
-		public DataType DataType {
-			set {
-				if(Handler == null) return;
-				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("DataType"));
-				this.ToList().ForEach(item => { item.DataType = value; });
-				Handler.UndoManager.EndBatch();
-			}
-		}
-		/// <summary>
-		/// Sets the IsDataTypeInferred property of all objects in the collection at once.
-		/// </summary>
-		[Description("Sets the IsDataTypeInferred property of all objects in the collection at once.")]
-		public bool IsDataTypeInferred {
-			set {
-				if(Handler == null) return;
-				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("IsDataTypeInferred"));
-				this.ToList().ForEach(item => { item.IsDataTypeInferred = value; });
-				Handler.UndoManager.EndBatch();
-			}
-		}
 		/// <summary>
 		/// Sets the DataCategory property of all objects in the collection at once.
 		/// </summary>
@@ -3179,6 +3172,30 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("SortByColumn"));
 				this.ToList().ForEach(item => { item.SortByColumn = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the DataType property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the DataType property of all objects in the collection at once.")]
+		public DataType DataType {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("DataType"));
+				this.ToList().ForEach(item => { item.DataType = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the IsDataTypeInferred property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the IsDataTypeInferred property of all objects in the collection at once.")]
+		public bool IsDataTypeInferred {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("IsDataTypeInferred"));
+				this.ToList().ForEach(item => { item.IsDataTypeInferred = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}
@@ -3559,7 +3576,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Culture>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -3660,7 +3677,7 @@ namespace TabularEditor.TOMWrapper
 		private Culture CreateFromMetadata(TOM.Culture obj)
 		{
 			if(obj is TOM.Culture cultureObj) return Culture.CreateFromMetadata(Model, cultureObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -3810,7 +3827,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.DataColumn>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -4215,7 +4232,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.DataSource>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -4315,9 +4332,9 @@ namespace TabularEditor.TOMWrapper
 
 		private DataSource CreateFromMetadata(TOM.DataSource obj)
 		{
-			if(obj is TOM.StructuredDataSource structureddatasourceObj) return StructuredDataSource.CreateFromMetadata(Model, structureddatasourceObj);
 			if(obj is TOM.ProviderDataSource providerdatasourceObj) return ProviderDataSource.CreateFromMetadata(Model, providerdatasourceObj);
-		    return null;
+			if(obj is TOM.StructuredDataSource structureddatasourceObj) return StructuredDataSource.CreateFromMetadata(Model, structureddatasourceObj);
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -4496,7 +4513,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.ExternalModelRoleMember>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -5136,7 +5153,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Hierarchy>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -5211,7 +5228,7 @@ namespace TabularEditor.TOMWrapper
 				case Properties.CHANGEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1567 : Handler.CompatibilityLevel >= 1567;
 				case Properties.EXCLUDEDARTIFACTS:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+					return false;
 				case Properties.EXTENDEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.HIDEMEMBERS:
@@ -5290,7 +5307,7 @@ namespace TabularEditor.TOMWrapper
 		private Hierarchy CreateFromMetadata(TOM.Hierarchy obj)
 		{
 			if(obj is TOM.Hierarchy hierarchyObj) return Hierarchy.CreateFromMetadata(Table, hierarchyObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -5919,7 +5936,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.KPI>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -6206,7 +6223,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.AlternateOf>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -6781,7 +6798,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Level>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -6899,7 +6916,7 @@ namespace TabularEditor.TOMWrapper
 		private Level CreateFromMetadata(TOM.Level obj)
 		{
 			if(obj is TOM.Level levelObj) return Level.CreateFromMetadata(Hierarchy, levelObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -7621,7 +7638,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Measure>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -7753,7 +7770,7 @@ namespace TabularEditor.TOMWrapper
 		private Measure CreateFromMetadata(TOM.Measure obj)
 		{
 			if(obj is TOM.Measure measureObj) return Measure.CreateFromMetadata(Table, measureObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -7888,18 +7905,6 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
-/// <summary>
-///             Gets an indication if the model has local changes that have not been saved to the engine yet.
-///             </summary><value>True, if the model has local changes; otherwise, false.</value><remarks>A disconnected model, will always return a value of <b>false</b>.</remarks>
-		[DisplayName("Has Local Changes")]
-		[Category("Options"),Description(@"Gets an indication if the model has local changes that have not been saved to the engine yet."),IntelliSense(@"Gets an indication if the model has local changes that have not been saved to the engine yet.")]
-		public bool HasLocalChanges {
-			get {
-			    return MetadataObject.HasLocalChanges;
-			}
-			
-		}
-		private bool ShouldSerializeHasLocalChanges() { return false; }
         private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
         ///<summary>Removes all annotations from this object.</summary>
         [IntelliSense("Removes all annotations from this object.")]
@@ -8606,6 +8611,30 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeDisableSystemDefaultExpression() { return false; }
 /// <summary>
+///             Define the fallback behavior of Direct Lake tables.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1604 or above.</remarks>
+		[DisplayName("Direct Lake Behavior")]
+		[Category("Options"),Description(@"Define the fallback behavior of Direct Lake tables."),IntelliSense(@"Define the fallback behavior of Direct Lake tables.")]
+		public DirectLakeBehavior DirectLakeBehavior {
+			get {
+			    return (DirectLakeBehavior)MetadataObject.DirectLakeBehavior;
+			}
+			set {
+				
+				var oldValue = DirectLakeBehavior;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.DIRECTLAKEBEHAVIOR, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.DirectLakeBehavior = (TOM.DirectLakeBehavior)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DIRECTLAKEBEHAVIOR, oldValue, newValue));
+				OnPropertyChanged(Properties.DIRECTLAKEBEHAVIOR, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeDirectLakeBehavior() { return false; }
+/// <summary>
 ///             A reference to a default measure.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("Default Measure")]
@@ -8630,6 +8659,18 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDefaultMeasure() { return false; }
+/// <summary>
+///             Gets an indication if the model has local changes that have not been saved to the engine yet.
+///             </summary><value>True, if the model has local changes; otherwise, false.</value><remarks>A disconnected model, will always return a value of <b>false</b>.</remarks>
+		[DisplayName("Has Local Changes")]
+		[Category("Options"),Description(@"Gets an indication if the model has local changes that have not been saved to the engine yet."),IntelliSense(@"Gets an indication if the model has local changes that have not been saved to the engine yet.")]
+		public bool HasLocalChanges {
+			get {
+			    return MetadataObject.HasLocalChanges;
+			}
+			
+		}
+		private bool ShouldSerializeHasLocalChanges() { return false; }
 
         /// <summary>
         /// Collection of localized descriptions for this Model.
@@ -8646,7 +8687,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Model>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -8774,7 +8815,7 @@ namespace TabularEditor.TOMWrapper
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.ANALYTICSAIMETADATA:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+					return false;
 				case Properties.AUTOMATICAGGREGATIONOPTIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1564 : Handler.CompatibilityLevel >= 1564;
 				case Properties.DATAACCESSOPTIONS:
@@ -8787,10 +8828,12 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.DEFAULTPOWERBIDATASOURCEVERSION:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1450 : Handler.CompatibilityLevel >= 1450;
+				case Properties.DIRECTLAKEBEHAVIOR:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1604 : Handler.CompatibilityLevel >= 1604;
 				case Properties.DISABLEAUTOEXISTS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1566 : Handler.CompatibilityLevel >= 1566;
 				case Properties.DISABLESYSTEMDEFAULTEXPRESSION:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+					return false;
 				case Properties.DISCOURAGECOMPOSITEMODELS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1560 : Handler.CompatibilityLevel >= 1560;
 				case Properties.DISCOURAGEIMPLICITMEASURES:
@@ -8798,7 +8841,7 @@ namespace TabularEditor.TOMWrapper
 				case Properties.DISCOURAGEREPORTMEASURES:
 					return false;
 				case Properties.EXCLUDEDARTIFACTS:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+					return false;
 				case Properties.EXPRESSIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.EXTENDEDPROPERTIES:
@@ -9253,7 +9296,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.ModelRole>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -9388,7 +9431,7 @@ namespace TabularEditor.TOMWrapper
 		private ModelRole CreateFromMetadata(TOM.ModelRole obj)
 		{
 			if(obj is TOM.ModelRole modelroleObj) return ModelRole.CreateFromMetadata(Model, modelroleObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -9788,7 +9831,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.ModelRoleMember>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -9890,7 +9933,7 @@ namespace TabularEditor.TOMWrapper
 		{
 			if(obj is TOM.ExternalModelRoleMember externalmodelrolememberObj) return ExternalModelRoleMember.CreateFromMetadata(ModelRole, externalmodelrolememberObj);
 			if(obj is TOM.WindowsModelRoleMember windowsmodelrolememberObj) return WindowsModelRoleMember.CreateFromMetadata(ModelRole, windowsmodelrolememberObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -9955,18 +9998,6 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
-/// <summary>
-///             The type of source used by the Partition. This is either a query against a DataSource, or for calculated tables, an expression.
-///             </summary>
-		[DisplayName("Source Type")]
-		[Category("Options"),Description(@"The type of source used by the Partition. This is either a query against a DataSource, or for calculated tables, an expression."),IntelliSense(@"The type of source used by the Partition. This is either a query against a DataSource, or for calculated tables, an expression.")]
-		public PartitionSourceType SourceType {
-			get {
-			    return (PartitionSourceType)MetadataObject.SourceType;
-			}
-			
-		}
-		private bool ShouldSerializeSourceType() { return false; }
         private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
         ///<summary>Removes all annotations from this object.</summary>
         [IntelliSense("Removes all annotations from this object.")]
@@ -10351,6 +10382,18 @@ namespace TabularEditor.TOMWrapper
 				return t as Table;
 			} 
 		}
+/// <summary>
+///             The type of source used by the Partition. This is either a query against a DataSource, or for calculated tables, an expression.
+///             </summary>
+		[DisplayName("Source Type")]
+		[Category("Options"),Description(@"The type of source used by the Partition. This is either a query against a DataSource, or for calculated tables, an expression."),IntelliSense(@"The type of source used by the Partition. This is either a query against a DataSource, or for calculated tables, an expression.")]
+		public PartitionSourceType SourceType {
+			get {
+			    return (PartitionSourceType)MetadataObject.SourceType;
+			}
+			
+		}
+		private bool ShouldSerializeSourceType() { return false; }
 
 		internal static Partition CreateFromMetadata(Table parent, TOM.Partition metadataObject) {
 			var obj = new Partition(metadataObject);
@@ -10422,7 +10465,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Partition>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -10529,10 +10572,9 @@ namespace TabularEditor.TOMWrapper
 		private Partition CreateFromMetadata(TOM.Partition obj)
 		{
 			if(obj.SourceType == TOM.PartitionSourceType.M) return MPartition.CreateFromMetadata(Table, obj);
-            else if(obj.SourceType == TOM.PartitionSourceType.Entity) return EntityPartition.CreateFromMetadata(Table, obj);
-            else if(obj.SourceType == TOM.PartitionSourceType.PolicyRange) return PolicyRangePartition.CreateFromMetadata(Table, obj);
+			else if(obj.SourceType == TOM.PartitionSourceType.Entity) return EntityPartition.CreateFromMetadata(Table, obj);
+			else if(obj.SourceType == TOM.PartitionSourceType.PolicyRange) return PolicyRangePartition.CreateFromMetadata(Table, obj);
 			else return Partition.CreateFromMetadata(Table, obj);
-		    return null;
 		}
 
 		/// <summary>
@@ -11122,7 +11164,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Set>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -11222,7 +11264,7 @@ namespace TabularEditor.TOMWrapper
 		private Set CreateFromMetadata(TOM.Set obj)
 		{
 			if(obj is TOM.Set setObj) return Set.CreateFromMetadata(Table, setObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -11715,7 +11757,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Perspective>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -11824,7 +11866,7 @@ namespace TabularEditor.TOMWrapper
 		private Perspective CreateFromMetadata(TOM.Perspective obj)
 		{
 			if(obj is TOM.Perspective perspectiveObj) return Perspective.CreateFromMetadata(Model, perspectiveObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -12121,7 +12163,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.ProviderDataSource>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -12187,32 +12229,6 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
-/// <summary>
-///             Gets the destination table in a directional table relationship.
-///             </summary>
-		[DisplayName("To Table")]
-		[Category("Options"),Description(@"Gets the destination table in a directional table relationship."),IntelliSense(@"Gets the destination table in a directional table relationship.")]
-		public Table ToTable {
-			get {
-				if (MetadataObject.ToTable == null) return null;
-			    return Handler.WrapperLookup[MetadataObject.ToTable] as Table;
-            }
-			
-		}
-		private bool ShouldSerializeToTable() { return false; }
-/// <summary>
-///             Gets the starting table in a directional table relationship.
-///             </summary>
-		[DisplayName("From Table")]
-		[Category("Options"),Description(@"Gets the starting table in a directional table relationship."),IntelliSense(@"Gets the starting table in a directional table relationship.")]
-		public Table FromTable {
-			get {
-				if (MetadataObject.FromTable == null) return null;
-			    return Handler.WrapperLookup[MetadataObject.FromTable] as Table;
-            }
-			
-		}
-		private bool ShouldSerializeFromTable() { return false; }
         private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
         ///<summary>Removes all annotations from this object.</summary>
         [IntelliSense("Removes all annotations from this object.")]
@@ -12630,12 +12646,38 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeSecurityFilteringBehavior() { return false; }
+/// <summary>
+///             Gets the starting table in a directional table relationship.
+///             </summary>
+		[DisplayName("From Table")]
+		[Category("Options"),Description(@"Gets the starting table in a directional table relationship."),IntelliSense(@"Gets the starting table in a directional table relationship.")]
+		public Table FromTable {
+			get {
+				if (MetadataObject.FromTable == null) return null;
+			    return Handler.WrapperLookup[MetadataObject.FromTable] as Table;
+            }
+			
+		}
+		private bool ShouldSerializeFromTable() { return false; }
+/// <summary>
+///             Gets the destination table in a directional table relationship.
+///             </summary>
+		[DisplayName("To Table")]
+		[Category("Options"),Description(@"Gets the destination table in a directional table relationship."),IntelliSense(@"Gets the destination table in a directional table relationship.")]
+		public Table ToTable {
+			get {
+				if (MetadataObject.ToTable == null) return null;
+			    return Handler.WrapperLookup[MetadataObject.ToTable] as Table;
+            }
+			
+		}
+		private bool ShouldSerializeToTable() { return false; }
 
 	
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Relationship>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -12739,7 +12781,7 @@ namespace TabularEditor.TOMWrapper
 		private Relationship CreateFromMetadata(TOM.Relationship obj)
 		{
 			if(obj is TOM.SingleColumnRelationship singlecolumnrelationshipObj) return SingleColumnRelationship.CreateFromMetadata(Model, singlecolumnrelationshipObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -12836,6 +12878,54 @@ namespace TabularEditor.TOMWrapper
 		}
 
 /// <summary>
+///             Indicates whether the "From" end of the relationship has a cardinality of One (1) or Many (2).
+///             </summary>
+		[DisplayName("From Cardinality")]
+		[Category("Basic"),Description(@"Indicates whether the ""From"" end of the relationship has a cardinality of One (1) or Many (2)."),IntelliSense(@"Indicates whether the ""From"" end of the relationship has a cardinality of One (1) or Many (2).")]
+		public RelationshipEndCardinality FromCardinality {
+			get {
+			    return (RelationshipEndCardinality)MetadataObject.FromCardinality;
+			}
+			set {
+				
+				var oldValue = FromCardinality;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.FROMCARDINALITY, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.FromCardinality = (TOM.RelationshipEndCardinality)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FROMCARDINALITY, oldValue, newValue));
+				OnPropertyChanged(Properties.FROMCARDINALITY, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeFromCardinality() { return false; }
+/// <summary>
+///             Indicates whether the "To" end of the relationship has a cardinality of One (1) or Many (2).
+///             </summary>
+		[DisplayName("To Cardinality")]
+		[Category("Basic"),Description(@"Indicates whether the ""To"" end of the relationship has a cardinality of One (1) or Many (2)."),IntelliSense(@"Indicates whether the ""To"" end of the relationship has a cardinality of One (1) or Many (2).")]
+		public RelationshipEndCardinality ToCardinality {
+			get {
+			    return (RelationshipEndCardinality)MetadataObject.ToCardinality;
+			}
+			set {
+				
+				var oldValue = ToCardinality;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.TOCARDINALITY, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.ToCardinality = (TOM.RelationshipEndCardinality)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TOCARDINALITY, oldValue, newValue));
+				OnPropertyChanged(Properties.TOCARDINALITY, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeToCardinality() { return false; }
+/// <summary>
 ///             Gets or sets the starting column in a single column relationship.
 ///             </summary>
 		[DisplayName("From Column")]
@@ -12885,54 +12975,6 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeToColumn() { return false; }
-/// <summary>
-///             Indicates whether the "From" end of the relationship has a cardinality of One (1) or Many (2).
-///             </summary>
-		[DisplayName("From Cardinality")]
-		[Category("Basic"),Description(@"Indicates whether the ""From"" end of the relationship has a cardinality of One (1) or Many (2)."),IntelliSense(@"Indicates whether the ""From"" end of the relationship has a cardinality of One (1) or Many (2).")]
-		public RelationshipEndCardinality FromCardinality {
-			get {
-			    return (RelationshipEndCardinality)MetadataObject.FromCardinality;
-			}
-			set {
-				
-				var oldValue = FromCardinality;
-				var newValue = value;
-				if (oldValue == newValue) return;
-				bool undoable = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.FROMCARDINALITY, newValue, ref undoable, ref cancel);
-				if (cancel) return;
-				if (!MetadataObject.IsRemoved) MetadataObject.FromCardinality = (TOM.RelationshipEndCardinality)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FROMCARDINALITY, oldValue, newValue));
-				OnPropertyChanged(Properties.FROMCARDINALITY, oldValue, newValue);
-			}
-		}
-		private bool ShouldSerializeFromCardinality() { return false; }
-/// <summary>
-///             Indicates whether the "To" end of the relationship has a cardinality of One (1) or Many (2).
-///             </summary>
-		[DisplayName("To Cardinality")]
-		[Category("Basic"),Description(@"Indicates whether the ""To"" end of the relationship has a cardinality of One (1) or Many (2)."),IntelliSense(@"Indicates whether the ""To"" end of the relationship has a cardinality of One (1) or Many (2).")]
-		public RelationshipEndCardinality ToCardinality {
-			get {
-			    return (RelationshipEndCardinality)MetadataObject.ToCardinality;
-			}
-			set {
-				
-				var oldValue = ToCardinality;
-				var newValue = value;
-				if (oldValue == newValue) return;
-				bool undoable = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.TOCARDINALITY, newValue, ref undoable, ref cancel);
-				if (cancel) return;
-				if (!MetadataObject.IsRemoved) MetadataObject.ToCardinality = (TOM.RelationshipEndCardinality)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TOCARDINALITY, oldValue, newValue));
-				OnPropertyChanged(Properties.TOCARDINALITY, oldValue, newValue);
-			}
-		}
-		private bool ShouldSerializeToCardinality() { return false; }
 
 		internal static SingleColumnRelationship CreateFromMetadata(Model parent, TOM.SingleColumnRelationship metadataObject) {
 			var obj = new SingleColumnRelationship(metadataObject);
@@ -13014,7 +13056,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.SingleColumnRelationship>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -13766,7 +13808,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Table>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -13887,13 +13929,13 @@ namespace TabularEditor.TOMWrapper
 				case Properties.CALCULATIONGROUP:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1470 : Handler.CompatibilityLevel >= 1470;
 				case Properties.CALENDARS:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+					return false;
 				case Properties.CHANGEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1567 : Handler.CompatibilityLevel >= 1567;
 				case Properties.DEFAULTDETAILROWSDEFINITION:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.EXCLUDEDARTIFACTS:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+					return false;
 				case Properties.EXCLUDEFROMAUTOMATICAGGREGATIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1572 : Handler.CompatibilityLevel >= 1572;
 				case Properties.EXCLUDEFROMMODELREFRESH:
@@ -13982,10 +14024,9 @@ namespace TabularEditor.TOMWrapper
 
 		private Table CreateFromMetadata(TOM.Table obj)
 		{
-            if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.Calculated) return CalculatedTable.CreateFromMetadata(Model, obj);
-			else if (obj.Partitions[0].SourceType == TOM.PartitionSourceType.CalculationGroup) return CalculationGroupTable.CreateFromMetadata(Model, obj);
+            if (obj.Partitions.Count == 1 && obj.Partitions[0].SourceType == TOM.PartitionSourceType.Calculated) return CalculatedTable.CreateFromMetadata(Model, obj);
+			else if (obj.Partitions.Count == 1 && obj.Partitions[0].SourceType == TOM.PartitionSourceType.CalculationGroup) return CalculationGroupTable.CreateFromMetadata(Model, obj);
             else return Table.CreateFromMetadata(Model, obj);
-		    return null;
 		}
 
 		/// <summary>
@@ -14212,7 +14253,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.WindowsModelRoleMember>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -14864,7 +14905,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.NamedExpression>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -14906,7 +14947,7 @@ namespace TabularEditor.TOMWrapper
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.EXCLUDEDARTIFACTS:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+					return false;
 				case Properties.EXPRESSIONSOURCE:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1570 : Handler.CompatibilityLevel >= 1570;
 				case Properties.LINEAGETAG:
@@ -14979,7 +15020,7 @@ namespace TabularEditor.TOMWrapper
 		private NamedExpression CreateFromMetadata(TOM.NamedExpression obj)
 		{
 			if(obj is TOM.NamedExpression namedexpressionObj) return NamedExpression.CreateFromMetadata(Model, namedexpressionObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -15310,7 +15351,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.CalculationGroup>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -15365,10 +15406,10 @@ namespace TabularEditor.TOMWrapper
 			switch (propertyName) {
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
-				case Properties.MULTISELECTIONEXPRESSION:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+				case Properties.MULTIPLEOREMPTYSELECTIONEXPRESSION:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1605 : Handler.CompatibilityLevel >= 1605;
 				case Properties.NOSELECTIONEXPRESSION:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1605 : Handler.CompatibilityLevel >= 1605;
 				
 				default:
 					return true;
@@ -15555,7 +15596,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.CalculationItem>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -15650,7 +15691,7 @@ namespace TabularEditor.TOMWrapper
 		private CalculationItem CreateFromMetadata(TOM.CalculationItem obj)
 		{
 			if(obj is TOM.CalculationItem calculationitemObj) return CalculationItem.CreateFromMetadata(CalculationGroup, calculationitemObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>
@@ -16157,7 +16198,7 @@ namespace TabularEditor.TOMWrapper
         internal override void RenewMetadataObject()
         {
             Handler.WrapperLookup.Remove(MetadataObject);
-            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
             MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.TablePermission>(json);
             Handler.WrapperLookup.Add(MetadataObject, this);
         }
@@ -16262,7 +16303,7 @@ namespace TabularEditor.TOMWrapper
 		private TablePermission CreateFromMetadata(TOM.TablePermission obj)
 		{
 			if(obj is TOM.TablePermission tablepermissionObj) return TablePermission.CreateFromMetadata(ModelRole, tablepermissionObj);
-		    return null;
+            else throw new ArgumentException("Cannot create object", "obj");
 		}
 
 		/// <summary>

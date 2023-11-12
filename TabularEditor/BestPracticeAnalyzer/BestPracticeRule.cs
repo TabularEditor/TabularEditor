@@ -283,8 +283,8 @@ namespace TabularEditor.BestPracticeAnalyzer
                 {
                     currentScope = query.Key;
                     results.AddRange(query.Value.OfType<ITabularNamedObject>());
-                    ObjectCount += results.Count;
                 }
+                ObjectCount += results.Count;
                 IsValid = true;
             }
             catch (Exception ex)
