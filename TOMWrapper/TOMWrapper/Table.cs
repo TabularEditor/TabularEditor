@@ -265,9 +265,9 @@ namespace TabularEditor.TOMWrapper
             get
             {
                 var ds = (MetadataObject.Partitions.FirstOrDefault()?.Source as TOM.QueryPartitionSource)?.DataSource;
-                string sourceName = null;
-                if (ds != null) sourceName = (Handler.WrapperLookup[ds] as DataSource)?.Name;
-                return sourceName ?? ds?.Name;
+                if (ds != null && Handler.WrapperLookup.TryGetValue(ds, out var dataSource) && dataSource is DataSource typedDataSource)
+                    return typedDataSource.Name;
+                return null;
             }
         }
 
