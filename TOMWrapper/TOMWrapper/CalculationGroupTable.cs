@@ -61,7 +61,7 @@ namespace TabularEditor.TOMWrapper
             CalculationItemErrors = null;
             base.ClearError();
 
-            if (Handler.CompatibilityLevel >= 1605)
+            if (Handler.CompatibilityLevel >= DefaultExpressionRequiredCompatibilityLevel)
             {
                 if(MetadataObject.CalculationGroup?.NoSelectionExpression != null)
                 {
