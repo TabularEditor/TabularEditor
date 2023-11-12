@@ -210,6 +210,8 @@ namespace TabularEditor.TOMWrapper
         {
             if (MetadataObject.MultipleOrEmptySelectionExpression.IsNullOrEmpty())
                 MetadataObject.MultipleOrEmptySelectionExpression = null;
+            if (MetadataObject.NoSelectionExpression.IsNullOrEmpty())
+                MetadataObject.NoSelectionExpression = null;
         }
 
         public override string ToString()

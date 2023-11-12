@@ -47,10 +47,33 @@ namespace TabularEditor.TOMWrapper
             Handler._errors.Add(calculationItem);
         }
 
+        private void AddCalcGroupError(string error)
+        {
+            if (string.IsNullOrEmpty(ErrorMessage))
+                ErrorMessage = string.Empty;
+            else
+                ErrorMessage += "\n";
+            ErrorMessage += error;
+        }
+
         internal override void ClearError()
         {
             CalculationItemErrors = null;
             base.ClearError();
+
+            if (Handler.CompatibilityLevel >= 1605)
+            {
+                if(MetadataObject.CalculationGroup?.NoSelectionExpression != null)
+                {
+                    if (!string.IsNullOrEmpty(MetadataObject.CalculationGroup.NoSelectionExpression.ErrorMessage)) AddCalcGroupError("No Selection Expression error: " + MetadataObject.CalculationGroup.NoSelectionExpression.ErrorMessage);
+                    if (!string.IsNullOrEmpty(MetadataObject.CalculationGroup.NoSelectionExpression.FormatStringDefinition?.ErrorMessage)) AddCalcGroupError("No Selection Format String Expression error: " + MetadataObject.CalculationGroup.NoSelectionExpression.FormatStringDefinition.ErrorMessage);
+                }
+                if (MetadataObject.CalculationGroup?.MultipleOrEmptySelectionExpression != null)
+                {
+                    if (!string.IsNullOrEmpty(MetadataObject.CalculationGroup.MultipleOrEmptySelectionExpression.ErrorMessage)) AddCalcGroupError("Multiple Selection Expression error: " + MetadataObject.CalculationGroup.MultipleOrEmptySelectionExpression.ErrorMessage);
+                    if (!string.IsNullOrEmpty(MetadataObject.CalculationGroup.MultipleOrEmptySelectionExpression.FormatStringDefinition?.ErrorMessage)) AddCalcGroupError("Multiple Selection Format String Expression error: " + MetadataObject.CalculationGroup.MultipleOrEmptySelectionExpression.FormatStringDefinition.ErrorMessage);
+                }
+            }
         }
 
         internal bool DisableReordering = false;
