@@ -41,8 +41,8 @@ partial class Rules {
 				var pbiProp = attrType.GetProperty("Pbi");
 				var pbi = (string)pbiProp.GetValue(attribute);
 
-				this.Box = int.TryParse(box, out int boxValue) ? boxValue : int.MaxValue;
-				this.Pbi = int.TryParse(pbi, out int pbiValue) ? pbiValue : int.MaxValue;
+				this.Box = box == "Preview" ? 1000000 : int.TryParse(box, out int boxValue) ? boxValue : int.MaxValue;
+				this.Pbi = pbi == "Preview" ? 1000000 : int.TryParse(pbi, out int pbiValue) ? pbiValue : int.MaxValue;
 			}
 			else 
 			{
@@ -505,7 +505,8 @@ partial class Rules {
 		"RefreshGranularityType",
 		"EvaluationBehavior",
 		"RefreshPolicyMode",
-		"RefreshPolicyType"
+		"RefreshPolicyType",
+		"DirectLakeBehavior"
 	};
 	public static readonly Type[] EnumTypes = _enumTypes.Select(t => ASType(t)).Where(t => t != null).ToArray();
 

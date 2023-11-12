@@ -271,7 +271,11 @@ namespace TabularEditor.TOMWrapper.Utils
         StatusExpression = 3,
         TrendExpression = 4,
         DefaultDetailRowsExpression = 5,
-        FormatStringExpression = 6
+        FormatStringExpression = 6,
+        NoSelectionExpression = 7,
+        NoSelectionFormatStringExpression = 8,
+        MultipleOrEmptySelectionExpression = 9,
+        MultipleOrEmptySelectionFormatStringExpression = 10
     }
 
     public static class DAXPropertyHelper

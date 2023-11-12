@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper.Undo;
 using TOM = Microsoft.AnalysisServices.Tabular;
+using System.ComponentModel.Design;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -46,10 +47,33 @@ namespace TabularEditor.TOMWrapper
             Handler._errors.Add(calculationItem);
         }
 
+        private void AddCalcGroupError(string error)
+        {
+            if (string.IsNullOrEmpty(ErrorMessage))
+                ErrorMessage = string.Empty;
+            else
+                ErrorMessage += "\n";
+            ErrorMessage += error;
+        }
+
         internal override void ClearError()
         {
             CalculationItemErrors = null;
             base.ClearError();
+
+            if (Handler.CompatibilityLevel >= DefaultExpressionRequiredCompatibilityLevel)
+            {
+                if(MetadataObject.CalculationGroup?.NoSelectionExpression != null)
+                {
+                    if (!string.IsNullOrEmpty(MetadataObject.CalculationGroup.NoSelectionExpression.ErrorMessage)) AddCalcGroupError("No Selection Expression error: " + MetadataObject.CalculationGroup.NoSelectionExpression.ErrorMessage);
+                    if (!string.IsNullOrEmpty(MetadataObject.CalculationGroup.NoSelectionExpression.FormatStringDefinition?.ErrorMessage)) AddCalcGroupError("No Selection Format String Expression error: " + MetadataObject.CalculationGroup.NoSelectionExpression.FormatStringDefinition.ErrorMessage);
+                }
+                if (MetadataObject.CalculationGroup?.MultipleOrEmptySelectionExpression != null)
+                {
+                    if (!string.IsNullOrEmpty(MetadataObject.CalculationGroup.MultipleOrEmptySelectionExpression.ErrorMessage)) AddCalcGroupError("Multiple Selection Expression error: " + MetadataObject.CalculationGroup.MultipleOrEmptySelectionExpression.ErrorMessage);
+                    if (!string.IsNullOrEmpty(MetadataObject.CalculationGroup.MultipleOrEmptySelectionExpression.FormatStringDefinition?.ErrorMessage)) AddCalcGroupError("Multiple Selection Format String Expression error: " + MetadataObject.CalculationGroup.MultipleOrEmptySelectionExpression.FormatStringDefinition.ErrorMessage);
+                }
+            }
         }
 
         internal bool DisableReordering = false;
@@ -191,13 +215,6 @@ namespace TabularEditor.TOMWrapper
             return CreateFromMetadata(parent, metadataObject);
         }
 
-        /*
-        [Browsable(false)]
-        public CalculationGroupAttribute NameField { get; private set; }
-        [Browsable(false)]
-        public CalculationGroupAttribute OrdinalField { get; private set; }
-        */
-
         CalculationGroupTable(TOM.Table table) : base(table)
         {
 
@@ -221,10 +238,73 @@ namespace TabularEditor.TOMWrapper
         [Category("Metadata"),DisplayName("Calculation Group Annotations"),Description("Annotations on the Calculation Group object."),NoMultiselect,Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
         public AnnotationCollection CalculationGroupAnnotations { get { return CalculationGroup.Annotations; } }
 
+        /// <summary>
+        /// The expression defined on this object will be applied to the selected measure in DAX queries, when multiple calculation items are aplied.
+        /// </summary>
+        [Category("Options"),DisplayName("Multiple or Empty Selection Expression"),Description("The expression defined on this object will be applied to the selected measure in DAX queries, when multiple calculation items are applied."),Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
+        public string MultipleOrEmptySelectionExpression
+        {
+            get => CalculationGroup.MultipleOrEmptySelectionExpression;
+            set => CalculationGroup.MultipleOrEmptySelectionExpression = value;
+        }
+
+        /// <summary>
+        /// The format string expression defined on this object will be applied to the selected measure in DAX queries, when multiple calculation items are aplied.
+        /// </summary>
+        [Category("Options"), DisplayName("Multiple or Empty Selection Format String Expression"), Description("The format string expression defined on this object will be applied to the selected measure in DAX queries, when multiple calculation items are applied."), Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
+        public string MultipleOrEmptySelectionFormatStringExpression
+        {
+            get => CalculationGroup.MultipleOrEmptySelectionFormatStringExpression;
+            set => CalculationGroup.MultipleOrEmptySelectionFormatStringExpression = value;
+        }
+
+        /// <summary>
+        /// The description of the CalculationGroupExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+        /// </summary>
+        [Category("Options"), DisplayName("Multiple or Empty Selection Expression Description"), Description("The description of the CalculationGroupExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")]
+        public string MultipleOrEmptySelectionDescription
+        {
+            get => CalculationGroup.MultipleOrEmptySelectionDescription;
+            set => CalculationGroup.MultipleOrEmptySelectionDescription = value;
+        }
+        /// <summary>
+        /// The expression defined on this object will be applied to the selected measure in DAX queries, when no calculation items are applied.
+        /// </summary>
+        [Category("Options"), DisplayName("No-selection Expression"), Description("The expression defined on this object will be applied to the selected measure in DAX queries, when no calculation items are applied."), Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
+        public string NoSelectionExpression
+        {
+            get => CalculationGroup.NoSelectionExpression;
+            set => CalculationGroup.NoSelectionExpression = value;
+        }
+
+        /// <summary>
+        /// The format string expression defined on this object will be applied to the selected measure in DAX queries, when no calculation items are applied.
+        /// </summary>
+        [Category("Options"), DisplayName("No-selection Format String Expression"), Description("The format string expression defined on this object will be applied to the selected measure in DAX queries, when no calculation items are applied."), Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
+        public string NoSelectionFormatStringExpression
+        {
+            get => CalculationGroup.NoSelectionFormatStringExpression;
+            set => CalculationGroup.NoSelectionFormatStringExpression = value;
+        }
+
+        /// <summary>
+        /// The description of the CalculationGroupExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+        /// </summary>
+        [Category("Options"), DisplayName("No-selection Expression Description"), Description("The description of the CalculationGroupExpression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")]
+        public string NoSelectionExpressionDescription
+        {
+            get => CalculationGroup.NoSelectionExpressionDescription;
+            set => CalculationGroup.NoSelectionExpressionDescription = value;
+        }
+
         protected override void Init()
         {
             if (MetadataObject.CalculationGroup != null)
+            {
                 CalculationGroup = CalculationGroup.CreateFromMetadata(this, MetadataObject.CalculationGroup);
+                CalculationGroup.PropertyChanging += (s, e) => RaisePropertyChanging(e.PropertyName);
+                CalculationGroup.PropertyChanged += (s, e) => RaisePropertyChanged(e.PropertyName);
+            }
             base.Init();
         }
 
@@ -259,29 +339,21 @@ namespace TabularEditor.TOMWrapper
                 case Properties.TRANSLATEDNAMES:
                 case Properties.TRANSLATEDDESCRIPTIONS:
                 case Properties.INPERSPECTIVE:
+                case Properties.DEFAULTDETAILROWSEXPRESSION:
                     return true;
+                case nameof(MultipleOrEmptySelectionExpression):
+                case nameof(MultipleOrEmptySelectionFormatStringExpression):
+                case nameof(MultipleOrEmptySelectionDescription):
+                case nameof(NoSelectionExpression):
+                case nameof(NoSelectionFormatStringExpression):
+                case nameof(NoSelectionExpressionDescription):
+                    return Handler.CompatibilityLevel >= DefaultExpressionRequiredCompatibilityLevel;
                 default:
                     return false;
             }
         }
-    }
 
-    public partial class CalculationGroup
-    {
-        internal static CalculationGroup CreateFromMetadata(Table parent, TOM.CalculationGroup metadataObject)
-        {
-            var obj = new CalculationGroup(metadataObject);
-            parent.MetadataObject.CalculationGroup = metadataObject;
-
-            obj.Init();
-
-            return obj;
-        }
-        
-        public override string ToString()
-        {
-            return "Calculation Group";
-        }
+        public const int DefaultExpressionRequiredCompatibilityLevel = 1605;
     }
 
     internal static partial class Properties

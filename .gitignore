@@ -58,3 +58,5 @@
 *.user
 /Publish/*
 /.cr
+/TOMWrapperTest/obj
+/AntlrGrammars/obj

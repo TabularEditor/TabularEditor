@@ -39,15 +39,11 @@ namespace TOMWrapperTest.RegressionTests.v2_9_5
               },
               {
                 ""type"": ""calculated"",
-                ""name"": ""bColumn"",
-                ""dataType"": ""unknown"",
-                ""isDataTypeInferred"": true
+                ""name"": ""bColumn""
               },
               {
                 ""type"": ""calculated"",
-                ""name"": ""yColumn"",
-                ""dataType"": ""unknown"",
-                ""isDataTypeInferred"": true
+                ""name"": ""yColumn""
               }
             ],
             ""partitions"": [

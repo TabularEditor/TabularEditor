@@ -15,7 +15,16 @@ namespace TabularEditor.TOMWrapper.Utils
         [IntelliSense("Return a list of tokens representing the DAX expression on the current object.")]
         public static IList<DaxToken> Tokenize(this IDaxDependantObject obj)
         {
-            return Tokenize(obj, DAXProperty.Expression);
+            return Tokenize(obj, includeHidden: true);
+        }
+
+        /// <summary>
+        /// Return a list of tokens representing the DAX expression on the current object.
+        /// </summary>
+        [IntelliSense("Return a list of tokens representing the DAX expression on the current object.")]
+        public static IList<DaxToken> Tokenize(this IDaxDependantObject obj, bool includeHidden)
+        {
+            return Tokenize(obj, DAXProperty.Expression, includeHidden);
         }
 
         /// <summary>
@@ -24,15 +33,36 @@ namespace TabularEditor.TOMWrapper.Utils
         [IntelliSense("Return a list of tokens representing the specified DAX property on the current object.")]
         public static IList<DaxToken> Tokenize(this IDaxDependantObject obj, DAXProperty property)
         {
+            return Tokenize(obj, property, includeHidden: true);
+        }
+
+        /// <summary>
+        /// Return a list of tokens representing the specified DAX property on the current object.
+        /// </summary>
+        [IntelliSense("Return a list of tokens representing the specified DAX property on the current object.")]
+        public static IList<DaxToken> Tokenize(this IDaxDependantObject obj, DAXProperty property, bool includeHidden)
+        {
             var result = new List<DaxToken>();
             var dax = obj.GetDAX(property);
             if(string.IsNullOrEmpty(dax)) return result;
             var lexer = new DAXLexer(new DAXCharStream(obj.GetDAX(property), false));
             lexer.RemoveErrorListeners();
             var lexerTokens = lexer.GetAllTokens();
-            for(int i = 0; i < lexerTokens.Count; i++)
+            if (includeHidden)
             {
-                result.Add(new DaxToken(lexerTokens[i], result, i));
+                for (int i = 0; i < lexerTokens.Count; i++)
+                {
+                    result.Add(new DaxToken(lexerTokens[i], result, i));
+                }
+            }
+            else
+            {
+                var i = 0;
+                foreach (var token in lexerTokens)
+                {
+                    if (token.Channel == DAXLexer.COMMENTS_CHANNEL || token.Type == DAXLexer.WHITESPACES) continue;
+                    result.Add(new DaxToken(token, result, i++));
+                }
             }
 
             return result;
@@ -49,6 +79,17 @@ namespace TabularEditor.TOMWrapper.Utils
                     yield return DAXProperty.DetailRowsExpression;
                 }
                 if (obj.ObjectType == ObjectType.Table) yield return DAXProperty.DefaultDetailRowsExpression;
+                if (obj.ObjectType == ObjectType.CalculationGroupTable)
+                {
+                    yield return DAXProperty.DefaultDetailRowsExpression;
+                    if(TabularModelHandler.Singleton.CompatibilityLevel >= CalculationGroupTable.DefaultExpressionRequiredCompatibilityLevel)
+                    {
+                        yield return DAXProperty.NoSelectionExpression;
+                        yield return DAXProperty.NoSelectionFormatStringExpression;
+                        yield return DAXProperty.MultipleOrEmptySelectionExpression;
+                        yield return DAXProperty.MultipleOrEmptySelectionFormatStringExpression;
+                    }
+                }
             }
             if (obj is KPI)
             {
@@ -111,6 +152,13 @@ namespace TabularEditor.TOMWrapper.Utils
                 {
                     return Properties.DEFAULTDETAILROWSEXPRESSION;
                 }
+                if (obj is CalculationGroupTable cgt)
+                {
+                    if (property == DAXProperty.NoSelectionExpression) return nameof(cgt.NoSelectionExpression);
+                    if (property == DAXProperty.NoSelectionFormatStringExpression) return nameof(cgt.NoSelectionFormatStringExpression);
+                    if (property == DAXProperty.MultipleOrEmptySelectionExpression) return nameof(cgt.MultipleOrEmptySelectionExpression);
+                    if (property == DAXProperty.MultipleOrEmptySelectionFormatStringExpression) return nameof(cgt.MultipleOrEmptySelectionFormatStringExpression);
+                }
             }
 
             throw new ArgumentException(string.Format(Messages.InvalidExpressionProperty, obj.GetTypeName(), property), "property");
@@ -152,6 +200,13 @@ namespace TabularEditor.TOMWrapper.Utils
                 if (obj is Table && property == DAXProperty.DefaultDetailRowsExpression)
                 {
                     return (obj as Table).DefaultDetailRowsExpression;
+                }
+                if (obj is CalculationGroupTable cgt)
+                {
+                    if (property == DAXProperty.NoSelectionExpression) return cgt.NoSelectionExpression;
+                    if (property == DAXProperty.NoSelectionFormatStringExpression) return cgt.NoSelectionFormatStringExpression;
+                    if (property == DAXProperty.MultipleOrEmptySelectionExpression) return cgt.MultipleOrEmptySelectionExpression;
+                    if (property == DAXProperty.MultipleOrEmptySelectionFormatStringExpression) return cgt.MultipleOrEmptySelectionFormatStringExpression;
                 }
             }
 
@@ -202,7 +257,13 @@ namespace TabularEditor.TOMWrapper.Utils
                 if (property == DAXProperty.Expression) { ci.Expression = expression; return; }
                 if (property == DAXProperty.FormatStringExpression) { ci.FormatStringExpression = expression; return; }
             }
-
+            if (obj is CalculationGroupTable cgt)
+            {
+                if (property == DAXProperty.NoSelectionExpression) { cgt.NoSelectionExpression = expression; return; }
+                if (property == DAXProperty.NoSelectionFormatStringExpression) { cgt.NoSelectionFormatStringExpression = expression; return; }
+                if (property == DAXProperty.MultipleOrEmptySelectionExpression) { cgt.MultipleOrEmptySelectionExpression = expression; return; }
+                if (property == DAXProperty.MultipleOrEmptySelectionFormatStringExpression) { cgt.MultipleOrEmptySelectionFormatStringExpression = expression; return; }
+            }
 
             throw new ArgumentException(string.Format(Messages.InvalidExpressionProperty, obj.GetTypeName(), property), "property");
         }

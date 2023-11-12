@@ -137,7 +137,7 @@ namespace TabularEditor.UI
                 UI.StatusExLabel.Text = string.Format("Script executed successfully. {0} model change{1}.", actionCount, actionCount == 1 ? "" : "s");
                 UI.TreeView.Focus();
             }
-            catch (ScriptCancelledException)
+            catch (ScriptCanceledException)
             {
                 UI.StatusExLabel.Text = "Script cancelled.";
             }
