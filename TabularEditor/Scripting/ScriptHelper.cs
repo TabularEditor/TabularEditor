@@ -238,7 +238,7 @@ namespace TabularEditor.Scripting
                 else
                 {
                     var mr = MessageBox.Show("This script is making multiple calls to the \"FormatDax\" method, which has been deprecated! Calls will be throttled to not overload the DaxFormatter.com service. To avoid throttling, please change your script to use the FormatDax extension method going forward.\n\nFor more information, see:\n\nhttps://docs.tabulareditor.com/FormatDax\n\nContinue script execution?", "FormatDax method deprecated!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-                    if (mr == DialogResult.No) throw new ScriptCancelledException();
+                    if (mr == DialogResult.No) throw new ScriptCanceledException();
                 }
                 daxFormatterWarningShown = true;
             }

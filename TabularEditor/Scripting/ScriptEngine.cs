@@ -713,7 +713,19 @@ namespace TabularEditor.Scripting
         }
     }
 
-    public class ScriptCancelledException: Exception
+    /// <summary>
+    /// This exception is thrown when a script calls a method that requires a UI, but no UI is available, such as when
+    /// a script is executed through the CLI.
+    /// </summary>
+    public class NoUiException: Exception
+    {
+
+    }
+
+    /// <summary>
+    /// The exception that is thrown when a user cancels a script execution through a UI prompt.
+    /// </summary>
+    public class ScriptCanceledException: Exception
     {
     }
 }
