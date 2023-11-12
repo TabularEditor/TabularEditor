@@ -138,9 +138,9 @@ namespace TabularEditor.TOMWrapper
 
             if (Options.HasFlag(LogicalTreeOptions.DisplayFolders))
             {
-                foreach (var m in table.Measures) BuildFolderForObject(m);
-                foreach (var h in table.Hierarchies) BuildFolderForObject(h);
-                foreach (var c in table.Columns) BuildFolderForObject(c);
+                foreach (var m in table.Measures.Where(m => !m.IsRemoved)) BuildFolderForObject(m);
+                foreach (var h in table.Hierarchies.Where(h => !h.IsRemoved)) BuildFolderForObject(h);
+                foreach (var c in table.Columns.Where(c => !c.IsRemoved)) BuildFolderForObject(c);
             }
 
             table.PropagateChildErrors();
@@ -211,7 +211,7 @@ namespace TabularEditor.TOMWrapper
                 // Rebuilt folder caches if necessary:
                 if (folderCachesToBeRebuilt.Count > 0 && Options.HasFlag(LogicalTreeOptions.DisplayFolders))
                 {
-                    foreach (var table in folderCachesToBeRebuilt) RebuildFolderCacheForTable(table);
+                    foreach (var table in folderCachesToBeRebuilt.Where(t => !t.IsRemoved)) RebuildFolderCacheForTable(table);
                     folderCachesToBeRebuilt.Clear();
                 }
 
