@@ -31,6 +31,13 @@ namespace TabularEditor.UIServices
         /// </summary>
         public static event EventHandler ClipboardUpdate;
 
+        private static NotificationForm _form = new NotificationForm();
+
+        public static void EnsureInitialized()
+        {
+            _form.Tag = new object();
+        }
+
         /// <summary>
         /// Raises the <see cref="ClipboardUpdate"/> event.
         /// </summary>

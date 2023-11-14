@@ -56,6 +56,7 @@ namespace TabularEditor.UI
             ScriptEditor_Init();
             PropertyGrid_Init();
 
+            ClipboardListener.EnsureInitialized();
             ClipboardListener.ClipboardUpdate += ClipboardListener_ClipboardUpdate;
 
             Current = this;
