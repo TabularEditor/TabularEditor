@@ -191,6 +191,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string TRENDEXPRESSION = "TrendExpression";
 	    public const string TRENDGRAPHIC = "TrendGraphic";
 	    public const string TYPE = "Type";
+	    public const string VALUEFILTERBEHAVIOR = "ValueFilterBehavior";
 	    public const string VARIATIONS = "Variations";
     }
 
@@ -555,6 +556,21 @@ namespace TabularEditor.TOMWrapper
         Automatic = 0,
         DirectLakeOnly = 1,
         DirectQueryOnly = 2,
+	}
+	/// <summary>
+///             Determines value filter behavior for SummarizeColumns
+///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1606 or above.</remarks>
+	public enum ValueFilterBehaviorType {    
+        Automatic = 0,
+        Independent = 1,
+        Coalesced = 2,
+	}
+	/// <summary>
+///             Data source edit varaibles override behaviour type. E.g. Disallow or Allow.
+///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1475 or above.</remarks>
+	public enum DataSourceVariablesOverrideBehaviorType {    
+        Disallow = 0,
+        Allow = 1,
 	}
   
 	/// <summary>
@@ -1603,7 +1619,7 @@ namespace TabularEditor.TOMWrapper
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.EVALUATIONBEHAVIOR:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.PARENT:
 					return false;
 				
@@ -5228,7 +5244,7 @@ namespace TabularEditor.TOMWrapper
 				case Properties.CHANGEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1567 : Handler.CompatibilityLevel >= 1567;
 				case Properties.EXCLUDEDARTIFACTS:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.EXTENDEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.HIDEMEMBERS:
@@ -8419,6 +8435,30 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeDiscourageReportMeasures() { return false; }
 /// <summary>
+///             Controls whether this model allows data source variables to be overriden.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1475 or above.</remarks>
+		[DisplayName("Data Source Variables Override Behavior")]
+		[Category("Options"),Description(@"Controls whether this model allows data source variables to be overriden."),IntelliSense(@"Controls whether this model allows data source variables to be overriden.")]
+		public DataSourceVariablesOverrideBehaviorType DataSourceVariablesOverrideBehavior {
+			get {
+			    return (DataSourceVariablesOverrideBehaviorType)MetadataObject.DataSourceVariablesOverrideBehavior;
+			}
+			set {
+				
+				var oldValue = DataSourceVariablesOverrideBehavior;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.DATASOURCEVARIABLESOVERRIDEBEHAVIOR, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.DataSourceVariablesOverrideBehavior = (TOM.DataSourceVariablesOverrideBehaviorType)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DATASOURCEVARIABLESOVERRIDEBEHAVIOR, oldValue, newValue));
+				OnPropertyChanged(Properties.DATASOURCEVARIABLESOVERRIDEBEHAVIOR, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeDataSourceVariablesOverrideBehavior() { return false; }
+/// <summary>
 ///             DataSourceDefaultMaxConnections will be used for connections to a data source if MaxConnections is set to -1 on the data source object or if there is no corresponding data source object for the data source.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1510 or above.</remarks>
 		[DisplayName("Data Source Default Max Connections")]
@@ -8635,6 +8675,30 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeDirectLakeBehavior() { return false; }
 /// <summary>
+///             Determines value filter behavior for SummarizeColumns
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1606 or above.</remarks>
+		[DisplayName("Value Filter Behavior")]
+		[Category("Options"),Description(@"Determines value filter behavior for SummarizeColumns"),IntelliSense(@"Determines value filter behavior for SummarizeColumns")]
+		public ValueFilterBehaviorType ValueFilterBehavior {
+			get {
+			    return (ValueFilterBehaviorType)MetadataObject.ValueFilterBehavior;
+			}
+			set {
+				
+				var oldValue = ValueFilterBehavior;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.VALUEFILTERBEHAVIOR, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.ValueFilterBehavior = (TOM.ValueFilterBehaviorType)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.VALUEFILTERBEHAVIOR, oldValue, newValue));
+				OnPropertyChanged(Properties.VALUEFILTERBEHAVIOR, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeValueFilterBehavior() { return false; }
+/// <summary>
 ///             A reference to a default measure.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("Default Measure")]
@@ -8815,7 +8879,7 @@ namespace TabularEditor.TOMWrapper
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.ANALYTICSAIMETADATA:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.AUTOMATICAGGREGATIONOPTIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1564 : Handler.CompatibilityLevel >= 1564;
 				case Properties.DATAACCESSOPTIONS:
@@ -8833,7 +8897,7 @@ namespace TabularEditor.TOMWrapper
 				case Properties.DISABLEAUTOEXISTS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1566 : Handler.CompatibilityLevel >= 1566;
 				case Properties.DISABLESYSTEMDEFAULTEXPRESSION:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.DISCOURAGECOMPOSITEMODELS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1560 : Handler.CompatibilityLevel >= 1560;
 				case Properties.DISCOURAGEIMPLICITMEASURES:
@@ -8841,7 +8905,7 @@ namespace TabularEditor.TOMWrapper
 				case Properties.DISCOURAGEREPORTMEASURES:
 					return false;
 				case Properties.EXCLUDEDARTIFACTS:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.EXPRESSIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.EXTENDEDPROPERTIES:
@@ -8858,6 +8922,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1480 : Handler.CompatibilityLevel >= 1480;
 				case Properties.SOURCEQUERYCULTURE:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1520 : Handler.CompatibilityLevel >= 1520;
+				case Properties.VALUEFILTERBEHAVIOR:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1606 : Handler.CompatibilityLevel >= 1606;
 				
 				// Hides translation properties in the grid, unless the model actually contains translations:
 				case Properties.TRANSLATEDNAMES:
@@ -13929,13 +13995,13 @@ namespace TabularEditor.TOMWrapper
 				case Properties.CALCULATIONGROUP:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1470 : Handler.CompatibilityLevel >= 1470;
 				case Properties.CALENDARS:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.CHANGEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1567 : Handler.CompatibilityLevel >= 1567;
 				case Properties.DEFAULTDETAILROWSDEFINITION:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.EXCLUDEDARTIFACTS:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.EXCLUDEFROMAUTOMATICAGGREGATIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1572 : Handler.CompatibilityLevel >= 1572;
 				case Properties.EXCLUDEFROMMODELREFRESH:
@@ -14947,7 +15013,7 @@ namespace TabularEditor.TOMWrapper
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.EXCLUDEDARTIFACTS:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.EXPRESSIONSOURCE:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1570 : Handler.CompatibilityLevel >= 1570;
 				case Properties.LINEAGETAG:
