@@ -1,9 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AnalysisServices.Tabular.Extensions;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using TabularEditor.TOMWrapper.PowerBI;
 using TabularEditor.TOMWrapper.Serialization;
 using TOM = Microsoft.AnalysisServices.Tabular;
@@ -86,9 +88,15 @@ namespace TabularEditor.TOMWrapper
             if (file.Exists && file.Extension.EqualsI(".pbit")) LoadPowerBiTemplateFile(path);
 
             // TMDL:
-            else if (file.Exists && (file.Extension.EqualsI(".tmd") || file.Extension.EqualsI(".tmdl"))) LoadTMDL(path);
-            else if (Directory.Exists(path) && File.Exists(Path.Combine(path, "model.tmd"))) LoadTMDL(Path.Combine(path, "model.tmd"));
-            else if (Directory.Exists(path) && File.Exists(Path.Combine(path, "model.tmdl"))) LoadTMDL(Path.Combine(path, "model.tmdl"));
+            else if (file.Exists && (file.Extension.EqualsI(".tmdl") || file.Extension.EqualsI(".tmd")))
+            {
+                var databaseTmdlExists = File.Exists(Path.Combine(file.DirectoryName, "database.tmdl"));
+                LoadTMDL(path, useModelDeserialization: !databaseTmdlExists);
+            }
+            else if (Directory.Exists(path) && File.Exists(Path.Combine(path, "database.tmdl"))) LoadTMDL(Path.Combine(path, "database.tmdl"), useModelDeserialization: false);
+            else if (Directory.Exists(path) && File.Exists(Path.Combine(path, "database.tmd"))) LoadTMDL(Path.Combine(path, "database.tmd"), useModelDeserialization: false);
+            else if (Directory.Exists(path) && File.Exists(Path.Combine(path, "model.tmdl"))) LoadTMDL(Path.Combine(path, "model.tmdl"), useModelDeserialization: true);
+            else if (Directory.Exists(path) && File.Exists(Path.Combine(path, "model.tmd"))) LoadTMDL(Path.Combine(path, "model.tmd"), useModelDeserialization: true);
 
             // If the file name is "database.json" or path is a directory, assume Split Model:
             else if ((file.Exists && file.Name.EqualsI("database.json")) || Directory.Exists(path)) LoadSplitModelFiles(path);
@@ -131,7 +139,7 @@ namespace TabularEditor.TOMWrapper
             InitModelFromJson(pbit.ModelJson);
         }
 
-        private void LoadTMDL(string path)
+        private void LoadTMDL(string path, bool useModelDeserialization)
         {
             SourceType = ModelSourceType.TMDL;
             if (File.Exists(path)) path = new FileInfo(path).DirectoryName;
@@ -139,15 +147,22 @@ namespace TabularEditor.TOMWrapper
 
             try
             {
-                var model = TOM.TmdlSerializer.DeserializeModelFromFolder(path);
-                database = model.Database as TOM.Database;
-                database.DetermineCompatibilityMode();
+                if (useModelDeserialization)
+                {
+                    var model = TOM.TmdlSerializer.DeserializeModelFromFolder(path);
+                    database = model.Database as TOM.Database;
+                    database.DetermineCompatibilityMode();
+                }
+                else
+                {
+                    database = TOM.TmdlSerializer.DeserializeDatabaseFromFolder(path);
+                }
                 Status = "Model loaded successfully.";
                 Init();
 
                 _serializeOptions = SerializeOptions;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception($"{ex.GetType().Name} encountered while deserializing TMDL: {ex.Message}");
             }
@@ -300,24 +315,66 @@ namespace TabularEditor.TOMWrapper
             var db = Model.Database.TOMDatabase;
             db.RemoveTabularEditorTag();
             var orgDbName = db.Name;
-            var orgDbId = db.ID;
 
             db.Name = Model.Database?.Name ?? "SemanticModel";
-            if (Model.Database != null)
-            {
-                if (!Model.Database.Name.EqualsI(Model.Database.ID)) db.SetID(Model.Database.ID);
-                else if (orgDbId != null) db.SetID(null);
-            }
 
             if (options.DatabaseNameOverride != null)
             {
                 db.SetName(options.DatabaseNameOverride);
-                db.SetID(null);
             }
-            TOM.TmdlSerializer.SerializeModelToFolder(Model.MetadataObject, path);
+            TOM.TmdlSerializer.SerializeDatabaseToFolder(Database, path);
+            var tmdlFormattingOptions = new TOM.Serialization.MetadataFormattingOptionsBuilder(TOM.Serialization.MetadataSerializationStyle.Tmdl)
+                .WithBaseIndentationLevel(options.TmdlOptions.BaseIndentationLevel)
+                .WithCasingStyle(options.TmdlOptions.CasingStyle)
+                .WithEncoding(options.TmdlOptions.Encoding.GetEncoding())
+                .WithNewLineStyle(options.TmdlOptions.NewLineStyle);
+            tmdlFormattingOptions = (options.TmdlOptions.SpacesIndentation <= 0 ? tmdlFormattingOptions.WithTabsIndentationMode() : tmdlFormattingOptions.WithSpacesIndentationMode(options.TmdlOptions.SpacesIndentation));
+
+            var tmdlOptionsBuilder = new TOM.Serialization.MetadataSerializationOptionsBuilder(TOM.Serialization.MetadataSerializationStyle.Tmdl)
+                .WithFormattingOptions(tmdlFormattingOptions.GetOptions())
+                .WithExpressionTrimStyle(options.TmdlOptions.ExpressionTrimStyle);
+            var tmdlOptions = (options.IncludeSensitive ? tmdlOptionsBuilder.WithRestrictedInformation() : tmdlOptionsBuilder.WithoutRestrictedInformation()).GetOptions();
+
+            TOM.TmdlSerializer.SerializeDatabaseToFolder(Database, tmdlOptionsBuilder.GetOptions(), path);
+
+            if (!options.TmdlOptions.IncludeRefs)
+            {
+                // The TMDL serializer always includes refs in the model.tmdl file. But these can cause merge conflicts when multiple developers
+                // work on the model in parallel. As the refs are only used to indicate the metadata ordering of model-level objects such as tables,
+                // perspectives and roles, and since the order of these objects carries no semantic meaning, we provide the option in Tabular Editor
+                // to output a model.tmdl file without these refs.
+                //
+                // In order to do that, we need to separately serialize the model.tmdl file without children, and then manually append metadata for
+                // children that are not serialized as separate files by the TMDL serializer (such as annotations, query groups and extended properties).
+                // This way, we end up with a model.tmdl file that contains no refs, but still contains all metadata.
+                var tmdlOptionsNoChild = tmdlOptionsBuilder.WithoutChildrenMetadata().GetOptions();
+
+                var modelTmdlSb = new StringBuilder();
+                modelTmdlSb.Append(TOM.TmdlSerializer.SerializeObject(Database.Model, tmdlOptionsNoChild, qualifyObject: false));
+
+                if (Database.CompatibilityLevel >= 1400) SerializeCollectionTmdl(modelTmdlSb, Database.Model.ExtendedProperties, tmdlOptions);
+                if (Database.CompatibilityLevel >= 1480) SerializeCollectionTmdl(modelTmdlSb, Database.Model.QueryGroups, tmdlOptions);
+                SerializeCollectionTmdl(modelTmdlSb, Database.Model.Annotations, tmdlOptions);
+
+                try
+                {
+                    File.WriteAllText(Path.Combine(path, "model.tmdl"), modelTmdlSb.ToString());
+                }
+                catch
+                {
+                    // Silently fail - worst case, we leave the model.tmdl generated by the TMDL serializer as-is.
+                }
+            }
 
             db.SetName(orgDbName);
-            db.SetID(orgDbId);
+        }
+
+        private void SerializeCollectionTmdl<T>(StringBuilder builder, TOM.NamedMetadataObjectCollection<T, TOM.Model> collection, TOM.Serialization.MetadataSerializationOptions options) where T: TOM.NamedMetadataObject
+        {
+            foreach(var obj in collection)
+            {
+                builder.Append(TOM.TmdlSerializer.SerializeObject(obj, options, qualifyObject: true));
+            }
         }
 
         private void SaveFile(string fileName, SerializeOptions options)

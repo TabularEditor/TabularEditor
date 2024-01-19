@@ -192,7 +192,7 @@ namespace TabularEditor.TOMWrapper.Serialization
                 IgnoreTimestamps = options.IgnoreTimestamps,
                 IgnoreInferredProperties = options.IgnoreInferredProperties,
                 SplitMultilineStrings = options.SplitMultilineStrings,
-                IncludeRestrictedInformation = db.Model.Annotations.Contains(ANN_SAVESENSITIVE) && db.Model.Annotations[ANN_SAVESENSITIVE].Value == "1"
+                IncludeRestrictedInformation = (db.Model.Annotations.Contains(ANN_SAVESENSITIVE) && db.Model.Annotations[ANN_SAVESENSITIVE].Value == "1") || options.IncludeSensitive
             };
             var serializedDB =
                 TOM.JsonSerializer.SerializeDatabase(db, serializeOptions);

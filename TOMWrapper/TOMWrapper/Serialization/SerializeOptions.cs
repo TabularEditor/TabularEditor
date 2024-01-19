@@ -73,11 +73,14 @@ namespace TabularEditor.TOMWrapper.Serialization
         public bool LocalPerspectives = false;
         public bool LocalRelationships = false;
 
+        public bool IncludeSensitive { get; set; } = false;
+        public bool ShouldSerializeIncludeSensitive() => IncludeSensitive;
+        public TmdlSerializeOptions TmdlOptions { get; set; } = new TmdlSerializeOptions();
+        public bool ShouldSerializeTmdlOptions() => !TmdlOptions.IsDefault();
         [JsonIgnore]
         public string DatabaseNameOverride = null;
 
         public HashSet<string> Levels = new HashSet<string>();
-
 
         public bool Equals(SerializeOptions other)
         {
@@ -95,7 +98,9 @@ namespace TabularEditor.TOMWrapper.Serialization
                 && other.LocalTranslations == LocalTranslations
                 && other.LocalPerspectives == LocalPerspectives
                 && other.LocalRelationships == LocalRelationships
-                && other.IgnoreIncrementalRefreshPartitions == IgnoreIncrementalRefreshPartitions;
+                && other.IgnoreIncrementalRefreshPartitions == IgnoreIncrementalRefreshPartitions
+                && other.IncludeSensitive == IncludeSensitive
+                && other.TmdlOptions == TmdlOptions;
         }
 
         public override bool Equals(object obj)
@@ -116,5 +121,4 @@ namespace TabularEditor.TOMWrapper.Serialization
             return !(obj1 == obj2);
         }
     }
-
 }

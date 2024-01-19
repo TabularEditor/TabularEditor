@@ -41,6 +41,7 @@ namespace TabularEditor.UIServices
         public bool IgnoreIncrementalRefreshPartitions = false;
         public bool IgnorePrivacySettings = false;
         public bool IgnoreLineageTags = false;
+        public bool IncludeSensitive = false;
 
         public bool ProxyUseSystem = true;
         public string ProxyAddress = string.Empty;
@@ -49,6 +50,7 @@ namespace TabularEditor.UIServices
         public bool UsePowerQueryPartitionsByDefault = false;
 
         public bool UseTMDL = false; // TODO: Set this to true (to use TMDL as the default folder format) once TMDL is out of preview.
+        public TmdlSerializeOptions TmdlOptions { get; set; } = new TmdlSerializeOptions { SerializeDefaults = true };
 
         /// <summary>
         /// Stores an encrypted version of the user password. Use the string Decrypt() extension method to decrypt.
@@ -152,6 +154,7 @@ namespace TabularEditor.UIServices
         public static Preferences Load(string json)
         {
             var result = JsonConvert.DeserializeObject<Preferences>(json, new JsonSerializerSettings() { ObjectCreationHandling = ObjectCreationHandling.Replace });
+            result.TmdlOptions = result.TmdlOptions with { SerializeDefaults = true };
 
             // For backwards compatibility:
             if (result.SaveToFile_IgnoreInferredObjects.HasValue)       result.IgnoreInferredObjects    = result.SaveToFile_IgnoreInferredObjects.Value;
@@ -240,7 +243,9 @@ namespace TabularEditor.UIServices
                 IgnoreLineageTags = value.IgnoreLineageTags,
                 IgnoreIncrementalRefreshPartitions = value.IgnoreIncrementalRefreshPartitions,
                 IgnorePrivacySettings = value.IgnorePrivacySettings,
+                IncludeSensitive = value.IncludeSensitive,
                 SplitMultilineStrings = value.SplitMultilineStrings,
+                TmdlOptions = value.TmdlOptions with { SerializeDefaults = false }
             };
 
             serializeOptions.PrefixFilenames = value.SaveToFolder_PrefixFiles;
