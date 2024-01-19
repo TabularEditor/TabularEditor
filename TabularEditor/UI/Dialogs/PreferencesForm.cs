@@ -28,6 +28,8 @@ namespace TabularEditor.UI.Dialogs
         private void UpdateTmdlUi()
         {
             var useLegacy = cmbSerializationMode.SelectedIndex == 0;
+            groupBox4.Visible = useLegacy;
+            groupBox11.Visible = !useLegacy;
             chkPrefixFiles.Enabled = useLegacy;
             chkLocalPerspectives.Enabled = useLegacy;
             chkLocalRelationships.Enabled = useLegacy;

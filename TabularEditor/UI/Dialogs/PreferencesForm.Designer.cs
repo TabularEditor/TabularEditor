@@ -30,44 +30,44 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PreferencesForm));
-            System.Windows.Forms.TreeNode treeNode27 = new System.Windows.Forms.TreeNode("Data Sources");
-            System.Windows.Forms.TreeNode treeNode28 = new System.Windows.Forms.TreeNode("Shared Expressions");
-            System.Windows.Forms.TreeNode treeNode29 = new System.Windows.Forms.TreeNode("Perspectives");
-            System.Windows.Forms.TreeNode treeNode30 = new System.Windows.Forms.TreeNode("Relationships");
-            System.Windows.Forms.TreeNode treeNode31 = new System.Windows.Forms.TreeNode("Roles");
-            System.Windows.Forms.TreeNode treeNode32 = new System.Windows.Forms.TreeNode("Annotations");
-            System.Windows.Forms.TreeNode treeNode33 = new System.Windows.Forms.TreeNode("Calculation Items");
-            System.Windows.Forms.TreeNode treeNode34 = new System.Windows.Forms.TreeNode("Columns");
-            System.Windows.Forms.TreeNode treeNode35 = new System.Windows.Forms.TreeNode("Hierarchies");
-            System.Windows.Forms.TreeNode treeNode36 = new System.Windows.Forms.TreeNode("Measures");
-            System.Windows.Forms.TreeNode treeNode37 = new System.Windows.Forms.TreeNode("Partitions");
-            System.Windows.Forms.TreeNode treeNode38 = new System.Windows.Forms.TreeNode("Tables", new System.Windows.Forms.TreeNode[] {
-            treeNode32,
-            treeNode33,
-            treeNode34,
-            treeNode35,
-            treeNode36,
-            treeNode37});
-            System.Windows.Forms.TreeNode treeNode39 = new System.Windows.Forms.TreeNode("Translations");
-            System.Windows.Forms.TreeNode treeNode40 = new System.Windows.Forms.TreeNode("Data Sources");
-            System.Windows.Forms.TreeNode treeNode41 = new System.Windows.Forms.TreeNode("Shared Expressions");
-            System.Windows.Forms.TreeNode treeNode42 = new System.Windows.Forms.TreeNode("Perspectives");
-            System.Windows.Forms.TreeNode treeNode43 = new System.Windows.Forms.TreeNode("Relationships");
-            System.Windows.Forms.TreeNode treeNode44 = new System.Windows.Forms.TreeNode("Roles");
-            System.Windows.Forms.TreeNode treeNode45 = new System.Windows.Forms.TreeNode("Annotations");
-            System.Windows.Forms.TreeNode treeNode46 = new System.Windows.Forms.TreeNode("Calculation Items");
-            System.Windows.Forms.TreeNode treeNode47 = new System.Windows.Forms.TreeNode("Columns");
-            System.Windows.Forms.TreeNode treeNode48 = new System.Windows.Forms.TreeNode("Hierarchies");
-            System.Windows.Forms.TreeNode treeNode49 = new System.Windows.Forms.TreeNode("Measures");
-            System.Windows.Forms.TreeNode treeNode50 = new System.Windows.Forms.TreeNode("Partitions");
-            System.Windows.Forms.TreeNode treeNode51 = new System.Windows.Forms.TreeNode("Tables", new System.Windows.Forms.TreeNode[] {
-            treeNode45,
-            treeNode46,
-            treeNode47,
-            treeNode48,
-            treeNode49,
-            treeNode50});
-            System.Windows.Forms.TreeNode treeNode52 = new System.Windows.Forms.TreeNode("Translations");
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Data Sources");
+            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Shared Expressions");
+            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Perspectives");
+            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Relationships");
+            System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Roles");
+            System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Annotations");
+            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Calculation Items");
+            System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("Columns");
+            System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("Hierarchies");
+            System.Windows.Forms.TreeNode treeNode10 = new System.Windows.Forms.TreeNode("Measures");
+            System.Windows.Forms.TreeNode treeNode11 = new System.Windows.Forms.TreeNode("Partitions");
+            System.Windows.Forms.TreeNode treeNode12 = new System.Windows.Forms.TreeNode("Tables", new System.Windows.Forms.TreeNode[] {
+            treeNode6,
+            treeNode7,
+            treeNode8,
+            treeNode9,
+            treeNode10,
+            treeNode11});
+            System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("Translations");
+            System.Windows.Forms.TreeNode treeNode14 = new System.Windows.Forms.TreeNode("Data Sources");
+            System.Windows.Forms.TreeNode treeNode15 = new System.Windows.Forms.TreeNode("Shared Expressions");
+            System.Windows.Forms.TreeNode treeNode16 = new System.Windows.Forms.TreeNode("Perspectives");
+            System.Windows.Forms.TreeNode treeNode17 = new System.Windows.Forms.TreeNode("Relationships");
+            System.Windows.Forms.TreeNode treeNode18 = new System.Windows.Forms.TreeNode("Roles");
+            System.Windows.Forms.TreeNode treeNode19 = new System.Windows.Forms.TreeNode("Annotations");
+            System.Windows.Forms.TreeNode treeNode20 = new System.Windows.Forms.TreeNode("Calculation Items");
+            System.Windows.Forms.TreeNode treeNode21 = new System.Windows.Forms.TreeNode("Columns");
+            System.Windows.Forms.TreeNode treeNode22 = new System.Windows.Forms.TreeNode("Hierarchies");
+            System.Windows.Forms.TreeNode treeNode23 = new System.Windows.Forms.TreeNode("Measures");
+            System.Windows.Forms.TreeNode treeNode24 = new System.Windows.Forms.TreeNode("Partitions");
+            System.Windows.Forms.TreeNode treeNode25 = new System.Windows.Forms.TreeNode("Tables", new System.Windows.Forms.TreeNode[] {
+            treeNode19,
+            treeNode20,
+            treeNode21,
+            treeNode22,
+            treeNode23,
+            treeNode24});
+            System.Windows.Forms.TreeNode treeNode26 = new System.Windows.Forms.TreeNode("Translations");
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
@@ -143,6 +143,7 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.tvDefaultSerialization = new System.Windows.Forms.TreeView();
             this.label1 = new System.Windows.Forms.Label();
+            this.groupBox11 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tabCurrentModel = new System.Windows.Forms.TabPage();
             this.grpSaveToFolder = new System.Windows.Forms.GroupBox();
@@ -173,9 +174,10 @@
             // 
             this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(233, 423);
+            this.btnOK.Location = new System.Drawing.Point(350, 651);
+            this.btnOK.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(75, 23);
+            this.btnOK.Size = new System.Drawing.Size(112, 35);
             this.btnOK.TabIndex = 1;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
@@ -184,9 +186,10 @@
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(314, 423);
+            this.btnCancel.Location = new System.Drawing.Point(471, 651);
+            this.btnCancel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(75, 23);
+            this.btnCancel.Size = new System.Drawing.Size(112, 35);
             this.btnCancel.TabIndex = 2;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
@@ -194,9 +197,10 @@
             // chkFixup
             // 
             this.chkFixup.AutoSize = true;
-            this.chkFixup.Location = new System.Drawing.Point(6, 19);
+            this.chkFixup.Location = new System.Drawing.Point(9, 29);
+            this.chkFixup.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkFixup.Name = "chkFixup";
-            this.chkFixup.Size = new System.Drawing.Size(138, 17);
+            this.chkFixup.Size = new System.Drawing.Size(206, 24);
             this.chkFixup.TabIndex = 1;
             this.chkFixup.Text = "Automatic formula fix-up";
             this.toolTip1.SetToolTip(this.chkFixup, "When this is checked, expressions of Measures, Calculated Columns and Calculated " +
@@ -206,9 +210,10 @@
             // chkIgnoreTimestamps
             // 
             this.chkIgnoreTimestamps.AutoSize = true;
-            this.chkIgnoreTimestamps.Location = new System.Drawing.Point(6, 42);
+            this.chkIgnoreTimestamps.Location = new System.Drawing.Point(9, 65);
+            this.chkIgnoreTimestamps.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkIgnoreTimestamps.Name = "chkIgnoreTimestamps";
-            this.chkIgnoreTimestamps.Size = new System.Drawing.Size(111, 17);
+            this.chkIgnoreTimestamps.Size = new System.Drawing.Size(167, 24);
             this.chkIgnoreTimestamps.TabIndex = 0;
             this.chkIgnoreTimestamps.Text = "Ignore timestamps";
             this.toolTip1.SetToolTip(this.chkIgnoreTimestamps, "If checked, editing timestamps are not serialized into the .json files");
@@ -217,9 +222,10 @@
             // chkIgnoreInfObjects
             // 
             this.chkIgnoreInfObjects.AutoSize = true;
-            this.chkIgnoreInfObjects.Location = new System.Drawing.Point(6, 19);
+            this.chkIgnoreInfObjects.Location = new System.Drawing.Point(9, 29);
+            this.chkIgnoreInfObjects.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkIgnoreInfObjects.Name = "chkIgnoreInfObjects";
-            this.chkIgnoreInfObjects.Size = new System.Drawing.Size(131, 17);
+            this.chkIgnoreInfObjects.Size = new System.Drawing.Size(194, 24);
             this.chkIgnoreInfObjects.TabIndex = 1;
             this.chkIgnoreInfObjects.Text = "Ignore inferred objects";
             this.toolTip1.SetToolTip(this.chkIgnoreInfObjects, "If checked, objects whose lifetime is controlled by the server (RowNumber, attrib" +
@@ -229,9 +235,10 @@
             // chkIgnoreInfProps
             // 
             this.chkIgnoreInfProps.AutoSize = true;
-            this.chkIgnoreInfProps.Location = new System.Drawing.Point(143, 19);
+            this.chkIgnoreInfProps.Location = new System.Drawing.Point(214, 29);
+            this.chkIgnoreInfProps.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkIgnoreInfProps.Name = "chkIgnoreInfProps";
-            this.chkIgnoreInfProps.Size = new System.Drawing.Size(143, 17);
+            this.chkIgnoreInfProps.Size = new System.Drawing.Size(214, 24);
             this.chkIgnoreInfProps.TabIndex = 2;
             this.chkIgnoreInfProps.Text = "Ignore inferred properties";
             this.toolTip1.SetToolTip(this.chkIgnoreInfProps, "If checked, objects whose value is controlled by the server (Column.State, etc.) " +
@@ -241,9 +248,10 @@
             // chkSplitMultiline
             // 
             this.chkSplitMultiline.AutoSize = true;
-            this.chkSplitMultiline.Location = new System.Drawing.Point(143, 42);
+            this.chkSplitMultiline.Location = new System.Drawing.Point(214, 65);
+            this.chkSplitMultiline.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkSplitMultiline.Name = "chkSplitMultiline";
-            this.chkSplitMultiline.Size = new System.Drawing.Size(114, 17);
+            this.chkSplitMultiline.Size = new System.Drawing.Size(170, 24);
             this.chkSplitMultiline.TabIndex = 3;
             this.chkSplitMultiline.Text = "Split multiline string";
             this.toolTip1.SetToolTip(this.chkSplitMultiline, "If checked, expressions and other multiline string properties are serialized as a" +
@@ -254,9 +262,10 @@
             // 
             this.chkLocalTranslations.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.chkLocalTranslations.AutoSize = true;
-            this.chkLocalTranslations.Location = new System.Drawing.Point(6, 176);
+            this.chkLocalTranslations.Location = new System.Drawing.Point(9, 273);
+            this.chkLocalTranslations.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkLocalTranslations.Name = "chkLocalTranslations";
-            this.chkLocalTranslations.Size = new System.Drawing.Size(171, 17);
+            this.chkLocalTranslations.Size = new System.Drawing.Size(256, 24);
             this.chkLocalTranslations.TabIndex = 8;
             this.chkLocalTranslations.Text = "Serialize translations per-object";
             this.toolTip1.SetToolTip(this.chkLocalTranslations, "If checked, all translatable objects (measures, columns, etc.) will have their tr" +
@@ -268,9 +277,10 @@
             // 
             this.chkLocalPerspectives.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.chkLocalPerspectives.AutoSize = true;
-            this.chkLocalPerspectives.Location = new System.Drawing.Point(6, 154);
+            this.chkLocalPerspectives.Location = new System.Drawing.Point(9, 239);
+            this.chkLocalPerspectives.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkLocalPerspectives.Name = "chkLocalPerspectives";
-            this.chkLocalPerspectives.Size = new System.Drawing.Size(227, 17);
+            this.chkLocalPerspectives.Size = new System.Drawing.Size(338, 24);
             this.chkLocalPerspectives.TabIndex = 7;
             this.chkLocalPerspectives.Text = "Serialize perspective information per-object";
             this.toolTip1.SetToolTip(this.chkLocalPerspectives, "If checked, all objects that can be toggled in a perspective, will have their per" +
@@ -283,9 +293,10 @@
             // 
             this.chkLocalRelationships.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.chkLocalRelationships.AutoSize = true;
-            this.chkLocalRelationships.Location = new System.Drawing.Point(6, 199);
+            this.chkLocalRelationships.Location = new System.Drawing.Point(9, 308);
+            this.chkLocalRelationships.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkLocalRelationships.Name = "chkLocalRelationships";
-            this.chkLocalRelationships.Size = new System.Drawing.Size(231, 17);
+            this.chkLocalRelationships.Size = new System.Drawing.Size(347, 24);
             this.chkLocalRelationships.TabIndex = 9;
             this.chkLocalRelationships.Text = "Serialize relationships by their starting tables";
             this.toolTip1.SetToolTip(this.chkLocalRelationships, "If checked, all relationships will be stored as a separate file on the \"From\" sid" +
@@ -296,9 +307,10 @@
             // chkAllowUnsupportedPBIFeatures
             // 
             this.chkAllowUnsupportedPBIFeatures.AutoSize = true;
-            this.chkAllowUnsupportedPBIFeatures.Location = new System.Drawing.Point(6, 21);
+            this.chkAllowUnsupportedPBIFeatures.Location = new System.Drawing.Point(9, 32);
+            this.chkAllowUnsupportedPBIFeatures.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkAllowUnsupportedPBIFeatures.Name = "chkAllowUnsupportedPBIFeatures";
-            this.chkAllowUnsupportedPBIFeatures.Size = new System.Drawing.Size(268, 17);
+            this.chkAllowUnsupportedPBIFeatures.Size = new System.Drawing.Size(401, 24);
             this.chkAllowUnsupportedPBIFeatures.TabIndex = 0;
             this.chkAllowUnsupportedPBIFeatures.Text = "Allow unsupported Power BI features (experimental)";
             this.toolTip1.SetToolTip(this.chkAllowUnsupportedPBIFeatures, "Checking this, will let you edit all TOM objects and properties when connected to" +
@@ -308,9 +320,10 @@
             // chkChangeDetectionLocalServer
             // 
             this.chkChangeDetectionLocalServer.AutoSize = true;
-            this.chkChangeDetectionLocalServer.Location = new System.Drawing.Point(6, 66);
+            this.chkChangeDetectionLocalServer.Location = new System.Drawing.Point(9, 102);
+            this.chkChangeDetectionLocalServer.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkChangeDetectionLocalServer.Name = "chkChangeDetectionLocalServer";
-            this.chkChangeDetectionLocalServer.Size = new System.Drawing.Size(270, 17);
+            this.chkChangeDetectionLocalServer.Size = new System.Drawing.Size(400, 24);
             this.chkChangeDetectionLocalServer.TabIndex = 0;
             this.chkChangeDetectionLocalServer.Text = "Detect changes on local AS instance (experimental)";
             this.toolTip1.SetToolTip(this.chkChangeDetectionLocalServer, resources.GetString("chkChangeDetectionLocalServer.ToolTip"));
@@ -319,9 +332,10 @@
             // chkCopyIncludeOLS
             // 
             this.chkCopyIncludeOLS.AutoSize = true;
-            this.chkCopyIncludeOLS.Location = new System.Drawing.Point(191, 42);
+            this.chkCopyIncludeOLS.Location = new System.Drawing.Point(286, 65);
+            this.chkCopyIncludeOLS.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkCopyIncludeOLS.Name = "chkCopyIncludeOLS";
-            this.chkCopyIncludeOLS.Size = new System.Drawing.Size(157, 17);
+            this.chkCopyIncludeOLS.Size = new System.Drawing.Size(228, 24);
             this.chkCopyIncludeOLS.TabIndex = 3;
             this.chkCopyIncludeOLS.Text = "Include object-level security";
             this.toolTip1.SetToolTip(this.chkCopyIncludeOLS, "Include object-level security when copying tables, columns, hierarchies or measur" +
@@ -331,9 +345,10 @@
             // chkCopyIncludeRLS
             // 
             this.chkCopyIncludeRLS.AutoSize = true;
-            this.chkCopyIncludeRLS.Location = new System.Drawing.Point(191, 19);
+            this.chkCopyIncludeRLS.Location = new System.Drawing.Point(286, 29);
+            this.chkCopyIncludeRLS.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkCopyIncludeRLS.Name = "chkCopyIncludeRLS";
-            this.chkCopyIncludeRLS.Size = new System.Drawing.Size(145, 17);
+            this.chkCopyIncludeRLS.Size = new System.Drawing.Size(210, 24);
             this.chkCopyIncludeRLS.TabIndex = 2;
             this.chkCopyIncludeRLS.Text = "Include row-level security";
             this.toolTip1.SetToolTip(this.chkCopyIncludeRLS, "Include row-level security when copying tables.");
@@ -342,9 +357,10 @@
             // chkCopyIncludePerspectives
             // 
             this.chkCopyIncludePerspectives.AutoSize = true;
-            this.chkCopyIncludePerspectives.Location = new System.Drawing.Point(6, 42);
+            this.chkCopyIncludePerspectives.Location = new System.Drawing.Point(9, 65);
+            this.chkCopyIncludePerspectives.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkCopyIncludePerspectives.Name = "chkCopyIncludePerspectives";
-            this.chkCopyIncludePerspectives.Size = new System.Drawing.Size(178, 17);
+            this.chkCopyIncludePerspectives.Size = new System.Drawing.Size(263, 24);
             this.chkCopyIncludePerspectives.TabIndex = 1;
             this.chkCopyIncludePerspectives.Text = "Include perspective membership";
             this.toolTip1.SetToolTip(this.chkCopyIncludePerspectives, "Include perspective membership when copying objects that can be toggled in perspe" +
@@ -354,9 +370,10 @@
             // chkCopyIncludeTranslations
             // 
             this.chkCopyIncludeTranslations.AutoSize = true;
-            this.chkCopyIncludeTranslations.Location = new System.Drawing.Point(6, 19);
+            this.chkCopyIncludeTranslations.Location = new System.Drawing.Point(9, 29);
+            this.chkCopyIncludeTranslations.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkCopyIncludeTranslations.Name = "chkCopyIncludeTranslations";
-            this.chkCopyIncludeTranslations.Size = new System.Drawing.Size(117, 17);
+            this.chkCopyIncludeTranslations.Size = new System.Drawing.Size(173, 24);
             this.chkCopyIncludeTranslations.TabIndex = 0;
             this.chkCopyIncludeTranslations.Text = "Include translations";
             this.toolTip1.SetToolTip(this.chkCopyIncludeTranslations, "Include translations when copying translatable objects");
@@ -365,9 +382,10 @@
             // chkAutoBackup
             // 
             this.chkAutoBackup.AutoSize = true;
-            this.chkAutoBackup.Location = new System.Drawing.Point(6, 44);
+            this.chkAutoBackup.Location = new System.Drawing.Point(9, 68);
+            this.chkAutoBackup.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkAutoBackup.Name = "chkAutoBackup";
-            this.chkAutoBackup.Size = new System.Drawing.Size(168, 17);
+            this.chkAutoBackup.Size = new System.Drawing.Size(243, 24);
             this.chkAutoBackup.TabIndex = 6;
             this.chkAutoBackup.Text = "Save Model.bim backup here:";
             this.toolTip1.SetToolTip(this.chkAutoBackup, resources.GetString("chkAutoBackup.ToolTip"));
@@ -378,9 +396,10 @@
             // 
             this.chkPrefixFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.chkPrefixFiles.AutoSize = true;
-            this.chkPrefixFiles.Location = new System.Drawing.Point(6, 131);
+            this.chkPrefixFiles.Location = new System.Drawing.Point(9, 204);
+            this.chkPrefixFiles.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkPrefixFiles.Name = "chkPrefixFiles";
-            this.chkPrefixFiles.Size = new System.Drawing.Size(99, 17);
+            this.chkPrefixFiles.Size = new System.Drawing.Size(146, 24);
             this.chkPrefixFiles.TabIndex = 10;
             this.chkPrefixFiles.Text = "Prefix filenames";
             this.toolTip1.SetToolTip(this.chkPrefixFiles, "If checked, files and folders representing individual objects, will be prefixed b" +
@@ -390,9 +409,10 @@
             // chkPrefixFilesCM
             // 
             this.chkPrefixFilesCM.AutoSize = true;
-            this.chkPrefixFilesCM.Location = new System.Drawing.Point(6, 19);
+            this.chkPrefixFilesCM.Location = new System.Drawing.Point(9, 29);
+            this.chkPrefixFilesCM.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkPrefixFilesCM.Name = "chkPrefixFilesCM";
-            this.chkPrefixFilesCM.Size = new System.Drawing.Size(99, 17);
+            this.chkPrefixFilesCM.Size = new System.Drawing.Size(146, 24);
             this.chkPrefixFilesCM.TabIndex = 10;
             this.chkPrefixFilesCM.Text = "Prefix filenames";
             this.toolTip1.SetToolTip(this.chkPrefixFilesCM, "If checked, files and folders representing individual objects, will be prefixed b" +
@@ -403,9 +423,10 @@
             // 
             this.chkLocalRelationshipsCM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.chkLocalRelationshipsCM.AutoSize = true;
-            this.chkLocalRelationshipsCM.Location = new System.Drawing.Point(6, 231);
+            this.chkLocalRelationshipsCM.Location = new System.Drawing.Point(9, 358);
+            this.chkLocalRelationshipsCM.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkLocalRelationshipsCM.Name = "chkLocalRelationshipsCM";
-            this.chkLocalRelationshipsCM.Size = new System.Drawing.Size(231, 17);
+            this.chkLocalRelationshipsCM.Size = new System.Drawing.Size(347, 24);
             this.chkLocalRelationshipsCM.TabIndex = 9;
             this.chkLocalRelationshipsCM.Text = "Serialize relationships by their starting tables";
             this.toolTip1.SetToolTip(this.chkLocalRelationshipsCM, "If checked, all relationships will be stored as a separate file on the \"From\" sid" +
@@ -417,9 +438,10 @@
             // 
             this.chkLocalTranslationsCM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.chkLocalTranslationsCM.AutoSize = true;
-            this.chkLocalTranslationsCM.Location = new System.Drawing.Point(6, 208);
+            this.chkLocalTranslationsCM.Location = new System.Drawing.Point(9, 322);
+            this.chkLocalTranslationsCM.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkLocalTranslationsCM.Name = "chkLocalTranslationsCM";
-            this.chkLocalTranslationsCM.Size = new System.Drawing.Size(171, 17);
+            this.chkLocalTranslationsCM.Size = new System.Drawing.Size(256, 24);
             this.chkLocalTranslationsCM.TabIndex = 8;
             this.chkLocalTranslationsCM.Text = "Serialize translations per-object";
             this.toolTip1.SetToolTip(this.chkLocalTranslationsCM, "If checked, all translatable objects (measures, columns, etc.) will have their tr" +
@@ -431,9 +453,10 @@
             // 
             this.chkLocalPerspectivesCM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.chkLocalPerspectivesCM.AutoSize = true;
-            this.chkLocalPerspectivesCM.Location = new System.Drawing.Point(6, 185);
+            this.chkLocalPerspectivesCM.Location = new System.Drawing.Point(9, 287);
+            this.chkLocalPerspectivesCM.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkLocalPerspectivesCM.Name = "chkLocalPerspectivesCM";
-            this.chkLocalPerspectivesCM.Size = new System.Drawing.Size(227, 17);
+            this.chkLocalPerspectivesCM.Size = new System.Drawing.Size(338, 24);
             this.chkLocalPerspectivesCM.TabIndex = 7;
             this.chkLocalPerspectivesCM.Text = "Serialize perspective information per-object";
             this.toolTip1.SetToolTip(this.chkLocalPerspectivesCM, "If checked, all objects that can be toggled in a perspective, will have their per" +
@@ -445,9 +468,10 @@
             // chkSplitMultilineCM
             // 
             this.chkSplitMultilineCM.AutoSize = true;
-            this.chkSplitMultilineCM.Location = new System.Drawing.Point(143, 42);
+            this.chkSplitMultilineCM.Location = new System.Drawing.Point(214, 65);
+            this.chkSplitMultilineCM.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkSplitMultilineCM.Name = "chkSplitMultilineCM";
-            this.chkSplitMultilineCM.Size = new System.Drawing.Size(114, 17);
+            this.chkSplitMultilineCM.Size = new System.Drawing.Size(170, 24);
             this.chkSplitMultilineCM.TabIndex = 3;
             this.chkSplitMultilineCM.Text = "Split multiline string";
             this.toolTip1.SetToolTip(this.chkSplitMultilineCM, "If checked, expressions and other multiline string properties are serialized as a" +
@@ -457,9 +481,10 @@
             // chkIgnoreInfPropsCM
             // 
             this.chkIgnoreInfPropsCM.AutoSize = true;
-            this.chkIgnoreInfPropsCM.Location = new System.Drawing.Point(143, 19);
+            this.chkIgnoreInfPropsCM.Location = new System.Drawing.Point(214, 29);
+            this.chkIgnoreInfPropsCM.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkIgnoreInfPropsCM.Name = "chkIgnoreInfPropsCM";
-            this.chkIgnoreInfPropsCM.Size = new System.Drawing.Size(143, 17);
+            this.chkIgnoreInfPropsCM.Size = new System.Drawing.Size(214, 24);
             this.chkIgnoreInfPropsCM.TabIndex = 2;
             this.chkIgnoreInfPropsCM.Text = "Ignore inferred properties";
             this.toolTip1.SetToolTip(this.chkIgnoreInfPropsCM, "If checked, objects whose value is controlled by the server (Column.State, etc.) " +
@@ -469,9 +494,10 @@
             // chkIgnoreInfObjectsCM
             // 
             this.chkIgnoreInfObjectsCM.AutoSize = true;
-            this.chkIgnoreInfObjectsCM.Location = new System.Drawing.Point(6, 19);
+            this.chkIgnoreInfObjectsCM.Location = new System.Drawing.Point(9, 29);
+            this.chkIgnoreInfObjectsCM.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkIgnoreInfObjectsCM.Name = "chkIgnoreInfObjectsCM";
-            this.chkIgnoreInfObjectsCM.Size = new System.Drawing.Size(131, 17);
+            this.chkIgnoreInfObjectsCM.Size = new System.Drawing.Size(194, 24);
             this.chkIgnoreInfObjectsCM.TabIndex = 1;
             this.chkIgnoreInfObjectsCM.Text = "Ignore inferred objects";
             this.toolTip1.SetToolTip(this.chkIgnoreInfObjectsCM, "If checked, objects whose lifetime is controlled by the server (RowNumber, attrib" +
@@ -481,9 +507,10 @@
             // chkIgnoreTimestampsCM
             // 
             this.chkIgnoreTimestampsCM.AutoSize = true;
-            this.chkIgnoreTimestampsCM.Location = new System.Drawing.Point(6, 42);
+            this.chkIgnoreTimestampsCM.Location = new System.Drawing.Point(9, 65);
+            this.chkIgnoreTimestampsCM.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkIgnoreTimestampsCM.Name = "chkIgnoreTimestampsCM";
-            this.chkIgnoreTimestampsCM.Size = new System.Drawing.Size(111, 17);
+            this.chkIgnoreTimestampsCM.Size = new System.Drawing.Size(167, 24);
             this.chkIgnoreTimestampsCM.TabIndex = 0;
             this.chkIgnoreTimestampsCM.Text = "Ignore timestamps";
             this.toolTip1.SetToolTip(this.chkIgnoreTimestampsCM, "If checked, editing timestamps are not serialized into the .json files");
@@ -496,18 +523,20 @@
             this.cmbSeparators.Items.AddRange(new object[] {
             "US/UK (A, B, C / 1.234)",
             "Others (A; B; C / 1,234)"});
-            this.cmbSeparators.Location = new System.Drawing.Point(7, 20);
+            this.cmbSeparators.Location = new System.Drawing.Point(10, 31);
+            this.cmbSeparators.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.cmbSeparators.Name = "cmbSeparators";
-            this.cmbSeparators.Size = new System.Drawing.Size(179, 21);
+            this.cmbSeparators.Size = new System.Drawing.Size(266, 28);
             this.cmbSeparators.TabIndex = 0;
             this.toolTip1.SetToolTip(this.cmbSeparators, resources.GetString("cmbSeparators.ToolTip"));
             // 
             // chkBackgroundBpa
             // 
             this.chkBackgroundBpa.AutoSize = true;
-            this.chkBackgroundBpa.Location = new System.Drawing.Point(6, 44);
+            this.chkBackgroundBpa.Location = new System.Drawing.Point(9, 68);
+            this.chkBackgroundBpa.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkBackgroundBpa.Name = "chkBackgroundBpa";
-            this.chkBackgroundBpa.Size = new System.Drawing.Size(223, 17);
+            this.chkBackgroundBpa.Size = new System.Drawing.Size(329, 24);
             this.chkBackgroundBpa.TabIndex = 1;
             this.chkBackgroundBpa.Text = "Background scan for Best Practice issues";
             this.toolTip1.SetToolTip(this.chkBackgroundBpa, "Checking this, will let you edit all TOM objects and properties when connected to" +
@@ -517,9 +546,10 @@
             // chkAnnotateDeploymentMetadata
             // 
             this.chkAnnotateDeploymentMetadata.AutoSize = true;
-            this.chkAnnotateDeploymentMetadata.Location = new System.Drawing.Point(7, 20);
+            this.chkAnnotateDeploymentMetadata.Location = new System.Drawing.Point(10, 31);
+            this.chkAnnotateDeploymentMetadata.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkAnnotateDeploymentMetadata.Name = "chkAnnotateDeploymentMetadata";
-            this.chkAnnotateDeploymentMetadata.Size = new System.Drawing.Size(229, 17);
+            this.chkAnnotateDeploymentMetadata.Size = new System.Drawing.Size(342, 24);
             this.chkAnnotateDeploymentMetadata.TabIndex = 9;
             this.chkAnnotateDeploymentMetadata.Text = "Add metadata annotation upon deployment";
             this.toolTip1.SetToolTip(this.chkAnnotateDeploymentMetadata, resources.GetString("chkAnnotateDeploymentMetadata.ToolTip"));
@@ -528,9 +558,10 @@
             // chkIgnoreLineageTags
             // 
             this.chkIgnoreLineageTags.AutoSize = true;
-            this.chkIgnoreLineageTags.Location = new System.Drawing.Point(6, 65);
+            this.chkIgnoreLineageTags.Location = new System.Drawing.Point(9, 100);
+            this.chkIgnoreLineageTags.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkIgnoreLineageTags.Name = "chkIgnoreLineageTags";
-            this.chkIgnoreLineageTags.Size = new System.Drawing.Size(116, 17);
+            this.chkIgnoreLineageTags.Size = new System.Drawing.Size(171, 24);
             this.chkIgnoreLineageTags.TabIndex = 4;
             this.chkIgnoreLineageTags.Text = "Ignore lineage tags";
             this.toolTip1.SetToolTip(this.chkIgnoreLineageTags, "If checked, expressions and other multiline string properties are serialized as a" +
@@ -540,9 +571,10 @@
             // chkIgnoreLineageTagsCM
             // 
             this.chkIgnoreLineageTagsCM.AutoSize = true;
-            this.chkIgnoreLineageTagsCM.Location = new System.Drawing.Point(6, 65);
+            this.chkIgnoreLineageTagsCM.Location = new System.Drawing.Point(9, 100);
+            this.chkIgnoreLineageTagsCM.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkIgnoreLineageTagsCM.Name = "chkIgnoreLineageTagsCM";
-            this.chkIgnoreLineageTagsCM.Size = new System.Drawing.Size(116, 17);
+            this.chkIgnoreLineageTagsCM.Size = new System.Drawing.Size(171, 24);
             this.chkIgnoreLineageTagsCM.TabIndex = 5;
             this.chkIgnoreLineageTagsCM.Text = "Ignore lineage tags";
             this.toolTip1.SetToolTip(this.chkIgnoreLineageTagsCM, "If checked, expressions and other multiline string properties are serialized as a" +
@@ -552,9 +584,10 @@
             // chkIgnorePrivacySettings
             // 
             this.chkIgnorePrivacySettings.AutoSize = true;
-            this.chkIgnorePrivacySettings.Location = new System.Drawing.Point(143, 65);
+            this.chkIgnorePrivacySettings.Location = new System.Drawing.Point(214, 100);
+            this.chkIgnorePrivacySettings.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkIgnorePrivacySettings.Name = "chkIgnorePrivacySettings";
-            this.chkIgnorePrivacySettings.Size = new System.Drawing.Size(132, 17);
+            this.chkIgnorePrivacySettings.Size = new System.Drawing.Size(193, 24);
             this.chkIgnorePrivacySettings.TabIndex = 4;
             this.chkIgnorePrivacySettings.Text = "Ignore privacy settings";
             this.toolTip1.SetToolTip(this.chkIgnorePrivacySettings, resources.GetString("chkIgnorePrivacySettings.ToolTip"));
@@ -563,9 +596,10 @@
             // chkIgnorePrivacySettingsCM
             // 
             this.chkIgnorePrivacySettingsCM.AutoSize = true;
-            this.chkIgnorePrivacySettingsCM.Location = new System.Drawing.Point(143, 65);
+            this.chkIgnorePrivacySettingsCM.Location = new System.Drawing.Point(214, 100);
+            this.chkIgnorePrivacySettingsCM.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkIgnorePrivacySettingsCM.Name = "chkIgnorePrivacySettingsCM";
-            this.chkIgnorePrivacySettingsCM.Size = new System.Drawing.Size(132, 17);
+            this.chkIgnorePrivacySettingsCM.Size = new System.Drawing.Size(193, 24);
             this.chkIgnorePrivacySettingsCM.TabIndex = 5;
             this.chkIgnorePrivacySettingsCM.Text = "Ignore privacy settings";
             this.toolTip1.SetToolTip(this.chkIgnorePrivacySettingsCM, resources.GetString("chkIgnorePrivacySettingsCM.ToolTip"));
@@ -574,9 +608,10 @@
             // chkIgnoreIncrementalRefreshPartitions
             // 
             this.chkIgnoreIncrementalRefreshPartitions.AutoSize = true;
-            this.chkIgnoreIncrementalRefreshPartitions.Location = new System.Drawing.Point(5, 88);
+            this.chkIgnoreIncrementalRefreshPartitions.Location = new System.Drawing.Point(8, 135);
+            this.chkIgnoreIncrementalRefreshPartitions.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkIgnoreIncrementalRefreshPartitions.Name = "chkIgnoreIncrementalRefreshPartitions";
-            this.chkIgnoreIncrementalRefreshPartitions.Size = new System.Drawing.Size(193, 17);
+            this.chkIgnoreIncrementalRefreshPartitions.Size = new System.Drawing.Size(290, 24);
             this.chkIgnoreIncrementalRefreshPartitions.TabIndex = 4;
             this.chkIgnoreIncrementalRefreshPartitions.Text = "Ignore incremental refresh partitions";
             this.toolTip1.SetToolTip(this.chkIgnoreIncrementalRefreshPartitions, "If checked, partitions governed by incremental refresh, will not be serialized.");
@@ -585,9 +620,10 @@
             // chkIgnoreIncrementalRefreshPartitionsCM
             // 
             this.chkIgnoreIncrementalRefreshPartitionsCM.AutoSize = true;
-            this.chkIgnoreIncrementalRefreshPartitionsCM.Location = new System.Drawing.Point(6, 88);
+            this.chkIgnoreIncrementalRefreshPartitionsCM.Location = new System.Drawing.Point(9, 135);
+            this.chkIgnoreIncrementalRefreshPartitionsCM.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkIgnoreIncrementalRefreshPartitionsCM.Name = "chkIgnoreIncrementalRefreshPartitionsCM";
-            this.chkIgnoreIncrementalRefreshPartitionsCM.Size = new System.Drawing.Size(193, 17);
+            this.chkIgnoreIncrementalRefreshPartitionsCM.Size = new System.Drawing.Size(290, 24);
             this.chkIgnoreIncrementalRefreshPartitionsCM.TabIndex = 5;
             this.chkIgnoreIncrementalRefreshPartitionsCM.Text = "Ignore incremental refresh partitions";
             this.toolTip1.SetToolTip(this.chkIgnoreIncrementalRefreshPartitionsCM, "If checked, partitions governed by incremental refresh, will not be serialized.");
@@ -596,10 +632,10 @@
             // chkAlsoSaveAsBim
             // 
             this.chkAlsoSaveAsBim.AutoSize = true;
-            this.chkAlsoSaveAsBim.Location = new System.Drawing.Point(269, 14);
-            this.chkAlsoSaveAsBim.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            this.chkAlsoSaveAsBim.Location = new System.Drawing.Point(404, 22);
+            this.chkAlsoSaveAsBim.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.chkAlsoSaveAsBim.Name = "chkAlsoSaveAsBim";
-            this.chkAlsoSaveAsBim.Size = new System.Drawing.Size(99, 17);
+            this.chkAlsoSaveAsBim.Size = new System.Drawing.Size(141, 24);
             this.chkAlsoSaveAsBim.TabIndex = 5;
             this.chkAlsoSaveAsBim.Text = "Save .bim copy";
             this.toolTip1.SetToolTip(this.chkAlsoSaveAsBim, "If checked, a .bim file will be saved along with the folder serialized version.");
@@ -608,10 +644,10 @@
             // chkAlsoSaveAsBimCM
             // 
             this.chkAlsoSaveAsBimCM.AutoSize = true;
-            this.chkAlsoSaveAsBimCM.Location = new System.Drawing.Point(143, 19);
-            this.chkAlsoSaveAsBimCM.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            this.chkAlsoSaveAsBimCM.Location = new System.Drawing.Point(214, 29);
+            this.chkAlsoSaveAsBimCM.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.chkAlsoSaveAsBimCM.Name = "chkAlsoSaveAsBimCM";
-            this.chkAlsoSaveAsBimCM.Size = new System.Drawing.Size(108, 17);
+            this.chkAlsoSaveAsBimCM.Size = new System.Drawing.Size(157, 24);
             this.chkAlsoSaveAsBimCM.TabIndex = 11;
             this.chkAlsoSaveAsBimCM.Text = "Also save as .bim";
             this.toolTip1.SetToolTip(this.chkAlsoSaveAsBimCM, "If checked, a .bim file will be saved along with the folder serialized version.");
@@ -622,9 +658,11 @@
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox3.Controls.Add(this.chkFixup);
-            this.groupBox3.Location = new System.Drawing.Point(6, 6);
+            this.groupBox3.Location = new System.Drawing.Point(9, 9);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(357, 49);
+            this.groupBox3.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox3.Size = new System.Drawing.Size(536, 75);
             this.groupBox3.TabIndex = 4;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Editing";
@@ -639,10 +677,11 @@
             this.tabControl1.Controls.Add(this.tabDAX);
             this.tabControl1.Controls.Add(this.tabSerialization);
             this.tabControl1.Controls.Add(this.tabCurrentModel);
-            this.tabControl1.Location = new System.Drawing.Point(12, 12);
+            this.tabControl1.Location = new System.Drawing.Point(18, 18);
+            this.tabControl1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(377, 405);
+            this.tabControl1.Size = new System.Drawing.Size(566, 623);
             this.tabControl1.TabIndex = 2;
             // 
             // tabFeatures
@@ -650,10 +689,11 @@
             this.tabFeatures.Controls.Add(this.grpDeployment);
             this.tabFeatures.Controls.Add(this.groupBox7);
             this.tabFeatures.Controls.Add(this.groupBox6);
-            this.tabFeatures.Location = new System.Drawing.Point(4, 22);
+            this.tabFeatures.Location = new System.Drawing.Point(4, 29);
+            this.tabFeatures.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabFeatures.Name = "tabFeatures";
-            this.tabFeatures.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.tabFeatures.Size = new System.Drawing.Size(369, 363);
+            this.tabFeatures.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tabFeatures.Size = new System.Drawing.Size(558, 590);
             this.tabFeatures.TabIndex = 2;
             this.tabFeatures.Text = "Features";
             this.tabFeatures.UseVisualStyleBackColor = true;
@@ -666,9 +706,11 @@
             this.grpDeployment.Controls.Add(this.btnFolder);
             this.grpDeployment.Controls.Add(this.txtBackupPath);
             this.grpDeployment.Controls.Add(this.chkAutoBackup);
-            this.grpDeployment.Location = new System.Drawing.Point(6, 181);
+            this.grpDeployment.Location = new System.Drawing.Point(9, 278);
+            this.grpDeployment.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.grpDeployment.Name = "grpDeployment";
-            this.grpDeployment.Size = new System.Drawing.Size(356, 98);
+            this.grpDeployment.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.grpDeployment.Size = new System.Drawing.Size(534, 151);
             this.grpDeployment.TabIndex = 7;
             this.grpDeployment.TabStop = false;
             this.grpDeployment.Text = "Deployment Options";
@@ -677,9 +719,10 @@
             // 
             this.btnFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnFolder.Enabled = false;
-            this.btnFolder.Location = new System.Drawing.Point(323, 66);
+            this.btnFolder.Location = new System.Drawing.Point(484, 102);
+            this.btnFolder.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnFolder.Name = "btnFolder";
-            this.btnFolder.Size = new System.Drawing.Size(27, 20);
+            this.btnFolder.Size = new System.Drawing.Size(40, 31);
             this.btnFolder.TabIndex = 8;
             this.btnFolder.Text = "...";
             this.btnFolder.UseVisualStyleBackColor = true;
@@ -690,9 +733,10 @@
             this.txtBackupPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtBackupPath.Enabled = false;
-            this.txtBackupPath.Location = new System.Drawing.Point(6, 66);
+            this.txtBackupPath.Location = new System.Drawing.Point(9, 102);
+            this.txtBackupPath.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtBackupPath.Name = "txtBackupPath";
-            this.txtBackupPath.Size = new System.Drawing.Size(311, 20);
+            this.txtBackupPath.Size = new System.Drawing.Size(464, 26);
             this.txtBackupPath.TabIndex = 7;
             // 
             // groupBox7
@@ -703,9 +747,11 @@
             this.groupBox7.Controls.Add(this.chkCopyIncludeRLS);
             this.groupBox7.Controls.Add(this.chkCopyIncludePerspectives);
             this.groupBox7.Controls.Add(this.chkCopyIncludeTranslations);
-            this.groupBox7.Location = new System.Drawing.Point(6, 109);
+            this.groupBox7.Location = new System.Drawing.Point(9, 168);
+            this.groupBox7.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(357, 65);
+            this.groupBox7.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox7.Size = new System.Drawing.Size(536, 100);
             this.groupBox7.TabIndex = 6;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Clipboard Operations";
@@ -717,9 +763,11 @@
             this.groupBox6.Controls.Add(this.chkBackgroundBpa);
             this.groupBox6.Controls.Add(this.chkAllowUnsupportedPBIFeatures);
             this.groupBox6.Controls.Add(this.chkChangeDetectionLocalServer);
-            this.groupBox6.Location = new System.Drawing.Point(6, 6);
+            this.groupBox6.Location = new System.Drawing.Point(9, 9);
+            this.groupBox6.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(357, 97);
+            this.groupBox6.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox6.Size = new System.Drawing.Size(536, 149);
             this.groupBox6.TabIndex = 2;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Features";
@@ -729,10 +777,11 @@
             this.tabGeneral.Controls.Add(this.groupBox10);
             this.tabGeneral.Controls.Add(this.groupBox9);
             this.tabGeneral.Controls.Add(this.groupBox1);
-            this.tabGeneral.Location = new System.Drawing.Point(4, 22);
+            this.tabGeneral.Location = new System.Drawing.Point(4, 29);
+            this.tabGeneral.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabGeneral.Name = "tabGeneral";
-            this.tabGeneral.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.tabGeneral.Size = new System.Drawing.Size(369, 363);
+            this.tabGeneral.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tabGeneral.Size = new System.Drawing.Size(558, 590);
             this.tabGeneral.TabIndex = 6;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
@@ -744,9 +793,11 @@
             this.groupBox10.Controls.Add(this.txtCompilerOptions);
             this.groupBox10.Controls.Add(this.label6);
             this.groupBox10.Controls.Add(this.txtCompilerPath);
-            this.groupBox10.Location = new System.Drawing.Point(6, 138);
+            this.groupBox10.Location = new System.Drawing.Point(9, 212);
+            this.groupBox10.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Size = new System.Drawing.Size(357, 114);
+            this.groupBox10.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox10.Size = new System.Drawing.Size(536, 175);
             this.groupBox10.TabIndex = 4;
             this.groupBox10.TabStop = false;
             this.groupBox10.Text = "Advanced Scripting";
@@ -754,9 +805,10 @@
             // linkLabel1
             // 
             this.linkLabel1.LinkArea = new System.Windows.Forms.LinkArea(127, 9);
-            this.linkLabel1.Location = new System.Drawing.Point(6, 22);
+            this.linkLabel1.Location = new System.Drawing.Point(9, 34);
+            this.linkLabel1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(351, 30);
+            this.linkLabel1.Size = new System.Drawing.Size(526, 46);
             this.linkLabel1.TabIndex = 13;
             this.linkLabel1.TabStop = true;
             this.linkLabel1.Text = "To use new C# language features when scripting, you must configure Tabular Editor" +
@@ -767,33 +819,37 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 91);
+            this.label7.Location = new System.Drawing.Point(9, 140);
+            this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(87, 13);
+            this.label7.Size = new System.Drawing.Size(131, 20);
             this.label7.TabIndex = 11;
             this.label7.Text = "Compiler options:";
             // 
             // txtCompilerOptions
             // 
-            this.txtCompilerOptions.Location = new System.Drawing.Point(99, 88);
+            this.txtCompilerOptions.Location = new System.Drawing.Point(148, 135);
+            this.txtCompilerOptions.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtCompilerOptions.Name = "txtCompilerOptions";
-            this.txtCompilerOptions.Size = new System.Drawing.Size(252, 20);
+            this.txtCompilerOptions.Size = new System.Drawing.Size(376, 26);
             this.txtCompilerOptions.TabIndex = 10;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 65);
+            this.label6.Location = new System.Drawing.Point(9, 100);
+            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(74, 13);
+            this.label6.Size = new System.Drawing.Size(111, 20);
             this.label6.TabIndex = 9;
             this.label6.Text = "Compiler path:";
             // 
             // txtCompilerPath
             // 
-            this.txtCompilerPath.Location = new System.Drawing.Point(99, 62);
+            this.txtCompilerPath.Location = new System.Drawing.Point(148, 95);
+            this.txtCompilerPath.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtCompilerPath.Name = "txtCompilerPath";
-            this.txtCompilerPath.Size = new System.Drawing.Size(252, 20);
+            this.txtCompilerPath.Size = new System.Drawing.Size(376, 26);
             this.txtCompilerPath.TabIndex = 8;
             // 
             // groupBox9
@@ -805,9 +861,11 @@
             this.groupBox9.Controls.Add(this.txtProxyUser);
             this.groupBox9.Controls.Add(this.txtProxyAddress);
             this.groupBox9.Controls.Add(this.chkSystemProxy);
-            this.groupBox9.Location = new System.Drawing.Point(6, 6);
+            this.groupBox9.Location = new System.Drawing.Point(9, 9);
+            this.groupBox9.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(357, 126);
+            this.groupBox9.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox9.Size = new System.Drawing.Size(536, 194);
             this.groupBox9.TabIndex = 3;
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Proxy settings";
@@ -815,53 +873,59 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 98);
+            this.label5.Location = new System.Drawing.Point(9, 151);
+            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(56, 13);
+            this.label5.Size = new System.Drawing.Size(82, 20);
             this.label5.TabIndex = 9;
             this.label5.Text = "Password:";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 72);
+            this.label4.Location = new System.Drawing.Point(9, 111);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(58, 13);
+            this.label4.Size = new System.Drawing.Size(87, 20);
             this.label4.TabIndex = 8;
             this.label4.Text = "Username:";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 46);
+            this.label3.Location = new System.Drawing.Point(9, 71);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(76, 13);
+            this.label3.Size = new System.Drawing.Size(112, 20);
             this.label3.TabIndex = 7;
             this.label3.Text = "Proxy address:";
             // 
             // txtProxyPassword
             // 
             this.txtProxyPassword.Enabled = false;
-            this.txtProxyPassword.Location = new System.Drawing.Point(99, 95);
+            this.txtProxyPassword.Location = new System.Drawing.Point(148, 146);
+            this.txtProxyPassword.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtProxyPassword.Name = "txtProxyPassword";
             this.txtProxyPassword.PasswordChar = '●';
-            this.txtProxyPassword.Size = new System.Drawing.Size(141, 20);
+            this.txtProxyPassword.Size = new System.Drawing.Size(210, 26);
             this.txtProxyPassword.TabIndex = 6;
             // 
             // txtProxyUser
             // 
             this.txtProxyUser.Enabled = false;
-            this.txtProxyUser.Location = new System.Drawing.Point(99, 69);
+            this.txtProxyUser.Location = new System.Drawing.Point(148, 106);
+            this.txtProxyUser.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtProxyUser.Name = "txtProxyUser";
-            this.txtProxyUser.Size = new System.Drawing.Size(141, 20);
+            this.txtProxyUser.Size = new System.Drawing.Size(210, 26);
             this.txtProxyUser.TabIndex = 5;
             // 
             // txtProxyAddress
             // 
             this.txtProxyAddress.Enabled = false;
-            this.txtProxyAddress.Location = new System.Drawing.Point(99, 43);
+            this.txtProxyAddress.Location = new System.Drawing.Point(148, 66);
+            this.txtProxyAddress.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtProxyAddress.Name = "txtProxyAddress";
-            this.txtProxyAddress.Size = new System.Drawing.Size(252, 20);
+            this.txtProxyAddress.Size = new System.Drawing.Size(376, 26);
             this.txtProxyAddress.TabIndex = 4;
             // 
             // chkSystemProxy
@@ -869,9 +933,10 @@
             this.chkSystemProxy.AutoSize = true;
             this.chkSystemProxy.Checked = true;
             this.chkSystemProxy.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkSystemProxy.Location = new System.Drawing.Point(7, 20);
+            this.chkSystemProxy.Location = new System.Drawing.Point(10, 31);
+            this.chkSystemProxy.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkSystemProxy.Name = "chkSystemProxy";
-            this.chkSystemProxy.Size = new System.Drawing.Size(108, 17);
+            this.chkSystemProxy.Size = new System.Drawing.Size(159, 24);
             this.chkSystemProxy.TabIndex = 0;
             this.chkSystemProxy.Text = "Use system proxy";
             this.chkSystemProxy.UseVisualStyleBackColor = true;
@@ -886,9 +951,11 @@
             this.groupBox1.Controls.Add(this.btnVersionCheck);
             this.groupBox1.Controls.Add(this.lblAvailableVersion);
             this.groupBox1.Controls.Add(this.lblCurrentVersion);
-            this.groupBox1.Location = new System.Drawing.Point(6, 259);
+            this.groupBox1.Location = new System.Drawing.Point(9, 398);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(357, 99);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox1.Size = new System.Drawing.Size(536, 152);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Tabular Editor Updates";
@@ -896,9 +963,10 @@
             // chkAutoUpdate
             // 
             this.chkAutoUpdate.AutoSize = true;
-            this.chkAutoUpdate.Location = new System.Drawing.Point(6, 75);
+            this.chkAutoUpdate.Location = new System.Drawing.Point(9, 115);
+            this.chkAutoUpdate.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkAutoUpdate.Name = "chkAutoUpdate";
-            this.chkAutoUpdate.Size = new System.Drawing.Size(204, 17);
+            this.chkAutoUpdate.Size = new System.Drawing.Size(301, 24);
             this.chkAutoUpdate.TabIndex = 4;
             this.chkAutoUpdate.Text = "Check for updated version on start-up";
             this.chkAutoUpdate.UseVisualStyleBackColor = true;
@@ -907,18 +975,20 @@
             // chkSkipPatch
             // 
             this.chkSkipPatch.AutoSize = true;
-            this.chkSkipPatch.Location = new System.Drawing.Point(230, 75);
+            this.chkSkipPatch.Location = new System.Drawing.Point(345, 115);
+            this.chkSkipPatch.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkSkipPatch.Name = "chkSkipPatch";
-            this.chkSkipPatch.Size = new System.Drawing.Size(107, 17);
+            this.chkSkipPatch.Size = new System.Drawing.Size(155, 24);
             this.chkSkipPatch.TabIndex = 5;
             this.chkSkipPatch.Text = "Skip patch builds";
             this.chkSkipPatch.UseVisualStyleBackColor = true;
             // 
             // btnVersionCheck
             // 
-            this.btnVersionCheck.Location = new System.Drawing.Point(6, 46);
+            this.btnVersionCheck.Location = new System.Drawing.Point(9, 71);
+            this.btnVersionCheck.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnVersionCheck.Name = "btnVersionCheck";
-            this.btnVersionCheck.Size = new System.Drawing.Size(126, 23);
+            this.btnVersionCheck.Size = new System.Drawing.Size(189, 35);
             this.btnVersionCheck.TabIndex = 3;
             this.btnVersionCheck.Text = "Check for updates";
             this.btnVersionCheck.UseVisualStyleBackColor = true;
@@ -930,9 +1000,10 @@
             this.lblAvailableVersion.Cursor = System.Windows.Forms.Cursors.Hand;
             this.lblAvailableVersion.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblAvailableVersion.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.lblAvailableVersion.Location = new System.Drawing.Point(6, 51);
+            this.lblAvailableVersion.Location = new System.Drawing.Point(9, 78);
+            this.lblAvailableVersion.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblAvailableVersion.Name = "lblAvailableVersion";
-            this.lblAvailableVersion.Size = new System.Drawing.Size(126, 13);
+            this.lblAvailableVersion.Size = new System.Drawing.Size(193, 20);
             this.lblAvailableVersion.TabIndex = 2;
             this.lblAvailableVersion.Text = "Available version: 2.0.0.0";
             this.lblAvailableVersion.Visible = false;
@@ -941,9 +1012,10 @@
             // lblCurrentVersion
             // 
             this.lblCurrentVersion.AutoSize = true;
-            this.lblCurrentVersion.Location = new System.Drawing.Point(6, 26);
+            this.lblCurrentVersion.Location = new System.Drawing.Point(9, 40);
+            this.lblCurrentVersion.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblCurrentVersion.Name = "lblCurrentVersion";
-            this.lblCurrentVersion.Size = new System.Drawing.Size(117, 13);
+            this.lblCurrentVersion.Size = new System.Drawing.Size(172, 20);
             this.lblCurrentVersion.TabIndex = 1;
             this.lblCurrentVersion.Text = "Current version: 2.0.0.0";
             // 
@@ -951,10 +1023,11 @@
             // 
             this.tabDAX.Controls.Add(this.groupBox5);
             this.tabDAX.Controls.Add(this.groupBox3);
-            this.tabDAX.Location = new System.Drawing.Point(4, 22);
+            this.tabDAX.Location = new System.Drawing.Point(4, 29);
+            this.tabDAX.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabDAX.Name = "tabDAX";
-            this.tabDAX.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.tabDAX.Size = new System.Drawing.Size(369, 363);
+            this.tabDAX.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tabDAX.Size = new System.Drawing.Size(558, 590);
             this.tabDAX.TabIndex = 1;
             this.tabDAX.Text = "DAX";
             this.tabDAX.UseVisualStyleBackColor = true;
@@ -964,9 +1037,11 @@
             this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox5.Controls.Add(this.cmbSeparators);
-            this.groupBox5.Location = new System.Drawing.Point(6, 62);
+            this.groupBox5.Location = new System.Drawing.Point(9, 95);
+            this.groupBox5.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(357, 53);
+            this.groupBox5.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox5.Size = new System.Drawing.Size(536, 82);
             this.groupBox5.TabIndex = 5;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Separators";
@@ -977,11 +1052,13 @@
             this.tabSerialization.Controls.Add(this.cmbSerializationMode);
             this.tabSerialization.Controls.Add(this.label8);
             this.tabSerialization.Controls.Add(this.groupBox4);
+            this.tabSerialization.Controls.Add(this.groupBox11);
             this.tabSerialization.Controls.Add(this.groupBox2);
-            this.tabSerialization.Location = new System.Drawing.Point(4, 22);
+            this.tabSerialization.Location = new System.Drawing.Point(4, 29);
+            this.tabSerialization.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabSerialization.Name = "tabSerialization";
-            this.tabSerialization.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.tabSerialization.Size = new System.Drawing.Size(369, 379);
+            this.tabSerialization.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tabSerialization.Size = new System.Drawing.Size(558, 590);
             this.tabSerialization.TabIndex = 3;
             this.tabSerialization.Text = "Serialization";
             this.tabSerialization.UseVisualStyleBackColor = true;
@@ -993,19 +1070,17 @@
             this.cmbSerializationMode.Items.AddRange(new object[] {
             "Database.json (default)",
             "TMDL (preview)"});
-            this.cmbSerializationMode.Location = new System.Drawing.Point(111, 11);
-            this.cmbSerializationMode.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cmbSerializationMode.Location = new System.Drawing.Point(166, 17);
             this.cmbSerializationMode.Name = "cmbSerializationMode";
-            this.cmbSerializationMode.Size = new System.Drawing.Size(145, 21);
+            this.cmbSerializationMode.Size = new System.Drawing.Size(216, 28);
             this.cmbSerializationMode.TabIndex = 11;
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(9, 15);
-            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label8.Location = new System.Drawing.Point(14, 23);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(95, 13);
+            this.label8.Size = new System.Drawing.Size(143, 20);
             this.label8.TabIndex = 12;
             this.label8.Text = "Serialization mode:";
             // 
@@ -1020,9 +1095,11 @@
             this.groupBox4.Controls.Add(this.chkLocalPerspectives);
             this.groupBox4.Controls.Add(this.tvDefaultSerialization);
             this.groupBox4.Controls.Add(this.label1);
-            this.groupBox4.Location = new System.Drawing.Point(6, 155);
+            this.groupBox4.Location = new System.Drawing.Point(9, 238);
+            this.groupBox4.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(357, 221);
+            this.groupBox4.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox4.Size = new System.Drawing.Size(536, 340);
             this.groupBox4.TabIndex = 4;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Save to Folder Serialization Options";
@@ -1033,57 +1110,58 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tvDefaultSerialization.CheckBoxes = true;
-            this.tvDefaultSerialization.Location = new System.Drawing.Point(5, 40);
+            this.tvDefaultSerialization.Location = new System.Drawing.Point(8, 62);
+            this.tvDefaultSerialization.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tvDefaultSerialization.Name = "tvDefaultSerialization";
-            treeNode27.Checked = true;
-            treeNode27.Name = "Data Sources";
-            treeNode27.Text = "Data Sources";
-            treeNode28.Checked = true;
-            treeNode28.Name = "Shared Expressions";
-            treeNode28.Text = "Shared Expressions";
-            treeNode29.Checked = true;
-            treeNode29.Name = "Perspectives";
-            treeNode29.Text = "Perspectives";
-            treeNode30.Checked = true;
-            treeNode30.Name = "Relationships";
-            treeNode30.Text = "Relationships";
-            treeNode31.Checked = true;
-            treeNode31.Name = "Roles";
-            treeNode31.Text = "Roles";
-            treeNode32.Name = "Annotations";
-            treeNode32.Text = "Annotations";
-            treeNode33.Checked = true;
-            treeNode33.Name = "Calculation Items";
-            treeNode33.Text = "Calculation Items";
-            treeNode34.Checked = true;
-            treeNode34.Name = "Columns";
-            treeNode34.Text = "Columns";
-            treeNode35.Checked = true;
-            treeNode35.Name = "Hierarchies";
-            treeNode35.Text = "Hierarchies";
-            treeNode36.Checked = true;
-            treeNode36.Name = "Measures";
-            treeNode36.Text = "Measures";
-            treeNode37.Checked = true;
-            treeNode37.Name = "Partitions";
-            treeNode37.Text = "Partitions";
-            treeNode38.Checked = true;
-            treeNode38.Name = "Tables";
-            treeNode38.Text = "Tables";
-            treeNode39.Checked = true;
-            treeNode39.Name = "Translations";
-            treeNode39.Text = "Translations";
+            treeNode1.Checked = true;
+            treeNode1.Name = "Data Sources";
+            treeNode1.Text = "Data Sources";
+            treeNode2.Checked = true;
+            treeNode2.Name = "Shared Expressions";
+            treeNode2.Text = "Shared Expressions";
+            treeNode3.Checked = true;
+            treeNode3.Name = "Perspectives";
+            treeNode3.Text = "Perspectives";
+            treeNode4.Checked = true;
+            treeNode4.Name = "Relationships";
+            treeNode4.Text = "Relationships";
+            treeNode5.Checked = true;
+            treeNode5.Name = "Roles";
+            treeNode5.Text = "Roles";
+            treeNode6.Name = "Annotations";
+            treeNode6.Text = "Annotations";
+            treeNode7.Checked = true;
+            treeNode7.Name = "Calculation Items";
+            treeNode7.Text = "Calculation Items";
+            treeNode8.Checked = true;
+            treeNode8.Name = "Columns";
+            treeNode8.Text = "Columns";
+            treeNode9.Checked = true;
+            treeNode9.Name = "Hierarchies";
+            treeNode9.Text = "Hierarchies";
+            treeNode10.Checked = true;
+            treeNode10.Name = "Measures";
+            treeNode10.Text = "Measures";
+            treeNode11.Checked = true;
+            treeNode11.Name = "Partitions";
+            treeNode11.Text = "Partitions";
+            treeNode12.Checked = true;
+            treeNode12.Name = "Tables";
+            treeNode12.Text = "Tables";
+            treeNode13.Checked = true;
+            treeNode13.Name = "Translations";
+            treeNode13.Text = "Translations";
             this.tvDefaultSerialization.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode27,
-            treeNode28,
-            treeNode29,
-            treeNode30,
-            treeNode31,
-            treeNode38,
-            treeNode39});
+            treeNode1,
+            treeNode2,
+            treeNode3,
+            treeNode4,
+            treeNode5,
+            treeNode12,
+            treeNode13});
             this.tvDefaultSerialization.PathSeparator = "/";
             this.tvDefaultSerialization.ShowLines = false;
-            this.tvDefaultSerialization.Size = new System.Drawing.Size(345, 83);
+            this.tvDefaultSerialization.Size = new System.Drawing.Size(516, 126);
             this.tvDefaultSerialization.TabIndex = 1;
             this.tvDefaultSerialization.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCheck);
             // 
@@ -1092,11 +1170,27 @@
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(5, 23);
+            this.label1.Location = new System.Drawing.Point(8, 35);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(199, 13);
+            this.label1.Size = new System.Drawing.Size(294, 20);
             this.label1.TabIndex = 0;
             this.label1.Text = "Serialize below objects as individual files:";
+            // 
+            // groupBox11
+            // 
+            this.groupBox11.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox11.Location = new System.Drawing.Point(9, 238);
+            this.groupBox11.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox11.Name = "groupBox11";
+            this.groupBox11.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox11.Size = new System.Drawing.Size(536, 340);
+            this.groupBox11.TabIndex = 4;
+            this.groupBox11.TabStop = false;
+            this.groupBox11.Text = "TMDL Serialization Options";
+            this.groupBox11.Visible = false;
             // 
             // groupBox2
             // 
@@ -1109,9 +1203,11 @@
             this.groupBox2.Controls.Add(this.chkIgnoreTimestamps);
             this.groupBox2.Controls.Add(this.chkIgnorePrivacySettings);
             this.groupBox2.Controls.Add(this.chkIgnoreIncrementalRefreshPartitions);
-            this.groupBox2.Location = new System.Drawing.Point(6, 38);
+            this.groupBox2.Location = new System.Drawing.Point(9, 58);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(357, 111);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox2.Size = new System.Drawing.Size(536, 171);
             this.groupBox2.TabIndex = 0;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "General Serialization Settings";
@@ -1120,10 +1216,11 @@
             // 
             this.tabCurrentModel.Controls.Add(this.grpSaveToFolder);
             this.tabCurrentModel.Controls.Add(this.groupBox8);
-            this.tabCurrentModel.Location = new System.Drawing.Point(4, 22);
+            this.tabCurrentModel.Location = new System.Drawing.Point(4, 29);
+            this.tabCurrentModel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabCurrentModel.Name = "tabCurrentModel";
-            this.tabCurrentModel.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.tabCurrentModel.Size = new System.Drawing.Size(369, 379);
+            this.tabCurrentModel.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tabCurrentModel.Size = new System.Drawing.Size(558, 590);
             this.tabCurrentModel.TabIndex = 5;
             this.tabCurrentModel.Text = "Current Model";
             this.tabCurrentModel.UseVisualStyleBackColor = true;
@@ -1140,9 +1237,11 @@
             this.grpSaveToFolder.Controls.Add(this.chkLocalPerspectivesCM);
             this.grpSaveToFolder.Controls.Add(this.treeView2);
             this.grpSaveToFolder.Controls.Add(this.label2);
-            this.grpSaveToFolder.Location = new System.Drawing.Point(6, 123);
+            this.grpSaveToFolder.Location = new System.Drawing.Point(9, 189);
+            this.grpSaveToFolder.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.grpSaveToFolder.Name = "grpSaveToFolder";
-            this.grpSaveToFolder.Size = new System.Drawing.Size(357, 252);
+            this.grpSaveToFolder.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.grpSaveToFolder.Size = new System.Drawing.Size(536, 388);
             this.grpSaveToFolder.TabIndex = 6;
             this.grpSaveToFolder.TabStop = false;
             this.grpSaveToFolder.Text = "Current Model \"Save to Folder\" Settings";
@@ -1153,57 +1252,58 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.treeView2.CheckBoxes = true;
-            this.treeView2.Location = new System.Drawing.Point(6, 73);
+            this.treeView2.Location = new System.Drawing.Point(9, 112);
+            this.treeView2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.treeView2.Name = "treeView2";
-            treeNode40.Checked = true;
-            treeNode40.Name = "Data Sources";
-            treeNode40.Text = "Data Sources";
-            treeNode41.Checked = true;
-            treeNode41.Name = "Shared Expressions";
-            treeNode41.Text = "Shared Expressions";
-            treeNode42.Checked = true;
-            treeNode42.Name = "Perspectives";
-            treeNode42.Text = "Perspectives";
-            treeNode43.Checked = true;
-            treeNode43.Name = "Relationships";
-            treeNode43.Text = "Relationships";
-            treeNode44.Checked = true;
-            treeNode44.Name = "Roles";
-            treeNode44.Text = "Roles";
-            treeNode45.Name = "Annotations";
-            treeNode45.Text = "Annotations";
-            treeNode46.Checked = true;
-            treeNode46.Name = "Calculation Items";
-            treeNode46.Text = "Calculation Items";
-            treeNode47.Checked = true;
-            treeNode47.Name = "Columns";
-            treeNode47.Text = "Columns";
-            treeNode48.Checked = true;
-            treeNode48.Name = "Hierarchies";
-            treeNode48.Text = "Hierarchies";
-            treeNode49.Checked = true;
-            treeNode49.Name = "Measures";
-            treeNode49.Text = "Measures";
-            treeNode50.Checked = true;
-            treeNode50.Name = "Partitions";
-            treeNode50.Text = "Partitions";
-            treeNode51.Checked = true;
-            treeNode51.Name = "Tables";
-            treeNode51.Text = "Tables";
-            treeNode52.Checked = true;
-            treeNode52.Name = "Translations";
-            treeNode52.Text = "Translations";
+            treeNode14.Checked = true;
+            treeNode14.Name = "Data Sources";
+            treeNode14.Text = "Data Sources";
+            treeNode15.Checked = true;
+            treeNode15.Name = "Shared Expressions";
+            treeNode15.Text = "Shared Expressions";
+            treeNode16.Checked = true;
+            treeNode16.Name = "Perspectives";
+            treeNode16.Text = "Perspectives";
+            treeNode17.Checked = true;
+            treeNode17.Name = "Relationships";
+            treeNode17.Text = "Relationships";
+            treeNode18.Checked = true;
+            treeNode18.Name = "Roles";
+            treeNode18.Text = "Roles";
+            treeNode19.Name = "Annotations";
+            treeNode19.Text = "Annotations";
+            treeNode20.Checked = true;
+            treeNode20.Name = "Calculation Items";
+            treeNode20.Text = "Calculation Items";
+            treeNode21.Checked = true;
+            treeNode21.Name = "Columns";
+            treeNode21.Text = "Columns";
+            treeNode22.Checked = true;
+            treeNode22.Name = "Hierarchies";
+            treeNode22.Text = "Hierarchies";
+            treeNode23.Checked = true;
+            treeNode23.Name = "Measures";
+            treeNode23.Text = "Measures";
+            treeNode24.Checked = true;
+            treeNode24.Name = "Partitions";
+            treeNode24.Text = "Partitions";
+            treeNode25.Checked = true;
+            treeNode25.Name = "Tables";
+            treeNode25.Text = "Tables";
+            treeNode26.Checked = true;
+            treeNode26.Name = "Translations";
+            treeNode26.Text = "Translations";
             this.treeView2.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode40,
-            treeNode41,
-            treeNode42,
-            treeNode43,
-            treeNode44,
-            treeNode51,
-            treeNode52});
+            treeNode14,
+            treeNode15,
+            treeNode16,
+            treeNode17,
+            treeNode18,
+            treeNode25,
+            treeNode26});
             this.treeView2.PathSeparator = "/";
             this.treeView2.ShowLines = false;
-            this.treeView2.Size = new System.Drawing.Size(345, 106);
+            this.treeView2.Size = new System.Drawing.Size(516, 161);
             this.treeView2.TabIndex = 1;
             this.treeView2.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView2_AfterCheck);
             // 
@@ -1211,9 +1311,10 @@
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.label2.Location = new System.Drawing.Point(6, 39);
+            this.label2.Location = new System.Drawing.Point(9, 60);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(344, 31);
+            this.label2.Size = new System.Drawing.Size(516, 48);
             this.label2.TabIndex = 0;
             this.label2.Text = "Check the type of objects you wish to serialize as individual files (unchecked ob" +
     "jects are serialized in the parent object):";
@@ -1229,9 +1330,11 @@
             this.groupBox8.Controls.Add(this.chkIgnoreTimestampsCM);
             this.groupBox8.Controls.Add(this.chkIgnorePrivacySettingsCM);
             this.groupBox8.Controls.Add(this.chkIgnoreIncrementalRefreshPartitionsCM);
-            this.groupBox8.Location = new System.Drawing.Point(6, 6);
+            this.groupBox8.Location = new System.Drawing.Point(9, 9);
+            this.groupBox8.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(357, 111);
+            this.groupBox8.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox8.Size = new System.Drawing.Size(536, 171);
             this.groupBox8.TabIndex = 5;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Current Model Serialization Settings";
@@ -1239,17 +1342,18 @@
             // PreferencesForm
             // 
             this.AcceptButton = this.btnOK;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(401, 458);
+            this.ClientSize = new System.Drawing.Size(602, 705);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(416, 476);
+            this.MinimumSize = new System.Drawing.Size(613, 702);
             this.Name = "PreferencesForm";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
@@ -1307,6 +1411,7 @@
         private System.Windows.Forms.CheckBox chkIgnoreInfProps;
         private System.Windows.Forms.CheckBox chkSplitMultiline;
         private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.GroupBox groupBox11;
         private System.Windows.Forms.TreeView tvDefaultSerialization;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox chkLocalTranslations;
