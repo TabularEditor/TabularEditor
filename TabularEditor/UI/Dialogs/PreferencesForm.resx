@@ -147,4 +147,10 @@ using the current date and time as the filename.</value>
   <data name="chkIgnorePrivacySettingsCM.ToolTip" xml:space="preserve">
     <value>Older versions of Microsoft.AnalysisServices.Deployment do not support the PrivacySetting property. If you plan to deploy your .asdatabase script with Microsoft.AnalysisServices.Deployment, check this to remove the PrivacySetting property when a model is saved to disk.</value>
   </data>
+  <data name="chkIncludeRefs.ToolTip" xml:space="preserve">
+    <value>If checked, the model.tmdl file will include details on how objects should be ordered in the deserialized metadata. The metadata order carries no semantic meaning, but some developers may prefer an explicit ordering.</value>
+  </data>
+  <data name="chkIncludeRefsCM.ToolTip" xml:space="preserve">
+    <value>If checked, the model.tmdl file will include details on how objects should be ordered in the deserialized metadata. The metadata order carries no semantic meaning, but some developers may prefer an explicit ordering.</value>
+  </data>
 </root>

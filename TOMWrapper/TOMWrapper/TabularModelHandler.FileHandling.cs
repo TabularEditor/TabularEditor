@@ -326,7 +326,7 @@ namespace TabularEditor.TOMWrapper
             var tmdlFormattingOptions = new TOM.Serialization.MetadataFormattingOptionsBuilder(TOM.Serialization.MetadataSerializationStyle.Tmdl)
                 .WithBaseIndentationLevel(options.TmdlOptions.BaseIndentationLevel)
                 .WithCasingStyle(options.TmdlOptions.CasingStyle)
-                .WithEncoding(options.TmdlOptions.Encoding.GetEncoding())
+                .WithEncoding(options.TmdlOptions.GetEncoding())
                 .WithNewLineStyle(options.TmdlOptions.NewLineStyle);
             tmdlFormattingOptions = (options.TmdlOptions.SpacesIndentation <= 0 ? tmdlFormattingOptions.WithTabsIndentationMode() : tmdlFormattingOptions.WithSpacesIndentationMode(options.TmdlOptions.SpacesIndentation));
 
@@ -358,7 +358,7 @@ namespace TabularEditor.TOMWrapper
 
                 try
                 {
-                    File.WriteAllText(Path.Combine(path, "model.tmdl"), modelTmdlSb.ToString());
+                    File.WriteAllText(Path.Combine(path, "model.tmdl"), modelTmdlSb.ToString(), options.TmdlOptions.GetEncoding());
                 }
                 catch
                 {

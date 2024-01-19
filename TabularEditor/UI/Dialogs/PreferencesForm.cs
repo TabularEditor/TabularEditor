@@ -11,6 +11,9 @@ using TabularEditor.TOMWrapper;
 using TabularEditor.UIServices;
 using TabularEditor.TOMWrapper.Serialization;
 using System.Diagnostics;
+using Microsoft.AnalysisServices.Tabular.Tmdl;
+using Microsoft.AnalysisServices.Tabular.Serialization;
+using static System.Windows.Forms.Design.AxImporter;
 
 namespace TabularEditor.UI.Dialogs
 {
@@ -21,6 +24,18 @@ namespace TabularEditor.UI.Dialogs
             InitializeComponent();
             chkCopyIncludeOLS.Enabled = true;
             cmbSerializationMode.SelectionChangeCommitted += CmbSerializationMode_SelectionChangeCommitted;
+            cmbIndentMode.SelectionChangeCommitted += CmbIndentMode_SelectionChangeCommitted;
+            cmbIndentModeCM.SelectionChangeCommitted += CmbIndentModeCM_SelectionChangeCommitted;
+        }
+
+        private void CmbIndentModeCM_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            txtIndentLevelCM.Enabled = cmbIndentModeCM.SelectedIndex == 0;
+        }
+
+        private void CmbIndentMode_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            txtIndentLevel.Enabled = cmbIndentMode.SelectedIndex == 0;
         }
 
         private bool tmdlWarningShown = false;
@@ -28,13 +43,14 @@ namespace TabularEditor.UI.Dialogs
         private void UpdateTmdlUi()
         {
             var useLegacy = cmbSerializationMode.SelectedIndex == 0;
-            groupBox4.Visible = useLegacy;
-            groupBox11.Visible = !useLegacy;
+            grpSaveToFolderOptions.Visible = useLegacy;
             chkPrefixFiles.Enabled = useLegacy;
             chkLocalPerspectives.Enabled = useLegacy;
             chkLocalRelationships.Enabled = useLegacy;
             chkLocalTranslations.Enabled = useLegacy;
             tvDefaultSerialization.Enabled = useLegacy;
+
+            grpTmdlOptions.Visible = !useLegacy;
         }
 
         private void CmbSerializationMode_SelectionChangeCommitted(object sender, EventArgs e)
@@ -69,6 +85,8 @@ namespace TabularEditor.UI.Dialogs
         }
 
         TabularModelHandler Handler;
+
+        private bool CurrentModelIsTmdl => Handler?.SourceType == ModelSourceType.TMDL;
 
         public DialogResult Show(TabularModelHandler handler)
         {
@@ -172,16 +190,37 @@ namespace TabularEditor.UI.Dialogs
             chkSplitMultilineCM.Checked = options.SplitMultilineStrings;
             chkIgnorePrivacySettingsCM.Checked = options.IgnorePrivacySettings;
             chkIgnoreIncrementalRefreshPartitionsCM.Checked = options.IgnoreIncrementalRefreshPartitions;
+            chkIncludeSensitiveCM.Checked = options.IncludeSensitive;
 
-            LoadCheckedNodes(treeView2.Nodes, options.Levels);
-            chkPrefixFilesCM.Checked = options.PrefixFilenames;
-            chkAlsoSaveAsBimCM.Checked = options.AlsoSaveAsBim;
-            chkLocalPerspectivesCM.Checked = options.LocalPerspectives;
-            chkLocalTranslationsCM.Checked = options.LocalTranslations;
-            chkLocalRelationshipsCM.Checked = options.LocalRelationships;
-            SetNodeVisible("Perspectives", !chkLocalPerspectivesCM.Checked, treeView2);
-            SetNodeVisible("Translations", !chkLocalTranslationsCM.Checked, treeView2);
-            SetNodeVisible("Relationships", !chkLocalRelationshipsCM.Checked, treeView2);
+            if (CurrentModelIsTmdl)
+            {
+                grpTmdlOptionsCM.Visible = true;
+                grpSaveToFolder.Visible = false;
+
+                chkIncludeRefsCM.Checked = options.TmdlOptions.IncludeRefs;
+                cmbIndentModeCM.SelectedIndex = options.TmdlOptions.SpacesIndentation > 0 ? 0 : 1;
+                txtIndentLevelCM.Value = options.TmdlOptions.SpacesIndentation > 0 ? options.TmdlOptions.SpacesIndentation : 4;
+                txtIndentLevelCM.Enabled = options.TmdlOptions.SpacesIndentation > 0;
+                cmbEncodingCM.SelectedIndex = (int)options.TmdlOptions.Encoding;
+                cmbCasingStyleCM.SelectedIndex = options.TmdlOptions.CasingStyle switch { TmdlCasingStyle.CamelCase => 0, TmdlCasingStyle.Pascalcase => 1, _ => 2 };
+                cmbExpressionTrimStyleCM.SelectedIndex = options.TmdlOptions.ExpressionTrimStyle switch { TmdlExpressionTrimStyle.NoTrim => 0, TmdlExpressionTrimStyle.TrimTrailingWhitespaces => 1, _ => 2 };
+                cmbNewLineStyleCM.SelectedIndex = options.TmdlOptions.NewLineStyle switch { NewLineStyle.SystemDefault => 0, NewLineStyle.WindowsStyle => 1, _ => 2 };
+            }
+            else
+            {
+                grpSaveToFolder.Visible = true;
+                grpTmdlOptionsCM.Visible = false;
+
+                LoadCheckedNodes(treeView2.Nodes, options.Levels);
+                chkPrefixFilesCM.Checked = options.PrefixFilenames;
+                chkAlsoSaveAsBimCM.Checked = options.AlsoSaveAsBim;
+                chkLocalPerspectivesCM.Checked = options.LocalPerspectives;
+                chkLocalTranslationsCM.Checked = options.LocalTranslations;
+                chkLocalRelationshipsCM.Checked = options.LocalRelationships;
+                SetNodeVisible("Perspectives", !chkLocalPerspectivesCM.Checked, treeView2);
+                SetNodeVisible("Translations", !chkLocalTranslationsCM.Checked, treeView2);
+                SetNodeVisible("Relationships", !chkLocalRelationshipsCM.Checked, treeView2);
+            }
         }
 
         private void SaveSettings()
@@ -202,6 +241,7 @@ namespace TabularEditor.UI.Dialogs
             Preferences.Current.IgnoreInferredProperties = chkIgnoreInfProps.Checked;
             Preferences.Current.SplitMultilineStrings = chkSplitMultiline.Checked;
             Preferences.Current.IgnorePrivacySettings = chkIgnorePrivacySettings.Checked;
+            Preferences.Current.IncludeSensitive = chkIncludeSensitive.Checked;
             Preferences.Current.IgnoreIncrementalRefreshPartitions = chkIgnoreIncrementalRefreshPartitions.Checked;
             Preferences.Current.UseTMDL = cmbSerializationMode.SelectedIndex == 1;
             Preferences.Current.SaveToFolder_PrefixFiles = chkPrefixFiles.Checked;
@@ -221,7 +261,18 @@ namespace TabularEditor.UI.Dialogs
 
             Preferences.Current.ScriptCompilerOptions = txtCompilerOptions.Text;
             Preferences.Current.ScriptCompilerDirectoryPath = txtCompilerPath.Text;
-            
+
+            Preferences.Current.TmdlOptions = Preferences.Current.TmdlOptions with
+            {
+
+                IncludeRefs = chkIncludeRefs.Checked,
+                SpacesIndentation = cmbIndentMode.SelectedIndex == 0 ? (int)txtIndentLevel.Value : 0,
+                Encoding = (SerializationEncoding)cmbEncoding.SelectedIndex,
+                CasingStyle = cmbCasingStyle.SelectedIndex switch { 0 => TmdlCasingStyle.CamelCase, 1 => TmdlCasingStyle.Pascalcase, _ => TmdlCasingStyle.LowerCase },
+                ExpressionTrimStyle = cmbExpressionTrimStyle.SelectedIndex switch { 0 => TmdlExpressionTrimStyle.NoTrim, 1 => TmdlExpressionTrimStyle.TrimTrailingWhitespaces, _ => TmdlExpressionTrimStyle.TrimLeadingCommonWhitespaces },
+                NewLineStyle = cmbNewLineStyle.SelectedIndex switch { 0 => NewLineStyle.SystemDefault, 1 => NewLineStyle.WindowsStyle, _ => NewLineStyle.UnixStyle }
+            };
+
             ProxyCache.ClearProxyCache();
 
             Preferences.Current.SaveToFolder_Levels = new HashSet<string>();
@@ -243,9 +294,24 @@ namespace TabularEditor.UI.Dialogs
             options.LocalTranslations = chkLocalTranslationsCM.Checked;
             options.LocalRelationships = chkLocalRelationshipsCM.Checked;
             options.IgnorePrivacySettings = chkIgnorePrivacySettingsCM.Checked;
+            options.IncludeSensitive = chkIncludeSensitiveCM.Checked;
             options.IgnoreIncrementalRefreshPartitions = chkIgnoreIncrementalRefreshPartitionsCM.Checked;
             options.Levels = new HashSet<string>();
             SaveCheckedNodes(treeView2.Nodes, options.Levels);
+
+            if(CurrentModelIsTmdl)
+            {
+                options.TmdlOptions = options.TmdlOptions with
+                {
+
+                    IncludeRefs = chkIncludeRefsCM.Checked,
+                    SpacesIndentation = cmbIndentModeCM.SelectedIndex == 0 ? (int)txtIndentLevelCM.Value : 0,
+                    Encoding = (SerializationEncoding)cmbEncodingCM.SelectedIndex,
+                    CasingStyle = cmbCasingStyleCM.SelectedIndex switch { 0 => TmdlCasingStyle.CamelCase, 1 => TmdlCasingStyle.Pascalcase, _ => TmdlCasingStyle.LowerCase },
+                    ExpressionTrimStyle = cmbExpressionTrimStyleCM.SelectedIndex switch { 0 => TmdlExpressionTrimStyle.NoTrim, 1 => TmdlExpressionTrimStyle.TrimTrailingWhitespaces, _ => TmdlExpressionTrimStyle.TrimLeadingCommonWhitespaces },
+                    NewLineStyle = cmbNewLineStyleCM.SelectedIndex switch { 0 => NewLineStyle.SystemDefault, 1 => NewLineStyle.WindowsStyle, _ => NewLineStyle.UnixStyle }
+                };
+            }
 
             if(Handler.SerializeOptions != options) Handler.SerializeOptions = options;
         }
@@ -289,6 +355,7 @@ namespace TabularEditor.UI.Dialogs
             chkIgnoreInfProps.Checked = Preferences.Current.IgnoreInferredProperties;
             chkSplitMultiline.Checked = Preferences.Current.SplitMultilineStrings;
             chkIgnorePrivacySettings.Checked = Preferences.Current.IgnorePrivacySettings;
+            chkIncludeSensitive.Checked = Preferences.Current.IncludeSensitive;
             chkIgnoreIncrementalRefreshPartitions.Checked = Preferences.Current.IgnoreIncrementalRefreshPartitions;
 
             cmbSerializationMode.SelectedIndex = Preferences.Current.UseTMDL ? 1 : 0;
@@ -309,6 +376,15 @@ namespace TabularEditor.UI.Dialogs
 
             txtCompilerOptions.Text = Preferences.Current.ScriptCompilerOptions;
             txtCompilerPath.Text = Preferences.Current.ScriptCompilerDirectoryPath;
+
+            chkIncludeRefs.Checked = Preferences.Current.TmdlOptions.IncludeRefs;
+            cmbIndentMode.SelectedIndex = Preferences.Current.TmdlOptions.SpacesIndentation > 0 ? 0 : 1;
+            txtIndentLevel.Value = Preferences.Current.TmdlOptions.SpacesIndentation > 0 ? Preferences.Current.TmdlOptions.SpacesIndentation : 4;
+            txtIndentLevel.Enabled = Preferences.Current.TmdlOptions.SpacesIndentation > 0;
+            cmbEncoding.SelectedIndex = (int)Preferences.Current.TmdlOptions.Encoding;
+            cmbCasingStyle.SelectedIndex = Preferences.Current.TmdlOptions.CasingStyle switch { TmdlCasingStyle.CamelCase => 0, TmdlCasingStyle.Pascalcase => 1, _ => 2 };
+            cmbExpressionTrimStyle.SelectedIndex = Preferences.Current.TmdlOptions.ExpressionTrimStyle switch { TmdlExpressionTrimStyle.NoTrim => 0, TmdlExpressionTrimStyle.TrimTrailingWhitespaces => 1, _ => 2 };
+            cmbNewLineStyle.SelectedIndex = Preferences.Current.TmdlOptions.NewLineStyle switch { NewLineStyle.SystemDefault => 0, NewLineStyle.WindowsStyle => 1, _ => 2 };
 
             UpdateProxyUI();
 

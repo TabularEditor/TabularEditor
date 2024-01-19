@@ -58,16 +58,16 @@ namespace TabularEditor.TOMWrapper.Serialization
 
     public enum SerializationEncoding
     {
-        Default,
-        UTF8,
-        UTF7,
-        UTF32,
-        Unicode,
-        ASCII,
-        BigEndianUnicode
+        Default = 0,
+        UTF8 = 1,
+        UTF7 = 2,
+        UTF32 = 3,
+        Unicode = 4,
+        ASCII = 5,
+        BigEndianUnicode = 6
     }
 
-    static class SerializationEncodingExtensions
+    static class TmdlSerializeOptionsExtensions
     {
         public static string GetNewLine(this TmdlSerializeOptions options, int repeat = 1)
         {
@@ -79,9 +79,9 @@ namespace TabularEditor.TOMWrapper.Serialization
             };
             return string.Concat(System.Linq.Enumerable.Repeat(newLine, repeat));
         }
-        public static Encoding GetEncoding(this SerializationEncoding encoding)
+        public static Encoding GetEncoding(this TmdlSerializeOptions options)
         {
-            return encoding switch
+            return options.Encoding switch
             {
                 SerializationEncoding.UTF8 => Encoding.UTF8,
                 SerializationEncoding.UTF7 => Encoding.UTF7,
