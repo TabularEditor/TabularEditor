@@ -411,7 +411,7 @@ namespace TabularEditor.TOMWrapper.Serialization
                 var obj = new JObject();
                 obj["name"] = perspective.Name;
                 obj["description"] = perspective.Description;
-                if(perspective.Annotations.Count > 0)
+                if(perspective.Annotations != null && perspective.Annotations.Count > 0)
                 {
                     var anns = new JArray();
                     foreach(var kvp in perspective.Annotations)
@@ -422,6 +422,26 @@ namespace TabularEditor.TOMWrapper.Serialization
                         anns.Add(ann);
                     }
                     obj["annotations"] = anns;
+                }
+                if (perspective.ExtendedProperties != null && perspective.ExtendedProperties.Count > 0)
+                {
+                    var exProps = new JArray();
+                    foreach (var kvp in perspective.ExtendedProperties)
+                    {
+                        var exProp = new JObject();
+                        exProp["name"] = kvp.Key;
+                        try
+                        {
+                            var jToken = JToken.Parse(kvp.Value);
+                            exProp["type"] = "json";
+                            exProp["value"] = jToken;
+                        }
+                        catch {
+                            exProp["value"] = kvp.Value;
+                        }
+                        exProps.Add(exProp);
+                    }
+                    obj["extendedProperties"] = exProps;
                 }
                 result.Add(obj);
             }
