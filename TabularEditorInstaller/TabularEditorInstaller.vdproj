@@ -28,7 +28,7 @@
         "Entry"
         {
         "MsmKey" = "8:_0FF3562CCA8722DC3D820BB35BA06E8D"
-        "OwnerKey" = "8:_CC67A7C1ECCF94BB7355A7F27189FB0D"
+        "OwnerKey" = "8:_C7266C3A0A44EC5323D56293A87A75FD"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -64,7 +64,7 @@
         "Entry"
         {
         "MsmKey" = "8:_30DF516BF96BA08DB456F80E5DA6B6CA"
-        "OwnerKey" = "8:_CC67A7C1ECCF94BB7355A7F27189FB0D"
+        "OwnerKey" = "8:_C7266C3A0A44EC5323D56293A87A75FD"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -87,6 +87,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_40DF0CA57044D18EFA7D708437FFBD4A"
+        "OwnerKey" = "8:_FC544BBFC4AE4FBCBA61AA486C697C6C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_40DF0CA57044D18EFA7D708437FFBD4A"
+        "OwnerKey" = "8:_C7266C3A0A44EC5323D56293A87A75FD"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_42342055039F52116842364B5978E82E"
         "OwnerKey" = "8:_FC544BBFC4AE4FBCBA61AA486C697C6C"
         "MsmSig" = "8:_UNDEFINED"
@@ -100,7 +112,7 @@
         "Entry"
         {
         "MsmKey" = "8:_448F244414520F127CCE26FF31847522"
-        "OwnerKey" = "8:_CC67A7C1ECCF94BB7355A7F27189FB0D"
+        "OwnerKey" = "8:_C7266C3A0A44EC5323D56293A87A75FD"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -183,18 +195,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_903CAEF8D1526A7A04D91DE7968AA897"
-        "OwnerKey" = "8:_FC544BBFC4AE4FBCBA61AA486C697C6C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_903CAEF8D1526A7A04D91DE7968AA897"
-        "OwnerKey" = "8:_CC67A7C1ECCF94BB7355A7F27189FB0D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_90DB973C2F654736BB0F1DE8455D2571"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -208,7 +208,7 @@
         "Entry"
         {
         "MsmKey" = "8:_95C3F0E0F9051F6813A0BDC953F7620B"
-        "OwnerKey" = "8:_CC67A7C1ECCF94BB7355A7F27189FB0D"
+        "OwnerKey" = "8:_C7266C3A0A44EC5323D56293A87A75FD"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -291,7 +291,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_CC67A7C1ECCF94BB7355A7F27189FB0D"
+        "MsmKey" = "8:_C7266C3A0A44EC5323D56293A87A75FD"
         "OwnerKey" = "8:_FC544BBFC4AE4FBCBA61AA486C697C6C"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -382,7 +382,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_CC67A7C1ECCF94BB7355A7F27189FB0D"
+        "OwnerKey" = "8:_C7266C3A0A44EC5323D56293A87A75FD"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_40DF0CA57044D18EFA7D708437FFBD4A"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -503,12 +509,6 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_CD887A86022D7519C14A19392B21DD1F"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_903CAEF8D1526A7A04D91DE7968AA897"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -670,7 +670,7 @@
                 {
                 "Name" = "8:.NET Framework"
                 "Message" = "8:[VSDNETMSG]"
-                "FrameworkVersion" = "8:v4.6         "
+                "FrameworkVersion" = "8:v4.6          "
                 "AllowLaterVersions" = "11:FALSE"
                 "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=395269"
                 }
@@ -891,6 +891,37 @@
             "Register" = "3:1"
             "Exclude" = "11:TRUE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_40DF0CA57044D18EFA7D708437FFBD4A"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_40DF0CA57044D18EFA7D708437FFBD4A"
+                    {
+                    "Name" = "8:Antlr4.Runtime.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Antlr4.Runtime.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_86B6DEA1587144389D74191CBF86D6D0"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_42342055039F52116842364B5978E82E"
@@ -1181,37 +1212,6 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_903CAEF8D1526A7A04D91DE7968AA897"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_903CAEF8D1526A7A04D91DE7968AA897"
-                    {
-                    "Name" = "8:Antlr4.Runtime.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:Antlr4.Runtime.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_86B6DEA1587144389D74191CBF86D6D0"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_90DB973C2F654736BB0F1DE8455D2571"
             {
             "SourcePath" = "8:..\\TabularEditor-license.rtf"
@@ -1427,14 +1427,14 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_CC67A7C1ECCF94BB7355A7F27189FB0D"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_C7266C3A0A44EC5323D56293A87A75FD"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:TOMWrapper, Version=2.22.8784.22718, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:TOMWrapper, Version=2.22.8784.24134, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_CC67A7C1ECCF94BB7355A7F27189FB0D"
+                    "_C7266C3A0A44EC5323D56293A87A75FD"
                     {
                     "Name" = "8:TOMWrapper.dll"
                     "Attributes" = "3:512"
@@ -1806,15 +1806,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Tabular Editor"
-        "ProductCode" = "8:{EACBA567-E11C-4CB7-8F6C-17036EB58B0E}"
-        "PackageCode" = "8:{55D8152B-8832-4CDD-B0A5-931A53061E8B}"
+        "ProductCode" = "8:{A2134BA0-15F5-41B9-9AD6-F7F0AF194CD1}"
+        "PackageCode" = "8:{E418821A-28C8-44E4-8C67-D4EDA24FA527}"
         "UpgradeCode" = "8:{E20734F5-CD2A-4A76-AB20-014819FCDE35}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:2.22.0"
+        "ProductVersion" = "8:2.22.1"
         "Manufacturer" = "8:Tabular Editor ApS"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:https://tabulareditor.com"
