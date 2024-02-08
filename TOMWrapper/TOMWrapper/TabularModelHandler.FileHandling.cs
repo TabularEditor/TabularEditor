@@ -151,12 +151,12 @@ namespace TabularEditor.TOMWrapper
                 {
                     var model = TOM.TmdlSerializer.DeserializeModelFromFolder(path);
                     database = model.Database as TOM.Database;
-                    database.DetermineCompatibilityMode();
                 }
                 else
                 {
                     database = TOM.TmdlSerializer.DeserializeDatabaseFromFolder(path);
                 }
+                database.DetermineCompatibilityMode();
                 Status = "Model loaded successfully.";
                 Init();
 
@@ -318,11 +318,13 @@ namespace TabularEditor.TOMWrapper
 
             db.Name = Model.Database?.Name ?? "SemanticModel";
 
+            if (options == null) options = new SerializeOptions();
+
             if (options.DatabaseNameOverride != null)
             {
                 db.SetName(options.DatabaseNameOverride);
             }
-            TOM.TmdlSerializer.SerializeDatabaseToFolder(Database, path);
+
             var tmdlFormattingOptions = new TOM.Serialization.MetadataFormattingOptionsBuilder(TOM.Serialization.MetadataSerializationStyle.Tmdl)
                 .WithBaseIndentationLevel(options.TmdlOptions.BaseIndentationLevel)
                 .WithCasingStyle(options.TmdlOptions.CasingStyle)
