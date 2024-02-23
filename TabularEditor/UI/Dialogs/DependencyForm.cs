@@ -110,6 +110,7 @@ namespace TabularEditor
             {
                 foreach(var d in ((IDaxDependantObject)obj).DependsOn.OrderBy(k => k.Key.ObjectType))
                 {
+                    if (d.Value.All(l => l.property == DAXProperty.DefaultDetailRowsExpression || l.property == DAXProperty.DetailRowsExpression)) continue;
                     currentDepth++;
 
                     if (d.Key == _rootObject)
@@ -147,14 +148,17 @@ namespace TabularEditor
 
             foreach(var d in obj.ReferencedBy.OrderBy(o => o.ObjectType))
             {
-                if(d.DependsOn.ContainsKey(obj))
+                if(d.DependsOn.TryGetValue(obj, out var objectReferences))
                 {
                     var i = UI.Tree.TabularIcon.GetIconIndex(d);
 
                     currentDepth++;
                     if (d == _rootObject)
                     {
-                        n.Nodes.Add(new TreeNode(d.GetName() + " (circular dependency)", i, i));
+                        if(objectReferences.Any(r => r.property == DAXProperty.DetailRowsExpression || r.property == DAXProperty.DefaultDetailRowsExpression))
+                            n.Nodes.Add(new TreeNode(d.GetName() + " (detail rows)", i, i));
+                        else
+                            n.Nodes.Add(new TreeNode(d.GetName() + " (circular dependency)", i, i));
                     }
                     else if (currentDepth < MAX_LEVELS && d is IDaxObject) InverseRecursiveAdd(d as IDaxObject, n.Nodes);
                     else if (currentDepth < MAX_LEVELS && d is TablePermission tp)
@@ -200,6 +204,8 @@ namespace TabularEditor
             }
         }
 
+        private readonly HashSet<object> visitedObjects = new HashSet<object>();
+
         public void RefreshTree()
         {
             if (RootObject.IsRemoved)
@@ -211,6 +217,7 @@ namespace TabularEditor
             treeObjects.Nodes.Clear();
 
             currentDepth = 0;
+            visitedObjects.Clear();
             if (radioButton1.Checked)
             {
                 RecursiveAdd(RootObject, treeObjects.Nodes);
