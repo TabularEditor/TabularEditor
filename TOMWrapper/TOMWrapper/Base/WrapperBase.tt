@@ -425,7 +425,10 @@ namespace TabularEditor.TOMWrapper
 			<#= Rules.PropertySetter(p) #>
 		}
 		private bool ShouldSerialize<#= p.Name #>() { return false; }
-<#		}
+<#		} else if(p.Name != "Parent" && p.Name != "ObjectType" && p.Name != "Name" && p.Name != "Annotations" && p.Name != "ExtendedProperties" && p.Name != "Variations"
+			&& p.Name != "ModifiedTime" && p.Name != "StructureModifiedTime" && p.Name != "RefreshedTime" && p.Name != "Table" && p.Name != "ChangedProperties") { #>
+		// Skipping property <#=p.Name#> on object <#=t.Name#>
+<#      }
 		if (p.Name == "DisplayFolder") { #>
         /// <summary>
         /// Collection of localized Display Folders for the current <#=Rules.SplitCamelCase(t.Name)#>.

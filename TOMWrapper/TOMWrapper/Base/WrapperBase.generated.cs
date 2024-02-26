@@ -1272,6 +1272,9 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+		// Skipping property ConnectionDetails on object StructuredDataSource
+		// Skipping property Options on object StructuredDataSource
+		// Skipping property Credential on object StructuredDataSource
 /// <summary>
 ///             For internal use only.
 ///             </summary>
@@ -2713,6 +2716,9 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeSortByColumn() { return false; }
+		// Skipping property AttributeHierarchy on object Column
+		// Skipping property RelatedColumnDetails on object Column
+		// Skipping property AlternateOf on object Column
 /// <summary>
 ///             For a DataColumn, specifies the data type. See <see href="https://msdn.microsoft.com/library/gg492146.aspx" /> for a list of supported data types.
 ///             </summary>
@@ -3238,6 +3244,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+		// Skipping property ObjectTranslations on object Culture
         private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
         ///<summary>Removes all annotations from this object.</summary>
         [IntelliSense("Removes all annotations from this object.")]
@@ -3511,7 +3518,8 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.ExtendedProperties.Select(a => a.Name);
 		}
 
-		
+				// Skipping property LinguisticMetadata on object Culture
+
 		internal static Culture CreateFromMetadata(Model parent, TOM.Culture metadataObject) {
 			var obj = new Culture(metadataObject);
 			parent.Cultures.Add(obj);
@@ -4604,6 +4612,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+		// Skipping property Levels on object Hierarchy
         private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
         ///<summary>Removes all annotations from this object.</summary>
         [IntelliSense("Removes all annotations from this object.")]
@@ -4877,7 +4886,8 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.ExtendedProperties.Select(a => a.Name);
 		}
 
-		/// <summary>
+				// Skipping property ExcludedArtifacts on object Hierarchy
+/// <summary>
 ///             The description of the hierarchy, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
 ///             </summary>
 		[DisplayName("Description")]
@@ -7423,6 +7433,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeIsSimpleMeasure() { return false; }
+		// Skipping property ErrorMessage on object Measure
 /// <summary>
 ///             Defines the display folder for the Measure, for use by clients.
 ///             </summary>
@@ -7540,6 +7551,9 @@ namespace TabularEditor.TOMWrapper
 				return t as Table;
 			} 
 		}
+		// Skipping property KPI on object Measure
+		// Skipping property DetailRowsDefinition on object Measure
+		// Skipping property FormatStringDefinition on object Measure
 
         /// <Summary>
 		/// Collection of perspectives in which this Measure is visible.
@@ -7921,6 +7935,15 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+		// Skipping property Tables on object Model
+		// Skipping property Relationships on object Model
+		// Skipping property DataSources on object Model
+		// Skipping property Perspectives on object Model
+		// Skipping property Cultures on object Model
+		// Skipping property Roles on object Model
+		// Skipping property Expressions on object Model
+		// Skipping property QueryGroups on object Model
+		// Skipping property AnalyticsAIMetadata on object Model
         private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
         ///<summary>Removes all annotations from this object.</summary>
         [IntelliSense("Removes all annotations from this object.")]
@@ -8194,7 +8217,8 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.ExtendedProperties.Select(a => a.Name);
 		}
 
-		/// <summary>
+				// Skipping property ExcludedArtifacts on object Model
+/// <summary>
 ///             The description of the model, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
 ///             </summary>
 		[DisplayName("Description")]
@@ -8338,6 +8362,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeCollation() { return false; }
+		// Skipping property DataAccessOptions on object Model
 /// <summary>
 ///             Used by PBIX data source format conversion.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1450 or above.</remarks>
@@ -8554,6 +8579,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDiscourageCompositeModels() { return false; }
+		// Skipping property AutomaticAggregationOptions on object Model
 /// <summary>
 ///             Disable auto exists behavior for SummarizeColumns
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1566 or above.</remarks>
@@ -8723,6 +8749,8 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeDefaultMeasure() { return false; }
+		// Skipping property Database on object Model
+		// Skipping property Server on object Model
 /// <summary>
 ///             Gets an indication if the model has local changes that have not been saved to the engine yet.
 ///             </summary><value>True, if the model has local changes; otherwise, false.</value><remarks>A disconnected model, will always return a value of <b>false</b>.</remarks>
@@ -8960,6 +8988,8 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+		// Skipping property Members on object ModelRole
+		// Skipping property TablePermissions on object ModelRole
         private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
         ///<summary>Removes all annotations from this object.</summary>
         [IntelliSense("Removes all annotations from this object.")]
@@ -10433,6 +10463,7 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeErrorMessage() { return false; }
+		// Skipping property RetainDataTillForceCalculate on object Partition
 		///<summary>The parent table of the current Partition.</summary>
 		[Browsable(false)]
 		public Table Table
@@ -10448,6 +10479,8 @@ namespace TabularEditor.TOMWrapper
 				return t as Table;
 			} 
 		}
+		// Skipping property QueryGroup on object Partition
+		// Skipping property DataCoverageDefinition on object Partition
 /// <summary>
 ///             The type of source used by the Partition. This is either a query against a DataSource, or for calculated tables, an expression.
 ///             </summary>
@@ -10460,6 +10493,7 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeSourceType() { return false; }
+		// Skipping property Source on object Partition
 
 		internal static Partition CreateFromMetadata(Table parent, TOM.Partition metadataObject) {
 			var obj = new Partition(metadataObject);
@@ -11430,6 +11464,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+		// Skipping property PerspectiveTables on object Perspective
         private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
         ///<summary>Removes all annotations from this object.</summary>
         [IntelliSense("Removes all annotations from this object.")]
@@ -13195,6 +13230,11 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 
+		// Skipping property Columns on object Table
+		// Skipping property Partitions on object Table
+		// Skipping property Measures on object Table
+		// Skipping property Hierarchies on object Table
+		// Skipping property Sets on object Table
         private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
         ///<summary>Removes all annotations from this object.</summary>
         [IntelliSense("Removes all annotations from this object.")]
@@ -13468,7 +13508,9 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.ExtendedProperties.Select(a => a.Name);
 		}
 
-		/// <summary>
+				// Skipping property ExcludedArtifacts on object Table
+		// Skipping property Calendars on object Table
+/// <summary>
 ///             Specifies the type of Table so that you can customize application behavior based on the type of data in the table. Allowed values are identical to those of dimension type properties for Multidimensional models. Regular is the default. Other values include Time (2), Geography (3), Organization (4), BillOfMaterials (5), Accounts (6), Customers (7), Products (8), Scenario (9), Quantitativ1e (10), Utility (11), Currency (12), Rates (13), Channel (14) - channel dimension, Promotion (15).
 ///             </summary>
 		[DisplayName("Data Category")]
@@ -13733,6 +13775,9 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeExcludeFromAutomaticAggregations() { return false; }
+		// Skipping property DefaultDetailRowsDefinition on object Table
+		// Skipping property RefreshPolicy on object Table
+		// Skipping property CalculationGroup on object Table
 
         /// <Summary>
 		/// Collection of perspectives in which this Table is visible.
@@ -14661,7 +14706,8 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.ExtendedProperties.Select(a => a.Name);
 		}
 
-		/// <summary>
+				// Skipping property ExcludedArtifacts on object NamedExpression
+/// <summary>
 ///             The description of the expression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
 ///             </summary>
 		[DisplayName("Description")]
@@ -14829,6 +14875,7 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeRemoteParameterName() { return false; }
+		// Skipping property QueryGroup on object NamedExpression
 /// <summary>
 ///             Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter..
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1545 or above.</remarks>
@@ -15349,7 +15396,8 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.Annotations.Select(a => a.Name);
 		}
 
-		/// <summary>
+				// Skipping property CalculationItems on object CalculationGroup
+/// <summary>
 ///             The description of the CalculationGroup, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
 ///             </summary>
 		[DisplayName("Description")]
@@ -15412,6 +15460,8 @@ namespace TabularEditor.TOMWrapper
 				return t as Table;
 			} 
 		}
+		// Skipping property MultipleOrEmptySelectionExpression on object CalculationGroup
+		// Skipping property NoSelectionExpression on object CalculationGroup
 
 	
         internal override void RenewMetadataObject()
@@ -15543,6 +15593,7 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeState() { return false; }
+		// Skipping property ErrorMessage on object CalculationItem
 /// <summary>
 ///             The DAX expression that is evaluated for this CalculationItem.
 ///             </summary>
@@ -15591,6 +15642,8 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeOrdinal() { return false; }
+		// Skipping property CalculationGroup on object CalculationItem
+		// Skipping property FormatStringDefinition on object CalculationItem
 
 		internal static CalculationItem CreateFromMetadata(CalculationGroup parent, TOM.CalculationItem metadataObject) {
 			var obj = new CalculationItem(metadataObject);
@@ -16093,7 +16146,8 @@ namespace TabularEditor.TOMWrapper
 			return MetadataObject.ExtendedProperties.Select(a => a.Name);
 		}
 
-		/// <summary>
+				// Skipping property ColumnPermissions on object TablePermission
+/// <summary>
 ///             The DAX expression that filters the rows in the table when this security role is in effect.
 ///             </summary>
 		[DisplayName("Filter Expression")]
