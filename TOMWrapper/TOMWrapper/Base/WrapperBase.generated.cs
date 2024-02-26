@@ -135,6 +135,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string ORDINAL = "Ordinal";
 	    public const string PARAMETERVALUESCOLUMN = "ParameterValuesColumn";
 	    public const string PARENT = "Parent";
+	    public const string PARTITION = "Partition";
 	    public const string PARTITIONS = "Partitions";
 	    public const string PASSWORD = "Password";
 	    public const string PERSPECTIVES = "Perspectives";
@@ -234,6 +235,7 @@ namespace TabularEditor.TOMWrapper
             { typeof(CalculationGroup) , typeof(TOM.CalculationGroup) },
             { typeof(CalculationItem) , typeof(TOM.CalculationItem) },
             { typeof(TablePermission) , typeof(TOM.TablePermission) },
+            { typeof(DataCoverageDefinition) , typeof(TOM.DataCoverageDefinition) },
 	    };
 
 		public static Type ToTOM(Type wrapperType) {
@@ -16463,4 +16465,286 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 	}
+  
+	/// <summary>
+///             A tabular DataCoverageDefinition object. The expression defined on this object gives hint about the data in a partition.
+///             </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1603 or above.</remarks>
+	[TypeConverter(typeof(DynamicPropertyConverter))]
+	public sealed partial class DataCoverageDefinition: TabularObject
+			, IErrorMessageObject
+			, IDescriptionObject
+			, IInternalAnnotationObject
+	{
+	    internal new TOM.DataCoverageDefinition MetadataObject 
+		{ 
+			get 
+			{ 
+				return base.MetadataObject as TOM.DataCoverageDefinition; 
+		    } 
+			set 
+			{ 
+				base.MetadataObject = value; 
+			}
+		}
+
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Annotations on the current Data Coverage Definition.</summary>
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Data Coverage Definition."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
+		public AnnotationCollection Annotations { get; private set; }
+		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
+		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
+		public string GetAnnotation(int index) {
+			return MetadataObject.Annotations[index].Value;
+		}
+		///<summary>Returns true if an annotation with the given name exists. Otherwise false.</summary>
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		///<summary>Gets the value of the annotation with the given name. Returns null if no such annotation exists.</summary>
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
+		public string GetAnnotation(string name) {
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
+		}
+		///<summary>Sets the value of the annotation with the given index, assuming it exists.</summary>
+		[IntelliSense("Sets the value of the annotation with the given index, assuming it exists.")]
+		public void SetAnnotation(int index, string value) {
+		    SetAnnotation(index, value, true);
+		}
+		internal void SetAnnotation(int index, string value, bool undoable) {
+		    var name = MetadataObject.Annotations[index].Name;
+			SetAnnotation(name, value, undoable);
+		}
+		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+			SetAnnotation(index, value, undoable);
+		}
+		///<summary>Returns a unique name for a new annotation.</summary>
+		public string GetNewAnnotationName() {
+			return MetadataObject.Annotations.GetNewName("New Annotation");
+		}
+		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		internal void SetAnnotation(string name, string value, bool undoable) {
+			if(name == null) name = GetNewAnnotationName();
+
+			if(value == null) {
+				// Remove annotation if set to null:
+				RemoveAnnotation(name, undoable);
+				return;
+			}
+
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
+
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Change existing annotation:
+
+				var oldValue = GetAnnotation(name);
+				MetadataObject.Annotations[name].Value = value;
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
+			} else {
+				// Add new annotation:
+
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
+			}
+		}
+		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+			this.SetAnnotation(name, value, undoable);
+		}
+		///<summary>Remove an annotation by the given name.</summary>
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		internal void RemoveAnnotation(string name, bool undoable) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
+
+			    var oldValue = MetadataObject.Annotations[name].Value;
+				MetadataObject.Annotations.Remove(name);
+
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
+			}
+		}
+		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+			this.RemoveAnnotation(name, undoable);
+		}
+		///<summary>Gets the number of annotations on the current Data Coverage Definition.</summary>
+		[IntelliSense("Gets the number of annotations on the current Data Coverage Definition.")]
+		public int GetAnnotationsCount() {
+			return MetadataObject.Annotations.Count;
+		}
+		///<summary>Gets a collection of all annotation names on the current Data Coverage Definition.</summary>
+		[IntelliSense("Gets a collection of all annotation names on the current Data Coverage Definition.")]
+		public IEnumerable<string> GetAnnotations() {
+			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		/// <summary>
+///             The description of the DataCoverageDefinition, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+///             </summary>
+		[DisplayName("Description")]
+		[Category("Basic"),Description(@"The description of the DataCoverageDefinition, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the DataCoverageDefinition, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		public string Description {
+			get {
+			    return MetadataObject.Description;
+			}
+			set {
+				
+				var oldValue = Description;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
+				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeDescription() { return false; }
+/// <summary>
+///             The DAX expression that is evaluated for the DataCoverageDefinition.
+///             </summary>
+		[DisplayName("Expression")]
+		[Category("Options"),Description(@"The DAX expression that is evaluated for the DataCoverageDefinition."),IntelliSense(@"The DAX expression that is evaluated for the DataCoverageDefinition.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		public string Expression {
+			get {
+			    return MetadataObject.Expression;
+			}
+			set {
+				
+				var oldValue = Expression;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXPRESSION, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.Expression = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EXPRESSION, oldValue, newValue));
+				OnPropertyChanged(Properties.EXPRESSION, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeExpression() { return false; }
+/// <summary>
+///             Provides information on the state of the Expression. Possible values and their interpretation are as follows. Ready (1) The Expression is queryable and has up-to-date data. SemanticError (5) The Expression has a semantic error. DependencyError (7) A dependency associated with the Expression is in an error state (SemanticError, EvaluationError, or DependencyError). SyntaxError (9) The Expression has a syntax error.
+///             </summary>
+		[DisplayName("State")]
+		[Category("Metadata"),Description(@"Provides information on the state of the Expression. Possible values and their interpretation are as follows. Ready (1) The Expression is queryable and has up-to-date data. SemanticError (5) The Expression has a semantic error. DependencyError (7) A dependency associated with the Expression is in an error state (SemanticError, EvaluationError, or DependencyError). SyntaxError (9) The Expression has a syntax error."),IntelliSense(@"Provides information on the state of the Expression. Possible values and their interpretation are as follows. Ready (1) The Expression is queryable and has up-to-date data. SemanticError (5) The Expression has a semantic error. DependencyError (7) A dependency associated with the Expression is in an error state (SemanticError, EvaluationError, or DependencyError). SyntaxError (9) The Expression has a syntax error.")]
+		public ObjectState State {
+			get {
+			    return (ObjectState)MetadataObject.State;
+			}
+			
+		}
+		private bool ShouldSerializeState() { return false; }
+/// <summary>
+///             The string that explains the error state associated with the DataCoverageDefinition. It is set by the engine only when the state of the Expression is one of these three values: SemanticError, DependencyError or SyntaxError.
+///             </summary>
+		[DisplayName("Error Message")]
+		[Category("Metadata"),Description(@"The string that explains the error state associated with the DataCoverageDefinition. It is set by the engine only when the state of the Expression is one of these three values: SemanticError, DependencyError or SyntaxError."),IntelliSense(@"The string that explains the error state associated with the DataCoverageDefinition. It is set by the engine only when the state of the Expression is one of these three values: SemanticError, DependencyError or SyntaxError.")]
+		public string ErrorMessage {
+			get {
+			    return MetadataObject.ErrorMessage;
+			}
+			
+		}
+		private bool ShouldSerializeErrorMessage() { return false; }
+/// <summary>
+///             A reference to the Partition object that owns the DataCoverageDefinition.
+///             </summary>
+		[DisplayName("Partition")]
+		[Category("Options"),Description(@"A reference to the Partition object that owns the DataCoverageDefinition."),IntelliSense(@"A reference to the Partition object that owns the DataCoverageDefinition.")]
+		public Partition Partition {
+			get {
+				if (MetadataObject.Partition == null) return null;
+			    return Handler.WrapperLookup[MetadataObject.Partition] as Partition;
+            }
+			
+		}
+		private bool ShouldSerializePartition() { return false; }
+
+	
+        internal override void RenewMetadataObject()
+        {
+            Handler.WrapperLookup.Remove(MetadataObject);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.DataCoverageDefinition>(json);
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+
+
+
+		/// <summary>
+		/// CTOR - only called from static factory methods on the class
+		/// </summary>
+		DataCoverageDefinition(TOM.DataCoverageDefinition metadataObject) : base(metadataObject)
+		{
+			
+			// Create indexer for annotations:
+			Annotations = new AnnotationCollection(this);
+		}
+
+
+
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
+			Reinit();
+			ReapplyReferences();
+		}
+		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
+			if(!base.Browsable(propertyName)) return false;
+
+			switch (propertyName) {
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
+				
+				default:
+					return true;
+			}
+		}
+
+    }
+
 }

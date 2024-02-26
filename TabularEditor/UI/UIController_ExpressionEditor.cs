@@ -96,12 +96,15 @@ namespace TabularEditor.UI
 
         sealed class DaxPropertyComboBoxItem
         {
-            public string Description { get; private set; }
-            public DAXProperty Value { get; private set; }
-            public DaxPropertyComboBoxItem(DAXProperty value) { Value = value; Description = Enum.GetName(typeof(DAXProperty), value).SplitCamelCase(); }
-            public static Dictionary<DAXProperty, DaxPropertyComboBoxItem> Items = new Dictionary<DAXProperty, DaxPropertyComboBoxItem>(
+            public string Description { get; }
+            public DAXProperty Value { get; }
+            public DaxPropertyComboBoxItem(DAXProperty value, string description) { Value = value; Description = description; }
+            public DaxPropertyComboBoxItem(DAXProperty value) { Value = value; Description = Enum.GetName(typeof(DAXProperty), Value).SplitCamelCase(); }
+            public static readonly IReadOnlyDictionary<DAXProperty, DaxPropertyComboBoxItem> Items = new Dictionary<DAXProperty, DaxPropertyComboBoxItem>(
                 Enum.GetValues(typeof(DAXProperty)).Cast<DAXProperty>().ToDictionary(v => v, v => new DaxPropertyComboBoxItem(v))
                 );
+            public static readonly DaxPropertyComboBoxItem MExpression = new DaxPropertyComboBoxItem(DAXProperty.Expression, "M Expression");
+            public static readonly DaxPropertyComboBoxItem Query = new DaxPropertyComboBoxItem(DAXProperty.Expression, "Query");
         }
 
         private void ExpressionEditor_KeyPress(object sender, KeyPressEventArgs e)
@@ -212,6 +215,8 @@ namespace TabularEditor.UI
                     case ObjectType.TablePermission:
                         // These are the only object types that contain DAX expression properties:
                         return true;
+                    case ObjectType.Partition:
+                        return CurrentDaxProperty == DAXProperty.DataCoverageExpression;
                     default:
                         // Other object types (partitions) do typically not contain DAX expressions:
                         return false;
@@ -252,6 +257,10 @@ namespace TabularEditor.UI
 
         private string GetProperty()
         {
+            if (ExpressionEditor_Current is Partition && CurrentDaxProperty == DAXProperty.Expression)
+            {
+                return TOMWrapper.Properties.EXPRESSION;
+            }
             return (ExpressionEditor_Current as IDaxDependantObject)?.GetDAXProperty(CurrentDaxProperty) ?? TOMWrapper.Properties.EXPRESSION;
         }
 
@@ -259,7 +268,11 @@ namespace TabularEditor.UI
         {
             string value;
 
-            if(ExpressionEditor_Current is IDaxDependantObject daxObject)
+            if(ExpressionEditor_Current is Partition && CurrentDaxProperty == DAXProperty.Expression)
+            {
+                value = ExpressionEditor_Current.Expression ?? "";
+            }
+            else if(ExpressionEditor_Current is IDaxDependantObject daxObject)
             {
                 value = daxObject.GetDAX(CurrentDaxProperty) ?? "";
             }
@@ -287,7 +300,11 @@ namespace TabularEditor.UI
             if (ExpressionEditor_IsDax && Preferences.Current.UseSemicolonsAsSeparators)
                 value = ExpressionParser.SemicolonsToCommas(value);
 
-            if (ExpressionEditor_Current is IDaxDependantObject)
+            if (ExpressionEditor_Current is Partition && prop == DAXProperty.Expression)
+            {
+                ExpressionEditor_Current.Expression = value;
+            }
+            else if (ExpressionEditor_Current is IDaxDependantObject)
             {
                 (ExpressionEditor_Current as IDaxDependantObject).SetDAX(prop, value);
             }
@@ -305,7 +322,7 @@ namespace TabularEditor.UI
             }
             set
             {
-                UI.ExpressionSelector.SelectedItem = DaxPropertyComboBoxItem.Items[value];
+                UI.ExpressionSelector.SelectedItem = UI.ExpressionSelector.Items.Cast<DaxPropertyComboBoxItem>().FirstOrDefault(i => i.Value == value) ?? DaxPropertyComboBoxItem.Items[value];
             }
         }
         private DAXProperty LastDaxProperty;
@@ -362,6 +379,8 @@ namespace TabularEditor.UI
             if (ddo != null)
             {
                 UI.ExpressionSelector.Enabled = true;
+                if (obj is MPartition) UI.ExpressionSelector.Items.Add(DaxPropertyComboBoxItem.MExpression);
+                else if (obj is Partition) UI.ExpressionSelector.Items.Add(DaxPropertyComboBoxItem.Query);
                 foreach (var daxProp in ddo.GetDAXProperties()) UI.ExpressionSelector.Items.Add(DaxPropertyComboBoxItem.Items[daxProp]);
                 CurrentDaxProperty = ddo.GetDefaultDAXProperty();
             }

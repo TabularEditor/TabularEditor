@@ -275,7 +275,8 @@ namespace TabularEditor.TOMWrapper.Utils
         NoSelectionExpression = 7,
         NoSelectionFormatStringExpression = 8,
         MultipleOrEmptySelectionExpression = 9,
-        MultipleOrEmptySelectionFormatStringExpression = 10
+        MultipleOrEmptySelectionFormatStringExpression = 10,
+        DataCoverageExpression = 11,
     }
 
     public static class DAXPropertyHelper
@@ -290,6 +291,7 @@ namespace TabularEditor.TOMWrapper.Utils
                 case DAXProperty.StatusExpression: return "KPI Status Expression";
                 case DAXProperty.TrendExpression: return "KPI Trend Expression";
                 case DAXProperty.FormatStringExpression: return "Format String Expression";
+                case DAXProperty.DataCoverageExpression: return "Data Coverage Expression";
                 default: return "Expression";
             }
         }

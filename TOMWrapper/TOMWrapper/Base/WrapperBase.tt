@@ -111,7 +111,7 @@ namespace TabularEditor.TOMWrapper
 #><#= props.Any(p => p.Name == "ErrorMessage") ? "\n\t\t\t, IErrorMessageObject" : ""
 #><#= props.Any(p => p.Name == "Table" && t.Name != "CalculationGroup" && t.Name != "TablePermission") ? "\n\t\t\t, ITabularTableObject" : ""
 #><#= props.Any(p => p.Name == "Description") ? "\n\t\t\t, IDescriptionObject" : ""
-#><#= props.Any(p => p.Name == "Expression" && t.Name != "NamedExpression") ? "\n\t\t\t, IExpressionObject" : ""
+#><#= props.Any(p => p.Name == "Expression" && t.Name != "NamedExpression" && t.Name != "DataCoverageDefinition") ? "\n\t\t\t, IExpressionObject" : ""
 #><#= props.Any(p => p.Name == "FormatString") ? "\n\t\t\t, IFormattableObject" : ""
 #><#= props.Any(p => p.Name == "LineageTag") ? "\n\t\t\t, ILineageTagObject" : ""
 #><#= props.Any(p => p.Name == "Annotations") ? "\n\t\t\t, IInternalAnnotationObject" : ""

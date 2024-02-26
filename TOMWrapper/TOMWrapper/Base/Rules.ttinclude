@@ -222,6 +222,7 @@ partial class Rules {
     {
 		if (p.Name == "ErrorMessage" && (t.Name == "Measure" || t.Name == "CalculationItem")) return false;
 		if (p.Name == "KPI") return false;
+		if (p.Name == "DataCoverageDefinition") return false;
 		if (p.Name == "AlternateOf") return false;
 		if (p.Name == "CalculationGroup") return false;
 		if (p.Name == "RefreshPolicy") return false;
@@ -290,9 +291,8 @@ partial class Rules {
 				case "FromColumn":
 				case "ToColumn":
 				case "ParameterValuesColumn":
+				case "DataCoverageDefinition":
 				case "KPI":
-					resolveObject = "value?.MetadataObject";
-					break;
 				case "DefaultMeasure":
 				    resolveObject = "value?.MetadataObject";
 					break;
@@ -573,7 +573,8 @@ partial class Rules {
 	   { "NamedExpression", "TabularNamedObject" },
 	   { "CalculationGroup", "TabularObject" },
 	   { "CalculationItem", "TabularNamedObject" },
-	   { "TablePermission", "TabularNamedObject" }
+	   { "TablePermission", "TabularNamedObject" },
+	   { "DataCoverageDefinition", "TabularObject" }
    };
    public static bool Seal(Type type) { return !_objectTypes.Values.Any(t => t == type.Name); }
    public static Dictionary<Type, string> ObjectTypes = Convert(_objectTypes).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);

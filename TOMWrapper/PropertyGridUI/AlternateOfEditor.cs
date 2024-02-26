@@ -39,4 +39,19 @@ namespace TabularEditor.PropertyGridUI
             return measure.AddKPI();
         }
     }
+    public class DataCoverageDefinitionEditor : UITypeEditor
+    {
+        public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
+        {
+            var partition = context.Instance as Partition;
+            if (partition == null) return UITypeEditorEditStyle.None;
+            return partition.DataCoverageDefinition == null ? UITypeEditorEditStyle.Modal : UITypeEditorEditStyle.None;
+        }
+
+        public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
+        {
+            var partition = context.Instance as Partition;
+            return partition.AddDataCoverageDefinition();
+        }
+    }
 }

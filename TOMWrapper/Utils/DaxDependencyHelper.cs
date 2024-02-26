@@ -106,6 +106,10 @@ namespace TabularEditor.TOMWrapper.Utils
                 yield return DAXProperty.Expression;
                 yield return DAXProperty.FormatStringExpression;
             }
+            if (obj is Partition p && p.ShowDataCoverageDefinition())
+            {
+                yield return DAXProperty.DataCoverageExpression;
+            }
         }
 
         public static DAXProperty GetDefaultDAXProperty(this IDaxDependantObject obj)
@@ -161,6 +165,11 @@ namespace TabularEditor.TOMWrapper.Utils
                 }
             }
 
+            if (obj is Partition p)
+            {
+                return nameof(p.DataCoverageDefinitionExpression);
+            }
+
             throw new ArgumentException(string.Format(Messages.InvalidExpressionProperty, obj.GetTypeName(), property), "property");
         }
 
@@ -208,6 +217,11 @@ namespace TabularEditor.TOMWrapper.Utils
                     if (property == DAXProperty.MultipleOrEmptySelectionExpression) return cgt.MultipleOrEmptySelectionExpression;
                     if (property == DAXProperty.MultipleOrEmptySelectionFormatStringExpression) return cgt.MultipleOrEmptySelectionFormatStringExpression;
                 }
+            }
+
+            if (obj is Partition p)
+            {
+                return p.DataCoverageDefinitionExpression;
             }
 
             throw new ArgumentException(string.Format(Messages.InvalidExpressionProperty, obj.GetTypeName(), property), "property");
@@ -263,6 +277,12 @@ namespace TabularEditor.TOMWrapper.Utils
                 if (property == DAXProperty.NoSelectionFormatStringExpression) { cgt.NoSelectionFormatStringExpression = expression; return; }
                 if (property == DAXProperty.MultipleOrEmptySelectionExpression) { cgt.MultipleOrEmptySelectionExpression = expression; return; }
                 if (property == DAXProperty.MultipleOrEmptySelectionFormatStringExpression) { cgt.MultipleOrEmptySelectionFormatStringExpression = expression; return; }
+            }
+
+            if (obj is Partition p)
+            {
+                p.DataCoverageDefinitionExpression = expression;
+                return;
             }
 
             throw new ArgumentException(string.Format(Messages.InvalidExpressionProperty, obj.GetTypeName(), property), "property");

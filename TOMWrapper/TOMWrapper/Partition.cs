@@ -9,12 +9,26 @@ using TabularEditor.TOMWrapper.Undo;
 using System.ComponentModel.Design;
 using System.Drawing.Design;
 using TabularEditor.TOMWrapper.PowerBI;
+using TabularEditor.TOMWrapper.Utils;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class Partition: IExpressionObject
+    public partial class Partition: IExpressionObject, IDaxDependantObject
     {
         public bool NeedsValidation { get { return false; } private set { } }
+
+        private DependsOnList _dependsOn = null;
+
+        [Browsable(false)]
+        public DependsOnList DependsOn
+        {
+            get
+            {
+                if (_dependsOn == null)
+                    _dependsOn = new DependsOnList(this);
+                return _dependsOn;
+            }
+        }
 
         protected override void Init()
         {
@@ -28,6 +42,9 @@ namespace TabularEditor.TOMWrapper
                         Model.DataSources.First().MetadataObject
                 };
             }
+
+            if (MetadataObject.DataCoverageDefinition != null) this.DataCoverageDefinition = DataCoverageDefinition.CreateFromMetadata(this, MetadataObject.DataCoverageDefinition);
+
             base.Init();
         }
 
@@ -77,6 +94,97 @@ namespace TabularEditor.TOMWrapper
                 if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "Expression", oldValue, value));
                 OnPropertyChanged("Expression", oldValue, value);
             }
+        }
+
+        [Browsable(false)]
+        public string DataCoverageDefinitionExpression
+        {
+            get
+            {
+                return DataCoverageDefinition?.Expression;
+            }
+            set
+            {
+                if (value == DataCoverageDefinitionExpression) return;
+                if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(DataCoverageDefinitionExpression)) return;
+                Handler.BeginUpdate("Data Coverage Definition Expression");
+                if (DataCoverageDefinition == null) AddDataCoverageDefinition();
+                if (DataCoverageDefinition != null) DataCoverageDefinition.Expression = value;
+                Handler.EndUpdate();
+            }
+        }
+
+        /// <summary>
+        /// A reference to an optional DataCoverageDefinition that provides the hint regarding the data that is covered by the partition.
+        /// </summary>
+		[DisplayName("DataCoverageDefinition")]
+        [Category("Options"), IntelliSense("A reference to an optional DataCoverageDefinition that provides the hint regarding the data that is covered by the partition.")]
+        [PropertyAction(nameof(AddDataCoverageDefinition), nameof(RemoveDataCoverageDefinition)), Editor(typeof(DataCoverageDefinitionEditor), typeof(UITypeEditor))]
+        public DataCoverageDefinition DataCoverageDefinition
+        {
+            get
+            {
+                if (MetadataObject.DataCoverageDefinition == null) return null;
+                return Handler.WrapperLookup[MetadataObject.DataCoverageDefinition] as DataCoverageDefinition;
+            }
+            set
+            {
+                var oldValue = MetadataObject.DataCoverageDefinition != null ? DataCoverageDefinition : null;
+                if (oldValue?.MetadataObject == value?.MetadataObject) return;
+                bool undoable = true;
+                bool cancel = false;
+                OnPropertyChanging("DataCoverageDefinition", value, ref undoable, ref cancel);
+                if (cancel) return;
+
+                var newDataCoverageDefinition = value?.MetadataObject;
+                if (newDataCoverageDefinition != null && newDataCoverageDefinition.IsRemoved)
+                {
+                    Handler.WrapperLookup.Remove(newDataCoverageDefinition);
+                    newDataCoverageDefinition = newDataCoverageDefinition.Clone();
+                    value.MetadataObject = newDataCoverageDefinition;
+                    Handler.WrapperLookup.Add(newDataCoverageDefinition, value);
+                }
+
+                MetadataObject.DataCoverageDefinition = newDataCoverageDefinition;
+
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, "DataCoverageDefinition", oldValue, value));
+                OnPropertyChanged("DataCoverageDefinition", oldValue, value);
+            }
+        }
+
+        public DataCoverageDefinition AddDataCoverageDefinition()
+        {
+            Handler.BeginUpdate("Add DataCoverageDefinition");
+            if (DataCoverageDefinition == null) DataCoverageDefinition = DataCoverageDefinition.CreateNew();
+            Handler.EndUpdate();
+            return DataCoverageDefinition;
+        }
+        private bool CanAddDataCoverageDefinition() => DataCoverageDefinition == null;
+        public void RemoveDataCoverageDefinition()
+        {
+            Handler.BeginUpdate("Remove DataCoverageDefinition");
+            DataCoverageDefinition = null;
+            Handler.EndUpdate();
+        }
+        private bool CanRemoveDataCoverageDefinition() => DataCoverageDefinition != null;
+
+        private DataCoverageDefinition DataCoverageDefinitionBackup;
+
+        internal override void RemoveReferences()
+        {
+            DataCoverageDefinitionBackup = DataCoverageDefinition;
+            base.RemoveReferences();
+        }
+
+        internal override void Reinit()
+        {
+            if (DataCoverageDefinitionBackup != null)
+            {
+                Handler.WrapperLookup.Remove(DataCoverageDefinitionBackup.MetadataObject);
+                DataCoverageDefinitionBackup.MetadataObject = MetadataObject.DataCoverageDefinition;
+                Handler.WrapperLookup.Add(DataCoverageDefinitionBackup.MetadataObject, DataCoverageDefinitionBackup);
+            }
+            base.Reinit();
         }
 
         [Browsable(false)]
@@ -133,10 +241,14 @@ namespace TabularEditor.TOMWrapper
                 case Properties.SOURCETYPE:
                 case Properties.ANNOTATIONS:
                     return true;
+                case nameof(DataCoverageDefinition):
+                    return ShowDataCoverageDefinition();
                 default:
                     return false;
             }
         }
+
+        internal bool ShowDataCoverageDefinition() => Handler.CompatibilityLevel >= 1603 && (this.GetMode() == ModeType.DirectQuery || this.GetMode() == ModeType.Dual || DataCoverageDefinition != null);
 
         [Category("Metadata"),DisplayName("Last Processed")]
         public DateTime RefreshedTime
@@ -179,6 +291,8 @@ namespace TabularEditor.TOMWrapper
                 case Properties.DATAVIEW:
                 case Properties.ANNOTATIONS:
                     return true;
+                case nameof(DataCoverageDefinition):
+                    return Handler.CompatibilityLevel >= 1603;
                 default:
                     return false;
             }

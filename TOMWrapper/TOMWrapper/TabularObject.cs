@@ -71,6 +71,7 @@ namespace TabularEditor.TOMWrapper
         CalculationGroup = 46,
         CalculationItem = 47,
         AlternateOf = 48,
+        DataCoverageDefinition = 58,
         Database = 1000
     }
 

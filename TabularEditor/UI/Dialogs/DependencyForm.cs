@@ -173,6 +173,12 @@ namespace TabularEditor
                         newNode.Tag = ci;
                         n.Nodes.Add(newNode);
                     }
+                    else if (currentDepth < MAX_LEVELS && d is Partition p)
+                    {
+                        var newNode = new TreeNode(d.GetName(), i, i);
+                        newNode.Tag = p;
+                        n.Nodes.Add(newNode);
+                    }
                     else n.Nodes.Add("(Infinite recursion)");
                     currentDepth--;
                 }

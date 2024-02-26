@@ -177,6 +177,10 @@ namespace TabularEditor.TOMWrapper.Utils
             {
                 BuildDependencyTree(ci);
             }
+            foreach (var p in Model.AllPartitions.Where(p => p.DataCoverageDefinition != null && !string.IsNullOrEmpty(p.DataCoverageDefinition.Expression)))
+            {
+                BuildDependencyTree(p);
+            }
             foreach (var role in Model.Roles)
             {
                 foreach(var tp in role.TablePermissions)
