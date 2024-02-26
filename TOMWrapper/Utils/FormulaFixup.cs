@@ -44,7 +44,7 @@ namespace TabularEditor.TOMWrapper.Utils
         {
             var lexer = new DAXLexer(new DAXCharStream(dax, false));
             lexer.RemoveErrorListeners();
-            var tokens = lexer.GetAllTokens();
+            var tokens = lexer.GetDefaultTokens().ToList();
 
             IToken lastTableRef = null;
             int startTableIndex = 0;
@@ -52,83 +52,87 @@ namespace TabularEditor.TOMWrapper.Utils
             for (var i = 0; i < tokens.Count; i++)
             {
                 var tok = tokens[i];
-                switch (tok.Type)
+
+                var isTableOrVariableRef = tok.Type == DAXLexer.TABLE
+                    || tok.Type == DAXLexer.TABLE_OR_VARIABLE
+                    || (tok.Channel == DAXLexer.KEYWORD_CHANNEL && i < tokens.Count - 1 && tokens[i + 1].Type != DAXLexer.OPEN_PARENS);
+
+                if (isTableOrVariableRef)
                 {
-                    case DAXLexer.TABLE:
-                    case DAXLexer.TABLE_OR_VARIABLE:
-                        if (i < tokens.Count - 1 && tokens[i + 1].Type == DAXLexer.COLUMN_OR_MEASURE)
-                        {
-                            // Keep the token reference, as the next token should be column (fully qualified).
-                            lastTableRef = tok;
-                            startTableIndex = tok.StartIndex;
-                        }
-                        else
-                        {
-                            // Table referenced directly, don't save the reference for the next token.
-                            lastTableRef = null;
-                        }
-
-                        if (Model.Tables.Contains(tok.Text))
-                        {
-                            if (dependsOn != null) dependsOn.Add(Model.Tables[tok.Text], prop, tok.StartIndex, tok.StopIndex, true);
-                            else expressionObj.AddDep(Model.Tables[tok.Text], prop, tok.StartIndex, tok.StopIndex, true);
-                        }
-                        else
-                        {
-                            // Invalid reference (no table with that name) or possibly a variable or function ref
-                        }
-                        break;
-                    case DAXLexer.COLUMN_OR_MEASURE:
-                        // Referencing a table just before the object reference
-                        if (lastTableRef != null)
-                        {
-                            var tableName = lastTableRef.Text;
-                            lastTableRef = null;
-                            if (!Model.Tables.Contains(tableName)) return; // Invalid reference (no table with that name)
-
-                            var table = Model.Tables[tableName];
-                            // Referencing a column on a specific table
-                            if (table.Columns.Contains(tok.Text))
-                            {
-                                if (dependsOn != null) dependsOn.Add(table.Columns[tok.Text], prop, startTableIndex, tok.StopIndex, true);
-                                else expressionObj.AddDep(table.Columns[tok.Text], prop, startTableIndex, tok.StopIndex, true);
-                            }
-                            // Referencing a measure on a specific table
-                            else if (table.Measures.Contains(tok.Text))
-                            {
-                                if (dependsOn != null) dependsOn.Add(table.Measures[tok.Text], prop, startTableIndex, tok.StopIndex, true);
-                                else expressionObj.AddDep(table.Measures[tok.Text], prop, startTableIndex, tok.StopIndex, true);
-                            }
-                        }
-                        // No table reference before the object reference
-                        else
-                        {
-                            var table = (expressionObj as ITabularTableObject)?.Table ?? (expressionObj as TablePermission)?.Table;
-                            // Referencing a column without specifying a table (assume column in same table):
-                            if (table != null && table.Columns.Contains(tok.Text))
-                            {
-                                if (dependsOn != null) dependsOn.Add(table.Columns[tok.Text], prop, tok.StartIndex, tok.StopIndex, false);
-                                else expressionObj.AddDep(table.Columns[tok.Text], prop, tok.StartIndex, tok.StopIndex, false);
-                            }
-                            // Referencing a measure or column without specifying a table
-                            else
-                            {
-                                Measure m = null;
-                                if (table != null && table.Measures.Contains(tok.Text)) m = table.Measures[tok.Text];
-                                else
-                                    m = Model.Tables.FirstOrDefault(t => t.Measures.Contains(tok.Text))?.Measures[tok.Text];
-
-                                if (m != null)
-                                {
-                                    if (dependsOn != null) dependsOn.Add(m, prop, tok.StartIndex, tok.StopIndex, false);
-                                    else expressionObj.AddDep(m, prop, tok.StartIndex, tok.StopIndex, false);
-                                }
-                            }
-                        }
-                        break;
-                    default:
+                    if (i < tokens.Count - 1 && tokens[i + 1].Type == DAXLexer.COLUMN_OR_MEASURE)
+                    {
+                        // Keep the token reference, as the next token should be column (fully qualified).
+                        lastTableRef = tok;
+                        startTableIndex = tok.StartIndex;
+                    }
+                    else
+                    {
+                        // Table referenced directly, don't save the reference for the next token.
                         lastTableRef = null;
-                        break;
+                    }
+
+                    if (Model.Tables.Contains(tok.Text))
+                    {
+                        if (dependsOn != null) dependsOn.Add(Model.Tables[tok.Text], prop, tok.StartIndex, tok.StopIndex, true);
+                        else expressionObj.AddDep(Model.Tables[tok.Text], prop, tok.StartIndex, tok.StopIndex, true);
+                    }
+                    else
+                    {
+                        // Invalid reference (no table with that name) or possibly a variable or function ref
+                    }
+                }
+                else if (tok.Type == DAXLexer.COLUMN_OR_MEASURE)
+                {
+                    // Referencing a table just before the object reference
+                    if (lastTableRef != null)
+                    {
+                        var tableName = lastTableRef.Text;
+                        lastTableRef = null;
+                        if (!Model.Tables.Contains(tableName)) return; // Invalid reference (no table with that name)
+
+                        var table = Model.Tables[tableName];
+                        // Referencing a column on a specific table
+                        if (table.Columns.Contains(tok.Text))
+                        {
+                            if (dependsOn != null) dependsOn.Add(table.Columns[tok.Text], prop, startTableIndex, tok.StopIndex, true);
+                            else expressionObj.AddDep(table.Columns[tok.Text], prop, startTableIndex, tok.StopIndex, true);
+                        }
+                        // Referencing a measure on a specific table
+                        else if (table.Measures.Contains(tok.Text))
+                        {
+                            if (dependsOn != null) dependsOn.Add(table.Measures[tok.Text], prop, startTableIndex, tok.StopIndex, true);
+                            else expressionObj.AddDep(table.Measures[tok.Text], prop, startTableIndex, tok.StopIndex, true);
+                        }
+                    }
+                    // No table reference before the object reference
+                    else
+                    {
+                        var table = (expressionObj as ITabularTableObject)?.Table ?? (expressionObj as TablePermission)?.Table;
+                        // Referencing a column without specifying a table (assume column in same table):
+                        if (table != null && table.Columns.Contains(tok.Text))
+                        {
+                            if (dependsOn != null) dependsOn.Add(table.Columns[tok.Text], prop, tok.StartIndex, tok.StopIndex, false);
+                            else expressionObj.AddDep(table.Columns[tok.Text], prop, tok.StartIndex, tok.StopIndex, false);
+                        }
+                        // Referencing a measure or column without specifying a table
+                        else
+                        {
+                            Measure m = null;
+                            if (table != null && table.Measures.Contains(tok.Text)) m = table.Measures[tok.Text];
+                            else
+                                m = Model.Tables.FirstOrDefault(t => t.Measures.Contains(tok.Text))?.Measures[tok.Text];
+
+                            if (m != null)
+                            {
+                                if (dependsOn != null) dependsOn.Add(m, prop, tok.StartIndex, tok.StopIndex, false);
+                                else expressionObj.AddDep(m, prop, tok.StartIndex, tok.StopIndex, false);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    lastTableRef = null;
                 }
             }
         }

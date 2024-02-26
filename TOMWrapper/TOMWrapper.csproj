@@ -110,6 +110,7 @@
     <Compile Include="IsExternalInit.cs" />
     <Compile Include="PowerBiCompatibilityModeHelper.cs" />
     <Compile Include="Serialization\TmdlSerializeOptions.cs" />
+    <Compile Include="TextServices\DAXLexerExtensions.cs" />
     <Compile Include="TOMWrapper\CalculationGroup.cs" />
     <Compile Include="Utils\DbConnectionStringBuilderExtension.cs" />
     <Compile Include="PropertyGridUI\AlternateOfEditor.cs" />

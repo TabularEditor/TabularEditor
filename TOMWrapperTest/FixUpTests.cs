@@ -308,6 +308,24 @@ namespace TabularEditor.TOMWrapper.Tests
         }
 
         [TestMethod]
+        public void FixupKeywordTest()
+        {
+            var handler = new TabularModelHandler(1500);
+            var model = handler.Model;
+            var t = model.AddTable("Calendar");
+            var m1 = t.AddMeasure("Test", "COUNTROWS(Calendar)");
+            var m2 = t.AddMeasure("Test", "COUNTROWS(Calendar())");
+
+            t.Name = "Renamed";
+            Assert.AreEqual("COUNTROWS('Renamed')", m1.Expression);
+            Assert.AreEqual("COUNTROWS(Calendar())", m2.Expression);
+
+            handler.UndoManager.Undo();
+            Assert.AreEqual("COUNTROWS(Calendar)", m1.Expression);
+            Assert.AreEqual("COUNTROWS(Calendar())", m2.Expression);
+        }
+
+        [TestMethod]
         public void FixupInitialNoMatchAndUndo()
         {
             var handler = ObjectHandlingTests.CreateTestModel(compatibilityLevel: 1400);
