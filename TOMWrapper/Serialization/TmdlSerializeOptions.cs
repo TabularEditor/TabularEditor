@@ -10,12 +10,12 @@ namespace TabularEditor.TOMWrapper.Serialization
     public record class TmdlSerializeOptions
     {
         private const TmdlCasingStyle DefaultCasingStyle = TmdlCasingStyle.CamelCase;
-        private const TmdlExpressionTrimStyle DefaultExpressionTrimStyle = TmdlExpressionTrimStyle.TrimTrailingWhitespaces;
+        private const TmdlExpressionTrimStyle DefaultExpressionTrimStyle = TmdlExpressionTrimStyle.NoTrim;
         private const NewLineStyle DefaultNewLineStyle = NewLineStyle.SystemDefault;
         private const SerializationEncoding DefaultEncoding = SerializationEncoding.UTF8;
         private const int DefaultBaseIndentationLevel = 0;
         private const int DefaultSpacesIndentation = 0; // Use tabs for indentation by default
-        private const bool DefaultIncludeRefs = false;
+        private const bool DefaultIncludeRefs = true;
 
         internal bool IsDefault() => DefaultCasingStyle == CasingStyle
             && DefaultExpressionTrimStyle == ExpressionTrimStyle
@@ -79,11 +79,17 @@ namespace TabularEditor.TOMWrapper.Serialization
             };
             return string.Concat(System.Linq.Enumerable.Repeat(newLine, repeat));
         }
+
+        private static UTF8Encoding utf8encodingWithoutBom
+            = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+        // Todo: Consider configuration for BOM/no BOM. Same for UTF32, where we also have an option for big/small endian.
+        // Also, consider codepage configuration for ASCII and other encodings.
+
         public static Encoding GetEncoding(this TmdlSerializeOptions options)
         {
             return options.Encoding switch
             {
-                SerializationEncoding.UTF8 => Encoding.UTF8,
+                SerializationEncoding.UTF8 => utf8encodingWithoutBom,
                 SerializationEncoding.UTF7 => Encoding.UTF7,
                 SerializationEncoding.UTF32 => Encoding.UTF32,
                 SerializationEncoding.Unicode => Encoding.Unicode,
