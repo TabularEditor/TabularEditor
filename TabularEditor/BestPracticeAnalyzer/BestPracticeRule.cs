@@ -253,11 +253,7 @@ namespace TabularEditor.BestPracticeAnalyzer
             UpdateEnabled(model);
             if (!Enabled)
             {
-                yield return new AnalyzerResult
-                {
-                    Rule = this,
-                    RuleEnabled = false
-                };
+                yield return new AnalyzerResult(this, false);
                 yield break;
             }
 
@@ -265,13 +261,7 @@ namespace TabularEditor.BestPracticeAnalyzer
             var queries = GetQueries(model);
 
             if (!IsValid) {
-                yield return new AnalyzerResult
-                {
-                    Rule = this,
-                    InvalidCompatibilityLevel = invalidCompatibilityLevel,
-                    RuleError = ErrorMessage,
-                    RuleErrorScope = errorScope
-                };
+                yield return new AnalyzerResult(this, invalidCompatibilityLevel, ErrorMessage, errorScope);
                 yield break;
             }
 
@@ -296,17 +286,11 @@ namespace TabularEditor.BestPracticeAnalyzer
 
             if (!IsValid)
             {
-                yield return new AnalyzerResult
-                {
-                    Rule = this,
-                    InvalidCompatibilityLevel = invalidCompatibilityLevel,
-                    RuleError = ErrorMessage,
-                    RuleErrorScope = errorScope
-                };
+                yield return new AnalyzerResult(this, invalidCompatibilityLevel, ErrorMessage, errorScope);
                 yield break;
             }
             else
-                foreach (var obj in results) yield return new AnalyzerResult { Rule = this, Object = obj };
+                foreach (var obj in results) yield return new AnalyzerResult(this, obj);
 
         }
 

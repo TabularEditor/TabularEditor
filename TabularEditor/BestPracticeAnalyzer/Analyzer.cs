@@ -166,11 +166,29 @@ namespace TabularEditor.BestPracticeAnalyzer
 
     public class AnalyzerResult
     {
-        public bool RuleEnabled { get; init; } = true;
+        public AnalyzerResult(BestPracticeRule rule, bool ruleEnabled)
+        {
+            Rule = rule;
+            RuleEnabled = ruleEnabled;
+        }
+        public AnalyzerResult(BestPracticeRule rule, ITabularNamedObject obj)
+        {
+            Rule = rule;
+            Object = obj;
+        }
+        public AnalyzerResult(BestPracticeRule rule, bool invalidCompatibilityLevel, string ruleErrorMessage, RuleScope ruleErrorScope)
+        {
+            Rule = rule;
+            InvalidCompatibilityLevel = invalidCompatibilityLevel;
+            RuleErrorScope = ruleErrorScope;
+            RuleError = ruleErrorMessage;
+        }
+
+        public bool RuleEnabled { get; } = true;
         public bool RuleHasError { get { return !string.IsNullOrEmpty(RuleError); } }
-        public bool InvalidCompatibilityLevel { get; init; }
-        public string RuleError { get; init; }
-        public RuleScope RuleErrorScope { get; init; }
+        public bool InvalidCompatibilityLevel { get; }
+        public string RuleError { get; }
+        public RuleScope RuleErrorScope { get; }
         public string ObjectType => RuleHasError ? "Error" : Object.GetTypeName();
         public string ObjectName
         {
@@ -184,8 +202,8 @@ namespace TabularEditor.BestPracticeAnalyzer
             }
         }
         public string RuleName { get { return Rule.Name; } }
-        public ITabularNamedObject Object { get; init; }
-        public BestPracticeRule Rule { get; init; }
+        public ITabularNamedObject Object { get; }
+        public BestPracticeRule Rule { get; }
         public bool CanFix { get { return Rule.FixExpression != null; } }
         /// <summary>
         /// Indicates whether this rule should be ignored on this particular object
