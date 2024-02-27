@@ -94,7 +94,7 @@ namespace TabularEditor.UI.Dialogs
 
             LoadSettings();
 
-            var showCm = handler?.HasSerializeOptions ?? false;
+            var showCm = handler != null && (handler.HasSerializeOptions || !handler.IsConnected);
             SetCurrentModelTabVisible(showCm);
             if (showCm) LoadSettingsCM();
 
