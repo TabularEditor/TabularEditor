@@ -140,7 +140,7 @@ namespace TabularEditor.TOMWrapper
 
         internal virtual ITabularObjectCollection GetCollectionForChild(TabularObject child)
         {
-            throw new NotSupportedException("This object does not have any child collections.");
+            return null;
         }
 
 
