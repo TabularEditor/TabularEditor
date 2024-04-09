@@ -570,7 +570,12 @@ database            Database ID of the model to load. If blank ("") picks the fi
                 {
                     try
                     {
-                        Handler.Save(Handler.Source, Handler.SourceType == ModelSourceType.Folder ? SaveFormat.TabularEditorFolder : Handler.SourceType == ModelSourceType.Pbit ? SaveFormat.PowerBiTemplate : SaveFormat.ModelSchemaOnly, Handler.SerializeOptions, true);
+                        var saveFormat = Handler.SourceType == ModelSourceType.Folder ? SaveFormat.TabularEditorFolder 
+                            : Handler.SourceType == ModelSourceType.Pbit ? SaveFormat.PowerBiTemplate
+                            : Handler.SourceType == ModelSourceType.TMDL ? SaveFormat.TMDL
+                            : SaveFormat.ModelSchemaOnly;
+
+                        Handler.Save(Handler.Source, saveFormat, Handler.SerializeOptions, true);
                         Console.WriteLine("Model metadata saved.");
                     }
                     catch (Exception ex)
