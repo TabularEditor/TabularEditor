@@ -313,7 +313,7 @@ namespace TabularEditor.TOMWrapper
         private void SaveTmdl(string path, SerializeOptions options)
         {
             var db = Model.Database.TOMDatabase;
-            db.RemoveTabularEditorTag();
+            db.AddTabularEditorTag();
 
             if (options == null) options = new SerializeOptions();
 
@@ -371,7 +371,7 @@ namespace TabularEditor.TOMWrapper
 
         private void SaveFile(string fileName, SerializeOptions options)
         {
-            var dbcontent = Serializer.SerializeDB(options, false);
+            var dbcontent = Serializer.SerializeDB(options, true);
             var jObject = JObject.Parse(dbcontent);
 
             jObject["name"] = Model.Database?.Name ?? "SemanticModel";
