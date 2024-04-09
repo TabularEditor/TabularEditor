@@ -197,6 +197,9 @@ namespace TabularEditor.TOMWrapper
 
         private const string ANN_SERIALIZEOPTIONS = "TabularEditor_SerializeOptions";
 
+        // When flag is set, Tabular Editor should treat the model as a Direct Lake model:
+        internal const string ANN_DIRECTLAKE = "TabularEditor_DirectLake";
+
         public bool HasSerializeOptions =>
             Model.GetAnnotation(ANN_SERIALIZEOPTIONS) != null;
 

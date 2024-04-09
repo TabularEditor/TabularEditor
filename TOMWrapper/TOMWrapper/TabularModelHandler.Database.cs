@@ -55,6 +55,13 @@ namespace TabularEditor.TOMWrapper
 
         public TabularDeployer TabularDeployer { get; } = new TabularDeployer();
 
+        private bool directLakeTableAddedFlag;
+        internal void FlagDirectLakeTableAdded()
+        {
+            if (this.HasDirectLake())
+                directLakeTableAddedFlag = true;
+        }
+
         /// <summary>
         /// Saves the changes to the database. It is the users responsibility to check if changes were made
         /// to the database since it was loaded to the TOMWrapper. You can use Handler.CheckConflicts() for
@@ -94,6 +101,11 @@ namespace TabularEditor.TOMWrapper
                     database.Update();
                     Thread.Sleep(500);
                 }
+                if (this.HasDirectLake() && directLakeTableAddedFlag)
+                {
+                    database.Model.RequestRefresh(TOM.RefreshType.Automatic);
+                    directLakeTableAddedFlag = false;
+                };
                 database.Model.SaveChanges();
 
                 AttachCalculatedTableMetadata();

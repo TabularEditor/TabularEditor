@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -68,6 +69,13 @@ namespace TabularEditor.TOMWrapper
             if (server == null) return AsServerType.NotConnected;
 
             return server.GetServerType();
+        }
+        public static bool HasDirectLake(this TabularModelHandler handler)
+        {
+            if (handler.Model.CheckFlag(TabularModelHandler.ANN_DIRECTLAKE)) return true;
+
+            if (handler.Model.DefaultMode == ModeType.DirectLake) return true;
+            return handler.Model.Tables.Any(t => t.IsDirectLakeTable());
         }
     }
 
