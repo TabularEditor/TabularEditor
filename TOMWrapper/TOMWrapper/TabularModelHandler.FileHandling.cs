@@ -50,8 +50,8 @@ namespace TabularEditor.TOMWrapper
                 // Manually search directories:
                 datasetFiles.AddRange(Directory.EnumerateFiles(file.DirectoryName, "*.bim", SearchOption.AllDirectories));
             }
-            if (datasetFiles.Count == 0) throw new Exception("The PBIP project folder does not contain any datasets.");
-            if (datasetFiles.Count > 1) throw new Exception("The PBIP project folder contains multiple datasets. Please open the .bim file directly.");
+            if (datasetFiles.Count == 0) throw new Exception("The PBIP project folder does not contain any semantic models.");
+            if (datasetFiles.Count > 1) throw new Exception("The PBIP project folder contains multiple semantic models. Please open the .bim file directly.");
 
             return datasetFiles[0];
         }
