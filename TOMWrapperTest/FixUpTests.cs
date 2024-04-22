@@ -116,20 +116,22 @@ namespace TabularEditor.TOMWrapper.Tests
             var m1 = handler.Model.Tables["Date"].AddMeasure("Test 1", "COUNT(Date[Date])");
             var m2 = handler.Model.Tables["Date"].AddMeasure("Test 2", "COUNT('Date'[Date])");
             var m3 = handler.Model.Tables["Date"].AddMeasure("Test 3", "COUNT([Date])");
+            var m4 = handler.Model.Tables["Date"].AddMeasure("Test 4", "COUNTROWS(Date)");
+            var m5 = handler.Model.Tables["Date"].AddMeasure("Test 5", "COUNTROWS('Date')");
 
-            var m4 = handler.Model.Tables["Date"].AddMeasure("Test 4", "[Test 1]+[Test 2]");
+            var m6 = handler.Model.Tables["Date"].AddMeasure("Test 6", "[Test 1]+[Test 2]");
 
             handler.UndoManager.SetCheckpoint();
 
             handler.Model.Tables["Date"].Columns["Date"].Name = "x";
 
-            Assert.AreEqual("COUNT(Date[x])", m1.Expression);
+            Assert.AreEqual("COUNT('Date'[x])", m1.Expression);
             Assert.AreEqual("COUNT('Date'[x])", m2.Expression);
             Assert.AreEqual("COUNT([x])", m3.Expression);
 
             handler.Model.Tables["Date"].Name = "y";
 
-            Assert.AreEqual("COUNT(Date[x])", m1.Expression); // Unaffected by table name change, since Date[x] is not a valid column reference ("Date" is a reserved word).
+            Assert.AreEqual("COUNT('y'[x])", m1.Expression);
             Assert.AreEqual("COUNT('y'[x])", m2.Expression);
             Assert.AreEqual("COUNT([x])", m3.Expression);
 
@@ -144,7 +146,7 @@ namespace TabularEditor.TOMWrapper.Tests
             Assert.AreEqual("COUNT([x])", m3.Expression);
 
             m1.Name = "Test X";
-            Assert.AreEqual("[Test X]+[Test 2]", m4.Expression);
+            Assert.AreEqual("[Test X]+[Test 2]", m6.Expression);
             Assert.AreEqual("[Test X]+[Test 2]", m0.Expression);
 
             handler.UndoManager.Rollback(true);

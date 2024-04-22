@@ -214,6 +214,10 @@
       {
         "name": "TabularEditor_SerializeOptions",
         "value": "{\"IgnoreInferredObjects\":true,\"IgnoreInferredProperties\":true,\"IgnoreTimestamps\":true,\"SplitMultilineStrings\":true,\"PrefixFilenames\":false,\"LocalTranslations\":true,\"LocalPerspectives\":true,\"LocalRelationships\":true,\"Levels\":[\"Data Sources\",\"Roles\",\"Tables\",\"Tables/Calculation Items\",\"Tables/Columns\",\"Tables/Hierarchies\",\"Tables/Measures\",\"Tables/Partitions\"]}"
+      },
+      {
+        "name": "__TEdtr",
+        "value": "1"
       }
     ]
   }
