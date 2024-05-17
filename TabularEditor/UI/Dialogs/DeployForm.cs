@@ -145,6 +145,9 @@ namespace TabularEditor.UI.Dialogs
                 DeployOptions.DeployRoles = chkDeployRoles.Checked;
                 DeployOptions.DeployRoleMembers = chkDeployRoleMembers.Checked;
 
+                // Auto-refresh when deploying a DirectLake model for the first time:
+                DeployOptions.AutoRefresh = DeployOptions.DeployMode == DeploymentMode.CreateDatabase && Handler.HasDirectLake();
+
                 tvSummary.Nodes.Clear();
                 var n = tvSummary.Nodes.Add("Summary");
                 var n1 = n.Nodes.Add("Destination");

@@ -834,6 +834,17 @@ namespace TabularEditor.TOMWrapper
             return sourceType == TOM.PartitionSourceType.M || sourceType == TOM.PartitionSourceType.Query || sourceType == TOM.PartitionSourceType.PolicyRange
                 || (sourceType == TOM.PartitionSourceType.None && table.RefreshPolicy != null);
         }
+        public static bool IsDirectLakeTable(this Table table)
+        {
+            return table.MetadataObject.IsDirectLakeTable();
+        }
+        public static bool IsDirectLakeTable(this TOM.Table table)
+        {
+            if (table.Model.DefaultMode == TOM.ModeType.DirectLake)
+                return table.Partitions.Any(p => p.SourceType == TOM.PartitionSourceType.Entity && p.Source is TOM.EntityPartitionSource && (p.Mode == TOM.ModeType.DirectLake || p.Mode == TOM.ModeType.Default));
+            else
+                return table.Partitions.Any(p => p.SourceType == TOM.PartitionSourceType.Entity && p.Source is TOM.EntityPartitionSource && p.Mode == TOM.ModeType.DirectLake);
+        }
         public static bool IsImported(this Table table)
         {
             return table.MetadataObject.IsImported();

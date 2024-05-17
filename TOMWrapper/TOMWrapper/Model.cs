@@ -79,6 +79,7 @@ namespace TabularEditor.TOMWrapper
             var t = Table.CreateNew(this, name);
             
             Handler.EndUpdate();
+            Handler.FlagDirectLakeTableAdded();
             return t;
         }
 

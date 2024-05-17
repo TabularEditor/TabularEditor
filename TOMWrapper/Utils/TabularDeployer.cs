@@ -111,6 +111,11 @@ namespace TabularEditor.TOMWrapper.Utils
             // Fully refresh the deployed database object, to make sure we get updated error messages for the full object tree:
             var deployedDB = destinationServer.Databases.GetByName(targetDatabaseName);
             deployedDB.Refresh(true);
+            if (options.AutoRefresh)
+            {
+                deployedDB.Model.RequestRefresh(TOM.RefreshType.Automatic);
+                deployedDB.Model.SaveChanges();
+            }
             return GetLastDeploymentResults(deployedDB);
         }
 
@@ -421,6 +426,7 @@ namespace TabularEditor.TOMWrapper.Utils
         public bool DeployRoleMembers = false;
         public bool ThrowIfEnterprise = false;
         public bool RemoveRoleMemberIds = false;
+        public bool AutoRefresh = false;
 
         /// <summary>
         /// Default deployment. Does not overwrite connections, partitions or role members.

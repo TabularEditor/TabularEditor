@@ -83,6 +83,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string FROMCARDINALITY = "FromCardinality";
 	    public const string FROMCOLUMN = "FromColumn";
 	    public const string FROMTABLE = "FromTable";
+	    public const string FUNCTIONS = "Functions";
 	    public const string HASLOCALCHANGES = "HasLocalChanges";
 	    public const string HIDEMEMBERS = "HideMembers";
 	    public const string HIERARCHIES = "Hierarchies";
@@ -7946,6 +7947,7 @@ namespace TabularEditor.TOMWrapper
 		// Skipping property Expressions on object Model
 		// Skipping property QueryGroups on object Model
 		// Skipping property AnalyticsAIMetadata on object Model
+		// Skipping property Functions on object Model
         private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
         ///<summary>Removes all annotations from this object.</summary>
         [IntelliSense("Removes all annotations from this object.")]
@@ -8942,6 +8944,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.FORCEUNIQUENAMES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1465 : Handler.CompatibilityLevel >= 1465;
+				case Properties.FUNCTIONS:
+					return false;
 				case Properties.MATTRIBUTES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1535 : Handler.CompatibilityLevel >= 1535;
 				case Properties.MAXPARALLELISMPERQUERY:
@@ -16666,10 +16670,10 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeExpression() { return false; }
 /// <summary>
-///             Provides information on the state of the Expression. Possible values and their interpretation are as follows. Ready (1) The Expression is queryable and has up-to-date data. SemanticError (5) The Expression has a semantic error. DependencyError (7) A dependency associated with the Expression is in an error state (SemanticError, EvaluationError, or DependencyError). SyntaxError (9) The Expression has a syntax error.
+///             Provides information on the state of the Expression. Possible values and their interpretation are as follows. Ready (1) The Expression is queryable and has up-to-date data. CalculationNeeded (4): The Expression is not queryable and needs to be refreshed to become functional. SemanticError (5) The Expression has a semantic error. DependencyError (7) A dependency associated with the Expression is in an error state (SemanticError, EvaluationError, or DependencyError). SyntaxError (9) The Expression has a syntax error.
 ///             </summary>
 		[DisplayName("State")]
-		[Category("Metadata"),Description(@"Provides information on the state of the Expression. Possible values and their interpretation are as follows. Ready (1) The Expression is queryable and has up-to-date data. SemanticError (5) The Expression has a semantic error. DependencyError (7) A dependency associated with the Expression is in an error state (SemanticError, EvaluationError, or DependencyError). SyntaxError (9) The Expression has a syntax error."),IntelliSense(@"Provides information on the state of the Expression. Possible values and their interpretation are as follows. Ready (1) The Expression is queryable and has up-to-date data. SemanticError (5) The Expression has a semantic error. DependencyError (7) A dependency associated with the Expression is in an error state (SemanticError, EvaluationError, or DependencyError). SyntaxError (9) The Expression has a syntax error.")]
+		[Category("Metadata"),Description(@"Provides information on the state of the Expression. Possible values and their interpretation are as follows. Ready (1) The Expression is queryable and has up-to-date data. CalculationNeeded (4): The Expression is not queryable and needs to be refreshed to become functional. SemanticError (5) The Expression has a semantic error. DependencyError (7) A dependency associated with the Expression is in an error state (SemanticError, EvaluationError, or DependencyError). SyntaxError (9) The Expression has a syntax error."),IntelliSense(@"Provides information on the state of the Expression. Possible values and their interpretation are as follows. Ready (1) The Expression is queryable and has up-to-date data. CalculationNeeded (4): The Expression is not queryable and needs to be refreshed to become functional. SemanticError (5) The Expression has a semantic error. DependencyError (7) A dependency associated with the Expression is in an error state (SemanticError, EvaluationError, or DependencyError). SyntaxError (9) The Expression has a syntax error.")]
 		public ObjectState State {
 			get {
 			    return (ObjectState)MetadataObject.State;
@@ -16678,10 +16682,10 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeState() { return false; }
 /// <summary>
-///             The string that explains the error state associated with the DataCoverageDefinition. It is set by the engine only when the state of the Expression is one of these three values: SemanticError, DependencyError or SyntaxError.
+///             The string that explains the error state associated with the DataCoverageDefinition. It is set by the engine only when the state of the Expression is one of these four values: EvaluationError, SemanticError, DependencyError or SyntaxError.
 ///             </summary>
 		[DisplayName("Error Message")]
-		[Category("Metadata"),Description(@"The string that explains the error state associated with the DataCoverageDefinition. It is set by the engine only when the state of the Expression is one of these three values: SemanticError, DependencyError or SyntaxError."),IntelliSense(@"The string that explains the error state associated with the DataCoverageDefinition. It is set by the engine only when the state of the Expression is one of these three values: SemanticError, DependencyError or SyntaxError.")]
+		[Category("Metadata"),Description(@"The string that explains the error state associated with the DataCoverageDefinition. It is set by the engine only when the state of the Expression is one of these four values: EvaluationError, SemanticError, DependencyError or SyntaxError."),IntelliSense(@"The string that explains the error state associated with the DataCoverageDefinition. It is set by the engine only when the state of the Expression is one of these four values: EvaluationError, SemanticError, DependencyError or SyntaxError.")]
 		public string ErrorMessage {
 			get {
 			    return MetadataObject.ErrorMessage;
