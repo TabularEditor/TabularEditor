@@ -46,7 +46,7 @@ namespace TabularEditor.UIServices
             if (string.IsNullOrWhiteSpace(basePath)) throw new ArgumentException("basePath must be specified");
             if (string.IsNullOrWhiteSpace(relativeOrAbsolutePath)) throw new System.IO.FileNotFoundException();
 
-            var isAbsolutePath = relativeOrAbsolutePath.StartsWith(@"\\") || (char.IsLetter(relativeOrAbsolutePath[0]) && relativeOrAbsolutePath[1] == ':');
+            var isAbsolutePath = relativeOrAbsolutePath.StartsWith(@"\\") || relativeOrAbsolutePath.StartsWith("/") || (char.IsLetter(relativeOrAbsolutePath[0]) && relativeOrAbsolutePath[1] == ':');
 
             return isAbsolutePath ? relativeOrAbsolutePath : Path.GetFullPath(basePath.ConcatPath(relativeOrAbsolutePath));
         }
