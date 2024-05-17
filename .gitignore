@@ -60,3 +60,5 @@
 /.cr
 /TOMWrapperTest/obj
 /AntlrGrammars/obj
+bin/
+obj/
