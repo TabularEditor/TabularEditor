@@ -37,6 +37,7 @@
     <Compile Include="TOMWrapper\Utils\DependencyList.cs" />
     <Compile Include="TOMWrapper\Utils\FormulaFixup.cs" />
     <Compile Include="TOMWrapper\Utils\JObjectExtension.cs" />
+    <Compile Include="TOMWrapper\MetadataSerializationOptionsBuilderExtension.cs" />
     <Compile Include="TOMWrapper\Messages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
