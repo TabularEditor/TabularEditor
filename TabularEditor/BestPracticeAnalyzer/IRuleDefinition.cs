@@ -1,3 +1,4 @@
+#if BPALib
 using System.Collections.Generic;
 
 namespace TabularEditor.BestPracticeAnalyzer
@@ -9,3 +10,4 @@ namespace TabularEditor.BestPracticeAnalyzer
         bool Internal { get; }
     }
 }
+#endif

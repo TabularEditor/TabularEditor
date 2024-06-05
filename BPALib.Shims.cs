@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Globalization;
-using TOM = Microsoft.AnalysisServices.Tabular;
 
 #if NETSTANDARD || NETFRAMEWORK
 

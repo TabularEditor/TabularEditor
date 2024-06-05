@@ -19,7 +19,9 @@
   <ItemGroup>
     <Compile Remove="**\*.cs" />
     <Compile Include="BPALib.Shims.cs" />
-    <Compile Include="TabularEditor\BestPracticeAnalyzer\**\*.cs" />
+    <Compile Include="TabularEditor\BestPracticeAnalyzer\Analyzer.cs" />
+    <Compile Include="TabularEditor\BestPracticeAnalyzer\BestPracticeRule.cs" />
+    <Compile Include="TabularEditor\BestPracticeAnalyzer\IRuleDefinition.cs" />
     <Compile Include="TabularEditor\UIServices\DynamicLinq.cs" />
     <Compile Include="TabularEditor\UIServices\FileSystemHelper.cs" />
     <Compile Include="TabularEditor\UIServices\Policies.cs" />
