@@ -388,7 +388,7 @@ namespace TabularEditor
                         database = "";
                     }
                 }
-                Console.WriteLine($"Loading model from server {server}...");
+                Console.WriteLine($"Loading model...");
                 Handler = new TabularModelHandler(server, database, settings);
             }
             catch (Exception e)
