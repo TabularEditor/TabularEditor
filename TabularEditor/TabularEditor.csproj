@@ -900,22 +900,4 @@
     <Error Condition="!Exists('..\packages\Fody.3.3.5\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.3.3.5\build\Fody.targets'))" />
     <Error Condition="!Exists('..\packages\Costura.Fody.3.3.2\build\Costura.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Costura.Fody.3.3.2\build\Costura.Fody.props'))" />
   </Target>
-  <PropertyGroup>
-    <PostBuildEvent Condition=" '$(Configuration)' == 'Release' ">"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x86\signtool.exe" sign /sha1 b2e9378dcc9030818a76527aa083f373772ae50b /tr "http://timestamp.sectigo.com" /td SHA256 /fd certHash ^
-        "$(SolutionDir)\TabularEditor\bin\Release\TabularEditor.exe" ^
-        "$(SolutionDir)\TabularEditor\obj\Release\TabularEditor.exe"
-    </PostBuildEvent>
-  </PropertyGroup>
-  <!-- Uncomment below to automatically comment 14.0.0.0 dlls into target folder -->
-  <!--<Target Condition="$(DefineConstants.Contains(CL1400))" Name="CopyDependencyDLLs" AfterTargets="AfterBuild">
-    <Copy SourceFiles="$(SolutionDir)packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Core.dll;$(SolutionDir)packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Tabular.dll;$(SolutionDir)packages\Microsoft.AnalysisServices.Tabular.14.0.1.430\Microsoft.AnalysisServices.Server.Tabular.Json.dll" DestinationFolder="$(TargetDir)">
-    </Copy>
-  </Target>-->
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
