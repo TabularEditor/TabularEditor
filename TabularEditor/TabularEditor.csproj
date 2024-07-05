@@ -900,4 +900,11 @@
     <Error Condition="!Exists('..\packages\Fody.3.3.5\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.3.3.5\build\Fody.targets'))" />
     <Error Condition="!Exists('..\packages\Costura.Fody.3.3.2\build\Costura.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Costura.Fody.3.3.2\build\Costura.Fody.props'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent Condition=" '$(Configuration)' == 'Release' ">powershell &amp; sign-binaries.ps1</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>cd $(SolutionDir)
+powershell.exe $(SolutionDir)sign-binaries.ps1</PostBuildEvent>
+  </PropertyGroup>
 </Project>
