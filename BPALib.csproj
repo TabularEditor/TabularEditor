@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net472;net6.0;net7.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net472;net6.0;net8.0</TargetFrameworks>
     <RootNamespace>TabularEditor</RootNamespace>
     <LangVersion>10.0</LangVersion>
     <TOMNugetVersion>19.84.1</TOMNugetVersion>
