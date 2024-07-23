@@ -4,7 +4,7 @@
     <TargetFrameworks>net472;net6.0;net7.0;net8.0</TargetFrameworks>
     <RootNamespace>TabularEditor</RootNamespace>
     <LangVersion>10.0</LangVersion>
-    <TOMNugetVersion>19.80.0</TOMNugetVersion>
+    <TOMNugetVersion>19.84.1</TOMNugetVersion>
     <DefineConstants>$(DefineConstants);BPALib</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
