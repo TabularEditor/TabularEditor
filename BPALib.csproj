@@ -4,7 +4,7 @@
     <TargetFrameworks>net472;net6.0;net8.0</TargetFrameworks>
     <RootNamespace>TabularEditor</RootNamespace>
     <LangVersion>10.0</LangVersion>
-    <TOMNugetVersion>19.84.1</TOMNugetVersion>
+    <TOMNugetVersion>19.84.6</TOMNugetVersion>
     <DefineConstants>$(DefineConstants);BPALib</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
@@ -62,10 +62,9 @@
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
     <PackageReference Include="System.IO.Compression" Version="4.3.0" />
-    <PackageReference Include="Microsoft.AnalysisServices.retail.amd64" Version="$(TOMNugetVersion)" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' != 'net472' ">
-    <PackageReference Include="Microsoft.AnalysisServices.NetCore.retail.amd64" Version="$(TOMNugetVersion)" />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AnalysisServices" Version="$(TOMNugetVersion)" />
   </ItemGroup>
   <ItemGroup>
     <Antlr4 Remove="AntlrGrammars\*.g4" />
