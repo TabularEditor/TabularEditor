@@ -89,15 +89,7 @@ namespace TabularEditor.TOMWrapper
             if (file.Exists && file.Extension.EqualsI(".pbit")) LoadPowerBiTemplateFile(path);
 
             // TMDL:
-            else if (file.Exists && (file.Extension.EqualsI(".tmdl") || file.Extension.EqualsI(".tmd")))
-            {
-                var databaseTmdlExists = File.Exists(Path.Combine(file.DirectoryName, "database.tmdl"));
-                LoadTMDL(path, useModelDeserialization: !databaseTmdlExists);
-            }
-            else if (Directory.Exists(path) && File.Exists(Path.Combine(path, "database.tmdl"))) LoadTMDL(Path.Combine(path, "database.tmdl"), useModelDeserialization: false);
-            else if (Directory.Exists(path) && File.Exists(Path.Combine(path, "database.tmd"))) LoadTMDL(Path.Combine(path, "database.tmd"), useModelDeserialization: false);
-            else if (Directory.Exists(path) && File.Exists(Path.Combine(path, "model.tmdl"))) LoadTMDL(Path.Combine(path, "model.tmdl"), useModelDeserialization: true);
-            else if (Directory.Exists(path) && File.Exists(Path.Combine(path, "model.tmd"))) LoadTMDL(Path.Combine(path, "model.tmd"), useModelDeserialization: true);
+            else if ((Directory.Exists(path) || IsTmdlFile(file)) && FindRootTmdlPath(path) is string rootTmdlPath) LoadTMDL(rootTmdlPath);
 
             // If the file name is "database.json" or path is a directory, assume Split Model:
             else if ((file.Exists && file.Name.EqualsI("database.json")) || Directory.Exists(path)) LoadSplitModelFiles(path);
@@ -111,6 +103,34 @@ namespace TabularEditor.TOMWrapper
 
             UndoManager.Resume();
             PowerBIGovernance.UpdateGovernanceMode(path);
+        }
+
+        private static string FindRootTmdlPath(string path)
+        {
+            if (File.Exists(path)) path = new FileInfo(path).DirectoryName;
+            if (IsRootTmdlDirectory(path)) return path;
+            var parent = new DirectoryInfo(path).Parent;
+            var i = 0;
+            while (parent != null)
+            {
+                if (IsRootTmdlDirectory(parent.FullName)) return parent.FullName;
+                parent = parent.Parent;
+                if (i++ > 5) break;
+            }
+            return null;
+
+        }
+        private static bool IsRootTmdlDirectory(string path)
+        {
+            return
+                File.Exists(Path.Combine(path, "database.tmdl")) ||
+                File.Exists(Path.Combine(path, "database.tmd")) ||
+                File.Exists(Path.Combine(path, "model.tmdl")) ||
+                File.Exists(Path.Combine(path, "model.tmd"));
+        }
+        private bool IsTmdlFile(FileInfo file)
+        {
+            return file.Exists && (file.Extension.EqualsI(".tmd") || file.Extension.EqualsI(".tmdl"));
         }
 
         private void LoadSplitModelFiles(string path)
@@ -140,24 +160,16 @@ namespace TabularEditor.TOMWrapper
             InitModelFromJson(pbit.ModelJson);
         }
 
-        private void LoadTMDL(string path, bool useModelDeserialization)
+        private void LoadTMDL(string path)
         {
             SourceType = ModelSourceType.TMDL;
-            if (File.Exists(path)) path = new FileInfo(path).DirectoryName;
             Source = path;
 
             try
             {
-                if (useModelDeserialization)
-                {
-                    var model = TOM.TmdlSerializer.DeserializeModelFromFolder(path);
-                    database = model.Database as TOM.Database;
-                }
-                else
-                {
-                    database = TOM.TmdlSerializer.DeserializeDatabaseFromFolder(path);
-                }
+                database = TOM.TmdlSerializer.DeserializeDatabaseFromFolder(path);
                 database.DetermineCompatibilityMode();
+
                 Status = "Model loaded successfully.";
                 Init();
 
