@@ -347,7 +347,7 @@ namespace TabularEditor.TOMWrapper
                 .WithRestrictedInformation(options.IncludeSensitive)
                 .WithMetadataOrderHints(options.TmdlOptions.IncludeRefs);
 
-            TOM.TmdlSerializer.SerializeDatabaseToFolder(Database, tmdlOptionsBuilder.GetOptions(), path);
+            TOM.TmdlSerializer.SerializeDatabaseToFolder(Database, path, tmdlOptionsBuilder.GetOptions());
         }
 
         private void SaveFile(string fileName, SerializeOptions options)

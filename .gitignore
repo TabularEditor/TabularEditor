@@ -61,3 +61,5 @@
 /TOMWrapperTest/obj
 /AntlrGrammars/obj
 **/.vs
+/sign-binaries.ps1
+/sign-installer.ps1

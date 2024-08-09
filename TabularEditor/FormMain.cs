@@ -30,7 +30,7 @@ namespace TabularEditor
             Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en-US");
             InitializeComponent();
 
-            dlgOpenFile.Filter = "All supported files|*.bim;database.json;model.tmd;model.tmdl;*.pbit;*.pbip|Tabular Model Files|*.bim;database.json;model.tmd;model.tmdl|Power BI Files|*.pbit;*.pbip|All files|*.*";
+            dlgOpenFile.Filter = "All supported files|*.bim;database.json;model.tmd;model.tmdl;database.tmdl;*.pbit;*.pbip|Tabular Model Files|*.bim;database.json;model.tmd;model.tmdl;database.tmdl|Power BI Files|*.pbit;*.pbip|All files|*.*";
 
             // For some reason, Visual Studio sometimes removes this from the FormMain.Designer.cs, making the
             // colors of the lines look ugly:

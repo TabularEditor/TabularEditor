@@ -24,6 +24,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string AUTOMATICAGGREGATIONOPTIONS = "AutomaticAggregationOptions";
 	    public const string BASECOLUMN = "BaseColumn";
 	    public const string BASETABLE = "BaseTable";
+	    public const string BINDINGINFOCOLLECTION = "BindingInfoCollection";
 	    public const string CALCULATIONGROUP = "CalculationGroup";
 	    public const string CALCULATIONITEMS = "CalculationItems";
 	    public const string CALENDARS = "Calendars";
@@ -60,7 +61,6 @@ namespace TabularEditor.TOMWrapper
 	    public const string DETAILROWSDEFINITION = "DetailRowsDefinition";
 	    public const string DIRECTLAKEBEHAVIOR = "DirectLakeBehavior";
 	    public const string DISABLEAUTOEXISTS = "DisableAutoExists";
-	    public const string DISABLESYSTEMDEFAULTEXPRESSION = "DisableSystemDefaultExpression";
 	    public const string DISCOURAGECOMPOSITEMODELS = "DiscourageCompositeModels";
 	    public const string DISCOURAGEIMPLICITMEASURES = "DiscourageImplicitMeasures";
 	    public const string DISCOURAGEREPORTMEASURES = "DiscourageReportMeasures";
@@ -7948,6 +7948,7 @@ namespace TabularEditor.TOMWrapper
 		// Skipping property QueryGroups on object Model
 		// Skipping property AnalyticsAIMetadata on object Model
 		// Skipping property Functions on object Model
+		// Skipping property BindingInfoCollection on object Model
         private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
         ///<summary>Removes all annotations from this object.</summary>
         [IntelliSense("Removes all annotations from this object.")]
@@ -8657,30 +8658,6 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeMaxParallelismPerQuery() { return false; }
 /// <summary>
-///             Disable system defined default expression behavior for calculation groups.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at Preview or above.</remarks>
-		[DisplayName("Disable System Default Expression")]
-		[Category("Options"),Description(@"Disable system defined default expression behavior for calculation groups."),IntelliSense(@"Disable system defined default expression behavior for calculation groups.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
-		public bool DisableSystemDefaultExpression {
-			get {
-			    return MetadataObject.DisableSystemDefaultExpression;
-			}
-			set {
-				
-				var oldValue = DisableSystemDefaultExpression;
-				var newValue = value;
-				if (oldValue == newValue) return;
-				bool undoable = true;
-				bool cancel = false;
-				OnPropertyChanging(Properties.DISABLESYSTEMDEFAULTEXPRESSION, newValue, ref undoable, ref cancel);
-				if (cancel) return;
-				if (!MetadataObject.IsRemoved) MetadataObject.DisableSystemDefaultExpression = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISABLESYSTEMDEFAULTEXPRESSION, oldValue, newValue));
-				OnPropertyChanged(Properties.DISABLESYSTEMDEFAULTEXPRESSION, oldValue, newValue);
-			}
-		}
-		private bool ShouldSerializeDisableSystemDefaultExpression() { return false; }
-/// <summary>
 ///             Define the fallback behavior of Direct Lake tables.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1604 or above.</remarks>
 		[DisplayName("Direct Lake Behavior")]
@@ -8914,6 +8891,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.AUTOMATICAGGREGATIONOPTIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1564 : Handler.CompatibilityLevel >= 1564;
+				case Properties.BINDINGINFOCOLLECTION:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.DATAACCESSOPTIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.DATASOURCEDEFAULTMAXCONNECTIONS:
@@ -8928,8 +8907,6 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1604 : Handler.CompatibilityLevel >= 1604;
 				case Properties.DISABLEAUTOEXISTS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1566 : Handler.CompatibilityLevel >= 1566;
-				case Properties.DISABLESYSTEMDEFAULTEXPRESSION:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.DISCOURAGECOMPOSITEMODELS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1560 : Handler.CompatibilityLevel >= 1560;
 				case Properties.DISCOURAGEIMPLICITMEASURES:

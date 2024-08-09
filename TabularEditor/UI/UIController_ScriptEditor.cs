@@ -250,7 +250,7 @@ namespace TabularEditor.UI
 
             //return methods
             foreach (var mi in type.GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                .Where(m => !m.IsSpecialName && m.DeclaringType != typeof(object)).AsEnumerable())
+                .Where(m => !m.IsSpecialName && m.DeclaringType != typeof(object)).AsEnumerable().OrderBy(m => m.Name))
             {
                 if (mi.GetCustomAttribute<IntelliSenseAttribute>() == null) continue;
                 switch (mi.Name)
@@ -269,16 +269,15 @@ namespace TabularEditor.UI
                     returnTypeName = compiler.GetTypeOutput(returnType).Replace("TabularEditor.UI.UISelectionList", "IEnumerable").Replace("TabularEditor.TOMWrapper.", "");
                 }
 
-                var methodSyntax = returnTypeName + " " + mi.Name + "(" + string.Join(", ", mi.GetParameters().Select(p => p.Name).ToArray()) + ")";
+                var methodSyntax = returnTypeName + " " + mi.Name + "(" + string.Join(", ", mi.GetParameters().Select(DynamicCollection.ParameterDisplayName).ToArray()) + ")";
 
-                if (last?.Text == methodName)
-                    last.ToolTipText = methodSyntax + Environment.NewLine + last.ToolTipText;
+                if (last?.Text == methodName) last.ToolTipText = "(overload) " + methodSyntax + Environment.NewLine + last.ToolTipText;
                 else
                 {
                     last = new MethodAutocompleteItemParen(methodName)
                     {
                         ToolTipTitle = methodSyntax,
-                        ToolTipText = mi.GetCustomAttribute<IntelliSenseAttribute>()?.Description ?? string.Empty,
+                        ToolTipText = Environment.NewLine + mi.GetCustomAttribute<IntelliSenseAttribute>()?.Description ?? string.Empty,
                         ImageIndex = TabularIcons.ICON_METHOD
                     };
                     Add(last);
@@ -457,7 +456,7 @@ namespace TabularEditor.UI
 
             //return methods
             foreach (var mi in type.GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                .Where(m => !m.IsSpecialName && m.DeclaringType != typeof(object)).AsEnumerable())
+                .Where(m => !m.IsSpecialName && m.DeclaringType != typeof(object)).AsEnumerable().OrderBy(m => m.Name))
             {
                 switch(mi.Name)
                 {
@@ -475,15 +474,15 @@ namespace TabularEditor.UI
                     returnTypeName = compiler.GetTypeOutput(returnType).Replace("TabularEditor.UI.UISelectionList", "IEnumerable").Replace("TabularEditor.TOMWrapper.", "");
                 }
 
-                var methodSyntax = returnTypeName + " " + mi.Name + "(" + string.Join(", ", mi.GetParameters().Select(p => p.Name).ToArray()) + ")";
+                var methodSyntax = returnTypeName + " " + mi.Name + "(" + string.Join(", ", mi.GetParameters().Select(ParameterDisplayName).ToArray()) + ")";
 
-                if (last?.Text == methodName) last.ToolTipTitle += "\n" + methodSyntax;
+                if (last?.Text == methodName) last.ToolTipText = "(overload) " + methodSyntax + Environment.NewLine + last.ToolTipText;
                 else
                 {
-                    last = new MethodAutocompleteItem(methodName)
+                    last = new MethodAutocompleteItemParen(methodName)
                     {
                         ToolTipTitle = methodSyntax,
-                        ToolTipText = mi.GetCustomAttribute<DescriptionAttribute>()?.Description ?? string.Empty,
+                        ToolTipText = Environment.NewLine + mi.GetCustomAttribute<DescriptionAttribute>()?.Description ?? string.Empty,
                         ImageIndex = TabularIcons.ICON_METHOD
                     };
                     yield return last;
@@ -552,6 +551,43 @@ namespace TabularEditor.UI
             }
 
             return null;
+        }
+
+        // This is the set of types from the C# keyword list.
+        static Dictionary<Type, string> _typeAlias = new Dictionary<Type, string>
+        {
+            { typeof(bool), "bool" },
+            { typeof(byte), "byte" },
+            { typeof(char), "char" },
+            { typeof(decimal), "decimal" },
+            { typeof(double), "double" },
+            { typeof(float), "float" },
+            { typeof(int), "int" },
+            { typeof(long), "long" },
+            { typeof(object), "object" },
+            { typeof(sbyte), "sbyte" },
+            { typeof(short), "short" },
+            { typeof(string), "string" },
+            { typeof(uint), "uint" },
+            { typeof(ulong), "ulong" },
+            { typeof(void), "void" }
+        };
+
+        static string TypeNameOrAlias(Type type)
+        {
+            // Lookup alias for type
+            if (_typeAlias.TryGetValue(type, out string alias))
+                return alias;
+
+            // Default to CLR type name
+            return type.Name;
+        }
+
+        internal static string ParameterDisplayName(ParameterInfo info)
+        {
+            var isParams = info.GetCustomAttributes(typeof(ParamArrayAttribute), false).Length > 0;
+            if (info.IsOptional) return $"[{TypeNameOrAlias(info.ParameterType)} {info.Name}]";
+            else return $"{(isParams ? "params " : "")}{TypeNameOrAlias(info.ParameterType)} {info.Name}";
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
