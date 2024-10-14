@@ -63,3 +63,5 @@
 **/.vs
 /sign-binaries.ps1
 /sign-installer.ps1
+bin/
+obj/

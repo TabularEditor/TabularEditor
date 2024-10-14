@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net472;net6.0;net8.0</TargetFrameworks>
+    <RootNamespace>TabularEditor</RootNamespace>
+    <LangVersion>10.0</LangVersion>
+    <TOMNugetVersion>19.84.6</TOMNugetVersion>
+    <DefineConstants>$(DefineConstants);BPALib</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="**\*.*" />
+    <EmbeddedResource Remove="**\*.resx" />
+    <EmbeddedResource Include="TOMWrapper\Messages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>TabularEditor</CustomToolNamespace>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="**\*.cs" />
+    <Compile Include="BPALib.Shims.cs" />
+    <Compile Include="TabularEditor\BestPracticeAnalyzer\Analyzer.cs" />
+    <Compile Include="TabularEditor\BestPracticeAnalyzer\BestPracticeRule.cs" />
+    <Compile Include="TabularEditor\BestPracticeAnalyzer\IRuleDefinition.cs" />
+    <Compile Include="TabularEditor\UIServices\DynamicLinq.cs" />
+    <Compile Include="TabularEditor\UIServices\FileSystemHelper.cs" />
+    <Compile Include="TabularEditor\UIServices\Policies.cs" />
+    <Compile Include="TabularEditor\UIServices\ProxyCache.cs" />
+    <Compile Include="TabularEditor\UIServices\Crypto.cs" />
+    <Compile Include="TabularEditor\NUnit.cs" />
+    <Compile Include="TOMWrapper\StringHelper.cs" />
+    <Compile Include="TOMWrapper\PowerBiCompatibilityModeHelper.cs" />
+    <Compile Include="TOMWrapper\PropertyGridUI\*Attribute.cs" />
+    <Compile Include="TOMWrapper\PropertyGridUI\DynamicPropertyObject.cs" />
+    <Compile Include="TOMWrapper\Serialization\**\*.cs" />
+    <Compile Include="TOMWrapper\TextServices\**\*.cs" />
+    <Compile Include="TOMWrapper\TOMWrapper\**\*.cs" Exclude="TOMWrapper\TOMWrapper\TabularCommonActions.cs;TOMWrapper\TOMWrapper\TabularModelHandler.Events.cs" />
+    <Compile Include="TOMWrapper\UndoFramework\**\*.cs" />
+    <Compile Include="TOMWrapper\Utils\DaxDependencyHelper.cs" />
+    <Compile Include="TOMWrapper\Utils\DaxToken.cs" />
+    <Compile Include="TOMWrapper\Utils\DependencyList.cs" />
+    <Compile Include="TOMWrapper\Utils\FormulaFixup.cs" />
+    <Compile Include="TOMWrapper\Utils\JObjectExtension.cs" />
+    <Compile Include="TOMWrapper\MetadataSerializationOptionsBuilderExtension.cs" />
+    <Compile Include="TOMWrapper\Messages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.CodeDom" Version="8.0.0" />
+    <PackageReference Include="System.Data.OleDb" Version="8.0.0" />
+    <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
+    <PackageReference Include="System.Security.Permissions" Version="8.0.0" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
+    <PackageReference Include="System.IO.Compression" Version="4.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AnalysisServices" Version="$(TOMNugetVersion)" />
+  </ItemGroup>
+  <ItemGroup>
+    <Antlr4 Remove="AntlrGrammars\*.g4" />
+    <Antlr4 Include="AntlrGrammars\DAXLexer.g4">
+      <Generator>MSBuild:Compile</Generator>
+      <CustomToolNamespace>TabularEditor.TextServices</CustomToolNamespace>
+    </Antlr4>
+    <None Include="Properties\PublishProfiles\net*.pubxml" />
+  </ItemGroup>
+</Project>
