@@ -428,7 +428,7 @@ namespace System.Linq.Dynamic
         private ClassFactory()
         {
             AssemblyName name = new AssemblyName("DynamicClasses");
-            AssemblyBuilder assembly = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
+            AssemblyBuilder assembly = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
 #if ENABLE_LINQ_PARTIAL_TRUST
             new ReflectionPermission(PermissionState.Unrestricted).Assert();
 #endif
@@ -499,7 +499,7 @@ namespace System.Linq.Dynamic
                 FieldInfo[] fields = GenerateProperties(tb, properties);
                 GenerateEquals(tb, fields);
                 GenerateGetHashCode(tb, fields);
-                Type result = tb.CreateType();
+                Type result = tb.CreateTypeInfo();
                 classCount++;
                 return result;
             }

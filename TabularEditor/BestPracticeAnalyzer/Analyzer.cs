@@ -1,5 +1,7 @@
-﻿using Aga.Controls.Tree;
+﻿#if !BPALib
+using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
+#endif
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -39,6 +41,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         }
     }
 
+#if !BPALib
     internal class AnalyzerResultsModel : ITreeModel
     {
         public event EventHandler<TreeModelEventArgs> NodesChanged;
@@ -99,7 +102,7 @@ namespace TabularEditor.BestPracticeAnalyzer
 
                 UpdateComplete?.Invoke(this, new EventArgs());
             }
-            
+
 
         }
 
@@ -115,11 +118,9 @@ namespace TabularEditor.BestPracticeAnalyzer
         }
 
         private bool _showIgnored = false;
-        public bool ShowIgnored
-        {
+        public bool ShowIgnored {
             get { return _showIgnored; }
-            set
-            {
+            set {
                 if (_showIgnored == value) return;
                 _showIgnored = value;
                 OnStructureChanged();
@@ -163,6 +164,7 @@ namespace TabularEditor.BestPracticeAnalyzer
             return null;
         }
     }
+#endif
 
     public class AnalyzerResult
     {
@@ -190,10 +192,8 @@ namespace TabularEditor.BestPracticeAnalyzer
         public string RuleError { get; }
         public RuleScope RuleErrorScope { get; }
         public string ObjectType => RuleHasError ? "Error" : Object.GetTypeName();
-        public string ObjectName
-        {
-            get
-            {
+        public string ObjectName {
+            get {
                 if (Object == null) return string.Empty;
                 if (RuleHasError) return RuleError;
 
@@ -208,10 +208,8 @@ namespace TabularEditor.BestPracticeAnalyzer
         /// <summary>
         /// Indicates whether this rule should be ignored on this particular object
         /// </summary>
-        public bool Ignored
-        {
-            get
-            {
+        public bool Ignored {
+            get {
                 var obj = Object as IAnnotationObject;
                 if (obj != null)
                 {
@@ -223,7 +221,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         }
     }
 
-    public class Analyzer: INotifyCollectionChanged
+    public class Analyzer : INotifyCollectionChanged
     {
         internal const string BPAAnnotationIgnore = "BestPracticeAnalyzer_IgnoreRules";
         internal const string BPAAnnotationExternalRules = "BestPracticeAnalyzer_ExternalRuleFiles";
@@ -235,7 +233,7 @@ namespace TabularEditor.BestPracticeAnalyzer
             prefix = !string.IsNullOrWhiteSpace(prefix) ? "NEW_RULE" : prefix;
             var result = prefix;
             var suffix = 0;
-            while(EffectiveRules.Any(r => r.ID.EqualsI(result)))
+            while (EffectiveRules.Any(r => r.ID.EqualsI(result)))
             {
                 suffix++;
                 result = $"{prefix}_{suffix}";
@@ -266,10 +264,8 @@ namespace TabularEditor.BestPracticeAnalyzer
 
         }
 
-        public IEnumerable<BestPracticeCollection> Collections
-        {
-            get
-            {
+        public IEnumerable<BestPracticeCollection> Collections {
+            get {
                 foreach (var rc in ExternalRuleCollections) yield return rc;
                 if (ModelRules != null) yield return ModelRules;
                 if (LocalUserRules != null) yield return LocalUserRules;
@@ -277,10 +273,8 @@ namespace TabularEditor.BestPracticeAnalyzer
             }
         }
 
-        public IEnumerable<BestPracticeRule> AllRules
-        {
-            get
-            {
+        public IEnumerable<BestPracticeRule> AllRules {
+            get {
                 foreach (var externalRuleCollection in ExternalRuleCollections)
                     foreach (var rule in externalRuleCollection) yield return rule;
                 if (LocalMachineRules != null) foreach (var rule in LocalMachineRules) yield return rule;
@@ -353,12 +347,11 @@ namespace TabularEditor.BestPracticeAnalyzer
             }
         }
 
-        public Model Model { get
-            {
+        public Model Model {
+            get {
                 return _model;
             }
-            private set
-            {
+            private set {
                 _model = value;
                 LoadModelRules();
                 LoadExternalRuleCollections();
@@ -498,9 +491,9 @@ namespace TabularEditor.BestPracticeAnalyzer
         internal List<AnalyzerResult> AnalyzeAll(CancellationToken ct)
         {
             var results = new List<AnalyzerResult>();
-            if(Model != null)
+            if (Model != null)
             {
-                foreach(var rule in EffectiveRules)
+                foreach (var rule in EffectiveRules)
                 {
                     if (ct.IsCancellationRequested) return new List<AnalyzerResult>();
                     results.AddRange(rule.Analyze(Model));
@@ -569,7 +562,7 @@ namespace TabularEditor.BestPracticeAnalyzer
                     return Enumerable.Empty<TabularNamedObject>().AsQueryable();
             }
 
-            
+
         }
 
     }
