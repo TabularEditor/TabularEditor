@@ -176,13 +176,7 @@ namespace TabularEditor.UIServices
         public bool ProxyUseSystem = true;
         public string ProxyPasswordEncrypted = string.Empty;
 
-        internal static Preferences Current
-        {
-            get
-            {
-                return new Preferences();
-            }
-        }
+        internal static Preferences Current { get; } = new Preferences();
     }
 
 }
