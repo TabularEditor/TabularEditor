@@ -60,8 +60,14 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Adds a Windows AD member to this role.")]
         public void AddWindowsMember(string memberName, string memberId = null)
         {
-            var member = WindowsModelRoleMember.CreateNew(this, memberName);
-            if (!string.IsNullOrEmpty(memberId)) member.MemberID = memberId;
+            if (string.IsNullOrEmpty(memberId))
+            {
+                WindowsModelRoleMember.CreateNew(this, memberName);
+            }
+            else 
+            {
+				WindowsModelRoleMember.CreateNew(this, memberName, memberId);
+			}
         }
 
         /// <summary>
