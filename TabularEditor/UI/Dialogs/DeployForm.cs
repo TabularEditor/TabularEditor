@@ -211,7 +211,12 @@ namespace TabularEditor.UI.Dialogs
 
         private void chkDeployRoles_CheckedChanged(object sender, EventArgs e)
         {
-            SetOptionsEnabledState();
+			if (!chkDeployRoles.Checked)
+			{
+				chkDeployRoleMembers.Checked = false;
+			}
+
+			SetOptionsEnabledState();
         }
 
         private void chkDeployPartitions_CheckedChanged(object sender, EventArgs e)
