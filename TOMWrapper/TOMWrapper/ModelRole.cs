@@ -1,10 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TabularEditor.PropertyGridUI;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -37,7 +34,7 @@ namespace TabularEditor.TOMWrapper
 
                 Handler.BeginUpdate("Set property 'Role Members'");
                 Members.Clear();
-                foreach(var member in value.Replace("\r", "").Split('\n'))
+                foreach (var member in value.Replace("\r", "").Split('\n'))
                 {
                     WindowsModelRoleMember.CreateNew(this, member);
                 }
@@ -64,10 +61,10 @@ namespace TabularEditor.TOMWrapper
             {
                 WindowsModelRoleMember.CreateNew(this, memberName);
             }
-            else 
+            else
             {
-				WindowsModelRoleMember.CreateNew(this, memberName, memberId);
-			}
+                WindowsModelRoleMember.CreateNew(this, memberName, memberId);
+            }
         }
 
         /// <summary>
@@ -84,7 +81,7 @@ namespace TabularEditor.TOMWrapper
         {
             get
             {
-                if(MetadataObject.TablePermissions.Any(tp => !string.IsNullOrEmpty(tp.ErrorMessage)))
+                if (MetadataObject.TablePermissions.Any(tp => !string.IsNullOrEmpty(tp.ErrorMessage)))
                 {
                     return string.Join("\n", MetadataObject.TablePermissions.Where(tp => !string.IsNullOrEmpty(tp.ErrorMessage)).Select(tp => "'" + tp.Table.Name + "' RLS: " + tp.ErrorMessage));
                 }
@@ -94,10 +91,11 @@ namespace TabularEditor.TOMWrapper
 
         internal override bool IsBrowsable(string propertyName)
         {
-            switch (propertyName) {
+            switch (propertyName)
+            {
                 case "MetadataPermission": return Handler.CompatibilityLevel >= 1400;
                 case Properties.TABLEPERMISSIONS: return false;
-                default:  return true;
+                default: return true;
             }
         }
 
