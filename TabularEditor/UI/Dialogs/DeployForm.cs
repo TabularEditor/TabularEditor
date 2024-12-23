@@ -1,23 +1,19 @@
-﻿using TOM = Microsoft.AnalysisServices.Tabular;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.TOMWrapper;
-using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.TOMWrapper.Serialization;
+using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.UI.Dialogs.Pages;
+using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.UI.Dialogs
 {
-    public partial class DeployForm : Form
+    public partial class DeployForm: Form
     {
         TabularModelHandler Handler { get { return UIController.Current.Handler; } }
 
@@ -120,7 +116,7 @@ namespace TabularEditor.UI.Dialogs
                 if (page2.Server == null) return;
             }
             CurrentPage++;
-            if(_currentPage == 1)
+            if (_currentPage == 1)
             {
                 if (PreselectDb == null) page2.DoClearSelection();
             }
@@ -211,12 +207,12 @@ namespace TabularEditor.UI.Dialogs
 
         private void chkDeployRoles_CheckedChanged(object sender, EventArgs e)
         {
-			if (!chkDeployRoles.Checked)
-			{
-				chkDeployRoleMembers.Checked = false;
-			}
+            if (!chkDeployRoles.Checked)
+            {
+                chkDeployRoleMembers.Checked = false;
+            }
 
-			SetOptionsEnabledState();
+            SetOptionsEnabledState();
         }
 
         private void chkDeployPartitions_CheckedChanged(object sender, EventArgs e)
@@ -295,14 +291,14 @@ namespace TabularEditor.UI.Dialogs
             ExportBuild_Database(databaseFile);
             ExportBuild_Options(optionsFile);
             ExportBuild_Targets(targetsFile);
-            if(DeployOptions.DeployConnections) ExportBuild_Configs(configsFile);
+            if (DeployOptions.DeployConnections) ExportBuild_Configs(configsFile);
 
             var allFiles = string.Format("{0}\n{1}\n{2}{3}", databaseFile, optionsFile, targetsFile, DeployOptions.DeployConnections ? "\n" + configsFile : "");
 
-            MessageBox.Show(string.Format(Strings.ExportBuildSuccess,allFiles), Strings.ExportBuildSuccessCaption, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(string.Format(Strings.ExportBuildSuccess, allFiles), Strings.ExportBuildSuccessCaption, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        
+
 
         private void ExportBuild_Database(string databaseFile)
         {
@@ -340,7 +336,7 @@ namespace TabularEditor.UI.Dialogs
         private void ExportBuild_Configs(string configsFile)
         {
             string dataSources = "";
-            foreach(var ds in Handler.Model.DataSources.OfType<TOMWrapper.ProviderDataSource>())
+            foreach (var ds in Handler.Model.DataSources.OfType<TOMWrapper.ProviderDataSource>())
             {
                 dataSources += string.Format(Strings.ExportBuildConfigDataSource
                     , ds.Name
