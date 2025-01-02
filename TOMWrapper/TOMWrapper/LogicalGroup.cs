@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,25 +17,26 @@ namespace TabularEditor.TOMWrapper
         public const string TABLES = "Tables";
         public const string ROLES = "Roles";
         public const string PERSPECTIVES = "Perspectives";
+        public const string FUNCTIONS = "User-Defined Functions";
         public const string TRANSLATIONS = "Translations";
         public const string RELATIONSHIPS = "Relationships";
         public const string DATASOURCES = "Data Sources";
         public const string EXPRESSIONS = "Shared Expressions";
-        //public const string CALCULATIONGROUPS = "Calculation Groups";
 
         public readonly LogicalGroup DataSources = new LogicalGroup(DATASOURCES);
         public readonly LogicalGroup Perspectives = new LogicalGroup(PERSPECTIVES);
+        public readonly LogicalGroup Functions = new LogicalGroup(FUNCTIONS);
         public readonly LogicalGroup Relationships = new LogicalGroup(RELATIONSHIPS);
         public readonly LogicalGroup Roles = new LogicalGroup(ROLES);
         public readonly LogicalGroup Expressions = new LogicalGroup(EXPRESSIONS);
         public readonly LogicalGroup Tables = new LogicalGroup(TABLES);
-        //public readonly LogicalGroup CalculationGroups = new LogicalGroup(CALCULATIONGROUPS);
         public readonly LogicalGroup Translations = new LogicalGroup(TRANSLATIONS);
 
         private IEnumerable<LogicalGroup> Groups()
         {
             yield return DataSources;
             yield return Perspectives;
+            if (TabularModelHandler.Singleton.CompatibilityLevel >= Function.MinimumCompatibilityLevel) yield return Functions;
             yield return Relationships;
             yield return Roles;
             if(TabularModelHandler.Singleton.CompatibilityLevel >= 1400) yield return Expressions;
@@ -78,10 +79,10 @@ namespace TabularEditor.TOMWrapper
                 case LogicalGroups.ROLES: return Model.Roles;
                 case LogicalGroups.EXPRESSIONS: return Model.Expressions;
                 case LogicalGroups.PERSPECTIVES: return Model.Perspectives;
+                case LogicalGroups.FUNCTIONS: return Model.Functions;
                 case LogicalGroups.TRANSLATIONS: return Model.Cultures;
                 case LogicalGroups.RELATIONSHIPS: return Model.Relationships;
                 case LogicalGroups.DATASOURCES: return Model.DataSources;
-                //case LogicalGroups.CALCULATIONGROUPS: return Model.Tables.OfType<CalculationGroupTable>();
             }
             return Enumerable.Empty<TabularNamedObject>();
         }
@@ -107,6 +108,9 @@ namespace TabularEditor.TOMWrapper
         [Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<Perspective>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter)), Category("Basic")]
         public PerspectiveCollection Perspectives { get { return Model.Perspectives; } }
 
+        [Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<Function>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter)), Category("Basic")]
+        public FunctionCollection Functions  { get { return Model.Functions; } }
+
         [Editor(typeof(TabularEditor.PropertyGridUI.CultureCollectionEditor), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter)), Category("Basic")]
         public CultureCollection Cultures { get { return Model.Cultures; } }
 
@@ -118,6 +122,7 @@ namespace TabularEditor.TOMWrapper
             switch(Name)
             {
                 case LogicalGroups.PERSPECTIVES: return propertyName == "Perspectives";
+                case LogicalGroups.FUNCTIONS: return propertyName == "Functions";
                 case LogicalGroups.TRANSLATIONS: return propertyName == "Cultures";
                 case LogicalGroups.ROLES: return propertyName == "Roles";
                 default:

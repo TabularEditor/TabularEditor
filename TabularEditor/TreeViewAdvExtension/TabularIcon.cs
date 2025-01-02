@@ -1,4 +1,4 @@
-﻿using Aga.Controls.Tree;
+using Aga.Controls.Tree;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -73,6 +73,7 @@ namespace TabularEditor.UI.Tree
                     return isExpanded ? TabularIcons.ICON_FOLDEROPENCALC : TabularIcons.ICON_FOLDERCALC;
 
                 case ObjectType.TablePermission:
+                case ObjectType.Function:
                     return TabularIcons.ICON_EFFECTS;
 
                 default:
