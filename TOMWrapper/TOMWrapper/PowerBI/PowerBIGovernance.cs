@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -38,6 +38,7 @@ namespace TabularEditor.TOMWrapper.PowerBI
             { typeof(Hierarchy), DevMode },
             { typeof(Relationship), DevMode },
             { typeof(SingleColumnRelationship), DevMode },
+            { typeof(Function), DevMode },
 
             { typeof(Column), DevModePbip },
             { typeof(DataColumn), DevModePbip },
@@ -216,6 +217,8 @@ namespace TabularEditor.TOMWrapper.PowerBI
                     case ObjectType.CalculationGroup:
                     case ObjectType.CalculationItem:
                         return PBIDesktopVersion >= DevMode ? true : AllowRestrictedEditCalculationGroupItemProperty(property);
+                    case ObjectType.Function:
+                        return PBIDesktopVersion >= DevMode;
                     default:
                         switch (type)
                         {
@@ -252,7 +255,8 @@ namespace TabularEditor.TOMWrapper.PowerBI
                     case ObjectType.Perspective:
                     case ObjectType.Culture:
                     case ObjectType.Role:
-                        return true;
+                    case ObjectType.Function:
+                    return true;
                     default:
                         if (obj is CalculatedTable) return true;
                         if (obj is Table) return PBIP;

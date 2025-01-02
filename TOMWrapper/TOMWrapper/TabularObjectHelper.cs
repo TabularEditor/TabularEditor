@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -69,6 +69,8 @@ namespace TabularEditor.TOMWrapper
                     return string.Format("{0}.Levels[\"{1}\"]", level.Hierarchy.GetLinqPath(), level.Name.Escape());
                 case Perspective perspective:
                     return string.Format("{0}.Perspectives[\"{1}\"]", obj.Model.GetLinqPath(), perspective.Name.Escape());
+                case Function function:
+                    return string.Format("{0}.Functions[\"{1}\"]", obj.Model.GetLinqPath(), function.Name.Escape());
                 case Culture culture:
                     return string.Format("{0}.Cultures[\"{1}\"]", obj.Model.GetLinqPath(), culture.Name.Escape());
                 case DataSource ds:
@@ -150,6 +152,7 @@ namespace TabularEditor.TOMWrapper
                 case TOM.ObjectType.Role:
                 case TOM.ObjectType.Expression:
                 case TOM.ObjectType.Perspective:
+                case TOM.ObjectType.Function:
                 case TOM.ObjectType.Culture:
                 case TOM.ObjectType.QueryGroup:
                     return obj.ObjectType.ToString() + "." + QuotePath((obj as TOM.NamedMetadataObject).Name);
@@ -293,6 +296,7 @@ namespace TabularEditor.TOMWrapper
                         return model.Roles.FindByName(parts[1]);
                 case "expression": return model.Expressions.FindByName(parts[1]);
                 case "perspective": return model.Perspectives.FindByName(parts[1]);
+                case "functions": return model.Functions.FindByName(parts[1]);
                 case "culture": return model.Cultures.FindByName(parts[1]);
 
                 default:

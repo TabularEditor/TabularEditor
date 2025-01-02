@@ -114,6 +114,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ExpressionProperty.cs" />
+    <Compile Include="TOMWrapper\Function.cs" />
     <Compile Include="IsExternalInit.cs" />
     <Compile Include="MetadataSerializationOptionsBuilderExtension.cs" />
     <Compile Include="PowerBiCompatibilityModeHelper.cs" />

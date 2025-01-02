@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using TOM = Microsoft.AnalysisServices.Tabular;
@@ -72,6 +72,7 @@ namespace TabularEditor.TOMWrapper
         CalculationItem = 47,
         AlternateOf = 48,
         DataCoverageDefinition = 58,
+        Function = 63,
         Database = 1000
     }
 

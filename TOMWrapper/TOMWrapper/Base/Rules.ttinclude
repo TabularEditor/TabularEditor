@@ -442,6 +442,7 @@ partial class Rules {
 		if(propertyName.EndsWith("Description")) return "[Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]";
 		if(propertyName == "ContextExpression") return "[Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]";
 
+		if(propertyName == "Functions") return "[Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<Function>),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Perspectives") return "[Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<Perspective>),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Cultures") return "[Editor(typeof(TabularEditor.PropertyGridUI.CultureCollectionEditor),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Roles") return "[Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<ModelRole>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]";
@@ -574,7 +575,8 @@ partial class Rules {
 	   { "CalculationGroup", "TabularObject" },
 	   { "CalculationItem", "TabularNamedObject" },
 	   { "TablePermission", "TabularNamedObject" },
-	   { "DataCoverageDefinition", "TabularObject" }
+	   { "DataCoverageDefinition", "TabularObject" },
+	   { "Function", "TabularNamedObject" }
    };
    public static bool Seal(Type type) { return !_objectTypes.Values.Any(t => t == type.Name); }
    public static Dictionary<Type, string> ObjectTypes = Convert(_objectTypes).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
@@ -610,7 +612,8 @@ partial class Rules {
 	   { "Variation", "Variations" },
 	   { "NamedExpression", "Expressions" },
 	   { "CalculationItem", "CalculationItems" },
-	   { "TablePermission", "TablePermissions" }
+	   { "TablePermission", "TablePermissions" },
+	   { "Function", "Functions" }
    };
    public static Dictionary<Type, string> Collections = Convert(_objectCollections).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
@@ -634,6 +637,7 @@ partial class Rules {
        { new KeyValuePair<string, string>("Table", "Model") },
 	   { new KeyValuePair<string, string>("Relationship", "Model") },
 	   { new KeyValuePair<string, string>("NamedExpression", "Model") },
+	   { new KeyValuePair<string, string>("Function", "Model") },
 
 	   // Collections owned by a Table (order of items matters, as this is the order in which child objects will be initialized):
        { new KeyValuePair<string, string>("Set", "Table") },
