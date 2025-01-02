@@ -236,6 +236,7 @@ namespace TabularEditor.TOMWrapper
             { typeof(CalculationItem) , typeof(TOM.CalculationItem) },
             { typeof(TablePermission) , typeof(TOM.TablePermission) },
             { typeof(DataCoverageDefinition) , typeof(TOM.DataCoverageDefinition) },
+            { typeof(Function) , typeof(TOM.Function) },
 	    };
 
 		public static Type ToTOM(Type wrapperType) {
@@ -268,6 +269,7 @@ namespace TabularEditor.TOMWrapper
             typeof(NamedExpression),
             typeof(CalculationItem),
             typeof(TablePermission),
+            typeof(Function),
 	        typeof(MPartition),
             typeof(EntityPartition),
             typeof(PolicyRangePartition),
@@ -8774,6 +8776,7 @@ namespace TabularEditor.TOMWrapper
 			if (child is Table) return Tables;
 			if (child is Relationship) return Relationships;
 			if (child is NamedExpression) return Expressions;
+			if (child is Function) return Functions;
             return base.GetCollectionForChild(child);
         }
 
@@ -8819,6 +8822,12 @@ namespace TabularEditor.TOMWrapper
 		[DisplayName("Expressions")]
 		[Category("Options"),IntelliSense("The collection of Named Expression objects on the current Model.")][Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<NamedExpression>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]
 		public NamedExpressionCollection Expressions { get; private set; }
+        /// <summary>
+        /// The collection of Function objects on this Model.
+        /// </summary>
+		[DisplayName("Functions")]
+		[Category("Options"),IntelliSense("The collection of Function objects on the current Model.")][Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<Function>),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]
+		public FunctionCollection Functions { get; private set; }
 
 		/// <summary>
 		/// CTOR - only called from static factory methods on the class
@@ -8843,6 +8852,7 @@ namespace TabularEditor.TOMWrapper
 			Tables = new TableCollection(this.GetObjectPath() + ".Tables", MetadataObject.Tables, this);
 			Relationships = new RelationshipCollection(this.GetObjectPath() + ".Relationships", MetadataObject.Relationships, this);
 			Expressions = new NamedExpressionCollection(this.GetObjectPath() + ".Expressions", MetadataObject.Expressions, this);
+			Functions = new FunctionCollection(this.GetObjectPath() + ".Functions", MetadataObject.Functions, this);
 
 			// Populate child collections:
 			Perspectives.CreateChildrenFromMetadata();
@@ -8852,6 +8862,7 @@ namespace TabularEditor.TOMWrapper
 			Tables.CreateChildrenFromMetadata();
 			Relationships.CreateChildrenFromMetadata();
 			Expressions.CreateChildrenFromMetadata();
+			Functions.CreateChildrenFromMetadata();
 
 			// Hook up event handlers on child collections:
 			Perspectives.CollectionChanged += Children_CollectionChanged;
@@ -8861,6 +8872,7 @@ namespace TabularEditor.TOMWrapper
 			Tables.CollectionChanged += Children_CollectionChanged;
 			Relationships.CollectionChanged += Children_CollectionChanged;
 			Expressions.CollectionChanged += Children_CollectionChanged;
+			Functions.CollectionChanged += Children_CollectionChanged;
 		}
 
 
@@ -8872,6 +8884,7 @@ namespace TabularEditor.TOMWrapper
 			Tables.Reinit();
 			Relationships.Reinit();
 			Expressions.Reinit();
+			Functions.Reinit();
 		}
 
 		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
@@ -16727,4 +16740,704 @@ namespace TabularEditor.TOMWrapper
 
     }
 
+  
+	/// <summary>
+///             Represents a user-defined function.
+///             </summary><remarks>This metadata object is only supported when the compatibility level of the database is at Preview or above.</remarks>
+	[TypeConverter(typeof(DynamicPropertyConverter))]
+	public sealed partial class Function: TabularNamedObject
+			, IHideableObject
+			, IErrorMessageObject
+			, IDescriptionObject
+			, IExpressionObject
+			, ILineageTagObject
+			, IInternalAnnotationObject
+			, IInternalExtendedPropertyObject
+			, IClonableObject
+	{
+	    internal new TOM.Function MetadataObject 
+		{ 
+			get 
+			{ 
+				return base.MetadataObject as TOM.Function; 
+		    } 
+			set 
+			{ 
+				base.MetadataObject = value; 
+			}
+		}
+
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Annotations on the current Function.</summary>
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Function."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
+		public AnnotationCollection Annotations { get; private set; }
+		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
+		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
+		public string GetAnnotation(int index) {
+			return MetadataObject.Annotations[index].Value;
+		}
+		///<summary>Returns true if an annotation with the given name exists. Otherwise false.</summary>
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		///<summary>Gets the value of the annotation with the given name. Returns null if no such annotation exists.</summary>
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
+		public string GetAnnotation(string name) {
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
+		}
+		///<summary>Sets the value of the annotation with the given index, assuming it exists.</summary>
+		[IntelliSense("Sets the value of the annotation with the given index, assuming it exists.")]
+		public void SetAnnotation(int index, string value) {
+		    SetAnnotation(index, value, true);
+		}
+		internal void SetAnnotation(int index, string value, bool undoable) {
+		    var name = MetadataObject.Annotations[index].Name;
+			SetAnnotation(name, value, undoable);
+		}
+		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+			SetAnnotation(index, value, undoable);
+		}
+		///<summary>Returns a unique name for a new annotation.</summary>
+		public string GetNewAnnotationName() {
+			return MetadataObject.Annotations.GetNewName("New Annotation");
+		}
+		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		internal void SetAnnotation(string name, string value, bool undoable) {
+			if(name == null) name = GetNewAnnotationName();
+
+			if(value == null) {
+				// Remove annotation if set to null:
+				RemoveAnnotation(name, undoable);
+				return;
+			}
+
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
+
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Change existing annotation:
+
+				var oldValue = GetAnnotation(name);
+				MetadataObject.Annotations[name].Value = value;
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
+			} else {
+				// Add new annotation:
+
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
+			}
+		}
+		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+			this.SetAnnotation(name, value, undoable);
+		}
+		///<summary>Remove an annotation by the given name.</summary>
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		internal void RemoveAnnotation(string name, bool undoable) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
+
+			    var oldValue = MetadataObject.Annotations[name].Value;
+				MetadataObject.Annotations.Remove(name);
+
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
+			}
+		}
+		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+			this.RemoveAnnotation(name, undoable);
+		}
+		///<summary>Gets the number of annotations on the current Function.</summary>
+		[IntelliSense("Gets the number of annotations on the current Function.")]
+		public int GetAnnotationsCount() {
+			return MetadataObject.Annotations.Count;
+		}
+		///<summary>Gets a collection of all annotation names on the current Function.</summary>
+		[IntelliSense("Gets a collection of all annotation names on the current Function.")]
+		public IEnumerable<string> GetAnnotations() {
+			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Extended Properties on the current Function.</summary>
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Function."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
+		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
+
+		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
+		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
+		public bool HasExtendedProperty(string name) {
+		    return MetadataObject.ExtendedProperties.ContainsName(name);
+		}
+		///<summary>Gets the type of the ExtendedProperty with the given index, assuming it exists.</summary>
+		public ExtendedPropertyType GetExtendedPropertyType(int index) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
+		}
+		///<summary>Gets the type of the ExtendedProperty with the given name, assuming it exists.</summary>
+		public ExtendedPropertyType GetExtendedPropertyType(string name) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
+		}
+		///<summary>Gets the value of the ExtendedProperty with the given index, assuming it exists.</summary>
+		public string GetExtendedProperty(int index) {
+			var ep = MetadataObject.ExtendedProperties[index];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		///<summary>Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.</summary>
+		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
+		public string GetExtendedProperty(string name) {
+		    if(!HasExtendedProperty(name)) return null;
+			var ep = MetadataObject.ExtendedProperties[name];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		///<summary>Sets the value of the ExtendedProperty with the given index, optionally specifiying the type (string or JSON) of the ExtendedProperty.</summary>
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
+			SetExtendedProperty(index, value, type, true);
+		}
+		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+			SetExtendedProperty(index, value, type, undoable);
+		}
+		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+			var name = MetadataObject.ExtendedProperties[index].Name;
+			SetExtendedProperty(name, value, type, undoable);
+		}
+		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
+		public string GetNewExtendedPropertyName() {
+			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+		}
+		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
+		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type) {
+			SetExtendedProperty(name, value, type, true);
+		}
+		internal void SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+			if(name == null) name = GetNewExtendedPropertyName();
+
+			if(value == null) {
+				// Remove ExtendedProperty if set to null:
+				RemoveExtendedProperty(name);
+				return;
+			}
+
+			if(GetExtendedProperty(name) == value) return;
+			if(undoable) {
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+				if (cancel) return;
+			}
+
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Change existing ExtendedProperty:
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				var ep = MetadataObject.ExtendedProperties[name];
+				if (ep is TOM.JsonExtendedProperty)
+					(ep as TOM.JsonExtendedProperty).Value = value;
+				else 
+					(ep as TOM.StringExtendedProperty).Value = value;
+					
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new ExtendedProperty:
+				if (type == ExtendedPropertyType.Json)
+					MetadataObject.ExtendedProperties.Add(new TOM.JsonExtendedProperty{ Name = name, Value = value });
+				else
+					MetadataObject.ExtendedProperties.Add(new TOM.StringExtendedProperty{ Name = name, Value = value });
+
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
+			}
+		}
+		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+			this.SetExtendedProperty(name, value, type, undoable);
+		}
+
+		///<summary>Remove an ExtendedProperty by the given name.</summary>
+		[IntelliSense("Remove an ExtendedProperty by the given name.")]
+		public void RemoveExtendedProperty(string name) {
+			RemoveExtendedProperty(name, true);
+		}
+
+		internal void RemoveExtendedProperty(string name, bool undoable) {
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Get current value:
+				if(undoable) {
+					bool cancel = false;
+					OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+					if (cancel) return;
+				}
+
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				MetadataObject.ExtendedProperties.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
+			}
+		}
+		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+			this.RemoveExtendedProperty(name, undoable);
+		}
+		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
+		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
+		public int GetExtendedPropertyCount() {
+			return MetadataObject.ExtendedProperties.Count;
+		}
+		///<summary>Gets a collection of all ExtendedProperty names on the current object.</summary>
+		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
+		public IEnumerable<string> GetExtendedProperties() {
+			return MetadataObject.ExtendedProperties.Select(a => a.Name);
+		}
+
+		/// <summary>
+///             The description of the user-defined function, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+///             </summary>
+		[DisplayName("Description")]
+		[Category("Basic"),Description(@"The description of the user-defined function, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the user-defined function, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		public string Description {
+			get {
+			    return MetadataObject.Description;
+			}
+			set {
+				
+				var oldValue = Description;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
+				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeDescription() { return false; }
+/// <summary>
+///             The DAX function parameters and expression.
+///             </summary>
+		[DisplayName("Expression")]
+		[Category("Options"),Description(@"The DAX function parameters and expression."),IntelliSense(@"The DAX function parameters and expression.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		public string Expression {
+			get {
+			    return MetadataObject.Expression;
+			}
+			set {
+				
+				var oldValue = Expression;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXPRESSION, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.Expression = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EXPRESSION, oldValue, newValue));
+				OnPropertyChanged(Properties.EXPRESSION, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeExpression() { return false; }
+/// <summary>
+///             A boolean value that indicates whether the function is treated as hidden by client visualization tools. True if the function is treated as hidden by client visualization tools; otherwise false.
+///             </summary>
+		[DisplayName("Hidden")]
+		[Category("Basic"),Description(@"A boolean value that indicates whether the function is treated as hidden by client visualization tools. True if the function is treated as hidden by client visualization tools; otherwise false."),IntelliSense(@"A boolean value that indicates whether the function is treated as hidden by client visualization tools. True if the function is treated as hidden by client visualization tools; otherwise false.")]
+		public bool IsHidden {
+			get {
+			    return MetadataObject.IsHidden;
+			}
+			set {
+				
+				var oldValue = IsHidden;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ISHIDDEN, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.IsHidden = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISHIDDEN, oldValue, newValue));
+				OnPropertyChanged(Properties.ISHIDDEN, oldValue, newValue);
+				Handler.UpdateObject(this);
+			}
+		}
+		private bool ShouldSerializeIsHidden() { return false; }
+/// <summary>
+///             Provides information on the state of the function. Possible values and their interpretation are as follows. Ready (1) The Function is usable. SemanticError (5) The function expression has a semantic error.  SyntaxError (9) The function has a syntax error in its expression. All other values are not applicable to Function.
+///             </summary>
+		[DisplayName("State")]
+		[Category("Metadata"),Description(@"Provides information on the state of the function. Possible values and their interpretation are as follows. Ready (1) The Function is usable. SemanticError (5) The function expression has a semantic error.  SyntaxError (9) The function has a syntax error in its expression. All other values are not applicable to Function."),IntelliSense(@"Provides information on the state of the function. Possible values and their interpretation are as follows. Ready (1) The Function is usable. SemanticError (5) The function expression has a semantic error.  SyntaxError (9) The function has a syntax error in its expression. All other values are not applicable to Function.")]
+		public ObjectState State {
+			get {
+			    return (ObjectState)MetadataObject.State;
+			}
+			
+		}
+		private bool ShouldSerializeState() { return false; }
+/// <summary>
+///             A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or SyntaxError.
+///             </summary>
+		[DisplayName("Error Message")]
+		[Category("Metadata"),Description(@"A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or SyntaxError."),IntelliSense(@"A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or SyntaxError.")]
+		public string ErrorMessage {
+			get {
+			    return MetadataObject.ErrorMessage;
+			}
+			
+		}
+		private bool ShouldSerializeErrorMessage() { return false; }
+/// <summary>
+///             A tag that represents the lineage of the object.
+///             </summary>
+		[DisplayName("Lineage Tag")]
+		[Category("Options"),Description(@"A tag that represents the lineage of the object."),IntelliSense(@"A tag that represents the lineage of the object.")]
+		public string LineageTag {
+			get {
+			    return MetadataObject.LineageTag;
+			}
+			set {
+				
+				var oldValue = LineageTag;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.LINEAGETAG, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.LineageTag = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.LINEAGETAG, oldValue, newValue));
+				OnPropertyChanged(Properties.LINEAGETAG, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeLineageTag() { return false; }
+/// <summary>
+///             A tag that represents the lineage of the source for the object.
+///             </summary>
+		[DisplayName("Source Lineage Tag")]
+		[Category("Options"),Description(@"A tag that represents the lineage of the source for the object."),IntelliSense(@"A tag that represents the lineage of the source for the object.")]
+		public string SourceLineageTag {
+			get {
+			    return MetadataObject.SourceLineageTag;
+			}
+			set {
+				
+				var oldValue = SourceLineageTag;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.SOURCELINEAGETAG, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.SourceLineageTag = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SOURCELINEAGETAG, oldValue, newValue));
+				OnPropertyChanged(Properties.SOURCELINEAGETAG, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeSourceLineageTag() { return false; }
+
+		internal static Function CreateFromMetadata(Model parent, TOM.Function metadataObject) {
+            // Generate a new LineageTag if an object with the provided lineage tag already exists:
+            if(!string.IsNullOrEmpty(metadataObject.LineageTag)) {
+                if (parent.Handler.CompatibilityLevel < 1540) metadataObject.LineageTag = null;
+                else if (parent.MetadataObject.Functions.FindByLineageTag(metadataObject.LineageTag) != metadataObject) {
+                    metadataObject.LineageTag = Guid.NewGuid().ToString();
+                }
+            }
+			var obj = new Function(metadataObject);
+			parent.Functions.Add(obj);
+			
+			obj.Init();
+
+			return obj;
+		}
+
+
+		/// <summary>
+		/// Creates a new Function and adds it to the parent Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
+		/// </summary>
+		public static Function CreateNew(Model parent, string name = null)
+		{
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(Function))) {
+				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Function).GetTypeName()));
+			}
+
+			var metadataObject = new TOM.Function();
+            if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
+			metadataObject.Name = parent.Functions.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Function).GetTypeName() : name);
+            InitMetadata(metadataObject, parent);
+            var obj = new Function(metadataObject);
+
+			parent.Functions.Add(obj);
+			
+			obj.Init();
+
+			return obj;
+		}
+
+        static partial void InitMetadata(TOM.Function metadataObject, Model parent);
+
+		/// <summary>
+		/// Creates a new Function and adds it to the current Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
+		/// </summary>		
+		public static Function CreateNew(string name = null)
+		{
+			return CreateNew(TabularModelHandler.Singleton.Model, name);
+		}
+
+
+		/// <summary>
+		/// Creates an exact copy of this Function object.
+		/// </summary>
+		[IntelliSense("Creates an exact copy of this Function object.")]
+		public Function Clone(string newName = null) {
+			if(!Handler.PowerBIGovernance.AllowCreate(this.GetType())) {
+				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(Function).GetTypeName()));
+			}
+
+		    Handler.BeginUpdate("Clone Function");
+
+			// Create a clone of the underlying metadataobject:
+			var tom = MetadataObject.Clone() as TOM.Function;
+
+            if(Model.Database.CompatibilityLevel >= 1540 && !string.IsNullOrEmpty(LineageTag)) {
+                tom.LineageTag = Guid.NewGuid().ToString();
+            }
+
+			// Assign a new, unique name:
+			tom.Name = Parent.Functions.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				
+			// Create the TOM Wrapper object, representing the metadataobject
+			Function obj = CreateFromMetadata(Parent, tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
+			if (newParent != null) throw new ArgumentException("This object can not be cloned to another parent. Argument newParent should be left as null.", "newParent");
+			return Clone(newName);
+		}
+
+	
+        internal override void RenewMetadataObject()
+        {
+            Handler.WrapperLookup.Remove(MetadataObject);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.Function>(json);
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+		///<summary>The parent Model of the current Function.</summary>
+		public Model Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
+			}
+		}
+
+
+
+		/// <summary>
+		/// CTOR - only called from static factory methods on the class
+		/// </summary>
+		Function(TOM.Function metadataObject) : base(metadataObject)
+		{
+			
+			// Create indexer for annotations:
+			Annotations = new AnnotationCollection(this);
+			
+			// Create indexer for extended properties:
+			ExtendedProperties = new ExtendedPropertyCollection(this);
+		}
+
+
+
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
+			Reinit();
+			ReapplyReferences();
+		}
+		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
+			if(!base.Browsable(propertyName)) return false;
+
+			switch (propertyName) {
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.PARENT:
+					return false;
+				
+				default:
+					return true;
+			}
+		}
+
+    }
+
+
+	/// <summary>
+	/// Collection class for Function. Provides convenient properties for setting a property on multiple objects at once.
+	/// </summary>
+	public sealed partial class FunctionCollection: TabularObjectCollection<Function>
+	{
+		internal Model Model { get { return Parent as Model; } }
+		TOM.FunctionCollection TOM_Collection;
+		internal FunctionCollection(string collectionName, TOM.FunctionCollection metadataObjectCollection, Model parent) : base(collectionName, parent)
+		{
+			TOM_Collection = metadataObjectCollection;
+		}
+		internal override Type GetItemType() { return typeof(Function); }
+        internal override void TOM_Add(TOM.MetadataObject obj) { TOM_Collection.Add(obj as TOM.Function); }
+        internal override bool TOM_Contains(TOM.MetadataObject obj) { return TOM_Collection.Contains(obj as TOM.Function); }
+        internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.Function); }
+        internal override void TOM_Clear() { TOM_Collection.Clear(); }
+        internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
+		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+        internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
+        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Function); }
+        /// <summary>The number of items in this collection.</summary>
+		public override int Count { get { return TOM_Collection.Count; } }
+		/// <summary>Returns an enumerator that iterates through the collection.</summary>
+        public override IEnumerator<Function> GetEnumerator() { return TOM_Collection.Select(h => Handler.WrapperLookup[h]).OfType<Function>().GetEnumerator(); }
+		internal override void Reinit() {
+			var ixOffset = 0;
+			for(int i = 0; i < Count; i++) {
+				var metadataObj = TOM_Get(i) as TOM.Function;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as Function : CreateFromMetadata(metadataObj);
+				Handler.WrapperLookup.Remove(item.MetadataObject);
+				item.MetadataObject = Model.MetadataObject.Functions[i + ixOffset] as TOM.Function;
+				Handler.WrapperLookup.Add(item.MetadataObject, item);
+				item.Collection = this;
+			}
+			TOM_Collection = Model.MetadataObject.Functions;
+			foreach(var item in this) item.Reinit();
+		}
+
+		internal override void ReapplyReferences() {
+			foreach(var item in this) item.ReapplyReferences();
+		}
+
+		private Function CreateFromMetadata(TOM.Function obj)
+		{
+			if(obj is TOM.Function functionObj) return Function.CreateFromMetadata(Model, functionObj);
+            else throw new ArgumentException("Cannot create object", "obj");
+		}
+
+		/// <summary>
+		/// Calling this method will populate the FunctionCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
+		/// </summary>
+		internal override void CreateChildrenFromMetadata()
+		{
+			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
+		}
+
+		/// <summary>
+		/// Sets the Description property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the Description property of all objects in the collection at once.")]
+		public string Description {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("Description"));
+				this.ToList().ForEach(item => { item.Description = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the Expression property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the Expression property of all objects in the collection at once.")]
+		public string Expression {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("Expression"));
+				this.ToList().ForEach(item => { item.Expression = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the IsHidden property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the IsHidden property of all objects in the collection at once.")]
+		public bool IsHidden {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("IsHidden"));
+				this.ToList().ForEach(item => { item.IsHidden = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the SourceLineageTag property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the SourceLineageTag property of all objects in the collection at once.")]
+		public string SourceLineageTag {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("SourceLineageTag"));
+				this.ToList().ForEach(item => { item.SourceLineageTag = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+	}
 }
