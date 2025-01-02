@@ -75,6 +75,11 @@ namespace TabularEditor.TOMWrapper
         Database = 1000
     }
 
+    internal partial class Properties
+    {
+        public const string OBJECTTYPE = "ObjectType";
+    }
+
     /// <summary>
     /// Base class for all TOM objects that are wrapped in the TOMWrapper. Supports INotifyPropertyChanged and INotifyPropertyChanging
     /// and undo/redo functionality via the TabularModelHandler. Every TabularObject holds a reference to the corresponding TOM MetadataObject.
