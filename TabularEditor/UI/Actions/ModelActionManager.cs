@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -155,6 +155,7 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => Governance.AllowCreate(typeof(ProviderDataSource)), (s, m) => m.AddDataSource().Edit(), (s, m) => @"Create New\Data Source (Legacy)", false, Context.DataSources | Context.Model));
             Add(new Action((s, m) => Governance.AllowCreate(typeof(StructuredDataSource)) && Handler.CompatibilityLevel >= 1400, (s, m) => m.AddStructuredDataSource().Edit(), (s, m) => @"Create New\Data Source (Power Query)", false, Context.DataSources | Context.Model));
             Add(new Action((s, m) => Governance.AllowCreate(typeof(Perspective)), (s, m) => m.AddPerspective().Edit(), (s, m) => @"Create New\Perspective", false, Context.Model | Context.Perspectives | Context.Perspective));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(Function)), (s, m) => m.AddFunction().Edit(), (s, m) => @"Create New\User-Defined Function", false, Context.Model | Context.Functions | Context.Function));
             Add(new Action((s, m) => Governance.AllowCreate(typeof(NamedExpression)), (s, m) => m.AddExpression().Edit(), (s, m) => @"Create New\Shared Expression", false, Context.Model | Context.Expressions | Context.Expression));
             Add(new Action((s, m) => Governance.AllowCreate(typeof(SingleColumnRelationship)) && m.Tables.Count(t => t.Columns.Any()) >= 2, (s, m) => m.AddRelationship().Edit(), (s, m) => @"Create New\Relationship", false, Context.Relationship | Context.Relationships | Context.Model));
             Add(new Action((s, m) => Governance.AllowCreate(typeof(ModelRole)), (s, m) => m.AddRole().Edit(), (s, m) => @"Create New\Role", false, Context.Model | Context.Roles | Context.Role));

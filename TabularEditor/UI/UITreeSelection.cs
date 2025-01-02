@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -241,10 +241,13 @@ namespace TabularEditor.UI
         /// </summary>
         Tool = 1 << 28,
 
+        Function = 1 << 29,
+        Functions = 1 << 30,
+
         Everywhere = 0x7FFFFFFF,
         TableObject = Measure | Column | Hierarchy,
-        SingularObjects = Model | Table | TableObject | Level | Partition | Relationship | DataSource | Role | TablePermission | Perspective | Translation | KPI | Expression | CalculationGroupTable | CalculationItem,
-        Groups = Tables | Relationships | DataSources | Roles | Perspectives | Translations | Expressions,
+        SingularObjects = Model | Table | TableObject | Level | Partition | Relationship | DataSource | Role | TablePermission | Perspective | Translation | KPI | Expression | CalculationGroupTable | CalculationItem | Function,
+        Groups = Tables | Relationships | DataSources | Roles | Perspectives | Translations | Expressions | Functions,
         DataObjects = CalculationGroupTable | Table | TableObject,
         Scriptable = CalculationGroupTable | Table | Partition | DataSource | Role
     }
@@ -299,6 +302,7 @@ namespace TabularEditor.UI
                 case ObjectType.Culture: return Context.Translation;
                 case ObjectType.DataSource: return Context.DataSource;
                 case ObjectType.Perspective: return Context.Perspective;
+                case ObjectType.Function: return Context.Function;
                 case ObjectType.Partition: return Context.Partition;
                 case ObjectType.Role: return Context.Role;
                 case ObjectType.Relationship: return Context.Relationship;
@@ -318,6 +322,7 @@ namespace TabularEditor.UI
                         case LogicalGroups.TABLES: return Context.Tables;
                         case LogicalGroups.DATASOURCES: return Context.DataSources;
                         case LogicalGroups.PERSPECTIVES: return Context.Perspectives;
+                        case LogicalGroups.FUNCTIONS: return UI.Context.Functions;
                         case LogicalGroups.ROLES: return Context.Roles;
                         case LogicalGroups.TRANSLATIONS: return Context.Translations;
                         case LogicalGroups.RELATIONSHIPS: return Context.Relationships;
@@ -365,6 +370,7 @@ namespace TabularEditor.UI
             Roles = new UISelectionList<ModelRole>(this.OfType<ModelRole>());
             DataSources = new UISelectionList<DataSource>(this.OfType<DataSource>());
             Perspectives = new UISelectionList<Perspective>(this.OfType<Perspective>());
+            Functions = new UISelectionList<Function>(this.OfType<Function>());
             CalculatedColumns = new UISelectionList<CalculatedColumn>(this.OfType<CalculatedColumn>());
             CalculatedTableColumns = new UISelectionList<CalculatedTableColumn>(this.OfType<CalculatedTableColumn>());
             CalculationGroups = new UISelectionList<CalculationGroupTable>(this.OfType<CalculationGroupTable>());
@@ -459,6 +465,12 @@ namespace TabularEditor.UI
 
         [IntelliSense("All currently selected perspectives.")]
         public UISelectionList<Perspective> Perspectives { get; private set; }
+
+        [IntelliSense("All currently selected functions.")]
+        public UISelectionList<Function> Functions { get; private set; }
+
+        [IntelliSense("The currently selected function.")]
+        public Function Function { get { return One<Function>(); } }
 
         [IntelliSense("The currently selected calculation item (if exactly one calculation item is selected in the explorer tree.)")]
         public CalculationItem CalculationItem { get { return One<CalculationItem>(); } }

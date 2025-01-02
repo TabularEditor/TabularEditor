@@ -13,5 +13,7 @@ namespace TabularEditor.TOMWrapper
         public bool IsVisible => !IsHidden;
         [Browsable(false)]
         public bool NeedsValidation { get; set; }
+
+        internal const int MinimumCompatibilityLevel = 1000000;
     }
 }

@@ -26,6 +26,17 @@ namespace TabularEditor.TOMWrapper
             Handler.EndUpdate();
             return perspective;
         }
+        [IntelliSense("Adds a new user-defined function to the model."), Tests.GenerateTest()]
+        public Function AddFunction(string name = null)
+        {
+            if (!Handler.PowerBIGovernance.AllowCreate(typeof(Function)))
+                throw new PowerBIGovernanceException("Adding functions to this Power BI model is not supported.");
+
+            Handler.BeginUpdate("add function");
+            var function = Function.CreateNew(this, name);
+            Handler.EndUpdate();
+            return function;
+        }
 
         [IntelliSense("Adds a new Shared Expression to the model."), Tests.GenerateTest(), Tests.CompatibilityLevel(1400)]
         public NamedExpression AddExpression(string name = null, string expression = null)
