@@ -193,7 +193,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
 		public string GetNewExtendedPropertyName() {
-			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+			return MetadataObject.ExtendedProperties.GetNewName(TabularNamedObject.GetNewName<ExtendedProperty>());
 		}
 		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
 		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
@@ -329,7 +329,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -515,7 +515,7 @@ namespace TabularEditor.TOMWrapper
 <# if(allProps.Any(p => p.Name == "LineageTag")) { #>
             if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
 <# } #>
-			metadataObject.<#=typeof(ModelRoleMember).IsAssignableFrom(t)?"Member":""#>Name = parent.<#= Rules.GetCollection(t) #>.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(<#= t.Name #>).GetTypeName() : name);
+			metadataObject.<#=typeof(ModelRoleMember).IsAssignableFrom(t)?"Member":""#>Name = parent.<#= Rules.GetCollection(t) #>.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<<#= t.Name #>>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new <#= t.Name #>(metadataObject);
 
@@ -583,7 +583,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 <# } #>
 
 			// Assign a new, unique name:
-			tom.Name = Parent.<#= Rules.GetCollection(t) #>.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.<#= Rules.GetCollection(t) #>.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			<#= t.Name #> obj <# if(t.Name == "Table") { #>;
@@ -792,7 +792,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
 <# if (t.Name != "Measure" && t.Name != "Relationship" && t.Name != "Column") { #>
-        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override string GetNewName(string prefix = null) { return RemoveInvalidNameChars(string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix)); }
 <# } if (t.Name == "Relationship") { #> 
 		internal override string GetNewName(string prefix = null) { return Guid.NewGuid().ToString(); }
 <# } if (t.Name != "Column") { #>

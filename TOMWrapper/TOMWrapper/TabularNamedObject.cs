@@ -1,4 +1,4 @@
-﻿using Microsoft.AnalysisServices.Tabular;
+using Microsoft.AnalysisServices.Tabular;
 using System;
 using System.Linq;
 using System.ComponentModel;
@@ -39,6 +39,25 @@ namespace TabularEditor.TOMWrapper
         bool ITabularNamedObject.CanEditName()
         {
             return Editable(Properties.NAME);
+        }
+
+
+        internal static string GetNewName<T>()
+        {
+            var type = typeof(T);
+            if (type == typeof(Function))
+                // Spaces are not allowed in Function names:
+                return "NewFunction";
+
+            return "New " + type.GetTypeName();
+        }
+        internal string GetCopyName()
+        {
+            if (this is Function)
+                // Spaces are not allowed in Function names:
+                return Name + "Copy";
+
+            return Name + " Copy";
         }
 
         /// <summary>
