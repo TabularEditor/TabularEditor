@@ -197,8 +197,8 @@ namespace TabularEditor.UI.Actions
             }), (s, m) => "Reverse direction", false, Context.Relationship));
 
             // Visibility and perspectives
-            Add(new Action((s, m) => Governance.AllowEditProperty(s, TOMWrapper.Properties.ISHIDDEN) && s.OfType<IHideableObject>().Any(o => o.IsHidden), (s, m) => s.IsHidden = false, (s, m) => "Make visible", true, Context.DataObjects, Keys.Control | Keys.U));
-            Add(new Action((s, m) => Governance.AllowEditProperty(s, TOMWrapper.Properties.ISHIDDEN) && s.OfType<IHideableObject>().Any(o => !o.IsHidden), (s, m) => s.IsHidden = true, (s, m) => "Make invisible", true, Context.DataObjects, Keys.Control | Keys.I));
+            Add(new Action((s, m) => Governance.AllowEditProperty(s, TOMWrapper.Properties.ISHIDDEN) && s.OfType<IHideableObject>().Any(o => o.IsHidden), (s, m) => s.IsHidden = false, (s, m) => "Make visible", true, Context.DataObjects | Context.Function, Keys.Control | Keys.U));
+            Add(new Action((s, m) => Governance.AllowEditProperty(s, TOMWrapper.Properties.ISHIDDEN) && s.OfType<IHideableObject>().Any(o => !o.IsHidden), (s, m) => s.IsHidden = true, (s, m) => "Make invisible", true, Context.DataObjects | Context.Function, Keys.Control | Keys.I));
             Add(new Action((s, m) => Governance.AllowCreate(typeof(Perspective)) && s.OfType<ITabularPerspectiveObject>().Any(), (s, m) => s.ShowInAllPerspectives(), (s, m) => @"Show in Perspectives\All Perspectives", true, Context.DataObjects));
             Add(new Action((s, m) => Governance.AllowCreate(typeof(Perspective)) && s.OfType<ITabularPerspectiveObject>().Any(), (s, m) => s.HideInAllPerspectives(), (s, m) => @"Hide in Perspectives\All Perspectives", true, Context.DataObjects));
 
@@ -240,9 +240,10 @@ namespace TabularEditor.UI.Actions
                 }),
                 (s, m) => "Duplicate " + s.Summary(), true, Context.Translation));
 
-            // "Duplicate Role / Perspective":
+            // "Duplicate Role / Perspective / Function":
             Add(new Action((s, m) => Governance.AllowCreate(typeof(Perspective)) && s.Count == 1, (s, m) => s.ForEach(i => (i as IClonableObject).Clone(null, Preferences.Current.Copy_IncludeTranslations).Edit()), (s, m) => "Duplicate Perspective", true, Context.Perspective));
             Add(new Action((s, m) => Governance.AllowCreate(typeof(ModelRole)) && s.Count == 1, (s, m) => s.ForEach(i => (i as IClonableObject).Clone(null, Preferences.Current.Copy_IncludeTranslations).Edit()), (s, m) => "Duplicate Role", true, Context.Role));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(Function)) && s.Count == 1, (s, m) => s.ForEach(i => (i as IClonableObject).Clone(null, Preferences.Current.Copy_IncludeTranslations).Edit()), (s, m) => "Duplicate Function", true, Context.Function));
 
             // Batch Rename
             Add(new Action((s, m) => Governance.AllowEditProperty(s.Direct, TOMWrapper.Properties.NAME) && s.DirectCount > 1, (s, m) =>
