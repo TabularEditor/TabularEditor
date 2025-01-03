@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TabularEditor.PropertyGridUI;
-using TabularEditor.TOMWrapper.PowerBI;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -18,13 +11,38 @@ namespace TabularEditor.TOMWrapper
             obj.Init();
             return obj;
         }
+
+        /// <summary>
+        /// Creates a new WindowsModelRoleMember and adds it to the parent ModelRole.
+        /// Also creates the underlying metadataobject and adds it to the TOM tree.
+        /// </summary>
+        public static WindowsModelRoleMember CreateNew(ModelRole parent, string name, string memberId)
+        {
+            if (!parent.Handler.PowerBIGovernance.AllowCreate(typeof(WindowsModelRoleMember)))
+            {
+                throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject, typeof(WindowsModelRoleMember).GetTypeName()));
+            }
+
+            var metadataObject = new TOM.WindowsModelRoleMember();
+            metadataObject.MemberName = name;
+            metadataObject.MemberID = memberId;
+
+            var obj = new WindowsModelRoleMember(metadataObject);
+
+            parent.Members.Add(obj);
+
+            obj.Init();
+
+            return obj;
+        }
+
     }
 
     public partial class ExternalModelRoleMember
     {
         internal static ExternalModelRoleMember CreateUnassigned()
         {
-            var obj = new ExternalModelRoleMember(new TOM.ExternalModelRoleMember {  IdentityProvider = "AzureAD" });
+            var obj = new ExternalModelRoleMember(new TOM.ExternalModelRoleMember { IdentityProvider = "AzureAD" });
             obj.Init();
             return obj;
         }
