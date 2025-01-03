@@ -1,4 +1,4 @@
-﻿using Aga.Controls.Tree;
+using Aga.Controls.Tree;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -487,6 +487,7 @@ namespace TabularEditor
                     case ObjectType.Culture: stack.Add(Model.Groups.Translations); stack.Add(item); break;
                     case ObjectType.Role: stack.Add(Model.Groups.Roles); stack.Add(item); break;
                     case ObjectType.Perspective: stack.Add(Model.Groups.Perspectives); stack.Add(item); break;
+                    case ObjectType.Function: stack.Add(Model.Groups.Functions); stack.Add(item); break;
                     case ObjectType.DataSource: stack.Add(Model.Groups.DataSources); stack.Add(item); break;
                     case ObjectType.Relationship: stack.Add(Model.Groups.Relationships); stack.Add(item); break;
                     case ObjectType.Expression: stack.Add(Model.Groups.Expressions); stack.Add(item); break;
