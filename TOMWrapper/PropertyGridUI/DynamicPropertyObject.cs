@@ -152,5 +152,6 @@ namespace TabularEditor.PropertyGridUI
         public string Name { get; set; }
         public Action Execute { get; set; }
         public Func<bool> Enabled { get; set; }
+        public bool IsResetAction { get; set; }
     }
 }

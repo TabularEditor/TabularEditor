@@ -624,6 +624,72 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        /// <summary>
+        /// Gets or sets the Refresh Policy of the Table.
+        /// </summary>
+        [DisplayName("Refresh Policy")]
+        [Category("Incremental Refresh"), Description("Gets or sets the Refresh Policy of the Table")]
+        [PropertyAction(nameof(AddRefreshPolicy), nameof(RemoveRefreshPolicy), nameof(ApplyRefreshPolicy))]
+        public BasicRefreshPolicy RefreshPolicy
+        {
+            get
+            {
+                if (MetadataObject.RefreshPolicy == null) return null;
+                return Handler.WrapperLookup[MetadataObject.RefreshPolicy] as BasicRefreshPolicy;
+            }
+            set
+            {
+                var oldValue = MetadataObject.RefreshPolicy != null ? RefreshPolicy : null;
+                if (oldValue?.MetadataObject == value?.MetadataObject) return;
+                bool undoable = true;
+                bool cancel = false;
+                OnPropertyChanging(nameof(RefreshPolicy), value, ref undoable, ref cancel);
+                if (cancel) return;
+
+                var newRefreshPolicy = value?.MetadataObject;
+                if (newRefreshPolicy != null && newRefreshPolicy.IsRemoved)
+                {
+                    Handler.WrapperLookup.Remove(newRefreshPolicy);
+                    newRefreshPolicy = newRefreshPolicy.Clone() as TOM.BasicRefreshPolicy;
+                    value.MetadataObject = newRefreshPolicy;
+                    Handler.WrapperLookup.Add(newRefreshPolicy, value);
+                }
+
+                MetadataObject.RefreshPolicy = newRefreshPolicy;
+
+                if (undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(RefreshPolicy), oldValue, value));
+                OnPropertyChanged(nameof(RefreshPolicy), oldValue, value);
+            }
+        }
+
+        /// <summary>
+        /// Adds a <see cref="TOMWrapper.RefreshPolicy"/> to this measure.
+        /// </summary>
+        /// <returns></returns>
+        public RefreshPolicy AddRefreshPolicy()
+        {
+            Handler.BeginUpdate("Add Refresh Policy");
+            //if (RefreshPolicy == null) RefreshPolicy = BasicRefreshPolicy.CreateNew(this);
+            Handler.EndUpdate();
+            return RefreshPolicy;
+        }
+        private bool CanAddRefreshPolicy() => RefreshPolicy == null;
+
+        /// <summary>
+        /// Removes the <see cref="TOMWrapper.RefreshPolicy"/> from this measure.
+        /// </summary>
+        [ResetPropertyAction]
+        public void RemoveRefreshPolicy()
+        {
+            Handler.BeginUpdate("Remove RefreshPolicy");
+            RefreshPolicy = null;
+            Handler.EndUpdate();
+        }
+        private bool CanRemoveRefreshPolicy() => RefreshPolicy != null;
+
+
+        private RefreshPolicy RefreshPolicyBackup;
+
         [Browsable(false)]
         public virtual bool NeedsValidation
         {

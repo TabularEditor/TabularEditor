@@ -117,6 +117,7 @@
     <Compile Include="IsExternalInit.cs" />
     <Compile Include="MetadataSerializationOptionsBuilderExtension.cs" />
     <Compile Include="PowerBiCompatibilityModeHelper.cs" />
+    <Compile Include="RefreshPolicy.cs" />
     <Compile Include="Serialization\TmdlSerializeOptions.cs" />
     <Compile Include="TextServices\DAXLexerExtensions.cs" />
     <Compile Include="TOMWrapper\CalculationGroup.cs" />

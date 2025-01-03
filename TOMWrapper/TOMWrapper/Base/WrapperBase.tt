@@ -4,7 +4,7 @@
 <#@ assembly name="System.Data.Linq" #>
 <#@ assembly name="System.Xml" #>
 <#@ assembly name="System.Xml.Linq" #>
-<#@ assembly name="$(SolutionDir)\packages\Microsoft.AnalysisServices.retail.amd64.19.84.1\lib\net45\Microsoft.AnalysisServices.Tabular.dll" #>
+<#@ assembly name="$(SolutionDir)\packages\Microsoft.AnalysisServices.19.86.6\lib\net472\Microsoft.AnalysisServices.Tabular.dll" #>
 <#@ assembly name="EnvDTE" #>
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System.Linq" #>
@@ -27,7 +27,8 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
 <#
-   Rules.XmlDocFile = Host.ResolvePath(@"..\..\..\packages\Microsoft.AnalysisServices.retail.amd64.19.84.1\lib\net45\Microsoft.AnalysisServices.Tabular.xml");
+   var solutionPath = Host.ResolveAssemblyReference("$(SolutionDir)");
+   Rules.XmlDocFile = Path.Combine(solutionPath, @"packages\Microsoft.AnalysisServices.19.86.6\lib\net472\Microsoft.AnalysisServices.Tabular.xml");
 
    if(!File.Exists(Rules.XmlDocFile)) {
 	   throw new Exception("Could not locate file: " + Rules.XmlDocFile);
@@ -109,7 +110,7 @@ namespace TabularEditor.TOMWrapper
 #><#= props.Any(p => p.Name == "DisplayFolder") ? "\n\t\t\t, IFolderObject" : ""
 #><#= props.Any(p => p.Name == "IsHidden") ? "\n\t\t\t, IHideableObject" : ""
 #><#= props.Any(p => p.Name == "ErrorMessage") ? "\n\t\t\t, IErrorMessageObject" : ""
-#><#= props.Any(p => p.Name == "Table" && t.Name != "CalculationGroup" && t.Name != "TablePermission") ? "\n\t\t\t, ITabularTableObject" : ""
+#><#= props.Any(p => p.Name == "Table" && t.Name != "CalculationGroup" && t.Name != "TablePermission" && t.Name != "RefreshPolicy") ? "\n\t\t\t, ITabularTableObject" : ""
 #><#= props.Any(p => p.Name == "Description") ? "\n\t\t\t, IDescriptionObject" : ""
 #><#= props.Any(p => p.Name == "Expression" && t.Name != "NamedExpression" && t.Name != "DataCoverageDefinition") ? "\n\t\t\t, IExpressionObject" : ""
 #><#= props.Any(p => p.Name == "FormatString") ? "\n\t\t\t, IFormattableObject" : ""
@@ -422,7 +423,7 @@ namespace TabularEditor.TOMWrapper
 		[Category("<#= Rules.GetCategory(p.Name, t.Name) #>"),Description(@"<#= Rules.GetPropertyDescription(t, p.Name)#>"),IntelliSense(@"<#= Rules.GetPropertyDescription(t, p.Name)#>")]<#= Rules.GetOtherAttributes(p.Name, t.Name) #>
 		public <#= Rules.PropertyType(p) #> <#= p.Name #> {
 			<#= Rules.PropertyGetter(p) #>
-			<#= Rules.PropertySetter(p) #>
+			<#= Rules.PropertySetter(p, t) #>
 		}
 		private bool ShouldSerialize<#= p.Name #>() { return false; }
 <#		} else if(p.Name != "Parent" && p.Name != "ObjectType" && p.Name != "Name" && p.Name != "Annotations" && p.Name != "ExtendedProperties" && p.Name != "Variations"

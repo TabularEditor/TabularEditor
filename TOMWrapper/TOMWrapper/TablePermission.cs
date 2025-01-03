@@ -73,7 +73,6 @@ namespace TabularEditor.TOMWrapper
 
         protected override void Init()
         {
-            if (!string.IsNullOrEmpty(ErrorMessage)) Handler._errors.Add(this);
             if (MetadataObject.Model != null) DelayedInit();
         }
 

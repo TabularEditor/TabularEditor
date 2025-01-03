@@ -28,6 +28,8 @@ namespace TabularEditor.PropertyGridUI
                 var executeMethod = declaringType.GetMethod(actionMethod, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 if (executeMethod == null || executeMethod.GetParameters().Length != 0) continue;
 
+                var isResetAction = executeMethod.GetCustomAttribute<ResetPropertyActionAttribute>() != null;
+
                 var displayName = executeMethod.GetCustomAttribute<DisplayNameAttribute>();
                 var actionName = displayName != null ? displayName.DisplayName : actionMethod.SplitCamelCase();
 
@@ -44,10 +46,12 @@ namespace TabularEditor.PropertyGridUI
                 {
                     Name = actionName,
                     Execute = actionExecute,
-                    Enabled = actionEnabled
+                    Enabled = actionEnabled,
+                    IsResetAction = isResetAction
                 });
             }
             return result;
         }
     }
+    class ResetPropertyActionAttribute : Attribute { }
 }

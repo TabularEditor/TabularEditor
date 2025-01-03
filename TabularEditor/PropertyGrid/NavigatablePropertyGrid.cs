@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.PropertyGridUI;
+using TabularEditor.UIServices;
 
 namespace TabularEditor.PropertyGridExtension
 {
@@ -37,13 +38,20 @@ namespace TabularEditor.PropertyGridExtension
             {
                 if(dpd.CustomActions != null && dpd.CustomActions.Count > 0)
                 {
-                    foreach(var act in dpd.CustomActions)
+                    var hasResetAction = false;
+                    foreach (var act in dpd.CustomActions)
                     {
+                        if (act.IsResetAction) hasResetAction = true;
                         if (act.Enabled())
                         {
                             hasItems = true;
                             this.ContextMenuStrip.Items.Add(act.Name).Click += (s, e2) => act.Execute();
                         }
+                    }
+                    if (hasResetAction)
+                    {
+                        //var resetIndex = this.ContextMenuStrip.Items.OfType<ToolStripItem>().FirstIndexOf(i => i.Tag is VGridStringId sId && sId == VGridStringId.MenuReset);
+                        //if (resetIndex != -1) e.Menu.Items.RemoveAt(resetIndex);
                     }
                 }
             }

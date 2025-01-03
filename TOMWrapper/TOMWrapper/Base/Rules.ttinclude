@@ -8,17 +8,28 @@
 partial class Rules {
 	public static string XmlDocFile;
 
-	public static string GetTypeXmlDoc(Type t) {
+	public static string GetTypeXmlDoc(Type t, int indent = 0) {
 		var xml = XElement.Load(Rules.XmlDocFile);
 		var node = xml?.Element("members")?.Elements("member")?.FirstOrDefault(e => ((string)e.Attribute("name")) == "T:Microsoft.AnalysisServices.Tabular." + t.Name);
 		if(node != null) {
 			var nodeReader = node.CreateReader();
 			nodeReader.MoveToContent();
 			var doc = nodeReader.ReadInnerXml();
-			return string.Join("\n", doc.Split('\n').Select(line => "/// " + line.Replace("Microsoft.AnalysisServices.Tabular","TabularEditor.TOMWrapper")));
+			return string.Join("\n", doc.Split('\n').Select(line => new string(' ', indent * 4) + "/// " + line.Replace("Microsoft.AnalysisServices.Tabular","TabularEditor.TOMWrapper").Trim()));
         }
 		return "";
     }
+	public static string GetEnumXmlDoc(Type t, string name, int indent = 0) {
+		var xml = XElement.Load(Rules.XmlDocFile);
+		var node = xml?.Element("members")?.Elements("member")?.FirstOrDefault(e => ((string)e.Attribute("name")) == "F:Microsoft.AnalysisServices.Tabular." + t.Name + "." + name);
+		if(node != null) {
+			var nodeReader = node.CreateReader();
+			nodeReader.MoveToContent();
+			var doc = nodeReader.ReadInnerXml();
+			return string.Join("\n", doc.Split('\n').Select(line => new string(' ', indent * 4) + "/// " + line.Replace("Microsoft.AnalysisServices.Tabular","TabularEditor.TOMWrapper").Trim()));
+        }
+		return "";
+	}
 
 	public class CompatRequirement
 	{
@@ -41,8 +52,8 @@ partial class Rules {
 				var pbiProp = attrType.GetProperty("Pbi");
 				var pbi = (string)pbiProp.GetValue(attribute);
 
-				this.Box = box == "Preview" ? 1000000 : int.TryParse(box, out int boxValue) ? boxValue : int.MaxValue;
-				this.Pbi = pbi == "Preview" ? 1000000 : int.TryParse(pbi, out int pbiValue) ? pbiValue : int.MaxValue;
+				this.Box = int.TryParse(box, out int boxValue) ? boxValue : int.MaxValue;
+				this.Pbi = int.TryParse(pbi, out int pbiValue) ? pbiValue : int.MaxValue;
 			}
 			else 
 			{
@@ -103,14 +114,14 @@ partial class Rules {
 		else return types;
 	}
 
-    public static string GetPropertyXmlDoc(Type t, string propertyName) {
+    public static string GetPropertyXmlDoc(Type t, string propertyName, int indent = 0) {
 		var xml = XElement.Load(XmlDocFile);
 		var node = xml?.Element("members")?.Elements("member")?.FirstOrDefault(e => ((string)e.Attribute("name")) == "P:Microsoft.AnalysisServices.Tabular." + t.Name + "." + propertyName);
 		if(node != null) {
 			var nodeReader = node.CreateReader();
 			nodeReader.MoveToContent();
 			var doc = nodeReader.ReadInnerXml();
-			return string.Join("\n", doc.Split('\n').Select(line => "/// " + line.Replace("Microsoft.AnalysisServices.Tabular","TabularEditor.TOMWrapper")));
+			return string.Join("\n", doc.Split('\n').Select(line => new string(' ', indent * 4) + "/// " + line.Replace("Microsoft.AnalysisServices.Tabular","TabularEditor.TOMWrapper").Trim()));
         }
 		return "";
     }
@@ -218,9 +229,15 @@ partial class Rules {
 
     }
 
+	public static bool IsDeprecated(PropertyInfo p)
+	{
+		var attributes = p.GetCustomAttributes(false);
+		return attributes.OfType<ObsoleteAttribute>().Any();
+	}
+
 	public static bool ShouldWrapProperty(PropertyInfo p, Type t)
     {
-		if (p.Name == "ErrorMessage" && (t.Name == "Measure" || t.Name == "CalculationItem")) return false;
+		if (p.Name == "ErrorMessage" && (t.Name == "Measure" || t.Name == "CalculationItem" || t.Name == "TablePermission" || t.Name == "Table" || t.Name == "CalculatedColumn" || t.Name == "KPI")) return false;
 		if (p.Name == "KPI") return false;
 		if (p.Name == "DataCoverageDefinition") return false;
 		if (p.Name == "AlternateOf") return false;
@@ -263,7 +280,7 @@ partial class Rules {
 		return p.PropertyType.Name;
     }
 
-	public static string PropertySetter(PropertyInfo p)
+	public static string PropertySetter(PropertyInfo p, Type t)
     {
 		if (p.SetMethod == null || !p.SetMethod.IsPublic) return "";
 
@@ -291,9 +308,10 @@ partial class Rules {
 				case "FromColumn":
 				case "ToColumn":
 				case "ParameterValuesColumn":
-				case "DataCoverageDefinition":
 				case "KPI":
+				case "QueryGroup":
 				case "DefaultMeasure":
+				case "DataCoverageDefinition":
 				    resolveObject = "value?.MetadataObject";
 					break;
 			}
@@ -310,7 +328,7 @@ partial class Rules {
 				OnPropertyChanging({5}, newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.{0} = {4};
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, {5}, oldValue, newValue));
+				if(undoable) Handler.UndoManager.Add(new {8}(this, {5}, oldValue, newValue));
 				OnPropertyChanged({5}, oldValue, newValue);{2}{3}
 			}}", 
 			p.Name, 
@@ -318,9 +336,10 @@ partial class Rules {
 			p.Name == "DisplayFolder" ? "\n\t\t\t\tHandler.UpdateFolders(Table);" : "",
 			p.Name == "IsHidden" ? "\n\t\t\t\tHandler.UpdateObject(this);" : "",
 			resolveObject, 
-			"Properties." + p.Name.ToUpper(),
+			"nameof(" + p.Name + ")",
 			p.PropertyType == typeof(string) ? "?.Replace(\"\\r\", \"\")" : "",
-			p.Name == "DisplayFolder" ? "if(value.Contains(@\"\\\\\")) throw new Exception(\"Display Folder names cannot be blank.\");" : "");
+			p.Name == "DisplayFolder" ? "if(value != null && value.Contains(@\"\\\\\")) throw new Exception(\"Display Folder names cannot be blank.\");" : "",
+			typeof(ModelRoleMember).IsAssignableFrom(t) ? "UndoPropertyChangedNonMetadataObjectAction" : "UndoPropertyChangedAction");
     }
 
 	public static string PropertyGetter(PropertyInfo p)
@@ -417,19 +436,23 @@ partial class Rules {
 
 	public static string GetOtherAttributes(string propertyName, string className)
     {
-	    if(className == "Variation" && propertyName == "Column") return "[TypeConverter(typeof(TableColumnConverter)),ReadOnly(true)]";
-		if(propertyName == "ParameterValuesColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
-		if(propertyName == "BaseColumn") return "[TypeConverter(typeof(AllOtherTablesColumnConverter))]";
-		if(propertyName == "BaseTable") return "[TypeConverter(typeof(OtherTablesConverter))]";
-		if(propertyName == "SortByColumn") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(ColumnConverter))]";
+	    if(className == "Variation" && propertyName == "Column") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(TableColumnConverter)),ReadOnly(true)]";
+		if(propertyName == "DefaultMeasure") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(MeasureConverter))]";
+		if(propertyName == "ParameterValuesColumn") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(ColumnConverter))]";
+		if(propertyName == "BaseColumn") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(AlternateOfColumnConverter))]";
+		if(propertyName == "BaseTable") return "[TypeConverter(typeof(OtherTableConverter))]";
+		if(propertyName == "SortByColumn") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(TableColumnConverter))]";
 		if(propertyName == "ExpressionSource") return "[TypeConverter(typeof(NamedExpressionConverter))]";
-		if(propertyName == "DefaultColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
+		if(propertyName == "MemberName") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]";
+		if(propertyName == "DefaultColumn") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(ColumnConverter))]";
 		if(propertyName == "DefaultHierarchy") return "[TypeConverter(typeof(AllHierarchyConverter))]";
 		if(propertyName == "Relationship") return "[TypeConverter(typeof(AllRelationshipConverter))]";
-		if(propertyName == "ToColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
-		if(propertyName == "FromColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
+		if(propertyName == "QueryGroup") return "[TypeConverter(typeof(QueryGroupConverter)),Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]";
+		if(propertyName == "QueryGroups") return "[Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<QueryGroup>),typeof(UITypeEditor))]";
+		if(propertyName == "ToColumn") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(ColumnConverter))]";
+		if(propertyName == "FromColumn") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(ColumnConverter))]";
 		if(className == "Level" && propertyName == "Hierarchy") return "[Browsable(false)]";
-		if(className == "Level" && propertyName == "Column") return "[TypeConverter(typeof(HierarchyColumnConverter)),NoMultiselect()]";
+		if(className == "Level" && propertyName == "Column") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(HierarchyColumnConverter)),NoMultiselect()]";
 		if(className == "Level" && propertyName == "Ordinal") return "[NoMultiselect()]";
 		if(className == "CalculationItem" && propertyName == "Ordinal") return "[NoMultiselect()]";
 		if(className == "Model" && propertyName == "Culture") return "[TypeConverter(typeof(CultureConverter))]";
@@ -440,12 +463,11 @@ partial class Rules {
 		if(className == "ProviderDataSource" && propertyName == "ConnectionString") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)),TypeConverter(typeof(ConnectionStringConverter))]";
 		if(propertyName.EndsWith("Expression")) return "[Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]";
 		if(propertyName.EndsWith("Description")) return "[Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]";
-		if(propertyName == "ContextExpression") return "[Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]";
-
 		if(propertyName == "Perspectives") return "[Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<Perspective>),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Cultures") return "[Editor(typeof(TabularEditor.PropertyGridUI.CultureCollectionEditor),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Roles") return "[Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<ModelRole>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Expressions") return "[Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<NamedExpression>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]";
+		if(propertyName == "BindingInfoCollection") return "[Editor(typeof(BindingInfoCollectionEditor), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Sets") return "[NoMultiselect(),Editor(typeof(SetCollectionEditor),typeof(UITypeEditor))]";
 		if(propertyName == "Partitions") return "[NoMultiselect(),Editor(typeof(PartitionCollectionEditor),typeof(UITypeEditor))]";
 		if(propertyName == "Variations") return "[NoMultiselect(),Editor(typeof(VariationCollectionEditor),typeof(UITypeEditor))]";
@@ -474,40 +496,42 @@ partial class Rules {
     }
 
 	private static readonly string[] _enumTypes = new[] {
-		"ContentType",
-		"ExpressionKind",
-		"DataSourceType",
-		"PartitionSourceType",
-		"DataType",
-		"ObjectState",
-		"Alignment",
 		"AggregateFunction",
+		"Alignment",
+		"BindingInfoType",
+		"CalculationGroupSelectionMode",
 		"ColumnType",
-		"RoleMemberType",
-		"ModeType",
-		"DataViewType",
-		"ModelPermission",
-		"ImpersonationMode",
-		"DatasourceIsolation",
-		"RelationshipType",
+		"ContentType",
 		"CrossFilteringBehavior",
-		"SecurityFilteringBehavior",
+		"DatasourceIsolation",
+		"DataSourceType",
+		"DataSourceVariablesOverrideBehaviorType",
+		"DataType",
+		"DataViewType",
 		"DateTimeRelationshipBehavior",
-		"RelationshipEndCardinality",
-		"HierarchyHideMembersType",
+		"DirectLakeBehavior",
 		"EncodingHintType",
-		"RefreshType",
-		"ExtendedPropertyType",
-		"MetadataPermission",
-		"PowerBIDataSourceVersion",
-		"SummarizationType",
-		"RefreshGranularityType",
 		"EvaluationBehavior",
+		"ExpressionKind",
+		"ExtendedPropertyType",
+		"HierarchyHideMembersType",
+		"ImpersonationMode",
+		"MetadataPermission",
+		"ModelPermission",
+		"ModeType",
+		"ObjectState",
+		"PartitionSourceType",
+		"PowerBIDataSourceVersion",
+		"RoleMemberType",
+		"RefreshGranularityType",
 		"RefreshPolicyMode",
 		"RefreshPolicyType",
-		"DirectLakeBehavior",
+		"RefreshType",
+		"RelationshipEndCardinality",
+		"RelationshipType",
+		"SecurityFilteringBehavior",
+		"SummarizationType",
 		"ValueFilterBehaviorType",
-		"DataSourceVariablesOverrideBehaviorType"
 	};
 	public static readonly Type[] EnumTypes = _enumTypes.Select(t => ASType(t)).Where(t => t != null).ToArray();
 
@@ -556,6 +580,8 @@ partial class Rules {
        { "ExternalModelRoleMember", "ModelRoleMember" },
        { "Hierarchy", "TabularNamedObject" },
        { "KPI", "TabularObject" },
+       { "RefreshPolicy", "TabularObject" },
+       { "BasicRefreshPolicy", "RefreshPolicy" },
 	   { "AlternateOf", "TabularObject" },
        { "Level", "TabularNamedObject" },
        { "Measure", "TabularNamedObject" },
@@ -574,8 +600,12 @@ partial class Rules {
 	   { "CalculationGroup", "TabularObject" },
 	   { "CalculationItem", "TabularNamedObject" },
 	   { "TablePermission", "TabularNamedObject" },
-	   { "DataCoverageDefinition", "TabularObject" }
+	   { "QueryGroup", "TabularNamedObject" },
+	   { "DataCoverageDefinition", "TabularObject" },
+	   { "BindingInfo", "TabularNamedObject" },
+	   { "DataBindingHint", "BindingInfo" },
    };
+   public static bool IsDerived(Type type) { return _objectTypes[type.Name] != "TabularObject" && _objectTypes[type.Name] != "TabularNamedObject"; }
    public static bool Seal(Type type) { return !_objectTypes.Values.Any(t => t == type.Name); }
    public static Dictionary<Type, string> ObjectTypes = Convert(_objectTypes).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
    
@@ -610,7 +640,9 @@ partial class Rules {
 	   { "Variation", "Variations" },
 	   { "NamedExpression", "Expressions" },
 	   { "CalculationItem", "CalculationItems" },
-	   { "TablePermission", "TablePermissions" }
+	   { "TablePermission", "TablePermissions" },
+	   { "QueryGroup", "QueryGroups" },
+	   { "BindingInfo", "BindingInfoCollection" },
    };
    public static Dictionary<Type, string> Collections = Convert(_objectCollections).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
@@ -620,6 +652,7 @@ partial class Rules {
 		   case "ModelRoleMember": return "Members";
 		   case "Hierarchy": return "Hierarchies";
 		   case "NamedExpression": return "Expressions";
+		   case "BindingInfo": return "BindingInfoCollection";
 		   default: return itemType.Name + "s";
        }
    }
@@ -634,6 +667,8 @@ partial class Rules {
        { new KeyValuePair<string, string>("Table", "Model") },
 	   { new KeyValuePair<string, string>("Relationship", "Model") },
 	   { new KeyValuePair<string, string>("NamedExpression", "Model") },
+	   { new KeyValuePair<string, string>("QueryGroup", "Model") },
+	   { new KeyValuePair<string, string>("BindingInfo", "Model") },
 
 	   // Collections owned by a Table (order of items matters, as this is the order in which child objects will be initialized):
        { new KeyValuePair<string, string>("Set", "Table") },

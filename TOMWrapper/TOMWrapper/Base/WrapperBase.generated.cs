@@ -35,6 +35,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string COLUMNPERMISSIONS = "ColumnPermissions";
 	    public const string COLUMNS = "Columns";
 	    public const string CONNECTIONDETAILS = "ConnectionDetails";
+	    public const string CONNECTIONID = "ConnectionId";
 	    public const string CONNECTIONSTRING = "ConnectionString";
 	    public const string CONTEXTEXPRESSION = "ContextExpression";
 	    public const string CREDENTIAL = "Credential";
@@ -77,6 +78,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string EXPRESSIONSOURCE = "ExpressionSource";
 	    public const string EXTENDEDPROPERTIES = "ExtendedProperties";
 	    public const string FILTEREXPRESSION = "FilterExpression";
+	    public const string FOLDER = "Folder";
 	    public const string FORCEUNIQUENAMES = "ForceUniqueNames";
 	    public const string FORMATSTRING = "FormatString";
 	    public const string FORMATSTRINGDEFINITION = "FormatStringDefinition";
@@ -90,6 +92,9 @@ namespace TabularEditor.TOMWrapper
 	    public const string HIERARCHY = "Hierarchy";
 	    public const string IDENTITYPROVIDER = "IdentityProvider";
 	    public const string IMPERSONATIONMODE = "ImpersonationMode";
+	    public const string INCREMENTALGRANULARITY = "IncrementalGranularity";
+	    public const string INCREMENTALPERIODS = "IncrementalPeriods";
+	    public const string INCREMENTALPERIODSOFFSET = "IncrementalPeriodsOffset";
 	    public const string INPERSPECTIVE = "InPerspective";
 	    public const string ISACTIVE = "IsActive";
 	    public const string ISAVAILABLEINMDX = "IsAvailableInMDX";
@@ -141,6 +146,8 @@ namespace TabularEditor.TOMWrapper
 	    public const string PASSWORD = "Password";
 	    public const string PERSPECTIVES = "Perspectives";
 	    public const string PERSPECTIVETABLES = "PerspectiveTables";
+	    public const string POLICYTYPE = "PolicyType";
+	    public const string POLLINGEXPRESSION = "PollingExpression";
 	    public const string PRECEDENCE = "Precedence";
 	    public const string PROVIDER = "Provider";
 	    public const string QUERYGROUP = "QueryGroup";
@@ -155,6 +162,8 @@ namespace TabularEditor.TOMWrapper
 	    public const string RETAINDATATILLFORCECALCULATE = "RetainDataTillForceCalculate";
 	    public const string ROLE = "Role";
 	    public const string ROLES = "Roles";
+	    public const string ROLLINGWINDOWGRANULARITY = "RollingWindowGranularity";
+	    public const string ROLLINGWINDOWPERIODS = "RollingWindowPeriods";
 	    public const string SECURITYFILTERINGBEHAVIOR = "SecurityFilteringBehavior";
 	    public const string SERVER = "Server";
 	    public const string SETS = "Sets";
@@ -162,6 +171,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string SORTBYCOLUMN = "SortByColumn";
 	    public const string SOURCE = "Source";
 	    public const string SOURCECOLUMN = "SourceColumn";
+	    public const string SOURCEEXPRESSION = "SourceExpression";
 	    public const string SOURCELINEAGETAG = "SourceLineageTag";
 	    public const string SOURCEPROVIDERTYPE = "SourceProviderType";
 	    public const string SOURCEQUERYCULTURE = "SourceQueryCulture";
@@ -218,6 +228,8 @@ namespace TabularEditor.TOMWrapper
             { typeof(ExternalModelRoleMember) , typeof(TOM.ExternalModelRoleMember) },
             { typeof(Hierarchy) , typeof(TOM.Hierarchy) },
             { typeof(KPI) , typeof(TOM.KPI) },
+            { typeof(RefreshPolicy) , typeof(TOM.RefreshPolicy) },
+            { typeof(BasicRefreshPolicy) , typeof(TOM.BasicRefreshPolicy) },
             { typeof(AlternateOf) , typeof(TOM.AlternateOf) },
             { typeof(Level) , typeof(TOM.Level) },
             { typeof(Measure) , typeof(TOM.Measure) },
@@ -236,7 +248,10 @@ namespace TabularEditor.TOMWrapper
             { typeof(CalculationGroup) , typeof(TOM.CalculationGroup) },
             { typeof(CalculationItem) , typeof(TOM.CalculationItem) },
             { typeof(TablePermission) , typeof(TOM.TablePermission) },
+            { typeof(QueryGroup) , typeof(TOM.QueryGroup) },
             { typeof(DataCoverageDefinition) , typeof(TOM.DataCoverageDefinition) },
+            { typeof(BindingInfo) , typeof(TOM.BindingInfo) },
+            { typeof(DataBindingHint) , typeof(TOM.DataBindingHint) },
 	    };
 
 		public static Type ToTOM(Type wrapperType) {
@@ -269,6 +284,8 @@ namespace TabularEditor.TOMWrapper
             typeof(NamedExpression),
             typeof(CalculationItem),
             typeof(TablePermission),
+            typeof(QueryGroup),
+            typeof(DataBindingHint),
 	        typeof(MPartition),
             typeof(EntityPartition),
             typeof(PolicyRangePartition),
@@ -277,42 +294,90 @@ namespace TabularEditor.TOMWrapper
         };
 	}
 	/// <summary>
-///             The type of the content of a string. E.g. XML or JSON.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1465 or above.</remarks>
+/// Specifies the aggregate function to be used by reporting tools to summarize column values.
+/// </summary>
+	public enum AggregateFunction {    
+        Default = 1,
+        None = 2,
+        Sum = 3,
+        Min = 4,
+        Max = 5,
+        Count = 6,
+        Average = 7,
+        DistinctCount = 8,
+	}
+	/// <summary>
+/// An enumeration of possible values for aligning data in a cell.
+/// </summary>
+	public enum Alignment {    
+        Default = 1,
+        Left = 2,
+        Right = 3,
+        Center = 4,
+	}
+	/// <summary>
+/// The type of a BindingInfo metadata element.
+/// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1608 or above.</remarks>
+	public enum BindingInfoType {    
+        Unknown = 0,
+        DataBindingHint = 1,
+	}
+	/// <summary>
+/// Options for selections on calculation groups which do not invoke a calculation item.
+/// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1605 or above.</remarks>
+	public enum CalculationGroupSelectionMode {    
+        Unknown = 0,
+        MultipleOrEmptySelection = 1,
+        NoSelection = 2,
+	}
+	/// <summary>
+/// An enumeration of possible values for a column type.
+/// </summary>
+	public enum ColumnType {    
+        Data = 1,
+        Calculated = 2,
+        RowNumber = 3,
+        CalculatedTableColumn = 4,
+	}
+	/// <summary>
+/// The type of the content of a string. E.g. XML or JSON.
+/// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1465 or above.</remarks>
 	public enum ContentType {    
         Xml = 0,
         Json = 1,
 	}
 	/// <summary>
-///             Indicates the dialect of the query expression.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
-	public enum ExpressionKind {    
-        M = 0,
+/// Indicates how relationships influence filtering of data. The enumeration defines the possible behaviors.
+/// </summary>
+	public enum CrossFilteringBehavior {    
+        OneDirection = 1,
+        BothDirections = 2,
+        Automatic = 3,
 	}
 	/// <summary>
-///             The type of DataSource. Currently, the only possible value is Provider.
-///             </summary>
+/// Controls the locking behavior of the SQL statements when executing commands against the data source.
+/// </summary>
+	public enum DatasourceIsolation {    
+        ReadCommitted = 1,
+        Snapshot = 2,
+	}
+	/// <summary>
+/// The type of DataSource. Currently, the only possible value is Provider.
+/// </summary>
 	public enum DataSourceType {    
         Provider = 1,
         Structured = 2,
 	}
 	/// <summary>
-///             An enumeration of possible values for a partition source.
-///             </summary>
-	public enum PartitionSourceType {    
-        Query = 1,
-        Calculated = 2,
-        None = 3,
-        M = 4,
-        Entity = 5,
-        PolicyRange = 6,
-        CalculationGroup = 7,
-        Inferred = 8,
-        Parquet = 9,
+/// Data source edit varaibles override behaviour type. E.g. Disallow or Allow.
+/// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1475 or above.</remarks>
+	public enum DataSourceVariablesOverrideBehaviorType {    
+        Disallow = 0,
+        Allow = 1,
 	}
 	/// <summary>
-///             Describes the type of data contained in the column. 
-///             </summary>
+/// Describes the type of data contained in the column.
+/// </summary>
 	public enum DataType {    
         Automatic = 1,
         String = 2,
@@ -326,8 +391,107 @@ namespace TabularEditor.TOMWrapper
         Variant = 20,
 	}
 	/// <summary>
-///             An enumeration of possible values for object state.
-///             </summary>
+/// Determines which partitions are to be selected to run queries against the model.
+/// </summary>
+	public enum DataViewType {    
+        Full = 0,
+        Sample = 1,
+        Default = 3,
+	}
+	/// <summary>
+/// When joining two date time columns, indicates whether to join on date and time parts or on date part only.
+/// </summary>
+	public enum DateTimeRelationshipBehavior {    
+        DateAndTime = 1,
+        DatePartOnly = 2,
+	}
+	/// <summary>
+/// Fallback behavior for Direct Lake models.
+/// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1604 or above.</remarks>
+	public enum DirectLakeBehavior {    
+        Automatic = 0,
+        DirectLakeOnly = 1,
+        DirectQueryOnly = 2,
+	}
+	/// <summary>
+/// Encoding hint to suggest whether a column should use hash encoding.
+/// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+	public enum EncodingHintType {    
+        Default = 0,
+        Hash = 1,
+        Value = 2,
+	}
+	/// <summary>
+/// Evaluation behavior for calculated column.
+/// </summary><remarks>This enum is only supported when the compatibility level of the database is at Preview or above.</remarks>
+	public enum EvaluationBehavior {    
+        Automatic = 1,
+        Static = 2,
+        Dynamic = 3,
+	}
+	/// <summary>
+/// Indicates the dialect of the query expression.
+/// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+	public enum ExpressionKind {    
+        M = 0,
+	}
+	/// <summary>
+/// An enumeration of possible values for the type of value stored in extended property.
+/// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+	public enum ExtendedPropertyType {    
+        String = 0,
+        Json = 1,
+	}
+	/// <summary>
+/// Ragged/unbalanced hierarchies can be enabled by hiding members.
+/// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+	public enum HierarchyHideMembersType {    
+        Default = 0,
+        HideBlankMembers = 1,
+	}
+	/// <summary>
+/// Determines how credentials are obtained for an impersonated connection to a data source during data import or refresh.
+/// </summary>
+	public enum ImpersonationMode {    
+        Default = 1,
+        ImpersonateAccount = 2,
+        ImpersonateAnonymous = 3,
+        ImpersonateCurrentUser = 4,
+        ImpersonateServiceAccount = 5,
+        ImpersonateUnattendedAccount = 6,
+	}
+	/// <summary>
+/// Access control to a data defined by a metadata object.
+/// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+	public enum MetadataPermission {    
+        Default = 0,
+        None = 1,
+        Read = 2,
+	}
+	/// <summary>
+/// An enumeration of possible model permissions that can be used in a Role object.
+/// </summary>
+	public enum ModelPermission {    
+        None = 1,
+        Read = 2,
+        ReadRefresh = 3,
+        Refresh = 4,
+        Administrator = 5,
+	}
+	/// <summary>
+/// Defines the method for making data available in the partition.
+/// </summary>
+	public enum ModeType {    
+        Import = 0,
+        DirectQuery = 1,
+        Default = 2,
+        Push = 3,
+        Dual = 4,
+        DirectLake = 5,
+	}
+	/// <summary>
+/// An enumeration of possible values for object state.
+/// </summary>
 	public enum ObjectState {    
         Ready = 1,
         NoData = 3,
@@ -339,146 +503,61 @@ namespace TabularEditor.TOMWrapper
         ForceCalculationNeeded = 10,
 	}
 	/// <summary>
-///             An enumeration of possible values for aligning data in a cell. 
-///             </summary>
-	public enum Alignment {    
-        Default = 1,
-        Left = 2,
-        Right = 3,
-        Center = 4,
-	}
-	/// <summary>
-///             Specifies the aggregate function to be used by reporting tools to summarize column values.
-///             </summary>
-	public enum AggregateFunction {    
-        Default = 1,
-        None = 2,
-        Sum = 3,
-        Min = 4,
-        Max = 5,
-        Count = 6,
-        Average = 7,
-        DistinctCount = 8,
-	}
-	/// <summary>
-///             An enumeration of possible values for a column type. 
-///             </summary>
-	public enum ColumnType {    
-        Data = 1,
+/// An enumeration of possible values for a partition source.
+/// </summary>
+	public enum PartitionSourceType {    
+        Query = 1,
         Calculated = 2,
-        RowNumber = 3,
-        CalculatedTableColumn = 4,
+        None = 3,
+        M = 4,
+        Entity = 5,
+        PolicyRange = 6,
+        CalculationGroup = 7,
+        Inferred = 8,
+        Parquet = 9,
 	}
 	/// <summary>
-///             Indicates whether the particular member of a security role is an individual user or a group of users, or if the member is automatically detected.
-///             </summary>
+/// DataSource format version in Power BI Service.
+/// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1450 or above.</remarks>
+	public enum PowerBIDataSourceVersion {    
+        PowerBI_V1 = 0,
+        PowerBI_V2 = 1,
+        PowerBI_V3 = 2,
+	}
+	/// <summary>
+/// Indicates whether the particular member of a security role is an individual user or a group of users, or if the member is automatically detected.
+/// </summary>
 	public enum RoleMemberType {    
         Auto = 1,
         User = 2,
         Group = 3,
 	}
 	/// <summary>
-///             Defines the method for making data available in the partition.
-///             </summary>
-	public enum ModeType {    
+/// Specifies the granularity of the refresh policy for auto partitioning
+/// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1450 or above.</remarks>
+	public enum RefreshGranularityType {    
+        Day = 0,
+        Month = 1,
+        Quarter = 2,
+        Year = 3,
+        Invalid = -1,
+	}
+	/// <summary>
+/// Mode of a refresh policy.
+/// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1565 or above.</remarks>
+	public enum RefreshPolicyMode {    
         Import = 0,
-        DirectQuery = 1,
-        Default = 2,
-        Push = 3,
-        Dual = 4,
-        DirectLake = 5,
+        Hybrid = 1,
 	}
 	/// <summary>
-///             Determines which partitions are to be selected to run queries against the model.
-///             </summary>
-	public enum DataViewType {    
-        Full = 0,
-        Sample = 1,
-        Default = 3,
+/// Specifies the refresh policy type of a table
+/// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1450 or above.</remarks>
+	public enum RefreshPolicyType {    
+        Basic = 0,
 	}
 	/// <summary>
-///             An enumeration of possible model permissions that can be used in a Role object.
-///             </summary>
-	public enum ModelPermission {    
-        None = 1,
-        Read = 2,
-        ReadRefresh = 3,
-        Refresh = 4,
-        Administrator = 5,
-	}
-	/// <summary>
-///             Determines how credentials are obtained for an impersonated connection to a data source during data import or refresh.
-///             </summary>
-	public enum ImpersonationMode {    
-        Default = 1,
-        ImpersonateAccount = 2,
-        ImpersonateAnonymous = 3,
-        ImpersonateCurrentUser = 4,
-        ImpersonateServiceAccount = 5,
-        ImpersonateUnattendedAccount = 6,
-	}
-	/// <summary>
-///             Controls the locking behavior of the SQL statements when executing commands against the data source. 
-///             </summary>
-	public enum DatasourceIsolation {    
-        ReadCommitted = 1,
-        Snapshot = 2,
-	}
-	/// <summary>
-///             The type of relationship. Currently, the only possible value is SingleColumn.
-///             </summary>
-	public enum RelationshipType {    
-        SingleColumn = 1,
-	}
-	/// <summary>
-///             Indicates how relationships influence filtering of data. The enumeration defines the possible behaviors.
-///             </summary>
-	public enum CrossFilteringBehavior {    
-        OneDirection = 1,
-        BothDirections = 2,
-        Automatic = 3,
-	}
-	/// <summary>
-///             Indicates how relationships influence filtering of data when evaluating row-level security expressions. The enumeration defines the possible behaviors.
-///             </summary>
-	public enum SecurityFilteringBehavior {    
-        OneDirection = 1,
-        BothDirections = 2,
-        None = 3,
-	}
-	/// <summary>
-///             When joining two date time columns, indicates whether to join on date and time parts or on date part only.
-///             </summary>
-	public enum DateTimeRelationshipBehavior {    
-        DateAndTime = 1,
-        DatePartOnly = 2,
-	}
-	/// <summary>
-///             An enumeration of possible values for defining cardinality on either side of a table relationship.
-///             </summary>
-	public enum RelationshipEndCardinality {    
-        None = 0,
-        One = 1,
-        Many = 2,
-	}
-	/// <summary>
-///             Ragged/unbalanced hierarchies can be enabled by hiding members.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
-	public enum HierarchyHideMembersType {    
-        Default = 0,
-        HideBlankMembers = 1,
-	}
-	/// <summary>
-///             Encoding hint to suggest whether a column should use hash encoding.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
-	public enum EncodingHintType {    
-        Default = 0,
-        Hash = 1,
-        Value = 2,
-	}
-	/// <summary>
-///             An enumeration of possible values for a refresh type.
-///             </summary>
+/// An enumeration of possible values for a refresh type.
+/// </summary>
 	public enum RefreshType {    
         Full = 1,
         ClearValues = 2,
@@ -489,31 +568,30 @@ namespace TabularEditor.TOMWrapper
         Defragment = 8,
 	}
 	/// <summary>
-///             An enumeration of possible values for the type of value stored in extended property.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
-	public enum ExtendedPropertyType {    
-        String = 0,
-        Json = 1,
+/// An enumeration of possible values for defining cardinality on either side of a table relationship.
+/// </summary>
+	public enum RelationshipEndCardinality {    
+        None = 0,
+        One = 1,
+        Many = 2,
 	}
 	/// <summary>
-///             Access control to a data defined by a metadata object.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
-	public enum MetadataPermission {    
-        Default = 0,
-        None = 1,
-        Read = 2,
+/// The type of relationship. Currently, the only possible value is SingleColumn.
+/// </summary>
+	public enum RelationshipType {    
+        SingleColumn = 1,
 	}
 	/// <summary>
-///             DataSource format version in Power BI Service.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1450 or above.</remarks>
-	public enum PowerBIDataSourceVersion {    
-        PowerBI_V1 = 0,
-        PowerBI_V2 = 1,
-        PowerBI_V3 = 2,
+/// Indicates how relationships influence filtering of data when evaluating row-level security expressions. The enumeration defines the possible behaviors.
+/// </summary>
+	public enum SecurityFilteringBehavior {    
+        OneDirection = 1,
+        BothDirections = 2,
+        None = 3,
 	}
 	/// <summary>
-///             Specifies the Summarization type to be used by alternative sources' columns.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1460 or above.</remarks>
+/// Specifies the Summarization type to be used by alternative sources' columns.
+/// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1460 or above.</remarks>
 	public enum SummarizationType {    
         GroupBy = 0,
         Sum = 1,
@@ -522,63 +600,17 @@ namespace TabularEditor.TOMWrapper
         Max = 4,
 	}
 	/// <summary>
-///             Specifies the granularity of the refresh policy for auto partitioning
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1450 or above.</remarks>
-	public enum RefreshGranularityType {    
-        Day = 0,
-        Month = 1,
-        Quarter = 2,
-        Year = 3,
-        Invalid = -1,
-	}
-	/// <summary>
-///             Evaluation behavior for calculated column.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at Preview or above.</remarks>
-	public enum EvaluationBehavior {    
-        Automatic = 1,
-        Static = 2,
-        Dynamic = 3,
-	}
-	/// <summary>
-///             Mode of a refresh policy.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1565 or above.</remarks>
-	public enum RefreshPolicyMode {    
-        Import = 0,
-        Hybrid = 1,
-	}
-	/// <summary>
-///             Specifies the refresh policy type of a table
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1450 or above.</remarks>
-	public enum RefreshPolicyType {    
-        Basic = 0,
-	}
-	/// <summary>
-///             Fallback behavior for Direct Lake models.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1604 or above.</remarks>
-	public enum DirectLakeBehavior {    
-        Automatic = 0,
-        DirectLakeOnly = 1,
-        DirectQueryOnly = 2,
-	}
-	/// <summary>
-///             Determines value filter behavior for SummarizeColumns
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1606 or above.</remarks>
+/// Determines value filter behavior for SummarizeColumns
+/// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1606 or above.</remarks>
 	public enum ValueFilterBehaviorType {    
         Automatic = 0,
         Independent = 1,
         Coalesced = 2,
 	}
-	/// <summary>
-///             Data source edit varaibles override behaviour type. E.g. Disallow or Allow.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1475 or above.</remarks>
-	public enum DataSourceVariablesOverrideBehaviorType {    
-        Disallow = 0,
-        Allow = 1,
-	}
   
 	/// <summary>
-///             Variation object.
-///             </summary><remarks>This metadata object is only supported for Pbi server, at database compatibility level of 1400 or above for Box server, at database compatibility level of 1400 or above for Excel server.</remarks>
+/// Variation object.
+/// </summary><remarks>This metadata object is only supported for Pbi server, at database compatibility level of 1400 or above for Box server, at database compatibility level of 1400 or above for Excel server.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Variation: TabularNamedObject
 			, IDescriptionObject
@@ -872,8 +904,8 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		/// <summary>
-///             Missing comment
-///             </summary>
+/// Missing comment
+/// </summary>
 		[DisplayName("Description")]
 		[Category("Basic"),Description(@"The Description of this Variation"),IntelliSense(@"The Description of this Variation")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
@@ -887,17 +919,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Description), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
-				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Description), oldValue, newValue));
+				OnPropertyChanged(nameof(Description), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
 /// <summary>
-///             If true, the Variation is the Default one for the Column.
-///             </summary>
+/// If true, the Variation is the Default one for the Column.
+/// </summary>
 		[DisplayName("Default")]
 		[Category("Options"),Description(@"If true, the Variation is the Default one for the Column."),IntelliSense(@"If true, the Variation is the Default one for the Column.")]
 		public bool IsDefault {
@@ -911,19 +943,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ISDEFAULT, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(IsDefault), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.IsDefault = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISDEFAULT, oldValue, newValue));
-				OnPropertyChanged(Properties.ISDEFAULT, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(IsDefault), oldValue, newValue));
+				OnPropertyChanged(nameof(IsDefault), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeIsDefault() { return false; }
 /// <summary>
-///             Missing comment
-///             </summary>
+/// Missing comment
+/// </summary>
 		[DisplayName("Parent Column")]
-		[Category("Basic"),Description(@"The Column of this Variation"),IntelliSense(@"The Column of this Variation")][TypeConverter(typeof(TableColumnConverter)),ReadOnly(true)]
+		[Category("Basic"),Description(@"The Column of this Variation"),IntelliSense(@"The Column of this Variation")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(TableColumnConverter)),ReadOnly(true)]
 		public Column Column {
 			get {
 				if (MetadataObject.Column == null) return null;
@@ -933,8 +965,8 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeColumn() { return false; }
 /// <summary>
-///             Missing comment
-///             </summary>
+/// Missing comment
+/// </summary>
 		[DisplayName("Relationship")]
 		[Category("Options"),Description(@"The Relationship of this Variation"),IntelliSense(@"The Relationship of this Variation")][TypeConverter(typeof(AllRelationshipConverter))]
 		public Relationship Relationship {
@@ -949,17 +981,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue?.MetadataObject == newValue?.MetadataObject) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.RELATIONSHIP, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Relationship), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Relationship = value == null ? null : value.MetadataObject;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.RELATIONSHIP, oldValue, newValue));
-				OnPropertyChanged(Properties.RELATIONSHIP, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Relationship), oldValue, newValue));
+				OnPropertyChanged(nameof(Relationship), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeRelationship() { return false; }
 /// <summary>
-///             Missing comment
-///             </summary>
+/// Missing comment
+/// </summary>
 		[DisplayName("Default Hierarchy")]
 		[Category("Options"),Description(@"The DefaultHierarchy of this Variation"),IntelliSense(@"The DefaultHierarchy of this Variation")][TypeConverter(typeof(AllHierarchyConverter))]
 		public Hierarchy DefaultHierarchy {
@@ -974,19 +1006,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue?.MetadataObject == newValue?.MetadataObject) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DEFAULTHIERARCHY, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DefaultHierarchy), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DefaultHierarchy = value == null ? null : value.MetadataObject;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DEFAULTHIERARCHY, oldValue, newValue));
-				OnPropertyChanged(Properties.DEFAULTHIERARCHY, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DefaultHierarchy), oldValue, newValue));
+				OnPropertyChanged(nameof(DefaultHierarchy), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDefaultHierarchy() { return false; }
 /// <summary>
-///             Missing comment
-///             </summary>
+/// Missing comment
+/// </summary>
 		[DisplayName("Default Column")]
-		[Category("Options"),Description(@"The DefaultColumn of this Variation"),IntelliSense(@"The DefaultColumn of this Variation")][TypeConverter(typeof(AllColumnConverter))]
+		[Category("Options"),Description(@"The DefaultColumn of this Variation"),IntelliSense(@"The DefaultColumn of this Variation")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(ColumnConverter))]
 		public Column DefaultColumn {
 			get {
 				if (MetadataObject.DefaultColumn == null) return null;
@@ -999,11 +1031,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue?.MetadataObject == newValue?.MetadataObject) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DEFAULTCOLUMN, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DefaultColumn), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DefaultColumn = value == null ? null : value.MetadataObject;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DEFAULTCOLUMN, oldValue, newValue));
-				OnPropertyChanged(Properties.DEFAULTCOLUMN, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DefaultColumn), oldValue, newValue));
+				OnPropertyChanged(nameof(DefaultColumn), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDefaultColumn() { return false; }
@@ -1257,8 +1289,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Represents a data source that uses JSON-based extensible protocol to define the location and mechanism of retrieving the data.
-///             </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+/// Represents a data source that uses JSON-based extensible protocol to define the location and mechanism of retrieving the data.
+/// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class StructuredDataSource: DataSource
 			, IClonableObject
@@ -1279,8 +1311,8 @@ namespace TabularEditor.TOMWrapper
 		// Skipping property Options on object StructuredDataSource
 		// Skipping property Credential on object StructuredDataSource
 /// <summary>
-///             For internal use only.
-///             </summary>
+/// For internal use only.
+/// </summary>
 		[DisplayName("Context Expression")]
 		[Category("Options"),Description(@"For internal use only."),IntelliSense(@"For internal use only.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string ContextExpression {
@@ -1294,11 +1326,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.CONTEXTEXPRESSION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(ContextExpression), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.ContextExpression = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.CONTEXTEXPRESSION, oldValue, newValue));
-				OnPropertyChanged(Properties.CONTEXTEXPRESSION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(ContextExpression), oldValue, newValue));
+				OnPropertyChanged(nameof(ContextExpression), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeContextExpression() { return false; }
@@ -1430,8 +1462,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             Represents a column that is based on a DAX expression in a Table that also contains DataColumns and a RowNumberColumn. A CalculatedColumn can also be added to a calculated table.
-///             </summary>
+/// Represents a column that is based on a DAX expression in a Table that also contains DataColumns and a RowNumberColumn. A CalculatedColumn can also be added to a calculated table.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class CalculatedColumn: Column
 			, IExpressionObject
@@ -1450,8 +1482,8 @@ namespace TabularEditor.TOMWrapper
 		}
 
 /// <summary>
-///             The DAX expression that is evaluated for the calculated column.
-///             </summary>
+/// The DAX expression that is evaluated for the calculated column.
+/// </summary>
 		[DisplayName("Expression")]
 		[Category("Options"),Description(@"The DAX expression that is evaluated for the calculated column."),IntelliSense(@"The DAX expression that is evaluated for the calculated column.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Expression {
@@ -1465,17 +1497,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.EXPRESSION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Expression), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Expression = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EXPRESSION, oldValue, newValue));
-				OnPropertyChanged(Properties.EXPRESSION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Expression), oldValue, newValue));
+				OnPropertyChanged(nameof(Expression), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeExpression() { return false; }
 /// <summary>
-///             Evaluation behavior for calculated column.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at Preview or above.</remarks>
+/// Evaluation behavior for calculated column.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at Preview or above.</remarks>
 		[DisplayName("Evaluation Behavior")]
 		[Category("Options"),Description(@"Evaluation behavior for calculated column."),IntelliSense(@"Evaluation behavior for calculated column.")]
 		public EvaluationBehavior EvaluationBehavior {
@@ -1489,11 +1521,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.EVALUATIONBEHAVIOR, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(EvaluationBehavior), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.EvaluationBehavior = (TOM.EvaluationBehavior)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EVALUATIONBEHAVIOR, oldValue, newValue));
-				OnPropertyChanged(Properties.EVALUATIONBEHAVIOR, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(EvaluationBehavior), oldValue, newValue));
+				OnPropertyChanged(nameof(EvaluationBehavior), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeEvaluationBehavior() { return false; }
@@ -1625,7 +1657,7 @@ namespace TabularEditor.TOMWrapper
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.EVALUATIONBEHAVIOR:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+					return false;
 				case Properties.PARENT:
 					return false;
 				
@@ -1638,8 +1670,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             Represents a column in a Table that is based on a DAX expression. A collection of CalculatedTableColumn, under a Table object bound to a partition with Source of type CalculatedPartitionSource, results in a calculated table.
-///             </summary>
+/// Represents a column in a Table that is based on a DAX expression. A collection of CalculatedTableColumn, under a Table object bound to a partition with Source of type CalculatedPartitionSource, results in a calculated table.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class CalculatedTableColumn: Column
 			, IClonableObject
@@ -1657,8 +1689,8 @@ namespace TabularEditor.TOMWrapper
 		}
 
 /// <summary>
-///             A boolean value indicating whether name of the column is inferred by the server.
-///             </summary>
+/// A boolean value indicating whether name of the column is inferred by the server.
+/// </summary>
 		[DisplayName("Name Inferred")]
 		[Category("Options"),Description(@"A boolean value indicating whether name of the column is inferred by the server."),IntelliSense(@"A boolean value indicating whether name of the column is inferred by the server.")]
 		public bool IsNameInferred {
@@ -1672,17 +1704,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ISNAMEINFERRED, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(IsNameInferred), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.IsNameInferred = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISNAMEINFERRED, oldValue, newValue));
-				OnPropertyChanged(Properties.ISNAMEINFERRED, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(IsNameInferred), oldValue, newValue));
+				OnPropertyChanged(nameof(IsNameInferred), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeIsNameInferred() { return false; }
 /// <summary>
-///             Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is an expression (as the Expression of a CalculatedPartitionSource).
-///             </summary>
+/// Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is an expression (as the Expression of a CalculatedPartitionSource).
+/// </summary>
 		[DisplayName("Source Column")]
 		[Category("Basic"),Description(@"Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is an expression (as the Expression of a CalculatedPartitionSource)."),IntelliSense(@"Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is an expression (as the Expression of a CalculatedPartitionSource).")]
 		public string SourceColumn {
@@ -1696,17 +1728,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.SOURCECOLUMN, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(SourceColumn), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.SourceColumn = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SOURCECOLUMN, oldValue, newValue));
-				OnPropertyChanged(Properties.SOURCECOLUMN, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(SourceColumn), oldValue, newValue));
+				OnPropertyChanged(nameof(SourceColumn), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeSourceColumn() { return false; }
 /// <summary>
-///             Returns a ColumnOrigin object. Applicable only to non-calculated columns of a calculated table. ColumnOrigin points to another column which is the source of this column' metadata and data.
-///             </summary>
+/// Returns a ColumnOrigin object. Applicable only to non-calculated columns of a calculated table. ColumnOrigin points to another column which is the source of this column' metadata and data.
+/// </summary>
 		[DisplayName("Column Origin")]
 		[Category("Options"),Description(@"Returns a ColumnOrigin object. Applicable only to non-calculated columns of a calculated table. ColumnOrigin points to another column which is the source of this column' metadata and data."),IntelliSense(@"Returns a ColumnOrigin object. Applicable only to non-calculated columns of a calculated table. ColumnOrigin points to another column which is the source of this column' metadata and data.")][Browsable(false)]
 		public Column ColumnOrigin {
@@ -1854,8 +1886,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             Represents a base class of a column object of a Tabular model, used to specify a DataColumn, RowNumberColumn, CalculatedColumn, or CalculatedTableColumn.
-///             </summary>
+/// Represents a base class of a column object of a Tabular model, used to specify a DataColumn, RowNumberColumn, CalculatedColumn, or CalculatedTableColumn.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public abstract partial class Column: TabularNamedObject
 			, IFolderObject
@@ -2157,8 +2189,8 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		/// <summary>
-///             Specifies the type of data contained in the column so that you can add custom behaviors based on column type. There are 248 possible values. The first ten are Invalid (-1), All (1), Regular (2), Image (3), ImageBMP (4), ImageGIF (5), ImageJPG (6), ImagePNG (7), ImageTIFF (8), ImageURL (9), Id (10). For the rest, please refer to the MS-SSAS-T SQL Server Analysis Services Tabular Protocol documentation on MSDN.
-///             </summary>
+/// Specifies the type of data contained in the column so that you can add custom behaviors based on column type. There are 248 possible values. The first ten are Invalid (-1), All (1), Regular (2), Image (3), ImageBMP (4), ImageGIF (5), ImageJPG (6), ImagePNG (7), ImageTIFF (8), ImageURL (9), Id (10). For the rest, please refer to the MS-SSAS-T SQL Server Analysis Services Tabular Protocol documentation on MSDN.
+/// </summary>
 		[DisplayName("Data Category")]
 		[Category("Options"),Description(@"Specifies the type of data contained in the column so that you can add custom behaviors based on column type. There are 248 possible values. The first ten are Invalid (-1), All (1), Regular (2), Image (3), ImageBMP (4), ImageGIF (5), ImageJPG (6), ImagePNG (7), ImageTIFF (8), ImageURL (9), Id (10). For the rest, please refer to the MS-SSAS-T SQL Server Analysis Services Tabular Protocol documentation on MSDN."),IntelliSense(@"Specifies the type of data contained in the column so that you can add custom behaviors based on column type. There are 248 possible values. The first ten are Invalid (-1), All (1), Regular (2), Image (3), ImageBMP (4), ImageGIF (5), ImageJPG (6), ImagePNG (7), ImageTIFF (8), ImageURL (9), Id (10). For the rest, please refer to the MS-SSAS-T SQL Server Analysis Services Tabular Protocol documentation on MSDN.")][TypeConverter(typeof(ColumnDataCategoryConverter))]
 		public string DataCategory {
@@ -2172,17 +2204,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DATACATEGORY, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DataCategory), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DataCategory = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DATACATEGORY, oldValue, newValue));
-				OnPropertyChanged(Properties.DATACATEGORY, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DataCategory), oldValue, newValue));
+				OnPropertyChanged(nameof(DataCategory), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDataCategory() { return false; }
 /// <summary>
-///             The description of the column, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
-///             </summary>
+/// The description of the column, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+/// </summary>
 		[DisplayName("Description")]
 		[Category("Basic"),Description(@"The description of the column, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the column, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
@@ -2196,17 +2228,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Description), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
-				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Description), oldValue, newValue));
+				OnPropertyChanged(nameof(Description), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
 /// <summary>
-///             A boolean value that indicates whether a column is treated as hidden by client visualization tools. True if the column is treated as hidden; otherwise false.
-///             </summary>
+/// A boolean value that indicates whether a column is treated as hidden by client visualization tools. True if the column is treated as hidden; otherwise false.
+/// </summary>
 		[DisplayName("Hidden")]
 		[Category("Basic"),Description(@"A boolean value that indicates whether a column is treated as hidden by client visualization tools. True if the column is treated as hidden; otherwise false."),IntelliSense(@"A boolean value that indicates whether a column is treated as hidden by client visualization tools. True if the column is treated as hidden; otherwise false.")]
 		public bool IsHidden {
@@ -2220,18 +2252,18 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ISHIDDEN, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(IsHidden), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.IsHidden = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISHIDDEN, oldValue, newValue));
-				OnPropertyChanged(Properties.ISHIDDEN, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(IsHidden), oldValue, newValue));
+				OnPropertyChanged(nameof(IsHidden), oldValue, newValue);
 				Handler.UpdateObject(this);
 			}
 		}
 		private bool ShouldSerializeIsHidden() { return false; }
 /// <summary>
-///             Enumerates the state of the column. Possible values include the following. Ready (1) The column is queryable and has up-to-date data. NoData (3) The column is queryable but has no data. This state is applicable only to columns of the type Data. CalculationNeeded (4) The column is not queryable and needs to be refreshed (that is, recalculated) to become functional. This state applies only to columns of the type Calculated or CalculatedTableColumn. SemanticError (5) The column is in an error state because of an invalid expression. The column is not queryable. This state applies only to columns of the type Calculated or CalculatedTableColumn. EvaluationError (6) The column is in an error state because of an error during expression evaluation. The column is not queryable.  This state applies only to columns of the type Calculated or CalculatedTableColumn. DependencyError (7) The column is in an error state because some of its calculation dependencies are in an error state.  The column is not queryable. This state applies only to columns of the type Calculated or CalculatedTableColumn. Incomplete (8) Some parts of the column have no data, and the column needs to be refreshed to bring the data in. The column is queryable. This state applies only to columns of the type Data. SyntaxError (9) The column is in an error state because of a syntax error in its expression. The column is not queryable. This state applies only to columns of the type Calculated.
-///             </summary>
+/// Enumerates the state of the column. Possible values include the following. Ready (1) The column is queryable and has up-to-date data. NoData (3) The column is queryable but has no data. This state is applicable only to columns of the type Data. CalculationNeeded (4) The column is not queryable and needs to be refreshed (that is, recalculated) to become functional. This state applies only to columns of the type Calculated or CalculatedTableColumn. SemanticError (5) The column is in an error state because of an invalid expression. The column is not queryable. This state applies only to columns of the type Calculated or CalculatedTableColumn. EvaluationError (6) The column is in an error state because of an error during expression evaluation. The column is not queryable.  This state applies only to columns of the type Calculated or CalculatedTableColumn. DependencyError (7) The column is in an error state because some of its calculation dependencies are in an error state.  The column is not queryable. This state applies only to columns of the type Calculated or CalculatedTableColumn. Incomplete (8) Some parts of the column have no data, and the column needs to be refreshed to bring the data in. The column is queryable. This state applies only to columns of the type Data. SyntaxError (9) The column is in an error state because of a syntax error in its expression. The column is not queryable. This state applies only to columns of the type Calculated.
+/// </summary>
 		[DisplayName("State")]
 		[Category("Metadata"),Description(@"Enumerates the state of the column. Possible values include the following. Ready (1) The column is queryable and has up-to-date data. NoData (3) The column is queryable but has no data. This state is applicable only to columns of the type Data. CalculationNeeded (4) The column is not queryable and needs to be refreshed (that is, recalculated) to become functional. This state applies only to columns of the type Calculated or CalculatedTableColumn. SemanticError (5) The column is in an error state because of an invalid expression. The column is not queryable. This state applies only to columns of the type Calculated or CalculatedTableColumn. EvaluationError (6) The column is in an error state because of an error during expression evaluation. The column is not queryable.  This state applies only to columns of the type Calculated or CalculatedTableColumn. DependencyError (7) The column is in an error state because some of its calculation dependencies are in an error state.  The column is not queryable. This state applies only to columns of the type Calculated or CalculatedTableColumn. Incomplete (8) Some parts of the column have no data, and the column needs to be refreshed to bring the data in. The column is queryable. This state applies only to columns of the type Data. SyntaxError (9) The column is in an error state because of a syntax error in its expression. The column is not queryable. This state applies only to columns of the type Calculated."),IntelliSense(@"Enumerates the state of the column. Possible values include the following. Ready (1) The column is queryable and has up-to-date data. NoData (3) The column is queryable but has no data. This state is applicable only to columns of the type Data. CalculationNeeded (4) The column is not queryable and needs to be refreshed (that is, recalculated) to become functional. This state applies only to columns of the type Calculated or CalculatedTableColumn. SemanticError (5) The column is in an error state because of an invalid expression. The column is not queryable. This state applies only to columns of the type Calculated or CalculatedTableColumn. EvaluationError (6) The column is in an error state because of an error during expression evaluation. The column is not queryable.  This state applies only to columns of the type Calculated or CalculatedTableColumn. DependencyError (7) The column is in an error state because some of its calculation dependencies are in an error state.  The column is not queryable. This state applies only to columns of the type Calculated or CalculatedTableColumn. Incomplete (8) Some parts of the column have no data, and the column needs to be refreshed to bring the data in. The column is queryable. This state applies only to columns of the type Data. SyntaxError (9) The column is in an error state because of a syntax error in its expression. The column is not queryable. This state applies only to columns of the type Calculated.")]
 		public ObjectState State {
@@ -2242,8 +2274,8 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeState() { return false; }
 /// <summary>
-///             A boolean value that indicates whether the column contains only unique values. True if the values are unique; otherwise false.
-///             </summary>
+/// A boolean value that indicates whether the column contains only unique values. True if the values are unique; otherwise false.
+/// </summary>
 		[DisplayName("Unique")]
 		[Category("Options"),Description(@"A boolean value that indicates whether the column contains only unique values. True if the values are unique; otherwise false."),IntelliSense(@"A boolean value that indicates whether the column contains only unique values. True if the values are unique; otherwise false.")]
 		public bool IsUnique {
@@ -2257,17 +2289,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ISUNIQUE, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(IsUnique), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.IsUnique = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISUNIQUE, oldValue, newValue));
-				OnPropertyChanged(Properties.ISUNIQUE, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(IsUnique), oldValue, newValue));
+				OnPropertyChanged(nameof(IsUnique), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeIsUnique() { return false; }
 /// <summary>
-///             A boolean value that indicates whether the column is a key of the table. True if the column is a key of the table; otherwise false.
-///             </summary>
+/// A boolean value that indicates whether the column is a key of the table. True if the column is a key of the table; otherwise false.
+/// </summary>
 		[DisplayName("Key")]
 		[Category("Options"),Description(@"A boolean value that indicates whether the column is a key of the table. True if the column is a key of the table; otherwise false."),IntelliSense(@"A boolean value that indicates whether the column is a key of the table. True if the column is a key of the table; otherwise false.")]
 		public bool IsKey {
@@ -2281,17 +2313,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ISKEY, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(IsKey), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.IsKey = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISKEY, oldValue, newValue));
-				OnPropertyChanged(Properties.ISKEY, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(IsKey), oldValue, newValue));
+				OnPropertyChanged(nameof(IsKey), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeIsKey() { return false; }
 /// <summary>
-///             If <b>false</b>, the column cannot contain nulls. Even if <b>true</b>, it may still not allow nulls if it's a key column.
-///             </summary>
+/// If <b>false</b>, the column cannot contain nulls. Even if <b>true</b>, it may still not allow nulls if it's a key column.
+/// </summary>
 		[DisplayName("Nullable")]
 		[Category("Options"),Description(@"If <b>false</b>, the column cannot contain nulls. Even if <b>true</b>, it may still not allow nulls if it's a key column."),IntelliSense(@"If <b>false</b>, the column cannot contain nulls. Even if <b>true</b>, it may still not allow nulls if it's a key column.")]
 		public bool IsNullable {
@@ -2305,17 +2337,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ISNULLABLE, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(IsNullable), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.IsNullable = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISNULLABLE, oldValue, newValue));
-				OnPropertyChanged(Properties.ISNULLABLE, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(IsNullable), oldValue, newValue));
+				OnPropertyChanged(nameof(IsNullable), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeIsNullable() { return false; }
 /// <summary>
-///             Specifies the text alignment of the column in report visualizations. The possible values are Default (1), Left (2), Right (3), Center (4).
-///             </summary>
+/// Specifies the text alignment of the column in report visualizations. The possible values are Default (1), Left (2), Right (3), Center (4).
+/// </summary>
 		[DisplayName("Alignment")]
 		[Category("Options"),Description(@"Specifies the text alignment of the column in report visualizations. The possible values are Default (1), Left (2), Right (3), Center (4)."),IntelliSense(@"Specifies the text alignment of the column in report visualizations. The possible values are Default (1), Left (2), Right (3), Center (4).")]
 		public Alignment Alignment {
@@ -2329,17 +2361,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ALIGNMENT, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Alignment), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Alignment = (TOM.Alignment)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ALIGNMENT, oldValue, newValue));
-				OnPropertyChanged(Properties.ALIGNMENT, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Alignment), oldValue, newValue));
+				OnPropertyChanged(nameof(Alignment), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeAlignment() { return false; }
 /// <summary>
-///             Determines whether you can place this column in the DefaultDetails collection of the Table. This collection is an ordered set of Column types. A positive value indicates participation in the collection. The collection is sorted in ascending order of this element. The DefaultDetails collection is returned as part of the CSDL metadata returned by the DISCOVER_CSDL_METADATA operation.
-///             </summary>
+/// Determines whether you can place this column in the DefaultDetails collection of the Table. This collection is an ordered set of Column types. A positive value indicates participation in the collection. The collection is sorted in ascending order of this element. The DefaultDetails collection is returned as part of the CSDL metadata returned by the DISCOVER_CSDL_METADATA operation.
+/// </summary>
 		[DisplayName("Table Detail Position")]
 		[Category("Options"),Description(@"Determines whether you can place this column in the DefaultDetails collection of the Table. This collection is an ordered set of Column types. A positive value indicates participation in the collection. The collection is sorted in ascending order of this element. The DefaultDetails collection is returned as part of the CSDL metadata returned by the DISCOVER_CSDL_METADATA operation."),IntelliSense(@"Determines whether you can place this column in the DefaultDetails collection of the Table. This collection is an ordered set of Column types. A positive value indicates participation in the collection. The collection is sorted in ascending order of this element. The DefaultDetails collection is returned as part of the CSDL metadata returned by the DISCOVER_CSDL_METADATA operation.")]
 		public int TableDetailPosition {
@@ -2353,17 +2385,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.TABLEDETAILPOSITION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(TableDetailPosition), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.TableDetailPosition = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TABLEDETAILPOSITION, oldValue, newValue));
-				OnPropertyChanged(Properties.TABLEDETAILPOSITION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(TableDetailPosition), oldValue, newValue));
+				OnPropertyChanged(nameof(TableDetailPosition), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeTableDetailPosition() { return false; }
 /// <summary>
-///             A boolean value that indicates whether this column is included in the DisplayKey element in CSDL.
-///             </summary>
+/// A boolean value that indicates whether this column is included in the DisplayKey element in CSDL.
+/// </summary>
 		[DisplayName("Default Label")]
 		[Category("Options"),Description(@"A boolean value that indicates whether this column is included in the DisplayKey element in CSDL."),IntelliSense(@"A boolean value that indicates whether this column is included in the DisplayKey element in CSDL.")]
 		public bool IsDefaultLabel {
@@ -2377,17 +2409,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ISDEFAULTLABEL, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(IsDefaultLabel), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.IsDefaultLabel = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISDEFAULTLABEL, oldValue, newValue));
-				OnPropertyChanged(Properties.ISDEFAULTLABEL, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(IsDefaultLabel), oldValue, newValue));
+				OnPropertyChanged(nameof(IsDefaultLabel), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeIsDefaultLabel() { return false; }
 /// <summary>
-///             A boolean value that indicates whether this column is returned as the DefaultImage property in CSDL.
-///             </summary>
+/// A boolean value that indicates whether this column is returned as the DefaultImage property in CSDL.
+/// </summary>
 		[DisplayName("Default Image")]
 		[Category("Options"),Description(@"A boolean value that indicates whether this column is returned as the DefaultImage property in CSDL."),IntelliSense(@"A boolean value that indicates whether this column is returned as the DefaultImage property in CSDL.")]
 		public bool IsDefaultImage {
@@ -2401,17 +2433,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ISDEFAULTIMAGE, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(IsDefaultImage), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.IsDefaultImage = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISDEFAULTIMAGE, oldValue, newValue));
-				OnPropertyChanged(Properties.ISDEFAULTIMAGE, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(IsDefaultImage), oldValue, newValue));
+				OnPropertyChanged(nameof(IsDefaultImage), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeIsDefaultImage() { return false; }
 /// <summary>
-///             A value indicating the default function, if any, used to aggregate this field. The possible values are Default (1), None (2), Sum (3), Min (4), Max (5), Count (6), Average (7), DistinctCount (8). If unspecified, Default is assumed for numeric fields, None for all other fields.
-///             </summary>
+/// A value indicating the default function, if any, used to aggregate this field. The possible values are Default (1), None (2), Sum (3), Min (4), Max (5), Count (6), Average (7), DistinctCount (8). If unspecified, Default is assumed for numeric fields, None for all other fields.
+/// </summary>
 		[DisplayName("Summarize By")]
 		[Category("Basic"),Description(@"A value indicating the default function, if any, used to aggregate this field. The possible values are Default (1), None (2), Sum (3), Min (4), Max (5), Count (6), Average (7), DistinctCount (8). If unspecified, Default is assumed for numeric fields, None for all other fields."),IntelliSense(@"A value indicating the default function, if any, used to aggregate this field. The possible values are Default (1), None (2), Sum (3), Min (4), Max (5), Count (6), Average (7), DistinctCount (8). If unspecified, Default is assumed for numeric fields, None for all other fields.")]
 		public AggregateFunction SummarizeBy {
@@ -2425,17 +2457,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.SUMMARIZEBY, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(SummarizeBy), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.SummarizeBy = (TOM.AggregateFunction)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SUMMARIZEBY, oldValue, newValue));
-				OnPropertyChanged(Properties.SUMMARIZEBY, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(SummarizeBy), oldValue, newValue));
+				OnPropertyChanged(nameof(SummarizeBy), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeSummarizeBy() { return false; }
 /// <summary>
-///             Specifies the data binding. Values include Data (1) where the contents of this column come from a DataSource, Calculated (2) where the contents are computed from an expression after the Data columns have been populated, RowNumber (3) where the column is an internal column representing the row number, or CalculatedTableColumn (4) where tables that are based on a calculated expression will automatically infer and generate the columns in the table.
-///             </summary>
+/// Specifies the data binding. Values include Data (1) where the contents of this column come from a DataSource, Calculated (2) where the contents are computed from an expression after the Data columns have been populated, RowNumber (3) where the column is an internal column representing the row number, or CalculatedTableColumn (4) where tables that are based on a calculated expression will automatically infer and generate the columns in the table.
+/// </summary>
 		[DisplayName("Type")]
 		[Category("Options"),Description(@"Specifies the data binding. Values include Data (1) where the contents of this column come from a DataSource, Calculated (2) where the contents are computed from an expression after the Data columns have been populated, RowNumber (3) where the column is an internal column representing the row number, or CalculatedTableColumn (4) where tables that are based on a calculated expression will automatically infer and generate the columns in the table."),IntelliSense(@"Specifies the data binding. Values include Data (1) where the contents of this column come from a DataSource, Calculated (2) where the contents are computed from an expression after the Data columns have been populated, RowNumber (3) where the column is an internal column representing the row number, or CalculatedTableColumn (4) where tables that are based on a calculated expression will automatically infer and generate the columns in the table.")][Browsable(false)]
 		public ColumnType Type {
@@ -2446,8 +2478,8 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeType() { return false; }
 /// <summary>
-///             A string that specifies the format of the column contents. 
-///             </summary>
+/// A string that specifies the format of the column contents.
+/// </summary>
 		[DisplayName("Format String")]
 		[Category("Basic"),Description(@"A string that specifies the format of the column contents."),IntelliSense(@"A string that specifies the format of the column contents.")][TypeConverter(typeof(FormatStringConverter))]
 		public string FormatString {
@@ -2461,17 +2493,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.FORMATSTRING, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(FormatString), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.FormatString = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FORMATSTRING, oldValue, newValue));
-				OnPropertyChanged(Properties.FORMATSTRING, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(FormatString), oldValue, newValue));
+				OnPropertyChanged(nameof(FormatString), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeFormatString() { return false; }
 /// <summary>
-///             A boolean value that indicates whether the column can be excluded from usage in MDX query tools. False if the column can be excluded from usage in MDX query tools; otherwise true.
-///             </summary>
+/// A boolean value that indicates whether the column can be excluded from usage in MDX query tools. False if the column can be excluded from usage in MDX query tools; otherwise true.
+/// </summary>
 		[DisplayName("Available In MDX")]
 		[Category("Options"),Description(@"A boolean value that indicates whether the column can be excluded from usage in MDX query tools. False if the column can be excluded from usage in MDX query tools; otherwise true."),IntelliSense(@"A boolean value that indicates whether the column can be excluded from usage in MDX query tools. False if the column can be excluded from usage in MDX query tools; otherwise true.")]
 		public bool IsAvailableInMDX {
@@ -2485,17 +2517,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ISAVAILABLEINMDX, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(IsAvailableInMDX), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.IsAvailableInMDX = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISAVAILABLEINMDX, oldValue, newValue));
-				OnPropertyChanged(Properties.ISAVAILABLEINMDX, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(IsAvailableInMDX), oldValue, newValue));
+				OnPropertyChanged(nameof(IsAvailableInMDX), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeIsAvailableInMDX() { return false; }
 /// <summary>
-///             Specifies the grouping behavior used for building a hierarchy. True groups by entity key. False groups by value.
-///             </summary>
+/// Specifies the grouping behavior used for building a hierarchy. True groups by entity key. False groups by value.
+/// </summary>
 		[DisplayName("Keep Unique Rows")]
 		[Category("Options"),Description(@"Specifies the grouping behavior used for building a hierarchy. True groups by entity key. False groups by value."),IntelliSense(@"Specifies the grouping behavior used for building a hierarchy. True groups by entity key. False groups by value.")]
 		public bool KeepUniqueRows {
@@ -2509,17 +2541,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.KEEPUNIQUEROWS, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(KeepUniqueRows), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.KeepUniqueRows = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.KEEPUNIQUEROWS, oldValue, newValue));
-				OnPropertyChanged(Properties.KEEPUNIQUEROWS, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(KeepUniqueRows), oldValue, newValue));
+				OnPropertyChanged(nameof(KeepUniqueRows), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeKeepUniqueRows() { return false; }
 /// <summary>
-///             Indicates the visual position of the column, defined as a relative ordering rather than a strict ordering (example: 10, 20, 40, 50). It allows client applications to maintain a consistent column position.
-///             </summary>
+/// Indicates the visual position of the column, defined as a relative ordering rather than a strict ordering (example: 10, 20, 40, 50). It allows client applications to maintain a consistent column position.
+/// </summary>
 		[DisplayName("Display Ordinal")]
 		[Category("Options"),Description(@"Indicates the visual position of the column, defined as a relative ordering rather than a strict ordering (example: 10, 20, 40, 50). It allows client applications to maintain a consistent column position."),IntelliSense(@"Indicates the visual position of the column, defined as a relative ordering rather than a strict ordering (example: 10, 20, 40, 50). It allows client applications to maintain a consistent column position.")]
 		public int DisplayOrdinal {
@@ -2533,17 +2565,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DISPLAYORDINAL, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DisplayOrdinal), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DisplayOrdinal = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISPLAYORDINAL, oldValue, newValue));
-				OnPropertyChanged(Properties.DISPLAYORDINAL, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DisplayOrdinal), oldValue, newValue));
+				OnPropertyChanged(nameof(DisplayOrdinal), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDisplayOrdinal() { return false; }
 /// <summary>
-///             A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError. It is applicable only to columns of the type Calculated or CalculatedTableColumn. It will be empty for other column objects.
-///             </summary>
+/// A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError. It is applicable only to columns of the type Calculated or CalculatedTableColumn. It will be empty for other column objects.
+/// </summary>
 		[DisplayName("Error Message")]
 		[Category("Metadata"),Description(@"A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError. It is applicable only to columns of the type Calculated or CalculatedTableColumn. It will be empty for other column objects."),IntelliSense(@"A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError. It is applicable only to columns of the type Calculated or CalculatedTableColumn. It will be empty for other column objects.")]
 		public string ErrorMessage {
@@ -2554,8 +2586,8 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeErrorMessage() { return false; }
 /// <summary>
-///             The original data type of the column as defined in the language of the data source. This data type is used to generate queries directly against the data source, for example in DirectQuery mode.
-///             </summary>
+/// The original data type of the column as defined in the language of the data source. This data type is used to generate queries directly against the data source, for example in DirectQuery mode.
+/// </summary>
 		[DisplayName("Source Provider Type")]
 		[Category("Options"),Description(@"The original data type of the column as defined in the language of the data source. This data type is used to generate queries directly against the data source, for example in DirectQuery mode."),IntelliSense(@"The original data type of the column as defined in the language of the data source. This data type is used to generate queries directly against the data source, for example in DirectQuery mode.")]
 		public string SourceProviderType {
@@ -2569,17 +2601,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.SOURCEPROVIDERTYPE, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(SourceProviderType), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.SourceProviderType = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SOURCEPROVIDERTYPE, oldValue, newValue));
-				OnPropertyChanged(Properties.SOURCEPROVIDERTYPE, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(SourceProviderType), oldValue, newValue));
+				OnPropertyChanged(nameof(SourceProviderType), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeSourceProviderType() { return false; }
 /// <summary>
-///             Defines the display folder for the column, for use by clients.
-///             </summary>
+/// Defines the display folder for the column, for use by clients.
+/// </summary>
 		[DisplayName("Display Folder")]
 		[Category("Basic"),Description(@"Defines the display folder for the column, for use by clients."),IntelliSense(@"Defines the display folder for the column, for use by clients.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string DisplayFolder {
@@ -2587,17 +2619,17 @@ namespace TabularEditor.TOMWrapper
 			    return MetadataObject.DisplayFolder;
 			}
 			set {
-				if(value.Contains(@"\\")) throw new Exception("Display Folder names cannot be blank.");
+				if(value != null && value.Contains(@"\\")) throw new Exception("Display Folder names cannot be blank.");
 				var oldValue = DisplayFolder;
 				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DISPLAYFOLDER, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DisplayFolder), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DisplayFolder = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISPLAYFOLDER, oldValue, newValue));
-				OnPropertyChanged(Properties.DISPLAYFOLDER, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DisplayFolder), oldValue, newValue));
+				OnPropertyChanged(nameof(DisplayFolder), oldValue, newValue);
 				Handler.UpdateFolders(Table);
 			}
 		}
@@ -2608,8 +2640,8 @@ namespace TabularEditor.TOMWrapper
         [Browsable(true),DisplayName("Translated Display Folders"),Description("Shows all translated Display Folders of the current Column."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedDisplayFolders { private set; get; }
 /// <summary>
-///             This property allows an encoding hint to be specified for the column. A numeric column may use either value-based encoding or hash-based encoding. Usually the server will automatically attempt detect which encoding to use, but re-encoding may occur later. This property allows hinting to the server that it should start with a different encoding type.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+/// This property allows an encoding hint to be specified for the column. A numeric column may use either value-based encoding or hash-based encoding. Usually the server will automatically attempt detect which encoding to use, but re-encoding may occur later. This property allows hinting to the server that it should start with a different encoding type.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("Encoding Hint")]
 		[Category("Options"),Description(@"This property allows an encoding hint to be specified for the column. A numeric column may use either value-based encoding or hash-based encoding. Usually the server will automatically attempt detect which encoding to use, but re-encoding may occur later. This property allows hinting to the server that it should start with a different encoding type."),IntelliSense(@"This property allows an encoding hint to be specified for the column. A numeric column may use either value-based encoding or hash-based encoding. Usually the server will automatically attempt detect which encoding to use, but re-encoding may occur later. This property allows hinting to the server that it should start with a different encoding type.")]
 		public EncodingHintType EncodingHint {
@@ -2623,17 +2655,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ENCODINGHINT, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(EncodingHint), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.EncodingHint = (TOM.EncodingHintType)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ENCODINGHINT, oldValue, newValue));
-				OnPropertyChanged(Properties.ENCODINGHINT, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(EncodingHint), oldValue, newValue));
+				OnPropertyChanged(nameof(EncodingHint), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeEncodingHint() { return false; }
 /// <summary>
-///             A tag that represents the lineage of the object.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
+/// A tag that represents the lineage of the object.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
 		[DisplayName("Lineage Tag")]
 		[Category("Options"),Description(@"A tag that represents the lineage of the object."),IntelliSense(@"A tag that represents the lineage of the object.")]
 		public string LineageTag {
@@ -2647,17 +2679,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.LINEAGETAG, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(LineageTag), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.LineageTag = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.LINEAGETAG, oldValue, newValue));
-				OnPropertyChanged(Properties.LINEAGETAG, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(LineageTag), oldValue, newValue));
+				OnPropertyChanged(nameof(LineageTag), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeLineageTag() { return false; }
 /// <summary>
-///             A tag that represents the lineage of the source for the object.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1550 or above.</remarks>
+/// A tag that represents the lineage of the source for the object.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1550 or above.</remarks>
 		[DisplayName("Source Lineage Tag")]
 		[Category("Options"),Description(@"A tag that represents the lineage of the source for the object."),IntelliSense(@"A tag that represents the lineage of the source for the object.")]
 		public string SourceLineageTag {
@@ -2671,11 +2703,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.SOURCELINEAGETAG, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(SourceLineageTag), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.SourceLineageTag = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SOURCELINEAGETAG, oldValue, newValue));
-				OnPropertyChanged(Properties.SOURCELINEAGETAG, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(SourceLineageTag), oldValue, newValue));
+				OnPropertyChanged(nameof(SourceLineageTag), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeSourceLineageTag() { return false; }
@@ -2695,10 +2727,10 @@ namespace TabularEditor.TOMWrapper
 			} 
 		}
 /// <summary>
-///             Indicates that the column defining this property will be sorted by the values of the column referenced by this property.
-///             </summary>
+/// Indicates that the column defining this property will be sorted by the values of the column referenced by this property.
+/// </summary>
 		[DisplayName("Sort By Column")]
-		[Category("Basic"),Description(@"Indicates that the column defining this property will be sorted by the values of the column referenced by this property."),IntelliSense(@"Indicates that the column defining this property will be sorted by the values of the column referenced by this property.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(ColumnConverter))]
+		[Category("Basic"),Description(@"Indicates that the column defining this property will be sorted by the values of the column referenced by this property."),IntelliSense(@"Indicates that the column defining this property will be sorted by the values of the column referenced by this property.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(TableColumnConverter))]
 		public Column SortByColumn {
 			get {
 				if (MetadataObject.SortByColumn == null) return null;
@@ -2711,11 +2743,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue?.MetadataObject == newValue?.MetadataObject) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.SORTBYCOLUMN, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(SortByColumn), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.SortByColumn = value == null ? null : Table.Columns[value.MetadataObject.Name].MetadataObject;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SORTBYCOLUMN, oldValue, newValue));
-				OnPropertyChanged(Properties.SORTBYCOLUMN, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(SortByColumn), oldValue, newValue));
+				OnPropertyChanged(nameof(SortByColumn), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeSortByColumn() { return false; }
@@ -2723,8 +2755,8 @@ namespace TabularEditor.TOMWrapper
 		// Skipping property RelatedColumnDetails on object Column
 		// Skipping property AlternateOf on object Column
 /// <summary>
-///             For a DataColumn, specifies the data type. See <see href="https://msdn.microsoft.com/library/gg492146.aspx" /> for a list of supported data types.
-///             </summary>
+/// For a DataColumn, specifies the data type. See <see href="https://msdn.microsoft.com/library/gg492146.aspx" /> for a list of supported data types.
+/// </summary>
 		[DisplayName("Data Type")]
 		[Category("Basic"),Description(@"For a DataColumn, specifies the data type. See https://msdn.microsoft.com/library/gg492146.aspx for a list of supported data types."),IntelliSense(@"For a DataColumn, specifies the data type. See https://msdn.microsoft.com/library/gg492146.aspx for a list of supported data types.")][TypeConverter(typeof(DataTypeEnumConverter))]
 		public DataType DataType {
@@ -2738,17 +2770,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DATATYPE, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DataType), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DataType = (TOM.DataType)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DATATYPE, oldValue, newValue));
-				OnPropertyChanged(Properties.DATATYPE, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DataType), oldValue, newValue));
+				OnPropertyChanged(nameof(DataType), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDataType() { return false; }
 /// <summary>
-///             A boolean value indicating whether the datatype is inferred.
-///             </summary>
+/// A boolean value indicating whether the datatype is inferred.
+/// </summary>
 		[DisplayName("Data Type Inferred")]
 		[Category("Options"),Description(@"A boolean value indicating whether the datatype is inferred."),IntelliSense(@"A boolean value indicating whether the datatype is inferred.")]
 		public bool IsDataTypeInferred {
@@ -2762,11 +2794,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ISDATATYPEINFERRED, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(IsDataTypeInferred), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.IsDataTypeInferred = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISDATATYPEINFERRED, oldValue, newValue));
-				OnPropertyChanged(Properties.ISDATATYPEINFERRED, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(IsDataTypeInferred), oldValue, newValue));
+				OnPropertyChanged(nameof(IsDataTypeInferred), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeIsDataTypeInferred() { return false; }
@@ -3227,8 +3259,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Represents a user culture. It is a child of a Model object, used for translating strings and formatting values.
-///             </summary>
+/// Represents a user culture. It is a child of a Model object, used for translating strings and formatting values.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Culture: TabularNamedObject
 			, IInternalAnnotationObject
@@ -3722,8 +3754,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Represents a column in a Table that gets data from an external data source.
-///             </summary>
+/// Represents a column in a Table that gets data from an external data source.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class DataColumn: Column
 			, IClonableObject
@@ -3741,8 +3773,8 @@ namespace TabularEditor.TOMWrapper
 		}
 
 /// <summary>
-///             Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is a query (as the Query of a CalculatedPartitionSource).
-///             </summary>
+/// Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is a query (as the Query of a CalculatedPartitionSource).
+/// </summary>
 		[DisplayName("Source Column")]
 		[Category("Basic"),Description(@"Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is a query (as the Query of a CalculatedPartitionSource)."),IntelliSense(@"Name of the column from which data will be retrieved. The name must match a column returned during processing or refresh, where the partition source is a query (as the Query of a CalculatedPartitionSource).")]
 		public string SourceColumn {
@@ -3756,11 +3788,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.SOURCECOLUMN, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(SourceColumn), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.SourceColumn = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SOURCECOLUMN, oldValue, newValue));
-				OnPropertyChanged(Properties.SOURCECOLUMN, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(SourceColumn), oldValue, newValue));
+				OnPropertyChanged(nameof(SourceColumn), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeSourceColumn() { return false; }
@@ -3901,8 +3933,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             Defines an open connection to an external data source for import, refresh, or DirectQuery operations on a Tabular <see cref="T:TabularEditor.TOMWrapper.Model" />.
-///             </summary>
+/// Defines an open connection to an external data source for import, refresh, or DirectQuery operations on a Tabular <see cref="T:TabularEditor.TOMWrapper.Model" />.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public abstract partial class DataSource: TabularNamedObject
 			, IDescriptionObject
@@ -4195,8 +4227,8 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		/// <summary>
-///             The description of the data source, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
-///             </summary>
+/// The description of the data source, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+/// </summary>
 		[DisplayName("Description")]
 		[Category("Basic"),Description(@"The description of the data source, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the data source, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
@@ -4210,17 +4242,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Description), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
-				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Description), oldValue, newValue));
+				OnPropertyChanged(nameof(Description), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
 /// <summary>
-///             The type of DataSource. At present, the only possible value is Provider, which refers to a data source that accepts a connection string.
-///             </summary>
+/// The type of DataSource. At present, the only possible value is Provider, which refers to a data source that accepts a connection string.
+/// </summary>
 		[DisplayName("Type")]
 		[Category("Options"),Description(@"The type of DataSource. At present, the only possible value is Provider, which refers to a data source that accepts a connection string."),IntelliSense(@"The type of DataSource. At present, the only possible value is Provider, which refers to a data source that accepts a connection string.")]
 		public DataSourceType Type {
@@ -4231,8 +4263,8 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeType() { return false; }
 /// <summary>
-///             The maximum number of connections to be opened concurrently to the data source.
-///             </summary>
+/// The maximum number of connections to be opened concurrently to the data source.
+/// </summary>
 		[DisplayName("Max Connections")]
 		[Category("Options"),Description(@"The maximum number of connections to be opened concurrently to the data source."),IntelliSense(@"The maximum number of connections to be opened concurrently to the data source.")]
 		public int MaxConnections {
@@ -4246,11 +4278,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.MAXCONNECTIONS, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(MaxConnections), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.MaxConnections = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MAXCONNECTIONS, oldValue, newValue));
-				OnPropertyChanged(Properties.MAXCONNECTIONS, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(MaxConnections), oldValue, newValue));
+				OnPropertyChanged(nameof(MaxConnections), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeMaxConnections() { return false; }
@@ -4403,8 +4435,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             For internal use only.
-///             </summary>
+/// For internal use only.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class ExternalModelRoleMember: ModelRoleMember
 			, IClonableObject
@@ -4422,8 +4454,8 @@ namespace TabularEditor.TOMWrapper
 		}
 
 /// <summary>
-///             A string that defines the identity provider used for authentication.
-///             </summary>
+/// A string that defines the identity provider used for authentication.
+/// </summary>
 		[DisplayName("Identity Provider")]
 		[Category("Options"),Description(@"A string that defines the identity provider used for authentication."),IntelliSense(@"A string that defines the identity provider used for authentication.")]
 		public string IdentityProvider {
@@ -4437,17 +4469,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.IDENTITYPROVIDER, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(IdentityProvider), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.IdentityProvider = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.IDENTITYPROVIDER, oldValue, newValue));
-				OnPropertyChanged(Properties.IDENTITYPROVIDER, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedNonMetadataObjectAction(this, nameof(IdentityProvider), oldValue, newValue));
+				OnPropertyChanged(nameof(IdentityProvider), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeIdentityProvider() { return false; }
 /// <summary>
-///             Indicates whether the particular member of a security role is an individual user or a group of users, or automatically detected. Possible values are as follows. Auto (1): Member is automatically detected. User (2): Member is an individual user. Group (3): Member is a security group.
-///             </summary>
+/// Indicates whether the particular member of a security role is an individual user or a group of users, or automatically detected. Possible values are as follows. Auto (1): Member is automatically detected. User (2): Member is an individual user. Group (3): Member is a security group.
+/// </summary>
 		[DisplayName("Member Type")]
 		[Category("Options"),Description(@"Indicates whether the particular member of a security role is an individual user or a group of users, or automatically detected. Possible values are as follows. Auto (1): Member is automatically detected. User (2): Member is an individual user. Group (3): Member is a security group."),IntelliSense(@"Indicates whether the particular member of a security role is an individual user or a group of users, or automatically detected. Possible values are as follows. Auto (1): Member is automatically detected. User (2): Member is an individual user. Group (3): Member is a security group.")]
 		public RoleMemberType MemberType {
@@ -4461,11 +4493,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.MEMBERTYPE, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(MemberType), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.MemberType = (TOM.RoleMemberType)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MEMBERTYPE, oldValue, newValue));
-				OnPropertyChanged(Properties.MEMBERTYPE, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedNonMetadataObjectAction(this, nameof(MemberType), oldValue, newValue));
+				OnPropertyChanged(nameof(MemberType), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeMemberType() { return false; }
@@ -4587,8 +4619,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             Represents a collection of levels that provide a logical hierarchical drilldown path for client applications. It is a child of a Table object.
-///             </summary>
+/// Represents a collection of levels that provide a logical hierarchical drilldown path for client applications. It is a child of a Table object.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Hierarchy: TabularNamedObject
 			, IFolderObject
@@ -4891,8 +4923,8 @@ namespace TabularEditor.TOMWrapper
 
 				// Skipping property ExcludedArtifacts on object Hierarchy
 /// <summary>
-///             The description of the hierarchy, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
-///             </summary>
+/// The description of the hierarchy, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+/// </summary>
 		[DisplayName("Description")]
 		[Category("Basic"),Description(@"The description of the hierarchy, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the hierarchy, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
@@ -4906,17 +4938,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Description), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
-				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Description), oldValue, newValue));
+				OnPropertyChanged(nameof(Description), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
 /// <summary>
-///             A boolean value that indicates whether the hierarchy is treated as hidden by client visualization tools. True if the hierarchy is treated as hidden; otherwise false.
-///             </summary>
+/// A boolean value that indicates whether the hierarchy is treated as hidden by client visualization tools. True if the hierarchy is treated as hidden; otherwise false.
+/// </summary>
 		[DisplayName("Hidden")]
 		[Category("Basic"),Description(@"A boolean value that indicates whether the hierarchy is treated as hidden by client visualization tools. True if the hierarchy is treated as hidden; otherwise false."),IntelliSense(@"A boolean value that indicates whether the hierarchy is treated as hidden by client visualization tools. True if the hierarchy is treated as hidden; otherwise false.")]
 		public bool IsHidden {
@@ -4930,18 +4962,18 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ISHIDDEN, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(IsHidden), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.IsHidden = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISHIDDEN, oldValue, newValue));
-				OnPropertyChanged(Properties.ISHIDDEN, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(IsHidden), oldValue, newValue));
+				OnPropertyChanged(nameof(IsHidden), oldValue, newValue);
 				Handler.UpdateObject(this);
 			}
 		}
 		private bool ShouldSerializeIsHidden() { return false; }
 /// <summary>
-///             Provides information on the state of the hierarchy. Possible values and their interpretation are as follows. Ready (1) The hierarchy is queryable and has up-to-date data. NoData (3) Not applicable to Hierarchy. CalculationNeeded (4) The hierarchy does not contain any data because it was not refreshed. There is no error associated with the hierarchy. SemanticError (5) Not applicable to Hierarchy. EvaluationError (6) Not applicable to Hierarchy. DependencyError (7) A dependency associated with the hierarchy is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Hierarchy.
-///             </summary>
+/// Provides information on the state of the hierarchy. Possible values and their interpretation are as follows. Ready (1) The hierarchy is queryable and has up-to-date data. NoData (3) Not applicable to Hierarchy. CalculationNeeded (4) The hierarchy does not contain any data because it was not refreshed. There is no error associated with the hierarchy. SemanticError (5) Not applicable to Hierarchy. EvaluationError (6) Not applicable to Hierarchy. DependencyError (7) A dependency associated with the hierarchy is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Hierarchy.
+/// </summary>
 		[DisplayName("State")]
 		[Category("Metadata"),Description(@"Provides information on the state of the hierarchy. Possible values and their interpretation are as follows. Ready (1) The hierarchy is queryable and has up-to-date data. NoData (3) Not applicable to Hierarchy. CalculationNeeded (4) The hierarchy does not contain any data because it was not refreshed. There is no error associated with the hierarchy. SemanticError (5) Not applicable to Hierarchy. EvaluationError (6) Not applicable to Hierarchy. DependencyError (7) A dependency associated with the hierarchy is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Hierarchy."),IntelliSense(@"Provides information on the state of the hierarchy. Possible values and their interpretation are as follows. Ready (1) The hierarchy is queryable and has up-to-date data. NoData (3) Not applicable to Hierarchy. CalculationNeeded (4) The hierarchy does not contain any data because it was not refreshed. There is no error associated with the hierarchy. SemanticError (5) Not applicable to Hierarchy. EvaluationError (6) Not applicable to Hierarchy. DependencyError (7) A dependency associated with the hierarchy is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Hierarchy.")]
 		public ObjectState State {
@@ -4952,8 +4984,8 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeState() { return false; }
 /// <summary>
-///             Defines the display folder for the hierarchy, for use by clients.
-///             </summary>
+/// Defines the display folder for the hierarchy, for use by clients.
+/// </summary>
 		[DisplayName("Display Folder")]
 		[Category("Basic"),Description(@"Defines the display folder for the hierarchy, for use by clients."),IntelliSense(@"Defines the display folder for the hierarchy, for use by clients.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string DisplayFolder {
@@ -4961,17 +4993,17 @@ namespace TabularEditor.TOMWrapper
 			    return MetadataObject.DisplayFolder;
 			}
 			set {
-				if(value.Contains(@"\\")) throw new Exception("Display Folder names cannot be blank.");
+				if(value != null && value.Contains(@"\\")) throw new Exception("Display Folder names cannot be blank.");
 				var oldValue = DisplayFolder;
 				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DISPLAYFOLDER, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DisplayFolder), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DisplayFolder = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISPLAYFOLDER, oldValue, newValue));
-				OnPropertyChanged(Properties.DISPLAYFOLDER, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DisplayFolder), oldValue, newValue));
+				OnPropertyChanged(nameof(DisplayFolder), oldValue, newValue);
 				Handler.UpdateFolders(Table);
 			}
 		}
@@ -4982,8 +5014,8 @@ namespace TabularEditor.TOMWrapper
         [Browsable(true),DisplayName("Translated Display Folders"),Description("Shows all translated Display Folders of the current Hierarchy."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedDisplayFolders { private set; get; }
 /// <summary>
-///             Ragged/unbalanced hierarchies can be enabled by hiding members using this property.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+/// Ragged/unbalanced hierarchies can be enabled by hiding members using this property.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("Hide Members")]
 		[Category("Options"),Description(@"Ragged/unbalanced hierarchies can be enabled by hiding members using this property."),IntelliSense(@"Ragged/unbalanced hierarchies can be enabled by hiding members using this property.")]
 		public HierarchyHideMembersType HideMembers {
@@ -4997,17 +5029,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.HIDEMEMBERS, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(HideMembers), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.HideMembers = (TOM.HierarchyHideMembersType)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.HIDEMEMBERS, oldValue, newValue));
-				OnPropertyChanged(Properties.HIDEMEMBERS, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(HideMembers), oldValue, newValue));
+				OnPropertyChanged(nameof(HideMembers), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeHideMembers() { return false; }
 /// <summary>
-///             A tag that represents the lineage of the object.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
+/// A tag that represents the lineage of the object.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
 		[DisplayName("Lineage Tag")]
 		[Category("Options"),Description(@"A tag that represents the lineage of the object."),IntelliSense(@"A tag that represents the lineage of the object.")]
 		public string LineageTag {
@@ -5021,17 +5053,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.LINEAGETAG, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(LineageTag), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.LineageTag = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.LINEAGETAG, oldValue, newValue));
-				OnPropertyChanged(Properties.LINEAGETAG, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(LineageTag), oldValue, newValue));
+				OnPropertyChanged(nameof(LineageTag), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeLineageTag() { return false; }
 /// <summary>
-///             A tag that represents the lineage of the source for the object.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1550 or above.</remarks>
+/// A tag that represents the lineage of the source for the object.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1550 or above.</remarks>
 		[DisplayName("Source Lineage Tag")]
 		[Category("Options"),Description(@"A tag that represents the lineage of the source for the object."),IntelliSense(@"A tag that represents the lineage of the source for the object.")]
 		public string SourceLineageTag {
@@ -5045,11 +5077,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.SOURCELINEAGETAG, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(SourceLineageTag), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.SourceLineageTag = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SOURCELINEAGETAG, oldValue, newValue));
-				OnPropertyChanged(Properties.SOURCELINEAGETAG, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(SourceLineageTag), oldValue, newValue));
+				OnPropertyChanged(nameof(SourceLineageTag), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeSourceLineageTag() { return false; }
@@ -5257,7 +5289,7 @@ namespace TabularEditor.TOMWrapper
 				case Properties.CHANGEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1567 : Handler.CompatibilityLevel >= 1567;
 				case Properties.EXCLUDEDARTIFACTS:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+					return false;
 				case Properties.EXTENDEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.HIDEMEMBERS:
@@ -5414,8 +5446,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Represents a Key Performance Indicator object. It is a child of a Measure object.
-///             </summary>
+/// Represents a Key Performance Indicator object. It is a child of a Measure object.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class KPI: TabularObject
 			, IDescriptionObject
@@ -5708,8 +5740,8 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		/// <summary>
-///             The description of the KPI, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
-///             </summary>
+/// The description of the KPI, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+/// </summary>
 		[DisplayName("Description")]
 		[Category("Basic"),Description(@"The description of the KPI, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the KPI, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
@@ -5723,17 +5755,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Description), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
-				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Description), oldValue, newValue));
+				OnPropertyChanged(nameof(Description), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
 /// <summary>
-///             The description of the target value of the KPI.
-///             </summary>
+/// The description of the target value of the KPI.
+/// </summary>
 		[DisplayName("Target Description")]
 		[Category("Options"),Description(@"The description of the target value of the KPI."),IntelliSense(@"The description of the target value of the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string TargetDescription {
@@ -5747,17 +5779,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.TARGETDESCRIPTION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(TargetDescription), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.TargetDescription = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TARGETDESCRIPTION, oldValue, newValue));
-				OnPropertyChanged(Properties.TARGETDESCRIPTION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(TargetDescription), oldValue, newValue));
+				OnPropertyChanged(nameof(TargetDescription), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeTargetDescription() { return false; }
 /// <summary>
-///             An expression that evaluates to a number and indicates the goal for the KPI.
-///             </summary>
+/// An expression that evaluates to a number and indicates the goal for the KPI.
+/// </summary>
 		[DisplayName("Target Expression")]
 		[Category("Options"),Description(@"An expression that evaluates to a number and indicates the goal for the KPI."),IntelliSense(@"An expression that evaluates to a number and indicates the goal for the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string TargetExpression {
@@ -5771,17 +5803,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.TARGETEXPRESSION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(TargetExpression), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.TargetExpression = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TARGETEXPRESSION, oldValue, newValue));
-				OnPropertyChanged(Properties.TARGETEXPRESSION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(TargetExpression), oldValue, newValue));
+				OnPropertyChanged(nameof(TargetExpression), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeTargetExpression() { return false; }
 /// <summary>
-///             The format string to be used when presenting the target value for the KPI.
-///             </summary>
+/// The format string to be used when presenting the target value for the KPI.
+/// </summary>
 		[DisplayName("Target Format String")]
 		[Category("Options"),Description(@"The format string to be used when presenting the target value for the KPI."),IntelliSense(@"The format string to be used when presenting the target value for the KPI.")][TypeConverter(typeof(FormatStringConverter))]
 		public string TargetFormatString {
@@ -5795,17 +5827,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.TARGETFORMATSTRING, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(TargetFormatString), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.TargetFormatString = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TARGETFORMATSTRING, oldValue, newValue));
-				OnPropertyChanged(Properties.TARGETFORMATSTRING, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(TargetFormatString), oldValue, newValue));
+				OnPropertyChanged(nameof(TargetFormatString), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeTargetFormatString() { return false; }
 /// <summary>
-///             The recommended graphic to represent the status of this KPI.
-///             </summary>
+/// The recommended graphic to represent the status of this KPI.
+/// </summary>
 		[DisplayName("Status Graphic")]
 		[Category("Options"),Description(@"The recommended graphic to represent the status of this KPI."),IntelliSense(@"The recommended graphic to represent the status of this KPI.")][TypeConverter(typeof(KPIStatusGraphicConverter))]
 		public string StatusGraphic {
@@ -5819,17 +5851,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.STATUSGRAPHIC, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(StatusGraphic), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.StatusGraphic = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.STATUSGRAPHIC, oldValue, newValue));
-				OnPropertyChanged(Properties.STATUSGRAPHIC, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(StatusGraphic), oldValue, newValue));
+				OnPropertyChanged(nameof(StatusGraphic), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeStatusGraphic() { return false; }
 /// <summary>
-///             A description of the Status value for the KPI.
-///             </summary>
+/// A description of the Status value for the KPI.
+/// </summary>
 		[DisplayName("Status Description")]
 		[Category("Options"),Description(@"A description of the Status value for the KPI."),IntelliSense(@"A description of the Status value for the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string StatusDescription {
@@ -5843,17 +5875,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.STATUSDESCRIPTION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(StatusDescription), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.StatusDescription = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.STATUSDESCRIPTION, oldValue, newValue));
-				OnPropertyChanged(Properties.STATUSDESCRIPTION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(StatusDescription), oldValue, newValue));
+				OnPropertyChanged(nameof(StatusDescription), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeStatusDescription() { return false; }
 /// <summary>
-///             An expression that is used to calculate the status of the KPI.
-///             </summary>
+/// An expression that is used to calculate the status of the KPI.
+/// </summary>
 		[DisplayName("Status Expression")]
 		[Category("Options"),Description(@"An expression that is used to calculate the status of the KPI."),IntelliSense(@"An expression that is used to calculate the status of the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string StatusExpression {
@@ -5867,17 +5899,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.STATUSEXPRESSION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(StatusExpression), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.StatusExpression = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.STATUSEXPRESSION, oldValue, newValue));
-				OnPropertyChanged(Properties.STATUSEXPRESSION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(StatusExpression), oldValue, newValue));
+				OnPropertyChanged(nameof(StatusExpression), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeStatusExpression() { return false; }
 /// <summary>
-///             A string that identifies the graphic to show for the trend of the KPI.
-///             </summary>
+/// A string that identifies the graphic to show for the trend of the KPI.
+/// </summary>
 		[DisplayName("Trend Graphic")]
 		[Category("Options"),Description(@"A string that identifies the graphic to show for the trend of the KPI."),IntelliSense(@"A string that identifies the graphic to show for the trend of the KPI.")][TypeConverter(typeof(KPITrendGraphicConverter))]
 		public string TrendGraphic {
@@ -5891,17 +5923,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.TRENDGRAPHIC, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(TrendGraphic), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.TrendGraphic = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TRENDGRAPHIC, oldValue, newValue));
-				OnPropertyChanged(Properties.TRENDGRAPHIC, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(TrendGraphic), oldValue, newValue));
+				OnPropertyChanged(nameof(TrendGraphic), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeTrendGraphic() { return false; }
 /// <summary>
-///             A description of the trend value of the KPI.
-///             </summary>
+/// A description of the trend value of the KPI.
+/// </summary>
 		[DisplayName("Trend Description")]
 		[Category("Options"),Description(@"A description of the trend value of the KPI."),IntelliSense(@"A description of the trend value of the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string TrendDescription {
@@ -5915,17 +5947,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.TRENDDESCRIPTION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(TrendDescription), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.TrendDescription = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TRENDDESCRIPTION, oldValue, newValue));
-				OnPropertyChanged(Properties.TRENDDESCRIPTION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(TrendDescription), oldValue, newValue));
+				OnPropertyChanged(nameof(TrendDescription), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeTrendDescription() { return false; }
 /// <summary>
-///             An expression representing the trend of the KPI.
-///             </summary>
+/// An expression representing the trend of the KPI.
+/// </summary>
 		[DisplayName("Trend Expression")]
 		[Category("Options"),Description(@"An expression representing the trend of the KPI."),IntelliSense(@"An expression representing the trend of the KPI.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string TrendExpression {
@@ -5939,17 +5971,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.TRENDEXPRESSION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(TrendExpression), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.TrendExpression = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TRENDEXPRESSION, oldValue, newValue));
-				OnPropertyChanged(Properties.TRENDEXPRESSION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(TrendExpression), oldValue, newValue));
+				OnPropertyChanged(nameof(TrendExpression), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeTrendExpression() { return false; }
 /// <summary>
-///             A reference to a Measure object that owns this KPI.
-///             </summary>
+/// A reference to a Measure object that owns this KPI.
+/// </summary>
 		[DisplayName("Measure")]
 		[Category("Options"),Description(@"A reference to a Measure object that owns this KPI."),IntelliSense(@"A reference to a Measure object that owns this KPI.")]
 		public Measure Measure {
@@ -6012,8 +6044,644 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             Represents a AlternativeSource object. It is a child of either a Table or a Column object.
-///             </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1460 or above.</remarks>
+/// Represents an abstract RefreshPolicy object. It is a child of a Table object.
+/// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1450 or above.</remarks>
+	[TypeConverter(typeof(DynamicPropertyConverter))]
+	public abstract partial class RefreshPolicy: TabularObject
+			, IInternalAnnotationObject
+			, IInternalExtendedPropertyObject
+	{
+	    internal new TOM.RefreshPolicy MetadataObject 
+		{ 
+			get 
+			{ 
+				return base.MetadataObject as TOM.RefreshPolicy; 
+		    } 
+			set 
+			{ 
+				base.MetadataObject = value; 
+			}
+		}
+
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Annotations on the current Refresh Policy.</summary>
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Refresh Policy."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
+		public AnnotationCollection Annotations { get; private set; }
+		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
+		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
+		public string GetAnnotation(int index) {
+			return MetadataObject.Annotations[index].Value;
+		}
+		///<summary>Returns true if an annotation with the given name exists. Otherwise false.</summary>
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		///<summary>Gets the value of the annotation with the given name. Returns null if no such annotation exists.</summary>
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
+		public string GetAnnotation(string name) {
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
+		}
+		///<summary>Sets the value of the annotation with the given index, assuming it exists.</summary>
+		[IntelliSense("Sets the value of the annotation with the given index, assuming it exists.")]
+		public void SetAnnotation(int index, string value) {
+		    SetAnnotation(index, value, true);
+		}
+		internal void SetAnnotation(int index, string value, bool undoable) {
+		    var name = MetadataObject.Annotations[index].Name;
+			SetAnnotation(name, value, undoable);
+		}
+		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+			SetAnnotation(index, value, undoable);
+		}
+		///<summary>Returns a unique name for a new annotation.</summary>
+		public string GetNewAnnotationName() {
+			return MetadataObject.Annotations.GetNewName("New Annotation");
+		}
+		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		internal void SetAnnotation(string name, string value, bool undoable) {
+			if(name == null) name = GetNewAnnotationName();
+
+			if(value == null) {
+				// Remove annotation if set to null:
+				RemoveAnnotation(name, undoable);
+				return;
+			}
+
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
+
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Change existing annotation:
+
+				var oldValue = GetAnnotation(name);
+				MetadataObject.Annotations[name].Value = value;
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
+			} else {
+				// Add new annotation:
+
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
+			}
+		}
+		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+			this.SetAnnotation(name, value, undoable);
+		}
+		///<summary>Remove an annotation by the given name.</summary>
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		internal void RemoveAnnotation(string name, bool undoable) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
+
+			    var oldValue = MetadataObject.Annotations[name].Value;
+				MetadataObject.Annotations.Remove(name);
+
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
+			}
+		}
+		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+			this.RemoveAnnotation(name, undoable);
+		}
+		///<summary>Gets the number of annotations on the current Refresh Policy.</summary>
+		[IntelliSense("Gets the number of annotations on the current Refresh Policy.")]
+		public int GetAnnotationsCount() {
+			return MetadataObject.Annotations.Count;
+		}
+		///<summary>Gets a collection of all annotation names on the current Refresh Policy.</summary>
+		[IntelliSense("Gets a collection of all annotation names on the current Refresh Policy.")]
+		public IEnumerable<string> GetAnnotations() {
+			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Extended Properties on the current Refresh Policy.</summary>
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Refresh Policy."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
+		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
+
+		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
+		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
+		public bool HasExtendedProperty(string name) {
+		    return MetadataObject.ExtendedProperties.ContainsName(name);
+		}
+		///<summary>Gets the type of the ExtendedProperty with the given index, assuming it exists.</summary>
+		public ExtendedPropertyType GetExtendedPropertyType(int index) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
+		}
+		///<summary>Gets the type of the ExtendedProperty with the given name, assuming it exists.</summary>
+		public ExtendedPropertyType GetExtendedPropertyType(string name) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
+		}
+		///<summary>Gets the value of the ExtendedProperty with the given index, assuming it exists.</summary>
+		public string GetExtendedProperty(int index) {
+			var ep = MetadataObject.ExtendedProperties[index];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		///<summary>Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.</summary>
+		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
+		public string GetExtendedProperty(string name) {
+		    if(!HasExtendedProperty(name)) return null;
+			var ep = MetadataObject.ExtendedProperties[name];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		///<summary>Sets the value of the ExtendedProperty with the given index, optionally specifiying the type (string or JSON) of the ExtendedProperty.</summary>
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
+			SetExtendedProperty(index, value, type, true);
+		}
+		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+			SetExtendedProperty(index, value, type, undoable);
+		}
+		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+			var name = MetadataObject.ExtendedProperties[index].Name;
+			SetExtendedProperty(name, value, type, undoable);
+		}
+		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
+		public string GetNewExtendedPropertyName() {
+			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+		}
+		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
+		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type) {
+			SetExtendedProperty(name, value, type, true);
+		}
+		internal void SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+			if(name == null) name = GetNewExtendedPropertyName();
+
+			if(value == null) {
+				// Remove ExtendedProperty if set to null:
+				RemoveExtendedProperty(name);
+				return;
+			}
+
+			if(GetExtendedProperty(name) == value) return;
+			if(undoable) {
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+				if (cancel) return;
+			}
+
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Change existing ExtendedProperty:
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				var ep = MetadataObject.ExtendedProperties[name];
+				if (ep is TOM.JsonExtendedProperty)
+					(ep as TOM.JsonExtendedProperty).Value = value;
+				else 
+					(ep as TOM.StringExtendedProperty).Value = value;
+					
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new ExtendedProperty:
+				if (type == ExtendedPropertyType.Json)
+					MetadataObject.ExtendedProperties.Add(new TOM.JsonExtendedProperty{ Name = name, Value = value });
+				else
+					MetadataObject.ExtendedProperties.Add(new TOM.StringExtendedProperty{ Name = name, Value = value });
+
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
+			}
+		}
+		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+			this.SetExtendedProperty(name, value, type, undoable);
+		}
+
+		///<summary>Remove an ExtendedProperty by the given name.</summary>
+		[IntelliSense("Remove an ExtendedProperty by the given name.")]
+		public void RemoveExtendedProperty(string name) {
+			RemoveExtendedProperty(name, true);
+		}
+
+		internal void RemoveExtendedProperty(string name, bool undoable) {
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Get current value:
+				if(undoable) {
+					bool cancel = false;
+					OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+					if (cancel) return;
+				}
+
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				MetadataObject.ExtendedProperties.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
+			}
+		}
+		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+			this.RemoveExtendedProperty(name, undoable);
+		}
+		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
+		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
+		public int GetExtendedPropertyCount() {
+			return MetadataObject.ExtendedProperties.Count;
+		}
+		///<summary>Gets a collection of all ExtendedProperty names on the current object.</summary>
+		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
+		public IEnumerable<string> GetExtendedProperties() {
+			return MetadataObject.ExtendedProperties.Select(a => a.Name);
+		}
+
+		/// <summary>
+/// Specifies the type of the refresh policy
+/// </summary>
+		[DisplayName("Policy Type")]
+		[Category("Options"),Description(@"Specifies the type of the refresh policy"),IntelliSense(@"Specifies the type of the refresh policy")]
+		public RefreshPolicyType PolicyType {
+			get {
+			    return (RefreshPolicyType)MetadataObject.PolicyType;
+			}
+			set {
+				
+				var oldValue = PolicyType;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(nameof(PolicyType), newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.PolicyType = (TOM.RefreshPolicyType)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(PolicyType), oldValue, newValue));
+				OnPropertyChanged(nameof(PolicyType), oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializePolicyType() { return false; }
+/// <summary>
+/// Defines the mode of a refresh policy applied during incremental refresh.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1565 or above.</remarks>
+		[DisplayName("Mode")]
+		[Category("Options"),Description(@"Defines the mode of a refresh policy applied during incremental refresh."),IntelliSense(@"Defines the mode of a refresh policy applied during incremental refresh.")]
+		public RefreshPolicyMode Mode {
+			get {
+			    return (RefreshPolicyMode)MetadataObject.Mode;
+			}
+			set {
+				
+				var oldValue = Mode;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(nameof(Mode), newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.Mode = (TOM.RefreshPolicyMode)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Mode), oldValue, newValue));
+				OnPropertyChanged(nameof(Mode), oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeMode() { return false; }
+		///<summary>The parent table of the current Refresh Policy.</summary>
+		[Browsable(false)]
+		public Table Table
+		{ 
+			get 
+			{ 
+				TabularObject t = null;
+				if(MetadataObject == null || MetadataObject.Table == null) return null;
+				if(!Handler.WrapperLookup.TryGetValue(MetadataObject.Table, out t)) {
+				    if(!MetadataObject.Table.IsRemoved)
+						t = Model.Tables[MetadataObject.Table.Name];
+				}
+				return t as Table;
+			} 
+		}
+
+	
+        internal override void RenewMetadataObject()
+        {
+            Handler.WrapperLookup.Remove(MetadataObject);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.RefreshPolicy>(json);
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+
+
+
+		/// <summary>
+		/// CTOR - only called from static factory methods on the class
+		/// </summary>
+		protected RefreshPolicy(TOM.RefreshPolicy metadataObject) : base(metadataObject)
+		{
+			
+			// Create indexer for annotations:
+			Annotations = new AnnotationCollection(this);
+			
+			// Create indexer for extended properties:
+			ExtendedProperties = new ExtendedPropertyCollection(this);
+		}
+
+
+
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
+			Reinit();
+			ReapplyReferences();
+		}
+		internal override bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
+			if(!base.Browsable(propertyName)) return false;
+
+			switch (propertyName) {
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.MODE:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1565 : Handler.CompatibilityLevel >= 1565;
+				
+				default:
+					return true;
+			}
+		}
+
+    }
+
+  
+	/// <summary>
+/// Represents a BasicRefreshPolicy object. It is a child of a Table object.
+/// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1450 or above.</remarks>
+	[TypeConverter(typeof(DynamicPropertyConverter))]
+	public sealed partial class BasicRefreshPolicy: RefreshPolicy
+	{
+	    internal new TOM.BasicRefreshPolicy MetadataObject 
+		{ 
+			get 
+			{ 
+				return base.MetadataObject as TOM.BasicRefreshPolicy; 
+		    } 
+			set 
+			{ 
+				base.MetadataObject = value; 
+			}
+		}
+
+/// <summary>
+/// Target granularity of the rolling window for the whole data set
+/// </summary>
+		[DisplayName("Rolling Window Granularity")]
+		[Category("Options"),Description(@"Target granularity of the rolling window for the whole data set"),IntelliSense(@"Target granularity of the rolling window for the whole data set")]
+		public RefreshGranularityType RollingWindowGranularity {
+			get {
+			    return (RefreshGranularityType)MetadataObject.RollingWindowGranularity;
+			}
+			set {
+				
+				var oldValue = RollingWindowGranularity;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(nameof(RollingWindowGranularity), newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.RollingWindowGranularity = (TOM.RefreshGranularityType)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(RollingWindowGranularity), oldValue, newValue));
+				OnPropertyChanged(nameof(RollingWindowGranularity), oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeRollingWindowGranularity() { return false; }
+/// <summary>
+/// Number of periods for the rolling window for the whole data set
+/// </summary>
+		[DisplayName("Rolling Window Periods")]
+		[Category("Options"),Description(@"Number of periods for the rolling window for the whole data set"),IntelliSense(@"Number of periods for the rolling window for the whole data set")]
+		public int RollingWindowPeriods {
+			get {
+			    return MetadataObject.RollingWindowPeriods;
+			}
+			set {
+				
+				var oldValue = RollingWindowPeriods;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(nameof(RollingWindowPeriods), newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.RollingWindowPeriods = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(RollingWindowPeriods), oldValue, newValue));
+				OnPropertyChanged(nameof(RollingWindowPeriods), oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeRollingWindowPeriods() { return false; }
+/// <summary>
+/// Granularity of the (most recent) incremental refresh range
+/// </summary>
+		[DisplayName("Incremental Granularity")]
+		[Category("Options"),Description(@"Granularity of the (most recent) incremental refresh range"),IntelliSense(@"Granularity of the (most recent) incremental refresh range")]
+		public RefreshGranularityType IncrementalGranularity {
+			get {
+			    return (RefreshGranularityType)MetadataObject.IncrementalGranularity;
+			}
+			set {
+				
+				var oldValue = IncrementalGranularity;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(nameof(IncrementalGranularity), newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.IncrementalGranularity = (TOM.RefreshGranularityType)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(IncrementalGranularity), oldValue, newValue));
+				OnPropertyChanged(nameof(IncrementalGranularity), oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeIncrementalGranularity() { return false; }
+/// <summary>
+/// Number of periods for the incremental refresh range
+/// </summary>
+		[DisplayName("Incremental Periods")]
+		[Category("Options"),Description(@"Number of periods for the incremental refresh range"),IntelliSense(@"Number of periods for the incremental refresh range")]
+		public int IncrementalPeriods {
+			get {
+			    return MetadataObject.IncrementalPeriods;
+			}
+			set {
+				
+				var oldValue = IncrementalPeriods;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(nameof(IncrementalPeriods), newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.IncrementalPeriods = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(IncrementalPeriods), oldValue, newValue));
+				OnPropertyChanged(nameof(IncrementalPeriods), oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeIncrementalPeriods() { return false; }
+/// <summary>
+/// Lag or leading periods from Now() to the rolling window head
+/// </summary>
+		[DisplayName("Incremental Periods Offset")]
+		[Category("Options"),Description(@"Lag or leading periods from Now() to the rolling window head"),IntelliSense(@"Lag or leading periods from Now() to the rolling window head")]
+		public int IncrementalPeriodsOffset {
+			get {
+			    return MetadataObject.IncrementalPeriodsOffset;
+			}
+			set {
+				
+				var oldValue = IncrementalPeriodsOffset;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(nameof(IncrementalPeriodsOffset), newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.IncrementalPeriodsOffset = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(IncrementalPeriodsOffset), oldValue, newValue));
+				OnPropertyChanged(nameof(IncrementalPeriodsOffset), oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeIncrementalPeriodsOffset() { return false; }
+/// <summary>
+/// If not null, M expression that is evaluated and stored for each partition upon each refresh or merge operation. Result is stored in Partition.RefreshBookmark
+/// </summary>
+		[DisplayName("Polling Expression")]
+		[Category("Options"),Description(@"If not null, M expression that is evaluated and stored for each partition upon each refresh or merge operation. Result is stored in Partition.RefreshBookmark"),IntelliSense(@"If not null, M expression that is evaluated and stored for each partition upon each refresh or merge operation. Result is stored in Partition.RefreshBookmark")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		public string PollingExpression {
+			get {
+			    return MetadataObject.PollingExpression;
+			}
+			set {
+				
+				var oldValue = PollingExpression;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(nameof(PollingExpression), newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.PollingExpression = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(PollingExpression), oldValue, newValue));
+				OnPropertyChanged(nameof(PollingExpression), oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializePollingExpression() { return false; }
+/// <summary>
+/// M expression that is used as the source M expression for new partitions. It includes the date filter by referring to 2 M parameters named [RangeStart] and [RangeEnd], which can be dates or integers depending on IntegerDateKey below
+/// </summary>
+		[DisplayName("Source Expression")]
+		[Category("Options"),Description(@"M expression that is used as the source M expression for new partitions. It includes the date filter by referring to 2 M parameters named [RangeStart] and [RangeEnd], which can be dates or integers depending on IntegerDateKey below"),IntelliSense(@"M expression that is used as the source M expression for new partitions. It includes the date filter by referring to 2 M parameters named [RangeStart] and [RangeEnd], which can be dates or integers depending on IntegerDateKey below")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		public string SourceExpression {
+			get {
+			    return MetadataObject.SourceExpression;
+			}
+			set {
+				
+				var oldValue = SourceExpression;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(nameof(SourceExpression), newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.SourceExpression = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(SourceExpression), oldValue, newValue));
+				OnPropertyChanged(nameof(SourceExpression), oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeSourceExpression() { return false; }
+
+	
+        internal override void RenewMetadataObject()
+        {
+            Handler.WrapperLookup.Remove(MetadataObject);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.BasicRefreshPolicy>(json);
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+
+
+
+		/// <summary>
+		/// CTOR - only called from static factory methods on the class
+		/// </summary>
+		BasicRefreshPolicy(TOM.BasicRefreshPolicy metadataObject) : base(metadataObject)
+		{
+		}
+
+
+
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
+			Reinit();
+			ReapplyReferences();
+		}
+		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
+			if(!base.Browsable(propertyName)) return false;
+
+			switch (propertyName) {
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
+				
+				default:
+					return true;
+			}
+		}
+
+    }
+
+  
+	/// <summary>
+/// Represents a AlternativeSource object. It is a child of either a Table or a Column object.
+/// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1460 or above.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class AlternateOf: TabularObject
 			, IInternalAnnotationObject
@@ -6161,8 +6829,8 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		/// <summary>
-///             A value indicating the summarization type used by this alternative sources' column. The possible values are GroupBy (0), Sum (1), Count (2), Min (3), Max (4).
-///             </summary>
+/// A value indicating the summarization type used by this alternative sources' column. The possible values are GroupBy (0), Sum (1), Count (2), Min (3), Max (4).
+/// </summary>
 		[DisplayName("Summarization")]
 		[Category("Options"),Description(@"A value indicating the summarization type used by this alternative sources' column. The possible values are GroupBy (0), Sum (1), Count (2), Min (3), Max (4)."),IntelliSense(@"A value indicating the summarization type used by this alternative sources' column. The possible values are GroupBy (0), Sum (1), Count (2), Min (3), Max (4).")]
 		public SummarizationType Summarization {
@@ -6176,17 +6844,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.SUMMARIZATION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Summarization), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Summarization = (TOM.SummarizationType)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SUMMARIZATION, oldValue, newValue));
-				OnPropertyChanged(Properties.SUMMARIZATION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Summarization), oldValue, newValue));
+				OnPropertyChanged(nameof(Summarization), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeSummarization() { return false; }
 /// <summary>
-///             ID of the owning/parent column.
-///             </summary>
+/// ID of the owning/parent column.
+/// </summary>
 		[DisplayName("Column")]
 		[Category("Options"),Description(@"ID of the owning/parent column."),IntelliSense(@"ID of the owning/parent column.")]
 		public Column Column {
@@ -6198,10 +6866,10 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeColumn() { return false; }
 /// <summary>
-///             A reference ID to the referenced source column.
-///             </summary>
+/// A reference ID to the referenced source column.
+/// </summary>
 		[DisplayName("Base Column")]
-		[Category("Options"),Description(@"A reference ID to the referenced source column."),IntelliSense(@"A reference ID to the referenced source column.")][TypeConverter(typeof(AllOtherTablesColumnConverter))]
+		[Category("Options"),Description(@"A reference ID to the referenced source column."),IntelliSense(@"A reference ID to the referenced source column.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public Column BaseColumn {
 			get {
 				if (MetadataObject.BaseColumn == null) return null;
@@ -6214,19 +6882,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue?.MetadataObject == newValue?.MetadataObject) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.BASECOLUMN, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(BaseColumn), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.BaseColumn = value?.MetadataObject;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.BASECOLUMN, oldValue, newValue));
-				OnPropertyChanged(Properties.BASECOLUMN, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(BaseColumn), oldValue, newValue));
+				OnPropertyChanged(nameof(BaseColumn), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeBaseColumn() { return false; }
 /// <summary>
-///             A reference ID to the referenced source table. You may either define BaseTable or BaseColumn, but not both.
-///             </summary>
+/// A reference ID to the referenced source table. You may either define BaseTable or BaseColumn, but not both.
+/// </summary>
 		[DisplayName("Base Table")]
-		[Category("Options"),Description(@"A reference ID to the referenced source table. You may either define BaseTable or BaseColumn, but not both."),IntelliSense(@"A reference ID to the referenced source table. You may either define BaseTable or BaseColumn, but not both.")][TypeConverter(typeof(OtherTablesConverter))]
+		[Category("Options"),Description(@"A reference ID to the referenced source table. You may either define BaseTable or BaseColumn, but not both."),IntelliSense(@"A reference ID to the referenced source table. You may either define BaseTable or BaseColumn, but not both.")]
 		public Table BaseTable {
 			get {
 				if (MetadataObject.BaseTable == null) return null;
@@ -6239,11 +6907,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue?.MetadataObject == newValue?.MetadataObject) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.BASETABLE, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(BaseTable), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.BaseTable = value?.MetadataObject;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.BASETABLE, oldValue, newValue));
-				OnPropertyChanged(Properties.BASETABLE, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(BaseTable), oldValue, newValue));
+				OnPropertyChanged(nameof(BaseTable), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeBaseTable() { return false; }
@@ -6294,8 +6962,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             Represents a level in a hierarchy that provides a logical hierarchical drilldown path for client applications. It is a child of a Hierarchy object. The level is based on the values in a column.
-///             </summary>
+/// Represents a level in a hierarchy that provides a logical hierarchical drilldown path for client applications. It is a child of a Hierarchy object. The level is based on the values in a column.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Level: TabularNamedObject
 			, IDescriptionObject
@@ -6592,8 +7260,8 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		/// <summary>
-///             The position of the level within the hierarchy. The levels in the hierarchy must be properly ordered, starting with 1 and increasing monotonically.
-///             </summary>
+/// The position of the level within the hierarchy. The levels in the hierarchy must be properly ordered, starting with 1 and increasing monotonically.
+/// </summary>
 		[DisplayName("Ordinal")]
 		[Category("Basic"),Description(@"The position of the level within the hierarchy. The levels in the hierarchy must be properly ordered, starting with 1 and increasing monotonically."),IntelliSense(@"The position of the level within the hierarchy. The levels in the hierarchy must be properly ordered, starting with 1 and increasing monotonically.")][NoMultiselect()]
 		public int Ordinal {
@@ -6607,17 +7275,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ORDINAL, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Ordinal), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Ordinal = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ORDINAL, oldValue, newValue));
-				OnPropertyChanged(Properties.ORDINAL, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Ordinal), oldValue, newValue));
+				OnPropertyChanged(nameof(Ordinal), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeOrdinal() { return false; }
 /// <summary>
-///             The description of the level, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
-///             </summary>
+/// The description of the level, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+/// </summary>
 		[DisplayName("Description")]
 		[Category("Basic"),Description(@"The description of the level, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the level, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
@@ -6631,17 +7299,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Description), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
-				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Description), oldValue, newValue));
+				OnPropertyChanged(nameof(Description), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
 /// <summary>
-///             A tag that represents the lineage of the object.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
+/// A tag that represents the lineage of the object.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
 		[DisplayName("Lineage Tag")]
 		[Category("Options"),Description(@"A tag that represents the lineage of the object."),IntelliSense(@"A tag that represents the lineage of the object.")]
 		public string LineageTag {
@@ -6655,17 +7323,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.LINEAGETAG, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(LineageTag), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.LineageTag = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.LINEAGETAG, oldValue, newValue));
-				OnPropertyChanged(Properties.LINEAGETAG, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(LineageTag), oldValue, newValue));
+				OnPropertyChanged(nameof(LineageTag), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeLineageTag() { return false; }
 /// <summary>
-///             A tag that represents the lineage of the source for the object.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1550 or above.</remarks>
+/// A tag that represents the lineage of the source for the object.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1550 or above.</remarks>
 		[DisplayName("Source Lineage Tag")]
 		[Category("Options"),Description(@"A tag that represents the lineage of the source for the object."),IntelliSense(@"A tag that represents the lineage of the source for the object.")]
 		public string SourceLineageTag {
@@ -6679,17 +7347,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.SOURCELINEAGETAG, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(SourceLineageTag), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.SourceLineageTag = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SOURCELINEAGETAG, oldValue, newValue));
-				OnPropertyChanged(Properties.SOURCELINEAGETAG, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(SourceLineageTag), oldValue, newValue));
+				OnPropertyChanged(nameof(SourceLineageTag), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeSourceLineageTag() { return false; }
 /// <summary>
-///             A reference to a Hierarchy object that owns this level.
-///             </summary>
+/// A reference to a Hierarchy object that owns this level.
+/// </summary>
 		[DisplayName("Hierarchy")]
 		[Category("Options"),Description(@"A reference to a Hierarchy object that owns this level."),IntelliSense(@"A reference to a Hierarchy object that owns this level.")][Browsable(false)]
 		public Hierarchy Hierarchy {
@@ -6701,10 +7369,10 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeHierarchy() { return false; }
 /// <summary>
-///             A reference to a Column object associated with this Level.
-///             </summary>
+/// A reference to a Column object associated with this Level.
+/// </summary>
 		[DisplayName("Column")]
-		[Category("Basic"),Description(@"A reference to a Column object associated with this Level."),IntelliSense(@"A reference to a Column object associated with this Level.")][TypeConverter(typeof(HierarchyColumnConverter)),NoMultiselect()]
+		[Category("Basic"),Description(@"A reference to a Column object associated with this Level."),IntelliSense(@"A reference to a Column object associated with this Level.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(HierarchyColumnConverter)),NoMultiselect()]
 		public Column Column {
 			get {
 				if (MetadataObject.Column == null) return null;
@@ -6717,11 +7385,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue?.MetadataObject == newValue?.MetadataObject) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.COLUMN, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Column), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Column = value == null ? null : Hierarchy.Table.Columns[value.MetadataObject.Name].MetadataObject;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.COLUMN, oldValue, newValue));
-				OnPropertyChanged(Properties.COLUMN, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Column), oldValue, newValue));
+				OnPropertyChanged(nameof(Column), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeColumn() { return false; }
@@ -6987,8 +7655,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Represents a value that is calculated based on an expression. It is a child of a Table object.
-///             </summary>
+/// Represents a value that is calculated based on an expression. It is a child of a Table object.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Measure: TabularNamedObject
 			, IFolderObject
@@ -7292,8 +7960,8 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		/// <summary>
-///             The description of the measure, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
-///             </summary>
+/// The description of the measure, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+/// </summary>
 		[DisplayName("Description")]
 		[Category("Basic"),Description(@"The description of the measure, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the measure, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
@@ -7307,17 +7975,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Description), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
-				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Description), oldValue, newValue));
+				OnPropertyChanged(nameof(Description), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
 /// <summary>
-///             Describes the type of data contained in the column. Possible values are as follows. String (2). Int64 (6). Double (8). DateTime (9). Decimal (10). Boolean (11). Binary (17). Unknown (19) A measure in an error state. Variant (20) A measure with varying data type.
-///             </summary>
+/// Describes the type of data contained in the column. Possible values are as follows. String (2). Int64 (6). Double (8). DateTime (9). Decimal (10). Boolean (11). Binary (17). Unknown (19) A measure in an error state. Variant (20) A measure with varying data type.
+/// </summary>
 		[DisplayName("Data Type")]
 		[Category("Metadata"),Description(@"Describes the type of data contained in the column. Possible values are as follows. String (2). Int64 (6). Double (8). DateTime (9). Decimal (10). Boolean (11). Binary (17). Unknown (19) A measure in an error state. Variant (20) A measure with varying data type."),IntelliSense(@"Describes the type of data contained in the column. Possible values are as follows. String (2). Int64 (6). Double (8). DateTime (9). Decimal (10). Boolean (11). Binary (17). Unknown (19) A measure in an error state. Variant (20) A measure with varying data type.")][TypeConverter(typeof(DataTypeEnumConverter))]
 		public DataType DataType {
@@ -7328,8 +7996,8 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeDataType() { return false; }
 /// <summary>
-///             The DAX expression that is evaluated for the calculated measure.
-///             </summary>
+/// The DAX expression that is evaluated for the calculated measure.
+/// </summary>
 		[DisplayName("Expression")]
 		[Category("Options"),Description(@"The DAX expression that is evaluated for the calculated measure."),IntelliSense(@"The DAX expression that is evaluated for the calculated measure.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Expression {
@@ -7343,17 +8011,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.EXPRESSION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Expression), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Expression = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EXPRESSION, oldValue, newValue));
-				OnPropertyChanged(Properties.EXPRESSION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Expression), oldValue, newValue));
+				OnPropertyChanged(nameof(Expression), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeExpression() { return false; }
 /// <summary>
-///             A string that specifies the format of the measure contents. For 
-///             </summary>
+/// A string that specifies the format of the measure contents. For
+/// </summary>
 		[DisplayName("Format String")]
 		[Category("Basic"),Description(@"A string that specifies the format of the measure contents. For"),IntelliSense(@"A string that specifies the format of the measure contents. For")][TypeConverter(typeof(FormatStringConverter))]
 		public string FormatString {
@@ -7367,17 +8035,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.FORMATSTRING, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(FormatString), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.FormatString = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FORMATSTRING, oldValue, newValue));
-				OnPropertyChanged(Properties.FORMATSTRING, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(FormatString), oldValue, newValue));
+				OnPropertyChanged(nameof(FormatString), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeFormatString() { return false; }
 /// <summary>
-///             A boolean value that indicates whether the measure is treated as hidden by client visualization tools. True if the measure is treated as hidden by client visualization tools; otherwise false.
-///             </summary>
+/// A boolean value that indicates whether the measure is treated as hidden by client visualization tools. True if the measure is treated as hidden by client visualization tools; otherwise false.
+/// </summary>
 		[DisplayName("Hidden")]
 		[Category("Basic"),Description(@"A boolean value that indicates whether the measure is treated as hidden by client visualization tools. True if the measure is treated as hidden by client visualization tools; otherwise false."),IntelliSense(@"A boolean value that indicates whether the measure is treated as hidden by client visualization tools. True if the measure is treated as hidden by client visualization tools; otherwise false.")]
 		public bool IsHidden {
@@ -7391,18 +8059,18 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ISHIDDEN, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(IsHidden), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.IsHidden = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISHIDDEN, oldValue, newValue));
-				OnPropertyChanged(Properties.ISHIDDEN, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(IsHidden), oldValue, newValue));
+				OnPropertyChanged(nameof(IsHidden), oldValue, newValue);
 				Handler.UpdateObject(this);
 			}
 		}
 		private bool ShouldSerializeIsHidden() { return false; }
 /// <summary>
-///             Provides information on the state of the measure. Possible values and their interpretation are as follows. Ready (1) The measure is queryable and has up-to-date data. NoData (3) Not applicable to Measure. CalculationNeeded (4) Not applicable to Measure. SemanticError (5) The measure expression has a semantic error. EvaluationError (6) Not applicable to Measure. DependencyError (7) A dependency associated with this measure is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Measure. SyntaxError (9) The measure has a syntax error in its expression.
-///             </summary>
+/// Provides information on the state of the measure. Possible values and their interpretation are as follows. Ready (1) The measure is queryable and has up-to-date data. NoData (3) Not applicable to Measure. CalculationNeeded (4) Not applicable to Measure. SemanticError (5) The measure expression has a semantic error. EvaluationError (6) Not applicable to Measure. DependencyError (7) A dependency associated with this measure is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Measure. SyntaxError (9) The measure has a syntax error in its expression.
+/// </summary>
 		[DisplayName("State")]
 		[Category("Metadata"),Description(@"Provides information on the state of the measure. Possible values and their interpretation are as follows. Ready (1) The measure is queryable and has up-to-date data. NoData (3) Not applicable to Measure. CalculationNeeded (4) Not applicable to Measure. SemanticError (5) The measure expression has a semantic error. EvaluationError (6) Not applicable to Measure. DependencyError (7) A dependency associated with this measure is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Measure. SyntaxError (9) The measure has a syntax error in its expression."),IntelliSense(@"Provides information on the state of the measure. Possible values and their interpretation are as follows. Ready (1) The measure is queryable and has up-to-date data. NoData (3) Not applicable to Measure. CalculationNeeded (4) Not applicable to Measure. SemanticError (5) The measure expression has a semantic error. EvaluationError (6) Not applicable to Measure. DependencyError (7) A dependency associated with this measure is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Measure. SyntaxError (9) The measure has a syntax error in its expression.")]
 		public ObjectState State {
@@ -7413,8 +8081,8 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeState() { return false; }
 /// <summary>
-///             A boolean value that indicates whether the measure is an implicit measure that is automatically created by client tools to aggregate a field. Client applications can hide measures that have this flag set.
-///             </summary>
+/// A boolean value that indicates whether the measure is an implicit measure that is automatically created by client tools to aggregate a field. Client applications can hide measures that have this flag set.
+/// </summary>
 		[DisplayName("Simple Measure")]
 		[Category("Options"),Description(@"A boolean value that indicates whether the measure is an implicit measure that is automatically created by client tools to aggregate a field. Client applications can hide measures that have this flag set."),IntelliSense(@"A boolean value that indicates whether the measure is an implicit measure that is automatically created by client tools to aggregate a field. Client applications can hide measures that have this flag set.")][Browsable(false)]
 		public bool IsSimpleMeasure {
@@ -7428,18 +8096,18 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ISSIMPLEMEASURE, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(IsSimpleMeasure), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.IsSimpleMeasure = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISSIMPLEMEASURE, oldValue, newValue));
-				OnPropertyChanged(Properties.ISSIMPLEMEASURE, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(IsSimpleMeasure), oldValue, newValue));
+				OnPropertyChanged(nameof(IsSimpleMeasure), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeIsSimpleMeasure() { return false; }
 		// Skipping property ErrorMessage on object Measure
 /// <summary>
-///             Defines the display folder for the Measure, for use by clients.
-///             </summary>
+/// Defines the display folder for the Measure, for use by clients.
+/// </summary>
 		[DisplayName("Display Folder")]
 		[Category("Basic"),Description(@"Defines the display folder for the Measure, for use by clients."),IntelliSense(@"Defines the display folder for the Measure, for use by clients.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string DisplayFolder {
@@ -7447,17 +8115,17 @@ namespace TabularEditor.TOMWrapper
 			    return MetadataObject.DisplayFolder;
 			}
 			set {
-				if(value.Contains(@"\\")) throw new Exception("Display Folder names cannot be blank.");
+				if(value != null && value.Contains(@"\\")) throw new Exception("Display Folder names cannot be blank.");
 				var oldValue = DisplayFolder;
 				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DISPLAYFOLDER, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DisplayFolder), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DisplayFolder = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISPLAYFOLDER, oldValue, newValue));
-				OnPropertyChanged(Properties.DISPLAYFOLDER, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DisplayFolder), oldValue, newValue));
+				OnPropertyChanged(nameof(DisplayFolder), oldValue, newValue);
 				Handler.UpdateFolders(Table);
 			}
 		}
@@ -7468,8 +8136,8 @@ namespace TabularEditor.TOMWrapper
         [Browsable(true),DisplayName("Translated Display Folders"),Description("Shows all translated Display Folders of the current Measure."),Category("Translations, Perspectives, Security")]
 	    public TranslationIndexer TranslatedDisplayFolders { private set; get; }
 /// <summary>
-///             Specifies the type of data contained in the measure so that you can add custom behaviors based on measure type.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1455 or above.</remarks>
+/// Specifies the type of data contained in the measure so that you can add custom behaviors based on measure type.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1455 or above.</remarks>
 		[DisplayName("Data Category")]
 		[Category("Options"),Description(@"Specifies the type of data contained in the measure so that you can add custom behaviors based on measure type."),IntelliSense(@"Specifies the type of data contained in the measure so that you can add custom behaviors based on measure type.")]
 		public string DataCategory {
@@ -7483,17 +8151,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DATACATEGORY, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DataCategory), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DataCategory = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DATACATEGORY, oldValue, newValue));
-				OnPropertyChanged(Properties.DATACATEGORY, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DataCategory), oldValue, newValue));
+				OnPropertyChanged(nameof(DataCategory), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDataCategory() { return false; }
 /// <summary>
-///             A tag that represents the lineage of the object.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
+/// A tag that represents the lineage of the object.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
 		[DisplayName("Lineage Tag")]
 		[Category("Options"),Description(@"A tag that represents the lineage of the object."),IntelliSense(@"A tag that represents the lineage of the object.")]
 		public string LineageTag {
@@ -7507,17 +8175,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.LINEAGETAG, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(LineageTag), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.LineageTag = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.LINEAGETAG, oldValue, newValue));
-				OnPropertyChanged(Properties.LINEAGETAG, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(LineageTag), oldValue, newValue));
+				OnPropertyChanged(nameof(LineageTag), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeLineageTag() { return false; }
 /// <summary>
-///             A tag that represents the lineage of the source for the object.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1550 or above.</remarks>
+/// A tag that represents the lineage of the source for the object.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1550 or above.</remarks>
 		[DisplayName("Source Lineage Tag")]
 		[Category("Options"),Description(@"A tag that represents the lineage of the source for the object."),IntelliSense(@"A tag that represents the lineage of the source for the object.")]
 		public string SourceLineageTag {
@@ -7531,11 +8199,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.SOURCELINEAGETAG, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(SourceLineageTag), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.SourceLineageTag = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SOURCELINEAGETAG, oldValue, newValue));
-				OnPropertyChanged(Properties.SOURCELINEAGETAG, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(SourceLineageTag), oldValue, newValue));
+				OnPropertyChanged(nameof(SourceLineageTag), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeSourceLineageTag() { return false; }
@@ -7917,8 +8585,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             A Tabular model created at compatibility level 1200 or above.
-///             </summary>
+/// A Tabular model created at compatibility level 1200 or above.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Model: TabularNamedObject
 			, IDescriptionObject
@@ -8224,8 +8892,8 @@ namespace TabularEditor.TOMWrapper
 
 				// Skipping property ExcludedArtifacts on object Model
 /// <summary>
-///             The description of the model, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
-///             </summary>
+/// The description of the model, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+/// </summary>
 		[DisplayName("Description")]
 		[Category("Basic"),Description(@"The description of the model, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the model, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
@@ -8239,17 +8907,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Description), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
-				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Description), oldValue, newValue));
+				OnPropertyChanged(nameof(Description), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
 /// <summary>
-///             The location on disk to place the model.
-///             </summary>
+/// The location on disk to place the model.
+/// </summary>
 		[DisplayName("Storage Location")]
 		[Category("Options"),Description(@"The location on disk to place the model."),IntelliSense(@"The location on disk to place the model.")]
 		public string StorageLocation {
@@ -8263,17 +8931,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.STORAGELOCATION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(StorageLocation), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.StorageLocation = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.STORAGELOCATION, oldValue, newValue));
-				OnPropertyChanged(Properties.STORAGELOCATION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(StorageLocation), oldValue, newValue));
+				OnPropertyChanged(nameof(StorageLocation), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeStorageLocation() { return false; }
 /// <summary>
-///             The default method for making data available in the partition.
-///             </summary>
+/// The default method for making data available in the partition.
+/// </summary>
 		[DisplayName("Default Mode")]
 		[Category("Options"),Description(@"The default method for making data available in the partition."),IntelliSense(@"The default method for making data available in the partition.")]
 		public ModeType DefaultMode {
@@ -8287,17 +8955,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DEFAULTMODE, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DefaultMode), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DefaultMode = (TOM.ModeType)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DEFAULTMODE, oldValue, newValue));
-				OnPropertyChanged(Properties.DEFAULTMODE, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DefaultMode), oldValue, newValue));
+				OnPropertyChanged(nameof(DefaultMode), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDefaultMode() { return false; }
 /// <summary>
-///             Used by partitions in the model to determine the type of query that retrieves data. A Full dataview retrieves an unfiltered rowset, used for in-memory models and deployed DirectQuery models. A Sample data view is a subset of data used during DirectQuery model design.
-///             </summary>
+/// Used by partitions in the model to determine the type of query that retrieves data. A Full dataview retrieves an unfiltered rowset, used for in-memory models and deployed DirectQuery models. A Sample data view is a subset of data used during DirectQuery model design.
+/// </summary>
 		[DisplayName("Default Data View")]
 		[Category("Options"),Description(@"Used by partitions in the model to determine the type of query that retrieves data. A Full dataview retrieves an unfiltered rowset, used for in-memory models and deployed DirectQuery models. A Sample data view is a subset of data used during DirectQuery model design."),IntelliSense(@"Used by partitions in the model to determine the type of query that retrieves data. A Full dataview retrieves an unfiltered rowset, used for in-memory models and deployed DirectQuery models. A Sample data view is a subset of data used during DirectQuery model design.")]
 		public DataViewType DefaultDataView {
@@ -8311,17 +8979,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DEFAULTDATAVIEW, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DefaultDataView), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DefaultDataView = (TOM.DataViewType)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DEFAULTDATAVIEW, oldValue, newValue));
-				OnPropertyChanged(Properties.DEFAULTDATAVIEW, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DefaultDataView), oldValue, newValue));
+				OnPropertyChanged(nameof(DefaultDataView), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDefaultDataView() { return false; }
 /// <summary>
-///             The name of the Culture used for formatting. Once it's used by a child object, this value can't be changed.
-///             </summary>
+/// The name of the Culture used for formatting. Once it's used by a child object, this value can't be changed.
+/// </summary>
 		[DisplayName("Culture")]
 		[Category("Options"),Description(@"The name of the Culture used for formatting. Once it's used by a child object, this value can't be changed."),IntelliSense(@"The name of the Culture used for formatting. Once it's used by a child object, this value can't be changed.")][TypeConverter(typeof(CultureConverter))]
 		public string Culture {
@@ -8335,17 +9003,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.CULTURE, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Culture), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Culture = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.CULTURE, oldValue, newValue));
-				OnPropertyChanged(Properties.CULTURE, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Culture), oldValue, newValue));
+				OnPropertyChanged(nameof(Culture), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeCulture() { return false; }
 /// <summary>
-///             The collation sequence. Analysis Services uses Windows collations.
-///             </summary>
+/// The collation sequence. Analysis Services uses Windows collations.
+/// </summary>
 		[DisplayName("Collation")]
 		[Category("Options"),Description(@"The collation sequence. Analysis Services uses Windows collations."),IntelliSense(@"The collation sequence. Analysis Services uses Windows collations.")]
 		public string Collation {
@@ -8359,18 +9027,18 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.COLLATION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Collation), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Collation = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.COLLATION, oldValue, newValue));
-				OnPropertyChanged(Properties.COLLATION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Collation), oldValue, newValue));
+				OnPropertyChanged(nameof(Collation), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeCollation() { return false; }
 		// Skipping property DataAccessOptions on object Model
 /// <summary>
-///             Used by PBIX data source format conversion.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1450 or above.</remarks>
+/// Used by PBIX data source format conversion.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1450 or above.</remarks>
 		[DisplayName("Default Power BI Data Source Version")]
 		[Category("Options"),Description(@"Used by PBIX data source format conversion."),IntelliSense(@"Used by PBIX data source format conversion.")]
 		public PowerBIDataSourceVersion DefaultPowerBIDataSourceVersion {
@@ -8384,17 +9052,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DEFAULTPOWERBIDATASOURCEVERSION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DefaultPowerBIDataSourceVersion), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DefaultPowerBIDataSourceVersion = (TOM.PowerBIDataSourceVersion)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DEFAULTPOWERBIDATASOURCEVERSION, oldValue, newValue));
-				OnPropertyChanged(Properties.DEFAULTPOWERBIDATASOURCEVERSION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DefaultPowerBIDataSourceVersion), oldValue, newValue));
+				OnPropertyChanged(nameof(DefaultPowerBIDataSourceVersion), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDefaultPowerBIDataSourceVersion() { return false; }
 /// <summary>
-///             Determines whether measures can have the same names as any column in the model.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1465 or above.</remarks>
+/// Determines whether measures can have the same names as any column in the model.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1465 or above.</remarks>
 		[DisplayName("Force Unique Names")]
 		[Category("Options"),Description(@"Determines whether measures can have the same names as any column in the model."),IntelliSense(@"Determines whether measures can have the same names as any column in the model.")]
 		public bool ForceUniqueNames {
@@ -8408,17 +9076,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.FORCEUNIQUENAMES, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(ForceUniqueNames), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.ForceUniqueNames = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FORCEUNIQUENAMES, oldValue, newValue));
-				OnPropertyChanged(Properties.FORCEUNIQUENAMES, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(ForceUniqueNames), oldValue, newValue));
+				OnPropertyChanged(nameof(ForceUniqueNames), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeForceUniqueNames() { return false; }
 /// <summary>
-///             Determines whether to discourage the implicit measures.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1470 or above.</remarks>
+/// Determines whether to discourage the implicit measures.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1470 or above.</remarks>
 		[DisplayName("Discourage Implicit Measures")]
 		[Category("Options"),Description(@"Determines whether to discourage the implicit measures."),IntelliSense(@"Determines whether to discourage the implicit measures.")]
 		public bool DiscourageImplicitMeasures {
@@ -8432,17 +9100,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DISCOURAGEIMPLICITMEASURES, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DiscourageImplicitMeasures), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DiscourageImplicitMeasures = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISCOURAGEIMPLICITMEASURES, oldValue, newValue));
-				OnPropertyChanged(Properties.DISCOURAGEIMPLICITMEASURES, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DiscourageImplicitMeasures), oldValue, newValue));
+				OnPropertyChanged(nameof(DiscourageImplicitMeasures), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDiscourageImplicitMeasures() { return false; }
 /// <summary>
-///             Determines whether to discourage the report measures.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at Internal or above.</remarks>
+/// Determines whether to discourage the report measures.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at Internal or above.</remarks>
 		[DisplayName("Discourage Report Measures")]
 		[Category("Options"),Description(@"Determines whether to discourage the report measures."),IntelliSense(@"Determines whether to discourage the report measures.")]
 		public bool DiscourageReportMeasures {
@@ -8456,17 +9124,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DISCOURAGEREPORTMEASURES, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DiscourageReportMeasures), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DiscourageReportMeasures = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISCOURAGEREPORTMEASURES, oldValue, newValue));
-				OnPropertyChanged(Properties.DISCOURAGEREPORTMEASURES, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DiscourageReportMeasures), oldValue, newValue));
+				OnPropertyChanged(nameof(DiscourageReportMeasures), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDiscourageReportMeasures() { return false; }
 /// <summary>
-///             Controls whether this model allows data source variables to be overriden.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1475 or above.</remarks>
+/// Controls whether this model allows data source variables to be overriden.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1475 or above.</remarks>
 		[DisplayName("Data Source Variables Override Behavior")]
 		[Category("Options"),Description(@"Controls whether this model allows data source variables to be overriden."),IntelliSense(@"Controls whether this model allows data source variables to be overriden.")]
 		public DataSourceVariablesOverrideBehaviorType DataSourceVariablesOverrideBehavior {
@@ -8480,17 +9148,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DATASOURCEVARIABLESOVERRIDEBEHAVIOR, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DataSourceVariablesOverrideBehavior), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DataSourceVariablesOverrideBehavior = (TOM.DataSourceVariablesOverrideBehaviorType)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DATASOURCEVARIABLESOVERRIDEBEHAVIOR, oldValue, newValue));
-				OnPropertyChanged(Properties.DATASOURCEVARIABLESOVERRIDEBEHAVIOR, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DataSourceVariablesOverrideBehavior), oldValue, newValue));
+				OnPropertyChanged(nameof(DataSourceVariablesOverrideBehavior), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDataSourceVariablesOverrideBehavior() { return false; }
 /// <summary>
-///             DataSourceDefaultMaxConnections will be used for connections to a data source if MaxConnections is set to -1 on the data source object or if there is no corresponding data source object for the data source.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1510 or above.</remarks>
+/// DataSourceDefaultMaxConnections will be used for connections to a data source if MaxConnections is set to -1 on the data source object or if there is no corresponding data source object for the data source.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1510 or above.</remarks>
 		[DisplayName("Data Source Default Max Connections")]
 		[Category("Options"),Description(@"DataSourceDefaultMaxConnections will be used for connections to a data source if MaxConnections is set to -1 on the data source object or if there is no corresponding data source object for the data source."),IntelliSense(@"DataSourceDefaultMaxConnections will be used for connections to a data source if MaxConnections is set to -1 on the data source object or if there is no corresponding data source object for the data source.")]
 		public int DataSourceDefaultMaxConnections {
@@ -8504,17 +9172,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DATASOURCEDEFAULTMAXCONNECTIONS, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DataSourceDefaultMaxConnections), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DataSourceDefaultMaxConnections = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DATASOURCEDEFAULTMAXCONNECTIONS, oldValue, newValue));
-				OnPropertyChanged(Properties.DATASOURCEDEFAULTMAXCONNECTIONS, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DataSourceDefaultMaxConnections), oldValue, newValue));
+				OnPropertyChanged(nameof(DataSourceDefaultMaxConnections), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDataSourceDefaultMaxConnections() { return false; }
 /// <summary>
-///             The name of the Culture used for formatting during refresh through Mashup.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1520 or above.</remarks>
+/// The name of the Culture used for formatting during refresh through Mashup.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1520 or above.</remarks>
 		[DisplayName("Source Query Culture")]
 		[Category("Options"),Description(@"The name of the Culture used for formatting during refresh through Mashup."),IntelliSense(@"The name of the Culture used for formatting during refresh through Mashup.")]
 		public string SourceQueryCulture {
@@ -8528,17 +9196,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.SOURCEQUERYCULTURE, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(SourceQueryCulture), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.SourceQueryCulture = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SOURCEQUERYCULTURE, oldValue, newValue));
-				OnPropertyChanged(Properties.SOURCEQUERYCULTURE, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(SourceQueryCulture), oldValue, newValue));
+				OnPropertyChanged(nameof(SourceQueryCulture), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeSourceQueryCulture() { return false; }
 /// <summary>
-///             The string that has M attributes.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1535 or above.</remarks>
+/// The string that has M attributes.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1535 or above.</remarks>
 		[DisplayName("M Attributes")]
 		[Category("Options"),Description(@"The string that has M attributes."),IntelliSense(@"The string that has M attributes.")]
 		public string MAttributes {
@@ -8552,17 +9220,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.MATTRIBUTES, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(MAttributes), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.MAttributes = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MATTRIBUTES, oldValue, newValue));
-				OnPropertyChanged(Properties.MATTRIBUTES, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(MAttributes), oldValue, newValue));
+				OnPropertyChanged(nameof(MAttributes), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeMAttributes() { return false; }
 /// <summary>
-///             Determines whether to discourage composite models.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1560 or above.</remarks>
+/// Determines whether to discourage composite models.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1560 or above.</remarks>
 		[DisplayName("Discourage Composite Models")]
 		[Category("Options"),Description(@"Determines whether to discourage composite models."),IntelliSense(@"Determines whether to discourage composite models.")]
 		public bool DiscourageCompositeModels {
@@ -8576,18 +9244,18 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DISCOURAGECOMPOSITEMODELS, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DiscourageCompositeModels), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DiscourageCompositeModels = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISCOURAGECOMPOSITEMODELS, oldValue, newValue));
-				OnPropertyChanged(Properties.DISCOURAGECOMPOSITEMODELS, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DiscourageCompositeModels), oldValue, newValue));
+				OnPropertyChanged(nameof(DiscourageCompositeModels), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDiscourageCompositeModels() { return false; }
 		// Skipping property AutomaticAggregationOptions on object Model
 /// <summary>
-///             Disable auto exists behavior for SummarizeColumns
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1566 or above.</remarks>
+/// Disable auto exists behavior for SummarizeColumns
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1566 or above.</remarks>
 		[DisplayName("Disable Auto Exists")]
 		[Category("Options"),Description(@"Disable auto exists behavior for SummarizeColumns"),IntelliSense(@"Disable auto exists behavior for SummarizeColumns")]
 		public int DisableAutoExists {
@@ -8601,17 +9269,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DISABLEAUTOEXISTS, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DisableAutoExists), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DisableAutoExists = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISABLEAUTOEXISTS, oldValue, newValue));
-				OnPropertyChanged(Properties.DISABLEAUTOEXISTS, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DisableAutoExists), oldValue, newValue));
+				OnPropertyChanged(nameof(DisableAutoExists), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDisableAutoExists() { return false; }
 /// <summary>
-///             Determines the max possible number of parallel tasks in data refresh, within the resource constraints of the hosting service.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1568 or above.</remarks>
+/// Determines the max possible number of parallel tasks in data refresh, within the resource constraints of the hosting service.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1568 or above.</remarks>
 		[DisplayName("Max Parallelism Per Refresh")]
 		[Category("Options"),Description(@"Determines the max possible number of parallel tasks in data refresh, within the resource constraints of the hosting service."),IntelliSense(@"Determines the max possible number of parallel tasks in data refresh, within the resource constraints of the hosting service.")]
 		public int MaxParallelismPerRefresh {
@@ -8625,17 +9293,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.MAXPARALLELISMPERREFRESH, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(MaxParallelismPerRefresh), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.MaxParallelismPerRefresh = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MAXPARALLELISMPERREFRESH, oldValue, newValue));
-				OnPropertyChanged(Properties.MAXPARALLELISMPERREFRESH, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(MaxParallelismPerRefresh), oldValue, newValue));
+				OnPropertyChanged(nameof(MaxParallelismPerRefresh), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeMaxParallelismPerRefresh() { return false; }
 /// <summary>
-///             Maximum degree of parallelism for query in formula engine
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1569 or above.</remarks>
+/// Maximum degree of parallelism for query in formula engine
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1569 or above.</remarks>
 		[DisplayName("Max Parallelism Per Query")]
 		[Category("Options"),Description(@"Maximum degree of parallelism for query in formula engine"),IntelliSense(@"Maximum degree of parallelism for query in formula engine")]
 		public int MaxParallelismPerQuery {
@@ -8649,17 +9317,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.MAXPARALLELISMPERQUERY, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(MaxParallelismPerQuery), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.MaxParallelismPerQuery = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MAXPARALLELISMPERQUERY, oldValue, newValue));
-				OnPropertyChanged(Properties.MAXPARALLELISMPERQUERY, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(MaxParallelismPerQuery), oldValue, newValue));
+				OnPropertyChanged(nameof(MaxParallelismPerQuery), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeMaxParallelismPerQuery() { return false; }
 /// <summary>
-///             Define the fallback behavior of Direct Lake tables.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1604 or above.</remarks>
+/// Define the fallback behavior of Direct Lake tables.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1604 or above.</remarks>
 		[DisplayName("Direct Lake Behavior")]
 		[Category("Options"),Description(@"Define the fallback behavior of Direct Lake tables."),IntelliSense(@"Define the fallback behavior of Direct Lake tables.")]
 		public DirectLakeBehavior DirectLakeBehavior {
@@ -8673,17 +9341,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DIRECTLAKEBEHAVIOR, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DirectLakeBehavior), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DirectLakeBehavior = (TOM.DirectLakeBehavior)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DIRECTLAKEBEHAVIOR, oldValue, newValue));
-				OnPropertyChanged(Properties.DIRECTLAKEBEHAVIOR, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DirectLakeBehavior), oldValue, newValue));
+				OnPropertyChanged(nameof(DirectLakeBehavior), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDirectLakeBehavior() { return false; }
 /// <summary>
-///             Determines value filter behavior for SummarizeColumns
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1606 or above.</remarks>
+/// Determines value filter behavior for SummarizeColumns
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1606 or above.</remarks>
 		[DisplayName("Value Filter Behavior")]
 		[Category("Options"),Description(@"Determines value filter behavior for SummarizeColumns"),IntelliSense(@"Determines value filter behavior for SummarizeColumns")]
 		public ValueFilterBehaviorType ValueFilterBehavior {
@@ -8697,19 +9365,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.VALUEFILTERBEHAVIOR, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(ValueFilterBehavior), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.ValueFilterBehavior = (TOM.ValueFilterBehaviorType)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.VALUEFILTERBEHAVIOR, oldValue, newValue));
-				OnPropertyChanged(Properties.VALUEFILTERBEHAVIOR, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(ValueFilterBehavior), oldValue, newValue));
+				OnPropertyChanged(nameof(ValueFilterBehavior), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeValueFilterBehavior() { return false; }
 /// <summary>
-///             A reference to a default measure.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+/// A reference to a default measure.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("Default Measure")]
-		[Category("Options"),Description(@"A reference to a default measure."),IntelliSense(@"A reference to a default measure.")]
+		[Category("Options"),Description(@"A reference to a default measure."),IntelliSense(@"A reference to a default measure.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public Measure DefaultMeasure {
 			get {
 				if (MetadataObject.DefaultMeasure == null) return null;
@@ -8722,19 +9390,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue?.MetadataObject == newValue?.MetadataObject) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DEFAULTMEASURE, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DefaultMeasure), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DefaultMeasure = value?.MetadataObject;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DEFAULTMEASURE, oldValue, newValue));
-				OnPropertyChanged(Properties.DEFAULTMEASURE, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DefaultMeasure), oldValue, newValue));
+				OnPropertyChanged(nameof(DefaultMeasure), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDefaultMeasure() { return false; }
 		// Skipping property Database on object Model
 		// Skipping property Server on object Model
 /// <summary>
-///             Gets an indication if the model has local changes that have not been saved to the engine yet.
-///             </summary><value>True, if the model has local changes; otherwise, false.</value><remarks>A disconnected model, will always return a value of <b>false</b>.</remarks>
+/// Gets an indication if the model has local changes that have not been saved to the engine yet.
+/// </summary><value>True, if the model has local changes; otherwise, false.</value><remarks>A disconnected model, will always return a value of <b>false</b>.</remarks>
 		[DisplayName("Has Local Changes")]
 		[Category("Options"),Description(@"Gets an indication if the model has local changes that have not been saved to the engine yet."),IntelliSense(@"Gets an indication if the model has local changes that have not been saved to the engine yet.")]
 		public bool HasLocalChanges {
@@ -8775,6 +9443,8 @@ namespace TabularEditor.TOMWrapper
 			if (child is Table) return Tables;
 			if (child is Relationship) return Relationships;
 			if (child is NamedExpression) return Expressions;
+			if (child is QueryGroup) return QueryGroups;
+			if (child is BindingInfo) return BindingInfoCollection;
             return base.GetCollectionForChild(child);
         }
 
@@ -8820,6 +9490,18 @@ namespace TabularEditor.TOMWrapper
 		[DisplayName("Expressions")]
 		[Category("Options"),IntelliSense("The collection of Named Expression objects on the current Model.")][Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<NamedExpression>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]
 		public NamedExpressionCollection Expressions { get; private set; }
+        /// <summary>
+        /// The collection of QueryGroup objects on this Model.
+        /// </summary>
+		[DisplayName("Query Groups")]
+		[Category("Options"),IntelliSense("The collection of Query Group objects on the current Model.")][Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<QueryGroup>),typeof(UITypeEditor))]
+		public QueryGroupCollection QueryGroups { get; private set; }
+        /// <summary>
+        /// The collection of BindingInfo objects on this Model.
+        /// </summary>
+		[DisplayName("Binding Info Collection")]
+		[Category("Options"),IntelliSense("The collection of Binding Info objects on the current Model.")]
+		public BindingInfoCollection BindingInfoCollection { get; private set; }
 
 		/// <summary>
 		/// CTOR - only called from static factory methods on the class
@@ -8844,6 +9526,8 @@ namespace TabularEditor.TOMWrapper
 			Tables = new TableCollection(this.GetObjectPath() + ".Tables", MetadataObject.Tables, this);
 			Relationships = new RelationshipCollection(this.GetObjectPath() + ".Relationships", MetadataObject.Relationships, this);
 			Expressions = new NamedExpressionCollection(this.GetObjectPath() + ".Expressions", MetadataObject.Expressions, this);
+			QueryGroups = new QueryGroupCollection(this.GetObjectPath() + ".QueryGroups", MetadataObject.QueryGroups, this);
+			BindingInfoCollection = new BindingInfoCollection(this.GetObjectPath() + ".BindingInfoCollection", MetadataObject.BindingInfoCollection, this);
 
 			// Populate child collections:
 			Perspectives.CreateChildrenFromMetadata();
@@ -8853,6 +9537,8 @@ namespace TabularEditor.TOMWrapper
 			Tables.CreateChildrenFromMetadata();
 			Relationships.CreateChildrenFromMetadata();
 			Expressions.CreateChildrenFromMetadata();
+			QueryGroups.CreateChildrenFromMetadata();
+			BindingInfoCollection.CreateChildrenFromMetadata();
 
 			// Hook up event handlers on child collections:
 			Perspectives.CollectionChanged += Children_CollectionChanged;
@@ -8862,6 +9548,8 @@ namespace TabularEditor.TOMWrapper
 			Tables.CollectionChanged += Children_CollectionChanged;
 			Relationships.CollectionChanged += Children_CollectionChanged;
 			Expressions.CollectionChanged += Children_CollectionChanged;
+			QueryGroups.CollectionChanged += Children_CollectionChanged;
+			BindingInfoCollection.CollectionChanged += Children_CollectionChanged;
 		}
 
 
@@ -8873,6 +9561,8 @@ namespace TabularEditor.TOMWrapper
 			Tables.Reinit();
 			Relationships.Reinit();
 			Expressions.Reinit();
+			QueryGroups.Reinit();
+			BindingInfoCollection.Reinit();
 		}
 
 		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
@@ -8888,11 +9578,11 @@ namespace TabularEditor.TOMWrapper
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.ANALYTICSAIMETADATA:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+					return false;
 				case Properties.AUTOMATICAGGREGATIONOPTIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1564 : Handler.CompatibilityLevel >= 1564;
 				case Properties.BINDINGINFOCOLLECTION:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1608 : Handler.CompatibilityLevel >= 1608;
 				case Properties.DATAACCESSOPTIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.DATASOURCEDEFAULTMAXCONNECTIONS:
@@ -8914,7 +9604,7 @@ namespace TabularEditor.TOMWrapper
 				case Properties.DISCOURAGEREPORTMEASURES:
 					return false;
 				case Properties.EXCLUDEDARTIFACTS:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+					return false;
 				case Properties.EXPRESSIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.EXTENDEDPROPERTIES:
@@ -8950,8 +9640,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             Defines a set of user principals for whom security rules are applied. It is a child of a Model object.
-///             </summary>
+/// Defines a set of user principals for whom security rules are applied. It is a child of a Model object.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class ModelRole: TabularNamedObject
 			, IDescriptionObject
@@ -9247,8 +9937,8 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		/// <summary>
-///             The description of the role, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
-///             </summary>
+/// The description of the role, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+/// </summary>
 		[DisplayName("Description")]
 		[Category("Basic"),Description(@"The description of the role, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the role, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
@@ -9262,17 +9952,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Description), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
-				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Description), oldValue, newValue));
+				OnPropertyChanged(nameof(Description), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
 /// <summary>
-///             The level of access for this role. Possible values are as follows. None (1): The role has no access to the model. Read (2): The role can read metadata and data of the model. ReadRefresh (3): The role has read and refresh permission. Refresh (4): The role can refresh the data and calculations in the model. Administrator (5): The role can administer the model.
-///             </summary>
+/// The level of access for this role. Possible values are as follows. None (1): The role has no access to the model. Read (2): The role can read metadata and data of the model. ReadRefresh (3): The role has read and refresh permission. Refresh (4): The role can refresh the data and calculations in the model. Administrator (5): The role can administer the model.
+/// </summary>
 		[DisplayName("Model Permission")]
 		[Category("Translations, Perspectives, Security"),Description(@"The level of access for this role. Possible values are as follows. None (1): The role has no access to the model. Read (2): The role can read metadata and data of the model. ReadRefresh (3): The role has read and refresh permission. Refresh (4): The role can refresh the data and calculations in the model. Administrator (5): The role can administer the model."),IntelliSense(@"The level of access for this role. Possible values are as follows. None (1): The role has no access to the model. Read (2): The role can read metadata and data of the model. ReadRefresh (3): The role has read and refresh permission. Refresh (4): The role can refresh the data and calculations in the model. Administrator (5): The role can administer the model.")]
 		public ModelPermission ModelPermission {
@@ -9286,11 +9976,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.MODELPERMISSION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(ModelPermission), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.ModelPermission = (TOM.ModelPermission)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MODELPERMISSION, oldValue, newValue));
-				OnPropertyChanged(Properties.MODELPERMISSION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(ModelPermission), oldValue, newValue));
+				OnPropertyChanged(nameof(ModelPermission), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeModelPermission() { return false; }
@@ -9552,8 +10242,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Defines a user principal that belongs to the Role. It is a child of a Role object.
-///             </summary>
+/// Defines a user principal that belongs to the Role. It is a child of a Role object.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public abstract partial class ModelRoleMember: TabularNamedObject
 			, IInternalAnnotationObject
@@ -9845,10 +10535,10 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		/// <summary>
-///             The security name that identifies the user or group of the member.
-///             </summary>
+/// The security name that identifies the user or group of the member.
+/// </summary>
 		[DisplayName("Member Name")]
-		[Category("Options"),Description(@"The security name that identifies the user or group of the member."),IntelliSense(@"The security name that identifies the user or group of the member.")]
+		[Category("Options"),Description(@"The security name that identifies the user or group of the member."),IntelliSense(@"The security name that identifies the user or group of the member.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string MemberName {
 			get {
 			    return MetadataObject.MemberName;
@@ -9860,17 +10550,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.MEMBERNAME, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(MemberName), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.MemberName = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MEMBERNAME, oldValue, newValue));
-				OnPropertyChanged(Properties.MEMBERNAME, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedNonMetadataObjectAction(this, nameof(MemberName), oldValue, newValue));
+				OnPropertyChanged(nameof(MemberName), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeMemberName() { return false; }
 /// <summary>
-///             A reference to a Member object associated with this RoleMembership.
-///             </summary>
+/// A reference to a Member object associated with this RoleMembership.
+/// </summary>
 		[DisplayName("Member ID")]
 		[Category("Options"),Description(@"A reference to a Member object associated with this RoleMembership."),IntelliSense(@"A reference to a Member object associated with this RoleMembership.")]
 		public string MemberID {
@@ -9884,17 +10574,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.MEMBERID, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(MemberID), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.MemberID = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MEMBERID, oldValue, newValue));
-				OnPropertyChanged(Properties.MEMBERID, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedNonMetadataObjectAction(this, nameof(MemberID), oldValue, newValue));
+				OnPropertyChanged(nameof(MemberID), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeMemberID() { return false; }
 /// <summary>
-///             A reference to a Role object that owns this RoleMembeship.
-///             </summary>
+/// A reference to a Role object that owns this RoleMembeship.
+/// </summary>
 		[DisplayName("Role")]
 		[Category("Options"),Description(@"A reference to a Role object that owns this RoleMembeship."),IntelliSense(@"A reference to a Role object that owns this RoleMembeship.")]
 		public ModelRole Role {
@@ -10054,8 +10744,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Represents a partition in a table. Partitions define the query against external data sources that return the rowsets of a <see cref="T:TabularEditor.TOMWrapper.Table" />.
-///             </summary>
+/// Represents a partition in a table. Partitions define the query against external data sources that return the rowsets of a <see cref="T:TabularEditor.TOMWrapper.Table" />.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public partial class Partition: TabularNamedObject
 			, IErrorMessageObject
@@ -10351,8 +11041,8 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		/// <summary>
-///             The description of the partition, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
-///             </summary>
+/// The description of the partition, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+/// </summary>
 		[DisplayName("Description")]
 		[Category("Basic"),Description(@"The description of the partition, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the partition, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
@@ -10366,17 +11056,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Description), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
-				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Description), oldValue, newValue));
+				OnPropertyChanged(nameof(Description), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
 /// <summary>
-///             Provides information on the state of the partition. Possible values are as follows. Ready (1): The partition is queryable and has up-to-date data. NoData (3): The partition is queryable but has no data. This state applies only to partitions with a type other than Calculated. CalculationNeeded (4): The partition is not queryable and needs to be refreshed (that is, recalculated) to become functional. This state applies only to partitions of the type Calculated. SemanticError (5): The partition is in an error state because of an invalid expression and is not queryable. This state applies only to partitions of the type Calculated. EvaluationError (6): The partition is in an error state because of an error during expression evaluation. The partition is not queryable. This state applies only to partitions of the type Calculated. DependencyError (7): The partition is in an error state because some of its calculation dependencies are in an error state. The partition is not queryable. This state applies only to partitions of the type Calculated. Incomplete (8): Some parts of the partition have no data, and the partition needs to be refreshed to bring the data in. The partition is queryable. This state applies only to partitions of a type other than Calculated. SyntaxError (9): The partition is in an error state because of a syntax error in its expression. The partition is not queryable. This state applies only to partitions of the type Calculated.
-///             </summary>
+/// Provides information on the state of the partition. Possible values are as follows. Ready (1): The partition is queryable and has up-to-date data. NoData (3): The partition is queryable but has no data. This state applies only to partitions with a type other than Calculated. CalculationNeeded (4): The partition is not queryable and needs to be refreshed (that is, recalculated) to become functional. This state applies only to partitions of the type Calculated. SemanticError (5): The partition is in an error state because of an invalid expression and is not queryable. This state applies only to partitions of the type Calculated. EvaluationError (6): The partition is in an error state because of an error during expression evaluation. The partition is not queryable. This state applies only to partitions of the type Calculated. DependencyError (7): The partition is in an error state because some of its calculation dependencies are in an error state. The partition is not queryable. This state applies only to partitions of the type Calculated. Incomplete (8): Some parts of the partition have no data, and the partition needs to be refreshed to bring the data in. The partition is queryable. This state applies only to partitions of a type other than Calculated. SyntaxError (9): The partition is in an error state because of a syntax error in its expression. The partition is not queryable. This state applies only to partitions of the type Calculated.
+/// </summary>
 		[DisplayName("State")]
 		[Category("Metadata"),Description(@"Provides information on the state of the partition. Possible values are as follows. Ready (1): The partition is queryable and has up-to-date data. NoData (3): The partition is queryable but has no data. This state applies only to partitions with a type other than Calculated. CalculationNeeded (4): The partition is not queryable and needs to be refreshed (that is, recalculated) to become functional. This state applies only to partitions of the type Calculated. SemanticError (5): The partition is in an error state because of an invalid expression and is not queryable. This state applies only to partitions of the type Calculated. EvaluationError (6): The partition is in an error state because of an error during expression evaluation. The partition is not queryable. This state applies only to partitions of the type Calculated. DependencyError (7): The partition is in an error state because some of its calculation dependencies are in an error state. The partition is not queryable. This state applies only to partitions of the type Calculated. Incomplete (8): Some parts of the partition have no data, and the partition needs to be refreshed to bring the data in. The partition is queryable. This state applies only to partitions of a type other than Calculated. SyntaxError (9): The partition is in an error state because of a syntax error in its expression. The partition is not queryable. This state applies only to partitions of the type Calculated."),IntelliSense(@"Provides information on the state of the partition. Possible values are as follows. Ready (1): The partition is queryable and has up-to-date data. NoData (3): The partition is queryable but has no data. This state applies only to partitions with a type other than Calculated. CalculationNeeded (4): The partition is not queryable and needs to be refreshed (that is, recalculated) to become functional. This state applies only to partitions of the type Calculated. SemanticError (5): The partition is in an error state because of an invalid expression and is not queryable. This state applies only to partitions of the type Calculated. EvaluationError (6): The partition is in an error state because of an error during expression evaluation. The partition is not queryable. This state applies only to partitions of the type Calculated. DependencyError (7): The partition is in an error state because some of its calculation dependencies are in an error state. The partition is not queryable. This state applies only to partitions of the type Calculated. Incomplete (8): Some parts of the partition have no data, and the partition needs to be refreshed to bring the data in. The partition is queryable. This state applies only to partitions of a type other than Calculated. SyntaxError (9): The partition is in an error state because of a syntax error in its expression. The partition is not queryable. This state applies only to partitions of the type Calculated.")]
 		public ObjectState State {
@@ -10387,8 +11077,8 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeState() { return false; }
 /// <summary>
-///             Defines the method for making data available in the partition. Possible values are as follows. Import (0) Data will be imported from a data source. DirectQuery (1) Data will be queried dynamically from a data source. Default (2): Only partitions can use this value. When set, the partition will inherit the DefaultMode of the Model. Push (3): Data will be pushed into the partition. The Mode of a Partition can be set to Default (2), in which case it will inherit its Mode from the DefaultMode of the Model
-///             </summary>
+/// Defines the method for making data available in the partition. Possible values are as follows. Import (0) Data will be imported from a data source. DirectQuery (1) Data will be queried dynamically from a data source. Default (2): Only partitions can use this value. When set, the partition will inherit the DefaultMode of the Model. Push (3): Data will be pushed into the partition. The Mode of a Partition can be set to Default (2), in which case it will inherit its Mode from the DefaultMode of the Model
+/// </summary>
 		[DisplayName("Mode")]
 		[Category("Options"),Description(@"Defines the method for making data available in the partition. Possible values are as follows. Import (0) Data will be imported from a data source. DirectQuery (1) Data will be queried dynamically from a data source. Default (2): Only partitions can use this value. When set, the partition will inherit the DefaultMode of the Model. Push (3): Data will be pushed into the partition. The Mode of a Partition can be set to Default (2), in which case it will inherit its Mode from the DefaultMode of the Model"),IntelliSense(@"Defines the method for making data available in the partition. Possible values are as follows. Import (0) Data will be imported from a data source. DirectQuery (1) Data will be queried dynamically from a data source. Default (2): Only partitions can use this value. When set, the partition will inherit the DefaultMode of the Model. Push (3): Data will be pushed into the partition. The Mode of a Partition can be set to Default (2), in which case it will inherit its Mode from the DefaultMode of the Model")]
 		public ModeType Mode {
@@ -10402,17 +11092,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.MODE, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Mode), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Mode = (TOM.ModeType)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MODE, oldValue, newValue));
-				OnPropertyChanged(Properties.MODE, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Mode), oldValue, newValue));
+				OnPropertyChanged(nameof(Mode), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeMode() { return false; }
 /// <summary>
-///             Determines which partitions should be selected to run queries against the model. The possible values are as follows. Full (0) - Partitions with DataView set to Default or Full are selected. Sample (1): Partitions with DataView set to Default or Sample are selected. SampleAndFull (2): All partitions are selected. Default (3) - Inherits from the default DataView of the Model object.
-///             </summary>
+/// Determines which partitions should be selected to run queries against the model. The possible values are as follows. Full (0) - Partitions with DataView set to Default or Full are selected. Sample (1): Partitions with DataView set to Default or Sample are selected. SampleAndFull (2): All partitions are selected. Default (3) - Inherits from the default DataView of the Model object.
+/// </summary>
 		[DisplayName("Data View")]
 		[Category("Options"),Description(@"Determines which partitions should be selected to run queries against the model. The possible values are as follows. Full (0) - Partitions with DataView set to Default or Full are selected. Sample (1): Partitions with DataView set to Default or Sample are selected. SampleAndFull (2): All partitions are selected. Default (3) - Inherits from the default DataView of the Model object."),IntelliSense(@"Determines which partitions should be selected to run queries against the model. The possible values are as follows. Full (0) - Partitions with DataView set to Default or Full are selected. Sample (1): Partitions with DataView set to Default or Sample are selected. SampleAndFull (2): All partitions are selected. Default (3) - Inherits from the default DataView of the Model object.")]
 		public DataViewType DataView {
@@ -10426,17 +11116,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DATAVIEW, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DataView), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DataView = (TOM.DataViewType)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DATAVIEW, oldValue, newValue));
-				OnPropertyChanged(Properties.DATAVIEW, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DataView), oldValue, newValue));
+				OnPropertyChanged(nameof(DataView), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDataView() { return false; }
 /// <summary>
-///             The string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError.This element applies only to partitions of the type Calculated.
-///             </summary>
+/// The string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError.This element applies only to partitions of the type Calculated.
+/// </summary>
 		[DisplayName("Error Message")]
 		[Category("Metadata"),Description(@"The string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError.This element applies only to partitions of the type Calculated."),IntelliSense(@"The string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError.This element applies only to partitions of the type Calculated.")]
 		public string ErrorMessage {
@@ -10462,11 +11152,35 @@ namespace TabularEditor.TOMWrapper
 				return t as Table;
 			} 
 		}
-		// Skipping property QueryGroup on object Partition
+/// <summary>
+/// QueryGroup associated with the partition.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1480 or above.</remarks>
+		[DisplayName("Query Group")]
+		[Category("Options"),Description(@"QueryGroup associated with the partition."),IntelliSense(@"QueryGroup associated with the partition.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		public QueryGroup QueryGroup {
+			get {
+				if (MetadataObject.QueryGroup == null) return null;
+			    return Handler.WrapperLookup[MetadataObject.QueryGroup] as QueryGroup;
+            }
+			set {
+				
+				var oldValue = QueryGroup;
+				var newValue = value;
+				if (oldValue?.MetadataObject == newValue?.MetadataObject) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(nameof(QueryGroup), newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.QueryGroup = value?.MetadataObject;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(QueryGroup), oldValue, newValue));
+				OnPropertyChanged(nameof(QueryGroup), oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeQueryGroup() { return false; }
 		// Skipping property DataCoverageDefinition on object Partition
 /// <summary>
-///             The type of source used by the Partition. This is either a query against a DataSource, or for calculated tables, an expression.
-///             </summary>
+/// The type of source used by the Partition. This is either a query against a DataSource, or for calculated tables, an expression.
+/// </summary>
 		[DisplayName("Source Type")]
 		[Category("Options"),Description(@"The type of source used by the Partition. This is either a query against a DataSource, or for calculated tables, an expression."),IntelliSense(@"The type of source used by the Partition. This is either a query against a DataSource, or for calculated tables, an expression.")]
 		public PartitionSourceType SourceType {
@@ -10708,11 +11422,23 @@ namespace TabularEditor.TOMWrapper
 				Handler.UndoManager.EndBatch();
 			}
 		}
+		/// <summary>
+		/// Sets the QueryGroup property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the QueryGroup property of all objects in the collection at once.")]
+		public QueryGroup QueryGroup {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("QueryGroup"));
+				this.ToList().ForEach(item => { item.QueryGroup = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
 	}
   
 	/// <summary>
-///             Set object.
-///             </summary><remarks>This metadata object is only supported at database compatibility level of 1400 or above for Pbi server.</remarks>
+/// Set object.
+/// </summary><remarks>This metadata object is only supported at database compatibility level of 1400 or above for Pbi server.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Set: TabularNamedObject
 			, IFolderObject
@@ -11011,8 +11737,8 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		/// <summary>
-///             The description of the set
-///             </summary>
+/// The description of the set
+/// </summary>
 		[DisplayName("Description")]
 		[Category("Basic"),Description(@"The description of the set"),IntelliSense(@"The description of the set")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
@@ -11026,17 +11752,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Description), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
-				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Description), oldValue, newValue));
+				OnPropertyChanged(nameof(Description), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
 /// <summary>
-///             The DAX expression that is evaluated for the calculated set.
-///             </summary>
+/// The DAX expression that is evaluated for the calculated set.
+/// </summary>
 		[DisplayName("Expression")]
 		[Category("Options"),Description(@"The DAX expression that is evaluated for the calculated set."),IntelliSense(@"The DAX expression that is evaluated for the calculated set.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Expression {
@@ -11050,17 +11776,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.EXPRESSION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Expression), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Expression = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EXPRESSION, oldValue, newValue));
-				OnPropertyChanged(Properties.EXPRESSION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Expression), oldValue, newValue));
+				OnPropertyChanged(nameof(Expression), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeExpression() { return false; }
 /// <summary>
-///             Indicates whether the set is static or dynamic
-///             </summary>
+/// Indicates whether the set is static or dynamic
+/// </summary>
 		[DisplayName("Dynamic")]
 		[Category("Options"),Description(@"Indicates whether the set is static or dynamic"),IntelliSense(@"Indicates whether the set is static or dynamic")]
 		public bool IsDynamic {
@@ -11074,17 +11800,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ISDYNAMIC, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(IsDynamic), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.IsDynamic = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISDYNAMIC, oldValue, newValue));
-				OnPropertyChanged(Properties.ISDYNAMIC, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(IsDynamic), oldValue, newValue));
+				OnPropertyChanged(nameof(IsDynamic), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeIsDynamic() { return false; }
 /// <summary>
-///             A boolean value that indicates whether the set is treated as hidden by client visualization tools. True if the set is treated as hidden by client visualization tools; otherwise false.
-///             </summary>
+/// A boolean value that indicates whether the set is treated as hidden by client visualization tools. True if the set is treated as hidden by client visualization tools; otherwise false.
+/// </summary>
 		[DisplayName("Hidden")]
 		[Category("Basic"),Description(@"A boolean value that indicates whether the set is treated as hidden by client visualization tools. True if the set is treated as hidden by client visualization tools; otherwise false."),IntelliSense(@"A boolean value that indicates whether the set is treated as hidden by client visualization tools. True if the set is treated as hidden by client visualization tools; otherwise false.")]
 		public bool IsHidden {
@@ -11098,18 +11824,18 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ISHIDDEN, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(IsHidden), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.IsHidden = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISHIDDEN, oldValue, newValue));
-				OnPropertyChanged(Properties.ISHIDDEN, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(IsHidden), oldValue, newValue));
+				OnPropertyChanged(nameof(IsHidden), oldValue, newValue);
 				Handler.UpdateObject(this);
 			}
 		}
 		private bool ShouldSerializeIsHidden() { return false; }
 /// <summary>
-///             Provides information on the state of the set. Possible values and their interpretation are as follows. Ready (1) The set is queryable and has up-to-date data. NoData (3) Not applicable to Set. CalculationNeeded (4) Not applicable to Set. SemanticError (5) The set expression has a semantic error. EvaluationError (6) Not applicable to Set. DependencyError (7) A dependency associated with this set is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Set. SyntaxError (9) The measure has a syntax error in its expression.
-///             </summary>
+/// Provides information on the state of the set. Possible values and their interpretation are as follows. Ready (1) The set is queryable and has up-to-date data. NoData (3) Not applicable to Set. CalculationNeeded (4) Not applicable to Set. SemanticError (5) The set expression has a semantic error. EvaluationError (6) Not applicable to Set. DependencyError (7) A dependency associated with this set is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Set. SyntaxError (9) The measure has a syntax error in its expression.
+/// </summary>
 		[DisplayName("State")]
 		[Category("Metadata"),Description(@"Provides information on the state of the set. Possible values and their interpretation are as follows. Ready (1) The set is queryable and has up-to-date data. NoData (3) Not applicable to Set. CalculationNeeded (4) Not applicable to Set. SemanticError (5) The set expression has a semantic error. EvaluationError (6) Not applicable to Set. DependencyError (7) A dependency associated with this set is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Set. SyntaxError (9) The measure has a syntax error in its expression."),IntelliSense(@"Provides information on the state of the set. Possible values and their interpretation are as follows. Ready (1) The set is queryable and has up-to-date data. NoData (3) Not applicable to Set. CalculationNeeded (4) Not applicable to Set. SemanticError (5) The set expression has a semantic error. EvaluationError (6) Not applicable to Set. DependencyError (7) A dependency associated with this set is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to Set. SyntaxError (9) The measure has a syntax error in its expression.")]
 		public ObjectState State {
@@ -11120,8 +11846,8 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeState() { return false; }
 /// <summary>
-///             The string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError or EvaluationError.
-///             </summary>
+/// The string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError or EvaluationError.
+/// </summary>
 		[DisplayName("Error Message")]
 		[Category("Metadata"),Description(@"The string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError or EvaluationError."),IntelliSense(@"The string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError or EvaluationError.")]
 		public string ErrorMessage {
@@ -11132,8 +11858,8 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeErrorMessage() { return false; }
 /// <summary>
-///             Defines the display folder for the Measure, for use by clients.
-///             </summary>
+/// Defines the display folder for the Measure, for use by clients.
+/// </summary>
 		[DisplayName("Display Folder")]
 		[Category("Basic"),Description(@"Defines the display folder for the Measure, for use by clients."),IntelliSense(@"Defines the display folder for the Measure, for use by clients.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string DisplayFolder {
@@ -11141,17 +11867,17 @@ namespace TabularEditor.TOMWrapper
 			    return MetadataObject.DisplayFolder;
 			}
 			set {
-				if(value.Contains(@"\\")) throw new Exception("Display Folder names cannot be blank.");
+				if(value != null && value.Contains(@"\\")) throw new Exception("Display Folder names cannot be blank.");
 				var oldValue = DisplayFolder;
 				var newValue = value?.Replace("\r", "");
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DISPLAYFOLDER, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DisplayFolder), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DisplayFolder = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DISPLAYFOLDER, oldValue, newValue));
-				OnPropertyChanged(Properties.DISPLAYFOLDER, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DisplayFolder), oldValue, newValue));
+				OnPropertyChanged(nameof(DisplayFolder), oldValue, newValue);
 				Handler.UpdateFolders(Table);
 			}
 		}
@@ -11425,8 +12151,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Defines a logical view over the Model and is a child of a Model object. It allows hiding Tables, Columns, Measures, and Hierarchies so that end users can look at a smaller subset of the large data model. 
-///             </summary>
+/// Defines a logical view over the Model and is a child of a Model object. It allows hiding Tables, Columns, Measures, and Hierarchies so that end users can look at a smaller subset of the large data model.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Perspective: TabularNamedObject
 			, IDescriptionObject
@@ -11722,8 +12448,8 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		/// <summary>
-///             The description of the perspective, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
-///             </summary>
+/// The description of the perspective, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+/// </summary>
 		[DisplayName("Description")]
 		[Category("Basic"),Description(@"The description of the perspective, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the perspective, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
@@ -11737,11 +12463,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Description), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
-				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Description), oldValue, newValue));
+				OnPropertyChanged(nameof(Description), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
@@ -11980,8 +12706,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Represents a data source that uses a connection string for the connection.
-///             </summary>
+/// Represents a data source that uses a connection string for the connection.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class ProviderDataSource: DataSource
 			, IClonableObject
@@ -11999,8 +12725,8 @@ namespace TabularEditor.TOMWrapper
 		}
 
 /// <summary>
-///             A string used to open the connection to the data source.
-///             </summary>
+/// A string used to open the connection to the data source.
+/// </summary>
 		[DisplayName("Connection String")]
 		[Category("Connection Details"),Description(@"A string used to open the connection to the data source."),IntelliSense(@"A string used to open the connection to the data source.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)),TypeConverter(typeof(ConnectionStringConverter))]
 		public string ConnectionString {
@@ -12014,17 +12740,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.CONNECTIONSTRING, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(ConnectionString), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.ConnectionString = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.CONNECTIONSTRING, oldValue, newValue));
-				OnPropertyChanged(Properties.CONNECTIONSTRING, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(ConnectionString), oldValue, newValue));
+				OnPropertyChanged(nameof(ConnectionString), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeConnectionString() { return false; }
 /// <summary>
-///             Determines how credentials are obtained for an impersonated connection to a data source during data import or refresh.
-///             </summary>
+/// Determines how credentials are obtained for an impersonated connection to a data source during data import or refresh.
+/// </summary>
 		[DisplayName("Impersonation Mode")]
 		[Category("Connection Details"),Description(@"Determines how credentials are obtained for an impersonated connection to a data source during data import or refresh."),IntelliSense(@"Determines how credentials are obtained for an impersonated connection to a data source during data import or refresh.")]
 		public ImpersonationMode ImpersonationMode {
@@ -12038,17 +12764,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.IMPERSONATIONMODE, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(ImpersonationMode), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.ImpersonationMode = (TOM.ImpersonationMode)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.IMPERSONATIONMODE, oldValue, newValue));
-				OnPropertyChanged(Properties.IMPERSONATIONMODE, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(ImpersonationMode), oldValue, newValue));
+				OnPropertyChanged(nameof(ImpersonationMode), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeImpersonationMode() { return false; }
 /// <summary>
-///             The user account used for impersonation.
-///             </summary>
+/// The user account used for impersonation.
+/// </summary>
 		[DisplayName("Account")]
 		[Category("Connection Details"),Description(@"The user account used for impersonation."),IntelliSense(@"The user account used for impersonation.")]
 		public string Account {
@@ -12062,17 +12788,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ACCOUNT, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Account), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Account = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ACCOUNT, oldValue, newValue));
-				OnPropertyChanged(Properties.ACCOUNT, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Account), oldValue, newValue));
+				OnPropertyChanged(nameof(Account), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeAccount() { return false; }
 /// <summary>
-///             The account password.
-///             </summary>
+/// The account password.
+/// </summary>
 		[DisplayName("Password")]
 		[Category("Connection Details"),Description(@"The account password."),IntelliSense(@"The account password.")][PasswordPropertyText(true)]
 		public string Password {
@@ -12086,17 +12812,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.PASSWORD, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Password), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Password = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.PASSWORD, oldValue, newValue));
-				OnPropertyChanged(Properties.PASSWORD, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Password), oldValue, newValue));
+				OnPropertyChanged(nameof(Password), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializePassword() { return false; }
 /// <summary>
-///             Specifies the locking behavior of the SQL statements when executing commands against the data source. Valid values include ReadCommitted (default) which only reads from committed transactions, or Snapshot which can read any statement in a transaction that is transactionally consistent.
-///             </summary>
+/// Specifies the locking behavior of the SQL statements when executing commands against the data source. Valid values include ReadCommitted (default) which only reads from committed transactions, or Snapshot which can read any statement in a transaction that is transactionally consistent.
+/// </summary>
 		[DisplayName("Isolation")]
 		[Category("Connection Details"),Description(@"Specifies the locking behavior of the SQL statements when executing commands against the data source. Valid values include ReadCommitted (default) which only reads from committed transactions, or Snapshot which can read any statement in a transaction that is transactionally consistent."),IntelliSense(@"Specifies the locking behavior of the SQL statements when executing commands against the data source. Valid values include ReadCommitted (default) which only reads from committed transactions, or Snapshot which can read any statement in a transaction that is transactionally consistent.")]
 		public DatasourceIsolation Isolation {
@@ -12110,17 +12836,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ISOLATION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Isolation), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Isolation = (TOM.DatasourceIsolation)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISOLATION, oldValue, newValue));
-				OnPropertyChanged(Properties.ISOLATION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Isolation), oldValue, newValue));
+				OnPropertyChanged(nameof(Isolation), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeIsolation() { return false; }
 /// <summary>
-///             The timeout in seconds for commands executed against the data source.
-///             </summary>
+/// The timeout in seconds for commands executed against the data source.
+/// </summary>
 		[DisplayName("Timeout")]
 		[Category("Connection Details"),Description(@"The timeout in seconds for commands executed against the data source."),IntelliSense(@"The timeout in seconds for commands executed against the data source.")]
 		public int Timeout {
@@ -12134,17 +12860,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.TIMEOUT, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Timeout), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Timeout = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TIMEOUT, oldValue, newValue));
-				OnPropertyChanged(Properties.TIMEOUT, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Timeout), oldValue, newValue));
+				OnPropertyChanged(nameof(Timeout), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeTimeout() { return false; }
 /// <summary>
-///             An optional string that identifies the name of the managed data provider for the data source.
-///             </summary>
+/// An optional string that identifies the name of the managed data provider for the data source.
+/// </summary>
 		[DisplayName("Provider")]
 		[Category("Connection Details"),Description(@"An optional string that identifies the name of the managed data provider for the data source."),IntelliSense(@"An optional string that identifies the name of the managed data provider for the data source.")]
 		public string Provider {
@@ -12158,11 +12884,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.PROVIDER, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Provider), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Provider = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.PROVIDER, oldValue, newValue));
-				OnPropertyChanged(Properties.PROVIDER, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Provider), oldValue, newValue));
+				OnPropertyChanged(nameof(Provider), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeProvider() { return false; }
@@ -12294,8 +13020,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             Represents a logical relationship between two Table objects. It is a child of a Model object.
-///             </summary>
+/// Represents a logical relationship between two Table objects. It is a child of a Model object.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public abstract partial class Relationship: TabularNamedObject
 			, IInternalAnnotationObject
@@ -12587,8 +13313,8 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		/// <summary>
-///             A boolean value that indicates whether the relationship is marked as Active or Inactive. An Active relationship is automatically used for filtering across tables. An Inactive relationship can be used explicitly by DAX calculations with the USERELATIONSHIP function.
-///             </summary>
+/// A boolean value that indicates whether the relationship is marked as Active or Inactive. An Active relationship is automatically used for filtering across tables. An Inactive relationship can be used explicitly by DAX calculations with the USERELATIONSHIP function.
+/// </summary>
 		[DisplayName("Active")]
 		[Category("Basic"),Description(@"A boolean value that indicates whether the relationship is marked as Active or Inactive. An Active relationship is automatically used for filtering across tables. An Inactive relationship can be used explicitly by DAX calculations with the USERELATIONSHIP function."),IntelliSense(@"A boolean value that indicates whether the relationship is marked as Active or Inactive. An Active relationship is automatically used for filtering across tables. An Inactive relationship can be used explicitly by DAX calculations with the USERELATIONSHIP function.")]
 		public bool IsActive {
@@ -12602,17 +13328,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ISACTIVE, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(IsActive), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.IsActive = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISACTIVE, oldValue, newValue));
-				OnPropertyChanged(Properties.ISACTIVE, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(IsActive), oldValue, newValue));
+				OnPropertyChanged(nameof(IsActive), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeIsActive() { return false; }
 /// <summary>
-///             The type of Relationship. At present, the only possible value is SingleColumn (1) or a normal column-column relationship.
-///             </summary>
+/// The type of Relationship. At present, the only possible value is SingleColumn (1) or a normal column-column relationship.
+/// </summary>
 		[DisplayName("Type")]
 		[Category("Options"),Description(@"The type of Relationship. At present, the only possible value is SingleColumn (1) or a normal column-column relationship."),IntelliSense(@"The type of Relationship. At present, the only possible value is SingleColumn (1) or a normal column-column relationship.")]
 		public RelationshipType Type {
@@ -12623,8 +13349,8 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeType() { return false; }
 /// <summary>
-///             Indicates how relationships influence filtering of data. The enumeration defines the possible behaviors. Possible values are as follows. OneDirection (1) The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2) Filters on either end of the relationship will automatically filter the other table. Automatic (3) The engine will analyze the relationships and choose one of the behaviors by using heuristics.
-///             </summary>
+/// Indicates how relationships influence filtering of data. The enumeration defines the possible behaviors. Possible values are as follows. OneDirection (1) The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2) Filters on either end of the relationship will automatically filter the other table. Automatic (3) The engine will analyze the relationships and choose one of the behaviors by using heuristics.
+/// </summary>
 		[DisplayName("Cross Filtering Behavior")]
 		[Category("Options"),Description(@"Indicates how relationships influence filtering of data. The enumeration defines the possible behaviors. Possible values are as follows. OneDirection (1) The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2) Filters on either end of the relationship will automatically filter the other table. Automatic (3) The engine will analyze the relationships and choose one of the behaviors by using heuristics."),IntelliSense(@"Indicates how relationships influence filtering of data. The enumeration defines the possible behaviors. Possible values are as follows. OneDirection (1) The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2) Filters on either end of the relationship will automatically filter the other table. Automatic (3) The engine will analyze the relationships and choose one of the behaviors by using heuristics.")]
 		public CrossFilteringBehavior CrossFilteringBehavior {
@@ -12638,17 +13364,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.CROSSFILTERINGBEHAVIOR, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(CrossFilteringBehavior), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.CrossFilteringBehavior = (TOM.CrossFilteringBehavior)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.CROSSFILTERINGBEHAVIOR, oldValue, newValue));
-				OnPropertyChanged(Properties.CROSSFILTERINGBEHAVIOR, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(CrossFilteringBehavior), oldValue, newValue));
+				OnPropertyChanged(nameof(CrossFilteringBehavior), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeCrossFilteringBehavior() { return false; }
 /// <summary>
-///             When joining two date time columns, indicates whether to join on date and time parts, or on date part only. DateAndTime (1) When joining two date time columns, join on date and time parts. DatePartOnly (2) When joining two date time columns, join on date part only.
-///             </summary>
+/// When joining two date time columns, indicates whether to join on date and time parts, or on date part only. DateAndTime (1) When joining two date time columns, join on date and time parts. DatePartOnly (2) When joining two date time columns, join on date part only.
+/// </summary>
 		[DisplayName("Join On Date Behavior")]
 		[Category("Options"),Description(@"When joining two date time columns, indicates whether to join on date and time parts, or on date part only. DateAndTime (1) When joining two date time columns, join on date and time parts. DatePartOnly (2) When joining two date time columns, join on date part only."),IntelliSense(@"When joining two date time columns, indicates whether to join on date and time parts, or on date part only. DateAndTime (1) When joining two date time columns, join on date and time parts. DatePartOnly (2) When joining two date time columns, join on date part only.")]
 		public DateTimeRelationshipBehavior JoinOnDateBehavior {
@@ -12662,17 +13388,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.JOINONDATEBEHAVIOR, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(JoinOnDateBehavior), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.JoinOnDateBehavior = (TOM.DateTimeRelationshipBehavior)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.JOINONDATEBEHAVIOR, oldValue, newValue));
-				OnPropertyChanged(Properties.JOINONDATEBEHAVIOR, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(JoinOnDateBehavior), oldValue, newValue));
+				OnPropertyChanged(nameof(JoinOnDateBehavior), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeJoinOnDateBehavior() { return false; }
 /// <summary>
-///             Unused; reserved for future use.
-///             </summary>
+/// Unused; reserved for future use.
+/// </summary>
 		[DisplayName("Rely On Referential Integrity")]
 		[Category("Options"),Description(@"If set to 'True', queries generated in DirectQuery mode will use INNER JOIN rather than OUTER JOIN."),IntelliSense(@"If set to 'True', queries generated in DirectQuery mode will use INNER JOIN rather than OUTER JOIN.")]
 		public bool RelyOnReferentialIntegrity {
@@ -12686,17 +13412,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.RELYONREFERENTIALINTEGRITY, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(RelyOnReferentialIntegrity), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.RelyOnReferentialIntegrity = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.RELYONREFERENTIALINTEGRITY, oldValue, newValue));
-				OnPropertyChanged(Properties.RELYONREFERENTIALINTEGRITY, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(RelyOnReferentialIntegrity), oldValue, newValue));
+				OnPropertyChanged(nameof(RelyOnReferentialIntegrity), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeRelyOnReferentialIntegrity() { return false; }
 /// <summary>
-///             Provides information on the state of the relationship. Possible values and their interpretation are as follows. Ready (1) The relationship is queryable and has up-to-date data. NoData (3) Not applicable to relationships. CalculationNeeded (4) The relationship does not contain any data because it was not refreshed. There is no error associated with the relationship. SemanticError (5) Not applicable to Relationship. EvaluationError (6) Not applicable to Relationship. DependencyError (7) A dependency associated with this relationship is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to relationships. SyntaxError (9) Not applicable to relationships.
-///             </summary>
+/// Provides information on the state of the relationship. Possible values and their interpretation are as follows. Ready (1) The relationship is queryable and has up-to-date data. NoData (3) Not applicable to relationships. CalculationNeeded (4) The relationship does not contain any data because it was not refreshed. There is no error associated with the relationship. SemanticError (5) Not applicable to Relationship. EvaluationError (6) Not applicable to Relationship. DependencyError (7) A dependency associated with this relationship is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to relationships. SyntaxError (9) Not applicable to relationships.
+/// </summary>
 		[DisplayName("State")]
 		[Category("Metadata"),Description(@"Provides information on the state of the relationship. Possible values and their interpretation are as follows. Ready (1) The relationship is queryable and has up-to-date data. NoData (3) Not applicable to relationships. CalculationNeeded (4) The relationship does not contain any data because it was not refreshed. There is no error associated with the relationship. SemanticError (5) Not applicable to Relationship. EvaluationError (6) Not applicable to Relationship. DependencyError (7) A dependency associated with this relationship is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to relationships. SyntaxError (9) Not applicable to relationships."),IntelliSense(@"Provides information on the state of the relationship. Possible values and their interpretation are as follows. Ready (1) The relationship is queryable and has up-to-date data. NoData (3) Not applicable to relationships. CalculationNeeded (4) The relationship does not contain any data because it was not refreshed. There is no error associated with the relationship. SemanticError (5) Not applicable to Relationship. EvaluationError (6) Not applicable to Relationship. DependencyError (7) A dependency associated with this relationship is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable to relationships. SyntaxError (9) Not applicable to relationships.")]
 		public ObjectState State {
@@ -12707,8 +13433,8 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeState() { return false; }
 /// <summary>
-///             Indicates how relationships influence filtering of data when evaluating row-level security expressions. Possible values are as follows. OneDirection (1): The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2): Filters on either end of the relationship will automatically filter the other table.
-///             </summary>
+/// Indicates how relationships influence filtering of data when evaluating row-level security expressions. Possible values are as follows. OneDirection (1): The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2): Filters on either end of the relationship will automatically filter the other table.
+/// </summary>
 		[DisplayName("Security Filtering Behavior")]
 		[Category("Options"),Description(@"Indicates how relationships influence filtering of data when evaluating row-level security expressions. Possible values are as follows. OneDirection (1): The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2): Filters on either end of the relationship will automatically filter the other table."),IntelliSense(@"Indicates how relationships influence filtering of data when evaluating row-level security expressions. Possible values are as follows. OneDirection (1): The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2): Filters on either end of the relationship will automatically filter the other table.")]
 		public SecurityFilteringBehavior SecurityFilteringBehavior {
@@ -12722,17 +13448,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.SECURITYFILTERINGBEHAVIOR, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(SecurityFilteringBehavior), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.SecurityFilteringBehavior = (TOM.SecurityFilteringBehavior)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SECURITYFILTERINGBEHAVIOR, oldValue, newValue));
-				OnPropertyChanged(Properties.SECURITYFILTERINGBEHAVIOR, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(SecurityFilteringBehavior), oldValue, newValue));
+				OnPropertyChanged(nameof(SecurityFilteringBehavior), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeSecurityFilteringBehavior() { return false; }
 /// <summary>
-///             Gets the starting table in a directional table relationship.
-///             </summary>
+/// Gets the starting table in a directional table relationship.
+/// </summary>
 		[DisplayName("From Table")]
 		[Category("Options"),Description(@"Gets the starting table in a directional table relationship."),IntelliSense(@"Gets the starting table in a directional table relationship.")]
 		public Table FromTable {
@@ -12744,8 +13470,8 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeFromTable() { return false; }
 /// <summary>
-///             Gets the destination table in a directional table relationship.
-///             </summary>
+/// Gets the destination table in a directional table relationship.
+/// </summary>
 		[DisplayName("To Table")]
 		[Category("Options"),Description(@"Gets the destination table in a directional table relationship."),IntelliSense(@"Gets the destination table in a directional table relationship.")]
 		public Table ToTable {
@@ -12943,8 +13669,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             SingleColumnRelationship object.
-///             </summary>
+/// SingleColumnRelationship object.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class SingleColumnRelationship: Relationship
 			, IClonableObject
@@ -12962,8 +13688,8 @@ namespace TabularEditor.TOMWrapper
 		}
 
 /// <summary>
-///             Indicates whether the "From" end of the relationship has a cardinality of One (1) or Many (2).
-///             </summary>
+/// Indicates whether the "From" end of the relationship has a cardinality of One (1) or Many (2).
+/// </summary>
 		[DisplayName("From Cardinality")]
 		[Category("Basic"),Description(@"Indicates whether the ""From"" end of the relationship has a cardinality of One (1) or Many (2)."),IntelliSense(@"Indicates whether the ""From"" end of the relationship has a cardinality of One (1) or Many (2).")]
 		public RelationshipEndCardinality FromCardinality {
@@ -12977,17 +13703,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.FROMCARDINALITY, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(FromCardinality), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.FromCardinality = (TOM.RelationshipEndCardinality)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FROMCARDINALITY, oldValue, newValue));
-				OnPropertyChanged(Properties.FROMCARDINALITY, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(FromCardinality), oldValue, newValue));
+				OnPropertyChanged(nameof(FromCardinality), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeFromCardinality() { return false; }
 /// <summary>
-///             Indicates whether the "To" end of the relationship has a cardinality of One (1) or Many (2).
-///             </summary>
+/// Indicates whether the "To" end of the relationship has a cardinality of One (1) or Many (2).
+/// </summary>
 		[DisplayName("To Cardinality")]
 		[Category("Basic"),Description(@"Indicates whether the ""To"" end of the relationship has a cardinality of One (1) or Many (2)."),IntelliSense(@"Indicates whether the ""To"" end of the relationship has a cardinality of One (1) or Many (2).")]
 		public RelationshipEndCardinality ToCardinality {
@@ -13001,19 +13727,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.TOCARDINALITY, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(ToCardinality), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.ToCardinality = (TOM.RelationshipEndCardinality)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TOCARDINALITY, oldValue, newValue));
-				OnPropertyChanged(Properties.TOCARDINALITY, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(ToCardinality), oldValue, newValue));
+				OnPropertyChanged(nameof(ToCardinality), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeToCardinality() { return false; }
 /// <summary>
-///             Gets or sets the starting column in a single column relationship.
-///             </summary>
+/// Gets or sets the starting column in a single column relationship.
+/// </summary>
 		[DisplayName("From Column")]
-		[Category("Basic"),Description(@"Gets or sets the starting column in a single column relationship."),IntelliSense(@"Gets or sets the starting column in a single column relationship.")][TypeConverter(typeof(AllColumnConverter))]
+		[Category("Basic"),Description(@"Gets or sets the starting column in a single column relationship."),IntelliSense(@"Gets or sets the starting column in a single column relationship.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(ColumnConverter))]
 		public Column FromColumn {
 			get {
 				if (MetadataObject.FromColumn == null) return null;
@@ -13026,19 +13752,19 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue?.MetadataObject == newValue?.MetadataObject) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.FROMCOLUMN, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(FromColumn), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.FromColumn = value?.MetadataObject;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FROMCOLUMN, oldValue, newValue));
-				OnPropertyChanged(Properties.FROMCOLUMN, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(FromColumn), oldValue, newValue));
+				OnPropertyChanged(nameof(FromColumn), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeFromColumn() { return false; }
 /// <summary>
-///             Gets or sets the destination column in a single column relationship.
-///             </summary>
+/// Gets or sets the destination column in a single column relationship.
+/// </summary>
 		[DisplayName("To Column")]
-		[Category("Basic"),Description(@"Gets or sets the destination column in a single column relationship."),IntelliSense(@"Gets or sets the destination column in a single column relationship.")][TypeConverter(typeof(AllColumnConverter))]
+		[Category("Basic"),Description(@"Gets or sets the destination column in a single column relationship."),IntelliSense(@"Gets or sets the destination column in a single column relationship.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(ColumnConverter))]
 		public Column ToColumn {
 			get {
 				if (MetadataObject.ToColumn == null) return null;
@@ -13051,11 +13777,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue?.MetadataObject == newValue?.MetadataObject) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.TOCOLUMN, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(ToColumn), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.ToColumn = value?.MetadataObject;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TOCOLUMN, oldValue, newValue));
-				OnPropertyChanged(Properties.TOCOLUMN, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(ToColumn), oldValue, newValue));
+				OnPropertyChanged(nameof(ToColumn), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeToColumn() { return false; }
@@ -13187,8 +13913,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             Represents a Table in the data model. A Table object is a member of the <see cref="T:TabularEditor.TOMWrapper.TableCollection" /> object under a <see cref="T:TabularEditor.TOMWrapper.Model" /> object. It contains a <see cref="T:TabularEditor.TOMWrapper.ColumnCollection" />. Rows are based on <see cref="T:TabularEditor.TOMWrapper.Partition" /> object or a <see cref="T:TabularEditor.TOMWrapper.CalculatedPartitionSource" /> if the Table is a calculated table.
-///             </summary>
+/// Represents a Table in the data model. A Table object is a member of the <see cref="T:TabularEditor.TOMWrapper.TableCollection" /> object under a <see cref="T:TabularEditor.TOMWrapper.Model" /> object. It contains a <see cref="T:TabularEditor.TOMWrapper.ColumnCollection" />. Rows are based on <see cref="T:TabularEditor.TOMWrapper.Partition" /> object or a <see cref="T:TabularEditor.TOMWrapper.CalculatedPartitionSource" /> if the Table is a calculated table.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public partial class Table: TabularNamedObject
 			, IHideableObject
@@ -13494,8 +14220,8 @@ namespace TabularEditor.TOMWrapper
 				// Skipping property ExcludedArtifacts on object Table
 		// Skipping property Calendars on object Table
 /// <summary>
-///             Specifies the type of Table so that you can customize application behavior based on the type of data in the table. Allowed values are identical to those of dimension type properties for Multidimensional models. Regular is the default. Other values include Time (2), Geography (3), Organization (4), BillOfMaterials (5), Accounts (6), Customers (7), Products (8), Scenario (9), Quantitativ1e (10), Utility (11), Currency (12), Rates (13), Channel (14) - channel dimension, Promotion (15).
-///             </summary>
+/// Specifies the type of Table so that you can customize application behavior based on the type of data in the table. Allowed values are identical to those of dimension type properties for Multidimensional models. Regular is the default. Other values include Time (2), Geography (3), Organization (4), BillOfMaterials (5), Accounts (6), Customers (7), Products (8), Scenario (9), Quantitativ1e (10), Utility (11), Currency (12), Rates (13), Channel (14) - channel dimension, Promotion (15).
+/// </summary>
 		[DisplayName("Data Category")]
 		[Category("Options"),Description(@"Specifies the type of Table so that you can customize application behavior based on the type of data in the table. Allowed values are identical to those of dimension type properties for Multidimensional models. Regular is the default. Other values include Time (2), Geography (3), Organization (4), BillOfMaterials (5), Accounts (6), Customers (7), Products (8), Scenario (9), Quantitativ1e (10), Utility (11), Currency (12), Rates (13), Channel (14) - channel dimension, Promotion (15)."),IntelliSense(@"Specifies the type of Table so that you can customize application behavior based on the type of data in the table. Allowed values are identical to those of dimension type properties for Multidimensional models. Regular is the default. Other values include Time (2), Geography (3), Organization (4), BillOfMaterials (5), Accounts (6), Customers (7), Products (8), Scenario (9), Quantitativ1e (10), Utility (11), Currency (12), Rates (13), Channel (14) - channel dimension, Promotion (15).")][TypeConverter(typeof(TableDataCategoryConverter))]
 		public string DataCategory {
@@ -13509,17 +14235,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DATACATEGORY, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(DataCategory), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.DataCategory = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DATACATEGORY, oldValue, newValue));
-				OnPropertyChanged(Properties.DATACATEGORY, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(DataCategory), oldValue, newValue));
+				OnPropertyChanged(nameof(DataCategory), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDataCategory() { return false; }
 /// <summary>
-///             The description of the table, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
-///             </summary>
+/// The description of the table, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+/// </summary>
 		[DisplayName("Description")]
 		[Category("Basic"),Description(@"The description of the table, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the table, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
@@ -13533,17 +14259,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Description), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
-				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Description), oldValue, newValue));
+				OnPropertyChanged(nameof(Description), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
 /// <summary>
-///             A boolean value that indicates whether the table is treated as hidden by client visualization tools. True if the Table is treated as hidden; otherwise false.
-///             </summary>
+/// A boolean value that indicates whether the table is treated as hidden by client visualization tools. True if the Table is treated as hidden; otherwise false.
+/// </summary>
 		[DisplayName("Hidden")]
 		[Category("Basic"),Description(@"A boolean value that indicates whether the table is treated as hidden by client visualization tools. True if the Table is treated as hidden; otherwise false."),IntelliSense(@"A boolean value that indicates whether the table is treated as hidden by client visualization tools. True if the Table is treated as hidden; otherwise false.")]
 		public bool IsHidden {
@@ -13557,18 +14283,18 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ISHIDDEN, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(IsHidden), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.IsHidden = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISHIDDEN, oldValue, newValue));
-				OnPropertyChanged(Properties.ISHIDDEN, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(IsHidden), oldValue, newValue));
+				OnPropertyChanged(nameof(IsHidden), oldValue, newValue);
 				Handler.UpdateObject(this);
 			}
 		}
 		private bool ShouldSerializeIsHidden() { return false; }
 /// <summary>
-///             A boolean value that indicates a difference between a local and server version. If True, the Table is only shown when referenced as Variation.
-///             </summary><remarks>This property is only supported for Pbi server, at database compatibility level of 1400 or above for Box server, at database compatibility level of 1400 or above for Excel server.</remarks>
+/// A boolean value that indicates a difference between a local and server version. If True, the Table is only shown when referenced as Variation.
+/// </summary><remarks>This property is only supported for Pbi server, at database compatibility level of 1400 or above for Box server, at database compatibility level of 1400 or above for Excel server.</remarks>
 		[DisplayName("Show As Variations Only")]
 		[Category("Options"),Description(@"A boolean value that indicates a difference between a local and server version. If True, the Table is only shown when referenced as Variation."),IntelliSense(@"A boolean value that indicates a difference between a local and server version. If True, the Table is only shown when referenced as Variation.")]
 		public bool ShowAsVariationsOnly {
@@ -13582,17 +14308,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.SHOWASVARIATIONSONLY, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(ShowAsVariationsOnly), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.ShowAsVariationsOnly = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SHOWASVARIATIONSONLY, oldValue, newValue));
-				OnPropertyChanged(Properties.SHOWASVARIATIONSONLY, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(ShowAsVariationsOnly), oldValue, newValue));
+				OnPropertyChanged(nameof(ShowAsVariationsOnly), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeShowAsVariationsOnly() { return false; }
 /// <summary>
-///             A boolean value that specifies whether to hide a table from the client. True hides the tables.
-///             </summary><remarks>This property is only supported for Pbi server, at database compatibility level of 1400 or above for Box server, at database compatibility level of 1400 or above for Excel server.</remarks>
+/// A boolean value that specifies whether to hide a table from the client. True hides the tables.
+/// </summary><remarks>This property is only supported for Pbi server, at database compatibility level of 1400 or above for Box server, at database compatibility level of 1400 or above for Excel server.</remarks>
 		[DisplayName("Private")]
 		[Category("Options"),Description(@"A boolean value that specifies whether to hide a table from the client. True hides the tables."),IntelliSense(@"A boolean value that specifies whether to hide a table from the client. True hides the tables.")]
 		public bool IsPrivate {
@@ -13606,17 +14332,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ISPRIVATE, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(IsPrivate), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.IsPrivate = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ISPRIVATE, oldValue, newValue));
-				OnPropertyChanged(Properties.ISPRIVATE, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(IsPrivate), oldValue, newValue));
+				OnPropertyChanged(nameof(IsPrivate), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeIsPrivate() { return false; }
 /// <summary>
-///             The ranking or precedence used to select the alternate source table in case more than one match is found.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1460 or above.</remarks>
+/// The ranking or precedence used to select the alternate source table in case more than one match is found.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1460 or above.</remarks>
 		[DisplayName("Alternate Source Precedence")]
 		[Category("Options"),Description(@"The ranking or precedence used to select the alternate source table in case more than one match is found."),IntelliSense(@"The ranking or precedence used to select the alternate source table in case more than one match is found.")]
 		public int AlternateSourcePrecedence {
@@ -13630,17 +14356,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ALTERNATESOURCEPRECEDENCE, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(AlternateSourcePrecedence), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.AlternateSourcePrecedence = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ALTERNATESOURCEPRECEDENCE, oldValue, newValue));
-				OnPropertyChanged(Properties.ALTERNATESOURCEPRECEDENCE, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(AlternateSourcePrecedence), oldValue, newValue));
+				OnPropertyChanged(nameof(AlternateSourcePrecedence), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeAlternateSourcePrecedence() { return false; }
 /// <summary>
-///             A boolean value that indicates whether the table is excluded from model refresh. When this is true, a refresh operation on the model would not trigger a refresh on the partitions of the table if they were already processed.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1480 or above.</remarks>
+/// A boolean value that indicates whether the table is excluded from model refresh. When this is true, a refresh operation on the model would not trigger a refresh on the partitions of the table if they were already processed.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1480 or above.</remarks>
 		[DisplayName("Exclude From Model Refresh")]
 		[Category("Options"),Description(@"A boolean value that indicates whether the table is excluded from model refresh. When this is true, a refresh operation on the model would not trigger a refresh on the partitions of the table if they were already processed."),IntelliSense(@"A boolean value that indicates whether the table is excluded from model refresh. When this is true, a refresh operation on the model would not trigger a refresh on the partitions of the table if they were already processed.")]
 		public bool ExcludeFromModelRefresh {
@@ -13654,17 +14380,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.EXCLUDEFROMMODELREFRESH, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(ExcludeFromModelRefresh), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.ExcludeFromModelRefresh = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EXCLUDEFROMMODELREFRESH, oldValue, newValue));
-				OnPropertyChanged(Properties.EXCLUDEFROMMODELREFRESH, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(ExcludeFromModelRefresh), oldValue, newValue));
+				OnPropertyChanged(nameof(ExcludeFromModelRefresh), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeExcludeFromModelRefresh() { return false; }
 /// <summary>
-///             A tag that represents the lineage of the object.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
+/// A tag that represents the lineage of the object.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
 		[DisplayName("Lineage Tag")]
 		[Category("Options"),Description(@"A tag that represents the lineage of the object."),IntelliSense(@"A tag that represents the lineage of the object.")]
 		public string LineageTag {
@@ -13678,17 +14404,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.LINEAGETAG, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(LineageTag), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.LineageTag = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.LINEAGETAG, oldValue, newValue));
-				OnPropertyChanged(Properties.LINEAGETAG, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(LineageTag), oldValue, newValue));
+				OnPropertyChanged(nameof(LineageTag), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeLineageTag() { return false; }
 /// <summary>
-///             A tag that represents the lineage of the source for the object.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1550 or above.</remarks>
+/// A tag that represents the lineage of the source for the object.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1550 or above.</remarks>
 		[DisplayName("Source Lineage Tag")]
 		[Category("Options"),Description(@"A tag that represents the lineage of the source for the object."),IntelliSense(@"A tag that represents the lineage of the source for the object.")]
 		public string SourceLineageTag {
@@ -13702,17 +14428,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.SOURCELINEAGETAG, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(SourceLineageTag), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.SourceLineageTag = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SOURCELINEAGETAG, oldValue, newValue));
-				OnPropertyChanged(Properties.SOURCELINEAGETAG, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(SourceLineageTag), oldValue, newValue));
+				OnPropertyChanged(nameof(SourceLineageTag), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeSourceLineageTag() { return false; }
 /// <summary>
-///             A boolean value that indicates whether the table is managed by the system. The system takes ownership of creation and deletion of such tables.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1562 or above.</remarks>
+/// A boolean value that indicates whether the table is managed by the system. The system takes ownership of creation and deletion of such tables.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1562 or above.</remarks>
 		[DisplayName("System Managed")]
 		[Category("Options"),Description(@"A boolean value that indicates whether the table is managed by the system. The system takes ownership of creation and deletion of such tables."),IntelliSense(@"A boolean value that indicates whether the table is managed by the system. The system takes ownership of creation and deletion of such tables.")]
 		public bool SystemManaged {
@@ -13726,17 +14452,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.SYSTEMMANAGED, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(SystemManaged), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.SystemManaged = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SYSTEMMANAGED, oldValue, newValue));
-				OnPropertyChanged(Properties.SYSTEMMANAGED, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(SystemManaged), oldValue, newValue));
+				OnPropertyChanged(nameof(SystemManaged), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeSystemManaged() { return false; }
 /// <summary>
-///             An indication whether the table is excluded from the automatic aggregations feature.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1572 or above.</remarks>
+/// An indication whether the table is excluded from the automatic aggregations feature.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1572 or above.</remarks>
 		[DisplayName("Exclude From Automatic Aggregations")]
 		[Category("Options"),Description(@"An indication whether the table is excluded from the automatic aggregations feature."),IntelliSense(@"An indication whether the table is excluded from the automatic aggregations feature.")]
 		public bool ExcludeFromAutomaticAggregations {
@@ -13750,11 +14476,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.EXCLUDEFROMAUTOMATICAGGREGATIONS, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(ExcludeFromAutomaticAggregations), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.ExcludeFromAutomaticAggregations = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EXCLUDEFROMAUTOMATICAGGREGATIONS, oldValue, newValue));
-				OnPropertyChanged(Properties.EXCLUDEFROMAUTOMATICAGGREGATIONS, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(ExcludeFromAutomaticAggregations), oldValue, newValue));
+				OnPropertyChanged(nameof(ExcludeFromAutomaticAggregations), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeExcludeFromAutomaticAggregations() { return false; }
@@ -14023,13 +14749,13 @@ namespace TabularEditor.TOMWrapper
 				case Properties.CALCULATIONGROUP:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1470 : Handler.CompatibilityLevel >= 1470;
 				case Properties.CALENDARS:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+					return false;
 				case Properties.CHANGEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1567 : Handler.CompatibilityLevel >= 1567;
 				case Properties.DEFAULTDETAILROWSDEFINITION:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.EXCLUDEDARTIFACTS:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+					return false;
 				case Properties.EXCLUDEFROMAUTOMATICAGGREGATIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1572 : Handler.CompatibilityLevel >= 1572;
 				case Properties.EXCLUDEFROMMODELREFRESH:
@@ -14258,8 +14984,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Represents an individual Windows user account or a Windows security group.
-///             </summary>
+/// Represents an individual Windows user account or a Windows security group.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class WindowsModelRoleMember: ModelRoleMember
 			, IClonableObject
@@ -14394,8 +15120,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             A named expression that can be used by one or more partitions.
-///             </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+/// A named expression that can be used by one or more partitions.
+/// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class NamedExpression: TabularNamedObject
 			, IDescriptionObject
@@ -14691,8 +15417,8 @@ namespace TabularEditor.TOMWrapper
 
 				// Skipping property ExcludedArtifacts on object NamedExpression
 /// <summary>
-///             The description of the expression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
-///             </summary>
+/// The description of the expression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+/// </summary>
 		[DisplayName("Description")]
 		[Category("Basic"),Description(@"The description of the expression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the expression, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
@@ -14706,17 +15432,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Description), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
-				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Description), oldValue, newValue));
+				OnPropertyChanged(nameof(Description), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
 /// <summary>
-///             The dialect of the expression.
-///             </summary>
+/// The dialect of the expression.
+/// </summary>
 		[DisplayName("Kind")]
 		[Category("Options"),Description(@"The dialect of the expression."),IntelliSense(@"The dialect of the expression.")]
 		public ExpressionKind Kind {
@@ -14730,17 +15456,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.KIND, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Kind), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Kind = (TOM.ExpressionKind)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.KIND, oldValue, newValue));
-				OnPropertyChanged(Properties.KIND, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Kind), oldValue, newValue));
+				OnPropertyChanged(nameof(Kind), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeKind() { return false; }
 /// <summary>
-///             The expression text.
-///             </summary>
+/// The expression text.
+/// </summary>
 		[DisplayName("Expression")]
 		[Category("Options"),Description(@"The expression text."),IntelliSense(@"The expression text.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Expression {
@@ -14754,17 +15480,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.EXPRESSION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Expression), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Expression = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EXPRESSION, oldValue, newValue));
-				OnPropertyChanged(Properties.EXPRESSION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Expression), oldValue, newValue));
+				OnPropertyChanged(nameof(Expression), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeExpression() { return false; }
 /// <summary>
-///             The string that has M attributes.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1535 or above.</remarks>
+/// The string that has M attributes.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1535 or above.</remarks>
 		[DisplayName("M Attributes")]
 		[Category("Options"),Description(@"The string that has M attributes."),IntelliSense(@"The string that has M attributes.")]
 		public string MAttributes {
@@ -14778,17 +15504,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.MATTRIBUTES, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(MAttributes), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.MAttributes = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.MATTRIBUTES, oldValue, newValue));
-				OnPropertyChanged(Properties.MATTRIBUTES, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(MAttributes), oldValue, newValue));
+				OnPropertyChanged(nameof(MAttributes), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeMAttributes() { return false; }
 /// <summary>
-///             A tag that represents the lineage of the object.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
+/// A tag that represents the lineage of the object.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
 		[DisplayName("Lineage Tag")]
 		[Category("Options"),Description(@"A tag that represents the lineage of the object."),IntelliSense(@"A tag that represents the lineage of the object.")]
 		public string LineageTag {
@@ -14802,17 +15528,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.LINEAGETAG, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(LineageTag), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.LineageTag = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.LINEAGETAG, oldValue, newValue));
-				OnPropertyChanged(Properties.LINEAGETAG, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(LineageTag), oldValue, newValue));
+				OnPropertyChanged(nameof(LineageTag), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeLineageTag() { return false; }
 /// <summary>
-///             A tag that represents the lineage of the source for the object.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1550 or above.</remarks>
+/// A tag that represents the lineage of the source for the object.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1550 or above.</remarks>
 		[DisplayName("Source Lineage Tag")]
 		[Category("Options"),Description(@"A tag that represents the lineage of the source for the object."),IntelliSense(@"A tag that represents the lineage of the source for the object.")]
 		public string SourceLineageTag {
@@ -14826,17 +15552,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.SOURCELINEAGETAG, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(SourceLineageTag), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.SourceLineageTag = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SOURCELINEAGETAG, oldValue, newValue));
-				OnPropertyChanged(Properties.SOURCELINEAGETAG, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(SourceLineageTag), oldValue, newValue));
+				OnPropertyChanged(nameof(SourceLineageTag), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeSourceLineageTag() { return false; }
 /// <summary>
-///             The parameter name defined in source model, applicable only for proxy model and empty for local model.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1570 or above.</remarks>
+/// The parameter name defined in source model, applicable only for proxy model and empty for local model.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1570 or above.</remarks>
 		[DisplayName("Remote Parameter Name")]
 		[Category("Options"),Description(@"The parameter name defined in source model, applicable only for proxy model and empty for local model."),IntelliSense(@"The parameter name defined in source model, applicable only for proxy model and empty for local model.")]
 		public string RemoteParameterName {
@@ -14850,20 +15576,44 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.REMOTEPARAMETERNAME, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(RemoteParameterName), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.RemoteParameterName = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.REMOTEPARAMETERNAME, oldValue, newValue));
-				OnPropertyChanged(Properties.REMOTEPARAMETERNAME, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(RemoteParameterName), oldValue, newValue));
+				OnPropertyChanged(nameof(RemoteParameterName), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeRemoteParameterName() { return false; }
-		// Skipping property QueryGroup on object NamedExpression
 /// <summary>
-///             Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter..
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1545 or above.</remarks>
+/// QueryGroup associated with the expression.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1480 or above.</remarks>
+		[DisplayName("Query Group")]
+		[Category("Options"),Description(@"QueryGroup associated with the expression."),IntelliSense(@"QueryGroup associated with the expression.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		public QueryGroup QueryGroup {
+			get {
+				if (MetadataObject.QueryGroup == null) return null;
+			    return Handler.WrapperLookup[MetadataObject.QueryGroup] as QueryGroup;
+            }
+			set {
+				
+				var oldValue = QueryGroup;
+				var newValue = value;
+				if (oldValue?.MetadataObject == newValue?.MetadataObject) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(nameof(QueryGroup), newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.QueryGroup = value?.MetadataObject;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(QueryGroup), oldValue, newValue));
+				OnPropertyChanged(nameof(QueryGroup), oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeQueryGroup() { return false; }
+/// <summary>
+/// Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter..
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1545 or above.</remarks>
 		[DisplayName("Parameter Values Column")]
-		[Category("Options"),Description(@"Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter.."),IntelliSense(@"Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter..")][TypeConverter(typeof(AllColumnConverter))]
+		[Category("Options"),Description(@"Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter.."),IntelliSense(@"Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter..")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(ColumnConverter))]
 		public Column ParameterValuesColumn {
 			get {
 				if (MetadataObject.ParameterValuesColumn == null) return null;
@@ -14876,17 +15626,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue?.MetadataObject == newValue?.MetadataObject) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.PARAMETERVALUESCOLUMN, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(ParameterValuesColumn), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.ParameterValuesColumn = value?.MetadataObject;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.PARAMETERVALUESCOLUMN, oldValue, newValue));
-				OnPropertyChanged(Properties.PARAMETERVALUESCOLUMN, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(ParameterValuesColumn), oldValue, newValue));
+				OnPropertyChanged(nameof(ParameterValuesColumn), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeParameterValuesColumn() { return false; }
 /// <summary>
-///             A reference to the NamedExpression where the parameter associated with the remote model.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1570 or above.</remarks>
+/// A reference to the NamedExpression where the parameter associated with the remote model.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1570 or above.</remarks>
 		[DisplayName("Expression Source")]
 		[Category("Options"),Description(@"A reference to the NamedExpression where the parameter associated with the remote model."),IntelliSense(@"A reference to the NamedExpression where the parameter associated with the remote model.")][TypeConverter(typeof(NamedExpressionConverter))]
 		public NamedExpression ExpressionSource {
@@ -14901,11 +15651,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue?.MetadataObject == newValue?.MetadataObject) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.EXPRESSIONSOURCE, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(ExpressionSource), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.ExpressionSource = value == null ? null : Model.Expressions[value.MetadataObject.Name].MetadataObject;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EXPRESSIONSOURCE, oldValue, newValue));
-				OnPropertyChanged(Properties.EXPRESSIONSOURCE, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(ExpressionSource), oldValue, newValue));
+				OnPropertyChanged(nameof(ExpressionSource), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeExpressionSource() { return false; }
@@ -15043,7 +15793,7 @@ namespace TabularEditor.TOMWrapper
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
 				case Properties.EXCLUDEDARTIFACTS:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+					return false;
 				case Properties.EXPRESSIONSOURCE:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1570 : Handler.CompatibilityLevel >= 1570;
 				case Properties.LINEAGETAG:
@@ -15204,6 +15954,18 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		/// <summary>
+		/// Sets the QueryGroup property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the QueryGroup property of all objects in the collection at once.")]
+		public QueryGroup QueryGroup {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("QueryGroup"));
+				this.ToList().ForEach(item => { item.QueryGroup = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
 		/// Sets the ParameterValuesColumn property of all objects in the collection at once.
 		/// </summary>
 		[Description("Sets the ParameterValuesColumn property of all objects in the collection at once.")]
@@ -15230,8 +15992,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Represents a collection of Calculation Items.
-///             </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1470 or above.</remarks>
+/// Represents a collection of Calculation Items.
+/// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1470 or above.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class CalculationGroup: TabularObject
 			, IDescriptionObject
@@ -15381,8 +16143,8 @@ namespace TabularEditor.TOMWrapper
 
 				// Skipping property CalculationItems on object CalculationGroup
 /// <summary>
-///             The description of the CalculationGroup, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
-///             </summary>
+/// The description of the CalculationGroup, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+/// </summary>
 		[DisplayName("Description")]
 		[Category("Basic"),Description(@"The description of the CalculationGroup, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the CalculationGroup, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
@@ -15396,17 +16158,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Description), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
-				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Description), oldValue, newValue));
+				OnPropertyChanged(nameof(Description), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
 /// <summary>
-///             Defines an evaluation order of CalculationGroup objects.
-///             </summary>
+/// Defines an evaluation order of CalculationGroup objects.
+/// </summary>
 		[DisplayName("Precedence")]
 		[Category("Options"),Description(@"Defines an evaluation order of CalculationGroup objects."),IntelliSense(@"Defines an evaluation order of CalculationGroup objects.")]
 		public int Precedence {
@@ -15420,11 +16182,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.PRECEDENCE, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Precedence), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Precedence = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.PRECEDENCE, oldValue, newValue));
-				OnPropertyChanged(Properties.PRECEDENCE, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Precedence), oldValue, newValue));
+				OnPropertyChanged(nameof(Precedence), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializePrecedence() { return false; }
@@ -15519,8 +16281,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             A Tabular Calculation Item.
-///             </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1470 or above.</remarks>
+/// A Tabular Calculation Item.
+/// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1470 or above.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class CalculationItem: TabularNamedObject
 			, IErrorMessageObject
@@ -15541,8 +16303,8 @@ namespace TabularEditor.TOMWrapper
 		}
 
 /// <summary>
-///             The description of the CalculationItem, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
-///             </summary>
+/// The description of the CalculationItem, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+/// </summary>
 		[DisplayName("Description")]
 		[Category("Basic"),Description(@"The description of the CalculationItem, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the CalculationItem, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
@@ -15556,17 +16318,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Description), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
-				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Description), oldValue, newValue));
+				OnPropertyChanged(nameof(Description), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
 /// <summary>
-///             Provides information on the state of the Expression. Possible values and their interpretation are as follows. Ready (1) The Expression is queryable and has up-to-date data. SemanticError (5) The Expression has a semantic error. DependencyError (7) A dependency associated with this Expression is in an error state (SemanticError, EvaluationError, or DependencyError). SyntaxError (9) The Expression has a syntax error.
-///             </summary>
+/// Provides information on the state of the Expression. Possible values and their interpretation are as follows. Ready (1) The Expression is queryable and has up-to-date data. SemanticError (5) The Expression has a semantic error. DependencyError (7) A dependency associated with this Expression is in an error state (SemanticError, EvaluationError, or DependencyError). SyntaxError (9) The Expression has a syntax error.
+/// </summary>
 		[DisplayName("State")]
 		[Category("Metadata"),Description(@"Provides information on the state of the Expression. Possible values and their interpretation are as follows. Ready (1) The Expression is queryable and has up-to-date data. SemanticError (5) The Expression has a semantic error. DependencyError (7) A dependency associated with this Expression is in an error state (SemanticError, EvaluationError, or DependencyError). SyntaxError (9) The Expression has a syntax error."),IntelliSense(@"Provides information on the state of the Expression. Possible values and their interpretation are as follows. Ready (1) The Expression is queryable and has up-to-date data. SemanticError (5) The Expression has a semantic error. DependencyError (7) A dependency associated with this Expression is in an error state (SemanticError, EvaluationError, or DependencyError). SyntaxError (9) The Expression has a syntax error.")]
 		public ObjectState State {
@@ -15578,8 +16340,8 @@ namespace TabularEditor.TOMWrapper
 		private bool ShouldSerializeState() { return false; }
 		// Skipping property ErrorMessage on object CalculationItem
 /// <summary>
-///             The DAX expression that is evaluated for this CalculationItem.
-///             </summary>
+/// The DAX expression that is evaluated for this CalculationItem.
+/// </summary>
 		[DisplayName("Expression")]
 		[Category("Options"),Description(@"The DAX expression that is evaluated for this CalculationItem."),IntelliSense(@"The DAX expression that is evaluated for this CalculationItem.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Expression {
@@ -15593,17 +16355,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.EXPRESSION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Expression), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Expression = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EXPRESSION, oldValue, newValue));
-				OnPropertyChanged(Properties.EXPRESSION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Expression), oldValue, newValue));
+				OnPropertyChanged(nameof(Expression), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeExpression() { return false; }
 /// <summary>
-///             The zero-based ordinal value associated with a Calculation Item.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1500 or above.</remarks>
+/// The zero-based ordinal value associated with a Calculation Item.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1500 or above.</remarks>
 		[DisplayName("Ordinal")]
 		[Category("Basic"),Description(@"The zero-based ordinal value associated with a Calculation Item."),IntelliSense(@"The zero-based ordinal value associated with a Calculation Item.")][NoMultiselect()]
 		public int Ordinal {
@@ -15617,11 +16379,11 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.ORDINAL, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Ordinal), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Ordinal = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.ORDINAL, oldValue, newValue));
-				OnPropertyChanged(Properties.ORDINAL, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Ordinal), oldValue, newValue));
+				OnPropertyChanged(nameof(Ordinal), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeOrdinal() { return false; }
@@ -15835,11 +16597,10 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Defines the security rules of the Role on the Table. It is a child of a Role object.
-///             </summary>
+/// Defines the security rules of the Role on the Table. It is a child of a Role object.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class TablePermission: TabularNamedObject
-			, IErrorMessageObject
 			, IInternalAnnotationObject
 			, IInternalExtendedPropertyObject
 			, IClonableObject
@@ -16131,8 +16892,8 @@ namespace TabularEditor.TOMWrapper
 
 				// Skipping property ColumnPermissions on object TablePermission
 /// <summary>
-///             The DAX expression that filters the rows in the table when this security role is in effect.
-///             </summary>
+/// The DAX expression that filters the rows in the table when this security role is in effect.
+/// </summary>
 		[DisplayName("Filter Expression")]
 		[Category("Translations, Perspectives, Security"),Description(@"The DAX expression that filters the rows in the table when this security role is in effect."),IntelliSense(@"The DAX expression that filters the rows in the table when this security role is in effect.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string FilterExpression {
@@ -16146,17 +16907,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.FILTEREXPRESSION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(FilterExpression), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.FilterExpression = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FILTEREXPRESSION, oldValue, newValue));
-				OnPropertyChanged(Properties.FILTEREXPRESSION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(FilterExpression), oldValue, newValue));
+				OnPropertyChanged(nameof(FilterExpression), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeFilterExpression() { return false; }
 /// <summary>
-///             Provides information on the state of the permission. Possible values and their interpretation are as follows. Ready (1) The permission has a valid expression. NoData (3) Not applicable. CalculationNeeded (4) Not applicable. SemanticError (5) The expression of the TablePermission object has a semantic error. EvaluationError (6) Not applicable. DependencyError (7) A dependency associated with this TablePermission object is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable. SyntaxError (9) The TablePermission object is in an error state because of a syntax error in its expression. The TablePermission object is not queryable. This state applies only to TablePermission objects of the type Calculated.
-///             </summary>
+/// Provides information on the state of the permission. Possible values and their interpretation are as follows. Ready (1) The permission has a valid expression. NoData (3) Not applicable. CalculationNeeded (4) Not applicable. SemanticError (5) The expression of the TablePermission object has a semantic error. EvaluationError (6) Not applicable. DependencyError (7) A dependency associated with this TablePermission object is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable. SyntaxError (9) The TablePermission object is in an error state because of a syntax error in its expression. The TablePermission object is not queryable. This state applies only to TablePermission objects of the type Calculated.
+/// </summary>
 		[DisplayName("State")]
 		[Category("Metadata"),Description(@"Provides information on the state of the permission. Possible values and their interpretation are as follows. Ready (1) The permission has a valid expression. NoData (3) Not applicable. CalculationNeeded (4) Not applicable. SemanticError (5) The expression of the TablePermission object has a semantic error. EvaluationError (6) Not applicable. DependencyError (7) A dependency associated with this TablePermission object is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable. SyntaxError (9) The TablePermission object is in an error state because of a syntax error in its expression. The TablePermission object is not queryable. This state applies only to TablePermission objects of the type Calculated."),IntelliSense(@"Provides information on the state of the permission. Possible values and their interpretation are as follows. Ready (1) The permission has a valid expression. NoData (3) Not applicable. CalculationNeeded (4) Not applicable. SemanticError (5) The expression of the TablePermission object has a semantic error. EvaluationError (6) Not applicable. DependencyError (7) A dependency associated with this TablePermission object is in an error state (SemanticError, EvaluationError, or DependencyError). Incomplete (8) Not applicable. SyntaxError (9) The TablePermission object is in an error state because of a syntax error in its expression. The TablePermission object is not queryable. This state applies only to TablePermission objects of the type Calculated.")]
 		public ObjectState State {
@@ -16166,21 +16927,10 @@ namespace TabularEditor.TOMWrapper
 			
 		}
 		private bool ShouldSerializeState() { return false; }
+		// Skipping property ErrorMessage on object TablePermission
 /// <summary>
-///             A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError.
-///             </summary>
-		[DisplayName("Error Message")]
-		[Category("Metadata"),Description(@"A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError."),IntelliSense(@"A string that explains the error state associated with the current object. It is set by the engine only when the state of the object is one of these three values: SemanticError, DependencyError, or EvaluationError.")]
-		public string ErrorMessage {
-			get {
-			    return MetadataObject.ErrorMessage;
-			}
-			
-		}
-		private bool ShouldSerializeErrorMessage() { return false; }
-/// <summary>
-///             Defines whether the metadata of this table should be secured from users belonging to this role.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+/// Defines whether the metadata of this table should be secured from users belonging to this role.
+/// </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("OLS Table Permission")]
 		[Category("Translations, Perspectives, Security"),Description(@"Defines whether the metadata of this table should be secured from users belonging to this role."),IntelliSense(@"Defines whether the metadata of this table should be secured from users belonging to this role.")]
 		public MetadataPermission MetadataPermission {
@@ -16194,17 +16944,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.METADATAPERMISSION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(MetadataPermission), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.MetadataPermission = (TOM.MetadataPermission)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.METADATAPERMISSION, oldValue, newValue));
-				OnPropertyChanged(Properties.METADATAPERMISSION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(MetadataPermission), oldValue, newValue));
+				OnPropertyChanged(nameof(MetadataPermission), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeMetadataPermission() { return false; }
 /// <summary>
-///             A reference to a Role object that owns this TablePermission.
-///             </summary>
+/// A reference to a Role object that owns this TablePermission.
+/// </summary>
 		[DisplayName("Role")]
 		[Category("Options"),Description(@"A reference to a Role object that owns this TablePermission."),IntelliSense(@"A reference to a Role object that owns this TablePermission.")]
 		public ModelRole Role {
@@ -16448,8 +17198,425 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             A tabular DataCoverageDefinition object. The expression defined on this object gives hint about the data in a partition.
-///             </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1603 or above.</remarks>
+/// Represents a QueryGroup object. Associated with Partition or NamedExpression objects.
+/// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1480 or above.</remarks>
+	[TypeConverter(typeof(DynamicPropertyConverter))]
+	public sealed partial class QueryGroup: TabularNamedObject
+			, IDescriptionObject
+			, IInternalAnnotationObject
+			, IClonableObject
+	{
+	    internal new TOM.QueryGroup MetadataObject 
+		{ 
+			get 
+			{ 
+				return base.MetadataObject as TOM.QueryGroup; 
+		    } 
+			set 
+			{ 
+				base.MetadataObject = value; 
+			}
+		}
+
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Annotations on the current Query Group.</summary>
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Query Group."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
+		public AnnotationCollection Annotations { get; private set; }
+		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
+		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
+		public string GetAnnotation(int index) {
+			return MetadataObject.Annotations[index].Value;
+		}
+		///<summary>Returns true if an annotation with the given name exists. Otherwise false.</summary>
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		///<summary>Gets the value of the annotation with the given name. Returns null if no such annotation exists.</summary>
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
+		public string GetAnnotation(string name) {
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
+		}
+		///<summary>Sets the value of the annotation with the given index, assuming it exists.</summary>
+		[IntelliSense("Sets the value of the annotation with the given index, assuming it exists.")]
+		public void SetAnnotation(int index, string value) {
+		    SetAnnotation(index, value, true);
+		}
+		internal void SetAnnotation(int index, string value, bool undoable) {
+		    var name = MetadataObject.Annotations[index].Name;
+			SetAnnotation(name, value, undoable);
+		}
+		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+			SetAnnotation(index, value, undoable);
+		}
+		///<summary>Returns a unique name for a new annotation.</summary>
+		public string GetNewAnnotationName() {
+			return MetadataObject.Annotations.GetNewName("New Annotation");
+		}
+		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		internal void SetAnnotation(string name, string value, bool undoable) {
+			if(name == null) name = GetNewAnnotationName();
+
+			if(value == null) {
+				// Remove annotation if set to null:
+				RemoveAnnotation(name, undoable);
+				return;
+			}
+
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
+
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Change existing annotation:
+
+				var oldValue = GetAnnotation(name);
+				MetadataObject.Annotations[name].Value = value;
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
+			} else {
+				// Add new annotation:
+
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
+			}
+		}
+		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+			this.SetAnnotation(name, value, undoable);
+		}
+		///<summary>Remove an annotation by the given name.</summary>
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		internal void RemoveAnnotation(string name, bool undoable) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
+
+			    var oldValue = MetadataObject.Annotations[name].Value;
+				MetadataObject.Annotations.Remove(name);
+
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
+			}
+		}
+		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+			this.RemoveAnnotation(name, undoable);
+		}
+		///<summary>Gets the number of annotations on the current Query Group.</summary>
+		[IntelliSense("Gets the number of annotations on the current Query Group.")]
+		public int GetAnnotationsCount() {
+			return MetadataObject.Annotations.Count;
+		}
+		///<summary>Gets a collection of all annotation names on the current Query Group.</summary>
+		[IntelliSense("Gets a collection of all annotation names on the current Query Group.")]
+		public IEnumerable<string> GetAnnotations() {
+			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		/// <summary>
+/// The logical path of the query group.
+/// </summary>
+		[DisplayName("Folder")]
+		[Category("Options"),Description(@"The logical path of the query group."),IntelliSense(@"The logical path of the query group.")]
+		public string Folder {
+			get {
+			    return MetadataObject.Folder;
+			}
+			set {
+				
+				var oldValue = Folder;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(nameof(Folder), newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.Folder = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Folder), oldValue, newValue));
+				OnPropertyChanged(nameof(Folder), oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeFolder() { return false; }
+/// <summary>
+/// The description of the query-group, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+/// </summary>
+		[DisplayName("Description")]
+		[Category("Basic"),Description(@"The description of the query-group, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the query-group, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		public string Description {
+			get {
+			    return MetadataObject.Description;
+			}
+			set {
+				
+				var oldValue = Description;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(nameof(Description), newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Description), oldValue, newValue));
+				OnPropertyChanged(nameof(Description), oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeDescription() { return false; }
+
+		internal static QueryGroup CreateFromMetadata(Model parent, TOM.QueryGroup metadataObject) {
+			var obj = new QueryGroup(metadataObject);
+			parent.QueryGroups.Add(obj);
+			
+			obj.Init();
+
+			return obj;
+		}
+
+
+		/// <summary>
+		/// Creates a new QueryGroup and adds it to the parent Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
+		/// </summary>
+		public static QueryGroup CreateNew(Model parent, string name = null)
+		{
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(QueryGroup))) {
+				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(QueryGroup).GetTypeName()));
+			}
+
+			var metadataObject = new TOM.QueryGroup();
+			metadataObject.Name = parent.QueryGroups.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(QueryGroup).GetTypeName() : name);
+            InitMetadata(metadataObject, parent);
+            var obj = new QueryGroup(metadataObject);
+
+			parent.QueryGroups.Add(obj);
+			
+			obj.Init();
+
+			return obj;
+		}
+
+        static partial void InitMetadata(TOM.QueryGroup metadataObject, Model parent);
+
+		/// <summary>
+		/// Creates a new QueryGroup and adds it to the current Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
+		/// </summary>		
+		public static QueryGroup CreateNew(string name = null)
+		{
+			return CreateNew(TabularModelHandler.Singleton.Model, name);
+		}
+
+
+		/// <summary>
+		/// Creates an exact copy of this QueryGroup object.
+		/// </summary>
+		[IntelliSense("Creates an exact copy of this QueryGroup object.")]
+		public QueryGroup Clone(string newName = null) {
+			if(!Handler.PowerBIGovernance.AllowCreate(this.GetType())) {
+				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(QueryGroup).GetTypeName()));
+			}
+
+		    Handler.BeginUpdate("Clone QueryGroup");
+
+			// Create a clone of the underlying metadataobject:
+			var tom = MetadataObject.Clone() as TOM.QueryGroup;
+
+
+			// Assign a new, unique name:
+			tom.Name = Parent.QueryGroups.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				
+			// Create the TOM Wrapper object, representing the metadataobject
+			QueryGroup obj = CreateFromMetadata(Parent, tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
+			if (newParent != null) throw new ArgumentException("This object can not be cloned to another parent. Argument newParent should be left as null.", "newParent");
+			return Clone(newName);
+		}
+
+	
+        internal override void RenewMetadataObject()
+        {
+            Handler.WrapperLookup.Remove(MetadataObject);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.QueryGroup>(json);
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+		///<summary>The parent Model of the current Query Group.</summary>
+		public Model Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
+			}
+		}
+
+
+
+		/// <summary>
+		/// CTOR - only called from static factory methods on the class
+		/// </summary>
+		QueryGroup(TOM.QueryGroup metadataObject) : base(metadataObject)
+		{
+			
+			// Create indexer for annotations:
+			Annotations = new AnnotationCollection(this);
+		}
+
+
+
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
+			Reinit();
+			ReapplyReferences();
+		}
+		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
+			if(!base.Browsable(propertyName)) return false;
+
+			switch (propertyName) {
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.PARENT:
+					return false;
+				
+				default:
+					return true;
+			}
+		}
+
+    }
+
+
+	/// <summary>
+	/// Collection class for QueryGroup. Provides convenient properties for setting a property on multiple objects at once.
+	/// </summary>
+	public sealed partial class QueryGroupCollection: TabularObjectCollection<QueryGroup>
+	{
+		internal Model Model { get { return Parent as Model; } }
+		TOM.QueryGroupCollection TOM_Collection;
+		internal QueryGroupCollection(string collectionName, TOM.QueryGroupCollection metadataObjectCollection, Model parent) : base(collectionName, parent)
+		{
+			TOM_Collection = metadataObjectCollection;
+		}
+		internal override Type GetItemType() { return typeof(QueryGroup); }
+        internal override void TOM_Add(TOM.MetadataObject obj) { TOM_Collection.Add(obj as TOM.QueryGroup); }
+        internal override bool TOM_Contains(TOM.MetadataObject obj) { return TOM_Collection.Contains(obj as TOM.QueryGroup); }
+        internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.QueryGroup); }
+        internal override void TOM_Clear() { TOM_Collection.Clear(); }
+        internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
+		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+        internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
+        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.QueryGroup); }
+        /// <summary>The number of items in this collection.</summary>
+		public override int Count { get { return TOM_Collection.Count; } }
+		/// <summary>Returns an enumerator that iterates through the collection.</summary>
+        public override IEnumerator<QueryGroup> GetEnumerator() { return TOM_Collection.Select(h => Handler.WrapperLookup[h]).OfType<QueryGroup>().GetEnumerator(); }
+		internal override void Reinit() {
+			var ixOffset = 0;
+			for(int i = 0; i < Count; i++) {
+				var metadataObj = TOM_Get(i) as TOM.QueryGroup;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as QueryGroup : CreateFromMetadata(metadataObj);
+				Handler.WrapperLookup.Remove(item.MetadataObject);
+				item.MetadataObject = Model.MetadataObject.QueryGroups[i + ixOffset] as TOM.QueryGroup;
+				Handler.WrapperLookup.Add(item.MetadataObject, item);
+				item.Collection = this;
+			}
+			TOM_Collection = Model.MetadataObject.QueryGroups;
+			foreach(var item in this) item.Reinit();
+		}
+
+		internal override void ReapplyReferences() {
+			foreach(var item in this) item.ReapplyReferences();
+		}
+
+		private QueryGroup CreateFromMetadata(TOM.QueryGroup obj)
+		{
+			if(obj is TOM.QueryGroup querygroupObj) return QueryGroup.CreateFromMetadata(Model, querygroupObj);
+            else throw new ArgumentException("Cannot create object", "obj");
+		}
+
+		/// <summary>
+		/// Calling this method will populate the QueryGroupCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
+		/// </summary>
+		internal override void CreateChildrenFromMetadata()
+		{
+			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
+		}
+
+		/// <summary>
+		/// Sets the Folder property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the Folder property of all objects in the collection at once.")]
+		public string Folder {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("Folder"));
+				this.ToList().ForEach(item => { item.Folder = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the Description property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the Description property of all objects in the collection at once.")]
+		public string Description {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("Description"));
+				this.ToList().ForEach(item => { item.Description = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+	}
+  
+	/// <summary>
+/// A tabular DataCoverageDefinition object. The expression defined on this object gives hint about the data in a partition.
+/// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1603 or above.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class DataCoverageDefinition: TabularObject
 			, IErrorMessageObject
@@ -16599,8 +17766,8 @@ namespace TabularEditor.TOMWrapper
 		}
 
 		/// <summary>
-///             The description of the DataCoverageDefinition, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
-///             </summary>
+/// The description of the DataCoverageDefinition, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+/// </summary>
 		[DisplayName("Description")]
 		[Category("Basic"),Description(@"The description of the DataCoverageDefinition, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the DataCoverageDefinition, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Description {
@@ -16614,17 +17781,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Description), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
-				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Description), oldValue, newValue));
+				OnPropertyChanged(nameof(Description), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeDescription() { return false; }
 /// <summary>
-///             The DAX expression that is evaluated for the DataCoverageDefinition.
-///             </summary>
+/// The DAX expression that is evaluated for the DataCoverageDefinition.
+/// </summary>
 		[DisplayName("Expression")]
 		[Category("Options"),Description(@"The DAX expression that is evaluated for the DataCoverageDefinition."),IntelliSense(@"The DAX expression that is evaluated for the DataCoverageDefinition.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Expression {
@@ -16638,17 +17805,17 @@ namespace TabularEditor.TOMWrapper
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.EXPRESSION, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(nameof(Expression), newValue, ref undoable, ref cancel);
 				if (cancel) return;
 				if (!MetadataObject.IsRemoved) MetadataObject.Expression = newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EXPRESSION, oldValue, newValue));
-				OnPropertyChanged(Properties.EXPRESSION, oldValue, newValue);
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Expression), oldValue, newValue));
+				OnPropertyChanged(nameof(Expression), oldValue, newValue);
 			}
 		}
 		private bool ShouldSerializeExpression() { return false; }
 /// <summary>
-///             Provides information on the state of the Expression. Possible values and their interpretation are as follows. Ready (1) The Expression is queryable and has up-to-date data. CalculationNeeded (4): The Expression is not queryable and needs to be refreshed to become functional. SemanticError (5) The Expression has a semantic error. DependencyError (7) A dependency associated with the Expression is in an error state (SemanticError, EvaluationError, or DependencyError). SyntaxError (9) The Expression has a syntax error.
-///             </summary>
+/// Provides information on the state of the Expression. Possible values and their interpretation are as follows. Ready (1) The Expression is queryable and has up-to-date data. CalculationNeeded (4): The Expression is not queryable and needs to be refreshed to become functional. SemanticError (5) The Expression has a semantic error. DependencyError (7) A dependency associated with the Expression is in an error state (SemanticError, EvaluationError, or DependencyError). SyntaxError (9) The Expression has a syntax error.
+/// </summary>
 		[DisplayName("State")]
 		[Category("Metadata"),Description(@"Provides information on the state of the Expression. Possible values and their interpretation are as follows. Ready (1) The Expression is queryable and has up-to-date data. CalculationNeeded (4): The Expression is not queryable and needs to be refreshed to become functional. SemanticError (5) The Expression has a semantic error. DependencyError (7) A dependency associated with the Expression is in an error state (SemanticError, EvaluationError, or DependencyError). SyntaxError (9) The Expression has a syntax error."),IntelliSense(@"Provides information on the state of the Expression. Possible values and their interpretation are as follows. Ready (1) The Expression is queryable and has up-to-date data. CalculationNeeded (4): The Expression is not queryable and needs to be refreshed to become functional. SemanticError (5) The Expression has a semantic error. DependencyError (7) A dependency associated with the Expression is in an error state (SemanticError, EvaluationError, or DependencyError). SyntaxError (9) The Expression has a syntax error.")]
 		public ObjectState State {
@@ -16659,8 +17826,8 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeState() { return false; }
 /// <summary>
-///             The string that explains the error state associated with the DataCoverageDefinition. It is set by the engine only when the state of the Expression is one of these four values: EvaluationError, SemanticError, DependencyError or SyntaxError.
-///             </summary>
+/// The string that explains the error state associated with the DataCoverageDefinition. It is set by the engine only when the state of the Expression is one of these four values: EvaluationError, SemanticError, DependencyError or SyntaxError.
+/// </summary>
 		[DisplayName("Error Message")]
 		[Category("Metadata"),Description(@"The string that explains the error state associated with the DataCoverageDefinition. It is set by the engine only when the state of the Expression is one of these four values: EvaluationError, SemanticError, DependencyError or SyntaxError."),IntelliSense(@"The string that explains the error state associated with the DataCoverageDefinition. It is set by the engine only when the state of the Expression is one of these four values: EvaluationError, SemanticError, DependencyError or SyntaxError.")]
 		public string ErrorMessage {
@@ -16671,8 +17838,8 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeErrorMessage() { return false; }
 /// <summary>
-///             A reference to the Partition object that owns the DataCoverageDefinition.
-///             </summary>
+/// A reference to the Partition object that owns the DataCoverageDefinition.
+/// </summary>
 		[DisplayName("Partition")]
 		[Category("Options"),Description(@"A reference to the Partition object that owns the DataCoverageDefinition."),IntelliSense(@"A reference to the Partition object that owns the DataCoverageDefinition.")]
 		public Partition Partition {
@@ -16720,6 +17887,663 @@ namespace TabularEditor.TOMWrapper
 			switch (propertyName) {
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
+				
+				default:
+					return true;
+			}
+		}
+
+    }
+
+  
+	/// <summary>
+/// Provides information that facilitates the binding of model elements to external resources, such as a data source reference in the model to a data connection in Fabric.
+/// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1608 or above.</remarks>
+	[TypeConverter(typeof(DynamicPropertyConverter))]
+	public abstract partial class BindingInfo: TabularNamedObject
+			, IDescriptionObject
+			, IInternalAnnotationObject
+			, IInternalExtendedPropertyObject
+	{
+	    internal new TOM.BindingInfo MetadataObject 
+		{ 
+			get 
+			{ 
+				return base.MetadataObject as TOM.BindingInfo; 
+		    } 
+			set 
+			{ 
+				base.MetadataObject = value; 
+			}
+		}
+
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Annotations on the current Binding Info.</summary>
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Binding Info."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
+		public AnnotationCollection Annotations { get; private set; }
+		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
+		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
+		public string GetAnnotation(int index) {
+			return MetadataObject.Annotations[index].Value;
+		}
+		///<summary>Returns true if an annotation with the given name exists. Otherwise false.</summary>
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		///<summary>Gets the value of the annotation with the given name. Returns null if no such annotation exists.</summary>
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
+		public string GetAnnotation(string name) {
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
+		}
+		///<summary>Sets the value of the annotation with the given index, assuming it exists.</summary>
+		[IntelliSense("Sets the value of the annotation with the given index, assuming it exists.")]
+		public void SetAnnotation(int index, string value) {
+		    SetAnnotation(index, value, true);
+		}
+		internal void SetAnnotation(int index, string value, bool undoable) {
+		    var name = MetadataObject.Annotations[index].Name;
+			SetAnnotation(name, value, undoable);
+		}
+		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+			SetAnnotation(index, value, undoable);
+		}
+		///<summary>Returns a unique name for a new annotation.</summary>
+		public string GetNewAnnotationName() {
+			return MetadataObject.Annotations.GetNewName("New Annotation");
+		}
+		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		internal void SetAnnotation(string name, string value, bool undoable) {
+			if(name == null) name = GetNewAnnotationName();
+
+			if(value == null) {
+				// Remove annotation if set to null:
+				RemoveAnnotation(name, undoable);
+				return;
+			}
+
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
+
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Change existing annotation:
+
+				var oldValue = GetAnnotation(name);
+				MetadataObject.Annotations[name].Value = value;
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
+			} else {
+				// Add new annotation:
+
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
+			}
+		}
+		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+			this.SetAnnotation(name, value, undoable);
+		}
+		///<summary>Remove an annotation by the given name.</summary>
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		internal void RemoveAnnotation(string name, bool undoable) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
+
+			    var oldValue = MetadataObject.Annotations[name].Value;
+				MetadataObject.Annotations.Remove(name);
+
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
+			}
+		}
+		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+			this.RemoveAnnotation(name, undoable);
+		}
+		///<summary>Gets the number of annotations on the current Binding Info.</summary>
+		[IntelliSense("Gets the number of annotations on the current Binding Info.")]
+		public int GetAnnotationsCount() {
+			return MetadataObject.Annotations.Count;
+		}
+		///<summary>Gets a collection of all annotation names on the current Binding Info.</summary>
+		[IntelliSense("Gets a collection of all annotation names on the current Binding Info.")]
+		public IEnumerable<string> GetAnnotations() {
+			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Extended Properties on the current Binding Info.</summary>
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Binding Info."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
+		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
+
+		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
+		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
+		public bool HasExtendedProperty(string name) {
+		    return MetadataObject.ExtendedProperties.ContainsName(name);
+		}
+		///<summary>Gets the type of the ExtendedProperty with the given index, assuming it exists.</summary>
+		public ExtendedPropertyType GetExtendedPropertyType(int index) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
+		}
+		///<summary>Gets the type of the ExtendedProperty with the given name, assuming it exists.</summary>
+		public ExtendedPropertyType GetExtendedPropertyType(string name) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
+		}
+		///<summary>Gets the value of the ExtendedProperty with the given index, assuming it exists.</summary>
+		public string GetExtendedProperty(int index) {
+			var ep = MetadataObject.ExtendedProperties[index];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		///<summary>Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.</summary>
+		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
+		public string GetExtendedProperty(string name) {
+		    if(!HasExtendedProperty(name)) return null;
+			var ep = MetadataObject.ExtendedProperties[name];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		///<summary>Sets the value of the ExtendedProperty with the given index, optionally specifiying the type (string or JSON) of the ExtendedProperty.</summary>
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
+			SetExtendedProperty(index, value, type, true);
+		}
+		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+			SetExtendedProperty(index, value, type, undoable);
+		}
+		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+			var name = MetadataObject.ExtendedProperties[index].Name;
+			SetExtendedProperty(name, value, type, undoable);
+		}
+		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
+		public string GetNewExtendedPropertyName() {
+			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+		}
+		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
+		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type) {
+			SetExtendedProperty(name, value, type, true);
+		}
+		internal void SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+			if(name == null) name = GetNewExtendedPropertyName();
+
+			if(value == null) {
+				// Remove ExtendedProperty if set to null:
+				RemoveExtendedProperty(name);
+				return;
+			}
+
+			if(GetExtendedProperty(name) == value) return;
+			if(undoable) {
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+				if (cancel) return;
+			}
+
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Change existing ExtendedProperty:
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				var ep = MetadataObject.ExtendedProperties[name];
+				if (ep is TOM.JsonExtendedProperty)
+					(ep as TOM.JsonExtendedProperty).Value = value;
+				else 
+					(ep as TOM.StringExtendedProperty).Value = value;
+					
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new ExtendedProperty:
+				if (type == ExtendedPropertyType.Json)
+					MetadataObject.ExtendedProperties.Add(new TOM.JsonExtendedProperty{ Name = name, Value = value });
+				else
+					MetadataObject.ExtendedProperties.Add(new TOM.StringExtendedProperty{ Name = name, Value = value });
+
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
+			}
+		}
+		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+			this.SetExtendedProperty(name, value, type, undoable);
+		}
+
+		///<summary>Remove an ExtendedProperty by the given name.</summary>
+		[IntelliSense("Remove an ExtendedProperty by the given name.")]
+		public void RemoveExtendedProperty(string name) {
+			RemoveExtendedProperty(name, true);
+		}
+
+		internal void RemoveExtendedProperty(string name, bool undoable) {
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Get current value:
+				if(undoable) {
+					bool cancel = false;
+					OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+					if (cancel) return;
+				}
+
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				MetadataObject.ExtendedProperties.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
+			}
+		}
+		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+			this.RemoveExtendedProperty(name, undoable);
+		}
+		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
+		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
+		public int GetExtendedPropertyCount() {
+			return MetadataObject.ExtendedProperties.Count;
+		}
+		///<summary>Gets a collection of all ExtendedProperty names on the current object.</summary>
+		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
+		public IEnumerable<string> GetExtendedProperties() {
+			return MetadataObject.ExtendedProperties.Select(a => a.Name);
+		}
+
+		/// <summary>
+/// The description of the object, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+/// </summary>
+		[DisplayName("Description")]
+		[Category("Basic"),Description(@"The description of the object, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the object, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		public string Description {
+			get {
+			    return MetadataObject.Description;
+			}
+			set {
+				
+				var oldValue = Description;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(nameof(Description), newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Description), oldValue, newValue));
+				OnPropertyChanged(nameof(Description), oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeDescription() { return false; }
+/// <summary>
+/// The type of object. The default type is Unknown. Currently, the only valid type is DataBindingHint, which means that the binding info is an unenforceable instruction (a hint) to bind a data source reference in the model to a data connection in Fabric.
+/// </summary>
+		[DisplayName("Type")]
+		[Category("Options"),Description(@"The type of object. The default type is Unknown. Currently, the only valid type is DataBindingHint, which means that the binding info is an unenforceable instruction (a hint) to bind a data source reference in the model to a data connection in Fabric."),IntelliSense(@"The type of object. The default type is Unknown. Currently, the only valid type is DataBindingHint, which means that the binding info is an unenforceable instruction (a hint) to bind a data source reference in the model to a data connection in Fabric.")]
+		public BindingInfoType Type {
+			get {
+			    return (BindingInfoType)MetadataObject.Type;
+			}
+			set {
+				
+				var oldValue = Type;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(nameof(Type), newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.Type = (TOM.BindingInfoType)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(Type), oldValue, newValue));
+				OnPropertyChanged(nameof(Type), oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeType() { return false; }
+
+	
+        internal override void RenewMetadataObject()
+        {
+            Handler.WrapperLookup.Remove(MetadataObject);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.BindingInfo>(json);
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+		///<summary>The parent Model of the current Binding Info.</summary>
+		public Model Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
+			}
+		}
+
+
+
+		/// <summary>
+		/// CTOR - only called from static factory methods on the class
+		/// </summary>
+		protected BindingInfo(TOM.BindingInfo metadataObject) : base(metadataObject)
+		{
+			
+			// Create indexer for annotations:
+			Annotations = new AnnotationCollection(this);
+			
+			// Create indexer for extended properties:
+			ExtendedProperties = new ExtendedPropertyCollection(this);
+		}
+
+
+
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
+			Reinit();
+			ReapplyReferences();
+		}
+		internal override bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
+			if(!base.Browsable(propertyName)) return false;
+
+			switch (propertyName) {
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.PARENT:
+					return false;
+				
+				default:
+					return true;
+			}
+		}
+
+    }
+
+
+	/// <summary>
+	/// Collection class for BindingInfo. Provides convenient properties for setting a property on multiple objects at once.
+	/// </summary>
+	public sealed partial class BindingInfoCollection: TabularObjectCollection<BindingInfo>
+	{
+		internal Model Model { get { return Parent as Model; } }
+		TOM.BindingInfoCollection TOM_Collection;
+		internal BindingInfoCollection(string collectionName, TOM.BindingInfoCollection metadataObjectCollection, Model parent) : base(collectionName, parent)
+		{
+			TOM_Collection = metadataObjectCollection;
+		}
+		internal override Type GetItemType() { return typeof(BindingInfo); }
+        internal override void TOM_Add(TOM.MetadataObject obj) { TOM_Collection.Add(obj as TOM.BindingInfo); }
+        internal override bool TOM_Contains(TOM.MetadataObject obj) { return TOM_Collection.Contains(obj as TOM.BindingInfo); }
+        internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.BindingInfo); }
+        internal override void TOM_Clear() { TOM_Collection.Clear(); }
+        internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
+		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+        internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
+        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.BindingInfo); }
+        /// <summary>The number of items in this collection.</summary>
+		public override int Count { get { return TOM_Collection.Count; } }
+		/// <summary>Returns an enumerator that iterates through the collection.</summary>
+        public override IEnumerator<BindingInfo> GetEnumerator() { return TOM_Collection.Select(h => Handler.WrapperLookup[h]).OfType<BindingInfo>().GetEnumerator(); }
+		internal override void Reinit() {
+			var ixOffset = 0;
+			for(int i = 0; i < Count; i++) {
+				var metadataObj = TOM_Get(i) as TOM.BindingInfo;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as BindingInfo : CreateFromMetadata(metadataObj);
+				Handler.WrapperLookup.Remove(item.MetadataObject);
+				item.MetadataObject = Model.MetadataObject.BindingInfoCollection[i + ixOffset] as TOM.BindingInfo;
+				Handler.WrapperLookup.Add(item.MetadataObject, item);
+				item.Collection = this;
+			}
+			TOM_Collection = Model.MetadataObject.BindingInfoCollection;
+			foreach(var item in this) item.Reinit();
+		}
+
+		internal override void ReapplyReferences() {
+			foreach(var item in this) item.ReapplyReferences();
+		}
+
+		private BindingInfo CreateFromMetadata(TOM.BindingInfo obj)
+		{
+			if(obj is TOM.DataBindingHint databindinghintObj) return DataBindingHint.CreateFromMetadata(Model, databindinghintObj);
+            else throw new ArgumentException("Cannot create object", "obj");
+		}
+
+		/// <summary>
+		/// Calling this method will populate the BindingInfoCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
+		/// </summary>
+		internal override void CreateChildrenFromMetadata()
+		{
+			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
+		}
+
+		/// <summary>
+		/// Sets the Description property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the Description property of all objects in the collection at once.")]
+		public string Description {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("Description"));
+				this.ToList().ForEach(item => { item.Description = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the Type property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the Type property of all objects in the collection at once.")]
+		public BindingInfoType Type {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("Type"));
+				this.ToList().ForEach(item => { item.Type = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+	}
+  
+	/// <summary>
+/// Represent as an unenforceable instruction (a hint) to bind a data source reference in the model to a data connection in Fabric. The hint is ignored if the data source is already bound or if the data connection does not exist in Fabric.
+/// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1608 or above.</remarks>
+	[TypeConverter(typeof(DynamicPropertyConverter))]
+	public sealed partial class DataBindingHint: BindingInfo
+			, IClonableObject
+	{
+	    internal new TOM.DataBindingHint MetadataObject 
+		{ 
+			get 
+			{ 
+				return base.MetadataObject as TOM.DataBindingHint; 
+		    } 
+			set 
+			{ 
+				base.MetadataObject = value; 
+			}
+		}
+
+/// <summary>
+/// The connection id of the data connection in Fabric that should be used to bind the referenced data source.
+/// </summary>
+		[DisplayName("Connection Id")]
+		[Category("Options"),Description(@"The connection id of the data connection in Fabric that should be used to bind the referenced data source."),IntelliSense(@"The connection id of the data connection in Fabric that should be used to bind the referenced data source.")]
+		public string ConnectionId {
+			get {
+			    return MetadataObject.ConnectionId;
+			}
+			set {
+				
+				var oldValue = ConnectionId;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(nameof(ConnectionId), newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.ConnectionId = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, nameof(ConnectionId), oldValue, newValue));
+				OnPropertyChanged(nameof(ConnectionId), oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeConnectionId() { return false; }
+
+		internal static DataBindingHint CreateFromMetadata(Model parent, TOM.DataBindingHint metadataObject) {
+			var obj = new DataBindingHint(metadataObject);
+			parent.BindingInfoCollection.Add(obj);
+			
+			obj.Init();
+
+			return obj;
+		}
+
+
+		/// <summary>
+		/// Creates a new DataBindingHint and adds it to the parent Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
+		/// </summary>
+		public static DataBindingHint CreateNew(Model parent, string name = null)
+		{
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(DataBindingHint))) {
+				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(DataBindingHint).GetTypeName()));
+			}
+
+			var metadataObject = new TOM.DataBindingHint();
+			metadataObject.Name = parent.BindingInfoCollection.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(DataBindingHint).GetTypeName() : name);
+            InitMetadata(metadataObject, parent);
+            var obj = new DataBindingHint(metadataObject);
+
+			parent.BindingInfoCollection.Add(obj);
+			
+			obj.Init();
+
+			return obj;
+		}
+
+        static partial void InitMetadata(TOM.DataBindingHint metadataObject, Model parent);
+
+		/// <summary>
+		/// Creates a new DataBindingHint and adds it to the current Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
+		/// </summary>		
+		public static DataBindingHint CreateNew(string name = null)
+		{
+			return CreateNew(TabularModelHandler.Singleton.Model, name);
+		}
+
+
+		/// <summary>
+		/// Creates an exact copy of this DataBindingHint object.
+		/// </summary>
+		[IntelliSense("Creates an exact copy of this DataBindingHint object.")]
+		public DataBindingHint Clone(string newName = null) {
+			if(!Handler.PowerBIGovernance.AllowCreate(this.GetType())) {
+				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(DataBindingHint).GetTypeName()));
+			}
+
+		    Handler.BeginUpdate("Clone DataBindingHint");
+
+			// Create a clone of the underlying metadataobject:
+			var tom = MetadataObject.Clone() as TOM.DataBindingHint;
+
+
+			// Assign a new, unique name:
+			tom.Name = Parent.BindingInfoCollection.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+				
+			// Create the TOM Wrapper object, representing the metadataobject
+			DataBindingHint obj = CreateFromMetadata(Parent, tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
+			if (newParent != null) throw new ArgumentException("This object can not be cloned to another parent. Argument newParent should be left as null.", "newParent");
+			return Clone(newName);
+		}
+
+	
+        internal override void RenewMetadataObject()
+        {
+            Handler.WrapperLookup.Remove(MetadataObject);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.DataBindingHint>(json);
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+		///<summary>The parent Model of the current Data Binding Hint.</summary>
+		public new Model Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
+			}
+		}
+
+
+
+		/// <summary>
+		/// CTOR - only called from static factory methods on the class
+		/// </summary>
+		DataBindingHint(TOM.DataBindingHint metadataObject) : base(metadataObject)
+		{
+		}
+
+
+
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
+			Reinit();
+			ReapplyReferences();
+		}
+		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
+			if(!base.Browsable(propertyName)) return false;
+
+			switch (propertyName) {
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.PARENT:
+					return false;
 				
 				default:
 					return true;
