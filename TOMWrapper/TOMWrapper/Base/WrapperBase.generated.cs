@@ -644,7 +644,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -784,7 +784,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
 		public string GetNewExtendedPropertyName() {
-			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+			return MetadataObject.ExtendedProperties.GetNewName(TabularNamedObject.GetNewName<ExtendedProperty>());
 		}
 		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
 		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
@@ -1030,7 +1030,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.Variation();
-			metadataObject.Name = parent.Variations.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Variation).GetTypeName() : name);
+			metadataObject.Name = parent.Variations.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<Variation>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Variation(metadataObject);
 
@@ -1060,7 +1060,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Variations.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Variations.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			Variation obj = CreateFromMetadata(newParent ?? Parent, tom);
@@ -1153,7 +1153,7 @@ namespace TabularEditor.TOMWrapper
 		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
-        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override string GetNewName(string prefix = null) { return RemoveInvalidNameChars(string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix)); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Variation); }
         /// <summary>The number of items in this collection.</summary>
 		public override int Count { get { return TOM_Collection.Count; } }
@@ -1325,7 +1325,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.StructuredDataSource();
-			metadataObject.Name = parent.DataSources.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(StructuredDataSource).GetTypeName() : name);
+			metadataObject.Name = parent.DataSources.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<StructuredDataSource>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new StructuredDataSource(metadataObject);
 
@@ -1364,7 +1364,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.DataSources.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.DataSources.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			StructuredDataSource obj = CreateFromMetadata(Parent, tom);
@@ -1528,7 +1528,7 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.CalculatedColumn();
             if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
-			metadataObject.Name = parent.Columns.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(CalculatedColumn).GetTypeName() : name);
+			metadataObject.Name = parent.Columns.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<CalculatedColumn>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new CalculatedColumn(metadataObject);
 
@@ -1561,7 +1561,7 @@ namespace TabularEditor.TOMWrapper
             }
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Columns.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Columns.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			CalculatedColumn obj = CreateFromMetadata(newParent ?? Parent, tom);
@@ -1748,7 +1748,7 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.CalculatedTableColumn();
             if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
-			metadataObject.Name = parent.Columns.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(CalculatedTableColumn).GetTypeName() : name);
+			metadataObject.Name = parent.Columns.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<CalculatedTableColumn>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new CalculatedTableColumn(metadataObject);
 
@@ -1781,7 +1781,7 @@ namespace TabularEditor.TOMWrapper
             }
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Columns.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Columns.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			CalculatedTableColumn obj = CreateFromMetadata(newParent ?? Parent, tom);
@@ -1929,7 +1929,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -2069,7 +2069,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
 		public string GetNewExtendedPropertyName() {
-			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+			return MetadataObject.ExtendedProperties.GetNewName(TabularNamedObject.GetNewName<ExtendedProperty>());
 		}
 		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
 		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
@@ -3294,7 +3294,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -3434,7 +3434,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
 		public string GetNewExtendedPropertyName() {
-			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+			return MetadataObject.ExtendedProperties.GetNewName(TabularNamedObject.GetNewName<ExtendedProperty>());
 		}
 		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
 		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
@@ -3545,7 +3545,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.Culture();
-			metadataObject.Name = parent.Cultures.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Culture).GetTypeName() : name);
+			metadataObject.Name = parent.Cultures.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<Culture>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Culture(metadataObject);
 
@@ -3584,7 +3584,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Cultures.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Cultures.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			Culture obj = CreateFromMetadata(Parent, tom);
@@ -3678,7 +3678,7 @@ namespace TabularEditor.TOMWrapper
 		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
-        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override string GetNewName(string prefix = null) { return RemoveInvalidNameChars(string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix)); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Culture); }
         /// <summary>The number of items in this collection.</summary>
 		public override int Count { get { return TOM_Collection.Count; } }
@@ -3795,7 +3795,7 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.DataColumn();
             if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
-			metadataObject.Name = parent.Columns.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(DataColumn).GetTypeName() : name);
+			metadataObject.Name = parent.Columns.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<DataColumn>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new DataColumn(metadataObject);
 
@@ -3828,7 +3828,7 @@ namespace TabularEditor.TOMWrapper
             }
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Columns.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Columns.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			DataColumn obj = CreateFromMetadata(newParent ?? Parent, tom);
@@ -3967,7 +3967,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -4107,7 +4107,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
 		public string GetNewExtendedPropertyName() {
-			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+			return MetadataObject.ExtendedProperties.GetNewName(TabularNamedObject.GetNewName<ExtendedProperty>());
 		}
 		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
 		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
@@ -4334,7 +4334,7 @@ namespace TabularEditor.TOMWrapper
 		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
-        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override string GetNewName(string prefix = null) { return RemoveInvalidNameChars(string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix)); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.DataSource); }
         /// <summary>The number of items in this collection.</summary>
 		public override int Count { get { return TOM_Collection.Count; } }
@@ -4492,7 +4492,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.ExternalModelRoleMember();
-			metadataObject.MemberName = parent.Members.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(ExternalModelRoleMember).GetTypeName() : name);
+			metadataObject.MemberName = parent.Members.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<ExternalModelRoleMember>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new ExternalModelRoleMember(metadataObject);
 
@@ -4522,7 +4522,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Members.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Members.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			ExternalModelRoleMember obj = CreateFromMetadata(newParent ?? Parent, tom);
@@ -4662,7 +4662,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -4802,7 +4802,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
 		public string GetNewExtendedPropertyName() {
-			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+			return MetadataObject.ExtendedProperties.GetNewName(TabularNamedObject.GetNewName<ExtendedProperty>());
 		}
 		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
 		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
@@ -5121,7 +5121,7 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Hierarchy();
             if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
-			metadataObject.Name = parent.Hierarchies.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Hierarchy).GetTypeName() : name);
+			metadataObject.Name = parent.Hierarchies.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<Hierarchy>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Hierarchy(metadataObject);
 
@@ -5155,7 +5155,7 @@ namespace TabularEditor.TOMWrapper
             }
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Hierarchies.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Hierarchies.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			Hierarchy obj = CreateFromMetadata(newParent ?? Parent, tom);
@@ -5310,7 +5310,7 @@ namespace TabularEditor.TOMWrapper
 		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
-        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override string GetNewName(string prefix = null) { return RemoveInvalidNameChars(string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix)); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Hierarchy); }
         /// <summary>The number of items in this collection.</summary>
 		public override int Count { get { return TOM_Collection.Count; } }
@@ -5480,7 +5480,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -5620,7 +5620,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
 		public string GetNewExtendedPropertyName() {
-			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+			return MetadataObject.ExtendedProperties.GetNewName(TabularNamedObject.GetNewName<ExtendedProperty>());
 		}
 		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
 		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
@@ -6076,7 +6076,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -6364,7 +6364,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -6504,7 +6504,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
 		public string GetNewExtendedPropertyName() {
-			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+			return MetadataObject.ExtendedProperties.GetNewName(TabularNamedObject.GetNewName<ExtendedProperty>());
 		}
 		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
 		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
@@ -6772,7 +6772,7 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Level();
             if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
-			metadataObject.Name = parent.Levels.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Level).GetTypeName() : name);
+			metadataObject.Name = parent.Levels.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<Level>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Level(metadataObject);
 
@@ -6805,7 +6805,7 @@ namespace TabularEditor.TOMWrapper
             }
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Levels.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Levels.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			Level obj = CreateFromMetadata(newParent ?? Parent, tom);
@@ -6919,7 +6919,7 @@ namespace TabularEditor.TOMWrapper
 		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
-        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override string GetNewName(string prefix = null) { return RemoveInvalidNameChars(string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix)); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Level); }
         /// <summary>The number of items in this collection.</summary>
 		public override int Count { get { return TOM_Collection.Count; } }
@@ -7064,7 +7064,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -7204,7 +7204,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
 		public string GetNewExtendedPropertyName() {
-			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+			return MetadataObject.ExtendedProperties.GetNewName(TabularNamedObject.GetNewName<ExtendedProperty>());
 		}
 		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
 		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
@@ -7610,7 +7610,7 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Measure();
             if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
-			metadataObject.Name = parent.Measures.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Measure).GetTypeName() : name);
+			metadataObject.Name = parent.Measures.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<Measure>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Measure(metadataObject);
 
@@ -7643,7 +7643,7 @@ namespace TabularEditor.TOMWrapper
             }
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Measures.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Measures.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			Measure obj = CreateFromMetadata(newParent ?? Parent, tom);
@@ -7995,7 +7995,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -8135,7 +8135,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
 		public string GetNewExtendedPropertyName() {
-			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+			return MetadataObject.ExtendedProperties.GetNewName(TabularNamedObject.GetNewName<ExtendedProperty>());
 		}
 		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
 		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
@@ -9030,7 +9030,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -9170,7 +9170,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
 		public string GetNewExtendedPropertyName() {
-			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+			return MetadataObject.ExtendedProperties.GetNewName(TabularNamedObject.GetNewName<ExtendedProperty>());
 		}
 		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
 		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
@@ -9328,7 +9328,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.ModelRole();
-			metadataObject.Name = parent.Roles.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(ModelRole).GetTypeName() : name);
+			metadataObject.Name = parent.Roles.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<ModelRole>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new ModelRole(metadataObject);
 
@@ -9367,7 +9367,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Roles.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Roles.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			ModelRole obj = CreateFromMetadata(Parent, tom);
@@ -9495,7 +9495,7 @@ namespace TabularEditor.TOMWrapper
 		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
-        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override string GetNewName(string prefix = null) { return RemoveInvalidNameChars(string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix)); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.ModelRole); }
         /// <summary>The number of items in this collection.</summary>
 		public override int Count { get { return TOM_Collection.Count; } }
@@ -9628,7 +9628,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -9768,7 +9768,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
 		public string GetNewExtendedPropertyName() {
-			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+			return MetadataObject.ExtendedProperties.GetNewName(TabularNamedObject.GetNewName<ExtendedProperty>());
 		}
 		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
 		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
@@ -9996,7 +9996,7 @@ namespace TabularEditor.TOMWrapper
 		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
-        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override string GetNewName(string prefix = null) { return RemoveInvalidNameChars(string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix)); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.ModelRoleMember); }
         /// <summary>The number of items in this collection.</summary>
 		public override int Count { get { return TOM_Collection.Count; } }
@@ -10134,7 +10134,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -10274,7 +10274,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
 		public string GetNewExtendedPropertyName() {
-			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+			return MetadataObject.ExtendedProperties.GetNewName(TabularNamedObject.GetNewName<ExtendedProperty>());
 		}
 		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
 		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
@@ -10511,7 +10511,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.Partition();
-			metadataObject.Name = parent.Partitions.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Partition).GetTypeName() : name);
+			metadataObject.Name = parent.Partitions.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<Partition>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Partition(metadataObject);
 
@@ -10541,7 +10541,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Partitions.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Partitions.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			Partition obj = CreateFromMetadata(newParent ?? Parent, tom);
@@ -10640,7 +10640,7 @@ namespace TabularEditor.TOMWrapper
 		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
-        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override string GetNewName(string prefix = null) { return RemoveInvalidNameChars(string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix)); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Partition); }
         /// <summary>The number of items in this collection.</summary>
 		public override int Count { get { return TOM_Collection.Count; } }
@@ -10794,7 +10794,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -10934,7 +10934,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
 		public string GetNewExtendedPropertyName() {
-			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+			return MetadataObject.ExtendedProperties.GetNewName(TabularNamedObject.GetNewName<ExtendedProperty>());
 		}
 		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
 		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
@@ -11210,7 +11210,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.Set();
-			metadataObject.Name = parent.Sets.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Set).GetTypeName() : name);
+			metadataObject.Name = parent.Sets.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<Set>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Set(metadataObject);
 
@@ -11240,7 +11240,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Sets.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Sets.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			Set obj = CreateFromMetadata(newParent ?? Parent, tom);
@@ -11332,7 +11332,7 @@ namespace TabularEditor.TOMWrapper
 		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
-        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override string GetNewName(string prefix = null) { return RemoveInvalidNameChars(string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix)); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Set); }
         /// <summary>The number of items in this collection.</summary>
 		public override int Count { get { return TOM_Collection.Count; } }
@@ -11505,7 +11505,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -11645,7 +11645,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
 		public string GetNewExtendedPropertyName() {
-			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+			return MetadataObject.ExtendedProperties.GetNewName(TabularNamedObject.GetNewName<ExtendedProperty>());
 		}
 		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
 		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
@@ -11790,7 +11790,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.Perspective();
-			metadataObject.Name = parent.Perspectives.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Perspective).GetTypeName() : name);
+			metadataObject.Name = parent.Perspectives.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<Perspective>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Perspective(metadataObject);
 
@@ -11829,7 +11829,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Perspectives.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Perspectives.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			Perspective obj = CreateFromMetadata(Parent, tom);
@@ -11935,7 +11935,7 @@ namespace TabularEditor.TOMWrapper
 		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
-        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override string GetNewName(string prefix = null) { return RemoveInvalidNameChars(string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix)); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Perspective); }
         /// <summary>The number of items in this collection.</summary>
 		public override int Count { get { return TOM_Collection.Count; } }
@@ -12200,7 +12200,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.ProviderDataSource();
-			metadataObject.Name = parent.DataSources.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(ProviderDataSource).GetTypeName() : name);
+			metadataObject.Name = parent.DataSources.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<ProviderDataSource>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new ProviderDataSource(metadataObject);
 
@@ -12239,7 +12239,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.DataSources.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.DataSources.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			ProviderDataSource obj = CreateFromMetadata(Parent, tom);
@@ -12370,7 +12370,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -12510,7 +12510,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
 		public string GetNewExtendedPropertyName() {
-			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+			return MetadataObject.ExtendedProperties.GetNewName(TabularNamedObject.GetNewName<ExtendedProperty>());
 		}
 		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
 		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
@@ -13093,7 +13093,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.SingleColumnRelationship();
-			metadataObject.Name = parent.Relationships.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(SingleColumnRelationship).GetTypeName() : name);
+			metadataObject.Name = parent.Relationships.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<SingleColumnRelationship>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new SingleColumnRelationship(metadataObject);
 
@@ -13132,7 +13132,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Relationships.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Relationships.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			SingleColumnRelationship obj = CreateFromMetadata(Parent, tom);
@@ -13275,7 +13275,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -13415,7 +13415,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
 		public string GetNewExtendedPropertyName() {
-			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+			return MetadataObject.ExtendedProperties.GetNewName(TabularNamedObject.GetNewName<ExtendedProperty>());
 		}
 		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
 		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
@@ -13825,7 +13825,7 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Table();
             if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
-			metadataObject.Name = parent.Tables.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Table).GetTypeName() : name);
+			metadataObject.Name = parent.Tables.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<Table>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Table(metadataObject);
 
@@ -13877,7 +13877,7 @@ namespace TabularEditor.TOMWrapper
             }
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Tables.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Tables.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			Table obj ;
@@ -14104,7 +14104,7 @@ namespace TabularEditor.TOMWrapper
 		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
-        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override string GetNewName(string prefix = null) { return RemoveInvalidNameChars(string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix)); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Table); }
         /// <summary>The number of items in this collection.</summary>
 		public override int Count { get { return TOM_Collection.Count; } }
@@ -14310,7 +14310,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.WindowsModelRoleMember();
-			metadataObject.MemberName = parent.Members.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(WindowsModelRoleMember).GetTypeName() : name);
+			metadataObject.MemberName = parent.Members.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<WindowsModelRoleMember>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new WindowsModelRoleMember(metadataObject);
 
@@ -14340,7 +14340,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Members.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Members.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			WindowsModelRoleMember obj = CreateFromMetadata(newParent ?? Parent, tom);
@@ -14473,7 +14473,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -14613,7 +14613,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
 		public string GetNewExtendedPropertyName() {
-			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+			return MetadataObject.ExtendedProperties.GetNewName(TabularNamedObject.GetNewName<ExtendedProperty>());
 		}
 		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
 		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
@@ -14951,7 +14951,7 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.NamedExpression();
             if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
-			metadataObject.Name = parent.Expressions.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(NamedExpression).GetTypeName() : name);
+			metadataObject.Name = parent.Expressions.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<NamedExpression>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new NamedExpression(metadataObject);
 
@@ -14993,7 +14993,7 @@ namespace TabularEditor.TOMWrapper
             }
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Expressions.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Expressions.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			NamedExpression obj = CreateFromMetadata(Parent, tom);
@@ -15101,7 +15101,7 @@ namespace TabularEditor.TOMWrapper
 		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
-        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override string GetNewName(string prefix = null) { return RemoveInvalidNameChars(string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix)); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.NamedExpression); }
         /// <summary>The number of items in this collection.</summary>
 		public override int Count { get { return TOM_Collection.Count; } }
@@ -15306,7 +15306,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -15661,7 +15661,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.CalculationItem();
-			metadataObject.Name = parent.CalculationItems.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(CalculationItem).GetTypeName() : name);
+			metadataObject.Name = parent.CalculationItems.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<CalculationItem>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new CalculationItem(metadataObject);
 
@@ -15691,7 +15691,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.CalculationItems.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.CalculationItems.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			CalculationItem obj = CreateFromMetadata(newParent ?? Parent, tom);
@@ -15778,7 +15778,7 @@ namespace TabularEditor.TOMWrapper
 		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
-        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override string GetNewName(string prefix = null) { return RemoveInvalidNameChars(string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix)); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.CalculationItem); }
         /// <summary>The number of items in this collection.</summary>
 		public override int Count { get { return TOM_Collection.Count; } }
@@ -15913,7 +15913,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -16053,7 +16053,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
 		public string GetNewExtendedPropertyName() {
-			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+			return MetadataObject.ExtendedProperties.GetNewName(TabularNamedObject.GetNewName<ExtendedProperty>());
 		}
 		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
 		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
@@ -16264,7 +16264,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.TablePermission();
-			metadataObject.Name = parent.TablePermissions.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(TablePermission).GetTypeName() : name);
+			metadataObject.Name = parent.TablePermissions.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<TablePermission>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new TablePermission(metadataObject);
 
@@ -16294,7 +16294,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.TablePermissions.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.TablePermissions.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			TablePermission obj = CreateFromMetadata(newParent ?? Parent, tom);
@@ -16391,7 +16391,7 @@ namespace TabularEditor.TOMWrapper
 		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
-        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override string GetNewName(string prefix = null) { return RemoveInvalidNameChars(string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix)); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.TablePermission); }
         /// <summary>The number of items in this collection.</summary>
 		public override int Count { get { return TOM_Collection.Count; } }
@@ -16525,7 +16525,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -16812,7 +16812,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
 		public string GetNewAnnotationName() {
-			return MetadataObject.Annotations.GetNewName("New Annotation");
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
 		}
 		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
 		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
@@ -16952,7 +16952,7 @@ namespace TabularEditor.TOMWrapper
 		}
 		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
 		public string GetNewExtendedPropertyName() {
-			return MetadataObject.ExtendedProperties.GetNewName("New ExtendedProperty");
+			return MetadataObject.ExtendedProperties.GetNewName(TabularNamedObject.GetNewName<ExtendedProperty>());
 		}
 		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
 		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
@@ -17215,7 +17215,7 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Function();
             if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
-			metadataObject.Name = parent.Functions.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Function).GetTypeName() : name);
+			metadataObject.Name = parent.Functions.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<Function>() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Function(metadataObject);
 
@@ -17257,7 +17257,7 @@ namespace TabularEditor.TOMWrapper
             }
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Functions.GetNewName(string.IsNullOrEmpty(newName) ? tom.Name + " copy" : newName);
+			tom.Name = Parent.Functions.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
 				
 			// Create the TOM Wrapper object, representing the metadataobject
 			Function obj = CreateFromMetadata(Parent, tom);
@@ -17349,7 +17349,7 @@ namespace TabularEditor.TOMWrapper
 		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
-        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override string GetNewName(string prefix = null) { return RemoveInvalidNameChars(string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix)); }
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.Function); }
         /// <summary>The number of items in this collection.</summary>
 		public override int Count { get { return TOM_Collection.Count; } }

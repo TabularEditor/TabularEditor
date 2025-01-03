@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -181,6 +181,11 @@ namespace TabularEditor.TOMWrapper
         }
 
         #endregion
+
+        protected virtual string RemoveInvalidNameChars(string name)
+        {
+            return name;
+        }
 
         // Abstract members:
         #region Public abstract members
