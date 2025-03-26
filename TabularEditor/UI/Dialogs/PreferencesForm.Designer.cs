@@ -1,4 +1,4 @@
-﻿namespace TabularEditor.UI.Dialogs
+namespace TabularEditor.UI.Dialogs
 {
     partial class PreferencesForm
     {
@@ -1241,7 +1241,7 @@
             this.cmbSerializationMode.FormattingEnabled = true;
             this.cmbSerializationMode.Items.AddRange(new object[] {
             "Database.json (default)",
-            "TMDL (preview)"});
+            "TMDL"});
             this.cmbSerializationMode.Location = new System.Drawing.Point(166, 17);
             this.cmbSerializationMode.Name = "cmbSerializationMode";
             this.cmbSerializationMode.Size = new System.Drawing.Size(216, 28);
