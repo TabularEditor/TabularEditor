@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -59,27 +59,27 @@ namespace TabularEditor.TOMWrapper
 
         protected override void SetValue(Table table, string filterExpression)
         {
-            var tp = Role.TablePermissions.FindByName(table.Name);
-
             // Filter expression removed:
-            if (string.IsNullOrWhiteSpace(filterExpression)) {
+            if (string.IsNullOrWhiteSpace(filterExpression))
+            {
+                var tp = Role.TablePermissions.FindByName(table.Name);
 
                 // Don't do anything if there is no TablePermission for this table anyway:
                 if (tp == null) return;
 
                 // Otherwise, remove the filter expression:
                 if (Handler.CompatibilityLevel >= 1400 && (tp.MetadataObject.MetadataPermission != TOM.MetadataPermission.Default ||
-                    tp.MetadataObject.ColumnPermissions.Any(cp => cp.MetadataPermission != TOM.MetadataPermission.Default)))
+                                                           tp.MetadataObject.ColumnPermissions.Any(cp => cp.MetadataPermission != TOM.MetadataPermission.Default)))
                     tp.FilterExpression = string.Empty;
                 else
                     tp.Delete();
             }
             else // Filter expression assigned:
             {
-                // Create a new TablePermission if we don't already have one for this table:
-                if (tp == null) tp = TablePermission.CreateFromMetadata(Role, new TOM.TablePermission { Table = table.MetadataObject });
-
+                Handler.BeginUpdate("RLS expression");
+                var tp = Role.AddOrGetTablePermission(table);
                 tp.FilterExpression = filterExpression;
+                Handler.EndUpdate();
             }
         }
     }

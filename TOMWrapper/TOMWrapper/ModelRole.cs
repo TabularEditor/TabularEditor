@@ -113,5 +113,18 @@ namespace TabularEditor.TOMWrapper
         {
             return TablePermissions;
         }
+
+        public TablePermission AddOrGetTablePermission(Table table)
+        {
+            var tp = TablePermissions.FindByName(table.Name);
+            if (tp == null)
+            {
+                if (ModelPermission == ModelPermission.None && TablePermissions.Count == 0)
+                    ModelPermission = ModelPermission.Read;
+
+                tp = TablePermission.CreateFromMetadata(this, new TOM.TablePermission { Table = table.MetadataObject });
+            }
+            return tp;
+        }
     }
 }
