@@ -131,7 +131,6 @@ namespace TabularEditor.TOMWrapper
 	    public const string NAME = "Name";
 	    public const string NOSELECTIONEXPRESSION = "NoSelectionExpression";
 	    public const string OBJECTTRANSLATIONS = "ObjectTranslations";
-	    public const string OBJECTTYPE = "ObjectType";
 	    public const string OPTIONS = "Options";
 	    public const string ORDINAL = "Ordinal";
 	    public const string PARAMETERVALUESCOLUMN = "ParameterValuesColumn";
@@ -8892,7 +8891,7 @@ namespace TabularEditor.TOMWrapper
 				case Properties.AUTOMATICAGGREGATIONOPTIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1564 : Handler.CompatibilityLevel >= 1564;
 				case Properties.BINDINGINFOCOLLECTION:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1608 : Handler.CompatibilityLevel >= 1608;
 				case Properties.DATAACCESSOPTIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.DATASOURCEDEFAULTMAXCONNECTIONS:
@@ -8922,7 +8921,7 @@ namespace TabularEditor.TOMWrapper
 				case Properties.FORCEUNIQUENAMES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1465 : Handler.CompatibilityLevel >= 1465;
 				case Properties.FUNCTIONS:
-					return false;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.MATTRIBUTES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1535 : Handler.CompatibilityLevel >= 1535;
 				case Properties.MAXPARALLELISMPERQUERY:

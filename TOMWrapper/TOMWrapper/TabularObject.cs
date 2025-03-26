@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using TOM = Microsoft.AnalysisServices.Tabular;
@@ -27,6 +27,11 @@ namespace TabularEditor.TOMWrapper
     public interface ITabularObjectContainer: ITabularNamedObject
     {
         IEnumerable<ITabularNamedObject> GetChildren();
+    }
+
+    internal static partial class Properties
+    {
+        public const string OBJECTTYPE = nameof(ObjectType);
     }
 
     public enum ObjectType
