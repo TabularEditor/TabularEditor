@@ -1,4 +1,4 @@
-﻿using Microsoft.AnalysisServices;
+using Microsoft.AnalysisServices;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -239,6 +239,12 @@ namespace TabularEditor.TOMWrapper.Utils
                             var partitions = new JArray();
                             table["partitions"] = partitions;
                             foreach (var pt in t.Partitions) partitions.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(pt)));
+
+                            // Retain existing refresh policy (if any):
+                            if (t.RefreshPolicy is not null)
+                            {
+                                table["refreshPolicy"] = JObject.Parse(TOM.JsonSerializer.SerializeObject(t.RefreshPolicy));
+                            }
                         }
                     }
                 }
