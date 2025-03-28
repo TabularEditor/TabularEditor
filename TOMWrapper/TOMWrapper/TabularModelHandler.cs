@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TabularEditor.TOMWrapper.Undo;
@@ -132,7 +132,8 @@ namespace TabularEditor.TOMWrapper
 
             Status = "Successfully created new model.";
             Init();
-            
+            Model.MetadataSource = new ModelMetadataSourceInfo("SemanticModel", ModelSourceType.UnsavedFile);
+
             PowerBIGovernance.UpdateGovernanceMode();
         }
         internal PowerBIGovernance PowerBIGovernance { get; }
@@ -246,6 +247,8 @@ namespace TabularEditor.TOMWrapper
             Status = "Connected successfully.";
             Version = database.Version;
             Init();
+            Model.MetadataSource = new ModelMetadataSourceInfo(Source, SourceType);
+
             UndoManager.Suspend();
 
             Model.ClearTabularEditorAnnotations();

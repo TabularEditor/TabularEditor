@@ -1,4 +1,4 @@
-﻿using Microsoft.AnalysisServices.Tabular.Extensions;
+using Microsoft.AnalysisServices.Tabular.Extensions;
 using Microsoft.AnalysisServices.Tabular.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -96,6 +96,8 @@ namespace TabularEditor.TOMWrapper
 
             // In any other case, assume this is just a regular Model.bim file:
             else LoadModelFile(path);
+
+            Model.MetadataSource = new ModelMetadataSourceInfo(Source, SourceType, PbipInfo.GetFromPath(Source));
 
             UndoManager.Suspend();
             Model.ClearTabularEditorAnnotations();
@@ -279,16 +281,32 @@ namespace TabularEditor.TOMWrapper
                     case SaveFormat.ModelSchemaOnly:
                         if (options != SerializeOptions.Default) SerializeOptions = options;
                         SaveFile(path, options);
+                        if (Model.MetadataSource?.SourceType == ModelSourceType.UnsavedFile)
+                        {
+                            Model.MetadataSource = new ModelMetadataSourceInfo(path, ModelSourceType.File);
+                        }
                         break;
                     case SaveFormat.PowerBiTemplate:
                         SavePbit(path);
+                        if (Model.MetadataSource?.SourceType == ModelSourceType.UnsavedFile)
+                        {
+                            Model.MetadataSource = new ModelMetadataSourceInfo(path, ModelSourceType.Pbit);
+                        }
                         break;
                     case SaveFormat.TabularEditorFolder:
                         Model.SaveToFolder(path, options);
+                        if (Model.MetadataSource?.SourceType == ModelSourceType.UnsavedFile)
+                        {
+                            Model.MetadataSource = new ModelMetadataSourceInfo(path, ModelSourceType.Folder);
+                        }
                         break;
 
                     case SaveFormat.TMDL:
                         SaveTmdl(path, options);
+                        if (Model.MetadataSource?.SourceType == ModelSourceType.UnsavedFile)
+                        {
+                            Model.MetadataSource = new ModelMetadataSourceInfo(path, ModelSourceType.TMDL, PbipInfo.GetFromPath(path));
+                        }
                         break;
                 }
 

@@ -118,6 +118,7 @@
     <Compile Include="TextServices\DAXLexerExtensions.cs" />
     <Compile Include="TOMWrapper\CalculationGroup.cs" />
     <Compile Include="TOMWrapper\DataCoverageDefinition.cs" />
+    <Compile Include="TOMWrapper\ModelMetadataSourceInfo.cs" />
     <Compile Include="Utils\DbConnectionStringBuilderExtension.cs" />
     <Compile Include="PropertyGridUI\AlternateOfEditor.cs" />
     <Compile Include="PropertyGridUI\Converters\ConnectionStringConverter.cs" />

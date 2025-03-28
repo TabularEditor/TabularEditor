@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,6 +10,10 @@ namespace TabularEditor.TOMWrapper
 {
     partial class Model: ITabularObjectContainer
     {
+        [Browsable(false)]
+        [IntelliSense("Provides additional information about the current model, such as where the model metadata was loaded from, the metadata format, etc.")]
+        public ModelMetadataSourceInfo MetadataSource { get; internal set; }
+
         #region Convenient methods
         [IntelliSense("Adds a new perspective to the model."), Tests.GenerateTest()]
         public Perspective AddPerspective(string name = null)

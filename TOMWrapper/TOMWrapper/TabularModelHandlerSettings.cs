@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -33,12 +33,12 @@ namespace TabularEditor.TOMWrapper
     public enum ModelSourceType
     {
         /// <summary>
-        /// SSAS Tabular database Compatibility Level 1200 or 1400
+        /// Model metadata loaded from the XMLA endpoint of Power BI or Analysis Services
         /// </summary>
         Database,
 
         /// <summary>
-        /// Model.bim Compatibility Level 1200 or 1400 JSON file
+        /// Model.bim aka. TMSL file
         /// </summary>
         File,
 
