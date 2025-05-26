@@ -102,12 +102,20 @@ namespace TabularEditor.TOMWrapper
             set => SetValue(EntityName, value, v => (MetadataObject.Source as TOM.EntityPartitionSource).EntityName = v);
         }
 
+        [Category("Options"), DisplayName("Schema Name"), Description("Gets or sets the Name of Schema of the underlying referenced object used to query and populate current partition."), IntelliSense("Gets or sets the Name of the Schema of the underlying referenced object used to query and populate current partition.")]
+        public string SchemaName
+        {
+            get => (MetadataObject.Source as TOM.EntityPartitionSource).SchemaName;
+            set => SetValue(SchemaName, value, v => (MetadataObject.Source as TOM.EntityPartitionSource).SchemaName = v);
+        }
+
         internal override bool IsBrowsable(string propertyName)
         {
             switch (propertyName)
             {
                 case nameof(DataSource):
                 case nameof(EntityName):
+                case nameof(SchemaName):
                 case nameof(ExpressionSource):
                     return true;
                 case nameof(Expression): return false;
@@ -121,6 +129,7 @@ namespace TabularEditor.TOMWrapper
             {
                 case nameof(DataSource):
                 case nameof(EntityName):
+                case nameof(SchemaName):
                 case nameof(ExpressionSource):
                     return true;
                 case nameof(Expression): return false;
