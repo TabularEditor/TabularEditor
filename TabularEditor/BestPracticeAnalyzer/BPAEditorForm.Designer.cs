@@ -39,6 +39,8 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.txtExpression = new System.Windows.Forms.TextBox();
+            this.tabPageFixExpression = new System.Windows.Forms.TabPage();
+            this.txtFixExpression = new System.Windows.Forms.TextBox();
             this.pnlInfo = new System.Windows.Forms.Panel();
             this.lblInfo = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -56,6 +58,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numSeverity)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.tabPageFixExpression.SuspendLayout();
             this.pnlInfo.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -149,6 +152,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPageFixExpression);
             this.tabControl1.Location = new System.Drawing.Point(12, 154);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -181,6 +185,37 @@
             this.txtExpression.Text = "";
             this.txtExpression.TextChanged += new System.EventHandler(this.txtExpression_TextChanged);
             this.txtExpression.Leave += new System.EventHandler(this.txtExpression_Leave);
+            // 
+            // tabPageFixExpression
+            // 
+            this.tabPageFixExpression.Controls.Add(this.txtFixExpression);
+            this.tabPageFixExpression.Location = new System.Drawing.Point(4, 22);
+            this.tabPageFixExpression.Name = "tabPageFixExpression";
+            this.tabPageFixExpression.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageFixExpression.Size = new System.Drawing.Size(636, 179);
+            this.tabPageFixExpression.TabIndex = 2;
+            this.tabPageFixExpression.Text = "Fix Expression Editor";
+            this.toolTip1.SetToolTip(this.tabPageFixExpression, "Optional C# expression to automatically fix violations of this rule. Use 'this' " +
+        "to reference the object that violates the rule. Leave empty if no automatic fix" +
+        " is available.");
+            this.tabPageFixExpression.UseVisualStyleBackColor = true;
+            // 
+            // txtFixExpression
+            // 
+            this.txtFixExpression.AcceptsTab = true;
+            this.txtFixExpression.Multiline = true;
+            this.txtFixExpression.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtFixExpression.WordWrap = true;
+            this.txtFixExpression.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtFixExpression.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtFixExpression.Location = new System.Drawing.Point(3, 3);
+            this.txtFixExpression.Name = "txtFixExpression";
+            this.txtFixExpression.Size = new System.Drawing.Size(630, 173);
+            this.txtFixExpression.TabIndex = 0;
+            this.txtFixExpression.Text = "";
+            this.toolTip1.SetToolTip(this.txtFixExpression, "Enter C# code to automatically fix rule violations. Examples:\r\n• this.Name = \"Ne" +
+        "wName\" (rename object)\r\n• this.IsHidden = true (hide object)\r\n• this.Description" +
+        " = \"Fixed\" (set description)\r\nUse 'this' to reference the violating object.");
             // 
             // pnlInfo
             // 
@@ -355,6 +390,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numSeverity)).EndInit();
             this.tabControl1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
+            this.tabPageFixExpression.ResumeLayout(false);
             this.pnlInfo.ResumeLayout(false);
             this.pnlInfo.PerformLayout();
             this.panel1.ResumeLayout(false);
@@ -374,6 +410,8 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TextBox txtExpression;
+        private System.Windows.Forms.TabPage tabPageFixExpression;
+        private System.Windows.Forms.TextBox txtFixExpression;
         private System.Windows.Forms.Panel pnlInfo;
         private System.Windows.Forms.Label lblInfo;
         private System.Windows.Forms.Panel panel1;
