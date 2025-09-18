@@ -7,18 +7,29 @@
 
 partial class Rules {
 	public static string XmlDocFile;
-
-	public static string GetTypeXmlDoc(Type t) {
+	
+	public static string GetTypeXmlDoc(Type t, int indent = 0) {
 		var xml = XElement.Load(Rules.XmlDocFile);
 		var node = xml?.Element("members")?.Elements("member")?.FirstOrDefault(e => ((string)e.Attribute("name")) == "T:Microsoft.AnalysisServices.Tabular." + t.Name);
 		if(node != null) {
 			var nodeReader = node.CreateReader();
 			nodeReader.MoveToContent();
 			var doc = nodeReader.ReadInnerXml();
-			return string.Join("\n", doc.Split('\n').Select(line => "/// " + line.Replace("Microsoft.AnalysisServices.Tabular","TabularEditor.TOMWrapper")));
+			return string.Join("\n", doc.Split('\n').Select(line => new string(' ', indent * 4) + "/// " + line.Replace("Microsoft.AnalysisServices.Tabular","TabularEditor.TOMWrapper").Trim()));
         }
 		return "";
     }
+	public static string GetEnumXmlDoc(Type t, string name, int indent = 0) {
+		var xml = XElement.Load(Rules.XmlDocFile);
+		var node = xml?.Element("members")?.Elements("member")?.FirstOrDefault(e => ((string)e.Attribute("name")) == "F:Microsoft.AnalysisServices.Tabular." + t.Name + "." + name);
+		if(node != null) {
+			var nodeReader = node.CreateReader();
+			nodeReader.MoveToContent();
+			var doc = nodeReader.ReadInnerXml();
+			return string.Join("\n", doc.Split('\n').Select(line => new string(' ', indent * 4) + "/// " + line.Replace("Microsoft.AnalysisServices.Tabular","TabularEditor.TOMWrapper").Trim()));
+        }
+		return "";
+	}
 
 	public class CompatRequirement
 	{
@@ -415,6 +426,19 @@ partial class Rules {
         }
     }
 
+	public static string GetEnumAttributes(Type enumType, string valueName)
+	{
+		var attr = GetEnumAttributesCore(enumType, valueName);
+		if(string.IsNullOrEmpty(attr)) return string.Empty;
+		return "\r\n        " + attr;
+	}
+
+	private static string GetEnumAttributesCore(Type enumType, string valueName)
+	{
+		if(enumType.Name == "TimeUnit" && valueName == "Unknown") return "[EnumBrowsable(false),EditorBrowsable(EditorBrowsableState.Never)]";
+		return null;
+	}
+
 	public static string GetOtherAttributes(string propertyName, string className)
     {
 	    if(className == "Variation" && propertyName == "Column") return "[TypeConverter(typeof(TableColumnConverter)),ReadOnly(true)]";
@@ -473,44 +497,6 @@ partial class Rules {
 		if(propertyName == "TrendGraphic") return "[TypeConverter(typeof(KPITrendGraphicConverter))]";
 		return "";
     }
-
-	private static readonly string[] _enumTypes = new[] {
-		"ContentType",
-		"ExpressionKind",
-		"DataSourceType",
-		"PartitionSourceType",
-		"DataType",
-		"ObjectState",
-		"Alignment",
-		"AggregateFunction",
-		"ColumnType",
-		"RoleMemberType",
-		"ModeType",
-		"DataViewType",
-		"ModelPermission",
-		"ImpersonationMode",
-		"DatasourceIsolation",
-		"RelationshipType",
-		"CrossFilteringBehavior",
-		"SecurityFilteringBehavior",
-		"DateTimeRelationshipBehavior",
-		"RelationshipEndCardinality",
-		"HierarchyHideMembersType",
-		"EncodingHintType",
-		"RefreshType",
-		"ExtendedPropertyType",
-		"MetadataPermission",
-		"PowerBIDataSourceVersion",
-		"SummarizationType",
-		"RefreshGranularityType",
-		"EvaluationBehavior",
-		"RefreshPolicyMode",
-		"RefreshPolicyType",
-		"DirectLakeBehavior",
-		"ValueFilterBehaviorType",
-		"DataSourceVariablesOverrideBehaviorType"
-	};
-	public static readonly Type[] EnumTypes = _enumTypes.Select(t => ASType(t)).Where(t => t != null).ToArray();
 
 	public static readonly Dictionary<Type, string> Aliases = new Dictionary<Type, string>()
 	{

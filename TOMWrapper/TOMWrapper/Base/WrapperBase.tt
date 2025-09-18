@@ -4,7 +4,7 @@
 <#@ assembly name="System.Data.Linq" #>
 <#@ assembly name="System.Xml" #>
 <#@ assembly name="System.Xml.Linq" #>
-<#@ assembly name="$(SolutionDir)\packages\Microsoft.AnalysisServices.19.90.0\lib\net472\Microsoft.AnalysisServices.Tabular.dll" #>
+<#@ assembly name="$(SolutionDir)\packages\Microsoft.AnalysisServices.19.104.1\lib\net472\Microsoft.AnalysisServices.Tabular.dll" #>
 <#@ assembly name="EnvDTE" #>
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System.Linq" #>
@@ -27,7 +27,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
 <#
-   Rules.XmlDocFile = Host.ResolvePath(@"..\..\..\packages\Microsoft.AnalysisServices.19.90.0\lib\net472\Microsoft.AnalysisServices.Tabular.xml");
+   Rules.XmlDocFile = Host.ResolvePath(@"..\..\..\packages\Microsoft.AnalysisServices.19.104.1\lib\net472\Microsoft.AnalysisServices.Tabular.xml");
 
    if(!File.Exists(Rules.XmlDocFile)) {
 	   throw new Exception("Could not locate file: " + Rules.XmlDocFile);
@@ -90,11 +90,13 @@ namespace TabularEditor.TOMWrapper
         };
 	}
 <#
-   foreach(var t in Rules.EnumTypes) {
+   foreach(var t in typeof(Model).Assembly.GetExportedTypes()
+		.Where(t => t.IsEnum && t.Namespace == "Microsoft.AnalysisServices.Tabular" && t.Name != "ObjectType" && t.Name != "TranslatedProperty").OrderBy(t => t.Name)) {
 #>
-	<#= Rules.GetTypeXmlDoc(t) #>
+<#= Rules.GetTypeXmlDoc(t,1) #>
 	public enum <#= t.Name #> {    
 <# foreach(var value in Enum.GetValues(t)) { #>
+<#= Rules.GetEnumXmlDoc(t, Enum.GetName(t, value),2) #><#= Rules.GetEnumAttributes(t, Enum.GetName(t, value)) #>
         <#= Enum.GetName(t, value) #> = <#= (int)value #>,
 <# } #>
 	}

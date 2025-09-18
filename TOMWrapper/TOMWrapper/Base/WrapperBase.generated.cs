@@ -134,7 +134,6 @@ namespace TabularEditor.TOMWrapper
 	    public const string OPTIONS = "Options";
 	    public const string ORDINAL = "Ordinal";
 	    public const string PARAMETERVALUESCOLUMN = "ParameterValuesColumn";
-	    public const string PARENT = "Parent";
 	    public const string PARTITION = "Partition";
 	    public const string PARTITIONS = "Partitions";
 	    public const string PASSWORD = "Password";
@@ -155,6 +154,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string ROLE = "Role";
 	    public const string ROLES = "Roles";
 	    public const string SECURITYFILTERINGBEHAVIOR = "SecurityFilteringBehavior";
+	    public const string SELECTIONEXPRESSIONBEHAVIOR = "SelectionExpressionBehavior";
 	    public const string SERVER = "Server";
 	    public const string SETS = "Sets";
 	    public const string SHOWASVARIATIONSONLY = "ShowAsVariationsOnly";
@@ -277,309 +277,888 @@ namespace TabularEditor.TOMWrapper
 			typeof(CalculationGroupTable)
         };
 	}
-	/// <summary>
-///             The type of the content of a string. E.g. XML or JSON.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1465 or above.</remarks>
-	public enum ContentType {    
-        Xml = 0,
-        Json = 1,
-	}
-	/// <summary>
-///             Indicates the dialect of the query expression.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
-	public enum ExpressionKind {    
-        M = 0,
-	}
-	/// <summary>
-///             The type of DataSource. Currently, the only possible value is Provider.
-///             </summary>
-	public enum DataSourceType {    
-        Provider = 1,
-        Structured = 2,
-	}
-	/// <summary>
-///             An enumeration of possible values for a partition source.
-///             </summary>
-	public enum PartitionSourceType {    
-        Query = 1,
-        Calculated = 2,
-        None = 3,
-        M = 4,
-        Entity = 5,
-        PolicyRange = 6,
-        CalculationGroup = 7,
-        Inferred = 8,
-        Parquet = 9,
-	}
-	/// <summary>
-///             Describes the type of data contained in the column. 
-///             </summary>
-	public enum DataType {    
-        Automatic = 1,
-        String = 2,
-        Int64 = 6,
-        Double = 8,
-        DateTime = 9,
-        Decimal = 10,
-        Boolean = 11,
-        Binary = 17,
-        Unknown = 19,
-        Variant = 20,
-	}
-	/// <summary>
-///             An enumeration of possible values for object state.
-///             </summary>
-	public enum ObjectState {    
-        Ready = 1,
-        NoData = 3,
-        CalculationNeeded = 4,
-        SemanticError = 5,
-        EvaluationError = 6,
-        DependencyError = 7,
-        Incomplete = 8,
-        ForceCalculationNeeded = 10,
-	}
-	/// <summary>
-///             An enumeration of possible values for aligning data in a cell. 
-///             </summary>
-	public enum Alignment {    
-        Default = 1,
-        Left = 2,
-        Right = 3,
-        Center = 4,
-	}
-	/// <summary>
-///             Specifies the aggregate function to be used by reporting tools to summarize column values.
-///             </summary>
+    /// <summary>
+    /// Specifies the aggregate function to be used by reporting tools to summarize column values.
+    /// </summary>
 	public enum AggregateFunction {    
+        /// <summary>
+        /// The default aggregation is Sum for numeric columns. Otherwise the default is None.
+        /// </summary>
         Default = 1,
+        /// <summary>
+        /// Leaves the aggregate function unspecified.
+        /// </summary>
         None = 2,
+        /// <summary>
+        /// Calculates the sum of values contained in the column. This is the default aggregation function.
+        /// </summary>
         Sum = 3,
+        /// <summary>
+        /// Returns the lowest value for all child members.
+        /// </summary>
         Min = 4,
+        /// <summary>
+        /// Returns the highest value for all child members.
+        /// </summary>
         Max = 5,
+        /// <summary>
+        /// Returns the rows count in the table.
+        /// </summary>
         Count = 6,
+        /// <summary>
+        /// Calculates the average of values for all non-empty child members.
+        /// </summary>
         Average = 7,
+        /// <summary>
+        /// Returns the count of all unique child members.
+        /// </summary>
         DistinctCount = 8,
 	}
-	/// <summary>
-///             An enumeration of possible values for a column type. 
-///             </summary>
+    /// <summary>
+    /// An enumeration of possible values for aligning data in a cell.
+    /// </summary>
+	public enum Alignment {    
+        /// <summary>
+        /// Aligns string or numerical values based on the culture.
+        /// </summary>
+        Default = 1,
+        /// <summary>
+        /// Aligns string or numerical values to the left.
+        /// </summary>
+        Left = 2,
+        /// <summary>
+        /// Aligns string or numerical values to the right.
+        /// </summary>
+        Right = 3,
+        /// <summary>
+        /// Centers string or numerical values within a cell.
+        /// </summary>
+        Center = 4,
+	}
+    /// <summary>
+    /// The type of a BindingInfo metadata element.
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1608 or above.</remarks>
+	public enum BindingInfoType {    
+        /// <summary>
+        /// The type of the binding information is unknown.
+        /// </summary>
+        Unknown = 0,
+        /// <summary>
+        /// The binding information is used as a hint for binding a data-source to a data-connection in Power BI service.
+        /// </summary>
+        DataBindingHint = 1,
+	}
+    /// <summary>
+    /// Options for selections on calculation groups which do not invoke a calculation item.
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1605 or above.</remarks>
+	public enum CalculationGroupSelectionMode {    
+        /// <summary>
+        /// Invalid selection value for CalculationGroupSelectionMode
+        /// </summary>
+        Unknown = 0,
+        /// <summary>
+        /// Multiple calculation items were referenced in the calculation group.
+        /// </summary>
+        MultipleOrEmptySelection = 1,
+        /// <summary>
+        /// No calculation items nor the calculation group were referenced in the calculation group.
+        /// </summary>
+        NoSelection = 2,
+	}
+    /// <summary>
+    /// An enumeration of possible values for a column type.
+    /// </summary>
 	public enum ColumnType {    
+        /// <summary>
+        /// The contents of this column come from a DataSource.
+        /// </summary>
         Data = 1,
+        /// <summary>
+        /// The contents of this column are computed by using an expression after the Data columns have been populated.
+        /// </summary>
         Calculated = 2,
+        /// <summary>
+        /// This column is automatically added by the Server to every table.
+        /// </summary>
         RowNumber = 3,
+        /// <summary>
+        /// The column exists in a calculated table, where the table and its columns are based on a calculated expression.
+        /// </summary>
         CalculatedTableColumn = 4,
 	}
-	/// <summary>
-///             Indicates whether the particular member of a security role is an individual user or a group of users, or if the member is automatically detected.
-///             </summary>
-	public enum RoleMemberType {    
-        Auto = 1,
-        User = 2,
-        Group = 3,
-	}
-	/// <summary>
-///             Defines the method for making data available in the partition.
-///             </summary>
-	public enum ModeType {    
-        Import = 0,
-        DirectQuery = 1,
-        Default = 2,
-        Push = 3,
-        Dual = 4,
-        DirectLake = 5,
-	}
-	/// <summary>
-///             Determines which partitions are to be selected to run queries against the model.
-///             </summary>
-	public enum DataViewType {    
-        Full = 0,
-        Sample = 1,
-        Default = 3,
-	}
-	/// <summary>
-///             An enumeration of possible model permissions that can be used in a Role object.
-///             </summary>
-	public enum ModelPermission {    
-        None = 1,
-        Read = 2,
-        ReadRefresh = 3,
-        Refresh = 4,
-        Administrator = 5,
-	}
-	/// <summary>
-///             Determines how credentials are obtained for an impersonated connection to a data source during data import or refresh.
-///             </summary>
-	public enum ImpersonationMode {    
-        Default = 1,
-        ImpersonateAccount = 2,
-        ImpersonateAnonymous = 3,
-        ImpersonateCurrentUser = 4,
-        ImpersonateServiceAccount = 5,
-        ImpersonateUnattendedAccount = 6,
-	}
-	/// <summary>
-///             Controls the locking behavior of the SQL statements when executing commands against the data source. 
-///             </summary>
-	public enum DatasourceIsolation {    
-        ReadCommitted = 1,
-        Snapshot = 2,
-	}
-	/// <summary>
-///             The type of relationship. Currently, the only possible value is SingleColumn.
-///             </summary>
-	public enum RelationshipType {    
-        SingleColumn = 1,
-	}
-	/// <summary>
-///             Indicates how relationships influence filtering of data. The enumeration defines the possible behaviors.
-///             </summary>
-	public enum CrossFilteringBehavior {    
-        OneDirection = 1,
-        BothDirections = 2,
-        Automatic = 3,
-	}
-	/// <summary>
-///             Indicates how relationships influence filtering of data when evaluating row-level security expressions. The enumeration defines the possible behaviors.
-///             </summary>
-	public enum SecurityFilteringBehavior {    
-        OneDirection = 1,
-        BothDirections = 2,
-        None = 3,
-	}
-	/// <summary>
-///             When joining two date time columns, indicates whether to join on date and time parts or on date part only.
-///             </summary>
-	public enum DateTimeRelationshipBehavior {    
-        DateAndTime = 1,
-        DatePartOnly = 2,
-	}
-	/// <summary>
-///             An enumeration of possible values for defining cardinality on either side of a table relationship.
-///             </summary>
-	public enum RelationshipEndCardinality {    
-        None = 0,
-        One = 1,
-        Many = 2,
-	}
-	/// <summary>
-///             Ragged/unbalanced hierarchies can be enabled by hiding members.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
-	public enum HierarchyHideMembersType {    
-        Default = 0,
-        HideBlankMembers = 1,
-	}
-	/// <summary>
-///             Encoding hint to suggest whether a column should use hash encoding.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
-	public enum EncodingHintType {    
-        Default = 0,
-        Hash = 1,
-        Value = 2,
-	}
-	/// <summary>
-///             An enumeration of possible values for a refresh type.
-///             </summary>
-	public enum RefreshType {    
-        Full = 1,
-        ClearValues = 2,
-        Calculate = 3,
-        DataOnly = 4,
-        Automatic = 5,
-        Add = 7,
-        Defragment = 8,
-	}
-	/// <summary>
-///             An enumeration of possible values for the type of value stored in extended property.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
-	public enum ExtendedPropertyType {    
-        String = 0,
+    /// <summary>
+    /// The type of the content of a string. E.g. XML or JSON.
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1465 or above.</remarks>
+	public enum ContentType {    
+        /// <summary>
+        /// XML content.
+        /// </summary>
+        Xml = 0,
+        /// <summary>
+        /// JSON content.
+        /// </summary>
         Json = 1,
 	}
-	/// <summary>
-///             Access control to a data defined by a metadata object.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
-	public enum MetadataPermission {    
-        Default = 0,
-        None = 1,
-        Read = 2,
+    /// <summary>
+    /// Indicates how relationships influence filtering of data. The enumeration defines the possible behaviors.
+    /// </summary>
+	public enum CrossFilteringBehavior {    
+        /// <summary>
+        /// The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship.
+        /// </summary>
+        OneDirection = 1,
+        /// <summary>
+        /// Filters on either end of the relationship will automatically filter the other table.
+        /// </summary>
+        BothDirections = 2,
+        /// <summary>
+        /// The engine will analyze the relationships and choose one of the behaviors by using heuristics.
+        /// </summary>
+        Automatic = 3,
 	}
-	/// <summary>
-///             DataSource format version in Power BI Service.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1450 or above.</remarks>
-	public enum PowerBIDataSourceVersion {    
-        PowerBI_V1 = 0,
-        PowerBI_V2 = 1,
-        PowerBI_V3 = 2,
+    /// <summary>
+    /// Specifies the mode for resetting culture and\or collation.
+    /// </summary>
+	public enum CultureResetMode {    
+        /// <summary>
+        /// Unknown. User should not use this value.
+        /// </summary>
+        Unknown = 0,
+        /// <summary>
+        /// Resets only the culture.
+        /// </summary>
+        CultureOnly = 1,
+        /// <summary>
+        /// Resets only the collation.
+        /// </summary>
+        CollationOnly = 2,
+        /// <summary>
+        /// Resets both culture and collation.
+        /// </summary>
+        CultureAndCollation = 3,
 	}
-	/// <summary>
-///             Specifies the Summarization type to be used by alternative sources' columns.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1460 or above.</remarks>
-	public enum SummarizationType {    
-        GroupBy = 0,
-        Sum = 1,
-        Count = 2,
-        Min = 3,
-        Max = 4,
+    /// <summary>
+    /// Controls the locking behavior of the SQL statements when executing commands against the data source.
+    /// </summary>
+	public enum DatasourceIsolation {    
+        /// <summary>
+        /// Specifies that statements cannot read data that has been modified, but not committed, by other transactions. This prevents dirty reads.
+        /// </summary>
+        ReadCommitted = 1,
+        /// <summary>
+        /// Specifies that the data read by any statement in a transaction is transactionally consistent, as if the statements in a transaction receive a snapshot of the committed data as it existed at the start of the transaction.
+        /// </summary>
+        Snapshot = 2,
 	}
-	/// <summary>
-///             Specifies the granularity of the refresh policy for auto partitioning
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1450 or above.</remarks>
-	public enum RefreshGranularityType {    
-        Day = 0,
-        Month = 1,
-        Quarter = 2,
-        Year = 3,
-        Invalid = -1,
+    /// <summary>
+    /// The type of DataSource. Currently, the only possible value is Provider.
+    /// </summary>
+	public enum DataSourceType {    
+        /// <summary>
+        /// A data source having a data provider and connection string.
+        /// </summary>
+        Provider = 1,
+        /// <summary>
+        /// For internal use only.
+        /// </summary><remarks>This value is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+        Structured = 2,
 	}
-	/// <summary>
-///             Evaluation behavior for calculated column.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at Preview or above.</remarks>
-	public enum EvaluationBehavior {    
+    /// <summary>
+    /// Data source edit varaibles override behaviour type. E.g. Disallow or Allow.
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1475 or above.</remarks>
+	public enum DataSourceVariablesOverrideBehaviorType {    
+        /// <summary>
+        /// Queries won't allow data source variables override.
+        /// </summary>
+        Disallow = 0,
+        /// <summary>
+        /// Queries allow data source variables override.
+        /// </summary>
+        Allow = 1,
+	}
+    /// <summary>
+    /// Describes the type of data contained in the column.
+    /// </summary>
+	public enum DataType {    
+        /// <summary>
+        /// Internal only.
+        /// </summary>
         Automatic = 1,
-        Static = 2,
-        Dynamic = 3,
+        /// <summary>
+        /// Column or measure contains string data values.
+        /// </summary>
+        String = 2,
+        /// <summary>
+        /// Column or measure contains integers.
+        /// </summary>
+        Int64 = 6,
+        /// <summary>
+        /// Column or measure contains double-precision floating-point numbers.
+        /// </summary>
+        Double = 8,
+        /// <summary>
+        /// Column or measure contains date and time data
+        /// </summary>
+        DateTime = 9,
+        /// <summary>
+        /// Column or measure contains decimal data values.
+        /// </summary>
+        Decimal = 10,
+        /// <summary>
+        /// Column or measure contains boolean data values.
+        /// </summary>
+        Boolean = 11,
+        /// <summary>
+        /// Column or measure contains binary data.
+        /// </summary>
+        Binary = 17,
+        /// <summary>
+        /// Initial value of a newly created column, replaced with an actual value after saving a Column to the Server.
+        /// </summary>
+        Unknown = 19,
+        /// <summary>
+        /// A measure with varying data type.
+        /// </summary>
+        Variant = 20,
 	}
-	/// <summary>
-///             Mode of a refresh policy.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1565 or above.</remarks>
-	public enum RefreshPolicyMode {    
-        Import = 0,
-        Hybrid = 1,
+    /// <summary>
+    /// Determines which partitions are to be selected to run queries against the model.
+    /// </summary>
+	public enum DataViewType {    
+        /// <summary>
+        /// Partitions with DataView set to Default or Full are selected.
+        /// </summary>
+        Full = 0,
+        /// <summary>
+        /// Partitions with DataView set to Default or Sample are selected.
+        /// </summary>
+        Sample = 1,
+        /// <summary>
+        /// Only Partitions can use this value. When set, the partition will inherit the DataView from the Model.
+        /// </summary>
+        Default = 3,
 	}
-	/// <summary>
-///             Specifies the refresh policy type of a table
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1450 or above.</remarks>
-	public enum RefreshPolicyType {    
-        Basic = 0,
+    /// <summary>
+    /// When joining two date time columns, indicates whether to join on date and time parts or on date part only.
+    /// </summary>
+	public enum DateTimeRelationshipBehavior {    
+        /// <summary>
+        /// When joining two date time columns, join on both the date and time parts.
+        /// </summary>
+        DateAndTime = 1,
+        /// <summary>
+        /// When joining two date time columns, join on date part only.
+        /// </summary>
+        DatePartOnly = 2,
 	}
-	/// <summary>
-///             Fallback behavior for Direct Lake models.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1604 or above.</remarks>
+    /// <summary>
+    /// Fallback behavior for Direct Lake models.
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1604 or above.</remarks>
 	public enum DirectLakeBehavior {    
+        /// <summary>
+        /// Adaptive fallback, shipped in public preview.
+        /// </summary>
         Automatic = 0,
+        /// <summary>
+        /// Disables fallback. Uses Direct Lake unconditionally.
+        /// </summary>
         DirectLakeOnly = 1,
+        /// <summary>
+        /// Enforces fallback. Uses DirectQuery unconditionally.
+        /// </summary>
         DirectQueryOnly = 2,
 	}
-	/// <summary>
-///             Determines value filter behavior for SummarizeColumns
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1606 or above.</remarks>
-	public enum ValueFilterBehaviorType {    
-        Automatic = 0,
-        Independent = 1,
-        Coalesced = 2,
+    /// <summary>
+    /// Encoding hint to suggest whether a column should use hash encoding.
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+	public enum EncodingHintType {    
+        /// <summary>
+        /// Default behavior - the server will automatically decide which encoding to use
+        /// </summary>
+        Default = 0,
+        /// <summary>
+        /// Hash encoding
+        /// </summary>
+        Hash = 1,
+        /// <summary>
+        /// Value encoding
+        /// </summary>
+        Value = 2,
 	}
-	/// <summary>
-///             Data source edit varaibles override behaviour type. E.g. Disallow or Allow.
-///             </summary><remarks>This enum is only supported when the compatibility level of the database is at 1475 or above.</remarks>
-	public enum DataSourceVariablesOverrideBehaviorType {    
-        Disallow = 0,
-        Allow = 1,
+    /// <summary>
+    /// Evaluation behavior for calculated column.
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at Preview or above.</remarks>
+	public enum EvaluationBehavior {    
+        /// <summary>
+        /// Default value, used for backward compatibility. Maps to Static or Dynamic depending on the table properties.
+        /// </summary>
+        Automatic = 1,
+        /// <summary>
+        /// Evaluation is performed during processing and the result is materialized.
+        /// </summary>
+        Static = 2,
+        /// <summary>
+        /// Evaluation is performed dynamically and the result is not materialized.
+        /// </summary>
+        Dynamic = 3,
+	}
+    /// <summary>
+    /// Indicates the dialect of the query expression.
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+	public enum ExpressionKind {    
+        /// <summary>
+        /// The expression is based on the M dialect.
+        /// </summary>
+        M = 0,
+	}
+    /// <summary>
+    /// An enumeration of possible values for the type of value stored in extended property.
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+	public enum ExtendedPropertyType {    
+        /// <summary>
+        /// The value in this extended property is a raw string with no specific formatting
+        /// </summary>
+        String = 0,
+        /// <summary>
+        /// The value in this extended property is a Json.
+        /// </summary>
+        Json = 1,
+	}
+    /// <summary>
+    /// Ragged/unbalanced hierarchies can be enabled by hiding members.
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+	public enum HierarchyHideMembersType {    
+        /// <summary>
+        /// Regular (balanced) hierarchy
+        /// </summary>
+        Default = 0,
+        /// <summary>
+        /// Hide the member if it has a blank value
+        /// </summary>
+        HideBlankMembers = 1,
+	}
+    /// <summary>
+    /// Determines how credentials are obtained for an impersonated connection to a data source during data import or refresh.
+    /// </summary>
+	public enum ImpersonationMode {    
+        /// <summary>
+        /// Uses the inherited value from the ImpersonationMode on the DataSourceImpersonationInfo object in the database.
+        /// </summary>
+        Default = 1,
+        /// <summary>
+        /// A Windows user account having read permissions on the external data source.
+        /// </summary>
+        ImpersonateAccount = 2,
+        /// <summary>
+        /// Not supported.
+        /// </summary>
+        ImpersonateAnonymous = 3,
+        /// <summary>
+        /// Not supported for tabular model databases attached to an Analysis Services instance.
+        /// </summary>
+        ImpersonateCurrentUser = 4,
+        /// <summary>
+        /// Startup account of the Analysis Services instance. This account must have read permissions on a data source to enable data refresh.
+        /// </summary>
+        ImpersonateServiceAccount = 5,
+        /// <summary>
+        /// Do not reference this member directly in your code. It supports the Analysis Services infrastructure.
+        /// </summary>
+        ImpersonateUnattendedAccount = 6,
+	}
+    /// <summary>
+    /// Access control to a data defined by a metadata object.
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+	public enum MetadataPermission {    
+        /// <summary>
+        /// Default behavior - no access control is enforced
+        /// </summary>
+        Default = 0,
+        /// <summary>
+        /// Access to the data is restricted
+        /// </summary>
+        None = 1,
+        /// <summary>
+        /// Access to the data is unrestricted
+        /// </summary>
+        Read = 2,
+	}
+    /// <summary>
+    /// An enumeration of possible model permissions that can be used in a Role object.
+    /// </summary>
+	public enum ModelPermission {    
+        /// <summary>
+        /// The role has no access to the model.
+        /// </summary>
+        None = 1,
+        /// <summary>
+        /// The role can read metadata and data of the model.
+        /// </summary>
+        Read = 2,
+        /// <summary>
+        /// The role has read and refresh permission.
+        /// </summary>
+        ReadRefresh = 3,
+        /// <summary>
+        /// The role can refresh the data and calculations in the model.
+        /// </summary>
+        Refresh = 4,
+        /// <summary>
+        /// Provides full access to the model.
+        /// </summary>
+        Administrator = 5,
+	}
+    /// <summary>
+    /// Defines the method for making data available in the partition.
+    /// </summary>
+	public enum ModeType {    
+        /// <summary>
+        /// Data will be imported from a data source.
+        /// </summary>
+        Import = 0,
+        /// <summary>
+        /// Data will be queried dynamically from a data source.
+        /// </summary>
+        DirectQuery = 1,
+        /// <summary>
+        /// Only partitions can use this value. When set, the partition will inherit the DefaultMode of the Model.
+        /// </summary>
+        Default = 2,
+        /// <summary>
+        /// Do not reference this member directly in your code. It supports the Analysis Services infrastructure.
+        /// </summary><remarks>This value is only supported for Pbi server.</remarks>
+        Push = 3,
+        /// <summary>
+        /// Uses both Import and DirectQuery storage modes to support queries in composite models with high performance.
+        /// </summary><remarks>This value is only supported when the compatibility level of the database is at 1455 or above.</remarks>
+        Dual = 4,
+        /// <summary>
+        /// Data will be loaded into memory from the data lake or queried dynamically if DirectLake fallback is enabled.
+        /// </summary><remarks>This value is only supported when the compatibility level of the database is at 1604 or above.</remarks>
+        DirectLake = 5,
+	}
+    /// <summary>
+    /// An enumeration of possible values for object state.
+    /// </summary>
+	public enum ObjectState {    
+        /// <summary>
+        /// Object is refreshed, contains up-to-date data, and is queryable.
+        /// </summary>
+        Ready = 1,
+        /// <summary>
+        /// Object is queryable but contains no data. Refresh it to bring in data. Applies to non-calculated objects, such as DataColumns, partitions, and Tables.
+        /// </summary>
+        NoData = 3,
+        /// <summary>
+        /// Object is not queryable and contains no data. It needs to be refreshed to become functional. Applies only to calculated objects, such as calculated columns, hierarchies, and calculated tables.
+        /// </summary>
+        CalculationNeeded = 4,
+        /// <summary>
+        /// Object is in an error state because of an invalid expression. It is not queryable.
+        /// </summary>
+        SemanticError = 5,
+        /// <summary>
+        /// Object is in an error state because an error occurred during expression evaluation. It is not queryable.
+        /// </summary>
+        EvaluationError = 6,
+        /// <summary>
+        /// Object is in an error state because some of its calculation dependencies are in an error state. It is not queryable.
+        /// </summary>
+        DependencyError = 7,
+        /// <summary>
+        /// Some parts of the object have no data. Refresh the object to add the rest of the data. The object is queryable. Applies to non-calculated objects, such as DataColumns, partitions, and tables.
+        /// </summary>
+        Incomplete = 8,
+        /// <summary>
+        /// The data is possibly outdated, but is in a queryable state. Applies only for CalculatedTable.
+        /// </summary><remarks>This value is only supported at database compatibility level of 1400 or above for Pbi server.</remarks>
+        ForceCalculationNeeded = 10,
+	}
+    /// <summary>
+    /// An enumeration of possible values for a partition source.
+    /// </summary>
+	public enum PartitionSourceType {    
+        /// <summary>
+        /// The data in this partition is retrieved by executing a query against a DataSource.
+        /// </summary>
+        Query = 1,
+        /// <summary>
+        /// The data in this partition is populated by executing a calculated expression.
+        /// </summary>
+        Calculated = 2,
+        /// <summary>
+        /// The source is undefined. Data can come from pushed data or from out of line bindings that pull in data from an explicitly specified data source.
+        /// </summary>
+        None = 3,
+        /// <summary>
+        /// The partition uses an M expression to retrieve the data.
+        /// </summary><remarks>This value is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+        M = 4,
+        /// <summary>
+        /// The data in this partition is obtained by querying the named entity from the underlying DataSource/Provider.
+        /// </summary><remarks>This value is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+        Entity = 5,
+        /// <summary>
+        /// The partition uses an M expression to retrieve the data. The partition ranges are auto created based on RefreshPolicy.
+        /// </summary><remarks>This value is only supported when the compatibility level of the database is at 1450 or above.</remarks>
+        PolicyRange = 6,
+        /// <summary>
+        /// The partition uses CalculationGroup as a source.
+        /// </summary><remarks>This value is only supported when the compatibility level of the database is at 1470 or above.</remarks>
+        CalculationGroup = 7,
+        /// <summary>
+        /// The data in this partition is populated by executing a query generated by the system.
+        /// </summary><remarks>This value is only supported when the compatibility level of the database is at 1563 or above.</remarks>
+        Inferred = 8,
+        /// <summary>
+        /// The data in this partition is populated from parquet file.
+        /// </summary><remarks>This value is only supported when the compatibility level of the database is at Internal or above.</remarks>
+        Parquet = 9,
+	}
+    /// <summary>
+    /// DataSource format version in Power BI Service.
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1450 or above.</remarks>
+	public enum PowerBIDataSourceVersion {    
+        /// <summary>
+        /// Power BI V1 Data Sources store the M expressions directly inside the connection strings.
+        /// </summary>
+        PowerBI_V1 = 0,
+        /// <summary>
+        /// Power BI V2 Data Sources use shared M Expressions.
+        /// </summary>
+        PowerBI_V2 = 1,
+        /// <summary>
+        /// Power BI V3 Data Sources support basic partition management operations.
+        /// </summary><remarks>This value is only supported when the compatibility level of the database is at 1465 or above.</remarks>
+        PowerBI_V3 = 2,
+	}
+    /// <summary>
+    /// Specifies the granularity of the refresh policy for auto partitioning
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1450 or above.</remarks>
+	public enum RefreshGranularityType {    
+        /// <summary>
+        /// Granularity of a day
+        /// </summary>
+        Day = 0,
+        /// <summary>
+        /// Granularity of a month
+        /// </summary>
+        Month = 1,
+        /// <summary>
+        /// Granularity of a quarter
+        /// </summary>
+        Quarter = 2,
+        /// <summary>
+        /// Granularity of a year
+        /// </summary>
+        Year = 3,
+        /// <summary>
+        /// Invalid Granularity
+        /// </summary>
+        Invalid = -1,
+	}
+    /// <summary>
+    /// The behavior regarding refresh-policy governed objects in the refresh.
+    /// </summary>
+	public enum RefreshPolicyBehavior {    
+        /// <summary>
+        /// Applying the default behavior.
+        /// </summary>
+        Default = 0,
+        /// <summary>
+        /// Ignoring the refresh-policy, even if exists.
+        /// </summary>
+        Ignore = 1,
+	}
+    /// <summary>
+    /// Mode of a refresh policy.
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1565 or above.</remarks>
+	public enum RefreshPolicyMode {    
+        /// <summary>
+        /// Creates import partitions during incremental refresh.
+        /// </summary>
+        Import = 0,
+        /// <summary>
+        /// Creates import and DirectQuery partitions during incremental refresh.
+        /// </summary>
+        Hybrid = 1,
+	}
+    /// <summary>
+    /// Specifies the refresh policy type of a table
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1450 or above.</remarks>
+	public enum RefreshPolicyType {    
+        /// <summary>
+        /// Basic refresh policy
+        /// </summary>
+        Basic = 0,
+	}
+    /// <summary>
+    /// An enumeration of possible values for a refresh type.
+    /// </summary>
+	public enum RefreshType {    
+        /// <summary>
+        /// For all partitions in the specified partition, table, or database, refresh data and recalculate all dependents. For a calculation partition, recalculate the partition and all its dependents.
+        /// </summary>
+        Full = 1,
+        /// <summary>
+        /// Clear values in this object and all its dependents.
+        /// </summary>
+        ClearValues = 2,
+        /// <summary>
+        /// Recalculate this object and all its dependents, but only if needed. This value does not force recalculation, except for volatile formulas.
+        /// </summary>
+        Calculate = 3,
+        /// <summary>
+        /// Refresh data in this object and clear all dependents.
+        /// </summary>
+        DataOnly = 4,
+        /// <summary>
+        /// If the object needs to be refreshed and recalculated, refresh and recalculate the object and all its dependents. Applies if the partition is in a state other than Ready.
+        /// </summary>
+        Automatic = 5,
+        /// <summary>
+        /// Append data to this partition and recalculate all dependents. This command is valid only for regular partitions and not for calculation partitions.
+        /// </summary>
+        Add = 7,
+        /// <summary>
+        /// Defragment the data in the specified table. As data is added to or removed from a table, the dictionaries of each column can become polluted with values that no longer exist in the actual column values. The defragment option will clean up the values in the dictionaries that are no longer used.
+        /// </summary>
+        Defragment = 8,
+	}
+    /// <summary>
+    /// An enumeration of possible values for defining cardinality on either side of a table relationship.
+    /// </summary>
+	public enum RelationshipEndCardinality {    
+        /// <summary>
+        /// The relationship is unspecified.
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// Specifies the 'one' side of a one-to-one or one-to-many relationship.
+        /// </summary>
+        One = 1,
+        /// <summary>
+        /// Specifies the 'many' side of a one-to-many relationship.
+        /// </summary>
+        Many = 2,
+	}
+    /// <summary>
+    /// The type of relationship. Currently, the only possible value is SingleColumn.
+    /// </summary>
+	public enum RelationshipType {    
+        /// <summary>
+        /// Relationships are constructed using a column-to-column mapping.
+        /// </summary>
+        SingleColumn = 1,
+	}
+    /// <summary>
+    /// Indicates whether the particular member of a security role is an individual user or a group of users, or if the member is automatically detected.
+    /// </summary>
+	public enum RoleMemberType {    
+        /// <summary>
+        /// Member of security role is automatically detected.
+        /// </summary>
+        Auto = 1,
+        /// <summary>
+        /// Member of security role is an individual user.
+        /// </summary>
+        User = 2,
+        /// <summary>
+        /// Member of security role is a group of users.
+        /// </summary>
+        Group = 3,
+	}
+    /// <summary>
+    /// Advanced options that can be used to control the behavior of a SaveChanges operation.
+    /// </summary>
+	public enum SaveFlags {    
+        /// <summary>
+        /// Default SaveChanges behavior.
+        /// </summary><remarks>All the pending model changes are packed in a batch containing Create/Alter/Delete/Rename/Process commands together with a SequencePoint command, that trigger immediate validation on the Server if used inside transaction, and sent to the Server.</remarks>
+        Default = 0,
+        /// <summary>
+        /// Delay the validation in the SaveChanges.
+        /// </summary><remarks><para>All the pending model changes are packed in a batch containing Create/Alter/Delete/Rename/Process commands and sent to the Server, but no SequencePoint command is sent, which will delay the validation of changes on the Server.</para><para>This flag can only be used inside a transaction, as any operation outside a transaction will cause implicit transaction to be created and committed on Server, which will trigger the validation anyway.</para></remarks>
+        DelayValidation = 1,
+        /// <summary>
+        /// Force the validation in the SaveChanges.
+        /// </summary><remarks><para>Forcing a validation of any changes that were already saved to the server, but are still pending to be commited, by sending SequencePoint command. If the model has any pending local changes, they will be also sent along with SequencePoint command.</para><para>This flag can only be used inside a transaction, as any operation outside a transaction will cause implicit transaction to be created and committed on Server, which will trigger the validation anyway.</para></remarks>
+        ForceValidation = 2,
+	}
+    /// <summary>
+    /// Indicates how relationships influence filtering of data when evaluating row-level security expressions. The enumeration defines the possible behaviors.
+    /// </summary>
+	public enum SecurityFilteringBehavior {    
+        /// <summary>
+        /// The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship.
+        /// </summary>
+        OneDirection = 1,
+        /// <summary>
+        /// Filters on either end of the relationship will automatically filter the other table.
+        /// </summary>
+        BothDirections = 2,
+        /// <summary>
+        /// No filtering will occur from either end of the relationship.
+        /// </summary><remarks>This value is only supported when the compatibility level of the database is at 1561 or above.</remarks>
+        None = 3,
+	}
+    /// <summary>
+    /// Determines Selection Expression behavior for Calculation groups
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1609 or above.</remarks>
+	public enum SelectionExpressionBehaviorType {    
+        /// <summary>
+        /// Automatically determines Selection Expression behavior based on database compability level.
+        /// </summary>
+        Automatic = 0,
+        /// <summary>
+        /// Subtotals are determined by Selection Expressions when grouping by Calculation Groups. Multi-selection yields BLANK() when the MultipleOrEmptySelectionExpression is undefined.
+        /// </summary>
+        Visual = 1,
+        /// <summary>
+        /// Subtotals are hidden when grouping by Calculation Groups. Multi-selection yields SELECTEDMEASURE() when the MultipleOrEmptySelectionExpression is undefined.
+        /// </summary>
+        NonVisual = 2,
+	}
+    /// <summary>
+    /// Specifies the Summarization type to be used by alternative sources' columns.
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1460 or above.</remarks>
+	public enum SummarizationType {    
+        /// <summary>
+        /// GroupBy type aggregation.
+        /// </summary>
+        GroupBy = 0,
+        /// <summary>
+        /// Sum type aggregation.
+        /// </summary>
+        Sum = 1,
+        /// <summary>
+        /// Count type aggregation.
+        /// </summary>
+        Count = 2,
+        /// <summary>
+        /// Min type aggregation.
+        /// </summary>
+        Min = 3,
+        /// <summary>
+        /// Max type aggregation.
+        /// </summary>
+        Max = 4,
+	}
+    /// <summary>
+    /// Various options for units that describe time information.
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1701 or above.</remarks>
+	public enum TimeUnit {    
+        /// <summary>
+        /// Unknown unit of time.
+        /// </summary>
+        [EnumBrowsable(false),EditorBrowsable(EditorBrowsableState.Never)]
+        Unknown = 0,
+        /// <summary>
+        /// The information about the year; e.g. '2022'.
+        /// </summary>
+        Year = 1,
+        /// <summary>
+        /// The information about the semester; e.g. 'S1 2022'.
+        /// </summary>
+        Semester = 2,
+        /// <summary>
+        /// The information of the semester within the year; e.g. '2'.
+        /// </summary>
+        SemesterOfYear = 3,
+        /// <summary>
+        /// The information about the quarter; e.g. 'Q3 2022'.
+        /// </summary>
+        Quarter = 4,
+        /// <summary>
+        /// The information of the quarter within the year; e.g. '4'.
+        /// </summary>
+        QuarterOfYear = 5,
+        /// <summary>
+        /// The information of the quarter within the semester; e.g. '1'.
+        /// </summary>
+        QuarterOfSemester = 6,
+        /// <summary>
+        /// The information about the month; e.g. 'January 2022'.
+        /// </summary>
+        Month = 7,
+        /// <summary>
+        /// The information of the month within the year; e.g. 'January'.
+        /// </summary>
+        MonthOfYear = 8,
+        /// <summary>
+        /// The information of the quarter within the semester; e.g. '5'.
+        /// </summary>
+        MonthOfSemester = 9,
+        /// <summary>
+        /// The information of the quarter within the quarter; e.g. '2'.
+        /// </summary>
+        MonthOfQuarter = 10,
+        /// <summary>
+        /// The information about the week; e.g. 'Week 49 2022'.
+        /// </summary>
+        Week = 11,
+        /// <summary>
+        /// The information of the week within the year; e.g. 'Week 49'.
+        /// </summary>
+        WeekOfYear = 12,
+        /// <summary>
+        /// The information of the week within the semester; e.g. '15'.
+        /// </summary>
+        WeekOfSemester = 13,
+        /// <summary>
+        /// The information of the week within the quarter; e.g. '11'.
+        /// </summary>
+        WeekOfQuarter = 14,
+        /// <summary>
+        /// The information of the week within the month; e.g. '3'.
+        /// </summary>
+        WeekOfMonth = 15,
+        /// <summary>
+        /// The information about the exact date; e.g. 'January 1st 2022'.
+        /// </summary>
+        Date = 16,
+        /// <summary>
+        /// The information of the day within the year; e.g. '241'.
+        /// </summary>
+        DayOfYear = 17,
+        /// <summary>
+        /// The information of the day within the semester; e.g. '115'.
+        /// </summary>
+        DayOfSemester = 18,
+        /// <summary>
+        /// The information of the day within the quarter; e.g. '71'.
+        /// </summary>
+        DayOfQuarter = 19,
+        /// <summary>
+        /// The information of the day within the month; e.g. '23'.
+        /// </summary>
+        DayOfMonth = 20,
+        /// <summary>
+        /// The information of the day within the week; e.g. '4'.
+        /// </summary>
+        DayOfWeek = 21,
+	}
+    /// <summary>
+    /// Determines value filter behavior for SummarizeColumns
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1606 or above.</remarks>
+	public enum ValueFilterBehaviorType {    
+        /// <summary>
+        /// Automatically determines value filter behavior based on database compability level.
+        /// </summary>
+        Automatic = 0,
+        /// <summary>
+        /// Value filters in SummarizeColumns are applied independently to measure.
+        /// </summary>
+        Independent = 1,
+        /// <summary>
+        /// Value filters in SummarizeColumns are applied to table first, then to measure.
+        /// </summary>
+        Coalesced = 2,
 	}
   
 	/// <summary>
-///             Variation object.
-///             </summary><remarks>This metadata object is only supported for Pbi server, at database compatibility level of 1400 or above for Box server, at database compatibility level of 1400 or above for Excel server.</remarks>
+/// Variation object.
+/// </summary><remarks>This metadata object is only supported for Pbi server, at database compatibility level of 1400 or above for Box server, at database compatibility level of 1400 or above for Excel server.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Variation: TabularNamedObject
 			, IDescriptionObject
@@ -1258,8 +1837,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Represents a data source that uses JSON-based extensible protocol to define the location and mechanism of retrieving the data.
-///             </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+/// Represents a data source that uses JSON-based extensible protocol to define the location and mechanism of retrieving the data.
+/// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class StructuredDataSource: DataSource
 			, IClonableObject
@@ -1431,8 +2010,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             Represents a column that is based on a DAX expression in a Table that also contains DataColumns and a RowNumberColumn. A CalculatedColumn can also be added to a calculated table.
-///             </summary>
+/// Represents a column that is based on a DAX expression in a Table that also contains DataColumns and a RowNumberColumn. A CalculatedColumn can also be added to a calculated table.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class CalculatedColumn: Column
 			, IExpressionObject
@@ -1639,8 +2218,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             Represents a column in a Table that is based on a DAX expression. A collection of CalculatedTableColumn, under a Table object bound to a partition with Source of type CalculatedPartitionSource, results in a calculated table.
-///             </summary>
+/// Represents a column in a Table that is based on a DAX expression. A collection of CalculatedTableColumn, under a Table object bound to a partition with Source of type CalculatedPartitionSource, results in a calculated table.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class CalculatedTableColumn: Column
 			, IClonableObject
@@ -1855,8 +2434,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             Represents a base class of a column object of a Tabular model, used to specify a DataColumn, RowNumberColumn, CalculatedColumn, or CalculatedTableColumn.
-///             </summary>
+/// Represents a base class of a column object of a Tabular model, used to specify a DataColumn, RowNumberColumn, CalculatedColumn, or CalculatedTableColumn.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public abstract partial class Column: TabularNamedObject
 			, IFolderObject
@@ -2634,7 +3213,7 @@ namespace TabularEditor.TOMWrapper
 		private bool ShouldSerializeEncodingHint() { return false; }
 /// <summary>
 ///             A tag that represents the lineage of the object.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
+///             </summary><remarks><para>Lineage tags enable stable identification of objects across different semantic models. Using lineage tags enables Power BI features such as composite models to maintain their binding to referenced tables or columns, even if the source semantic model object is renamed.</para><para>This property is only supported when the compatibility level of the database is at 1540 or above.</para></remarks>
 		[DisplayName("Lineage Tag")]
 		[Category("Options"),Description(@"A tag that represents the lineage of the object."),IntelliSense(@"A tag that represents the lineage of the object.")]
 		public string LineageTag {
@@ -3228,8 +3807,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Represents a user culture. It is a child of a Model object, used for translating strings and formatting values.
-///             </summary>
+/// Represents a user culture. It is a child of a Model object, used for translating strings and formatting values.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Culture: TabularNamedObject
 			, IInternalAnnotationObject
@@ -3723,8 +4302,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Represents a column in a Table that gets data from an external data source.
-///             </summary>
+/// Represents a column in a Table that gets data from an external data source.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class DataColumn: Column
 			, IClonableObject
@@ -3902,8 +4481,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             Defines an open connection to an external data source for import, refresh, or DirectQuery operations on a Tabular <see cref="T:TabularEditor.TOMWrapper.Model" />.
-///             </summary>
+/// Defines an open connection to an external data source for import, refresh, or DirectQuery operations on a Tabular <see cref="T:TabularEditor.TOMWrapper.Model" />.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public abstract partial class DataSource: TabularNamedObject
 			, IDescriptionObject
@@ -4404,8 +4983,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             For internal use only.
-///             </summary>
+/// For internal use only.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class ExternalModelRoleMember: ModelRoleMember
 			, IClonableObject
@@ -4588,8 +5167,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             Represents a collection of levels that provide a logical hierarchical drilldown path for client applications. It is a child of a Table object.
-///             </summary>
+/// Represents a collection of levels that provide a logical hierarchical drilldown path for client applications. It is a child of a Table object.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Hierarchy: TabularNamedObject
 			, IFolderObject
@@ -5008,7 +5587,7 @@ namespace TabularEditor.TOMWrapper
 		private bool ShouldSerializeHideMembers() { return false; }
 /// <summary>
 ///             A tag that represents the lineage of the object.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
+///             </summary><remarks><para>Lineage tags enable stable identification of objects across different semantic models. Using lineage tags enables Power BI features such as composite models to maintain their binding to referenced tables or columns, even if the source semantic model object is renamed.</para><para>This property is only supported when the compatibility level of the database is at 1540 or above.</para></remarks>
 		[DisplayName("Lineage Tag")]
 		[Category("Options"),Description(@"A tag that represents the lineage of the object."),IntelliSense(@"A tag that represents the lineage of the object.")]
 		public string LineageTag {
@@ -5415,8 +5994,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Represents a Key Performance Indicator object. It is a child of a Measure object.
-///             </summary>
+/// Represents a Key Performance Indicator object. It is a child of a Measure object.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class KPI: TabularObject
 			, IDescriptionObject
@@ -6013,8 +6592,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             Represents a AlternativeSource object. It is a child of either a Table or a Column object.
-///             </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1460 or above.</remarks>
+/// Represents a AlternativeSource object. It is a child of either a Table or a Column object.
+/// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1460 or above.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class AlternateOf: TabularObject
 			, IInternalAnnotationObject
@@ -6295,8 +6874,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             Represents a level in a hierarchy that provides a logical hierarchical drilldown path for client applications. It is a child of a Hierarchy object. The level is based on the values in a column.
-///             </summary>
+/// Represents a level in a hierarchy that provides a logical hierarchical drilldown path for client applications. It is a child of a Hierarchy object. The level is based on the values in a column.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Level: TabularNamedObject
 			, IDescriptionObject
@@ -6642,7 +7221,7 @@ namespace TabularEditor.TOMWrapper
 		private bool ShouldSerializeDescription() { return false; }
 /// <summary>
 ///             A tag that represents the lineage of the object.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
+///             </summary><remarks><para>Lineage tags enable stable identification of objects across different semantic models. Using lineage tags enables Power BI features such as composite models to maintain their binding to referenced tables or columns, even if the source semantic model object is renamed.</para><para>This property is only supported when the compatibility level of the database is at 1540 or above.</para></remarks>
 		[DisplayName("Lineage Tag")]
 		[Category("Options"),Description(@"A tag that represents the lineage of the object."),IntelliSense(@"A tag that represents the lineage of the object.")]
 		public string LineageTag {
@@ -6988,8 +7567,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Represents a value that is calculated based on an expression. It is a child of a Table object.
-///             </summary>
+/// Represents a value that is calculated based on an expression. It is a child of a Table object.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Measure: TabularNamedObject
 			, IFolderObject
@@ -7353,10 +7932,10 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeExpression() { return false; }
 /// <summary>
-///             A string that specifies the format of the measure contents. For 
+///             A string that specifies the format of the measure contents.
 ///             </summary>
 		[DisplayName("Format String")]
-		[Category("Basic"),Description(@"A string that specifies the format of the measure contents. For"),IntelliSense(@"A string that specifies the format of the measure contents. For")][TypeConverter(typeof(FormatStringConverter))]
+		[Category("Basic"),Description(@"A string that specifies the format of the measure contents."),IntelliSense(@"A string that specifies the format of the measure contents.")][TypeConverter(typeof(FormatStringConverter))]
 		public string FormatString {
 			get {
 			    return MetadataObject.FormatString;
@@ -7494,7 +8073,7 @@ namespace TabularEditor.TOMWrapper
 		private bool ShouldSerializeDataCategory() { return false; }
 /// <summary>
 ///             A tag that represents the lineage of the object.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
+///             </summary><remarks><para>Lineage tags enable stable identification of objects across different semantic models. Using lineage tags enables Power BI features such as composite models to maintain their binding to referenced tables or columns, even if the source semantic model object is renamed.</para><para>This property is only supported when the compatibility level of the database is at 1540 or above.</para></remarks>
 		[DisplayName("Lineage Tag")]
 		[Category("Options"),Description(@"A tag that represents the lineage of the object."),IntelliSense(@"A tag that represents the lineage of the object.")]
 		public string LineageTag {
@@ -7918,8 +8497,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             A Tabular model created at compatibility level 1200 or above.
-///             </summary>
+/// A Tabular model created at compatibility level 1200 or above.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Model: TabularNamedObject
 			, IDescriptionObject
@@ -8707,6 +9286,30 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeValueFilterBehavior() { return false; }
 /// <summary>
+///             Determines Selection Expression behavior for Calculation Groups
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1609 or above.</remarks>
+		[DisplayName("Selection Expression Behavior")]
+		[Category("Options"),Description(@"Determines Selection Expression behavior for Calculation Groups"),IntelliSense(@"Determines Selection Expression behavior for Calculation Groups")]
+		public SelectionExpressionBehaviorType SelectionExpressionBehavior {
+			get {
+			    return (SelectionExpressionBehaviorType)MetadataObject.SelectionExpressionBehavior;
+			}
+			set {
+				
+				var oldValue = SelectionExpressionBehavior;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.SELECTIONEXPRESSIONBEHAVIOR, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.SelectionExpressionBehavior = (TOM.SelectionExpressionBehaviorType)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.SELECTIONEXPRESSIONBEHAVIOR, oldValue, newValue));
+				OnPropertyChanged(Properties.SELECTIONEXPRESSIONBEHAVIOR, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeSelectionExpressionBehavior() { return false; }
+/// <summary>
 ///             A reference to a default measure.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("Default Measure")]
@@ -8934,7 +9537,7 @@ namespace TabularEditor.TOMWrapper
 				case Properties.FORCEUNIQUENAMES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1465 : Handler.CompatibilityLevel >= 1465;
 				case Properties.FUNCTIONS:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1702 : Handler.CompatibilityLevel >= 1702;
 				case Properties.MATTRIBUTES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1535 : Handler.CompatibilityLevel >= 1535;
 				case Properties.MAXPARALLELISMPERQUERY:
@@ -8943,6 +9546,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1568 : Handler.CompatibilityLevel >= 1568;
 				case Properties.QUERYGROUPS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1480 : Handler.CompatibilityLevel >= 1480;
+				case Properties.SELECTIONEXPRESSIONBEHAVIOR:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1609 : Handler.CompatibilityLevel >= 1609;
 				case Properties.SOURCEQUERYCULTURE:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1520 : Handler.CompatibilityLevel >= 1520;
 				case Properties.VALUEFILTERBEHAVIOR:
@@ -8962,8 +9567,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             Defines a set of user principals for whom security rules are applied. It is a child of a Model object.
-///             </summary>
+/// Defines a set of user principals for whom security rules are applied. It is a child of a Model object.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class ModelRole: TabularNamedObject
 			, IDescriptionObject
@@ -9564,8 +10169,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Defines a user principal that belongs to the Role. It is a child of a Role object.
-///             </summary>
+/// Defines a user principal that belongs to the Role. It is a child of a Role object.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public abstract partial class ModelRoleMember: TabularNamedObject
 			, IInternalAnnotationObject
@@ -10066,8 +10671,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Represents a partition in a table. Partitions define the query against external data sources that return the rowsets of a <see cref="T:TabularEditor.TOMWrapper.Table" />.
-///             </summary>
+/// Represents a partition in a table. Partitions define the query against external data sources that return the rowsets of a <see cref="T:TabularEditor.TOMWrapper.Table" />.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public partial class Partition: TabularNamedObject
 			, IErrorMessageObject
@@ -10723,8 +11328,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Set object.
-///             </summary><remarks>This metadata object is only supported at database compatibility level of 1400 or above for Pbi server.</remarks>
+/// Set object.
+/// </summary><remarks>This metadata object is only supported at database compatibility level of 1400 or above for Pbi server.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Set: TabularNamedObject
 			, IFolderObject
@@ -11437,8 +12042,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Defines a logical view over the Model and is a child of a Model object. It allows hiding Tables, Columns, Measures, and Hierarchies so that end users can look at a smaller subset of the large data model. 
-///             </summary>
+/// Defines a logical view over the Model and is a child of a Model object. It allows hiding Tables, Columns, Measures, and Hierarchies so that end users can look at a smaller subset of the large data model.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Perspective: TabularNamedObject
 			, IDescriptionObject
@@ -11992,8 +12597,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Represents a data source that uses a connection string for the connection.
-///             </summary>
+/// Represents a data source that uses a connection string for the connection.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class ProviderDataSource: DataSource
 			, IClonableObject
@@ -12306,8 +12911,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             Represents a logical relationship between two Table objects. It is a child of a Model object.
-///             </summary>
+/// Represents a logical relationship between two Table objects. It is a child of a Model object.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public abstract partial class Relationship: TabularNamedObject
 			, IInternalAnnotationObject
@@ -12955,8 +13560,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             SingleColumnRelationship object.
-///             </summary>
+/// SingleColumnRelationship object.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class SingleColumnRelationship: Relationship
 			, IClonableObject
@@ -13199,8 +13804,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             Represents a Table in the data model. A Table object is a member of the <see cref="T:TabularEditor.TOMWrapper.TableCollection" /> object under a <see cref="T:TabularEditor.TOMWrapper.Model" /> object. It contains a <see cref="T:TabularEditor.TOMWrapper.ColumnCollection" />. Rows are based on <see cref="T:TabularEditor.TOMWrapper.Partition" /> object or a <see cref="T:TabularEditor.TOMWrapper.CalculatedPartitionSource" /> if the Table is a calculated table.
-///             </summary>
+/// Represents a Table in the data model. A Table object is a member of the <see cref="T:TabularEditor.TOMWrapper.TableCollection" /> object under a <see cref="T:TabularEditor.TOMWrapper.Model" /> object. It contains a <see cref="T:TabularEditor.TOMWrapper.ColumnCollection" />. Rows are based on <see cref="T:TabularEditor.TOMWrapper.Partition" /> object or a <see cref="T:TabularEditor.TOMWrapper.CalculatedPartitionSource" /> if the Table is a calculated table.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public partial class Table: TabularNamedObject
 			, IHideableObject
@@ -13676,7 +14281,7 @@ namespace TabularEditor.TOMWrapper
 		private bool ShouldSerializeExcludeFromModelRefresh() { return false; }
 /// <summary>
 ///             A tag that represents the lineage of the object.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
+///             </summary><remarks><para>Lineage tags enable stable identification of objects across different semantic models. Using lineage tags enables Power BI features such as composite models to maintain their binding to referenced tables or columns, even if the source semantic model object is renamed.</para><para>This property is only supported when the compatibility level of the database is at 1540 or above.</para></remarks>
 		[DisplayName("Lineage Tag")]
 		[Category("Options"),Description(@"A tag that represents the lineage of the object."),IntelliSense(@"A tag that represents the lineage of the object.")]
 		public string LineageTag {
@@ -14035,7 +14640,7 @@ namespace TabularEditor.TOMWrapper
 				case Properties.CALCULATIONGROUP:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1470 : Handler.CompatibilityLevel >= 1470;
 				case Properties.CALENDARS:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1701 : Handler.CompatibilityLevel >= 1701;
 				case Properties.CHANGEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1567 : Handler.CompatibilityLevel >= 1567;
 				case Properties.DEFAULTDETAILROWSDEFINITION:
@@ -14270,8 +14875,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Represents an individual Windows user account or a Windows security group.
-///             </summary>
+/// Represents an individual Windows user account or a Windows security group.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class WindowsModelRoleMember: ModelRoleMember
 			, IClonableObject
@@ -14406,8 +15011,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             A named expression that can be used by one or more partitions.
-///             </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1400 or above.</remarks>
+/// A named expression that can be used by one or more partitions.
+/// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class NamedExpression: TabularNamedObject
 			, IDescriptionObject
@@ -14800,7 +15405,7 @@ namespace TabularEditor.TOMWrapper
 		private bool ShouldSerializeMAttributes() { return false; }
 /// <summary>
 ///             A tag that represents the lineage of the object.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1540 or above.</remarks>
+///             </summary><remarks><para>Lineage tags enable stable identification of objects across different semantic models. Using lineage tags enables Power BI features such as composite models to maintain their binding to referenced tables or columns, even if the source semantic model object is renamed.</para><para>This property is only supported when the compatibility level of the database is at 1540 or above.</para></remarks>
 		[DisplayName("Lineage Tag")]
 		[Category("Options"),Description(@"A tag that represents the lineage of the object."),IntelliSense(@"A tag that represents the lineage of the object.")]
 		public string LineageTag {
@@ -15242,8 +15847,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Represents a collection of Calculation Items.
-///             </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1470 or above.</remarks>
+/// Represents a collection of Calculation Items.
+/// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1470 or above.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class CalculationGroup: TabularObject
 			, IDescriptionObject
@@ -15531,8 +16136,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             A Tabular Calculation Item.
-///             </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1470 or above.</remarks>
+/// A Tabular Calculation Item.
+/// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1470 or above.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class CalculationItem: TabularNamedObject
 			, IErrorMessageObject
@@ -15847,8 +16452,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             Defines the security rules of the Role on the Table. It is a child of a Role object.
-///             </summary>
+/// Defines the security rules of the Role on the Table. It is a child of a Role object.
+/// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class TablePermission: TabularNamedObject
 			, IErrorMessageObject
@@ -16460,8 +17065,8 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
-///             A tabular DataCoverageDefinition object. The expression defined on this object gives hint about the data in a partition.
-///             </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1603 or above.</remarks>
+/// A tabular DataCoverageDefinition object. The expression defined on this object gives hint about the data in a partition.
+/// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1603 or above.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class DataCoverageDefinition: TabularObject
 			, IErrorMessageObject
@@ -16742,8 +17347,8 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
-///             Represents a user-defined function.
-///             </summary><remarks>This metadata object is only supported when the compatibility level of the database is at Preview or above.</remarks>
+/// Represents a user-defined function.
+/// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1702 or above.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Function: TabularNamedObject
 			, IHideableObject
@@ -17114,10 +17719,10 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeIsHidden() { return false; }
 /// <summary>
-///             Provides information on the state of the function. Possible values and their interpretation are as follows. Ready (1) The Function is usable. SemanticError (5) The function expression has a semantic error.  SyntaxError (9) The function has a syntax error in its expression. All other values are not applicable to Function.
+///             Provides information on the state of the function. Possible values and their interpretation are as follows. Ready (1) The Function is usable. SemanticError (5) The function expression has a semantic error. SyntaxError (9) The function has a syntax error in its expression. All other values are not applicable to Function.
 ///             </summary>
 		[DisplayName("State")]
-		[Category("Metadata"),Description(@"Provides information on the state of the function. Possible values and their interpretation are as follows. Ready (1) The Function is usable. SemanticError (5) The function expression has a semantic error.  SyntaxError (9) The function has a syntax error in its expression. All other values are not applicable to Function."),IntelliSense(@"Provides information on the state of the function. Possible values and their interpretation are as follows. Ready (1) The Function is usable. SemanticError (5) The function expression has a semantic error.  SyntaxError (9) The function has a syntax error in its expression. All other values are not applicable to Function.")]
+		[Category("Metadata"),Description(@"Provides information on the state of the function. Possible values and their interpretation are as follows. Ready (1) The Function is usable. SemanticError (5) The function expression has a semantic error. SyntaxError (9) The function has a syntax error in its expression. All other values are not applicable to Function."),IntelliSense(@"Provides information on the state of the function. Possible values and their interpretation are as follows. Ready (1) The Function is usable. SemanticError (5) The function expression has a semantic error. SyntaxError (9) The function has a syntax error in its expression. All other values are not applicable to Function.")]
 		public ObjectState State {
 			get {
 			    return (ObjectState)MetadataObject.State;
@@ -17139,7 +17744,7 @@ namespace TabularEditor.TOMWrapper
 		private bool ShouldSerializeErrorMessage() { return false; }
 /// <summary>
 ///             A tag that represents the lineage of the object.
-///             </summary>
+///             </summary><remarks><para>Lineage tags enable stable identification of objects across different semantic models. Using lineage tags enables Power BI features such as composite models to maintain their binding to referenced tables or columns, even if the source semantic model object is renamed.</para></remarks>
 		[DisplayName("Lineage Tag")]
 		[Category("Options"),Description(@"A tag that represents the lineage of the object."),IntelliSense(@"A tag that represents the lineage of the object.")]
 		public string LineageTag {
