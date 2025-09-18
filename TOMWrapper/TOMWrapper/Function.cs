@@ -39,9 +39,30 @@ namespace TabularEditor.TOMWrapper
                 if (string.IsNullOrWhiteSpace(newName)) throw new ArgumentException("Function name cannot be empty.");
                 if (!IsValidNameFirstChar(newName[0])) throw new ArgumentException("Function name must start with a letter or an underscore.");
                 if (newName.Any(c => !IsValidNameChar(c))) throw new ArgumentException("Function name contains invalid characters.");
+
+                if (Handler.Settings.AutoFixup) Handler.BeginUpdate("Set Property 'Name'"); // This batch will be ended in the corresponding OnPropertyChanged
             }
 
             base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
+        }
+
+        protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
+        {
+            switch (propertyName)
+            {
+
+                case Properties.NAME:
+                    if (Handler.Settings.AutoFixup)
+                    {
+                        // Fixup is not performed during an undo operation. We rely on the undo stack to fixup the expressions
+                        // affected by the name change (the undo stack should contain the expression changes that were made
+                        // when the name was initially changed).
+                        if (!Handler.UndoManager.UndoInProgress) FormulaFixup.DoFixup(this, true);
+                        FormulaFixup.BuildDependencyTree();
+                        Handler.EndUpdate(); // This batch was started in OnPropertyChanging
+                    }
+                    break;
+            }
         }
 
         [Browsable(false)]
