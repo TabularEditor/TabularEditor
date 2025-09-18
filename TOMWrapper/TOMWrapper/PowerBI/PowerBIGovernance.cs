@@ -91,6 +91,11 @@ namespace TabularEditor.TOMWrapper.PowerBI
                     PBIDesktopVersionSimple = int.Parse(_versions[0]) + (int.Parse(_versions[1]) / 100.0M);
                 }
             }
+            else
+            {
+                // If the annotation is not present (seems not to be the case since September 2025 version of PBI Desktop), assume everything is possible:
+                GovernanceMode = PowerBIGovernanceMode.Unrestricted;
+            }
         }
 
         internal bool IsPBIDesktop(TOM.Database database)
