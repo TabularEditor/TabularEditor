@@ -51,6 +51,7 @@ namespace TabularEditor.PropertyGridUI
             Collection.Clear();
             foreach (CalendarColumnGroup an in value)
             {
+                if(an.IsRemoved) an.RenewMetadataObject();
                 Collection.Add(an);
             }
             return Collection;

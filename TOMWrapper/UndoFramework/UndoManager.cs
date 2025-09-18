@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -95,24 +95,6 @@ namespace TabularEditor.TOMWrapper.Undo
                 sb.AppendLine(act.GetSummary());
 
                 if (act is UndoBatchAction && (act as UndoBatchAction).Begin) indent += 1;
-            }
-
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Returns a string containing the C# code needed to recreate the entire history
-        /// of changes applied to the model.
-        /// </summary>
-        /// <returns></returns>
-        public string GetHistoryCode()
-        {
-            var sb = new StringBuilder();
-
-            foreach(var act in _UndoStack.Reverse())
-            {
-                var code = act.GetCode();
-                if(!string.IsNullOrEmpty(code)) sb.AppendLine(code);
             }
 
             return sb.ToString();

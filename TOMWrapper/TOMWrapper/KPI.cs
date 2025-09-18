@@ -19,7 +19,7 @@ namespace TabularEditor.TOMWrapper
         public string MeasureName => Measure?.DaxObjectName;
 
         bool ITabularNamedObject.CanEditName() { return false; }
-
+        void ITabularNamedObject.RemoveReferences() { }
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
             switch(propertyName)
@@ -116,7 +116,7 @@ namespace TabularEditor.TOMWrapper
             return true;
         }
 
-        public void Delete()
+        public override void Delete()
         {
             Measure.RemoveKPI();
         }

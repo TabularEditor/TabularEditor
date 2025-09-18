@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -27,12 +27,12 @@ namespace TabularEditor.TOMWrapper
         protected virtual T1 EmptyValue { get { return default(T1); } }
         protected abstract void SetValue(T key, T1 value);
         protected abstract T1 GetValue(T key);
-        protected abstract TabularObjectCollection<T> GetCollection();
+        protected abstract TabularNamedObjectCollection<T> GetCollection();
         protected virtual T GetObjectFromName(string name)
         {
             return Collection[name];
         }
-        protected TabularObjectCollection<T> Collection { get { return GetCollection(); } }
+        protected TabularNamedObjectCollection<T> Collection { get { return GetCollection(); } }
 
         protected virtual bool IsEmptyValue(T1 value)
         {

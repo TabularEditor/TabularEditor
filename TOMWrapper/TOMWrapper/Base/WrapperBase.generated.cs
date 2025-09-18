@@ -1725,7 +1725,7 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for Variation. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public sealed partial class VariationCollection: TabularObjectCollection<Variation>
+	public sealed partial class VariationCollection: TabularNamedObjectCollection<Variation>
 	{
 		internal Column Column { get { return Parent as Column; } }
 		TOM.VariationCollection TOM_Collection;
@@ -3494,7 +3494,7 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for Column. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public sealed partial class ColumnCollection: TabularObjectCollection<Column>
+	public sealed partial class ColumnCollection: TabularNamedObjectCollection<Column>
 	{
 		internal Table Table { get { return Parent as Table; } }
 		TOM.ColumnCollection TOM_Collection;
@@ -4250,7 +4250,7 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for Culture. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public sealed partial class CultureCollection: TabularObjectCollection<Culture>
+	public sealed partial class CultureCollection: TabularNamedObjectCollection<Culture>
 	{
 		internal Model Model { get { return Parent as Model; } }
 		TOM.CultureCollection TOM_Collection;
@@ -4906,7 +4906,7 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for DataSource. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public sealed partial class DataSourceCollection: TabularObjectCollection<DataSource>
+	public sealed partial class DataSourceCollection: TabularNamedObjectCollection<DataSource>
 	{
 		internal Model Model { get { return Parent as Model; } }
 		TOM.DataSourceCollection TOM_Collection;
@@ -5181,7 +5181,7 @@ namespace TabularEditor.TOMWrapper
 ///             Gets or sets the reference to the primary column in the association.
 ///             </summary><value>The <see cref="T:TabularEditor.TOMWrapper.Column" /> instance that is the primary column, or a null reference (Nothing in Visual Basic) if such column is not set.</value>
 		[DisplayName("Primary Column")]
-		[Category("Basic"),Description(@"Gets or sets the reference to the primary column in the association."),IntelliSense(@"Gets or sets the reference to the primary column in the association.")]
+		[Category("Basic"),Description(@"Gets or sets the reference to the primary column in the association."),IntelliSense(@"Gets or sets the reference to the primary column in the association.")][Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(TableColumnConverter))]
 		public Column PrimaryColumn {
 			get {
 				if (MetadataObject.PrimaryColumn == null) return null;
@@ -6232,7 +6232,7 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for Hierarchy. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public sealed partial class HierarchyCollection: TabularObjectCollection<Hierarchy>
+	public sealed partial class HierarchyCollection: TabularNamedObjectCollection<Hierarchy>
 	{
 		internal Table Table { get { return Parent as Table; } }
 		TOM.HierarchyCollection TOM_Collection;
@@ -7841,7 +7841,7 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for Level. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public sealed partial class LevelCollection: TabularObjectCollection<Level>
+	public sealed partial class LevelCollection: TabularNamedObjectCollection<Level>
 	{
 		internal Hierarchy Hierarchy { get { return Parent as Hierarchy; } }
 		TOM.LevelCollection TOM_Collection;
@@ -8700,7 +8700,7 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for Measure. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public sealed partial class MeasureCollection: TabularObjectCollection<Measure>
+	public sealed partial class MeasureCollection: TabularNamedObjectCollection<Measure>
 	{
 		internal Table Table { get { return Parent as Table; } }
 		TOM.MeasureCollection TOM_Collection;
@@ -10443,7 +10443,7 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for ModelRole. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public sealed partial class ModelRoleCollection: TabularObjectCollection<ModelRole>
+	public sealed partial class ModelRoleCollection: TabularNamedObjectCollection<ModelRole>
 	{
 		internal Model Model { get { return Parent as Model; } }
 		TOM.ModelRoleCollection TOM_Collection;
@@ -10944,7 +10944,7 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for ModelRoleMember. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public sealed partial class ModelRoleMemberCollection: TabularObjectCollection<ModelRoleMember>
+	public sealed partial class ModelRoleMemberCollection: TabularNamedObjectCollection<ModelRoleMember>
 	{
 		internal ModelRole ModelRole { get { return Parent as ModelRole; } }
 		TOM.ModelRoleMemberCollection TOM_Collection;
@@ -11588,7 +11588,7 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for Partition. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public sealed partial class PartitionCollection: TabularObjectCollection<Partition>
+	public sealed partial class PartitionCollection: TabularNamedObjectCollection<Partition>
 	{
 		internal Table Table { get { return Parent as Table; } }
 		TOM.PartitionCollection TOM_Collection;
@@ -12280,7 +12280,7 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for Set. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public sealed partial class SetCollection: TabularObjectCollection<Set>
+	public sealed partial class SetCollection: TabularNamedObjectCollection<Set>
 	{
 		internal Table Table { get { return Parent as Table; } }
 		TOM.SetCollection TOM_Collection;
@@ -12883,7 +12883,7 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for Perspective. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public sealed partial class PerspectiveCollection: TabularObjectCollection<Perspective>
+	public sealed partial class PerspectiveCollection: TabularNamedObjectCollection<Perspective>
 	{
 		internal Model Model { get { return Parent as Model; } }
 		TOM.PerspectiveCollection TOM_Collection;
@@ -13797,7 +13797,7 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for Relationship. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public sealed partial class RelationshipCollection: TabularObjectCollection<SingleColumnRelationship>
+	public sealed partial class RelationshipCollection: TabularNamedObjectCollection<SingleColumnRelationship>
 	{
 		internal Model Model { get { return Parent as Model; } }
 		TOM.RelationshipCollection TOM_Collection;
@@ -15063,7 +15063,7 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for Table. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public sealed partial class TableCollection: TabularObjectCollection<Table>
+	public sealed partial class TableCollection: TabularNamedObjectCollection<Table>
 	{
 		internal Model Model { get { return Parent as Model; } }
 		TOM.TableCollection TOM_Collection;
@@ -16060,7 +16060,7 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for NamedExpression. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public sealed partial class NamedExpressionCollection: TabularObjectCollection<NamedExpression>
+	public sealed partial class NamedExpressionCollection: TabularNamedObjectCollection<NamedExpression>
 	{
 		internal Model Model { get { return Parent as Model; } }
 		TOM.NamedExpressionCollection TOM_Collection;
@@ -16737,7 +16737,7 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for CalculationItem. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public sealed partial class CalculationItemCollection: TabularObjectCollection<CalculationItem>
+	public sealed partial class CalculationItemCollection: TabularNamedObjectCollection<CalculationItem>
 	{
 		internal CalculationGroup CalculationGroup { get { return Parent as CalculationGroup; } }
 		TOM.CalculationItemCollection TOM_Collection;
@@ -17350,7 +17350,7 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for TablePermission. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public sealed partial class TablePermissionCollection: TabularObjectCollection<TablePermission>
+	public sealed partial class TablePermissionCollection: TabularNamedObjectCollection<TablePermission>
 	{
 		internal ModelRole ModelRole { get { return Parent as ModelRole; } }
 		TOM.TablePermissionCollection TOM_Collection;
@@ -18308,7 +18308,7 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for Function. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public sealed partial class FunctionCollection: TabularObjectCollection<Function>
+	public sealed partial class FunctionCollection: TabularNamedObjectCollection<Function>
 	{
 		internal Model Model { get { return Parent as Model; } }
 		TOM.FunctionCollection TOM_Collection;
@@ -18680,7 +18680,7 @@ namespace TabularEditor.TOMWrapper
 	/// <summary>
 	/// Collection class for Calendar. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public sealed partial class CalendarCollection: TabularObjectCollection<Calendar>
+	public sealed partial class CalendarCollection: TabularNamedObjectCollection<Calendar>
 	{
 		internal Table Table { get { return Parent as Table; } }
 		TOM.CalendarCollection TOM_Collection;

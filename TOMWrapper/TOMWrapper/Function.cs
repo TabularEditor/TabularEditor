@@ -92,6 +92,20 @@ namespace TabularEditor.TOMWrapper
 
     public partial class FunctionCollection
     {
+        internal override string GetNewName(string prefix = null)
+        {
+            var i = 0;
+            prefix = prefix?.Replace(" ", ""); // Spaces not allowed in UDF names
+            var name = prefix;
+            while (TOM_Collection.ContainsName(name))
+            {
+                i++;
+                name = prefix + i;
+            }
+
+            return name;
+        }
+
         protected override string RemoveInvalidNameChars(string name)
         {
             return string.Join(string.Empty, name.Where(Function.IsValidNameChar));

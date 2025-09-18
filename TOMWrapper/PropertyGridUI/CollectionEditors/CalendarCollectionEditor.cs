@@ -10,7 +10,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.PropertyGridUI
 {
-    internal class CalendarCollectionEditor: ClonableObjectCollectionEditor<Partition>
+    internal class CalendarCollectionEditor: ClonableObjectCollectionEditor<Calendar>
     {
         public CalendarCollectionEditor(Type type) : base(type)
         {

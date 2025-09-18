@@ -299,8 +299,11 @@ namespace TabularEditor.TOMWrapper
         }
     }
 
-    public partial class PartitionCollection : ITabularNamedObject, ITabularObjectContainer, ITabularTableObject
+    public partial class PartitionCollection: ITabularObjectContainer, ITabularTableObject
     {
+        void ITabularObject.ReapplyReferences() => ReapplyReferences();
+        void ITabularNamedObject.RemoveReferences() { }
+
         internal Type[] GetSupportedPartitionTypes()
         {
             if (Table.MetadataObject.RefreshPolicy is TOM.RefreshPolicy) return new[] { typeof(PolicyRangePartition) };

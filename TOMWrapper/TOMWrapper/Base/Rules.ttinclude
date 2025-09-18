@@ -453,6 +453,7 @@ partial class Rules {
 		if(propertyName == "ParameterValuesColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
 		if(propertyName == "BaseColumn") return "[TypeConverter(typeof(AllOtherTablesColumnConverter))]";
 		if(propertyName == "BaseTable") return "[TypeConverter(typeof(OtherTablesConverter))]";
+		if(propertyName == "PrimaryColumn") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(TableColumnConverter))]";
 		if(propertyName == "SortByColumn") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(ColumnConverter))]";
 		if(propertyName == "ExpressionSource") return "[TypeConverter(typeof(NamedExpressionConverter))]";
 		if(propertyName == "DefaultColumn") return "[TypeConverter(typeof(AllColumnConverter))]";

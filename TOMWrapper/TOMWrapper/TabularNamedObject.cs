@@ -97,7 +97,7 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Deletes the object.
         /// </summary>
-        public void Delete()
+        public override void Delete()
         {
             // CanDelete logic should not be handled while an Undo is in progress:
             if (!Handler.UndoManager.UndoInProgress)

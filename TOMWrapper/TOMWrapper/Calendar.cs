@@ -83,13 +83,11 @@ namespace TabularEditor.TOMWrapper
             base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
             if (cancel) return;
 
-            switch (propertyName)
+            if (propertyName == Properties.NAME)
             {
-                case nameof(Name):
-                    // Some changes may trigger cascading changes, so we start a batch before the change,
-                    // and end the batch in the PropertyChanged handler:
-                    Handler.BeginUpdate("Set Calendar name");
-                    break;
+                // When formula fixup is enabled, we need to begin a new batch of undo operations, as this
+                // name change could result in expression changes on multiple objects:
+                if (Handler.Settings.AutoFixup) Handler.BeginUpdate("Set Property 'Name'");
             }
         }
 
@@ -102,8 +100,15 @@ namespace TabularEditor.TOMWrapper
                     break;
 
                 case nameof(Name):
-                    Handler.SemanticAnalysisCascader.CascadeCalendarNameChange(this, Name);
-                    Handler.EndUpdate();
+                    if (Handler.Settings.AutoFixup)
+                    {
+                        // Fixup is not performed during an undo operation. We rely on the undo stack to fixup the expressions
+                        // affected by the name change (the undo stack should contain the expression changes that were made
+                        // when the name was initially changed).
+                        if (!Handler.UndoManager.UndoInProgress) FormulaFixup.DoFixup(this, true);
+                        FormulaFixup.BuildDependencyTree();
+                        Handler.EndUpdate();
+                    }
                     break;
             }
 
@@ -112,7 +117,7 @@ namespace TabularEditor.TOMWrapper
 
         internal void HandleCalendarMappingChange()
         {
-            Handler.SemanticAnalysisCascader.CascadeCalendarMappingChange(this);
+            // Nothing to do, as TE2 does not perform semantic analysis involving calendar mappings
         }
 
         private protected override bool IsBrowsable(string propertyName)

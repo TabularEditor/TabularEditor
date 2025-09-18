@@ -774,7 +774,7 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
 	/// <summary>
 	/// Collection class for <#= t.Name #>. Provides convenient properties for setting a property on multiple objects at once.
 	/// </summary>
-	public sealed partial class <#= t.Name #>Collection: TabularObjectCollection<<#= t.Name == "Relationship" ? "SingleColumnRelationship" : t.Name #>>
+	public sealed partial class <#= t.Name #>Collection: <#= props.Any(p => p.Name == "Name") ? "TabularNamedObjectCollection" : "TabularObjectCollection"#><<#= t.Name == "Relationship" ? "SingleColumnRelationship" : t.Name #>>
 	{
 		internal <#= Rules.GetParent(t) #> <#= Rules.GetParent(t) #> { get { return Parent as <#= Rules.GetParent(t) #>; } }
 		TOM.<#= t.Name #>Collection TOM_Collection;

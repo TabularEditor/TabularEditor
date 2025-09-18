@@ -25,6 +25,8 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
+        void ITabularNamedObject.RemoveReferences() { }
+
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
             if(propertyName == nameof(Expression))
@@ -79,7 +81,7 @@ namespace TabularEditor.TOMWrapper
             return true;
         }
 
-        public void Delete()
+        public override void Delete()
         {
             Partition.RemoveDataCoverageDefinition();
         }

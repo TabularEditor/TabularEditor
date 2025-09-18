@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using TabularEditor.PropertyGridUI;
 
@@ -20,7 +20,7 @@ namespace TabularEditor.TOMWrapper
             Table = table;
         }
 
-        protected override TabularObjectCollection<ModelRole> GetCollection()
+        protected override TabularNamedObjectCollection<ModelRole> GetCollection()
         {
             return Model.Roles;
         }

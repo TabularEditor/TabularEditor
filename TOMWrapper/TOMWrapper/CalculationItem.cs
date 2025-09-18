@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
@@ -120,7 +120,7 @@ namespace TabularEditor.TOMWrapper
         Table ITabularTableObject.Table => Parent.Table;
     }
     
-    public partial class CalculationItemCollection : ITabularNamedObject, ITabularObjectContainer, ITabularTableObject, IDynamicPropertyObject
+    public partial class CalculationItemCollection : ITabularObjectContainer, ITabularTableObject, IDynamicPropertyObject
     {
         [ReadOnly(true)]
         string ITabularNamedObject.Name { get { return "Calculation Items"; } set { } }
@@ -132,6 +132,8 @@ namespace TabularEditor.TOMWrapper
         Model ITabularObject.Model => CalculationGroup.Model;
 
         bool ITabularObject.IsRemoved => false;
+        void ITabularNamedObject.RemoveReferences() { }
+        void ITabularObject.ReapplyReferences() => ReapplyReferences();
 
         Table ITabularTableObject.Table => CalculationGroup.Table;
 

@@ -17,7 +17,6 @@ namespace TabularEditor.TOMWrapper
         void Clear();
         void Remove(TabularObject obj);
         bool Contains(TabularObject obj);
-        bool Contains(string key);
         string CollectionName { get; }
         int IndexOf(TabularObject obj);
         TabularObject Parent { get; }
@@ -108,28 +107,6 @@ namespace TabularEditor.TOMWrapper
         }
         #endregion
         #region Public members
-        /// <summary>
-        /// Gets the item with the specified name.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public virtual T this[string name]
-        {
-            get
-            {
-                return Handler.WrapperLookup[TOM_Get(name)] as T;
-            }
-        }
-
-        public virtual T FindByName(string name)
-        {
-            var tom = TOM_Find(name);
-
-            if (tom != null && Handler.WrapperLookup.TryGetValue(tom, out TabularObject value))
-                return value as T;
-            else
-                return null;
-        }
 
         /// <summary>
         /// Gets the item on the specified index.
@@ -155,15 +132,6 @@ namespace TabularEditor.TOMWrapper
         public bool Contains(T item)
         {
             return TOM_Contains(item.MetadataObject);
-        }
-        /// <summary>
-        /// Returns true if this collection contains an item with the specified name.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public bool Contains(string name)
-        {
-            return TOM_ContainsName(name);
         }
 
         /// <summary>
@@ -197,19 +165,15 @@ namespace TabularEditor.TOMWrapper
         internal abstract int IndexOf(TOM.MetadataObject value);
         #endregion
         #region Internal / protected abstract members
-        internal abstract string GetNewName(string prefix = null);
         internal abstract void Reinit();
         internal abstract void ReapplyReferences();
         internal abstract void CreateChildrenFromMetadata();
         internal abstract Type GetItemType();
-        internal abstract TOM.MetadataObject TOM_Get(string name);
-        internal abstract TOM.MetadataObject TOM_Find(string name);
         internal abstract TOM.MetadataObject TOM_Get(int index);
         internal abstract void TOM_Add(TOM.MetadataObject obj);
         internal abstract void TOM_Remove(TOM.MetadataObject obj);
         internal abstract void TOM_Clear();
         internal abstract bool TOM_Contains(TOM.MetadataObject obj);
-        internal abstract bool TOM_ContainsName(string name);
         #endregion
 
         // Interface implementations:
@@ -218,10 +182,6 @@ namespace TabularEditor.TOMWrapper
         void ITabularObjectCollection.Clear()
         {
             Clear();
-        }
-        bool ITabularObjectCollection.Contains(string key)
-        {
-            return Contains(key);
         }
         bool ITabularObjectCollection.Contains(TabularObject obj)
         {

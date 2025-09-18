@@ -29,7 +29,7 @@ namespace TabularEditor.TOMWrapper
         }
 
         [IntelliSense("Delete the AlternateOf")]
-        public void Delete()
+        public override void Delete()
         {
             this.Column.AlternateOf = null;
         }

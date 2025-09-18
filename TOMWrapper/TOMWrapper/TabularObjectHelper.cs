@@ -62,7 +62,9 @@ namespace TabularEditor.TOMWrapper
                 case Hierarchy hierarchy:
                     return string.Format("{0}.Hierarchies[\"{1}\"]", hierarchy.Table.GetLinqPath(), hierarchy.Name.Escape());
                 case Partition partition:
-                    return string.Format("{0}.Partitions[\"{1}\"]", partition.Table.GetLinqPath(), partition.Name, obj.GetType().Name);
+                    return string.Format("{0}.Partitions[\"{1}\"]", partition.Table.GetLinqPath(), partition.Name);
+                case Calendar calendar:
+                    return string.Format("{0}.Calendars[\"{1}\"]", calendar.Table.GetLinqPath(), calendar.Name);
                 case Table table:
                     return string.Format("Model.Tables[\"{0}\"]", table.Name.Escape());
                 case Level level:
@@ -158,6 +160,18 @@ namespace TabularEditor.TOMWrapper
                     return obj.ObjectType.ToString() + "." + QuotePath((obj as TOM.NamedMetadataObject).Name);
                 case TOM.ObjectType.Partition:
                     return GetObjectPathTableObject("P", (obj as TOM.Partition));
+                case TOM.ObjectType.Calendar:
+                    return GetObjectPathTableObject("CA", obj as TOM.Calendar);
+                case TOM.ObjectType.CalendarColumnGroup:
+                    if (obj is TOM.TimeUnitColumnAssociation assoc)
+                    {
+                        return GetObjectPath(assoc.Calendar) + "." + assoc.TimeUnit;
+                    }
+                    else
+                    {
+                        var ccg = obj as TOM.TimeRelatedColumnGroup;
+                        return GetObjectPath(ccg.Calendar) + "." + ccg.Calendar.CalendarColumnGroups.IndexOf(ccg);
+                    }
                 case TOM.ObjectType.RoleMembership:
                     var mrm = obj as TOM.ModelRoleMember;
                     return GetObjectPath(mrm.Role) + "." + mrm.Name;
@@ -265,6 +279,14 @@ namespace TabularEditor.TOMWrapper
                                 var hierarchy = table.Hierarchies.FindByName(parts[4]);
                                 if (parts.Length == 6) return hierarchy?.Levels.FindByName(parts[5]);
                                 else return hierarchy;
+                            }
+                            if (parts[3].EqualsI("ca"))
+                            {
+                                var calendar = table.Calendars.FindByName(parts[4]);
+                                if (parts.Length == 5) return calendar;
+                                if (int.TryParse(parts[5], out var columnGroupIndex))
+                                    return calendar.CalendarColumnGroups[columnGroupIndex];
+                                else return calendar.CalendarColumnGroups[(TimeUnit)Enum.Parse(typeof(TimeUnit), parts[5])];
                             }
                             if (parts[3] == "ci" && table is CalculationGroupTable cgt && parts.Length == 5)
                             {
