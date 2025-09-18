@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -78,6 +78,7 @@ namespace TabularEditor.TOMWrapper.Utils
                     if (TabularModelHandler.Singleton.CompatibilityLevel >= 1601) yield return DAXProperty.FormatStringExpression;
                     yield return DAXProperty.DetailRowsExpression;
                 }
+                if (obj.ObjectType == ObjectType.Function) yield return DAXProperty.Expression;
                 if (obj.ObjectType == ObjectType.Table) yield return DAXProperty.DefaultDetailRowsExpression;
                 if (obj.ObjectType == ObjectType.CalculationGroupTable)
                 {

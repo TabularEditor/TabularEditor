@@ -406,6 +406,17 @@ ALPHABETICAL:                            'ALPHABETICAL'                         
 KEEP:									 'KEEP'									   -> channel(KEYWORD_CHANNEL);
 REL:									 'REL'									   -> channel(KEYWORD_CHANNEL);
 
+EXPR:									 'EXPR'									   -> channel(KEYWORD_CHANNEL);
+VAL:									 'VAL'									   -> channel(KEYWORD_CHANNEL);
+
+ANYVAL:									 'ANYVAL'								   -> channel(KEYWORD_CHANNEL);
+ANYREF:									 'ANYREF'								   -> channel(KEYWORD_CHANNEL);
+SCALAR:									 'SCALAR'								   -> channel(KEYWORD_CHANNEL);
+
+INT64:									 'INT64'								   -> channel(KEYWORD_CHANNEL);
+DECIMAL:							     'DECIMAL'								   -> channel(KEYWORD_CHANNEL);
+NUMERIC:							     'NUMERIC'								   -> channel(KEYWORD_CHANNEL);
+
 DATE_LITERAL:          'DT"' (~'"' | '""')* '"' {Text = Text.Substring(3, Text.Length - 4);};
 INTEGER_LITERAL:       [0-9]+;
 REAL_LITERAL:          [0-9]* '.' [0-9]+;
@@ -433,6 +444,8 @@ OP_OR:                 '||';
 OP_NE:                 '<>';
 OP_LE:                 '<=';
 OP_GE:                 '>=';
+LAMBDA:				   '=>';
+COLON:				   ':';
 
 
 fragment InputCharacter:       ~[\r\n\u0085\u2028\u2029];

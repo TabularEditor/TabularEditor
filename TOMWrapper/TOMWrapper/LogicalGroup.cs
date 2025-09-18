@@ -17,7 +17,7 @@ namespace TabularEditor.TOMWrapper
         public const string TABLES = "Tables";
         public const string ROLES = "Roles";
         public const string PERSPECTIVES = "Perspectives";
-        public const string FUNCTIONS = "User-Defined Functions";
+        public const string FUNCTIONS = "Functions";
         public const string TRANSLATIONS = "Translations";
         public const string RELATIONSHIPS = "Relationships";
         public const string DATASOURCES = "Data Sources";
@@ -36,7 +36,7 @@ namespace TabularEditor.TOMWrapper
         {
             yield return DataSources;
             yield return Perspectives;
-            if (TabularModelHandler.Singleton.CompatibilityLevel >= Function.MinimumCompatibilityLevel) yield return Functions;
+            if (TabularModelHandler.Singleton.CompatibilityLevel >= 1702) yield return Functions;
             yield return Relationships;
             yield return Roles;
             if(TabularModelHandler.Singleton.CompatibilityLevel >= 1400) yield return Expressions;

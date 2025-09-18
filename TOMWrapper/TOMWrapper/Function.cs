@@ -4,10 +4,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TabularEditor.TOMWrapper.Utils;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class Function
+    public partial class Function: IDaxObject, IDaxDependantObject
     {
         [Browsable(false)]
         public bool IsVisible => !IsHidden;
@@ -41,6 +42,30 @@ namespace TabularEditor.TOMWrapper
             }
 
             base.OnPropertyChanging(propertyName, newValue, ref undoable, ref cancel);
+        }
+
+        [Browsable(false)]
+        public string DaxObjectName => Name;
+        [Browsable(false)]
+        public string DaxObjectFullName => Name;
+        [Browsable(false)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public string DaxTableName => null;
+
+        [Browsable(false)]
+        public ReferencedByList ReferencedBy { get; } = new ReferencedByList();
+
+        private DependsOnList _dependsOn;
+        [Browsable(false)]
+        public DependsOnList DependsOn
+        {
+
+            get
+            {
+                if (_dependsOn == null)
+                    _dependsOn = new DependsOnList(this);
+                return _dependsOn;
+            }
         }
     }
 

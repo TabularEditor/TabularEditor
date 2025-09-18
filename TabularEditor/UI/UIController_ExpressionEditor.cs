@@ -1,4 +1,4 @@
-﻿using Aga.Controls.Tree;
+using Aga.Controls.Tree;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -208,6 +208,7 @@ namespace TabularEditor.UI
                 {
                     case ObjectType.CalculationItem:
                     case ObjectType.Measure:
+                    case ObjectType.Function:
                     case ObjectType.Table:
                     case ObjectType.CalculationGroupTable:
                     case ObjectType.Column:

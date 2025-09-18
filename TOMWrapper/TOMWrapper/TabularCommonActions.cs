@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -220,6 +220,7 @@ namespace TabularEditor.TOMWrapper
                 foreach (var obj in objectContainer.Get<Table>()) inserted.Add(Serializer.DeserializeTable(obj, Handler.Model));
             }
 
+            foreach (var obj in objectContainer.Get<Function>()) inserted.Add(Serializer.DeserializeFunction(obj, Handler.Model));
             foreach (var obj in objectContainer.Get<ModelRole>()) inserted.Add(Serializer.DeserializeModelRole(obj, Handler.Model));
             foreach (var obj in objectContainer.Get<ProviderDataSource>()) inserted.Add(Serializer.DeserializeProviderDataSource(obj, Handler.Model));
             foreach (var obj in objectContainer.Get<SingleColumnRelationship>()) inserted.Add(Serializer.DeserializeSingleColumnRelationship(obj, Handler.Model));

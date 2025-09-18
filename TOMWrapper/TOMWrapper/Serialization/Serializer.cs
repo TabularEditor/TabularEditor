@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -412,6 +412,15 @@ namespace TabularEditor.TOMWrapper.Serialization
             var role = ModelRole.CreateFromMetadata(model, tom);
 
             return role;
+        }
+        public static Function DeserializeFunction(JObject json, Model model)
+        {
+            var tom = TOM.JsonSerializer.DeserializeObject<TOM.Function>(json.ToString(Formatting.None));
+            tom.Name = model.Functions.GetNewName(tom.Name);
+
+            var function = Function.CreateFromMetadata(model, tom);
+
+            return function;
         }
 
         public static Perspective DeserializePerspective(JObject json, Model model)

@@ -32,6 +32,7 @@ namespace TabularEditor.TOMWrapper
     internal static partial class Properties
     {
         public const string OBJECTTYPE = nameof(ObjectType);
+        public const string PARENT = nameof(TOM.MetadataObject.Parent);
     }
 
     public enum ObjectType

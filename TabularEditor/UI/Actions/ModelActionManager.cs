@@ -328,7 +328,7 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => s.DirectCount == 1 && s.Direct.First() is IDaxObject, (s, m) =>
             {
                 UIController.Current.ShowDependencies(s.Direct.First() as IDaxObject);
-            }, (s, m) => @"Show &dependencies...", true, Context.Table | Context.TableObject | Context.CalculationItem, Keys.F3));
+            }, (s, m) => @"Show &dependencies...", true, Context.Table | Context.TableObject | Context.CalculationItem | Context.Function, Keys.F3));
 
             // Filter related...
             // TODO

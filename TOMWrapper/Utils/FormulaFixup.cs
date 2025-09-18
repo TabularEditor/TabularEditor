@@ -1,4 +1,4 @@
-﻿using Antlr4.Runtime;
+using Antlr4.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -59,26 +59,41 @@ namespace TabularEditor.TOMWrapper.Utils
 
                 if (isTableOrVariableRef)
                 {
-                    if (i < tokens.Count - 1 && tokens[i + 1].Type == DAXLexer.COLUMN_OR_MEASURE)
+                    if (i < tokens.Count - 1 && tokens[i + 1].Type == DAXLexer.OPEN_PARENS)
                     {
-                        // Keep the token reference, as the next token should be column (fully qualified).
-                        lastTableRef = tok;
-                        startTableIndex = tok.StartIndex;
+                        // function call
+                        if (Model.Functions.FindByName(tok.Text) is Function f)
+                        {
+                            // user-defined function
+                            if (dependsOn != null) dependsOn.Add(f, DAXProperty.Expression, tok.StartIndex, tok.StopIndex, false);
+                            else expressionObj.AddDep(f, DAXProperty.Expression, tok.StartIndex, tok.StopIndex, false);
+                        }
                     }
                     else
                     {
-                        // Table referenced directly, don't save the reference for the next token.
-                        lastTableRef = null;
-                    }
+                        if (i < tokens.Count - 1 && tokens[i + 1].Type == DAXLexer.COLUMN_OR_MEASURE)
+                        {
+                            // Keep the token reference, as the next token should be column (fully qualified).
+                            lastTableRef = tok;
+                            startTableIndex = tok.StartIndex;
+                        }
+                        else
+                        {
+                            // Table referenced directly, don't save the reference for the next token.
+                            lastTableRef = null;
+                        }
 
-                    if (Model.Tables.Contains(tok.Text))
-                    {
-                        if (dependsOn != null) dependsOn.Add(Model.Tables[tok.Text], prop, tok.StartIndex, tok.StopIndex, true);
-                        else expressionObj.AddDep(Model.Tables[tok.Text], prop, tok.StartIndex, tok.StopIndex, true);
-                    }
-                    else
-                    {
-                        // Invalid reference (no table with that name) or possibly a variable or function ref
+                        if (Model.Tables.Contains(tok.Text))
+                        {
+                            if (dependsOn != null)
+                                dependsOn.Add(Model.Tables[tok.Text], prop, tok.StartIndex, tok.StopIndex, true);
+                            else
+                                expressionObj.AddDep(Model.Tables[tok.Text], prop, tok.StartIndex, tok.StopIndex, true);
+                        }
+                        else
+                        {
+                            // Invalid reference (no table with that name) or possibly a variable or function ref
+                        }
                     }
                 }
                 else if (tok.Type == DAXLexer.COLUMN_OR_MEASURE)
