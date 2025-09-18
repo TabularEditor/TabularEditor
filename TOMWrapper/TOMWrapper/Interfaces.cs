@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -21,11 +21,7 @@ namespace TabularEditor.TOMWrapper
         ObjectType ObjectType { get; }
         Model Model { get; }
         bool IsRemoved { get; }
-    }
-
-    internal interface IInternalTabularObject: ITabularObject
-    {
-        void ReapplyReferences();
+        internal void ReapplyReferences();
     }
 
     public interface ILineageTagObject: ITabularNamedObject
@@ -62,11 +58,7 @@ namespace TabularEditor.TOMWrapper
         bool CanEditName();
         bool CanDelete(out string message);
         void Delete();
-    }
-
-    internal interface IInternalTabularNamedObject: ITabularNamedObject, IInternalTabularObject
-    {
-        void RemoveReferences();
+        internal void RemoveReferences();
     }
 
     #region Common interfaces

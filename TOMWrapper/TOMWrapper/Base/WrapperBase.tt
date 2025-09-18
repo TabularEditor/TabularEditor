@@ -787,17 +787,19 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
         internal override bool TOM_Contains(TOM.MetadataObject obj) { return TOM_Collection.Contains(obj as TOM.<#= t.Name #>); }
         internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.<#= t.Name #>); }
         internal override void TOM_Clear() { TOM_Collection.Clear(); }
-        internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
 <# if (t.Name != "Column") { #>
 		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
 <# } #>
+<# if (props.Any(p => p.Name == "Name")) { #>
+        internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
         internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
         internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
-<# if (t.Name != "Measure" && t.Name != "Relationship" && t.Name != "Column") { #>
-        internal override string GetNewName(string prefix = null) { return RemoveInvalidNameChars(string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix)); }
-<# } if (t.Name == "Relationship") { #> 
+<#   if (t.Name != "Measure" && t.Name != "Relationship" && t.Name != "Column" && t.Name != "Function" && t.Name != "Calendar") { #>
+        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+<#   } if (t.Name == "Relationship") { #> 
 		internal override string GetNewName(string prefix = null) { return Guid.NewGuid().ToString(); }
-<# } if (t.Name != "Column") { #>
+<#   }
+   } if (t.Name != "Column") { #>
         internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.<#= t.Name #>); }
         /// <summary>The number of items in this collection.</summary>
 		public override int Count { get { return TOM_Collection.Count; } }

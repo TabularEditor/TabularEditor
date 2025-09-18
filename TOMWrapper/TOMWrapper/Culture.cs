@@ -1,4 +1,4 @@
-﻿using Microsoft.AnalysisServices.Tabular;
+using Microsoft.AnalysisServices.Tabular;
 using System.ComponentModel;
 using TabularEditor.PropertyGridUI;
 using System;
@@ -42,7 +42,7 @@ namespace TabularEditor.TOMWrapper
         }
         private bool ShouldSerializeContentType() { return false; }
 
-        internal override bool IsEditable(string propertyName)
+        private protected override bool IsEditable(string propertyName)
         {
             if (propertyName == nameof(ContentType)) return false;
             return base.IsEditable(propertyName);
@@ -53,7 +53,7 @@ namespace TabularEditor.TOMWrapper
             base.Init();
         }
 
-        internal override bool IsBrowsable(string propertyName)
+        private protected override bool IsBrowsable(string propertyName)
         {
             switch(propertyName)
             {

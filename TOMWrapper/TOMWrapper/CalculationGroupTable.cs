@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
@@ -322,7 +322,7 @@ namespace TabularEditor.TOMWrapper
 
         public CalculationItemCollection CalculationItems => CalculationGroup.CalculationItems;
 
-        internal override bool IsBrowsable(string propertyName)
+        private protected override bool IsBrowsable(string propertyName)
         {
             switch(propertyName)
             {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
@@ -88,7 +88,7 @@ namespace TabularEditor.TOMWrapper
         [Browsable(true), DisplayName("OLS Column Permissions"), Category("Security")]
         public RoleColumnOLSIndexer ColumnPermissions { get; private set; }
 
-        internal override bool IsBrowsable(string propertyName)
+        private protected override bool IsBrowsable(string propertyName)
         {
             switch(propertyName)
             {

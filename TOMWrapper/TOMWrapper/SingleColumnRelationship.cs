@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -42,7 +42,7 @@ namespace TabularEditor.TOMWrapper
             return string.Format("'{0}'[{1}]", col.Table.Name, col.Name);
         }
 
-        internal override bool IsBrowsable(string propertyName)
+        private protected override bool IsBrowsable(string propertyName)
         {
             switch (propertyName)
             {
@@ -54,7 +54,7 @@ namespace TabularEditor.TOMWrapper
             return true;
         }
 
-        internal override bool IsEditable(string propertyName)
+        private protected override bool IsEditable(string propertyName)
         {
             switch (propertyName)
             {

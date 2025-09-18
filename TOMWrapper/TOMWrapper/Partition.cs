@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using TabularEditor.PropertyGridUI;
@@ -222,7 +222,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        internal override bool IsBrowsable(string propertyName)
+        private protected override bool IsBrowsable(string propertyName)
         {
             switch(propertyName)
             {
@@ -278,7 +278,7 @@ namespace TabularEditor.TOMWrapper
             return base.AllowDelete(out message);
         }
 
-        internal override bool IsEditable(string propertyName)
+        private protected override bool IsEditable(string propertyName)
         {
             switch(propertyName)
             {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -84,7 +84,7 @@ namespace TabularEditor.TOMWrapper
             Partition.RemoveDataCoverageDefinition();
         }
 
-        internal override bool IsBrowsable(string propertyName)
+        private protected override bool IsBrowsable(string propertyName)
         {
             switch (propertyName)
             {
@@ -93,7 +93,7 @@ namespace TabularEditor.TOMWrapper
             return true;
         }
 
-        internal override bool IsEditable(string propertyName)
+        private protected override bool IsEditable(string propertyName)
         {
             if (propertyName == Properties.NAME) return false;
             return true;

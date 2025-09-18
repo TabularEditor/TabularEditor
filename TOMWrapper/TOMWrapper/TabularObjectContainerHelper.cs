@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +30,29 @@ namespace TabularEditor.TOMWrapper
                     foreach (var c in toc.GetChildrenRecursive(false)) yield return c;
                 }
             }
+        }
+
+        [Localizable(false)]
+        internal static string GetNewName(this IEnumerable<string> existingNames, string prefix, bool caseSensitive = false)
+        {
+            var testName = prefix;
+            var suffix = 0;
+            var names = new HashSet<string>(existingNames, caseSensitive ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
+
+            // Loop to determine if prefix + suffix is already in use - break, when we find a name
+            // that's not being used anywhere:
+            while (names.Contains(testName))
+            {
+                suffix++;
+                testName = prefix + " " + suffix;
+            }
+            return testName;
+        }
+
+        [Localizable(false)]
+        internal static string GetNewName(this IEnumerable<ITabularNamedObject> objectCollection, string prefix, params IEnumerable<ITabularNamedObject>[] additionalObjectCollections)
+        {
+            return GetNewName(objectCollection.Select(o => o.Name).Concat(additionalObjectCollections.SelectMany(o => o).Select(o => o.Name)), prefix);
         }
     }
 }

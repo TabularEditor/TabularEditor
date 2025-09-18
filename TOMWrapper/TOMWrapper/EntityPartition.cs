@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using TOM = Microsoft.AnalysisServices.Tabular;
 using System.ComponentModel;
 using System.ComponentModel.Design;
@@ -109,7 +109,7 @@ namespace TabularEditor.TOMWrapper
             set => SetValue(SchemaName, value, v => (MetadataObject.Source as TOM.EntityPartitionSource).SchemaName = v);
         }
 
-        internal override bool IsBrowsable(string propertyName)
+        private protected override bool IsBrowsable(string propertyName)
         {
             switch (propertyName)
             {
@@ -123,7 +123,7 @@ namespace TabularEditor.TOMWrapper
             return base.IsBrowsable(propertyName);
         }
 
-        internal override bool IsEditable(string propertyName)
+        private protected override bool IsEditable(string propertyName)
         {
             switch (propertyName)
             {

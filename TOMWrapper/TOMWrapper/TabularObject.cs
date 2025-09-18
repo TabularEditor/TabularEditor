@@ -40,6 +40,7 @@ namespace TabularEditor.TOMWrapper
         // Special types needed by Tabular Editor (doesn't exist in the TOM):
         CalculationGroupTable = -7,
         CalculationItemCollection = -6,
+        CalendarCollection = -5,
         PartitionCollection = -4,
         KPIMeasure = -3,
         Group = -2,
@@ -89,12 +90,12 @@ namespace TabularEditor.TOMWrapper
     /// 
     /// Protected constructor that takes a TOM MetadataObject as argument.
     /// </summary>
-    public abstract class TabularObject: IInternalTabularObject, INotifyPropertyChanged, INotifyPropertyChanging, IDynamicPropertyObject
+    public abstract class TabularObject: ITabularObject, INotifyPropertyChanging, IDynamicPropertyObject
     {
         internal JObject SerializedFrom = null;
         internal ITabularObjectCollection Collection;
 
-        void IInternalTabularObject.ReapplyReferences() => ReapplyReferences();
+        void ITabularObject.ReapplyReferences() => ReapplyReferences();
 
         protected void SetValue(object org, object value, Action<object> setter, [CallerMemberName] string propertyName = null)
         {
@@ -131,10 +132,27 @@ namespace TabularEditor.TOMWrapper
         public event PropertyChangingEventHandler PropertyChanging;
 
         internal abstract void RenewMetadataObject();
-        internal virtual void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) { }
+
+        internal virtual void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson)
+        {
+            Handler.WrapperLookup.Remove(MetadataObject);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject(tomObjectType, tomJson, null, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
+            Handler.WrapperLookup.Add(MetadataObject, this);
+            ResolveMissingReferences(collection, tomJson);
+            Collection = collection;
+            Collection.Add(this);
+        }
+        public virtual void Delete() { }
         internal virtual void ReapplyReferences() { }
         internal virtual void DeleteLinkedObjects(bool isChildOfDeleted) { }
         internal virtual void Reinit() { }
+
+        /// <summary>
+        /// Gives implementations a chance to resolve missing references after deserializing from JSON, but before adding the object to the collection.
+        /// </summary>
+        /// <param name="parentCollection"></param>
+        /// <param name="tomJson"></param>
+        private protected virtual void ResolveMissingReferences(ITabularObjectCollection parentCollection, string tomJson) { }
 
         internal static readonly TOM.SerializeOptions RenewMetadataOptions = new TOM.SerializeOptions
         {
@@ -277,11 +295,11 @@ namespace TabularEditor.TOMWrapper
             return IsEditable(propertyName);
         }
 
-        internal virtual bool IsBrowsable(string propertyName)
+        private protected virtual bool IsBrowsable(string propertyName)
         {
             return true;
         }
-        internal virtual bool IsEditable(string propertyName)
+        private protected virtual bool IsEditable(string propertyName)
         {
             return true;
         }

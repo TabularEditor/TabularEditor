@@ -10,16 +10,16 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    interface ITabularObjectCollection: INotifyCollectionChanged, IExpandableIndexer, IEnumerable
+    interface ITabularObjectCollection: INotifyCollectionChanged, IEnumerable
     {
         TabularModelHandler Handler { get; }
-        void Add(TabularNamedObject obj);
+        void Add(TabularObject obj);
         void Clear();
-        void Remove(TabularNamedObject obj);
-        bool Contains(TabularNamedObject obj);
+        void Remove(TabularObject obj);
+        bool Contains(TabularObject obj);
         bool Contains(string key);
         string CollectionName { get; }
-        int IndexOf(TabularNamedObject obj);
+        int IndexOf(TabularObject obj);
         TabularObject Parent { get; }
         void CreateChildrenFromMetadata();
         Type ItemType { get; }
@@ -30,7 +30,7 @@ namespace TabularEditor.TOMWrapper
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public abstract class TabularObjectCollection<T> : ITabularObjectCollection, IReadOnlyList<T>
-        where T: TabularNamedObject
+        where T: TabularObject
     {
         // Functionality:
         #region CTOR
@@ -131,7 +131,6 @@ namespace TabularEditor.TOMWrapper
                 return null;
         }
 
-        bool IExpandableIndexer.EnableMultiLine => false;
         /// <summary>
         /// Gets the item on the specified index.
         /// </summary>
@@ -224,7 +223,7 @@ namespace TabularEditor.TOMWrapper
         {
             return Contains(key);
         }
-        bool ITabularObjectCollection.Contains(TabularNamedObject obj)
+        bool ITabularObjectCollection.Contains(TabularObject obj)
         {
             return Contains(obj as T);
         }
@@ -235,55 +234,26 @@ namespace TabularEditor.TOMWrapper
         }
         TabularModelHandler ITabularObjectCollection.Handler { get { return _handler; } }
         TabularObject ITabularObjectCollection.Parent { get { return _parent; } }
-        int ITabularObjectCollection.IndexOf(TabularNamedObject obj)
+        int ITabularObjectCollection.IndexOf(TabularObject obj)
         {
             return IndexOf(obj as T);
         }
-        void ITabularObjectCollection.Add(TabularNamedObject item)
+        void ITabularObjectCollection.Add(TabularObject item)
         {
             Add(item as T);
         }
 
-        void ITabularObjectCollection.Remove(TabularNamedObject item)
+        void ITabularObjectCollection.Remove(TabularObject item)
         {
             Remove(item as T);
         }
 
         #endregion
-        #region IExpandableIndexer members
-
-        object IExpandableIndexer.this[string name]
-        {
-            get
-            {
-                return this[name];
-            }
-
-            set
-            {
-                throw new NotSupportedException();
-            }
-        }
-        string IExpandableIndexer.GetDisplayName(string key)
-        {
-            return key;
-        }
-
-        IEnumerable<string> IExpandableIndexer.Keys
-        {
-            get
-            {
-                return this.Select(obj => obj.Name);
-            }
-        }
-        string IExpandableIndexer.Summary => ToString();
 
         public override string ToString()
         {
             return string.Format("{0} {1}", Count, typeof(T).GetTypeName(Count != 1)).ToLower();
         }
-
-        #endregion
         #region INotifyCollectionChanged members
         public event NotifyCollectionChangedEventHandler CollectionChanged;
         #endregion
@@ -295,4 +265,60 @@ namespace TabularEditor.TOMWrapper
         #endregion
     }
 
+
+    public abstract class TabularNamedObjectCollection<T>: TabularObjectCollection<T>, IExpandableIndexer where T : TabularNamedObject
+    {
+        internal abstract string GetNewName(string prefix = null);
+        internal abstract bool TOM_ContainsName(string name);
+        internal abstract TOM.MetadataObject TOM_Get(string name);
+        internal abstract TOM.MetadataObject TOM_Find(string name);
+
+        public TabularNamedObjectCollection(string collectionName, TabularObject parent) : base(collectionName, parent)
+        {
+        }
+
+
+        #region IExpandableIndexer members
+        string IExpandableIndexer.GetDisplayName(string key) => key;
+
+        string IExpandableIndexer.Summary => ToString();
+
+        IEnumerable<string> IExpandableIndexer.Keys => GetKeys();
+
+        bool IExpandableIndexer.EnableMultiLine => false;
+
+        object IExpandableIndexer.this[string name]
+        {
+            get => this[name];
+
+            set => throw new NotSupportedException();
+        }
+
+        #endregion
+
+        protected virtual IEnumerable<string> GetKeys() => this.Select(obj => obj.Name);
+
+        /// <summary>
+        /// Gets the item with the specified name.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public virtual T this[string name] => Handler.WrapperLookup[TOM_Get(name)] as T;
+
+        public virtual T FindByName(string name)
+        {
+            var tom = TOM_Find(name);
+
+            if (tom != null && Handler.WrapperLookup.TryGetValue(tom, out var value))
+                return value as T;
+            return null;
+        }
+
+        /// <summary>
+        /// Returns true if this collection contains an item with the specified name.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public bool Contains(string name) => TOM_ContainsName(name);
+    }
 }

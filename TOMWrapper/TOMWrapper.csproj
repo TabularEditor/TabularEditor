@@ -110,8 +110,14 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="ExpressionProperty.cs" />
+    <Compile Include="PropertyGridUI\CollectionEditors\CalendarColumnGroupCollectionEditor.cs" />
+    <Compile Include="PropertyGridUI\CollectionEditors\CalendarCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\Converters\EnumBrowsableConverter.cs" />
+    <Compile Include="TOMWrapper\AssociatedColumnCollection.cs" />
+    <Compile Include="TOMWrapper\Calendar.cs" />
+    <Compile Include="TOMWrapper\CalendarColumnGroup.cs" />
     <Compile Include="TOMWrapper\Function.cs" />
     <Compile Include="IsExternalInit.cs" />
     <Compile Include="MetadataSerializationOptionsBuilderExtension.cs" />

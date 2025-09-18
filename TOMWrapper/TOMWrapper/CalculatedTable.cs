@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
@@ -47,7 +47,7 @@ namespace TabularEditor.TOMWrapper
             Partitions[0].PropertyChanged += Partition_PropertyChanged;
         }
 
-        internal override bool IsBrowsable(string propertyName)
+        private protected override bool IsBrowsable(string propertyName)
         {
             // Calculated Table should not expose all properties that the ancestor Table class has
             // For example, we don't want users to edit the Partitions collection.

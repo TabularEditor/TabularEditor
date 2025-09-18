@@ -162,6 +162,11 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         [Browsable(false),IntelliSense("A collection of every hierarchy across all tables in the model.")]
         public IEnumerable<Hierarchy> AllHierarchies { get { return Tables.SelectMany(t => t.Hierarchies); } }
+        /// <summary>
+        /// Iterates all calendars on all tables of the model.
+        /// </summary>
+        [Browsable(false), IntelliSense("A collection of every calendar across all tables in the model.")]
+        public IEnumerable<Calendar> AllCalendars { get { return Tables.SelectMany(t => t.Calendars); } }
 
         /// <summary>
         /// Iterates all columns on all tables of the model.
@@ -247,7 +252,7 @@ namespace TabularEditor.TOMWrapper
             InitDeploymentMetadata();
         }
 
-        internal override bool IsBrowsable(string propertyName)
+        private protected override bool IsBrowsable(string propertyName)
         {
             switch (propertyName)
             {

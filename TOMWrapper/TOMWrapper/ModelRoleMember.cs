@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -73,7 +73,7 @@ namespace TabularEditor.TOMWrapper
 
     public partial class ModelRoleMember
     {
-        internal override bool IsBrowsable(string propertyName)
+        private protected override bool IsBrowsable(string propertyName)
         {
             switch (propertyName)
             {
