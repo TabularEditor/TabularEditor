@@ -40,6 +40,11 @@ namespace TabularEditor.PropertyGridUI
             return base.GetItems(editValue);
         }
 
+        protected override object SetItems(object editValue, object[] value)
+        {
+            return base.SetItems(editValue, value);
+        }
+
         protected override object CreateInstance(Type itemType)
         {
             return Calendar.CreateNew(table);

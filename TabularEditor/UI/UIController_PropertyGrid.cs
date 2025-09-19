@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,8 +17,11 @@ namespace TabularEditor.UI
         {
             CustomEditors.RegisterEditor(nameof(Measure.DisplayFolder), new FormDisplayFolderSelect());
             CustomEditors.RegisterEditor(nameof(ProviderDataSource.ConnectionString), new ConnectSqlForm());
-            CustomEditors.RegisterEditor(nameof(Column.SortByColumn), new ColumnSelectDialog());
-            CustomEditors.RegisterEditor(nameof(Column.GroupByColumns), new ColumnSelectDialog());
+            CustomEditors.RegisterEditor(nameof(Column.SortByColumn), new ColumnSelectDialog(multiSelect: false, allowNoSelection: true));
+            CustomEditors.RegisterEditor(nameof(Column.GroupByColumns), new ColumnSelectDialog(multiSelect: true, allowNoSelection: true));
+            CustomEditors.RegisterEditor(nameof(TimeUnitColumnAssociation.PrimaryColumn), new ColumnSelectDialog(multiSelect: false, allowNoSelection: false));
+            CustomEditors.RegisterEditor(nameof(TimeUnitColumnAssociation.AssociatedColumns), new ColumnSelectDialog(multiSelect: true, allowNoSelection: true));
+            CustomEditors.RegisterEditor(nameof(TimeRelatedColumnGroup.Columns), new ColumnSelectDialog(multiSelect: true, allowNoSelection: false));
         }
 
         public void PropertyGrid_UpdateFromSelection()

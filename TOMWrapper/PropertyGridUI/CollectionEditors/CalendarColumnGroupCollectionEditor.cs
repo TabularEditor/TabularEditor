@@ -48,11 +48,18 @@ namespace TabularEditor.PropertyGridUI
 
         protected override object SetItems(object editValue, object[] value)
         {
-            Collection.Clear();
             foreach (CalendarColumnGroup an in value)
             {
-                if(an.IsRemoved) an.RenewMetadataObject();
-                Collection.Add(an);
+                if (!Collection.Contains(an))
+                {
+                    if (an.IsRemoved) an.RenewMetadataObject();
+                    Collection.Add(an);
+                }
+            }
+
+            foreach (CalendarColumnGroup an in Collection.ToList())
+            {
+                if (!value.Contains(an)) Collection.Remove(an);
             }
             return Collection;
         }

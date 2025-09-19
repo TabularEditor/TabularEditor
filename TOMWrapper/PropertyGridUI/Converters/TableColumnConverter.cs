@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -108,6 +108,7 @@ namespace TabularEditor.PropertyGridUI
             if (context.Instance is ITabularObject[] tabularObjects) return (tabularObjects.First() as Column)?.Table;
             if (context.Instance is ITabularNamedObject[] tabularObjects2) return (tabularObjects2.First() as Column)?.Table;
             if (context.Instance is object[] tabularObjects3) return (tabularObjects3.First() as Column)?.Table;
+            if (context.Instance is CalendarColumnGroup ccg) return ccg.Calendar.Table;
             return null;
         }
 
