@@ -110,6 +110,7 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ConnectionStringProperties.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="ExpressionProperty.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\BindingInfoCollectionEditor.cs" />

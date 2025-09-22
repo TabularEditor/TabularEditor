@@ -1,4 +1,5 @@
-﻿using System;
+using Microsoft.AnalysisServices;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
@@ -688,8 +689,8 @@ database            Database ID of the model to load. If blank ("") picks the fi
                     foreach (var map in replaceMap) Handler.Model.DataSources.SetPlaceholder(map.Key, map.Value);
                 }
 
-                var cs = string.IsNullOrEmpty(userName) ? TabularConnection.GetConnectionString(serverName, Program.ApplicationName) :
-                    TabularConnection.GetConnectionString(serverName, userName, password, Program.ApplicationName);
+                var cs = string.IsNullOrEmpty(userName) ? TabularConnection.GetConnectionString(serverName, Program.ApplicationName, databaseID) :
+                    TabularConnection.GetConnectionString(serverName, userName, password, Program.ApplicationName, ProtocolFormat.Default, InteractiveLogin.Default, IdentityMode.Default);
                 if (xmla_scripting_only)
                 {
                     Console.WriteLine("Generating XMLA/TMSL script...");

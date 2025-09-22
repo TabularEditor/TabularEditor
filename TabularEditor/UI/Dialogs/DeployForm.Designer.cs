@@ -1,4 +1,6 @@
-﻿namespace TabularEditor.UI.Dialogs
+using TabularEditor.UI.Dialogs.Pages;
+
+namespace TabularEditor.UI.Dialogs
 {
     partial class DeployForm
     {
@@ -397,7 +399,7 @@
             // page1
             // 
             this.page1.AllowLocalInstanceConnect = false;
-            this.page1.IntegratedSecurity = true;
+            this.page1.AuthenticationMode = AuthenticationMode.Integrated;
             this.page1.Location = new System.Drawing.Point(15, 63);
             this.page1.MinimumSize = new System.Drawing.Size(232, 123);
             this.page1.Name = "page1";

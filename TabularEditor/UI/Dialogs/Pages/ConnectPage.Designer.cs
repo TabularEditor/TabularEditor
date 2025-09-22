@@ -1,4 +1,4 @@
-﻿namespace TabularEditor.UI.Dialogs.Pages
+namespace TabularEditor.UI.Dialogs.Pages
 {
     partial class ConnectPage
     {
@@ -37,6 +37,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.rdbUsernamePassword = new System.Windows.Forms.RadioButton();
             this.rdbIntegrated = new System.Windows.Forms.RadioButton();
+            this.rdbEntraID = new System.Windows.Forms.RadioButton();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.txtPassword = new System.Windows.Forms.TextBox();
@@ -93,8 +94,9 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.rdbUsernamePassword);
             this.panel1.Controls.Add(this.rdbIntegrated);
+            this.panel1.Controls.Add(this.rdbEntraID);
+            this.panel1.Controls.Add(this.rdbUsernamePassword);
             this.panel1.Controls.Add(this.label5);
             this.panel1.Controls.Add(this.label4);
             this.panel1.Controls.Add(this.txtPassword);
@@ -103,13 +105,13 @@
             this.panel1.Location = new System.Drawing.Point(0, 66);
             this.panel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(433, 123);
+            this.panel1.Size = new System.Drawing.Size(433, 151);
             this.panel1.TabIndex = 54;
             // 
             // rdbUsernamePassword
             // 
             this.rdbUsernamePassword.AutoSize = true;
-            this.rdbUsernamePassword.Location = new System.Drawing.Point(120, 33);
+            this.rdbUsernamePassword.Location = new System.Drawing.Point(120, 61);
             this.rdbUsernamePassword.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.rdbUsernamePassword.Name = "rdbUsernamePassword";
             this.rdbUsernamePassword.Size = new System.Drawing.Size(178, 20);
@@ -128,9 +130,23 @@
             this.rdbIntegrated.Size = new System.Drawing.Size(250, 20);
             this.rdbIntegrated.TabIndex = 0;
             this.rdbIntegrated.TabStop = true;
-            this.rdbIntegrated.Text = "Windows Integrated or Azure AD login";
+            this.rdbIntegrated.Text = "Integrated";
             this.rdbIntegrated.UseVisualStyleBackColor = true;
             this.rdbIntegrated.CheckedChanged += new System.EventHandler(this.ValidateUI);
+            // 
+            // rdbEntraID
+            // 
+            this.rdbEntraID.AutoSize = true;
+            this.rdbEntraID.Checked = true;
+            this.rdbEntraID.Location = new System.Drawing.Point(120, 33);
+            this.rdbEntraID.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.rdbEntraID.Name = "rdbEntraID";
+            this.rdbEntraID.Size = new System.Drawing.Size(250, 20);
+            this.rdbEntraID.TabIndex = 0;
+            this.rdbEntraID.TabStop = true;
+            this.rdbEntraID.Text = "Microsoft Entra MFA";
+            this.rdbEntraID.UseVisualStyleBackColor = true;
+            this.rdbEntraID.CheckedChanged += new System.EventHandler(this.ValidateUI);
             // 
             // label5
             // 
@@ -145,7 +161,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(0, 98);
+            this.label4.Location = new System.Drawing.Point(0, 126);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(71, 16);
@@ -155,7 +171,7 @@
             // txtPassword
             // 
             this.txtPassword.Enabled = false;
-            this.txtPassword.Location = new System.Drawing.Point(120, 95);
+            this.txtPassword.Location = new System.Drawing.Point(120, 123);
             this.txtPassword.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtPassword.MaximumSize = new System.Drawing.Size(239, 20);
             this.txtPassword.Name = "txtPassword";
@@ -166,7 +182,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(0, 66);
+            this.label3.Location = new System.Drawing.Point(0, 94);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(74, 16);
@@ -176,7 +192,7 @@
             // txtUsername
             // 
             this.txtUsername.Enabled = false;
-            this.txtUsername.Location = new System.Drawing.Point(120, 63);
+            this.txtUsername.Location = new System.Drawing.Point(120, 91);
             this.txtUsername.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtUsername.MaximumSize = new System.Drawing.Size(239, 20);
             this.txtUsername.Name = "txtUsername";
@@ -208,9 +224,9 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label2);
             this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.MinimumSize = new System.Drawing.Size(360, 186);
+            this.MinimumSize = new System.Drawing.Size(360, 214);
             this.Name = "ConnectPage";
-            this.Size = new System.Drawing.Size(575, 186);
+            this.Size = new System.Drawing.Size(575, 214);
             this.Load += new System.EventHandler(this.ConnectPage_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -227,6 +243,7 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.RadioButton rdbUsernamePassword;
         private System.Windows.Forms.RadioButton rdbIntegrated;
+        private System.Windows.Forms.RadioButton rdbEntraID;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox txtPassword;
