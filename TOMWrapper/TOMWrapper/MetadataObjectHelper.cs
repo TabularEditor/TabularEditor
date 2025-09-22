@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -96,6 +96,16 @@ namespace Microsoft.AnalysisServices.Tabular.Helper
                 // Do not allow a column with the same name as another column in the table:
                 if (column.Table.Columns.Any(c => c != obj && c.Name.Equals(newName, StringComparison.InvariantCultureIgnoreCase)))
                     throw new ArgumentException(string.Format(Messages.DuplicateColumnName, newName));
+            }
+            else if (obj is Calendar calendar)
+            {
+                // Do not allow calendar names with the same name as any other calendar or table in the model:
+                if (calendar.Model.Tables.Any(t => t.Calendars.Find(newName) is { } c && c != calendar))
+                    throw new ArgumentException(string.Format(Messages.DuplicateCalendarName, newName));
+
+                if (calendar.Model.Tables.Find(newName) != null)
+                    throw new ArgumentException(string.Format(Messages.DuplicateCalendarTableName, newName));
+
             }
         }
 

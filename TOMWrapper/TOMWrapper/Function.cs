@@ -50,6 +50,9 @@ namespace TabularEditor.TOMWrapper
         {
             switch (propertyName)
             {
+                case Properties.EXPRESSION:
+                    FormulaFixup.BuildDependencyTree(this);
+                    break;
 
                 case Properties.NAME:
                     if (Handler.Settings.AutoFixup)

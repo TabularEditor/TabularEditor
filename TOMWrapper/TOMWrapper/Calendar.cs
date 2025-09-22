@@ -85,6 +85,9 @@ namespace TabularEditor.TOMWrapper
 
             if (propertyName == Properties.NAME)
             {
+                // Check that the name is valid:
+
+
                 // When formula fixup is enabled, we need to begin a new batch of undo operations, as this
                 // name change could result in expression changes on multiple objects:
                 if (Handler.Settings.AutoFixup) Handler.BeginUpdate("Set Property 'Name'");

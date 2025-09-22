@@ -144,6 +144,17 @@ namespace TabularEditor.TOMWrapper
             return ds;
         }
 
+        internal TabularNamedObject FindTableOrCalendar(string name)
+        {
+            if (Tables.FindByName(name) is { } match) return match;
+            foreach (var t in Tables)
+            {
+                if (t.Calendars.FindByName(name) is {} c) return c;
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Adds a new <see cref="QueryGroup"/> (display folder for Power Query expressions) to the <see cref="Model"/>.
         /// </summary>

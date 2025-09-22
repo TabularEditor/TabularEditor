@@ -331,13 +331,7 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => s.DirectCount == 1 && s.Direct.First() is IDaxObject, (s, m) =>
             {
                 UIController.Current.ShowDependencies(s.Direct.First() as IDaxObject);
-            }, (s, m) => @"Show &dependencies...", true, Context.Table | Context.TableObject | Context.CalculationItem | Context.Function, Keys.F3));
-
-            // Filter related...
-            // TODO
-            /*Add(new Action((s, m) => s.DirectCount == 1, (s, m) => UIController.Current.ApplyFilter(":RelatedTables.Any(Name = \"" + s.Table.Name + "\")"), 
-                (s, m) => @"Filter &related", true, Context.Table));*/
-
+            }, (s, m) => @"Show &dependencies...", true, Context.Calendar | Context.Table | Context.TableObject | Context.CalculationItem | Context.Function, Keys.F3));
 
             // Script actions:
             Add(new Action((s, m) => s.DirectCount == 1, (s, m) => Clipboard.SetText(Scripter.ScriptCreateOrReplace(s.OfType<TabularNamedObject>().FirstOrDefault())), (s, m) => @"Script\Create or Replace\To clipboard", true, Context.Scriptable));
