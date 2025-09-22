@@ -225,7 +225,7 @@ namespace TabularEditor.TOMWrapper
 
             server = new TOM.Server();
 
-            var connectionString = TabularConnection.GetConnectionString(serverName, applicationName);
+            var connectionString = TabularConnection.GetConnectionString(serverName, applicationName, databaseName);
             server.Connect(connectionString);
 
             if (string.IsNullOrEmpty(databaseName))

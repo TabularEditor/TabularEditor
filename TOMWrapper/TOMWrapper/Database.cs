@@ -1,4 +1,4 @@
-﻿using Microsoft.AnalysisServices;
+using Microsoft.AnalysisServices;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -148,6 +148,7 @@ namespace TabularEditor.TOMWrapper
         {
             return TOMDatabase?.Server == null ? "(Metadata loaded from file)" : ServerName + "." + Name;
         }
+        void ITabularObject.ReapplyReferences() { }
 
         public event PropertyChangedEventHandler PropertyChanged;
         public event PropertyChangingEventHandler PropertyChanging;

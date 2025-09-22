@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
@@ -252,7 +252,7 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// A collection of columns that should be grouped together with this column when used in visuals (RelatedColumnDetails).
         /// </summary>
-        [NoMultiselect(), Editor(typeof(ColumnSetCollectionEditor), typeof(UITypeEditor)), Category("Options"), DisplayName("Group By Columns")]
+        [NoMultiselect(), Editor(typeof(CustomDialogEditor), typeof(UITypeEditor)), Category("Options"), DisplayName("Group By Columns")]
         [IntelliSense("A collection of columns that should be grouped together with this column when used in visuals (RelatedColumnDetails).")]
         [Description("A collection of columns that should be grouped together with this column when used in visuals (RelatedColumnDetails).")]
         public GroupingColumnCollection GroupByColumns
@@ -336,7 +336,7 @@ namespace TabularEditor.TOMWrapper
             base.OnPropertyChanged(propertyName, oldValue, newValue);
         }
 
-        internal override bool IsBrowsable(string propertyName)
+        private protected override bool IsBrowsable(string propertyName)
         {
             switch (propertyName)
             {

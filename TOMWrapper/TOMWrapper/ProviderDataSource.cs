@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -84,7 +84,7 @@ namespace TabularEditor.TOMWrapper
         [DisplayName("Source ID"), Category("Power BI Source Details")]
         public string SourceID { get { return MetadataObject.Name; } }
 
-        internal override bool IsBrowsable(string propertyName)
+        private protected override bool IsBrowsable(string propertyName)
         {
             switch(propertyName)
             {

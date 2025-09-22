@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,9 +9,9 @@ namespace TabularEditor.TOMWrapper.Serialization
     internal static class PerspectiveAnnotationSerializer
     {
 
-        public static IEnumerable<IInternalTabularPerspectiveObject> GetAllPerspectiveObjects(this Model model)
+        public static IEnumerable<ITabularPerspectiveObject> GetAllPerspectiveObjects(this Model model)
         {
-                return model.Tables.OfType<IInternalTabularPerspectiveObject>()
+                return model.Tables.OfType<ITabularPerspectiveObject>()
                     .Concat(model.AllMeasures)
                     .Concat(model.AllColumns)
                     .Concat(model.AllHierarchies);

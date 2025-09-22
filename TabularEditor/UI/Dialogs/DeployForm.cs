@@ -79,6 +79,7 @@ namespace TabularEditor.UI.Dialogs
             modelHasDataSources = Handler.Model.DataSources.Any();
             modelHasNonCalculatedPartitions = Handler.Model.Tables.Any(t => t.MetadataObject.IsImported());
             modelHasRefreshPolicyPartitions = Handler.Model.AllPartitions.Any(p => p.SourceType == TOMWrapper.PartitionSourceType.PolicyRange);
+            modelHasSharedExpressions = Handler.Model.Expressions.Any();
             modelHasRoles = Handler.Model.Roles.Any();
             modelHasRoleMembers = Handler.Model.Roles.Any(mr => mr.Members.Any());
         }
@@ -88,6 +89,7 @@ namespace TabularEditor.UI.Dialogs
         private bool modelHasNonCalculatedPartitions;
         private bool modelHasRoles;
         private bool modelHasRoleMembers;
+        private bool modelHasSharedExpressions;
 
         private void Page_Validation(object sender, ValidationEventArgs e)
         {
@@ -129,6 +131,7 @@ namespace TabularEditor.UI.Dialogs
                 chkDeployDataSources.Checked = modelHasDataSources;
                 chkDeployPartitions.Checked = modelHasNonCalculatedPartitions;
                 chkDeployRefreshPolicyPartitions.Checked = modelHasRefreshPolicyPartitions;
+                chkDeploySharedExpressions.Checked = modelHasSharedExpressions;
                 chkDeployRoles.Checked = modelHasRoleMembers;
                 chkDeployRoleMembers.Checked = modelHasRoleMembers;
             }
@@ -138,6 +141,7 @@ namespace TabularEditor.UI.Dialogs
                 DeployOptions.DeployConnections = chkDeployDataSources.Checked;
                 DeployOptions.DeployPartitions = chkDeployPartitions.Checked;
                 DeployOptions.SkipRefreshPolicyPartitions = !chkDeployRefreshPolicyPartitions.Checked;
+                DeployOptions.DeploySharedExpressions = chkDeploySharedExpressions.Checked;
                 DeployOptions.DeployRoles = chkDeployRoles.Checked;
                 DeployOptions.DeployRoleMembers = chkDeployRoleMembers.Checked;
 
@@ -155,6 +159,7 @@ namespace TabularEditor.UI.Dialogs
                 if (chkDeployModel.Checked) n2.Nodes.Add("Deploy Model Structure");
                 if (chkDeployDataSources.Checked) n2.Nodes.Add("Deploy Connections");
                 if (chkDeployPartitions.Checked) n2.Nodes.Add("Deploy Partitions");
+                if (chkDeploySharedExpressions.Checked) n2.Nodes.Add("Deploy Shared Expressions");
                 if (chkDeployRoles.Checked)
                 {
                     var n3 = n2.Nodes.Add("Deploy Roles and Permissions");
@@ -173,6 +178,7 @@ namespace TabularEditor.UI.Dialogs
             var modelHasDataSources = Handler.Model.DataSources.Any();
             var modelHasNonCalculatedPartitions = Handler.Model.Tables.Any(t => t.MetadataObject.IsQueryTable());
             var modelHasIncrRefresh = Handler.Model.Tables.Any(t => t.EnableRefreshPolicy);
+            var modelHasSharedExpressions = Handler.Model.Expressions.Any();
             var modelHasRoles = Handler.Model.Roles.Any();
             var modelHasRoleMembers = Handler.Model.Roles.Any(mr => mr.Members.Any());
 
@@ -181,7 +187,7 @@ namespace TabularEditor.UI.Dialogs
                 chkDeployDataSources.Enabled = false;
                 chkDeployPartitions.Enabled = false;
                 chkDeployRefreshPolicyPartitions.Enabled = false;
-
+                chkDeploySharedExpressions.Enabled = false;
                 chkDeployRoles.Enabled = chkDeployModel.Checked && modelHasRoleMembers;
                 chkDeployRoleMembers.Enabled = chkDeployModel.Checked && chkDeployRoles.Checked && modelHasRoleMembers;
             }
@@ -190,6 +196,7 @@ namespace TabularEditor.UI.Dialogs
                 chkDeployDataSources.Enabled = modelHasDataSources && chkDeployModel.Checked;
                 chkDeployPartitions.Enabled = modelHasNonCalculatedPartitions && chkDeployModel.Checked;
                 chkDeployRefreshPolicyPartitions.Enabled = modelHasIncrRefresh && chkDeployModel.Checked && chkDeployPartitions.Checked;
+                chkDeploySharedExpressions.Enabled = Handler.CompatibilityLevel >= 1400;
                 chkDeployRoles.Enabled = modelHasRoles && chkDeployModel.Checked;
                 chkDeployRoleMembers.Enabled = modelHasRoleMembers && chkDeployModel.Checked && chkDeployRoles.Checked;
             }

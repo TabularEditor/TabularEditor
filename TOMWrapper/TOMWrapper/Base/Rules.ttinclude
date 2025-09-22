@@ -166,6 +166,7 @@ partial class Rules {
 	// are not abstract, and are not auto-inferred by the SSAS engine:
 	public static bool IsCreatable(Type t) {
 		if(!InCollection(t) || t.IsAbstract) return false;
+		if(t.Name == "TimeUnitColumnAssociation" || t.Name == "TimeRelatedColumnGroup") return false;
 		return true;
 	}
 
@@ -284,6 +285,9 @@ partial class Rules {
 				case "ExpressionSource":
 					resolveObject = "value == null ? null : Model.Expressions[value.MetadataObject.Name].MetadataObject";
 					break;
+				case "PrimaryColumn":
+					resolveObject = "value == null ? null : Calendar.Table.Columns[value.MetadataObject.Name].MetadataObject";
+					break;
 				case "SortByColumn":
 					resolveObject = "value == null ? null : Table.Columns[value.MetadataObject.Name].MetadataObject";
 					break;
@@ -302,9 +306,10 @@ partial class Rules {
 				case "FromColumn":
 				case "ToColumn":
 				case "ParameterValuesColumn":
-				case "DataCoverageDefinition":
 				case "KPI":
+				case "QueryGroup":
 				case "DefaultMeasure":
+				case "DataCoverageDefinition":
 				    resolveObject = "value?.MetadataObject";
 					break;
 			}
@@ -405,6 +410,9 @@ partial class Rules {
 			case "ToColumn":
 			case "IsActive":
 			case "Ordinal":
+			case "CalendarColumnGroups":
+			case "PrimaryColumn":
+			case "TimeUnit":
 				return "Basic";
 
 			case "Column":
@@ -442,14 +450,18 @@ partial class Rules {
 	public static string GetOtherAttributes(string propertyName, string className)
     {
 	    if(className == "Variation" && propertyName == "Column") return "[TypeConverter(typeof(TableColumnConverter)),ReadOnly(true)]";
+		if(className == "CalendarColumnGroup" && propertyName == "Calendar") return "[Browsable(false)]";
 		if(propertyName == "ParameterValuesColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
 		if(propertyName == "BaseColumn") return "[TypeConverter(typeof(AllOtherTablesColumnConverter))]";
 		if(propertyName == "BaseTable") return "[TypeConverter(typeof(OtherTablesConverter))]";
+		if(propertyName == "PrimaryColumn") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(TableColumnConverter))]";
 		if(propertyName == "SortByColumn") return "[Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor)), TypeConverter(typeof(ColumnConverter))]";
 		if(propertyName == "ExpressionSource") return "[TypeConverter(typeof(NamedExpressionConverter))]";
 		if(propertyName == "DefaultColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
 		if(propertyName == "DefaultHierarchy") return "[TypeConverter(typeof(AllHierarchyConverter))]";
 		if(propertyName == "Relationship") return "[TypeConverter(typeof(AllRelationshipConverter))]";
+		if(propertyName == "QueryGroup") return "[TypeConverter(typeof(QueryGroupConverter)),Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]";
+		if(propertyName == "QueryGroups") return "[Editor(typeof(ClonableObjectCollectionEditor<QueryGroup>),typeof(UITypeEditor))]";
 		if(propertyName == "ToColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
 		if(propertyName == "FromColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
 		if(className == "Level" && propertyName == "Hierarchy") return "[Browsable(false)]";
@@ -471,9 +483,13 @@ partial class Rules {
 		if(propertyName == "Cultures") return "[Editor(typeof(TabularEditor.PropertyGridUI.CultureCollectionEditor),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Roles") return "[Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<ModelRole>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Expressions") return "[Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<NamedExpression>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]";
+		if(propertyName == "BindingInfoCollection") return "[Editor(typeof(BindingInfoCollectionEditor), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Sets") return "[NoMultiselect(),Editor(typeof(SetCollectionEditor),typeof(UITypeEditor))]";
 		if(propertyName == "Partitions") return "[NoMultiselect(),Editor(typeof(PartitionCollectionEditor),typeof(UITypeEditor))]";
 		if(propertyName == "Variations") return "[NoMultiselect(),Editor(typeof(VariationCollectionEditor),typeof(UITypeEditor))]";
+		if(propertyName == "Calendars") return "[NoMultiselect(),Editor(typeof(CalendarCollectionEditor),typeof(UITypeEditor))]";
+		if(propertyName == "CalendarColumnGroups") return "[NoMultiselect(),Editor(typeof(CalendarColumnGroupCollectionEditor),typeof(UITypeEditor))]";
+		if(propertyName == "TimeUnit") return "[TypeConverter(typeof(EnumBrowsableConverter))]";
 		
 		if(propertyName == "DataSources") return "[Browsable(false)]";
 		if(propertyName == "Relationships") return "[Browsable(false)]";
@@ -540,6 +556,9 @@ partial class Rules {
        { "Culture", "TabularNamedObject" },
        { "DataColumn", "Column" },
        { "DataSource", "TabularNamedObject" },
+       { "CalendarColumnGroup", "TabularObject" },
+       { "TimeUnitColumnAssociation", "CalendarColumnGroup" },
+       { "TimeRelatedColumnGroup", "CalendarColumnGroup" },
        { "ExternalModelRoleMember", "ModelRoleMember" },
        { "Hierarchy", "TabularNamedObject" },
        { "KPI", "TabularObject" },
@@ -561,8 +580,12 @@ partial class Rules {
 	   { "CalculationGroup", "TabularObject" },
 	   { "CalculationItem", "TabularNamedObject" },
 	   { "TablePermission", "TabularNamedObject" },
+	   { "QueryGroup", "TabularNamedObject" },
 	   { "DataCoverageDefinition", "TabularObject" },
-	   { "Function", "TabularNamedObject" }
+	   { "BindingInfo", "TabularNamedObject" },
+	   { "DataBindingHint", "BindingInfo" },
+	   { "Function", "TabularNamedObject" },
+	   { "Calendar", "TabularNamedObject" }
    };
    public static bool Seal(Type type) { return !_objectTypes.Values.Any(t => t == type.Name); }
    public static Dictionary<Type, string> ObjectTypes = Convert(_objectTypes).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
@@ -583,6 +606,7 @@ partial class Rules {
        { "ModelRoleMember", "Members" },
        { "ModelRole", "Roles" },
        { "Table", "Tables" },
+       { "Calendar", "Calendars" },
        { "CalculatedColumn", "Columns" },
        { "CalculatedTableColumn", "Columns" },
        { "DataColumn", "Columns" },
@@ -595,10 +619,13 @@ partial class Rules {
        { "Culture", "Cultures" },
 	   { "Relationship", "Relationships" },
 	   { "DataSource", "DataSources" },
+	   { "CalendarColumnGroup", "CalendarColumnGroups" },
 	   { "Variation", "Variations" },
 	   { "NamedExpression", "Expressions" },
 	   { "CalculationItem", "CalculationItems" },
 	   { "TablePermission", "TablePermissions" },
+	   { "QueryGroup", "QueryGroups" },
+	   { "BindingInfo", "BindingInfoCollection" },
 	   { "Function", "Functions" }
    };
    public static Dictionary<Type, string> Collections = Convert(_objectCollections).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
@@ -609,6 +636,7 @@ partial class Rules {
 		   case "ModelRoleMember": return "Members";
 		   case "Hierarchy": return "Hierarchies";
 		   case "NamedExpression": return "Expressions";
+		   case "BindingInfo": return "BindingInfoCollection";
 		   default: return itemType.Name + "s";
        }
    }
@@ -623,6 +651,8 @@ partial class Rules {
        { new KeyValuePair<string, string>("Table", "Model") },
 	   { new KeyValuePair<string, string>("Relationship", "Model") },
 	   { new KeyValuePair<string, string>("NamedExpression", "Model") },
+	   { new KeyValuePair<string, string>("QueryGroup", "Model") },
+	   { new KeyValuePair<string, string>("BindingInfo", "Model") },
 	   { new KeyValuePair<string, string>("Function", "Model") },
 
 	   // Collections owned by a Table (order of items matters, as this is the order in which child objects will be initialized):
@@ -631,6 +661,8 @@ partial class Rules {
        { new KeyValuePair<string, string>("Column", "Table") },
        { new KeyValuePair<string, string>("Hierarchy", "Table") },
        { new KeyValuePair<string, string>("Measure", "Table") },
+       { new KeyValuePair<string, string>("Calendar", "Table") },
+	   { new KeyValuePair<string, string>("CalendarColumnGroup", "Calendar") },
 
 	   // Collections owned by a ModelRole (order of items matters, as this is the order in which child objects will be initialized):
        { new KeyValuePair<string, string>("ModelRoleMember", "ModelRole") },

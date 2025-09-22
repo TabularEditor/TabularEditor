@@ -50,6 +50,9 @@ namespace TabularEditor.TOMWrapper
         {
             switch (propertyName)
             {
+                case Properties.EXPRESSION:
+                    FormulaFixup.BuildDependencyTree(this);
+                    break;
 
                 case Properties.NAME:
                     if (Handler.Settings.AutoFixup)
@@ -88,10 +91,26 @@ namespace TabularEditor.TOMWrapper
                 return _dependsOn;
             }
         }
+
+        private protected override string GetCloneName(string orgName) => orgName + "_copy";
     }
 
     public partial class FunctionCollection
     {
+        internal override string GetNewName(string prefix = null)
+        {
+            var i = 0;
+            prefix = prefix?.Replace(" ", ""); // Spaces not allowed in UDF names
+            var name = prefix;
+            while (TOM_Collection.ContainsName(name))
+            {
+                i++;
+                name = prefix + i;
+            }
+
+            return name;
+        }
+
         protected override string RemoveInvalidNameChars(string name)
         {
             return string.Join(string.Empty, name.Where(Function.IsValidNameChar));

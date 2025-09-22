@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.ComponentModel;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
@@ -17,7 +17,7 @@ namespace TabularEditor.TOMWrapper
             PerspectiveObject = perspectiveObject;
         }
 
-        protected override TabularObjectCollection<Perspective> GetCollection()
+        protected override TabularNamedObjectCollection<Perspective> GetCollection()
         {
             return Model.Perspectives;
         }

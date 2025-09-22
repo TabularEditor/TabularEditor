@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -234,7 +234,7 @@ namespace TabularEditor.TOMWrapper
         [Browsable(false)]
         public bool NeedsValidation => IsExpressionModified;
 
-        internal override bool IsBrowsable(string propertyName)
+        private protected override bool IsBrowsable(string propertyName)
         {
             switch (propertyName)
             {

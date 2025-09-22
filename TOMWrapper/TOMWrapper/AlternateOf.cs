@@ -29,7 +29,7 @@ namespace TabularEditor.TOMWrapper
         }
 
         [IntelliSense("Delete the AlternateOf")]
-        public void Delete()
+        public override void Delete()
         {
             this.Column.AlternateOf = null;
         }
@@ -92,7 +92,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        internal override bool IsBrowsable(string propertyName)
+        private protected override bool IsBrowsable(string propertyName)
         {
             if (propertyName == Properties.COLUMN || propertyName == Properties.OBJECTTYPE) return false;
             if (propertyName == Properties.BASETABLE) return Summarization == SummarizationType.Count;
@@ -100,7 +100,7 @@ namespace TabularEditor.TOMWrapper
             return base.IsBrowsable(propertyName);
         }
 
-        internal override bool IsEditable(string propertyName)
+        private protected override bool IsEditable(string propertyName)
         {
             if (propertyName == Properties.OBJECTTYPENAME) return false;
             return base.IsEditable(propertyName);

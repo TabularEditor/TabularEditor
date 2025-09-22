@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using TabularEditor.TOMWrapper;
 
@@ -13,12 +13,12 @@ namespace TabularEditor.TOMWrapper.Undo
     internal class UndoAddRemoveAction : IUndoAction
     {
         ITabularObjectCollection _collection;
-        TabularNamedObject _obj;
+        TabularObject _obj;
         UndoAddRemoveActionType _actionType;
         string _json;
         Type _tomObjectType;
 
-        public UndoAddRemoveAction(ITabularObjectCollection collection, TabularNamedObject obj, UndoAddRemoveActionType actionType)
+        public UndoAddRemoveAction(ITabularObjectCollection collection, TabularObject obj, UndoAddRemoveActionType actionType)
         {
             _tomObjectType = obj.MetadataObject.GetType();
             _json = Microsoft.AnalysisServices.Tabular.JsonSerializer.SerializeObject(obj.MetadataObject, TabularObject.RenewMetadataOptions, obj.Handler.CompatibilityLevel, obj.Handler.Database.CompatibilityMode);
@@ -62,20 +62,7 @@ namespace TabularEditor.TOMWrapper.Undo
         public string GetSummary()
         {
             return string.Format("{0} object {{{1}}} in collection {{{2}}}", _actionType == UndoAddRemoveActionType.Add ? "Added" : "Removed",
-                _obj.Name, _collection.CollectionName);
-        }
-
-        public string GetCode()
-        {
-            if(_actionType == UndoAddRemoveActionType.Add)
-            {
-                var path = _obj.GetLinqPath();
-                path = path.Substring(0, path.Length - _obj.Name.Length - 4);
-                return string.Format("{0}.Add(new {1}() {{ Name = \"{2}\" }});", path, _obj.GetTypeName(), _obj.Name);
-            } else
-            {
-                return _obj.GetLinqPath() + ".Remove();";
-            }
+                (_obj as TabularNamedObject)?.Name ?? _obj.ObjectTypeName, _collection.CollectionName);
         }
     }
 

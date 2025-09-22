@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TabularEditor.TOMWrapper;
 
 namespace TabularEditor.TOMWrapper.Undo
@@ -9,6 +9,5 @@ namespace TabularEditor.TOMWrapper.Undo
         void Redo();
         string ActionName { get; }
         string GetSummary();
-        string GetCode();
     }
 }

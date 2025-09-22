@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using TabularEditor.TOMWrapper.PowerBI;
+using TabularEditor.TOMWrapper.Tests;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -143,6 +144,36 @@ namespace TabularEditor.TOMWrapper
             return ds;
         }
 
+        internal TabularNamedObject FindTableOrCalendar(string name)
+        {
+            if (Tables.FindByName(name) is { } match) return match;
+            foreach (var t in Tables)
+            {
+                if (t.Calendars.FindByName(name) is {} c) return c;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Adds a new <see cref="QueryGroup"/> (display folder for Power Query expressions) to the <see cref="Model"/>.
+        /// </summary>
+        /// <param name="name">The name of the new Query Group to add</param>
+        /// <returns>A reference to the newly created query group</returns>
+        /// <exception cref="PowerBIGovernanceException"></exception>
+        [IntelliSense("Adds a new QueryGroup (display folder for Power Query expressions) to the Model"), Tests.GenerateTest()]
+        public QueryGroup AddQueryGroup(string name = null)
+        {
+            if (!Handler.PowerBIGovernance.AllowCreate(typeof(QueryGroup)))
+                throw new PowerBIGovernanceException("Adding Query Groups to this Power BI Model is not supported.");
+
+            Handler.BeginUpdate("add query group");
+
+            var qg = QueryGroup.CreateNew(this, name);
+            Handler.EndUpdate();
+            return qg;
+        }
+
         [IntelliSense("Adds a new strucured data source to the model."), Tests.GenerateTest(), Tests.CompatibilityLevel(1400)]
         public StructuredDataSource AddStructuredDataSource(string name = null)
         {
@@ -162,6 +193,11 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         [Browsable(false),IntelliSense("A collection of every hierarchy across all tables in the model.")]
         public IEnumerable<Hierarchy> AllHierarchies { get { return Tables.SelectMany(t => t.Hierarchies); } }
+        /// <summary>
+        /// Iterates all calendars on all tables of the model.
+        /// </summary>
+        [Browsable(false), IntelliSense("A collection of every calendar across all tables in the model.")]
+        public IEnumerable<Calendar> AllCalendars { get { return Tables.SelectMany(t => t.Calendars); } }
 
         /// <summary>
         /// Iterates all columns on all tables of the model.
@@ -247,7 +283,7 @@ namespace TabularEditor.TOMWrapper
             InitDeploymentMetadata();
         }
 
-        internal override bool IsBrowsable(string propertyName)
+        private protected override bool IsBrowsable(string propertyName)
         {
             switch (propertyName)
             {

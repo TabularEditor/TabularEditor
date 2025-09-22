@@ -1,4 +1,6 @@
-﻿namespace TabularEditor.UI.Dialogs
+using TabularEditor.UI.Dialogs.Pages;
+
+namespace TabularEditor.UI.Dialogs
 {
     partial class ConnectForm
     {
@@ -38,7 +40,7 @@
             this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.btnOK.Enabled = false;
-            this.btnOK.Location = new System.Drawing.Point(292, 178);
+            this.btnOK.Location = new System.Drawing.Point(292, 206);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(88, 23);
             this.btnOK.TabIndex = 1;
@@ -49,7 +51,7 @@
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(386, 178);
+            this.btnCancel.Location = new System.Drawing.Point(386, 206);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(88, 23);
             this.btnCancel.TabIndex = 2;
@@ -59,13 +61,13 @@
             // connectPage
             // 
             this.connectPage.AllowLocalInstanceConnect = true;
-            this.connectPage.IntegratedSecurity = true;
+            this.connectPage.AuthenticationMode = AuthenticationMode.Integrated;
             this.connectPage.Location = new System.Drawing.Point(12, 12);
-            this.connectPage.MinimumSize = new System.Drawing.Size(232, 151);
+            this.connectPage.MinimumSize = new System.Drawing.Size(232, 179);
             this.connectPage.Name = "connectPage";
             this.connectPage.Password = "";
             this.connectPage.ServerName = "";
-            this.connectPage.Size = new System.Drawing.Size(463, 159);
+            this.connectPage.Size = new System.Drawing.Size(463, 187);
             this.connectPage.TabIndex = 0;
             this.connectPage.UserName = "";
             this.connectPage.Validation += new TabularEditor.UI.Dialogs.ValidationEventHandler(this.connectPage_Validation);
@@ -76,7 +78,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(486, 213);
+            this.ClientSize = new System.Drawing.Size(486, 241);
             this.ControlBox = false;
             this.Controls.Add(this.connectPage);
             this.Controls.Add(this.btnCancel);

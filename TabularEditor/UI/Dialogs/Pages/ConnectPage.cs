@@ -1,14 +1,17 @@
-﻿using System;
+using Microsoft.AnalysisServices;
+using Microsoft.AnalysisServices.Tabular;
+using Server = Microsoft.AnalysisServices.Tabular.Server;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Data;
+using System.Drawing;
+using System.Drawing.Text;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Microsoft.AnalysisServices.Tabular;
 using TabularEditor.TOMWrapper;
 using TabularEditor.UIServices;
-using System.IO;
-using Newtonsoft.Json;
 
 namespace TabularEditor.UI.Dialogs.Pages
 {
@@ -54,7 +57,7 @@ namespace TabularEditor.UI.Dialogs.Pages
             var result = new Server();
             try
             {
-                var connectionString = GetConnectionString();
+                var connectionString = GetConnectionString(resetAuth: true);
                 result.Connect(connectionString);
 
                 // SharePoint mode seems to be an alias for Power BI mode starting from an update of Power BI some time in 2017:
@@ -95,7 +98,7 @@ namespace TabularEditor.UI.Dialogs.Pages
         }
 
         public bool IsValid => (!string.IsNullOrWhiteSpace(txtServer.Text) || comboBox1.SelectedIndex >= 0)
-                && (rdbIntegrated.Checked || !string.IsNullOrEmpty(txtUsername.Text));
+                && (rdbIntegrated.Checked || rdbEntraID.Checked || !string.IsNullOrEmpty(txtUsername.Text));
 
         public bool AllowLocalInstanceConnect
         {
@@ -136,22 +139,33 @@ namespace TabularEditor.UI.Dialogs.Pages
             return null;
         }
 
-        public bool IntegratedSecurity
+        public AuthenticationMode AuthenticationMode
         {
-            get { return rdbIntegrated.Checked; }
+            get => rdbIntegrated.Checked ? AuthenticationMode.Integrated
+                : rdbEntraID.Checked ? AuthenticationMode.MicrosoftEntraMFA
+                : AuthenticationMode.Password;
             set
             {
-                if (value) rdbIntegrated.Checked = true;
+                if (value == AuthenticationMode.Integrated) rdbIntegrated.Checked = true;
+                else if (value == AuthenticationMode.MicrosoftEntraMFA) rdbEntraID.Checked = true;
                 else rdbUsernamePassword.Checked = true;
             } 
         }
         public string UserName { get { return txtUsername.Text; } set { txtUsername.Text = value; } }
         public string Password { get { return txtPassword.Text; } set { txtPassword.Text = value; } }
-
-        public string GetConnectionString()
+        private string _databaseName;
+        public string DatabaseName => _databaseName;
+        public string GetConnectionString(bool resetAuth = false)
         {
-            return IntegratedSecurity ? TabularConnection.GetConnectionString(ServerName, Program.ApplicationName)
-                : TabularConnection.GetConnectionString(ServerName, UserName, Password, Program.ApplicationName);
+            return AuthenticationMode switch
+            {
+                AuthenticationMode.Integrated =>
+                    TabularConnection.GetConnectionString(ServerName, Program.ApplicationName, ProtocolFormat.Default, InteractiveLogin.Default, IdentityMode.Default, out _databaseName),
+                AuthenticationMode.MicrosoftEntraMFA =>
+                    TabularConnection.GetConnectionString(ServerName, Program.ApplicationName, ProtocolFormat.Default, resetAuth ? InteractiveLogin.Always : InteractiveLogin.Default, IdentityMode.Connection, out _databaseName),
+                _ =>
+                    TabularConnection.GetConnectionString(ServerName, UserName, Password, Program.ApplicationName, ProtocolFormat.Default, InteractiveLogin.Default, IdentityMode.Default, out _databaseName)
+            };
         }
 
         private void comboBox1_DrawItem(object sender, DrawItemEventArgs e)
@@ -209,5 +223,12 @@ namespace TabularEditor.UI.Dialogs.Pages
             comboBox1.SelectedIndex = -1;
             ValidateUI(sender, e);
         }
+    }
+
+    public enum AuthenticationMode
+    {
+        Integrated = 0,
+        MicrosoftEntraMFA = 1,
+        Password = 2
     }
 }

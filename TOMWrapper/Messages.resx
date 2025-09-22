@@ -147,6 +147,12 @@
   <data name="DuplicateColumnName" xml:space="preserve">
     <value>A column with the name "{0}" already exists in the table. Choose a different name for this column.</value>
   </data>
+  <data name="DuplicateCalendarName" xml:space="preserve">
+    <value>A calendar with the name '{0}' already exists in the model.</value>
+  </data>
+  <data name="DuplicateCalendarTableName" xml:space="preserve">
+    <value>A table with the name '{0}' already exists in the model. Calendars and tables must have unique names.</value>
+  </data>
   <data name="DuplicateMeasureName" xml:space="preserve">
     <value>A measure with the name "{0}" already exists in the model. Choose a different name for this measure.</value>
   </data>

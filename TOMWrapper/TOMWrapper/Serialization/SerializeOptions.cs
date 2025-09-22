@@ -1,5 +1,6 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.Collections.Generic;
+using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper.Serialization
 {
@@ -71,6 +72,7 @@ namespace TabularEditor.TOMWrapper.Serialization
         public bool ShouldSerializeAlsoSaveAsBim() => AlsoSaveAsBim;
         public bool LocalTranslations = false;
         public bool LocalPerspectives = false;
+        public bool SortArrays = false;
         public bool LocalRelationships = false;
 
         public bool IncludeSensitive { get; set; } = false;
@@ -120,5 +122,33 @@ namespace TabularEditor.TOMWrapper.Serialization
         {
             return !(obj1 == obj2);
         }
+    }
+    internal class DataSourceProperties
+    {
+        public DataSourceProperties() { }
+
+        public DataSourceProperties(DataSource source)
+        {
+            if (source is ProviderDataSource pds)
+            {
+                Username = pds.Account;
+                Password = pds.Password;
+                ConnectionString = pds.ConnectionString;
+            }
+            else if (source is StructuredDataSource sds)
+            {
+                Username = sds.Username;
+                Password = sds.Password;
+                PrivacySetting = sds.PrivacySetting;
+                AccountKey = sds.Credential[TOM.CredentialProperty.Key] as string;
+            }
+        }
+
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string PrivacySetting { get; set; }
+        public string ConnectionString { get; set; }
+        public string AccountKey { get; set; }
+        public string ImpersonationMode { get; set; }
     }
 }

@@ -142,6 +142,24 @@ namespace TabularEditor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A calendar with the name &apos;{0}&apos; already exists in the model..
+        /// </summary>
+        internal static string DuplicateCalendarName {
+            get {
+                return ResourceManager.GetString("DuplicateCalendarName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A table with the name &apos;{0}&apos; already exists in the model. Calendars and tables must have unique names..
+        /// </summary>
+        internal static string DuplicateCalendarTableName {
+            get {
+                return ResourceManager.GetString("DuplicateCalendarTableName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A column with the name &quot;{0}&quot; already exists in the table. Choose a different name for this column..
         /// </summary>
         internal static string DuplicateColumnName {

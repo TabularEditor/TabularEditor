@@ -120,7 +120,7 @@ namespace TabularEditor.TOMWrapper
         {
             // Possible destinations:
             var destHier = (destination as Level)?.Hierarchy ?? (destination as Hierarchy);
-            var destTable = (destination as Folder)?.Table ?? (destination as Partition)?.Table ?? destHier?.Table ?? (destination as IFolderObject)?.Table ?? (destination as Table);
+            var destTable = (destination as ITabularTableObject)?.Table ?? (destination as Table);
             var folder = (destination as Folder)?.Path;
 
             bool replaceTable = false;
@@ -164,6 +164,7 @@ namespace TabularEditor.TOMWrapper
                 foreach (var obj in objectContainer.Get<MPartition>()) inserted.Add(Serializer.DeserializeMPartition(obj, destTable));
                 foreach (var obj in objectContainer.Get<PolicyRangePartition>()) inserted.Add(Serializer.DeserializePolicyRangePartition(obj, destTable));
                 foreach (var obj in objectContainer.Get<EntityPartition>()) inserted.Add(Serializer.DeserializeEntityPartition(obj, destTable));
+                foreach (var obj in objectContainer.Get<Calendar>()) inserted.Add(Serializer.DeserializeCalendar(obj, destTable));
             }
 
             if (destTable is Table)
@@ -248,8 +249,8 @@ namespace TabularEditor.TOMWrapper
             {
                 var tableObj = obj as Table;
 
-                (obj as IInternalTranslatableObject)?.LoadTranslations(true);
-                (obj as IInternalTabularPerspectiveObject)?.LoadPerspectives(true);
+                (obj as ITranslatableObject)?.LoadTranslations(true);
+                (obj as ITabularPerspectiveObject)?.LoadPerspectives(true);
                 if (tableObj != null)
                 {
                     tableObj.LoadRLS();
@@ -267,7 +268,7 @@ namespace TabularEditor.TOMWrapper
                     (obj as Column)?.LoadOLS();
                 }
 
-                (obj as IInternalAnnotationObject)?.ClearTabularEditorAnnotations();
+                (obj as IAnnotationObject)?.ClearTabularEditorAnnotations();
             }
 
             Handler.EndUpdate();

@@ -47,7 +47,7 @@ namespace TabularEditor.TOMWrapper
 
         protected override bool EnableMultiLine => true;
 
-        protected override TabularObjectCollection<Table> GetCollection()
+        protected override TabularNamedObjectCollection<Table> GetCollection()
         {
             return Model.Tables;
         }

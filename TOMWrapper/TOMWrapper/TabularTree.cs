@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
@@ -21,7 +21,8 @@ namespace TabularEditor.TOMWrapper
         AllObjectTypes = 0x100,
         ShowRoot = 0x200,
         OrderByName = 0x400,
-        Default = DisplayFolders | Columns | Measures | KPIs | Hierarchies | Partitions | Levels | ShowRoot | AllObjectTypes
+        Calendars = 0x1000,
+        Default = DisplayFolders | Columns | Measures | KPIs | Hierarchies | Partitions | Calendars | Levels | ShowRoot | AllObjectTypes
     }
 
     internal static class ObjectOrderHelper
@@ -30,7 +31,9 @@ namespace TabularEditor.TOMWrapper
         {
             switch (item.ObjectType)
             {
+                case ObjectType.CalculationItemCollection: return 0;
                 case ObjectType.PartitionCollection: return 0;
+                case ObjectType.CalendarCollection: return 0;
                 case ObjectType.Folder: return 1;
                 case ObjectType.Measure: return 2;
                 case ObjectType.Column: return 3;
@@ -242,22 +245,6 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        /*public Func<string, string> GetFolderMutation(object source, object destination)
-        {
-            string srcPath = FolderHelper.GetFullPath(source as ITabularNamedObject);
-            string dstPath = FolderHelper.GetFullPath(destination as ITabularNamedObject);
-
-            return GetFolderMutation(srcPath, dstPath);
-        }
-
-        public Func<string, string> GetFolderMutation(string oldPath, string newPath)
-        {
-            return new Func<string, string>((s) => {
-                return newPath.ConcatPath(s.Substring(oldPath.Length));
-            });
-        }*/
-
-
         #endregion
 
         #region ITreeModel implementation
@@ -269,6 +256,11 @@ namespace TabularEditor.TOMWrapper
             if (table.SourceType != PartitionSourceType.Calculated && table.ObjectType != ObjectType.CalculationGroupTable && Options.HasFlag(LogicalTreeOptions.Partitions))
             {
                 yield return table.Partitions;
+            }
+
+            if (Options.HasFlag(LogicalTreeOptions.Calendars) && table.Calendars.Any())
+            {
+                yield return table.Calendars;
             }
             if (table is CalculationGroupTable cg)
             {
@@ -365,31 +357,6 @@ namespace TabularEditor.TOMWrapper
             // Don't show objects not in the current perspective:
             if (Perspective != null && tabularObject is ITabularPerspectiveObject && !(tabularObject as ITabularPerspectiveObject).InPerspective[Perspective]) return false;
 
-            /*// Hide items not matching the filter text:
-            if (!string.IsNullOrEmpty(Filter))
-            {
-                switch (tabularObject.ObjectType)
-                {
-                    case ObjectType.Relationship:
-                    case ObjectType.Partition:
-                    case ObjectType.DataSource:
-                    case ObjectType.Perspective:
-                    case ObjectType.Role:
-                    case ObjectType.Culture:
-                    case ObjectType.Column:
-                    case ObjectType.Hierarchy:
-                    case ObjectType.Measure:
-                        if(tabularObject is ITabularTableObject)
-                        {
-                            // If the parent table's name matches the filter criteria, show all objects inside the table, even
-                            // though they don't match the filter:
-                            if ((tabularObject as ITabularTableObject).Table.Name.IndexOf(Filter, StringComparison.InvariantCultureIgnoreCase) >= 0) break;
-                        }
-                        if (tabularObject.Name.IndexOf(Filter, StringComparison.InvariantCultureIgnoreCase) == -1) return false;
-                        break;
-                }
-            }*/
-
             // Type dependent display:
             switch (tabularObject.ObjectType)
             {
@@ -401,26 +368,9 @@ namespace TabularEditor.TOMWrapper
                     return (Options.HasFlag(LogicalTreeOptions.Hierarchies));
                 case ObjectType.PartitionCollection:
                     return (Options.HasFlag(LogicalTreeOptions.Partitions));
+                case ObjectType.CalendarCollection:
+                    return (Options.HasFlag(LogicalTreeOptions.Calendars));
             }
-
-            /*// Always hide empty tables when filtering, unless the table name matches the filter criteria
-            if (tabularObject is Table)
-            {
-                var table = tabularObject as Table;
-                return string.IsNullOrEmpty(Filter) || (table.GetChildren().Any(o => VisibleInTree(o)) || table.Name.IndexOf(Filter, StringComparison.InvariantCultureIgnoreCase) >= 0);
-            }
-            // Same goes for PartitionViewTables:
-            if (tabularObject is PartitionViewTable)
-            {
-                var table = tabularObject as PartitionViewTable;
-                return string.IsNullOrEmpty(Filter) || (table.GetChildren().Any(o => VisibleInTree(o)) || table.Name.IndexOf(Filter, StringComparison.InvariantCultureIgnoreCase) >= 0);
-            }
-
-            // If a filter is in place, Logical Groups are only shown when they contain objects:
-            if (tabularObject is LogicalGroup)
-            {
-                return string.IsNullOrEmpty(Filter) || (tabularObject as LogicalGroup).GetChildren().Any(o => VisibleInTree(o));
-            }*/
 
             // All other objects should be visible by default:
             return true;

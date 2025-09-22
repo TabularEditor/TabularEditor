@@ -1,4 +1,5 @@
-﻿using System;
+using Microsoft.AnalysisServices;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
@@ -141,8 +142,12 @@ namespace TabularEditor
                 testRunFile = argList[doTestRun + 1];
             }
 
+            var doDeploy = upperArgList.IndexOf("-DEPLOY");
+            if (doDeploy == -1) doDeploy = upperArgList.IndexOf("-D");
+
             var doScript = upperArgList.IndexOf("-SCRIPT");
             if (doScript == -1) doScript = upperArgList.IndexOf("-S");
+            if (doScript > doDeploy) doScript = -1; // -S was used as a deployment option - not a script, so ignore it here
             if (doScript > -1)
             {
                 if (upperArgList.Count <= doScript)
@@ -164,6 +169,7 @@ namespace TabularEditor
 
             var doSaveToFolder = upperArgList.IndexOf("-FOLDER");
             if (doSaveToFolder == -1) doSaveToFolder = upperArgList.IndexOf("-F");
+            if (doSaveToFolder > doDeploy) doSaveToFolder = -1; // -F was used as a deployment option - not a save option, so ignore it here
             if (doSaveToFolder > -1)
             {
                 if (upperArgList.Count <= doSaveToFolder)
@@ -285,7 +291,7 @@ namespace TabularEditor
                 AnalyzeBestPracticeRules(rulefile, false);
             }
 
-            var doDeploy = upperArgList.IndexOf("-DEPLOY");
+            doDeploy = upperArgList.IndexOf("-DEPLOY");
             if (doDeploy == -1) doDeploy = upperArgList.IndexOf("-D");
             if (doDeploy > -1)
             {
@@ -473,8 +479,8 @@ namespace TabularEditor
 
 TABULAREDITOR ( file | server database | -L [name] ) [-S script1 [script2] [...]]
     [-SC] [-A [rules] | -AX rules] [(-B | -F | -TMDL) output [id]] [-V | -G] [-T resultsfile]
-    [-D [server database [-L user pass] [-O [-C [plch1 value1 [plch2 value2 [...]]]]
-        [-P [-Y]] [-R [-M]]]
+    [-D [server database [-L user pass] [-F | -O [-C [plch1 value1 [plch2 value2 [...]]]]
+        [-P [-Y]] [-S] [-R [-M]]]
         [-X xmla_script]] [-W] [-E]]
 
 file                Full path of the Model.bim file or database.json model folder to load.
@@ -517,6 +523,7 @@ database            Database ID of the model to load. If blank ("") picks the fi
   -L / -LOGIN         Disables integrated security when connecting to the server. Specify:
     user                Username (must be a user with admin rights on the server)
     pass                Password
+  -F / -FULL          Deploy the full model metadata, allowing overwrite of an existing database.
   -O / -OVERWRITE     Allow deploy (overwrite) of an existing database.
     -C / -CONNECTIONS   Deploy (overwrite) existing data sources in the model. After the -C switch, you
                         can (optionally) specify any number of placeholder-value pairs. Doing so, will
@@ -525,6 +532,7 @@ database            Database ID of the model to load. If blank ("") picks the fi
                         (value1, value2, ...).
     -P / -PARTITIONS    Deploy (overwrite) existing table partitions in the model.
       -Y / -SKIPPOLICY    Do not overwrite partitions that have Incremental Refresh Policies defined.
+    -S / -SHARED        Deploy (overwrite) shared expressions.
     -R / -ROLES         Deploy roles.
       -M / -MEMBERS       Deploy role members.
   -X / -XMLA        No deployment. Generate XMLA/TMSL script for later deployment instead.
@@ -540,7 +548,7 @@ database            Database ID of the model to load. If blank ("") picks the fi
             if (serverName == null)
             {
                 var nextSwitch = upperArgList.Skip(doDeploy + 1).FirstOrDefault();
-                var deploySwitches = new[] { "-L", "-LOGIN", "-O", "-OVERWRITE", "-C", "-CONNECTIONS", "-P", "-PARTITIONS", "-Y", "-SKIPPOLICY", "-R", "-ROLES", "-M", "-MEMBERS", "-X", "-XMLA" };
+                var deploySwitches = new[] { "-L", "-LOGIN", "-O", "-OVERWRITE", "-F", "-FULL", "-C", "-CONNECTIONS", "-P", "-PARTITIONS", "-Y", "-SKIPPOLICY", "-S", "-SHARED", "-R", "-ROLES", "-M", "-MEMBERS", "-X", "-XMLA" };
                 if (deploySwitches.Contains(nextSwitch))
                 {
                     Error("Invalid argument syntax.");
@@ -628,12 +636,33 @@ database            Database ID of the model to load. If blank ("") picks the fi
                 }
                 switches.Remove("-L"); switches.Remove("-LOGIN");
             }
+
+            var full = false;
+            if (switches.Contains("-F") || switches.Contains("-FULL"))
+            {
+                full = true;
+                options.DeployMode = DeploymentMode.CreateOrAlter;
+                options.DeploySharedExpressions = true;
+                options.DeployConnections = true;
+                options.DeployPartitions = true;
+                options.DeployRoles = true;
+                options.DeployRoleMembers = true;
+                options.SkipRefreshPolicyPartitions = false;
+                switches.Remove("-F"); switches.Remove("-F");
+            }
             if (switches.Contains("-O") || switches.Contains("-OVERWRITE"))
             {
+                if (full)
+                {
+                    Error("-FULL and -OVERWRITE are mutually exclusive.\n");
+                    OutputUsage();
+                    throw new CommandLineException();
+                }
+
                 options.DeployMode = DeploymentMode.CreateOrAlter;
                 switches.Remove("-O"); switches.Remove("-OVERWRITE");
             }
-            else
+            else if(!full)
             {
                 options.DeployMode = DeploymentMode.CreateDatabase;
             }
@@ -652,6 +681,12 @@ database            Database ID of the model to load. If blank ("") picks the fi
             {
                 options.DeployConnections = true;
                 switches.Remove("-C"); switches.Remove("-CONNECTIONS");
+            }
+
+            if (switches.Contains("-S") || switches.Contains("-SHARED"))
+            {
+                options.DeploySharedExpressions = true;
+                switches.Remove("-S"); switches.Remove("-SHARED");
             }
             if (switches.Contains("-R") || switches.Contains("-ROLES"))
             {
@@ -689,7 +724,7 @@ database            Database ID of the model to load. If blank ("") picks the fi
                 }
 
                 var cs = string.IsNullOrEmpty(userName) ? TabularConnection.GetConnectionString(serverName, Program.ApplicationName) :
-                    TabularConnection.GetConnectionString(serverName, userName, password, Program.ApplicationName);
+                    TabularConnection.GetConnectionString(serverName, userName, password, Program.ApplicationName, ProtocolFormat.Default, InteractiveLogin.Default, IdentityMode.Default);
                 if (xmla_scripting_only)
                 {
                     Console.WriteLine("Generating XMLA/TMSL script...");

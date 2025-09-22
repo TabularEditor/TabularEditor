@@ -470,12 +470,6 @@ namespace TabularEditor
             var stack = new List<object>();
 
             stack.Add(Model);
-            if (item is Partition)
-            {
-                stack.Add((item as Partition).Table.Partitions);
-                stack.Add(item);
-                return new TreePath(stack.ToArray());
-            }
 
             if (Options.HasFlag(LogicalTreeOptions.AllObjectTypes) && item != Model)
             {
@@ -503,6 +497,19 @@ namespace TabularEditor
             else if (item is ITabularTableObject)
             {
                 stack.Add((item as ITabularTableObject).Table);
+
+                if (item is Partition)
+                {
+                    stack.Add((item as Partition).Table.Partitions);
+                    stack.Add(item);
+                    return new TreePath(stack.ToArray());
+                }
+                if (item is Calendar)
+                {
+                    stack.Add((item as Calendar).Table.Calendars);
+                    stack.Add(item);
+                    return new TreePath(stack.ToArray());
+                }
 
                 var calcItem = item as CalculationItem;
                 if (calcItem != null) item = calcItem.GetContainer();

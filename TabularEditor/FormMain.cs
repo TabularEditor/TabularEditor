@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Linq;
 using System.IO;
@@ -171,6 +171,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             actToggleColumns.Checked = Preferences.Current.View_Columns;
             actToggleHierarchies.Checked = Preferences.Current.View_Hierarchies;
             actTogglePartitions.Checked = Preferences.Current.View_Partitions;
+            actToggleCalendars.Checked = Preferences.Current.View_Calendars;
             actToggleAllObjectTypes.Checked = Preferences.Current.View_AllObjectTypes;
             actToggleOrderByName.Checked = !Preferences.Current.View_SortAlphabetically;
 
@@ -263,6 +264,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                 actToggleMeasures.Checked,
                 actToggleHierarchies.Checked,
                 actTogglePartitions.Checked,
+                actToggleCalendars.Checked,
                 actToggleAllObjectTypes.Checked,
                 actToggleOrderByName.Checked,
                 actToggleFilter.Checked ? txtFilter.Text : null
@@ -274,6 +276,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
             Preferences.Current.View_Measures = actToggleMeasures.Checked;
             Preferences.Current.View_Hierarchies = actToggleHierarchies.Checked;
             Preferences.Current.View_Partitions = actTogglePartitions.Checked;
+            Preferences.Current.View_Calendars = actToggleCalendars.Checked;
             Preferences.Current.View_AllObjectTypes = actToggleAllObjectTypes.Checked;
             Preferences.Current.View_SortAlphabetically = !actToggleOrderByName.Checked;
             Preferences.Current.Save();
@@ -307,6 +310,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
         private void FormMain_Load(object sender, EventArgs e)
         {
             actTogglePartitions.Image = tabularTreeImages.Images["partition"];
+            actToggleCalendars.Image = tabularTreeImages.Images["calendar"];
 
             // Populate list of recent files...
             PopulateRecentFilesList();

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using TabularEditor.PropertyGridUI;
 
 namespace TabularEditor.TOMWrapper
@@ -18,7 +18,7 @@ namespace TabularEditor.TOMWrapper
         }
         protected override bool EnableMultiLine => true;
 
-        protected override TabularObjectCollection<ModelRole> GetCollection()
+        protected override TabularNamedObjectCollection<ModelRole> GetCollection()
         {
             return Model.Roles;
         }

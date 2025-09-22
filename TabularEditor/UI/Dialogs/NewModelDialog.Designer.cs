@@ -1,4 +1,4 @@
-﻿namespace TabularEditor.UI.Dialogs
+namespace TabularEditor.UI.Dialogs
 {
     partial class NewModelDialog
     {
@@ -51,8 +51,9 @@
             "1200 (Azure Analysis Services / SQL Server 2016+)",
             "1400 (Azure Analysis Services / SQL Server 2017+)",
             "1500 (Azure Analysis Services / SQL Server 2019+)",
-            "1600 (Azure Analysis Services / SQL Server 2022)",
-            "1605 (Power BI / Fabric)"});
+            "1600 (Azure Analysis Services / SQL Server 2022+)",
+            "1700 (Azure Analysis Services / SQL Server 2025)",
+            "1702 (Power BI / Fabric)"});
             this.comboBox1.Location = new System.Drawing.Point(12, 32);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(379, 21);

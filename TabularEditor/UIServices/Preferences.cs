@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Text;
@@ -102,6 +102,7 @@ namespace TabularEditor.UIServices
         public bool View_Columns = true;
         public bool View_Hierarchies = true;
         public bool View_Partitions = true;
+        public bool View_Calendars = true;
         public bool View_MetadataInformation = false;
 
         [JsonConverter(typeof(StringEnumConverter))]

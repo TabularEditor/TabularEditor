@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
@@ -120,7 +120,7 @@ namespace TabularEditor.TOMWrapper
         Table ITabularTableObject.Table => Parent.Table;
     }
     
-    public partial class CalculationItemCollection : ITabularNamedObject, ITabularObjectContainer, ITabularTableObject, IDynamicPropertyObject
+    public partial class CalculationItemCollection : ITabularObjectContainer, ITabularTableObject, IDynamicPropertyObject
     {
         [ReadOnly(true)]
         string ITabularNamedObject.Name { get { return "Calculation Items"; } set { } }
@@ -132,6 +132,8 @@ namespace TabularEditor.TOMWrapper
         Model ITabularObject.Model => CalculationGroup.Model;
 
         bool ITabularObject.IsRemoved => false;
+        void ITabularNamedObject.RemoveReferences() { }
+        void ITabularObject.ReapplyReferences() => ReapplyReferences();
 
         Table ITabularTableObject.Table => CalculationGroup.Table;
 
@@ -185,17 +187,17 @@ namespace TabularEditor.TOMWrapper
 
         public void SetAnnotation(int index, string value, bool undoable = false)
         {
-            ((IInternalAnnotationObject)CalculationGroup).SetAnnotation(index, value, undoable);
+            ((IAnnotationObject)CalculationGroup).SetAnnotation(index, value, undoable);
         }
 
         public void SetAnnotation(string name, string value, bool undoable = false)
         {
-            ((IInternalAnnotationObject)CalculationGroup).SetAnnotation(name, value, undoable);
+            ((IAnnotationObject)CalculationGroup).SetAnnotation(name, value, undoable);
         }
 
         public void RemoveAnnotation(string name, bool undoable = false)
         {
-            ((IInternalAnnotationObject)CalculationGroup).RemoveAnnotation(name, undoable);
+            ((IAnnotationObject)CalculationGroup).RemoveAnnotation(name, undoable);
         }
 
         public bool HasAnnotation(string name)
@@ -220,17 +222,17 @@ namespace TabularEditor.TOMWrapper
 
         public void SetAnnotation(int index, string value)
         {
-            ((IInternalAnnotationObject)CalculationGroup).SetAnnotation(index, value);
+            ((IAnnotationObject)CalculationGroup).SetAnnotation(index, value);
         }
 
         public void SetAnnotation(string name, string value)
         {
-            ((IInternalAnnotationObject)CalculationGroup).SetAnnotation(name, value);
+            ((IAnnotationObject)CalculationGroup).SetAnnotation(name, value);
         }
 
         public void RemoveAnnotation(string name)
         {
-            ((IInternalAnnotationObject)CalculationGroup).RemoveAnnotation(name);
+            ((IAnnotationObject)CalculationGroup).RemoveAnnotation(name);
         }
 
         public int GetAnnotationsCount()

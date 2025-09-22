@@ -1,18 +1,19 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Data;
 using System.Data.OleDb;
 using System.Drawing.Design;
 using System.Linq;
 using TabularEditor.PropertyGridUI;
-using TabularEditor.TOMWrapper.Utils;
-using TabularEditor.TOMWrapper.Undo;
-using TOM = Microsoft.AnalysisServices.Tabular;
 using TabularEditor.TOMWrapper.PowerBI;
+using TabularEditor.TOMWrapper.Tests;
+using TabularEditor.TOMWrapper.Undo;
+using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.Utils;
-using System.ComponentModel.Design;
+using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
@@ -152,6 +153,21 @@ namespace TabularEditor.TOMWrapper
         }
 
         /// <summary>
+        /// Adds a new custom calendar to the table and returns a reference to the calendar.
+        /// </summary>
+        /// <param name="name">The name of the calendar, which can be used as a table reference in DAX time intelligence functions</param>
+        /// <returns>A reference to the newly added calendar</returns>
+        [IntelliSense("Adds a new custom calendar to the table and returns a reference to the calendar."), Tests.GenerateTest()]
+        [CompatibilityLevel(1702)]
+        public Calendar AddCalendar(string name = null)
+        {
+            if (!Handler.PowerBIGovernance.AllowCreate(typeof(Calendar)))
+                throw new PowerBIGovernanceException("Adding calendars to this Power BI model is not supported.");
+
+            return Calendar.CreateNew(this, name);
+        }
+
+        /// <summary>
         /// Adds a new data column to the table and returns a reference to the column.
         /// </summary>
         /// <param name="name">The name of the column</param>
@@ -283,7 +299,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        internal override bool IsBrowsable(string propertyName)
+        private protected override bool IsBrowsable(string propertyName)
         {
             switch(propertyName)
             {

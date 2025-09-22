@@ -1,4 +1,6 @@
-﻿namespace TabularEditor.UI.Dialogs
+using TabularEditor.UI.Dialogs.Pages;
+
+namespace TabularEditor.UI.Dialogs
 {
     partial class DeployForm
     {
@@ -58,6 +60,7 @@
             this.chkDeployRefreshPolicyPartitions = new System.Windows.Forms.CheckBox();
             this.chkDeployRoleMembers = new System.Windows.Forms.CheckBox();
             this.chkDeployRoles = new System.Windows.Forms.CheckBox();
+            this.chkDeploySharedExpressions = new System.Windows.Forms.CheckBox();
             this.chkDeployDataSources = new System.Windows.Forms.CheckBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.page2 = new TabularEditor.UI.Dialogs.Pages.DatabasePage();
@@ -307,6 +310,7 @@
             this.page3.Controls.Add(this.chkDeployRefreshPolicyPartitions);
             this.page3.Controls.Add(this.chkDeployRoleMembers);
             this.page3.Controls.Add(this.chkDeployRoles);
+            this.page3.Controls.Add(this.chkDeploySharedExpressions);
             this.page3.Controls.Add(this.chkDeployDataSources);
             this.page3.Location = new System.Drawing.Point(15, 63);
             this.page3.Name = "page3";
@@ -358,15 +362,27 @@
             this.chkDeployRefreshPolicyPartitions.Text = "Deploy partitions governed by Incremental Refresh Policies";
             this.chkDeployRefreshPolicyPartitions.UseVisualStyleBackColor = true;
             // 
+            // chkDeploySharedExpressions
+            // 
+            this.chkDeploySharedExpressions.AutoSize = true;
+            this.chkDeploySharedExpressions.Checked = true;
+            this.chkDeploySharedExpressions.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkDeploySharedExpressions.Location = new System.Drawing.Point(167, 156);
+            this.chkDeploySharedExpressions.Name = "chkDeploySharedExpressions";
+            this.chkDeploySharedExpressions.Size = new System.Drawing.Size(89, 17);
+            this.chkDeploySharedExpressions.TabIndex = 4;
+            this.chkDeploySharedExpressions.Text = "Deploy Shared Expressions";
+            this.chkDeploySharedExpressions.UseVisualStyleBackColor = true;
+            // 
             // chkDeployRoles
             // 
             this.chkDeployRoles.AutoSize = true;
             this.chkDeployRoles.Checked = true;
             this.chkDeployRoles.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkDeployRoles.Location = new System.Drawing.Point(167, 156);
+            this.chkDeployRoles.Location = new System.Drawing.Point(167, 186);
             this.chkDeployRoles.Name = "chkDeployRoles";
             this.chkDeployRoles.Size = new System.Drawing.Size(89, 17);
-            this.chkDeployRoles.TabIndex = 4;
+            this.chkDeployRoles.TabIndex = 5;
             this.chkDeployRoles.Text = "Deploy Roles";
             this.chkDeployRoles.UseVisualStyleBackColor = true;
             this.chkDeployRoles.CheckedChanged += new System.EventHandler(this.chkDeployRoles_CheckedChanged);
@@ -374,10 +390,10 @@
             // chkDeployRoleMembers
             // 
             this.chkDeployRoleMembers.AutoSize = true;
-            this.chkDeployRoleMembers.Location = new System.Drawing.Point(187, 186);
+            this.chkDeployRoleMembers.Location = new System.Drawing.Point(187, 216);
             this.chkDeployRoleMembers.Name = "chkDeployRoleMembers";
             this.chkDeployRoleMembers.Size = new System.Drawing.Size(130, 17);
-            this.chkDeployRoleMembers.TabIndex = 5;
+            this.chkDeployRoleMembers.TabIndex = 6;
             this.chkDeployRoleMembers.Text = "Deploy Role Members";
             this.chkDeployRoleMembers.UseVisualStyleBackColor = true;
             // 
@@ -397,7 +413,7 @@
             // page1
             // 
             this.page1.AllowLocalInstanceConnect = false;
-            this.page1.IntegratedSecurity = true;
+            this.page1.AuthenticationMode = AuthenticationMode.Integrated;
             this.page1.Location = new System.Drawing.Point(15, 63);
             this.page1.MinimumSize = new System.Drawing.Size(232, 123);
             this.page1.Name = "page1";
@@ -467,6 +483,7 @@
         private System.Windows.Forms.Panel page3;
         private System.Windows.Forms.CheckBox chkDeployRoleMembers;
         private System.Windows.Forms.CheckBox chkDeployRoles;
+        private System.Windows.Forms.CheckBox chkDeploySharedExpressions;
         private System.Windows.Forms.CheckBox chkDeployDataSources;
         private System.Windows.Forms.CheckBox chkDeployPartitions;
         private System.Windows.Forms.CheckBox chkDeployRefreshPolicyPartitions;

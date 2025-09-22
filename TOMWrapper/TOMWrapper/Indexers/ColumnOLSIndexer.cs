@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using TabularEditor.PropertyGridUI;
 using TabularEditor.TOMWrapper.Undo;
@@ -22,7 +22,7 @@ namespace TabularEditor.TOMWrapper
             Column = column;
         }
 
-        protected override TabularObjectCollection<ModelRole> GetCollection()
+        protected override TabularNamedObjectCollection<ModelRole> GetCollection()
         {
             return Model.Roles;
         }

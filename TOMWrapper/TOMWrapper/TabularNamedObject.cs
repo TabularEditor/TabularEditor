@@ -19,7 +19,7 @@ namespace TabularEditor.TOMWrapper
     /// method for editing the (localized) name and description.
     /// </summary>
     [DebuggerDisplay("{ObjectType} {Name}")]
-    public abstract class TabularNamedObject : TabularObject, IInternalTabularNamedObject, IComparable
+    public abstract class TabularNamedObject : TabularObject, ITabularNamedObject, IComparable
     {
         /// <summary>
         /// Derived classes should override this method to prevent an object from being deleted.
@@ -51,12 +51,9 @@ namespace TabularEditor.TOMWrapper
 
             return "New " + type.GetTypeName();
         }
-        internal string GetCopyName()
-        {
-            if (this is Function)
-                // Spaces are not allowed in Function names:
-                return Name + "Copy";
 
+        private protected virtual string GetCloneName(string orgName)
+        {
             return Name + " Copy";
         }
 
@@ -97,7 +94,7 @@ namespace TabularEditor.TOMWrapper
         /// <summary>
         /// Deletes the object.
         /// </summary>
-        public void Delete()
+        public override void Delete()
         {
             // CanDelete logic should not be handled while an Undo is in progress:
             if (!Handler.UndoManager.UndoInProgress)
@@ -138,10 +135,12 @@ namespace TabularEditor.TOMWrapper
             Handler.UndoManager.EndBatch();
         }
 
+        void ITabularObject.ReapplyReferences() => ReapplyReferences();
+
         internal override void ReapplyReferences()
         {
             var container = this as ITabularObjectContainer;
-            if (container != null) foreach (var child in container.GetChildren().OfType<IInternalTabularObject>()) child.ReapplyReferences();
+            if (container != null) foreach (var child in container.GetChildren().OfType<ITabularObject>()) child.ReapplyReferences();
 
             if (this is IDaxDependantObject || this is IDaxObject || this is ModelRole) FormulaFixup.BuildDependencyTree();
         }
@@ -169,7 +168,7 @@ namespace TabularEditor.TOMWrapper
             Collection.Add(this);
         }
 
-        void IInternalTabularNamedObject.RemoveReferences() => RemoveReferences();
+        void ITabularNamedObject.RemoveReferences() => RemoveReferences();
 
         /// <summary>
         /// The RemoveReferences method is called before an object is deleted. Derived classes
@@ -185,7 +184,7 @@ namespace TabularEditor.TOMWrapper
         internal virtual void RemoveReferences()
         {
             var container = this as ITabularObjectContainer;
-            if (container != null) foreach (var child in container.GetChildren().OfType<IInternalTabularNamedObject>()) child.RemoveReferences();
+            if (container != null) foreach (var child in container.GetChildren().OfType<ITabularNamedObject>()) child.RemoveReferences();
 
             // Remove translations for names, if this object supports translations:
             (this as ITranslatableObject)?.TranslatedNames?.Clear();

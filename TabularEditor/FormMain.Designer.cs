@@ -1,4 +1,4 @@
-﻿namespace TabularEditor
+namespace TabularEditor
 {
     partial class FormMain
     {
@@ -36,6 +36,7 @@
             this.actToggleOrderByName = new TabularEditor.UI.UIModelAction();
             this.actToggleMeasures = new TabularEditor.UI.UIModelAction();
             this.actTogglePartitions = new TabularEditor.UI.UIModelAction();
+            this.actToggleCalendars = new TabularEditor.UI.UIModelAction();
             this.actToggleColumns = new TabularEditor.UI.UIModelAction();
             this.actToggleHierarchies = new TabularEditor.UI.UIModelAction();
             this.actToggleInfoColumns = new TabularEditor.UI.UIModelAction();
@@ -146,6 +147,7 @@
             this.toolStripButton15 = new System.Windows.Forms.ToolStripButton();
             this.goToDefinitionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton16 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton17 = new System.Windows.Forms.ToolStripButton();
             this.bestPracticeAnalyzerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.longFormatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.shortFormatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -184,7 +186,7 @@
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.tabCodeEditors = new System.Windows.Forms.TabControl();
             this.pgExpressionEditor = new System.Windows.Forms.TabPage();
-            this.txtExpression = new UI.Extensions.FCTB.FastColoredTextBox();
+            this.txtExpression = new TabularEditor.UI.Extensions.FCTB.FastColoredTextBox();
             this.lblCurrentMeasure = new System.Windows.Forms.Label();
             this.toolStrip3 = new System.Windows.Forms.ToolStrip();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
@@ -195,7 +197,7 @@
             this.toolStripLabel4 = new System.Windows.Forms.ToolStripLabel();
             this.cmbExpressionSelector = new System.Windows.Forms.ToolStripComboBox();
             this.pgCSharpScript = new System.Windows.Forms.TabPage();
-            this.txtAdvanced = new UI.Extensions.FCTB.FastColoredTextBox();
+            this.txtAdvanced = new TabularEditor.UI.Extensions.FCTB.FastColoredTextBox();
             this.toolStrip4 = new System.Windows.Forms.ToolStrip();
             this.toolStripSeparator18 = new System.Windows.Forms.ToolStripSeparator();
             this.btnUndoErrors = new System.Windows.Forms.ToolStripButton();
@@ -281,6 +283,7 @@
             actionsMain.Actions.Add(this.actToggleOrderByName);
             actionsMain.Actions.Add(this.actToggleMeasures);
             actionsMain.Actions.Add(this.actTogglePartitions);
+            actionsMain.Actions.Add(this.actToggleCalendars);
             actionsMain.Actions.Add(this.actToggleColumns);
             actionsMain.Actions.Add(this.actToggleHierarchies);
             actionsMain.Actions.Add(this.actToggleInfoColumns);
@@ -383,6 +386,17 @@
             this.actTogglePartitions.Text = "&Partitions";
             this.actTogglePartitions.ToolTipText = "Show/hide partitions (Ctrl+6)";
             this.actTogglePartitions.Execute += new System.EventHandler(this.actViewOptions_Execute);
+            // 
+            // actToggleCalendars
+            // 
+            this.actToggleCalendars.Checked = true;
+            this.actToggleCalendars.CheckOnClick = true;
+            this.actToggleCalendars.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.actToggleCalendars.Enabled = false;
+            this.actToggleCalendars.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D7)));
+            this.actToggleCalendars.Text = "C&alendars";
+            this.actToggleCalendars.ToolTipText = "Show/hide calendars (Ctrl+7)";
+            this.actToggleCalendars.Execute += new System.EventHandler(this.actViewOptions_Execute);
             // 
             // actToggleColumns
             // 
@@ -591,8 +605,8 @@
             this.actExecuteScript.ShortcutKeys = System.Windows.Forms.Keys.F5;
             this.actExecuteScript.Text = "Run script";
             this.actExecuteScript.ToolTipText = "Run script (selection only) (F5)";
-            this.actExecuteScript.Execute += new System.EventHandler(this.actExecuteScript_Execute);
             this.actExecuteScript.UpdateEx += new System.EventHandler<TabularEditor.UI.UpdateExEventArgs>(this.actExecuteScript_Update);
+            this.actExecuteScript.Execute += new System.EventHandler(this.actExecuteScript_Execute);
             // 
             // actDeploy
             // 
@@ -885,6 +899,7 @@
             // btnSave
             // 
             actionsMain.SetAction(this.btnSave, this.actSave);
+            this.btnSave.AutoToolTip = false;
             this.btnSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnSave.Image = global::TabularEditor.Resources.Save;
             this.btnSave.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -895,6 +910,7 @@
             // saveToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveToolStripMenuItem, this.actSave);
+            this.saveToolStripMenuItem.AutoToolTip = true;
             this.saveToolStripMenuItem.Image = global::TabularEditor.Resources.Save;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+S";
@@ -905,6 +921,7 @@
             // saveAsToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveAsToolStripMenuItem, this.actSaveAs);
+            this.saveAsToolStripMenuItem.AutoToolTip = true;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.saveAsToolStripMenuItem.Text = "Save &As...";
@@ -912,7 +929,6 @@
             // undoToolStripMenuItem
             // 
             actionsMain.SetAction(this.undoToolStripMenuItem, this.actUndo);
-            this.undoToolStripMenuItem.AutoToolTip = true;
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Z";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
@@ -1028,7 +1044,6 @@
             // expandAllToolStripMenuItem
             // 
             actionsMain.SetAction(this.expandAllToolStripMenuItem, this.actExpandAll);
-            this.expandAllToolStripMenuItem.AutoToolTip = true;
             this.expandAllToolStripMenuItem.Image = global::TabularEditor.Resources.ExpandAll;
             this.expandAllToolStripMenuItem.Name = "expandAllToolStripMenuItem";
             this.expandAllToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+Right";
@@ -1038,6 +1053,7 @@
             // collapseAllToolStripMenuItem
             // 
             actionsMain.SetAction(this.collapseAllToolStripMenuItem, this.actCollapseAll);
+            this.collapseAllToolStripMenuItem.AutoToolTip = true;
             this.collapseAllToolStripMenuItem.Image = global::TabularEditor.Resources.CollapseAll;
             this.collapseAllToolStripMenuItem.Name = "collapseAllToolStripMenuItem";
             this.collapseAllToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+Left";
@@ -1148,7 +1164,7 @@
             // btnSaveMacro
             // 
             actionsMain.SetAction(this.btnSaveMacro, this.actSaveMacro);
-            this.btnSaveMacro.AutoToolTip = true;
+            this.btnSaveMacro.AutoToolTip = false;
             this.btnSaveMacro.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnSaveMacro.Image = global::TabularEditor.Resources.add;
             this.btnSaveMacro.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -1288,7 +1304,6 @@
             // saveToFolderToolStripMenuItem
             // 
             actionsMain.SetAction(this.saveToFolderToolStripMenuItem, this.actSaveToFolder);
-            this.saveToFolderToolStripMenuItem.AutoToolTip = true;
             this.saveToFolderToolStripMenuItem.Name = "saveToFolderToolStripMenuItem";
             this.saveToFolderToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.saveToFolderToolStripMenuItem.Text = "Save to &Folder...";
@@ -1345,6 +1360,7 @@
             // expandFromHereToolStripMenuItem
             // 
             actionsMain.SetAction(this.expandFromHereToolStripMenuItem, this.actExpandFromHere);
+            this.expandFromHereToolStripMenuItem.AutoToolTip = true;
             this.expandFromHereToolStripMenuItem.Name = "expandFromHereToolStripMenuItem";
             this.expandFromHereToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Right";
             this.expandFromHereToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
@@ -1353,6 +1369,7 @@
             // collapseHereToolStripMenuItem
             // 
             actionsMain.SetAction(this.collapseHereToolStripMenuItem, this.actCollapseFromHere);
+            this.collapseHereToolStripMenuItem.AutoToolTip = true;
             this.collapseHereToolStripMenuItem.Name = "collapseHereToolStripMenuItem";
             this.collapseHereToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Left";
             this.collapseHereToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
@@ -1540,9 +1557,25 @@
             this.toolStripButton16.Text = "&Partitions";
             this.toolStripButton16.ToolTipText = "Show/hide partitions (Ctrl+6)";
             // 
+            // toolStripButton17
+            // 
+            actionsMain.SetAction(this.toolStripButton17, this.actToggleCalendars);
+            this.toolStripButton17.AutoToolTip = false;
+            this.toolStripButton17.Checked = true;
+            this.toolStripButton17.CheckOnClick = true;
+            this.toolStripButton17.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.toolStripButton17.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton17.Enabled = false;
+            this.toolStripButton17.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton17.Name = "toolStripButton17";
+            this.toolStripButton17.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton17.Text = "C&alendars";
+            this.toolStripButton17.ToolTipText = "Show/hide calendars (Ctrl+7)";
+            // 
             // bestPracticeAnalyzerToolStripMenuItem
             // 
             actionsMain.SetAction(this.bestPracticeAnalyzerToolStripMenuItem, this.actOpenBPA);
+            this.bestPracticeAnalyzerToolStripMenuItem.AutoToolTip = true;
             this.bestPracticeAnalyzerToolStripMenuItem.Image = global::TabularEditor.Resources.clipboard_16;
             this.bestPracticeAnalyzerToolStripMenuItem.Name = "bestPracticeAnalyzerToolStripMenuItem";
             this.bestPracticeAnalyzerToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F10;
@@ -1581,14 +1614,13 @@
             // btnDeleteMacro
             // 
             actionsMain.SetAction(this.btnDeleteMacro, this.actDeleteMacro);
-            this.btnDeleteMacro.AutoToolTip = true;
+            this.btnDeleteMacro.AutoToolTip = false;
             this.btnDeleteMacro.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnDeleteMacro.Image = global::TabularEditor.Resources.Delete;
             this.btnDeleteMacro.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnDeleteMacro.Name = "btnDeleteMacro";
             this.btnDeleteMacro.Size = new System.Drawing.Size(23, 22);
             this.btnDeleteMacro.Text = "Delete current Macro";
-            this.btnDeleteMacro.ToolTipText = "Delete current Macro";
             // 
             // preferencesToolStripMenuItem
             // 
@@ -1843,6 +1875,7 @@
             this.tbShowColumns,
             this.tbShowHierarchies,
             this.toolStripButton16,
+            this.toolStripButton17,
             this.toolStripSeparator2,
             this.tbShowDisplayFolders,
             this.tbShowHidden,
@@ -2563,6 +2596,9 @@
             this.tabularTreeImages.Images.SetKeyName(47, "folderCalc");
             this.tabularTreeImages.Images.SetKeyName(48, "folderOpenCalc");
             this.tabularTreeImages.Images.SetKeyName(49, "tableCalc");
+            this.tabularTreeImages.Images.SetKeyName(50, "calendar");
+            this.tabularTreeImages.Images.SetKeyName(51, "folderCalendar");
+            this.tabularTreeImages.Images.SetKeyName(52, "folderOpenCalendar");
             // 
             // dlgOpenFile
             // 
@@ -2873,6 +2909,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem11;
         private System.Windows.Forms.ToolStripButton toolStripButton16;
         public UI.UIModelAction actTogglePartitions;
+        private System.Windows.Forms.ToolStripButton toolStripButton17;
+        public UI.UIModelAction actToggleCalendars;
         private System.Windows.Forms.ToolStripStatusLabel lblBpaRules;
         private System.Windows.Forms.ToolStripMenuItem manageBPARulesToolStripMenuItem;
         public UI.UIModelAction actOpenBPA;

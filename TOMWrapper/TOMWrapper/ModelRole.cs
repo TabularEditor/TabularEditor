@@ -89,7 +89,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        internal override bool IsBrowsable(string propertyName)
+        private protected override bool IsBrowsable(string propertyName)
         {
             switch (propertyName)
             {

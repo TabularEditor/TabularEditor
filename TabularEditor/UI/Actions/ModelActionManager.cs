@@ -105,6 +105,9 @@ namespace TabularEditor.UI.Actions
             // Add data column:
             Add(new Action((s, m) => Governance.AllowCreate(typeof(DataColumn)) && (s.Count == 1 || s.Context.HasX(Context.TableObject)) && !(s.Table is CalculatedTable), (s, m) => s.Table.AddDataColumn(displayFolder: s.CurrentFolder).Vis().Edit(), (s, m) => @"Create New\Data Column", true, Context.CalculationGroupTable | Context.Table | Context.TableObject, Keys.Alt | Keys.D4));
 
+            // Add calendar:
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(Calendar)) && (s.Count == 1 || s.Context.HasX(Context.TableObject)), (s, m) => s.Table.AddCalendar().Edit(), (s, m) => @"Create New\Calendar", true, Context.Calendar | Context.CalendarCollection | Context.CalculationGroupTable | Context.Table | Context.TableObject, Keys.Alt | Keys.D7));
+
             // Add KPI:
             Add(new Action((s, m) => Governance.AllowCreate(typeof(KPI)) && s.Count == 1 && !s.Folders.Any(), (s, m) => s.Measure.AddKPI().Edit(), (s, m) => @"Create New\KPI", true, Context.Measure));
 
@@ -147,7 +150,7 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => Governance.AllowCreate(typeof(Table)) && (m.DataSources.Any() || Handler.CompatibilityLevel >= 1400), (s, m) => m.AddTable().Vis().Edit(), (s, m) => @"Create New\Table", false, Context.Tables | Context.Model, Keys.Alt | Keys.D5));
 
             Add(new Action((s, m) => Governance.AllowCreate(typeof(CalculatedTable)), (s, m) => m.AddCalculatedTable().Vis().Edit(), (s, m) => @"Create New\Calculated Table", false, Context.Tables | Context.Model, Keys.Alt | Keys.D6));
-            Add(new Action((s, m) => Governance.AllowCreate(typeof(CalculationGroupTable)) && Handler.CompatibilityLevel >= 1470, (s, m) => m.AddCalculationGroup().Vis().Edit(), (s, m) => @"Create New\Calculation Group", false, Context.Tables | Context.Model, Keys.Alt | Keys.D7));
+            Add(new Action((s, m) => Governance.AllowCreate(typeof(CalculationGroupTable)) && Handler.CompatibilityLevel >= 1470, (s, m) => m.AddCalculationGroup().Vis().Edit(), (s, m) => @"Create New\Calculation Group", false, Context.Tables | Context.Model, Keys.Alt | Keys.D8));
 
             Add(new Action((s, m) => Governance.AllowCreate(typeof(CalculationItem)) && s.Count == 1, (s, m) => s.CalculationGroup.AddCalculationItem().Edit(), (s, m) => @"New Calculation Item", false, Context.CalculationItemCollection));
             Add(new Action((s, m) => Governance.AllowCreate(typeof(CalculationItem)), (s, m) => s.CalculationItems.First().CalculationGroupTable.AddCalculationItem().Edit(), (s, m) => @"New Calculation Item", false, Context.CalculationItem));
@@ -225,7 +228,7 @@ namespace TabularEditor.UI.Actions
                     var obj = (i as IClonableObject).Clone(includeTranslations: i is ITranslatableObject && Preferences.Current.Copy_IncludeTranslations);
                     if (s.Count == 1) obj.Edit(); // Focuses the cloned item in the tree, and lets the user edit its name
                 }),
-                (s, m) => "Duplicate " + s.Summary(), true, Context.TableObject | Context.Partition | Context.CalculationItem));
+                (s, m) => "Duplicate " + s.Summary(), true, Context.TableObject | Context.Calendar | Context.Partition | Context.CalculationItem));
 
             // "Duplicate Table";
             Add(new Action((s, m) => Governance.AllowCreate(s) && s.Count == 1, (s, m) => s.Table.Clone().Edit(), (s, m) => "Duplicate Table", true, Context.Table));
@@ -328,13 +331,7 @@ namespace TabularEditor.UI.Actions
             Add(new Action((s, m) => s.DirectCount == 1 && s.Direct.First() is IDaxObject, (s, m) =>
             {
                 UIController.Current.ShowDependencies(s.Direct.First() as IDaxObject);
-            }, (s, m) => @"Show &dependencies...", true, Context.Table | Context.TableObject | Context.CalculationItem | Context.Function, Keys.F3));
-
-            // Filter related...
-            // TODO
-            /*Add(new Action((s, m) => s.DirectCount == 1, (s, m) => UIController.Current.ApplyFilter(":RelatedTables.Any(Name = \"" + s.Table.Name + "\")"), 
-                (s, m) => @"Filter &related", true, Context.Table));*/
-
+            }, (s, m) => @"Show &dependencies...", true, Context.Calendar | Context.Table | Context.TableObject | Context.CalculationItem | Context.Function, Keys.F3));
 
             // Script actions:
             Add(new Action((s, m) => s.DirectCount == 1, (s, m) => Clipboard.SetText(Scripter.ScriptCreateOrReplace(s.OfType<TabularNamedObject>().FirstOrDefault())), (s, m) => @"Script\Create or Replace\To clipboard", true, Context.Scriptable));

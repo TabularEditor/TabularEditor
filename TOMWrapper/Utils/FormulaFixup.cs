@@ -83,12 +83,20 @@ namespace TabularEditor.TOMWrapper.Utils
                             lastTableRef = null;
                         }
 
-                        if (Model.Tables.Contains(tok.Text))
+                        var tableOrCalendar = Model.FindTableOrCalendar(tok.Text);
+                        if (tableOrCalendar is Table table)
                         {
                             if (dependsOn != null)
-                                dependsOn.Add(Model.Tables[tok.Text], prop, tok.StartIndex, tok.StopIndex, true);
+                                dependsOn.Add(table, prop, tok.StartIndex, tok.StopIndex, true);
                             else
-                                expressionObj.AddDep(Model.Tables[tok.Text], prop, tok.StartIndex, tok.StopIndex, true);
+                                expressionObj.AddDep(table, prop, tok.StartIndex, tok.StopIndex, true);
+                        }
+                        else if (tableOrCalendar is Calendar calendar)
+                        {
+                            if (dependsOn != null)
+                                dependsOn.Add(calendar, prop, tok.StartIndex, tok.StopIndex, true);
+                            else
+                                expressionObj.AddDep(calendar, prop, tok.StartIndex, tok.StopIndex, true);
                         }
                         else
                         {
@@ -195,6 +203,11 @@ namespace TabularEditor.TOMWrapper.Utils
             foreach (var p in Model.AllPartitions.Where(p => p.DataCoverageDefinition != null && !string.IsNullOrEmpty(p.DataCoverageDefinition.Expression)))
             {
                 BuildDependencyTree(p);
+            }
+
+            foreach (var f in Model.Functions.Where(f => !string.IsNullOrEmpty(f.Expression)))
+            {
+                BuildDependencyTree(f);
             }
             foreach (var role in Model.Roles)
             {

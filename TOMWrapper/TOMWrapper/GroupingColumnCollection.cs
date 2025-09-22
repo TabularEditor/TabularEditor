@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -88,10 +88,6 @@ namespace TabularEditor.TOMWrapper
             return typeof(Column);
         }
 
-        internal override string GetNewName(string prefix = null)
-        {
-            throw new NotSupportedException();
-        }
 
         internal override int IndexOf(TOM.MetadataObject value)
         {
@@ -124,21 +120,6 @@ namespace TabularEditor.TOMWrapper
         internal override bool TOM_Contains(TOM.MetadataObject obj)
         {
             return tomCollection?.Any(gbc => gbc.GroupingColumn == obj) ?? false;
-        }
-
-        internal override bool TOM_ContainsName(string name)
-        {
-            return TOM_Find(name) != null;
-        }
-
-        internal override TOM.MetadataObject TOM_Find(string name)
-        {
-            return tomCollection?.FirstOrDefault(gbc => gbc.GroupingColumn.Name.EqualsI(name));
-        }
-
-        internal override TOM.MetadataObject TOM_Get(string name)
-        {
-            return tomCollection?.First(gbc => gbc.GroupingColumn.Name.EqualsI(name));
         }
 
         internal override TOM.MetadataObject TOM_Get(int index)

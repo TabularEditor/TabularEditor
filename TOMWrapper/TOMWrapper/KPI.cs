@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -19,7 +19,7 @@ namespace TabularEditor.TOMWrapper
         public string MeasureName => Measure?.DaxObjectName;
 
         bool ITabularNamedObject.CanEditName() { return false; }
-
+        void ITabularNamedObject.RemoveReferences() { }
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
             switch(propertyName)
@@ -116,12 +116,12 @@ namespace TabularEditor.TOMWrapper
             return true;
         }
 
-        public void Delete()
+        public override void Delete()
         {
             Measure.RemoveKPI();
         }
 
-        internal override bool IsBrowsable(string propertyName)
+        private protected override bool IsBrowsable(string propertyName)
         {
             switch(propertyName)
             {
@@ -130,7 +130,7 @@ namespace TabularEditor.TOMWrapper
             return true;
         }
 
-        internal override bool IsEditable(string propertyName)
+        private protected override bool IsEditable(string propertyName)
         {
             if (propertyName == Properties.NAME) return false;
             return true;

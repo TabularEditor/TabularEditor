@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -31,6 +31,8 @@ namespace TabularEditor.TOMWrapper
 
         bool ITabularNamedObject.CanEditName() { return Handler.PowerBIGovernance.AllowEditProperty(ObjectType.Measure, Properties.DISPLAYFOLDER); }
 
+        void ITabularObject.ReapplyReferences() { }
+        void ITabularNamedObject.RemoveReferences() { }
         public override int GetHashCode()
         {
             unchecked
