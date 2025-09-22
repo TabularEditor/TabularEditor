@@ -33,8 +33,7 @@ namespace TabularEditor.UI.Tree
             { ObjectType.PartitionCollection, TabularIcons.ICON_PARTITION },
             { ObjectType.CalculationGroupTable, TabularIcons.ICON_TABLECALC },
             { ObjectType.CalculationItem, TabularIcons.ICON_CALCULATOR },
-            { ObjectType.Calendar, TabularIcons.ICON_CALENDAR },
-            { ObjectType.CalendarCollection, TabularIcons.ICON_CALENDAR_COLLECTION },
+            { ObjectType.Calendar, TabularIcons.ICON_CALENDAR }
         };
 
 
@@ -52,6 +51,8 @@ namespace TabularEditor.UI.Tree
 
             switch (obj.ObjectType)
             {
+                case ObjectType.CalendarCollection:
+                    return isExpanded ? TabularIcons.ICON_FOLDEROPENCALENDAR : TabularIcons.ICON_FOLDERCALENDAR;
                 case ObjectType.Table:
                     var t = obj as Table;
                     if (t.DataCategory == "Time" && t.Columns.Any(c => c.IsKey))
@@ -163,8 +164,9 @@ namespace TabularEditor.UI.Tree
         public const int ICON_FOLDEROPENCALC = 48;
         public const int ICON_TABLECALC = 49;
 
-        public const int ICON_CALENDAR = 42;
-        public const int ICON_CALENDAR_COLLECTION = 48;
+        public const int ICON_CALENDAR = 50;
+        public const int ICON_FOLDERCALENDAR = 51;
+        public const int ICON_FOLDEROPENCALENDAR = 52;
     }
 
 }
