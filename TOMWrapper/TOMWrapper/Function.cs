@@ -88,6 +88,8 @@ namespace TabularEditor.TOMWrapper
                 return _dependsOn;
             }
         }
+
+        private protected override string GetCloneName(string orgName) => orgName + "_copy";
     }
 
     public partial class FunctionCollection

@@ -42,10 +42,6 @@ namespace TabularEditor.TOMWrapper
         TranslationIndexer TranslatedNames { get; }
         TranslationIndexer TranslatedDescriptions { get; }
     }
-    internal interface IInternalTranslatableObject: ITranslatableObject, IInternalAnnotationObject
-    {
-
-    }
 
     public interface ITabularNamedObject : ITabularObject
     {
@@ -77,11 +73,6 @@ namespace TabularEditor.TOMWrapper
     public interface ITabularPerspectiveObject: IHideableObject, IAnnotationObject
     {
         PerspectiveIndexer InPerspective { get; }
-    }
-
-    internal interface IInternalTabularPerspectiveObject: ITabularPerspectiveObject, IInternalAnnotationObject
-    {
-
     }
 
     /// <summary>
@@ -116,13 +107,9 @@ namespace TabularEditor.TOMWrapper
         IEnumerable<string> GetAnnotations();
         AnnotationCollection Annotations { get; }
         void ClearAnnotations();
-    }
-
-    internal interface IInternalAnnotationObject: IAnnotationObject
-    {
-        void SetAnnotation(int index, string value, bool undoable = false);
-        void SetAnnotation(string name, string value, bool undoable = false);
-        void RemoveAnnotation(string name, bool undoable = false);
+        internal void SetAnnotation(int index, string value, bool undoable = false);
+        internal void SetAnnotation(string name, string value, bool undoable = false);
+        internal void RemoveAnnotation(string name, bool undoable = false);
     }
 
     public interface IExtendedPropertyObject: ITabularObject
@@ -139,13 +126,9 @@ namespace TabularEditor.TOMWrapper
         IEnumerable<string> GetExtendedProperties();
         int GetExtendedPropertyCount();
         ExtendedPropertyCollection ExtendedProperties { get; }
-    }
-
-    internal interface IInternalExtendedPropertyObject: IExtendedPropertyObject
-    {
-        void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable = false);
-        void SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable = false);
-        void RemoveExtendedProperty(string name, bool undoable = false);
+        internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable = false);
+        internal void SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable = false);
+        internal void RemoveExtendedProperty(string name, bool undoable = false);
     }
 
     /// <summary>

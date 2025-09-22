@@ -112,10 +112,13 @@
     </Compile>
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="ExpressionProperty.cs" />
+    <Compile Include="PropertyGridUI\CollectionEditors\BindingInfoCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\CalendarColumnGroupCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\CollectionEditors\CalendarCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\Converters\EnumBrowsableConverter.cs" />
+    <Compile Include="PropertyGridUI\Converters\QueryGroupConverter.cs" />
     <Compile Include="TOMWrapper\AssociatedColumnCollection.cs" />
+    <Compile Include="TOMWrapper\BindingInfo.cs" />
     <Compile Include="TOMWrapper\Calendar.cs" />
     <Compile Include="TOMWrapper\CalendarColumnGroup.cs" />
     <Compile Include="TOMWrapper\Function.cs" />
@@ -127,6 +130,8 @@
     <Compile Include="TOMWrapper\CalculationGroup.cs" />
     <Compile Include="TOMWrapper\DataCoverageDefinition.cs" />
     <Compile Include="TOMWrapper\ModelMetadataSourceInfo.cs" />
+    <Compile Include="TOMWrapper\QueryGroup.cs" />
+    <Compile Include="TOMWrapper\Serialization\ObjectSerializer.cs" />
     <Compile Include="TOMWrapper\TimeUnitColumnAssociation.cs" />
     <Compile Include="Utils\DbConnectionStringBuilderExtension.cs" />
     <Compile Include="PropertyGridUI\AlternateOfEditor.cs" />

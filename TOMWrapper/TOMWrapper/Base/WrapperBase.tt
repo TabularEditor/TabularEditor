@@ -116,10 +116,10 @@ namespace TabularEditor.TOMWrapper
 #><#= props.Any(p => p.Name == "Expression" && t.Name != "NamedExpression" && t.Name != "DataCoverageDefinition") ? "\n\t\t\t, IExpressionObject" : ""
 #><#= props.Any(p => p.Name == "FormatString") ? "\n\t\t\t, IFormattableObject" : ""
 #><#= props.Any(p => p.Name == "LineageTag") ? "\n\t\t\t, ILineageTagObject" : ""
-#><#= props.Any(p => p.Name == "Annotations") ? "\n\t\t\t, IInternalAnnotationObject" : ""
-#><#= props.Any(p => p.Name == "ExtendedProperties") ? "\n\t\t\t, IInternalExtendedPropertyObject" : ""
-#><#= Rules.IsPerspectiveObject(t) ? "\n\t\t\t, IInternalTabularPerspectiveObject" : ""
-#><#= Rules.IsTranslatable(t) ? "\n\t\t\t, IInternalTranslatableObject" : ""
+#><#= props.Any(p => p.Name == "Annotations") ? "\n\t\t\t, IAnnotationObject" : ""
+#><#= props.Any(p => p.Name == "ExtendedProperties") ? "\n\t\t\t, IExtendedPropertyObject" : ""
+#><#= Rules.IsPerspectiveObject(t) ? "\n\t\t\t, ITabularPerspectiveObject" : ""
+#><#= Rules.IsTranslatable(t) ? "\n\t\t\t, ITranslatableObject" : ""
 #><#= Rules.IsSynonymObject(t) ? "\n\t\t\t, ISynonymObject" : ""
 #><#= Rules.IsCreatable(t) ? "\n\t\t\t, IClonableObject" : ""
 #>
@@ -186,7 +186,7 @@ namespace TabularEditor.TOMWrapper
 		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
 			SetExtendedProperty(index, value, type, true);
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
 			SetExtendedProperty(index, value, type, undoable);
 		}
 		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
@@ -241,7 +241,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
 			}
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
 			this.SetExtendedProperty(name, value, type, undoable);
 		}
 
@@ -269,7 +269,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
 			}
 		}
-		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+		void IExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
 			this.RemoveExtendedProperty(name, undoable);
 		}
 		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
@@ -326,7 +326,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -374,7 +374,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -402,7 +402,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current <#=Rules.SplitCamelCase(t.Name)#>.</summary>
@@ -507,7 +507,7 @@ namespace TabularEditor.TOMWrapper
 		/// Creates a new <#= t.Name #> and adds it to the parent <#= Rules.GetParent(t) #>.
 		/// Also creates the underlying metadataobject and adds it to the TOM tree.
 		/// </summary>
-		public static <#= t.Name #> CreateNew(<#= Rules.GetParent(t) #> parent, string name = null)
+		public static <#= t.Name #> CreateNew(<#= Rules.GetParent(t) #> parent, string name = null<# if(typeof(ModelRoleMember).IsAssignableFrom(t)) { #>, string memberId = null<# } #>)
 		{
 			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(<#= t.Name #>))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(<#= t.Name #>).GetTypeName()));
@@ -517,7 +517,10 @@ namespace TabularEditor.TOMWrapper
 <# if(allProps.Any(p => p.Name == "LineageTag")) { #>
             if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
 <# } #>
-			metadataObject.<#=typeof(ModelRoleMember).IsAssignableFrom(t)?"Member":""#>Name = parent.<#= Rules.GetCollection(t) #>.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<<#= t.Name #>>() : name);
+			metadataObject.<#=typeof(ModelRoleMember).IsAssignableFrom(t)?"Member":""#><#=t.Name == "QueryGroup"?"Folder":"Name"#> = parent.<#= Rules.GetCollection(t) #>.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(<#= t.Name #>).GetTypeName() : name);
+<# if(typeof(ModelRoleMember).IsAssignableFrom(t)) { #>
+			if(!string.IsNullOrEmpty(memberId)) metadataObject.MemberID = memberId;
+<# } #>
             InitMetadata(metadataObject, parent);
             var obj = new <#= t.Name #>(metadataObject);
 
@@ -584,9 +587,13 @@ Rules.GetParent(t) != "Model" ? ", " + Rules.GetParent(t) + " newParent = null" 
             }
 <# } #>
 
+<# if(t.Name != "QueryGroup") { #>
 			// Assign a new, unique name:
-			tom.Name = Parent.<#= Rules.GetCollection(t) #>.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.<#= Rules.GetCollection(t) #>.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
+<# } else { #>				
+			// Assign a new, unique name:
+			tom.Folder = Parent.<#= Rules.GetCollection(t) #>.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
+<# } #>
 			// Create the TOM Wrapper object, representing the metadataobject
 			<#= t.Name #> obj <# if(t.Name == "Table") { #>;
 			if(this is CalculatedTable) obj = CalculatedTable.CreateFromMetadata(Parent, tom);

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using TabularEditor.TOMWrapper.PowerBI;
+using TabularEditor.TOMWrapper.Tests;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
@@ -141,6 +142,25 @@ namespace TabularEditor.TOMWrapper
             var ds = ProviderDataSource.CreateNew(this, name);
             Handler.EndUpdate();
             return ds;
+        }
+
+        /// <summary>
+        /// Adds a new <see cref="QueryGroup"/> (display folder for Power Query expressions) to the <see cref="Model"/>.
+        /// </summary>
+        /// <param name="name">The name of the new Query Group to add</param>
+        /// <returns>A reference to the newly created query group</returns>
+        /// <exception cref="PowerBIGovernanceException"></exception>
+        [IntelliSense("Adds a new QueryGroup (display folder for Power Query expressions) to the Model"), Tests.GenerateTest()]
+        public QueryGroup AddQueryGroup(string name = null)
+        {
+            if (!Handler.PowerBIGovernance.AllowCreate(typeof(QueryGroup)))
+                throw new PowerBIGovernanceException("Adding Query Groups to this Power BI Model is not supported.");
+
+            Handler.BeginUpdate("add query group");
+
+            var qg = QueryGroup.CreateNew(this, name);
+            Handler.EndUpdate();
+            return qg;
         }
 
         [IntelliSense("Adds a new strucured data source to the model."), Tests.GenerateTest(), Tests.CompatibilityLevel(1400)]

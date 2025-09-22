@@ -249,8 +249,8 @@ namespace TabularEditor.TOMWrapper
             {
                 var tableObj = obj as Table;
 
-                (obj as IInternalTranslatableObject)?.LoadTranslations(true);
-                (obj as IInternalTabularPerspectiveObject)?.LoadPerspectives(true);
+                (obj as ITranslatableObject)?.LoadTranslations(true);
+                (obj as ITabularPerspectiveObject)?.LoadPerspectives(true);
                 if (tableObj != null)
                 {
                     tableObj.LoadRLS();
@@ -268,7 +268,7 @@ namespace TabularEditor.TOMWrapper
                     (obj as Column)?.LoadOLS();
                 }
 
-                (obj as IInternalAnnotationObject)?.ClearTabularEditorAnnotations();
+                (obj as IAnnotationObject)?.ClearTabularEditorAnnotations();
             }
 
             Handler.EndUpdate();

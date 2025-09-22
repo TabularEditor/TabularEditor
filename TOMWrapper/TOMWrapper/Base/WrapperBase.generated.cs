@@ -38,6 +38,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string COLUMNPERMISSIONS = "ColumnPermissions";
 	    public const string COLUMNS = "Columns";
 	    public const string CONNECTIONDETAILS = "ConnectionDetails";
+	    public const string CONNECTIONID = "ConnectionId";
 	    public const string CONNECTIONSTRING = "ConnectionString";
 	    public const string CONTEXTEXPRESSION = "ContextExpression";
 	    public const string CREDENTIAL = "Credential";
@@ -80,6 +81,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string EXPRESSIONSOURCE = "ExpressionSource";
 	    public const string EXTENDEDPROPERTIES = "ExtendedProperties";
 	    public const string FILTEREXPRESSION = "FilterExpression";
+	    public const string FOLDER = "Folder";
 	    public const string FORCEUNIQUENAMES = "ForceUniqueNames";
 	    public const string FORMATSTRING = "FormatString";
 	    public const string FORMATSTRINGDEFINITION = "FormatStringDefinition";
@@ -243,7 +245,10 @@ namespace TabularEditor.TOMWrapper
             { typeof(CalculationGroup) , typeof(TOM.CalculationGroup) },
             { typeof(CalculationItem) , typeof(TOM.CalculationItem) },
             { typeof(TablePermission) , typeof(TOM.TablePermission) },
+            { typeof(QueryGroup) , typeof(TOM.QueryGroup) },
             { typeof(DataCoverageDefinition) , typeof(TOM.DataCoverageDefinition) },
+            { typeof(BindingInfo) , typeof(TOM.BindingInfo) },
+            { typeof(DataBindingHint) , typeof(TOM.DataBindingHint) },
             { typeof(Function) , typeof(TOM.Function) },
             { typeof(Calendar) , typeof(TOM.Calendar) },
 	    };
@@ -278,6 +283,8 @@ namespace TabularEditor.TOMWrapper
             typeof(NamedExpression),
             typeof(CalculationItem),
             typeof(TablePermission),
+            typeof(QueryGroup),
+            typeof(DataBindingHint),
             typeof(Function),
             typeof(Calendar),
 	        typeof(MPartition),
@@ -1172,8 +1179,8 @@ namespace TabularEditor.TOMWrapper
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Variation: TabularNamedObject
 			, IDescriptionObject
-			, IInternalAnnotationObject
-			, IInternalExtendedPropertyObject
+			, IAnnotationObject
+			, IExtendedPropertyObject
 			, IClonableObject
 	{
 	    internal new TOM.Variation MetadataObject 
@@ -1228,7 +1235,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -1276,7 +1283,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -1304,7 +1311,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current Variation.</summary>
@@ -1364,7 +1371,7 @@ namespace TabularEditor.TOMWrapper
 		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
 			SetExtendedProperty(index, value, type, true);
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
 			SetExtendedProperty(index, value, type, undoable);
 		}
 		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
@@ -1419,7 +1426,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
 			}
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
 			this.SetExtendedProperty(name, value, type, undoable);
 		}
 
@@ -1447,7 +1454,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
 			}
 		}
-		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+		void IExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
 			this.RemoveExtendedProperty(name, undoable);
 		}
 		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
@@ -1619,7 +1626,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.Variation();
-			metadataObject.Name = parent.Variations.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<Variation>() : name);
+			metadataObject.Name = parent.Variations.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Variation).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Variation(metadataObject);
 
@@ -1649,8 +1656,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Variations.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.Variations.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			Variation obj = CreateFromMetadata(newParent ?? Parent, tom);
 
@@ -1914,7 +1920,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.StructuredDataSource();
-			metadataObject.Name = parent.DataSources.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<StructuredDataSource>() : name);
+			metadataObject.Name = parent.DataSources.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(StructuredDataSource).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new StructuredDataSource(metadataObject);
 
@@ -1953,8 +1959,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.DataSources.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.DataSources.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			StructuredDataSource obj = CreateFromMetadata(Parent, tom);
 
@@ -2117,7 +2122,7 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.CalculatedColumn();
             if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
-			metadataObject.Name = parent.Columns.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<CalculatedColumn>() : name);
+			metadataObject.Name = parent.Columns.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(CalculatedColumn).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new CalculatedColumn(metadataObject);
 
@@ -2150,8 +2155,7 @@ namespace TabularEditor.TOMWrapper
             }
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Columns.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.Columns.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			CalculatedColumn obj = CreateFromMetadata(newParent ?? Parent, tom);
 
@@ -2337,7 +2341,7 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.CalculatedTableColumn();
             if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
-			metadataObject.Name = parent.Columns.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<CalculatedTableColumn>() : name);
+			metadataObject.Name = parent.Columns.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(CalculatedTableColumn).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new CalculatedTableColumn(metadataObject);
 
@@ -2370,8 +2374,7 @@ namespace TabularEditor.TOMWrapper
             }
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Columns.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.Columns.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			CalculatedTableColumn obj = CreateFromMetadata(newParent ?? Parent, tom);
 
@@ -2455,10 +2458,10 @@ namespace TabularEditor.TOMWrapper
 			, IDescriptionObject
 			, IFormattableObject
 			, ILineageTagObject
-			, IInternalAnnotationObject
-			, IInternalExtendedPropertyObject
-			, IInternalTabularPerspectiveObject
-			, IInternalTranslatableObject
+			, IAnnotationObject
+			, IExtendedPropertyObject
+			, ITabularPerspectiveObject
+			, ITranslatableObject
 			, ISynonymObject
 	{
 	    internal new TOM.Column MetadataObject 
@@ -2513,7 +2516,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -2561,7 +2564,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -2589,7 +2592,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current Column.</summary>
@@ -2649,7 +2652,7 @@ namespace TabularEditor.TOMWrapper
 		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
 			SetExtendedProperty(index, value, type, true);
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
 			SetExtendedProperty(index, value, type, undoable);
 		}
 		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
@@ -2704,7 +2707,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
 			}
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
 			this.SetExtendedProperty(name, value, type, undoable);
 		}
 
@@ -2732,7 +2735,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
 			}
 		}
-		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+		void IExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
 			this.RemoveExtendedProperty(name, undoable);
 		}
 		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
@@ -3821,8 +3824,8 @@ namespace TabularEditor.TOMWrapper
 /// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Culture: TabularNamedObject
-			, IInternalAnnotationObject
-			, IInternalExtendedPropertyObject
+			, IAnnotationObject
+			, IExtendedPropertyObject
 			, IClonableObject
 	{
 	    internal new TOM.Culture MetadataObject 
@@ -3878,7 +3881,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -3926,7 +3929,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -3954,7 +3957,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current Culture.</summary>
@@ -4014,7 +4017,7 @@ namespace TabularEditor.TOMWrapper
 		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
 			SetExtendedProperty(index, value, type, true);
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
 			SetExtendedProperty(index, value, type, undoable);
 		}
 		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
@@ -4069,7 +4072,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
 			}
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
 			this.SetExtendedProperty(name, value, type, undoable);
 		}
 
@@ -4097,7 +4100,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
 			}
 		}
-		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+		void IExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
 			this.RemoveExtendedProperty(name, undoable);
 		}
 		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
@@ -4134,7 +4137,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.Culture();
-			metadataObject.Name = parent.Cultures.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<Culture>() : name);
+			metadataObject.Name = parent.Cultures.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Culture).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Culture(metadataObject);
 
@@ -4173,8 +4176,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Cultures.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.Cultures.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			Culture obj = CreateFromMetadata(Parent, tom);
 
@@ -4384,7 +4386,7 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.DataColumn();
             if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
-			metadataObject.Name = parent.Columns.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<DataColumn>() : name);
+			metadataObject.Name = parent.Columns.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(DataColumn).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new DataColumn(metadataObject);
 
@@ -4417,8 +4419,7 @@ namespace TabularEditor.TOMWrapper
             }
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Columns.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.Columns.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			DataColumn obj = CreateFromMetadata(newParent ?? Parent, tom);
 
@@ -4496,8 +4497,8 @@ namespace TabularEditor.TOMWrapper
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public abstract partial class DataSource: TabularNamedObject
 			, IDescriptionObject
-			, IInternalAnnotationObject
-			, IInternalExtendedPropertyObject
+			, IAnnotationObject
+			, IExtendedPropertyObject
 	{
 	    internal new TOM.DataSource MetadataObject 
 		{ 
@@ -4551,7 +4552,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -4599,7 +4600,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -4627,7 +4628,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current Data Source.</summary>
@@ -4687,7 +4688,7 @@ namespace TabularEditor.TOMWrapper
 		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
 			SetExtendedProperty(index, value, type, true);
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
 			SetExtendedProperty(index, value, type, undoable);
 		}
 		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
@@ -4742,7 +4743,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
 			}
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
 			this.SetExtendedProperty(name, value, type, undoable);
 		}
 
@@ -4770,7 +4771,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
 			}
 		}
-		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+		void IExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
 			this.RemoveExtendedProperty(name, undoable);
 		}
 		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
@@ -5424,14 +5425,15 @@ namespace TabularEditor.TOMWrapper
 		/// Creates a new ExternalModelRoleMember and adds it to the parent ModelRole.
 		/// Also creates the underlying metadataobject and adds it to the TOM tree.
 		/// </summary>
-		public static ExternalModelRoleMember CreateNew(ModelRole parent, string name = null)
+		public static ExternalModelRoleMember CreateNew(ModelRole parent, string name = null, string memberId = null)
 		{
 			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(ExternalModelRoleMember))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(ExternalModelRoleMember).GetTypeName()));
 			}
 
 			var metadataObject = new TOM.ExternalModelRoleMember();
-			metadataObject.MemberName = parent.Members.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<ExternalModelRoleMember>() : name);
+			metadataObject.MemberName = parent.Members.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(ExternalModelRoleMember).GetTypeName() : name);
+			if(!string.IsNullOrEmpty(memberId)) metadataObject.MemberID = memberId;
             InitMetadata(metadataObject, parent);
             var obj = new ExternalModelRoleMember(metadataObject);
 
@@ -5461,8 +5463,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Members.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.Members.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			ExternalModelRoleMember obj = CreateFromMetadata(newParent ?? Parent, tom);
 
@@ -5536,10 +5537,10 @@ namespace TabularEditor.TOMWrapper
 			, ITabularTableObject
 			, IDescriptionObject
 			, ILineageTagObject
-			, IInternalAnnotationObject
-			, IInternalExtendedPropertyObject
-			, IInternalTabularPerspectiveObject
-			, IInternalTranslatableObject
+			, IAnnotationObject
+			, IExtendedPropertyObject
+			, ITabularPerspectiveObject
+			, ITranslatableObject
 			, ISynonymObject
 			, IClonableObject
 	{
@@ -5596,7 +5597,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -5644,7 +5645,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -5672,7 +5673,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current Hierarchy.</summary>
@@ -5732,7 +5733,7 @@ namespace TabularEditor.TOMWrapper
 		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
 			SetExtendedProperty(index, value, type, true);
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
 			SetExtendedProperty(index, value, type, undoable);
 		}
 		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
@@ -5787,7 +5788,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
 			}
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
 			this.SetExtendedProperty(name, value, type, undoable);
 		}
 
@@ -5815,7 +5816,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
 			}
 		}
-		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+		void IExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
 			this.RemoveExtendedProperty(name, undoable);
 		}
 		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
@@ -6060,7 +6061,7 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Hierarchy();
             if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
-			metadataObject.Name = parent.Hierarchies.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<Hierarchy>() : name);
+			metadataObject.Name = parent.Hierarchies.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Hierarchy).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Hierarchy(metadataObject);
 
@@ -6094,8 +6095,7 @@ namespace TabularEditor.TOMWrapper
             }
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Hierarchies.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.Hierarchies.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			Hierarchy obj = CreateFromMetadata(newParent ?? Parent, tom);
 
@@ -6359,8 +6359,8 @@ namespace TabularEditor.TOMWrapper
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class KPI: TabularObject
 			, IDescriptionObject
-			, IInternalAnnotationObject
-			, IInternalExtendedPropertyObject
+			, IAnnotationObject
+			, IExtendedPropertyObject
 	{
 	    internal new TOM.KPI MetadataObject 
 		{ 
@@ -6414,7 +6414,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -6462,7 +6462,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -6490,7 +6490,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current KPI.</summary>
@@ -6550,7 +6550,7 @@ namespace TabularEditor.TOMWrapper
 		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
 			SetExtendedProperty(index, value, type, true);
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
 			SetExtendedProperty(index, value, type, undoable);
 		}
 		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
@@ -6605,7 +6605,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
 			}
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
 			this.SetExtendedProperty(name, value, type, undoable);
 		}
 
@@ -6633,7 +6633,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
 			}
 		}
-		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+		void IExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
 			this.RemoveExtendedProperty(name, undoable);
 		}
 		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
@@ -6956,7 +6956,7 @@ namespace TabularEditor.TOMWrapper
 /// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1460 or above.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class AlternateOf: TabularObject
-			, IInternalAnnotationObject
+			, IAnnotationObject
 	{
 	    internal new TOM.AlternateOf MetadataObject 
 		{ 
@@ -7010,7 +7010,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -7058,7 +7058,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -7086,7 +7086,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current Alternate Of.</summary>
@@ -7240,9 +7240,9 @@ namespace TabularEditor.TOMWrapper
 	public sealed partial class Level: TabularNamedObject
 			, IDescriptionObject
 			, ILineageTagObject
-			, IInternalAnnotationObject
-			, IInternalExtendedPropertyObject
-			, IInternalTranslatableObject
+			, IAnnotationObject
+			, IExtendedPropertyObject
+			, ITranslatableObject
 			, ISynonymObject
 			, IClonableObject
 	{
@@ -7298,7 +7298,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -7346,7 +7346,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -7374,7 +7374,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current Level.</summary>
@@ -7434,7 +7434,7 @@ namespace TabularEditor.TOMWrapper
 		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
 			SetExtendedProperty(index, value, type, true);
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
 			SetExtendedProperty(index, value, type, undoable);
 		}
 		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
@@ -7489,7 +7489,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
 			}
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
 			this.SetExtendedProperty(name, value, type, undoable);
 		}
 
@@ -7517,7 +7517,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
 			}
 		}
-		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+		void IExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
 			this.RemoveExtendedProperty(name, undoable);
 		}
 		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
@@ -7711,7 +7711,7 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Level();
             if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
-			metadataObject.Name = parent.Levels.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<Level>() : name);
+			metadataObject.Name = parent.Levels.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Level).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Level(metadataObject);
 
@@ -7744,8 +7744,7 @@ namespace TabularEditor.TOMWrapper
             }
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Levels.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.Levels.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			Level obj = CreateFromMetadata(newParent ?? Parent, tom);
 
@@ -7939,10 +7938,10 @@ namespace TabularEditor.TOMWrapper
 			, IExpressionObject
 			, IFormattableObject
 			, ILineageTagObject
-			, IInternalAnnotationObject
-			, IInternalExtendedPropertyObject
-			, IInternalTabularPerspectiveObject
-			, IInternalTranslatableObject
+			, IAnnotationObject
+			, IExtendedPropertyObject
+			, ITabularPerspectiveObject
+			, ITranslatableObject
 			, ISynonymObject
 			, IClonableObject
 	{
@@ -7998,7 +7997,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -8046,7 +8045,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -8074,7 +8073,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current Measure.</summary>
@@ -8134,7 +8133,7 @@ namespace TabularEditor.TOMWrapper
 		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
 			SetExtendedProperty(index, value, type, true);
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
 			SetExtendedProperty(index, value, type, undoable);
 		}
 		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
@@ -8189,7 +8188,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
 			}
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
 			this.SetExtendedProperty(name, value, type, undoable);
 		}
 
@@ -8217,7 +8216,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
 			}
 		}
-		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+		void IExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
 			this.RemoveExtendedProperty(name, undoable);
 		}
 		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
@@ -8549,7 +8548,7 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Measure();
             if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
-			metadataObject.Name = parent.Measures.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<Measure>() : name);
+			metadataObject.Name = parent.Measures.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Measure).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Measure(metadataObject);
 
@@ -8582,8 +8581,7 @@ namespace TabularEditor.TOMWrapper
             }
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Measures.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.Measures.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			Measure obj = CreateFromMetadata(newParent ?? Parent, tom);
 
@@ -8862,9 +8860,9 @@ namespace TabularEditor.TOMWrapper
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Model: TabularNamedObject
 			, IDescriptionObject
-			, IInternalAnnotationObject
-			, IInternalExtendedPropertyObject
-			, IInternalTranslatableObject
+			, IAnnotationObject
+			, IExtendedPropertyObject
+			, ITranslatableObject
 	{
 	    internal new TOM.Model MetadataObject 
 		{ 
@@ -8929,7 +8927,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -8977,7 +8975,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -9005,7 +9003,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current Model.</summary>
@@ -9065,7 +9063,7 @@ namespace TabularEditor.TOMWrapper
 		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
 			SetExtendedProperty(index, value, type, true);
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
 			SetExtendedProperty(index, value, type, undoable);
 		}
 		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
@@ -9120,7 +9118,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
 			}
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
 			this.SetExtendedProperty(name, value, type, undoable);
 		}
 
@@ -9148,7 +9146,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
 			}
 		}
-		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+		void IExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
 			this.RemoveExtendedProperty(name, undoable);
 		}
 		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
@@ -9739,6 +9737,8 @@ namespace TabularEditor.TOMWrapper
 			if (child is Table) return Tables;
 			if (child is Relationship) return Relationships;
 			if (child is NamedExpression) return Expressions;
+			if (child is QueryGroup) return QueryGroups;
+			if (child is BindingInfo) return BindingInfoCollection;
 			if (child is Function) return Functions;
             return base.GetCollectionForChild(child);
         }
@@ -9786,6 +9786,18 @@ namespace TabularEditor.TOMWrapper
 		[Category("Options"),IntelliSense("The collection of Named Expression objects on the current Model.")][Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<NamedExpression>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]
 		public NamedExpressionCollection Expressions { get; private set; }
         /// <summary>
+        /// The collection of QueryGroup objects on this Model.
+        /// </summary>
+		[DisplayName("Query Groups")]
+		[Category("Options"),IntelliSense("The collection of Query Group objects on the current Model.")][Editor(typeof(ClonableObjectCollectionEditor<QueryGroup>),typeof(UITypeEditor))]
+		public QueryGroupCollection QueryGroups { get; private set; }
+        /// <summary>
+        /// The collection of BindingInfo objects on this Model.
+        /// </summary>
+		[DisplayName("Binding Info Collection")]
+		[Category("Options"),IntelliSense("The collection of Binding Info objects on the current Model.")][Editor(typeof(BindingInfoCollectionEditor), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]
+		public BindingInfoCollection BindingInfoCollection { get; private set; }
+        /// <summary>
         /// The collection of Function objects on this Model.
         /// </summary>
 		[DisplayName("Functions")]
@@ -9815,6 +9827,8 @@ namespace TabularEditor.TOMWrapper
 			Tables = new TableCollection(this.GetObjectPath() + ".Tables", MetadataObject.Tables, this);
 			Relationships = new RelationshipCollection(this.GetObjectPath() + ".Relationships", MetadataObject.Relationships, this);
 			Expressions = new NamedExpressionCollection(this.GetObjectPath() + ".Expressions", MetadataObject.Expressions, this);
+			QueryGroups = new QueryGroupCollection(this.GetObjectPath() + ".QueryGroups", MetadataObject.QueryGroups, this);
+			BindingInfoCollection = new BindingInfoCollection(this.GetObjectPath() + ".BindingInfoCollection", MetadataObject.BindingInfoCollection, this);
 			Functions = new FunctionCollection(this.GetObjectPath() + ".Functions", MetadataObject.Functions, this);
 
 			// Populate child collections:
@@ -9825,6 +9839,8 @@ namespace TabularEditor.TOMWrapper
 			Tables.CreateChildrenFromMetadata();
 			Relationships.CreateChildrenFromMetadata();
 			Expressions.CreateChildrenFromMetadata();
+			QueryGroups.CreateChildrenFromMetadata();
+			BindingInfoCollection.CreateChildrenFromMetadata();
 			Functions.CreateChildrenFromMetadata();
 
 			// Hook up event handlers on child collections:
@@ -9835,6 +9851,8 @@ namespace TabularEditor.TOMWrapper
 			Tables.CollectionChanged += Children_CollectionChanged;
 			Relationships.CollectionChanged += Children_CollectionChanged;
 			Expressions.CollectionChanged += Children_CollectionChanged;
+			QueryGroups.CollectionChanged += Children_CollectionChanged;
+			BindingInfoCollection.CollectionChanged += Children_CollectionChanged;
 			Functions.CollectionChanged += Children_CollectionChanged;
 		}
 
@@ -9847,6 +9865,8 @@ namespace TabularEditor.TOMWrapper
 			Tables.Reinit();
 			Relationships.Reinit();
 			Expressions.Reinit();
+			QueryGroups.Reinit();
+			BindingInfoCollection.Reinit();
 			Functions.Reinit();
 		}
 
@@ -9932,8 +9952,8 @@ namespace TabularEditor.TOMWrapper
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class ModelRole: TabularNamedObject
 			, IDescriptionObject
-			, IInternalAnnotationObject
-			, IInternalExtendedPropertyObject
+			, IAnnotationObject
+			, IExtendedPropertyObject
 			, IClonableObject
 	{
 	    internal new TOM.ModelRole MetadataObject 
@@ -9990,7 +10010,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -10038,7 +10058,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -10066,7 +10086,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current Model Role.</summary>
@@ -10126,7 +10146,7 @@ namespace TabularEditor.TOMWrapper
 		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
 			SetExtendedProperty(index, value, type, true);
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
 			SetExtendedProperty(index, value, type, undoable);
 		}
 		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
@@ -10181,7 +10201,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
 			}
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
 			this.SetExtendedProperty(name, value, type, undoable);
 		}
 
@@ -10209,7 +10229,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
 			}
 		}
-		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+		void IExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
 			this.RemoveExtendedProperty(name, undoable);
 		}
 		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
@@ -10293,7 +10313,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.ModelRole();
-			metadataObject.Name = parent.Roles.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<ModelRole>() : name);
+			metadataObject.Name = parent.Roles.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(ModelRole).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new ModelRole(metadataObject);
 
@@ -10332,8 +10352,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Roles.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.Roles.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			ModelRole obj = CreateFromMetadata(Parent, tom);
 
@@ -10533,8 +10552,8 @@ namespace TabularEditor.TOMWrapper
 /// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public abstract partial class ModelRoleMember: TabularNamedObject
-			, IInternalAnnotationObject
-			, IInternalExtendedPropertyObject
+			, IAnnotationObject
+			, IExtendedPropertyObject
 	{
 	    internal new TOM.ModelRoleMember MetadataObject 
 		{ 
@@ -10588,7 +10607,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -10636,7 +10655,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -10664,7 +10683,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current Model Role Member.</summary>
@@ -10724,7 +10743,7 @@ namespace TabularEditor.TOMWrapper
 		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
 			SetExtendedProperty(index, value, type, true);
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
 			SetExtendedProperty(index, value, type, undoable);
 		}
 		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
@@ -10779,7 +10798,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
 			}
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
 			this.SetExtendedProperty(name, value, type, undoable);
 		}
 
@@ -10807,7 +10826,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
 			}
 		}
-		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+		void IExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
 			this.RemoveExtendedProperty(name, undoable);
 		}
 		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
@@ -11038,8 +11057,8 @@ namespace TabularEditor.TOMWrapper
 			, IErrorMessageObject
 			, ITabularTableObject
 			, IDescriptionObject
-			, IInternalAnnotationObject
-			, IInternalExtendedPropertyObject
+			, IAnnotationObject
+			, IExtendedPropertyObject
 			, IClonableObject
 	{
 	    internal new TOM.Partition MetadataObject 
@@ -11094,7 +11113,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -11142,7 +11161,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -11170,7 +11189,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current Partition.</summary>
@@ -11230,7 +11249,7 @@ namespace TabularEditor.TOMWrapper
 		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
 			SetExtendedProperty(index, value, type, true);
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
 			SetExtendedProperty(index, value, type, undoable);
 		}
 		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
@@ -11285,7 +11304,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
 			}
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
 			this.SetExtendedProperty(name, value, type, undoable);
 		}
 
@@ -11313,7 +11332,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
 			}
 		}
-		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+		void IExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
 			this.RemoveExtendedProperty(name, undoable);
 		}
 		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
@@ -11439,7 +11458,31 @@ namespace TabularEditor.TOMWrapper
 				return t as Table;
 			} 
 		}
-		// Skipping property QueryGroup on object Partition
+/// <summary>
+///             QueryGroup associated with the partition.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1480 or above.</remarks>
+		[DisplayName("Query Group")]
+		[Category("Options"),Description(@"QueryGroup associated with the partition."),IntelliSense(@"QueryGroup associated with the partition.")][TypeConverter(typeof(QueryGroupConverter)),Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		public QueryGroup QueryGroup {
+			get {
+				if (MetadataObject.QueryGroup == null) return null;
+			    return Handler.WrapperLookup[MetadataObject.QueryGroup] as QueryGroup;
+            }
+			set {
+				
+				var oldValue = QueryGroup;
+				var newValue = value;
+				if (oldValue?.MetadataObject == newValue?.MetadataObject) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.QUERYGROUP, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.QueryGroup = value?.MetadataObject;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.QUERYGROUP, oldValue, newValue));
+				OnPropertyChanged(Properties.QUERYGROUP, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeQueryGroup() { return false; }
 		// Skipping property DataCoverageDefinition on object Partition
 /// <summary>
 ///             The type of source used by the Partition. This is either a query against a DataSource, or for calculated tables, an expression.
@@ -11476,7 +11519,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.Partition();
-			metadataObject.Name = parent.Partitions.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<Partition>() : name);
+			metadataObject.Name = parent.Partitions.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Partition).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Partition(metadataObject);
 
@@ -11506,8 +11549,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Partitions.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.Partitions.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			Partition obj = CreateFromMetadata(newParent ?? Parent, tom);
 
@@ -11685,6 +11727,18 @@ namespace TabularEditor.TOMWrapper
 				Handler.UndoManager.EndBatch();
 			}
 		}
+		/// <summary>
+		/// Sets the QueryGroup property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the QueryGroup property of all objects in the collection at once.")]
+		public QueryGroup QueryGroup {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("QueryGroup"));
+				this.ToList().ForEach(item => { item.QueryGroup = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
 	}
   
 	/// <summary>
@@ -11698,8 +11752,8 @@ namespace TabularEditor.TOMWrapper
 			, ITabularTableObject
 			, IDescriptionObject
 			, IExpressionObject
-			, IInternalAnnotationObject
-			, IInternalExtendedPropertyObject
+			, IAnnotationObject
+			, IExtendedPropertyObject
 			, IClonableObject
 	{
 	    internal new TOM.Set MetadataObject 
@@ -11754,7 +11808,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -11802,7 +11856,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -11830,7 +11884,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current Set.</summary>
@@ -11890,7 +11944,7 @@ namespace TabularEditor.TOMWrapper
 		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
 			SetExtendedProperty(index, value, type, true);
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
 			SetExtendedProperty(index, value, type, undoable);
 		}
 		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
@@ -11945,7 +11999,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
 			}
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
 			this.SetExtendedProperty(name, value, type, undoable);
 		}
 
@@ -11973,7 +12027,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
 			}
 		}
-		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+		void IExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
 			this.RemoveExtendedProperty(name, undoable);
 		}
 		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
@@ -12175,7 +12229,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.Set();
-			metadataObject.Name = parent.Sets.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<Set>() : name);
+			metadataObject.Name = parent.Sets.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Set).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Set(metadataObject);
 
@@ -12205,8 +12259,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Sets.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.Sets.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			Set obj = CreateFromMetadata(newParent ?? Parent, tom);
 
@@ -12407,9 +12460,9 @@ namespace TabularEditor.TOMWrapper
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class Perspective: TabularNamedObject
 			, IDescriptionObject
-			, IInternalAnnotationObject
-			, IInternalExtendedPropertyObject
-			, IInternalTranslatableObject
+			, IAnnotationObject
+			, IExtendedPropertyObject
+			, ITranslatableObject
 			, IClonableObject
 	{
 	    internal new TOM.Perspective MetadataObject 
@@ -12465,7 +12518,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -12513,7 +12566,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -12541,7 +12594,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current Perspective.</summary>
@@ -12601,7 +12654,7 @@ namespace TabularEditor.TOMWrapper
 		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
 			SetExtendedProperty(index, value, type, true);
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
 			SetExtendedProperty(index, value, type, undoable);
 		}
 		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
@@ -12656,7 +12709,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
 			}
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
 			this.SetExtendedProperty(name, value, type, undoable);
 		}
 
@@ -12684,7 +12737,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
 			}
 		}
-		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+		void IExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
 			this.RemoveExtendedProperty(name, undoable);
 		}
 		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
@@ -12755,7 +12808,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.Perspective();
-			metadataObject.Name = parent.Perspectives.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<Perspective>() : name);
+			metadataObject.Name = parent.Perspectives.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Perspective).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Perspective(metadataObject);
 
@@ -12794,8 +12847,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Perspectives.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.Perspectives.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			Perspective obj = CreateFromMetadata(Parent, tom);
 
@@ -13165,7 +13217,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.ProviderDataSource();
-			metadataObject.Name = parent.DataSources.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<ProviderDataSource>() : name);
+			metadataObject.Name = parent.DataSources.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(ProviderDataSource).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new ProviderDataSource(metadataObject);
 
@@ -13204,8 +13256,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.DataSources.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.DataSources.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			ProviderDataSource obj = CreateFromMetadata(Parent, tom);
 
@@ -13275,8 +13326,8 @@ namespace TabularEditor.TOMWrapper
 /// </summary>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public abstract partial class Relationship: TabularNamedObject
-			, IInternalAnnotationObject
-			, IInternalExtendedPropertyObject
+			, IAnnotationObject
+			, IExtendedPropertyObject
 	{
 	    internal new TOM.Relationship MetadataObject 
 		{ 
@@ -13330,7 +13381,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -13378,7 +13429,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -13406,7 +13457,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current Relationship.</summary>
@@ -13466,7 +13517,7 @@ namespace TabularEditor.TOMWrapper
 		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
 			SetExtendedProperty(index, value, type, true);
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
 			SetExtendedProperty(index, value, type, undoable);
 		}
 		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
@@ -13521,7 +13572,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
 			}
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
 			this.SetExtendedProperty(name, value, type, undoable);
 		}
 
@@ -13549,7 +13600,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
 			}
 		}
-		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+		void IExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
 			this.RemoveExtendedProperty(name, undoable);
 		}
 		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
@@ -14058,7 +14109,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.SingleColumnRelationship();
-			metadataObject.Name = parent.Relationships.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<SingleColumnRelationship>() : name);
+			metadataObject.Name = parent.Relationships.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(SingleColumnRelationship).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new SingleColumnRelationship(metadataObject);
 
@@ -14097,8 +14148,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Relationships.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.Relationships.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			SingleColumnRelationship obj = CreateFromMetadata(Parent, tom);
 
@@ -14171,10 +14221,10 @@ namespace TabularEditor.TOMWrapper
 			, IHideableObject
 			, IDescriptionObject
 			, ILineageTagObject
-			, IInternalAnnotationObject
-			, IInternalExtendedPropertyObject
-			, IInternalTabularPerspectiveObject
-			, IInternalTranslatableObject
+			, IAnnotationObject
+			, IExtendedPropertyObject
+			, ITabularPerspectiveObject
+			, ITranslatableObject
 			, ISynonymObject
 			, IClonableObject
 	{
@@ -14235,7 +14285,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -14283,7 +14333,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -14311,7 +14361,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current Table.</summary>
@@ -14371,7 +14421,7 @@ namespace TabularEditor.TOMWrapper
 		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
 			SetExtendedProperty(index, value, type, true);
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
 			SetExtendedProperty(index, value, type, undoable);
 		}
 		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
@@ -14426,7 +14476,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
 			}
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
 			this.SetExtendedProperty(name, value, type, undoable);
 		}
 
@@ -14454,7 +14504,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
 			}
 		}
-		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+		void IExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
 			this.RemoveExtendedProperty(name, undoable);
 		}
 		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
@@ -14790,7 +14840,7 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Table();
             if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
-			metadataObject.Name = parent.Tables.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<Table>() : name);
+			metadataObject.Name = parent.Tables.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Table).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Table(metadataObject);
 
@@ -14842,8 +14892,7 @@ namespace TabularEditor.TOMWrapper
             }
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Tables.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.Tables.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			Table obj ;
 			if(this is CalculatedTable) obj = CalculatedTable.CreateFromMetadata(Parent, tom);
@@ -15279,14 +15328,15 @@ namespace TabularEditor.TOMWrapper
 		/// Creates a new WindowsModelRoleMember and adds it to the parent ModelRole.
 		/// Also creates the underlying metadataobject and adds it to the TOM tree.
 		/// </summary>
-		public static WindowsModelRoleMember CreateNew(ModelRole parent, string name = null)
+		public static WindowsModelRoleMember CreateNew(ModelRole parent, string name = null, string memberId = null)
 		{
 			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(WindowsModelRoleMember))) {
 				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(WindowsModelRoleMember).GetTypeName()));
 			}
 
 			var metadataObject = new TOM.WindowsModelRoleMember();
-			metadataObject.MemberName = parent.Members.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<WindowsModelRoleMember>() : name);
+			metadataObject.MemberName = parent.Members.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(WindowsModelRoleMember).GetTypeName() : name);
+			if(!string.IsNullOrEmpty(memberId)) metadataObject.MemberID = memberId;
             InitMetadata(metadataObject, parent);
             var obj = new WindowsModelRoleMember(metadataObject);
 
@@ -15316,8 +15366,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Members.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.Members.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			WindowsModelRoleMember obj = CreateFromMetadata(newParent ?? Parent, tom);
 
@@ -15388,8 +15437,8 @@ namespace TabularEditor.TOMWrapper
 	public sealed partial class NamedExpression: TabularNamedObject
 			, IDescriptionObject
 			, ILineageTagObject
-			, IInternalAnnotationObject
-			, IInternalExtendedPropertyObject
+			, IAnnotationObject
+			, IExtendedPropertyObject
 			, IClonableObject
 	{
 	    internal new TOM.NamedExpression MetadataObject 
@@ -15444,7 +15493,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -15492,7 +15541,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -15520,7 +15569,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current Named Expression.</summary>
@@ -15580,7 +15629,7 @@ namespace TabularEditor.TOMWrapper
 		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
 			SetExtendedProperty(index, value, type, true);
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
 			SetExtendedProperty(index, value, type, undoable);
 		}
 		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
@@ -15635,7 +15684,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
 			}
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
 			this.SetExtendedProperty(name, value, type, undoable);
 		}
 
@@ -15663,7 +15712,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
 			}
 		}
-		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+		void IExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
 			this.RemoveExtendedProperty(name, undoable);
 		}
 		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
@@ -15846,7 +15895,31 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeRemoteParameterName() { return false; }
-		// Skipping property QueryGroup on object NamedExpression
+/// <summary>
+///             QueryGroup associated with the expression.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1480 or above.</remarks>
+		[DisplayName("Query Group")]
+		[Category("Options"),Description(@"QueryGroup associated with the expression."),IntelliSense(@"QueryGroup associated with the expression.")][TypeConverter(typeof(QueryGroupConverter)),Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		public QueryGroup QueryGroup {
+			get {
+				if (MetadataObject.QueryGroup == null) return null;
+			    return Handler.WrapperLookup[MetadataObject.QueryGroup] as QueryGroup;
+            }
+			set {
+				
+				var oldValue = QueryGroup;
+				var newValue = value;
+				if (oldValue?.MetadataObject == newValue?.MetadataObject) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.QUERYGROUP, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.QueryGroup = value?.MetadataObject;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.QUERYGROUP, oldValue, newValue));
+				OnPropertyChanged(Properties.QUERYGROUP, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeQueryGroup() { return false; }
 /// <summary>
 ///             Client tools apply filters to this column using M parameter. The presence of this property indicates model owner allows Dax queries to override this parameter, and columns data type must match the type specified in the meta tag of the parameter..
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1545 or above.</remarks>
@@ -15927,7 +16000,7 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.NamedExpression();
             if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
-			metadataObject.Name = parent.Expressions.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<NamedExpression>() : name);
+			metadataObject.Name = parent.Expressions.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(NamedExpression).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new NamedExpression(metadataObject);
 
@@ -15969,8 +16042,7 @@ namespace TabularEditor.TOMWrapper
             }
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Expressions.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.Expressions.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			NamedExpression obj = CreateFromMetadata(Parent, tom);
 
@@ -16192,6 +16264,18 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		/// <summary>
+		/// Sets the QueryGroup property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the QueryGroup property of all objects in the collection at once.")]
+		public QueryGroup QueryGroup {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("QueryGroup"));
+				this.ToList().ForEach(item => { item.QueryGroup = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
 		/// Sets the ParameterValuesColumn property of all objects in the collection at once.
 		/// </summary>
 		[Description("Sets the ParameterValuesColumn property of all objects in the collection at once.")]
@@ -16223,7 +16307,7 @@ namespace TabularEditor.TOMWrapper
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class CalculationGroup: TabularObject
 			, IDescriptionObject
-			, IInternalAnnotationObject
+			, IAnnotationObject
 	{
 	    internal new TOM.CalculationGroup MetadataObject 
 		{ 
@@ -16277,7 +16361,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -16325,7 +16409,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -16353,7 +16437,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current Calculation Group.</summary>
@@ -16637,7 +16721,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.CalculationItem();
-			metadataObject.Name = parent.CalculationItems.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<CalculationItem>() : name);
+			metadataObject.Name = parent.CalculationItems.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(CalculationItem).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new CalculationItem(metadataObject);
 
@@ -16667,8 +16751,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.CalculationItems.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.CalculationItems.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			CalculationItem obj = CreateFromMetadata(newParent ?? Parent, tom);
 
@@ -16828,8 +16911,8 @@ namespace TabularEditor.TOMWrapper
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class TablePermission: TabularNamedObject
 			, IErrorMessageObject
-			, IInternalAnnotationObject
-			, IInternalExtendedPropertyObject
+			, IAnnotationObject
+			, IExtendedPropertyObject
 			, IClonableObject
 	{
 	    internal new TOM.TablePermission MetadataObject 
@@ -16884,7 +16967,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -16932,7 +17015,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -16960,7 +17043,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current Table Permission.</summary>
@@ -17020,7 +17103,7 @@ namespace TabularEditor.TOMWrapper
 		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
 			SetExtendedProperty(index, value, type, true);
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
 			SetExtendedProperty(index, value, type, undoable);
 		}
 		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
@@ -17075,7 +17158,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
 			}
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
 			this.SetExtendedProperty(name, value, type, undoable);
 		}
 
@@ -17103,7 +17186,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
 			}
 		}
-		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+		void IExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
 			this.RemoveExtendedProperty(name, undoable);
 		}
 		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
@@ -17240,7 +17323,7 @@ namespace TabularEditor.TOMWrapper
 			}
 
 			var metadataObject = new TOM.TablePermission();
-			metadataObject.Name = parent.TablePermissions.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<TablePermission>() : name);
+			metadataObject.Name = parent.TablePermissions.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(TablePermission).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new TablePermission(metadataObject);
 
@@ -17270,8 +17353,7 @@ namespace TabularEditor.TOMWrapper
 
 
 			// Assign a new, unique name:
-			tom.Name = Parent.TablePermissions.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.TablePermissions.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			TablePermission obj = CreateFromMetadata(newParent ?? Parent, tom);
 
@@ -17436,13 +17518,430 @@ namespace TabularEditor.TOMWrapper
 	}
   
 	/// <summary>
+/// Represents a QueryGroup object. Associated with Partition or NamedExpression objects.
+/// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1480 or above.</remarks>
+	[TypeConverter(typeof(DynamicPropertyConverter))]
+	public sealed partial class QueryGroup: TabularNamedObject
+			, IDescriptionObject
+			, IAnnotationObject
+			, IClonableObject
+	{
+	    internal new TOM.QueryGroup MetadataObject 
+		{ 
+			get 
+			{ 
+				return base.MetadataObject as TOM.QueryGroup; 
+		    } 
+			set 
+			{ 
+				base.MetadataObject = value; 
+			}
+		}
+
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Annotations on the current Query Group.</summary>
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Query Group."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
+		public AnnotationCollection Annotations { get; private set; }
+		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
+		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
+		public string GetAnnotation(int index) {
+			return MetadataObject.Annotations[index].Value;
+		}
+		///<summary>Returns true if an annotation with the given name exists. Otherwise false.</summary>
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		///<summary>Gets the value of the annotation with the given name. Returns null if no such annotation exists.</summary>
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
+		public string GetAnnotation(string name) {
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
+		}
+		///<summary>Sets the value of the annotation with the given index, assuming it exists.</summary>
+		[IntelliSense("Sets the value of the annotation with the given index, assuming it exists.")]
+		public void SetAnnotation(int index, string value) {
+		    SetAnnotation(index, value, true);
+		}
+		internal void SetAnnotation(int index, string value, bool undoable) {
+		    var name = MetadataObject.Annotations[index].Name;
+			SetAnnotation(name, value, undoable);
+		}
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+			SetAnnotation(index, value, undoable);
+		}
+		///<summary>Returns a unique name for a new annotation.</summary>
+		public string GetNewAnnotationName() {
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
+		}
+		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		internal void SetAnnotation(string name, string value, bool undoable) {
+			if(name == null) name = GetNewAnnotationName();
+
+			if(value == null) {
+				// Remove annotation if set to null:
+				RemoveAnnotation(name, undoable);
+				return;
+			}
+
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
+
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Change existing annotation:
+
+				var oldValue = GetAnnotation(name);
+				MetadataObject.Annotations[name].Value = value;
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
+			} else {
+				// Add new annotation:
+
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
+			}
+		}
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+			this.SetAnnotation(name, value, undoable);
+		}
+		///<summary>Remove an annotation by the given name.</summary>
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		internal void RemoveAnnotation(string name, bool undoable) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
+
+			    var oldValue = MetadataObject.Annotations[name].Value;
+				MetadataObject.Annotations.Remove(name);
+
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
+			}
+		}
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+			this.RemoveAnnotation(name, undoable);
+		}
+		///<summary>Gets the number of annotations on the current Query Group.</summary>
+		[IntelliSense("Gets the number of annotations on the current Query Group.")]
+		public int GetAnnotationsCount() {
+			return MetadataObject.Annotations.Count;
+		}
+		///<summary>Gets a collection of all annotation names on the current Query Group.</summary>
+		[IntelliSense("Gets a collection of all annotation names on the current Query Group.")]
+		public IEnumerable<string> GetAnnotations() {
+			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		/// <summary>
+///             The logical path of the query group.
+///             </summary>
+		[DisplayName("Folder")]
+		[Category("Options"),Description(@"The logical path of the query group."),IntelliSense(@"The logical path of the query group.")]
+		public string Folder {
+			get {
+			    return MetadataObject.Folder;
+			}
+			set {
+				
+				var oldValue = Folder;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.FOLDER, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.Folder = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FOLDER, oldValue, newValue));
+				OnPropertyChanged(Properties.FOLDER, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeFolder() { return false; }
+/// <summary>
+///             The description of the query-group, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+///             </summary>
+		[DisplayName("Description")]
+		[Category("Basic"),Description(@"The description of the query-group, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the query-group, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		public string Description {
+			get {
+			    return MetadataObject.Description;
+			}
+			set {
+				
+				var oldValue = Description;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
+				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeDescription() { return false; }
+
+		internal static QueryGroup CreateFromMetadata(Model parent, TOM.QueryGroup metadataObject) {
+			var obj = new QueryGroup(metadataObject);
+			parent.QueryGroups.Add(obj);
+			
+			obj.Init();
+
+			return obj;
+		}
+
+
+		/// <summary>
+		/// Creates a new QueryGroup and adds it to the parent Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
+		/// </summary>
+		public static QueryGroup CreateNew(Model parent, string name = null)
+		{
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(QueryGroup))) {
+				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(QueryGroup).GetTypeName()));
+			}
+
+			var metadataObject = new TOM.QueryGroup();
+			metadataObject.Folder = parent.QueryGroups.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(QueryGroup).GetTypeName() : name);
+            InitMetadata(metadataObject, parent);
+            var obj = new QueryGroup(metadataObject);
+
+			parent.QueryGroups.Add(obj);
+			
+			obj.Init();
+
+			return obj;
+		}
+
+        static partial void InitMetadata(TOM.QueryGroup metadataObject, Model parent);
+
+		/// <summary>
+		/// Creates a new QueryGroup and adds it to the current Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
+		/// </summary>		
+		public static QueryGroup CreateNew(string name = null)
+		{
+			return CreateNew(TabularModelHandler.Singleton.Model, name);
+		}
+
+
+		/// <summary>
+		/// Creates an exact copy of this QueryGroup object.
+		/// </summary>
+		[IntelliSense("Creates an exact copy of this QueryGroup object.")]
+		public QueryGroup Clone(string newName = null) {
+			if(!Handler.PowerBIGovernance.AllowCreate(this.GetType())) {
+				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(QueryGroup).GetTypeName()));
+			}
+
+		    Handler.BeginUpdate("Clone QueryGroup");
+
+			// Create a clone of the underlying metadataobject:
+			var tom = MetadataObject.Clone() as TOM.QueryGroup;
+
+
+				
+			// Assign a new, unique name:
+			tom.Folder = Parent.QueryGroups.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
+			// Create the TOM Wrapper object, representing the metadataobject
+			QueryGroup obj = CreateFromMetadata(Parent, tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
+			if (newParent != null) throw new ArgumentException("This object can not be cloned to another parent. Argument newParent should be left as null.", "newParent");
+			return Clone(newName);
+		}
+
+	
+        internal override void RenewMetadataObject()
+        {
+            Handler.WrapperLookup.Remove(MetadataObject);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.QueryGroup>(json);
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+		///<summary>The parent Model of the current Query Group.</summary>
+		public Model Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
+			}
+		}
+
+
+
+		/// <summary>
+		/// CTOR - only called from static factory methods on the class
+		/// </summary>
+		QueryGroup(TOM.QueryGroup metadataObject) : base(metadataObject)
+		{
+			
+			// Create indexer for annotations:
+			Annotations = new AnnotationCollection(this);
+		}
+
+
+
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
+			Reinit();
+			ReapplyReferences();
+		}
+		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
+			if(!base.Browsable(propertyName)) return false;
+
+			switch (propertyName) {
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.PARENT:
+					return false;
+				
+				default:
+					return true;
+			}
+		}
+
+    }
+
+
+	/// <summary>
+	/// Collection class for QueryGroup. Provides convenient properties for setting a property on multiple objects at once.
+	/// </summary>
+	public sealed partial class QueryGroupCollection: TabularNamedObjectCollection<QueryGroup>
+	{
+		internal Model Model { get { return Parent as Model; } }
+		TOM.QueryGroupCollection TOM_Collection;
+		internal QueryGroupCollection(string collectionName, TOM.QueryGroupCollection metadataObjectCollection, Model parent) : base(collectionName, parent)
+		{
+			TOM_Collection = metadataObjectCollection;
+		}
+		internal override Type GetItemType() { return typeof(QueryGroup); }
+        internal override void TOM_Add(TOM.MetadataObject obj) { TOM_Collection.Add(obj as TOM.QueryGroup); }
+        internal override bool TOM_Contains(TOM.MetadataObject obj) { return TOM_Collection.Contains(obj as TOM.QueryGroup); }
+        internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.QueryGroup); }
+        internal override void TOM_Clear() { TOM_Collection.Clear(); }
+		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+        internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
+        internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
+        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.QueryGroup); }
+        /// <summary>The number of items in this collection.</summary>
+		public override int Count { get { return TOM_Collection.Count; } }
+		/// <summary>Returns an enumerator that iterates through the collection.</summary>
+        public override IEnumerator<QueryGroup> GetEnumerator() { return TOM_Collection.Select(h => Handler.WrapperLookup[h]).OfType<QueryGroup>().GetEnumerator(); }
+		internal override void Reinit() {
+			var ixOffset = 0;
+			for(int i = 0; i < Count; i++) {
+				var metadataObj = TOM_Get(i) as TOM.QueryGroup;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as QueryGroup : CreateFromMetadata(metadataObj);
+				Handler.WrapperLookup.Remove(item.MetadataObject);
+				item.MetadataObject = Model.MetadataObject.QueryGroups[i + ixOffset] as TOM.QueryGroup;
+				Handler.WrapperLookup.Add(item.MetadataObject, item);
+				item.Collection = this;
+			}
+			TOM_Collection = Model.MetadataObject.QueryGroups;
+			foreach(var item in this) item.Reinit();
+		}
+
+		internal override void ReapplyReferences() {
+			foreach(var item in this) item.ReapplyReferences();
+		}
+
+		private QueryGroup CreateFromMetadata(TOM.QueryGroup obj)
+		{
+			if(obj is TOM.QueryGroup querygroupObj) return QueryGroup.CreateFromMetadata(Model, querygroupObj);
+            else throw new ArgumentException("Cannot create object", "obj");
+		}
+
+		/// <summary>
+		/// Calling this method will populate the QueryGroupCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
+		/// </summary>
+		internal override void CreateChildrenFromMetadata()
+		{
+			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
+		}
+
+		/// <summary>
+		/// Sets the Folder property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the Folder property of all objects in the collection at once.")]
+		public string Folder {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("Folder"));
+				this.ToList().ForEach(item => { item.Folder = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the Description property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the Description property of all objects in the collection at once.")]
+		public string Description {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("Description"));
+				this.ToList().ForEach(item => { item.Description = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+	}
+  
+	/// <summary>
 /// A tabular DataCoverageDefinition object. The expression defined on this object gives hint about the data in a partition.
 /// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1603 or above.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
 	public sealed partial class DataCoverageDefinition: TabularObject
 			, IErrorMessageObject
 			, IDescriptionObject
-			, IInternalAnnotationObject
+			, IAnnotationObject
 	{
 	    internal new TOM.DataCoverageDefinition MetadataObject 
 		{ 
@@ -17496,7 +17995,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -17544,7 +18043,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -17572,7 +18071,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current Data Coverage Definition.</summary>
@@ -17718,6 +18217,662 @@ namespace TabularEditor.TOMWrapper
 
   
 	/// <summary>
+/// Provides information that facilitates the binding of model elements to external resources, such as a data source reference in the model to a data connection in Fabric.
+/// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1608 or above.</remarks>
+	[TypeConverter(typeof(DynamicPropertyConverter))]
+	public abstract partial class BindingInfo: TabularNamedObject
+			, IDescriptionObject
+			, IAnnotationObject
+			, IExtendedPropertyObject
+	{
+	    internal new TOM.BindingInfo MetadataObject 
+		{ 
+			get 
+			{ 
+				return base.MetadataObject as TOM.BindingInfo; 
+		    } 
+			set 
+			{ 
+				base.MetadataObject = value; 
+			}
+		}
+
+        private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
+        ///<summary>Removes all annotations from this object.</summary>
+        [IntelliSense("Removes all annotations from this object.")]
+        public void ClearAnnotations()
+        {
+            Handler.BeginUpdate("Clear annotations");
+            foreach(var annotation in GetAnnotations().ToList()) {
+                RemoveAnnotation(annotation);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Annotations on the current Binding Info.</summary>
+        [Browsable(true),NoMultiselect,Category("Metadata"),Description("The collection of Annotations on the current Binding Info."),Editor(typeof(AnnotationCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearAnnotations))]
+		public AnnotationCollection Annotations { get; private set; }
+		///<summary>Gets the value of the annotation with the given index, assuming it exists.</summary>
+		[IntelliSense("Gets the value of the annotation with the given index, assuming it exists.")]
+		public string GetAnnotation(int index) {
+			return MetadataObject.Annotations[index].Value;
+		}
+		///<summary>Returns true if an annotation with the given name exists. Otherwise false.</summary>
+		[IntelliSense("Returns true if an annotation with the given name exists. Otherwise false.")]
+		public bool HasAnnotation(string name) {
+		    return MetadataObject.Annotations.ContainsName(name);
+		}
+		///<summary>Gets the value of the annotation with the given name. Returns null if no such annotation exists.</summary>
+		[IntelliSense("Gets the value of the annotation with the given name. Returns null if no such annotation exists.")]
+		public string GetAnnotation(string name) {
+		    return HasAnnotation(name) ? MetadataObject.Annotations[name].Value : null;
+		}
+		///<summary>Sets the value of the annotation with the given index, assuming it exists.</summary>
+		[IntelliSense("Sets the value of the annotation with the given index, assuming it exists.")]
+		public void SetAnnotation(int index, string value) {
+		    SetAnnotation(index, value, true);
+		}
+		internal void SetAnnotation(int index, string value, bool undoable) {
+		    var name = MetadataObject.Annotations[index].Name;
+			SetAnnotation(name, value, undoable);
+		}
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+			SetAnnotation(index, value, undoable);
+		}
+		///<summary>Returns a unique name for a new annotation.</summary>
+		public string GetNewAnnotationName() {
+			return MetadataObject.Annotations.GetNewName(TabularNamedObject.GetNewName<Annotation>());
+		}
+		///<summary>Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.</summary>
+		[IntelliSense("Sets the value of the annotation having the given name. If no such annotation exists, it will be created. If value is set to null, the annotation will be removed.")]
+		public void SetAnnotation(string name, string value) {
+		    SetAnnotation(name, value, true);
+		}
+		internal void SetAnnotation(string name, string value, bool undoable) {
+			if(name == null) name = GetNewAnnotationName();
+
+			if(value == null) {
+				// Remove annotation if set to null:
+				RemoveAnnotation(name, undoable);
+				return;
+			}
+
+			if(undoable) {
+ 				if(GetAnnotation(name) == value) return;
+				bool undoable2 = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + value, ref undoable2, ref cancel);
+				if (cancel) return;
+			}
+
+			if(MetadataObject.Annotations.Contains(name)) {
+				// Change existing annotation:
+
+				var oldValue = GetAnnotation(name);
+				MetadataObject.Annotations[name].Value = value;
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, name + ":" + value);
+				}
+			} else {
+				// Add new annotation:
+
+				MetadataObject.Annotations.Add(new TOM.Annotation{ Name = name, Value = value });
+				if (undoable) {
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, value, null));
+					OnPropertyChanged(Properties.ANNOTATIONS, null, name + ":" + value);
+				}
+			}
+		}
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+			this.SetAnnotation(name, value, undoable);
+		}
+		///<summary>Remove an annotation by the given name.</summary>
+		[IntelliSense("Remove an annotation by the given name.")]
+		public void RemoveAnnotation(string name) {
+		    RemoveAnnotation(name, true);
+		}
+		internal void RemoveAnnotation(string name, bool undoable) {
+			if(MetadataObject.Annotations.Contains(name)) {
+				if(undoable) 
+				{
+				    bool undoable2 = true;
+				    bool cancel = false;
+				    OnPropertyChanging(Properties.ANNOTATIONS, name + ":" + GetAnnotation(name), ref undoable2, ref cancel);
+				    if (cancel) return;
+				}
+
+			    var oldValue = MetadataObject.Annotations[name].Value;
+				MetadataObject.Annotations.Remove(name);
+
+				if (undoable) 
+				{
+					Handler.UndoManager.Add(new UndoAnnotationAction(this, name, null, oldValue));
+					OnPropertyChanged(Properties.ANNOTATIONS, name + ":" + oldValue, null);
+			    }
+			}
+		}
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+			this.RemoveAnnotation(name, undoable);
+		}
+		///<summary>Gets the number of annotations on the current Binding Info.</summary>
+		[IntelliSense("Gets the number of annotations on the current Binding Info.")]
+		public int GetAnnotationsCount() {
+			return MetadataObject.Annotations.Count;
+		}
+		///<summary>Gets a collection of all annotation names on the current Binding Info.</summary>
+		[IntelliSense("Gets a collection of all annotation names on the current Binding Info.")]
+		public IEnumerable<string> GetAnnotations() {
+			return MetadataObject.Annotations.Select(a => a.Name);
+		}
+
+		        private bool CanClearExtendedProperties() => GetExtendedPropertyCount() > 0;
+        ///<summary>Removes all Extended Properties from this object.</summary>
+        [IntelliSense("Removes all Extended Properties from this object.")]
+        public void ClearExtendedProperties()
+        {
+            Handler.BeginUpdate("Clear extended properties");
+            foreach(var extendedProperty in GetExtendedProperties().ToList()) {
+                RemoveExtendedProperty(extendedProperty);
+            }
+            Handler.EndUpdate();
+        }
+
+		///<summary>The collection of Extended Properties on the current Binding Info.</summary>
+        [DisplayName("Extended Properties"),NoMultiselect,Category("Metadata"),Description("The collection of Extended Properties on the current Binding Info."),Editor(typeof(ExtendedPropertyCollectionEditor), typeof(UITypeEditor))]
+        [PropertyAction(nameof(ClearExtendedProperties))]
+		public ExtendedPropertyCollection ExtendedProperties { get; private set; }
+
+		///<summary>Returns true if an ExtendedProperty with the given name exists. Otherwise false.</summary>
+		[IntelliSense("Returns true if an ExtendedProperty with the given name exists. Otherwise false.")]
+		public bool HasExtendedProperty(string name) {
+		    return MetadataObject.ExtendedProperties.ContainsName(name);
+		}
+		///<summary>Gets the type of the ExtendedProperty with the given index, assuming it exists.</summary>
+		public ExtendedPropertyType GetExtendedPropertyType(int index) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[index].Type;
+		}
+		///<summary>Gets the type of the ExtendedProperty with the given name, assuming it exists.</summary>
+		public ExtendedPropertyType GetExtendedPropertyType(string name) {
+			return (ExtendedPropertyType)MetadataObject.ExtendedProperties[name].Type;
+		}
+		///<summary>Gets the value of the ExtendedProperty with the given index, assuming it exists.</summary>
+		public string GetExtendedProperty(int index) {
+			var ep = MetadataObject.ExtendedProperties[index];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		///<summary>Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.</summary>
+		[IntelliSense("Gets the value of the ExtendedProperty with the given name. Returns null if no such ExtendedProperty exists.")]
+		public string GetExtendedProperty(string name) {
+		    if(!HasExtendedProperty(name)) return null;
+			var ep = MetadataObject.ExtendedProperties[name];
+			return ep.Type == TOM.ExtendedPropertyType.Json ? (ep as TOM.JsonExtendedProperty).Value : (ep as TOM.StringExtendedProperty).Value;
+		}
+		///<summary>Sets the value of the ExtendedProperty with the given index, optionally specifiying the type (string or JSON) of the ExtendedProperty.</summary>
+		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
+			SetExtendedProperty(index, value, type, true);
+		}
+		void IExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+			SetExtendedProperty(index, value, type, undoable);
+		}
+		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+			var name = MetadataObject.ExtendedProperties[index].Name;
+			SetExtendedProperty(name, value, type, undoable);
+		}
+		///<summary>Returns a unique name for a new ExtendedProperty.</summary>
+		public string GetNewExtendedPropertyName() {
+			return MetadataObject.ExtendedProperties.GetNewName(TabularNamedObject.GetNewName<ExtendedProperty>());
+		}
+		///<summary>Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.</summary>
+		[IntelliSense("Sets the value of the ExtendedProperty having the given name. If no such ExtendedProperty exists, it will be created. If value is set to null, the ExtendedProperty will be removed.")]
+		public void SetExtendedProperty(string name, string value, ExtendedPropertyType type) {
+			SetExtendedProperty(name, value, type, true);
+		}
+		internal void SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+			if(name == null) name = GetNewExtendedPropertyName();
+
+			if(value == null) {
+				// Remove ExtendedProperty if set to null:
+				RemoveExtendedProperty(name);
+				return;
+			}
+
+			if(GetExtendedProperty(name) == value) return;
+			if(undoable) {
+				bool cancel = false;
+				OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + value, ref undoable, ref cancel);
+				if (cancel) return;
+			}
+
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Change existing ExtendedProperty:
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				var ep = MetadataObject.ExtendedProperties[name];
+				if (ep is TOM.JsonExtendedProperty)
+					(ep as TOM.JsonExtendedProperty).Value = value;
+				else 
+					(ep as TOM.StringExtendedProperty).Value = value;
+					
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, name + ":" + value);
+			} else {
+				// Add new ExtendedProperty:
+				if (type == ExtendedPropertyType.Json)
+					MetadataObject.ExtendedProperties.Add(new TOM.JsonExtendedProperty{ Name = name, Value = value });
+				else
+					MetadataObject.ExtendedProperties.Add(new TOM.StringExtendedProperty{ Name = name, Value = value });
+
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, value, null, type));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
+			}
+		}
+		void IExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+			this.SetExtendedProperty(name, value, type, undoable);
+		}
+
+		///<summary>Remove an ExtendedProperty by the given name.</summary>
+		[IntelliSense("Remove an ExtendedProperty by the given name.")]
+		public void RemoveExtendedProperty(string name) {
+			RemoveExtendedProperty(name, true);
+		}
+
+		internal void RemoveExtendedProperty(string name, bool undoable) {
+			if(MetadataObject.ExtendedProperties.Contains(name)) {
+				// Get current value:
+				if(undoable) {
+					bool cancel = false;
+					OnPropertyChanging(Properties.EXTENDEDPROPERTIES, name + ":" + GetExtendedProperty(name), ref undoable, ref cancel);
+					if (cancel) return;
+				}
+
+				var oldValue = GetExtendedProperty(name);
+				var oldType = GetExtendedPropertyType(name);
+				MetadataObject.ExtendedProperties.Remove(name);
+
+				// Undo-handling:
+				if (undoable) Handler.UndoManager.Add(new UndoExtendedPropertyAction(this, name, null, oldValue, oldType));
+				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
+			}
+		}
+		void IExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+			this.RemoveExtendedProperty(name, undoable);
+		}
+		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
+		[IntelliSense("Gets the number of ExtendedProperties on the current object.")]
+		public int GetExtendedPropertyCount() {
+			return MetadataObject.ExtendedProperties.Count;
+		}
+		///<summary>Gets a collection of all ExtendedProperty names on the current object.</summary>
+		[IntelliSense("Gets a collection of all ExtendedProperty names on the current object.")]
+		public IEnumerable<string> GetExtendedProperties() {
+			return MetadataObject.ExtendedProperties.Select(a => a.Name);
+		}
+
+		/// <summary>
+///             The description of the object, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.
+///             </summary>
+		[DisplayName("Description")]
+		[Category("Basic"),Description(@"The description of the object, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio."),IntelliSense(@"The description of the object, visible to developers at design time and to administrators in management tools, such as SQL Server Management Studio.")][Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		public string Description {
+			get {
+			    return MetadataObject.Description;
+			}
+			set {
+				
+				var oldValue = Description;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.DESCRIPTION, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.Description = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DESCRIPTION, oldValue, newValue));
+				OnPropertyChanged(Properties.DESCRIPTION, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeDescription() { return false; }
+/// <summary>
+///             The type of object. The default type is Unknown. Currently, the only valid type is DataBindingHint, which means that the binding info is an unenforceable instruction (a hint) to bind a data source reference in the model to a data connection in Fabric.
+///             </summary>
+		[DisplayName("Type")]
+		[Category("Options"),Description(@"The type of object. The default type is Unknown. Currently, the only valid type is DataBindingHint, which means that the binding info is an unenforceable instruction (a hint) to bind a data source reference in the model to a data connection in Fabric."),IntelliSense(@"The type of object. The default type is Unknown. Currently, the only valid type is DataBindingHint, which means that the binding info is an unenforceable instruction (a hint) to bind a data source reference in the model to a data connection in Fabric.")]
+		public BindingInfoType Type {
+			get {
+			    return (BindingInfoType)MetadataObject.Type;
+			}
+			set {
+				
+				var oldValue = Type;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.TYPE, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.Type = (TOM.BindingInfoType)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.TYPE, oldValue, newValue));
+				OnPropertyChanged(Properties.TYPE, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeType() { return false; }
+
+	
+        internal override void RenewMetadataObject()
+        {
+            Handler.WrapperLookup.Remove(MetadataObject);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.BindingInfo>(json);
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+		///<summary>The parent Model of the current Binding Info.</summary>
+		public Model Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
+			}
+		}
+
+
+
+		/// <summary>
+		/// CTOR - only called from static factory methods on the class
+		/// </summary>
+		protected BindingInfo(TOM.BindingInfo metadataObject) : base(metadataObject)
+		{
+			
+			// Create indexer for annotations:
+			Annotations = new AnnotationCollection(this);
+			
+			// Create indexer for extended properties:
+			ExtendedProperties = new ExtendedPropertyCollection(this);
+		}
+
+
+
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
+			Reinit();
+			ReapplyReferences();
+		}
+		internal override bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
+			if(!base.Browsable(propertyName)) return false;
+
+			switch (propertyName) {
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.PARENT:
+					return false;
+				
+				default:
+					return true;
+			}
+		}
+
+    }
+
+
+	/// <summary>
+	/// Collection class for BindingInfo. Provides convenient properties for setting a property on multiple objects at once.
+	/// </summary>
+	public sealed partial class BindingInfoCollection: TabularNamedObjectCollection<BindingInfo>
+	{
+		internal Model Model { get { return Parent as Model; } }
+		TOM.BindingInfoCollection TOM_Collection;
+		internal BindingInfoCollection(string collectionName, TOM.BindingInfoCollection metadataObjectCollection, Model parent) : base(collectionName, parent)
+		{
+			TOM_Collection = metadataObjectCollection;
+		}
+		internal override Type GetItemType() { return typeof(BindingInfo); }
+        internal override void TOM_Add(TOM.MetadataObject obj) { TOM_Collection.Add(obj as TOM.BindingInfo); }
+        internal override bool TOM_Contains(TOM.MetadataObject obj) { return TOM_Collection.Contains(obj as TOM.BindingInfo); }
+        internal override void TOM_Remove(TOM.MetadataObject obj) { TOM_Collection.Remove(obj as TOM.BindingInfo); }
+        internal override void TOM_Clear() { TOM_Collection.Clear(); }
+		internal override TOM.MetadataObject TOM_Get(int index) { return TOM_Collection[index]; }
+        internal override bool TOM_ContainsName(string name) { return TOM_Collection.ContainsName(name); }
+        internal override TOM.MetadataObject TOM_Get(string name) { return TOM_Collection[name]; }
+        internal override TOM.MetadataObject TOM_Find(string name) { return TOM_Collection.Find(name); }
+        internal override string GetNewName(string prefix = null) { return string.IsNullOrEmpty(prefix) ? TOM_Collection.GetNewName() : TOM_Collection.GetNewName(prefix); }
+        internal override int IndexOf(TOM.MetadataObject obj) { return TOM_Collection.IndexOf(obj as TOM.BindingInfo); }
+        /// <summary>The number of items in this collection.</summary>
+		public override int Count { get { return TOM_Collection.Count; } }
+		/// <summary>Returns an enumerator that iterates through the collection.</summary>
+        public override IEnumerator<BindingInfo> GetEnumerator() { return TOM_Collection.Select(h => Handler.WrapperLookup[h]).OfType<BindingInfo>().GetEnumerator(); }
+		internal override void Reinit() {
+			var ixOffset = 0;
+			for(int i = 0; i < Count; i++) {
+				var metadataObj = TOM_Get(i) as TOM.BindingInfo;
+				var item = Handler.WrapperLookup.TryGetValue(metadataObj, out var existingItem) ? existingItem as BindingInfo : CreateFromMetadata(metadataObj);
+				Handler.WrapperLookup.Remove(item.MetadataObject);
+				item.MetadataObject = Model.MetadataObject.BindingInfoCollection[i + ixOffset] as TOM.BindingInfo;
+				Handler.WrapperLookup.Add(item.MetadataObject, item);
+				item.Collection = this;
+			}
+			TOM_Collection = Model.MetadataObject.BindingInfoCollection;
+			foreach(var item in this) item.Reinit();
+		}
+
+		internal override void ReapplyReferences() {
+			foreach(var item in this) item.ReapplyReferences();
+		}
+
+		private BindingInfo CreateFromMetadata(TOM.BindingInfo obj)
+		{
+			if(obj is TOM.DataBindingHint databindinghintObj) return DataBindingHint.CreateFromMetadata(Model, databindinghintObj);
+            else throw new ArgumentException("Cannot create object", "obj");
+		}
+
+		/// <summary>
+		/// Calling this method will populate the BindingInfoCollection with objects based on the MetadataObjects in the corresponding MetadataObjectCollection.
+		/// </summary>
+		internal override void CreateChildrenFromMetadata()
+		{
+			// Construct child objects (they are automatically added to the Handler's WrapperLookup dictionary):
+			foreach(var obj in TOM_Collection)
+			{
+				CreateFromMetadata(obj);
+			}
+		}
+
+		/// <summary>
+		/// Sets the Description property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the Description property of all objects in the collection at once.")]
+		public string Description {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("Description"));
+				this.ToList().ForEach(item => { item.Description = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the Type property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the Type property of all objects in the collection at once.")]
+		public BindingInfoType Type {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("Type"));
+				this.ToList().ForEach(item => { item.Type = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+	}
+  
+	/// <summary>
+/// Represent as an unenforceable instruction (a hint) to bind a data source reference in the model to a data connection in Fabric. The hint is ignored if the data source is already bound or if the data connection does not exist in Fabric.
+/// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1608 or above.</remarks>
+	[TypeConverter(typeof(DynamicPropertyConverter))]
+	public sealed partial class DataBindingHint: BindingInfo
+			, IClonableObject
+	{
+	    internal new TOM.DataBindingHint MetadataObject 
+		{ 
+			get 
+			{ 
+				return base.MetadataObject as TOM.DataBindingHint; 
+		    } 
+			set 
+			{ 
+				base.MetadataObject = value; 
+			}
+		}
+
+/// <summary>
+///             The connection id of the data connection in Fabric that should be used to bind the referenced data source.
+///             </summary>
+		[DisplayName("Connection Id")]
+		[Category("Options"),Description(@"The connection id of the data connection in Fabric that should be used to bind the referenced data source."),IntelliSense(@"The connection id of the data connection in Fabric that should be used to bind the referenced data source.")]
+		public string ConnectionId {
+			get {
+			    return MetadataObject.ConnectionId;
+			}
+			set {
+				
+				var oldValue = ConnectionId;
+				var newValue = value?.Replace("\r", "");
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.CONNECTIONID, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.ConnectionId = newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.CONNECTIONID, oldValue, newValue));
+				OnPropertyChanged(Properties.CONNECTIONID, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeConnectionId() { return false; }
+
+		internal static DataBindingHint CreateFromMetadata(Model parent, TOM.DataBindingHint metadataObject) {
+			var obj = new DataBindingHint(metadataObject);
+			parent.BindingInfoCollection.Add(obj);
+			
+			obj.Init();
+
+			return obj;
+		}
+
+
+		/// <summary>
+		/// Creates a new DataBindingHint and adds it to the parent Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
+		/// </summary>
+		public static DataBindingHint CreateNew(Model parent, string name = null)
+		{
+			if(!parent.Handler.PowerBIGovernance.AllowCreate(typeof(DataBindingHint))) {
+				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(DataBindingHint).GetTypeName()));
+			}
+
+			var metadataObject = new TOM.DataBindingHint();
+			metadataObject.Name = parent.BindingInfoCollection.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(DataBindingHint).GetTypeName() : name);
+            InitMetadata(metadataObject, parent);
+            var obj = new DataBindingHint(metadataObject);
+
+			parent.BindingInfoCollection.Add(obj);
+			
+			obj.Init();
+
+			return obj;
+		}
+
+        static partial void InitMetadata(TOM.DataBindingHint metadataObject, Model parent);
+
+		/// <summary>
+		/// Creates a new DataBindingHint and adds it to the current Model.
+		/// Also creates the underlying metadataobject and adds it to the TOM tree.
+		/// </summary>		
+		public static DataBindingHint CreateNew(string name = null)
+		{
+			return CreateNew(TabularModelHandler.Singleton.Model, name);
+		}
+
+
+		/// <summary>
+		/// Creates an exact copy of this DataBindingHint object.
+		/// </summary>
+		[IntelliSense("Creates an exact copy of this DataBindingHint object.")]
+		public DataBindingHint Clone(string newName = null) {
+			if(!Handler.PowerBIGovernance.AllowCreate(this.GetType())) {
+				throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject,typeof(DataBindingHint).GetTypeName()));
+			}
+
+		    Handler.BeginUpdate("Clone DataBindingHint");
+
+			// Create a clone of the underlying metadataobject:
+			var tom = MetadataObject.Clone() as TOM.DataBindingHint;
+
+
+			// Assign a new, unique name:
+			tom.Name = Parent.BindingInfoCollection.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
+			// Create the TOM Wrapper object, representing the metadataobject
+			DataBindingHint obj = CreateFromMetadata(Parent, tom);
+
+            Handler.EndUpdate();
+
+            return obj;
+		}
+
+		TabularNamedObject IClonableObject.Clone(string newName, bool includeTranslations, TabularNamedObject newParent) 
+		{
+			if (newParent != null) throw new ArgumentException("This object can not be cloned to another parent. Argument newParent should be left as null.", "newParent");
+			return Clone(newName);
+		}
+
+	
+        internal override void RenewMetadataObject()
+        {
+            Handler.WrapperLookup.Remove(MetadataObject);
+            var json = TOM.JsonSerializer.SerializeObject(MetadataObject, RenewMetadataOptions, Handler.CompatibilityLevel, Handler.Database.CompatibilityMode);
+            MetadataObject = TOM.JsonSerializer.DeserializeObject<TOM.DataBindingHint>(json);
+            Handler.WrapperLookup.Add(MetadataObject, this);
+        }
+
+		///<summary>The parent Model of the current Data Binding Hint.</summary>
+		public new Model Parent { 
+			get {
+				return Handler.WrapperLookup[MetadataObject.Parent] as Model;
+			}
+		}
+
+
+
+		/// <summary>
+		/// CTOR - only called from static factory methods on the class
+		/// </summary>
+		DataBindingHint(TOM.DataBindingHint metadataObject) : base(metadataObject)
+		{
+		}
+
+
+
+		internal override void Undelete(ITabularObjectCollection collection, Type tomObjectType, string tomJson) {
+			base.Undelete(collection, tomObjectType, tomJson);
+			Reinit();
+			ReapplyReferences();
+		}
+		internal override sealed bool Browsable(string propertyName) {
+			// Allow custom overrides to hide a property regardless of its compatibility level requirements:
+			if(!base.Browsable(propertyName)) return false;
+
+			switch (propertyName) {
+
+				// Hide properties based on compatibility requirements (inferred from TOM):
+				case Properties.PARENT:
+					return false;
+				
+				default:
+					return true;
+			}
+		}
+
+    }
+
+  
+	/// <summary>
 /// Represents a user-defined function.
 /// </summary><remarks>This metadata object is only supported when the compatibility level of the database is at 1702 or above.</remarks>
 	[TypeConverter(typeof(DynamicPropertyConverter))]
@@ -17727,8 +18882,8 @@ namespace TabularEditor.TOMWrapper
 			, IDescriptionObject
 			, IExpressionObject
 			, ILineageTagObject
-			, IInternalAnnotationObject
-			, IInternalExtendedPropertyObject
+			, IAnnotationObject
+			, IExtendedPropertyObject
 			, IClonableObject
 	{
 	    internal new TOM.Function MetadataObject 
@@ -17783,7 +18938,7 @@ namespace TabularEditor.TOMWrapper
 		    var name = MetadataObject.Annotations[index].Name;
 			SetAnnotation(name, value, undoable);
 		}
-		void IInternalAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(int index, string value, bool undoable) {
 			SetAnnotation(index, value, undoable);
 		}
 		///<summary>Returns a unique name for a new annotation.</summary>
@@ -17831,7 +18986,7 @@ namespace TabularEditor.TOMWrapper
 				}
 			}
 		}
-		void IInternalAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
+		void IAnnotationObject.SetAnnotation(string name, string value, bool undoable) {
 			this.SetAnnotation(name, value, undoable);
 		}
 		///<summary>Remove an annotation by the given name.</summary>
@@ -17859,7 +19014,7 @@ namespace TabularEditor.TOMWrapper
 			    }
 			}
 		}
-		void IInternalAnnotationObject.RemoveAnnotation(string name, bool undoable) {
+		void IAnnotationObject.RemoveAnnotation(string name, bool undoable) {
 			this.RemoveAnnotation(name, undoable);
 		}
 		///<summary>Gets the number of annotations on the current Function.</summary>
@@ -17919,7 +19074,7 @@ namespace TabularEditor.TOMWrapper
 		public void SetExtendedProperty(int index, string value, ExtendedPropertyType type) {
 			SetExtendedProperty(index, value, type, true);
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
 			SetExtendedProperty(index, value, type, undoable);
 		}
 		internal void SetExtendedProperty(int index, string value, ExtendedPropertyType type, bool undoable) {
@@ -17974,7 +19129,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, null, name + ":" + value);
 			}
 		}
-		void IInternalExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
+		void IExtendedPropertyObject.SetExtendedProperty(string name, string value, ExtendedPropertyType type, bool undoable) {
 			this.SetExtendedProperty(name, value, type, undoable);
 		}
 
@@ -18002,7 +19157,7 @@ namespace TabularEditor.TOMWrapper
 				OnPropertyChanged(Properties.EXTENDEDPROPERTIES, name + ":" + oldValue, null);
 			}
 		}
-		void IInternalExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
+		void IExtendedPropertyObject.RemoveExtendedProperty(string name, bool undoable) {
 			this.RemoveExtendedProperty(name, undoable);
 		}
 		///<summary>Gets the number of ExtendedProperties on the current object.</summary>
@@ -18191,7 +19346,7 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Function();
             if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
-			metadataObject.Name = parent.Functions.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<Function>() : name);
+			metadataObject.Name = parent.Functions.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Function).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Function(metadataObject);
 
@@ -18233,8 +19388,7 @@ namespace TabularEditor.TOMWrapper
             }
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Functions.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.Functions.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			Function obj = CreateFromMetadata(Parent, tom);
 
@@ -18556,7 +19710,7 @@ namespace TabularEditor.TOMWrapper
 
 			var metadataObject = new TOM.Calendar();
             if(parent.Model.Database.CompatibilityLevel >= 1540) metadataObject.LineageTag = Guid.NewGuid().ToString();
-			metadataObject.Name = parent.Calendars.GetNewName(string.IsNullOrWhiteSpace(name) ? TabularNamedObject.GetNewName<Calendar>() : name);
+			metadataObject.Name = parent.Calendars.GetNewName(string.IsNullOrWhiteSpace(name) ? "New " + typeof(Calendar).GetTypeName() : name);
             InitMetadata(metadataObject, parent);
             var obj = new Calendar(metadataObject);
 
@@ -18589,8 +19743,7 @@ namespace TabularEditor.TOMWrapper
             }
 
 			// Assign a new, unique name:
-			tom.Name = Parent.Calendars.GetNewName(string.IsNullOrEmpty(newName) ? GetCopyName() : newName);
-				
+			tom.Name = Parent.Calendars.GetNewName(string.IsNullOrEmpty(newName) ? GetCloneName(tom.Name) : newName);
 			// Create the TOM Wrapper object, representing the metadataobject
 			Calendar obj = CreateFromMetadata(newParent ?? Parent, tom);
 

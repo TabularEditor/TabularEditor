@@ -187,17 +187,17 @@ namespace TabularEditor.TOMWrapper
 
         public void SetAnnotation(int index, string value, bool undoable = false)
         {
-            ((IInternalAnnotationObject)CalculationGroup).SetAnnotation(index, value, undoable);
+            ((IAnnotationObject)CalculationGroup).SetAnnotation(index, value, undoable);
         }
 
         public void SetAnnotation(string name, string value, bool undoable = false)
         {
-            ((IInternalAnnotationObject)CalculationGroup).SetAnnotation(name, value, undoable);
+            ((IAnnotationObject)CalculationGroup).SetAnnotation(name, value, undoable);
         }
 
         public void RemoveAnnotation(string name, bool undoable = false)
         {
-            ((IInternalAnnotationObject)CalculationGroup).RemoveAnnotation(name, undoable);
+            ((IAnnotationObject)CalculationGroup).RemoveAnnotation(name, undoable);
         }
 
         public bool HasAnnotation(string name)
@@ -222,17 +222,17 @@ namespace TabularEditor.TOMWrapper
 
         public void SetAnnotation(int index, string value)
         {
-            ((IInternalAnnotationObject)CalculationGroup).SetAnnotation(index, value);
+            ((IAnnotationObject)CalculationGroup).SetAnnotation(index, value);
         }
 
         public void SetAnnotation(string name, string value)
         {
-            ((IInternalAnnotationObject)CalculationGroup).SetAnnotation(name, value);
+            ((IAnnotationObject)CalculationGroup).SetAnnotation(name, value);
         }
 
         public void RemoveAnnotation(string name)
         {
-            ((IInternalAnnotationObject)CalculationGroup).RemoveAnnotation(name);
+            ((IAnnotationObject)CalculationGroup).RemoveAnnotation(name);
         }
 
         public int GetAnnotationsCount()

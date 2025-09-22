@@ -306,9 +306,10 @@ partial class Rules {
 				case "FromColumn":
 				case "ToColumn":
 				case "ParameterValuesColumn":
-				case "DataCoverageDefinition":
 				case "KPI":
+				case "QueryGroup":
 				case "DefaultMeasure":
+				case "DataCoverageDefinition":
 				    resolveObject = "value?.MetadataObject";
 					break;
 			}
@@ -459,6 +460,8 @@ partial class Rules {
 		if(propertyName == "DefaultColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
 		if(propertyName == "DefaultHierarchy") return "[TypeConverter(typeof(AllHierarchyConverter))]";
 		if(propertyName == "Relationship") return "[TypeConverter(typeof(AllRelationshipConverter))]";
+		if(propertyName == "QueryGroup") return "[TypeConverter(typeof(QueryGroupConverter)),Editor(typeof(CustomDialogEditor), typeof(System.Drawing.Design.UITypeEditor))]";
+		if(propertyName == "QueryGroups") return "[Editor(typeof(ClonableObjectCollectionEditor<QueryGroup>),typeof(UITypeEditor))]";
 		if(propertyName == "ToColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
 		if(propertyName == "FromColumn") return "[TypeConverter(typeof(AllColumnConverter))]";
 		if(className == "Level" && propertyName == "Hierarchy") return "[Browsable(false)]";
@@ -480,6 +483,7 @@ partial class Rules {
 		if(propertyName == "Cultures") return "[Editor(typeof(TabularEditor.PropertyGridUI.CultureCollectionEditor),typeof(UITypeEditor)),TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Roles") return "[Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<ModelRole>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Expressions") return "[Editor(typeof(TabularEditor.PropertyGridUI.ClonableObjectCollectionEditor<NamedExpression>), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]";
+		if(propertyName == "BindingInfoCollection") return "[Editor(typeof(BindingInfoCollectionEditor), typeof(UITypeEditor)), TypeConverter(typeof(StringConverter))]";
 		if(propertyName == "Sets") return "[NoMultiselect(),Editor(typeof(SetCollectionEditor),typeof(UITypeEditor))]";
 		if(propertyName == "Partitions") return "[NoMultiselect(),Editor(typeof(PartitionCollectionEditor),typeof(UITypeEditor))]";
 		if(propertyName == "Variations") return "[NoMultiselect(),Editor(typeof(VariationCollectionEditor),typeof(UITypeEditor))]";
@@ -576,7 +580,10 @@ partial class Rules {
 	   { "CalculationGroup", "TabularObject" },
 	   { "CalculationItem", "TabularNamedObject" },
 	   { "TablePermission", "TabularNamedObject" },
+	   { "QueryGroup", "TabularNamedObject" },
 	   { "DataCoverageDefinition", "TabularObject" },
+	   { "BindingInfo", "TabularNamedObject" },
+	   { "DataBindingHint", "BindingInfo" },
 	   { "Function", "TabularNamedObject" },
 	   { "Calendar", "TabularNamedObject" }
    };
@@ -617,6 +624,8 @@ partial class Rules {
 	   { "NamedExpression", "Expressions" },
 	   { "CalculationItem", "CalculationItems" },
 	   { "TablePermission", "TablePermissions" },
+	   { "QueryGroup", "QueryGroups" },
+	   { "BindingInfo", "BindingInfoCollection" },
 	   { "Function", "Functions" }
    };
    public static Dictionary<Type, string> Collections = Convert(_objectCollections).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
@@ -627,6 +636,7 @@ partial class Rules {
 		   case "ModelRoleMember": return "Members";
 		   case "Hierarchy": return "Hierarchies";
 		   case "NamedExpression": return "Expressions";
+		   case "BindingInfo": return "BindingInfoCollection";
 		   default: return itemType.Name + "s";
        }
    }
@@ -641,6 +651,8 @@ partial class Rules {
        { new KeyValuePair<string, string>("Table", "Model") },
 	   { new KeyValuePair<string, string>("Relationship", "Model") },
 	   { new KeyValuePair<string, string>("NamedExpression", "Model") },
+	   { new KeyValuePair<string, string>("QueryGroup", "Model") },
+	   { new KeyValuePair<string, string>("BindingInfo", "Model") },
 	   { new KeyValuePair<string, string>("Function", "Model") },
 
 	   // Collections owned by a Table (order of items matters, as this is the order in which child objects will be initialized):

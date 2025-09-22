@@ -12,30 +12,6 @@ namespace TabularEditor.TOMWrapper
             return obj;
         }
 
-        /// <summary>
-        /// Creates a new WindowsModelRoleMember and adds it to the parent ModelRole.
-        /// Also creates the underlying metadataobject and adds it to the TOM tree.
-        /// </summary>
-        public static WindowsModelRoleMember CreateNew(ModelRole parent, string name, string memberId)
-        {
-            if (!parent.Handler.PowerBIGovernance.AllowCreate(typeof(WindowsModelRoleMember)))
-            {
-                throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject, typeof(WindowsModelRoleMember).GetTypeName()));
-            }
-
-            var metadataObject = new TOM.WindowsModelRoleMember();
-            metadataObject.MemberName = name;
-            metadataObject.MemberID = memberId;
-
-            var obj = new WindowsModelRoleMember(metadataObject);
-
-            parent.Members.Add(obj);
-
-            obj.Init();
-
-            return obj;
-        }
-
     }
 
     public partial class ExternalModelRoleMember
@@ -51,16 +27,14 @@ namespace TabularEditor.TOMWrapper
         /// Creates a new ExternalModelRoleMember and adds it to the parent ModelRole.
         /// Also creates the underlying metadataobject and adds it to the TOM tree.
         /// </summary>
-        public static ExternalModelRoleMember CreateNew(ModelRole parent, string name, string identityProvider)
+        public static ExternalModelRoleMember CreateNew(ModelRole parent, string name, string identityProvider, string memberId)
         {
-            if (!parent.Handler.PowerBIGovernance.AllowCreate(typeof(ExternalModelRoleMember)))
-            {
-                throw new InvalidOperationException(string.Format(Messages.CannotCreatePowerBIObject, typeof(ExternalModelRoleMember).GetTypeName()));
-            }
+            if (!parent.Handler.PowerBIGovernance.AllowCreate(typeof(ExternalModelRoleMember))) throw new InvalidOperationException(string.Format("Adding a {0} to a Power BI Semantic Model is not allowed.", typeof(ExternalModelRoleMember).GetTypeName()));
 
             var metadataObject = new TOM.ExternalModelRoleMember();
             metadataObject.IdentityProvider = identityProvider;
             metadataObject.MemberName = name;
+            metadataObject.MemberID = memberId;
             var obj = new ExternalModelRoleMember(metadataObject);
 
             parent.Members.Add(obj);

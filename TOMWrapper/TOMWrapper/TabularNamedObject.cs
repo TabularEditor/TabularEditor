@@ -51,12 +51,9 @@ namespace TabularEditor.TOMWrapper
 
             return "New " + type.GetTypeName();
         }
-        internal string GetCopyName()
-        {
-            if (this is Function)
-                // Spaces are not allowed in Function names:
-                return Name + "Copy";
 
+        private protected virtual string GetCloneName(string orgName)
+        {
             return Name + " Copy";
         }
 
