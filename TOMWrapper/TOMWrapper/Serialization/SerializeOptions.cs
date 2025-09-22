@@ -72,7 +72,7 @@ namespace TabularEditor.TOMWrapper.Serialization
         public bool ShouldSerializeAlsoSaveAsBim() => AlsoSaveAsBim;
         public bool LocalTranslations = false;
         public bool LocalPerspectives = false;
-        public bool SortArrays = true;
+        public bool SortArrays = false;
         public bool LocalRelationships = false;
 
         public bool IncludeSensitive { get; set; } = false;

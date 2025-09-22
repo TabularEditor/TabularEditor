@@ -12,46 +12,46 @@ namespace TOMWrapperTest.RegressionTests.v2_7_4
         #region Model.bim metadata
         const string DatabaseJson = """
             {
-                "name": "SemanticModel",
-                "compatibilityLevel": 1200,
-                "model": {
+              "name": "SemanticModel",
+              "compatibilityLevel": 1200,
+              "model": {
                 "tables": [
-                    {
+                  {
                     "name": "NewTable",
                     "partitions": [
-                        {
+                      {
                         "name": "NewTable",
                         "mode": "import",
                         "source": {
-                            "type": "calculated"
+                          "type": "calculated"
                         }
-                        }
+                      }
                     ],
                     "measures": [
-                        {
+                      {
                         "name": "Measure1",
                         "expression": "123",
                         "annotations": [
-                            {
+                          {
                             "name": "TabularEditor_TranslatedNames",
                             "value": "{\"da-DK\":\"Measure1DK\",\"en-US\":\"Measure1US\"}"
-                            }
+                          }
                         ]
-                        }
+                      }
                     ]
-                    }
+                  }
                 ],
                 "annotations": [
-                    {
+                  {
                     "name": "TabularEditor_SerializeOptions",
-                    "value": "{\"IgnoreInferredObjects\":true,\"IgnoreInferredProperties\":true,\"IgnoreTimestamps\":true,\"SplitMultilineStrings\":true,\"PrefixFilenames\":false,\"LocalTranslations\":true,\"LocalPerspectives\":false,\"LocalRelationships\":false,\"Levels\":[]}"
-                    },
-                    {
+                    "value": "{\"IgnoreInferredObjects\":true,\"IgnoreInferredProperties\":true,\"IgnoreTimestamps\":true,\"SplitMultilineStrings\":true,\"PrefixFilenames\":false,\"LocalTranslations\":true,\"LocalPerspectives\":false,\"SortArrays\":false,\"LocalRelationships\":false,\"Levels\":[]}"
+                  },
+                  {
                     "name": "TabularEditor_Cultures",
                     "value": "[\"da-DK\",\"en-US\"]"
-                    }
+                  }
                 ]
-                }
+              }
             }
             """;
         #endregion
