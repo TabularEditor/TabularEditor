@@ -112,7 +112,7 @@ namespace TabularEditor.UI
     /// menu items to be visible under several contexts, which is why the enum is treated as Flags.
     /// </summary>
     [Flags]
-    public enum Context
+    public enum Context: long
     {
         /// <summary>
         /// Nothing selected in the tree
@@ -236,17 +236,24 @@ namespace TabularEditor.UI
         CalculationItemCollection = 1 << 26,
 
         /// <summary>
+        /// Context menu opened on a "Function" object
+        /// </summary>
+        Function = 1 << 27,
+
+        /// <summary>
         /// Special context for actions that can be executed regardless of the current selection,
         /// but where the action should show up in the "Tools" menu only.
         /// </summary>
         Tool = 1 << 28,
 
-        Function = 1 << 29,
-        Functions = 1 << 30,
+        Calendar = 1 << 29,
+        CalendarCollection = 1 << 30,
+
+        Functions = 1L << 31,
 
         Everywhere = 0x7FFFFFFF,
         TableObject = Measure | Column | Hierarchy,
-        SingularObjects = Model | Table | TableObject | Level | Partition | Relationship | DataSource | Role | TablePermission | Perspective | Translation | KPI | Expression | CalculationGroupTable | CalculationItem | Function,
+        SingularObjects = Model | Table | TableObject | Level | Partition | Relationship | DataSource | Role | TablePermission | Perspective | Translation | KPI | Expression | CalculationGroupTable | CalculationItem | Function | Calendar,
         Groups = Tables | Relationships | DataSources | Roles | Perspectives | Translations | Expressions | Functions,
         DataObjects = CalculationGroupTable | Table | TableObject,
         Scriptable = CalculationGroupTable | Table | Partition | DataSource | Role
@@ -296,6 +303,8 @@ namespace TabularEditor.UI
             var obj = node.Tag as ITabularNamedObject;
             switch (obj.ObjectType)
             {
+                case ObjectType.CalendarCollection: return Context.CalendarCollection;
+                case ObjectType.Calendar: return Context.Calendar;
                 case ObjectType.PartitionCollection: return Context.PartitionCollection;
                 case ObjectType.Expression: return Context.Expression;
                 case ObjectType.Model: return Context.Model;
@@ -380,6 +389,7 @@ namespace TabularEditor.UI
             DataColumns = new UISelectionList<DataColumn>(this.OfType<DataColumn>());
             Tables = new UISelectionList<Table>(this.OfType<Table>());
             Partitions = new UISelectionList<Partition>(this.OfType<Partition>());
+            Calendars = new UISelectionList<Calendar>(this.OfType<Calendar>());
         }
 
         private T One<T>() where T: TabularObject
@@ -513,6 +523,12 @@ namespace TabularEditor.UI
 
         [IntelliSense("The currently selected partition.")]
         public Partition Partition { get { return One<Partition>(); } }
+
+        [IntelliSense("All currently selected calendars.")]
+        public UISelectionList<Calendar> Calendars { get; private set; }
+
+        [IntelliSense("The currently selected calendar.")]
+        public Calendar Calendar { get { return One<Calendar>(); } }
 
 
         [IntelliSense("The currently selected perspective in Tabular Editor.")]
