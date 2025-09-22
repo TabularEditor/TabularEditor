@@ -65,3 +65,4 @@
 /sign-installer.ps1
 bin/
 obj/
+*.runsettings
