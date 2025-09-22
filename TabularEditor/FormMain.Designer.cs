@@ -1,4 +1,4 @@
-﻿namespace TabularEditor
+namespace TabularEditor
 {
     partial class FormMain
     {
@@ -36,6 +36,7 @@
             this.actToggleOrderByName = new TabularEditor.UI.UIModelAction();
             this.actToggleMeasures = new TabularEditor.UI.UIModelAction();
             this.actTogglePartitions = new TabularEditor.UI.UIModelAction();
+            this.actToggleCalendars = new TabularEditor.UI.UIModelAction();
             this.actToggleColumns = new TabularEditor.UI.UIModelAction();
             this.actToggleHierarchies = new TabularEditor.UI.UIModelAction();
             this.actToggleInfoColumns = new TabularEditor.UI.UIModelAction();
@@ -146,6 +147,7 @@
             this.toolStripButton15 = new System.Windows.Forms.ToolStripButton();
             this.goToDefinitionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton16 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton17 = new System.Windows.Forms.ToolStripButton();
             this.bestPracticeAnalyzerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.longFormatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.shortFormatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -281,6 +283,7 @@
             actionsMain.Actions.Add(this.actToggleOrderByName);
             actionsMain.Actions.Add(this.actToggleMeasures);
             actionsMain.Actions.Add(this.actTogglePartitions);
+            actionsMain.Actions.Add(this.actToggleCalendars);
             actionsMain.Actions.Add(this.actToggleColumns);
             actionsMain.Actions.Add(this.actToggleHierarchies);
             actionsMain.Actions.Add(this.actToggleInfoColumns);
@@ -383,6 +386,17 @@
             this.actTogglePartitions.Text = "&Partitions";
             this.actTogglePartitions.ToolTipText = "Show/hide partitions (Ctrl+6)";
             this.actTogglePartitions.Execute += new System.EventHandler(this.actViewOptions_Execute);
+            // 
+            // actToggleCalendars
+            // 
+            this.actToggleCalendars.Checked = true;
+            this.actToggleCalendars.CheckOnClick = true;
+            this.actToggleCalendars.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.actToggleCalendars.Enabled = false;
+            this.actToggleCalendars.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D7)));
+            this.actToggleCalendars.Text = "C&alendars";
+            this.actToggleCalendars.ToolTipText = "Show/hide calendars (Ctrl+7)";
+            this.actToggleCalendars.Execute += new System.EventHandler(this.actViewOptions_Execute);
             // 
             // actToggleColumns
             // 
@@ -1540,6 +1554,21 @@
             this.toolStripButton16.Text = "&Partitions";
             this.toolStripButton16.ToolTipText = "Show/hide partitions (Ctrl+6)";
             // 
+            // toolStripButton17
+            // 
+            actionsMain.SetAction(this.toolStripButton17, this.actToggleCalendars);
+            this.toolStripButton17.AutoToolTip = false;
+            this.toolStripButton17.Checked = true;
+            this.toolStripButton17.CheckOnClick = true;
+            this.toolStripButton17.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.toolStripButton17.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton17.Enabled = false;
+            this.toolStripButton17.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton17.Name = "toolStripButton17";
+            this.toolStripButton17.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton17.Text = "C&alendars";
+            this.toolStripButton17.ToolTipText = "Show/hide calendars (Ctrl+7)";
+            // 
             // bestPracticeAnalyzerToolStripMenuItem
             // 
             actionsMain.SetAction(this.bestPracticeAnalyzerToolStripMenuItem, this.actOpenBPA);
@@ -1843,6 +1872,7 @@
             this.tbShowColumns,
             this.tbShowHierarchies,
             this.toolStripButton16,
+            this.toolStripButton17,
             this.toolStripSeparator2,
             this.tbShowDisplayFolders,
             this.tbShowHidden,
@@ -2873,6 +2903,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem11;
         private System.Windows.Forms.ToolStripButton toolStripButton16;
         public UI.UIModelAction actTogglePartitions;
+        private System.Windows.Forms.ToolStripButton toolStripButton17;
+        public UI.UIModelAction actToggleCalendars;
         private System.Windows.Forms.ToolStripStatusLabel lblBpaRules;
         private System.Windows.Forms.ToolStripMenuItem manageBPARulesToolStripMenuItem;
         public UI.UIModelAction actOpenBPA;

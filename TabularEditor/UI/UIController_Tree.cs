@@ -1,4 +1,4 @@
-﻿using Aga.Controls.Tree;
+using Aga.Controls.Tree;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -468,31 +468,10 @@ namespace TabularEditor.UI
             TreeModel.OnStructureChanged();
             if (FilterEnabled && TreeModel.FilterMode == FilterMode.Child)
                 UI.TreeView.ExpandAll();
-            
-            /*
-            // Regular name filtering:
-            if (string.IsNullOrEmpty(filter) || !filter.StartsWith(":"))
-            {
-                TreeModel.Filter = filter;
-                TreeModel.FilterMode = FilterMode.Parent;
-            }
-
-            // LINQ filter (filter string starts with ":"):
-            if (!string.IsNullOrEmpty(filter) && filter.StartsWith(":"))
-            {
-                EnableLinqMode(filter.Substring(1));
-            }
-            // LINQ filter removed (filter string empty or no longer starts with ":"):
-            else if ((string.IsNullOrEmpty(filter) || !filter.StartsWith(":")) && LinqMode)
-            {
-                DisableLinqMode();
-            }
-
-            CurrentFilter = filter;*/
         }
 
         public void SetDisplayOptions(bool showHidden, bool showDisplayFolders, bool showColumns, 
-            bool showMeasures, bool showHierarchies, bool showPartitions, bool showAllObjectTypes, bool orderByName, string filter = null)
+            bool showMeasures, bool showHierarchies, bool showPartitions, bool showCalendars, bool showAllObjectTypes, bool orderByName, string filter = null)
         {
             CurrentOptions = 
                 (showHidden ? LogicalTreeOptions.ShowHidden : 0) |
@@ -501,53 +480,16 @@ namespace TabularEditor.UI
                 (showMeasures ? LogicalTreeOptions.Measures : 0) |
                 (showHierarchies ? LogicalTreeOptions.Hierarchies : 0) |
                 (showPartitions ? LogicalTreeOptions.Partitions : 0) |
+                (showCalendars ? LogicalTreeOptions.Calendars : 0) |
                 (showAllObjectTypes ? LogicalTreeOptions.AllObjectTypes : 0) |
                 (orderByName ? LogicalTreeOptions.OrderByName : 0) |
                 LogicalTreeOptions.ShowRoot;
 
             if (TreeModel == null) return;
 
-            /*var cmp = (UI.TreeView.Model as SortedTreeModel)?.Comparer as TabularObjectComparer;
-            if(cmp != null)
-            {
-                cmp.Order = alphabeticalSort ? ObjectOrder.Alphabetical : ObjectOrder.Metadata;
-            }*/
-
             TreeModel.Options = CurrentOptions;
 
             InternalApplyFilter(filter);
         }
-
-        /*private void EnableLinqMode(string filter)
-        {
-            if (!LinqMode)
-            {
-                LinqMode = true;
-                var useInfoColumns = UI.TreeView.UseColumns;
-                UI.FormMain._colTable.IsVisible = true;
-                SetInfoColumns(true);
-            }
-            TreeModel.LinqFilter = filter;
-            UI.StatusLabel.Text = string.Format("Found {0} object{1} in {2} ms", 
-                TreeModel.FilterResultCount,
-                TreeModel.FilterResultCount == 1 ? "" : "s", 
-                TreeModel.FilterExecutionTime);
-        }
-
-        private void DisableLinqMode()
-        {
-            if (!LinqMode) return;
-
-            LinqMode = false;
-
-            UI.FormMain._colTable.IsVisible = false;
-            SetInfoColumns(Preferences.Current.View_MetadataInformation);
-
-            TreeModel.LinqFilter = null;
-            if(UI.TreeView.Root.Children.Count > 0)
-                UI.TreeView.Root.Children[0].Expand(); // TODO: Expand same as before
-        }
-
-        private bool LinqMode = false;*/
     }
 }
