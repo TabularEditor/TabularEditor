@@ -50,11 +50,12 @@ internal static class TabularConnection
     private static DbConnectionStringBuilder GetBuilder(string serverNameOrConnectionString, string applicationName, string databaseName, ProtocolFormat protocolFormat, InteractiveLogin interactiveLogin, IdentityMode identityMode)
     {
         var csb = GetBuilder(serverNameOrConnectionString, applicationName, protocolFormat, interactiveLogin, identityMode);
-        csb[InitialCatalogKey] = databaseName;
+        if(!string.IsNullOrEmpty(databaseName))
+            csb[InitialCatalogKey] = databaseName;
         return csb;
     }
 
-    public static string GetConnectionString(string serverNameOrConnectionString, string applicationName, string databaseName, ProtocolFormat protocolFormat = ProtocolFormat.Default, InteractiveLogin interactiveLogin = InteractiveLogin.Default, IdentityMode identityMode = IdentityMode.Default)
+    public static string GetConnectionString(string serverNameOrConnectionString, string applicationName, string databaseName = null, ProtocolFormat protocolFormat = ProtocolFormat.Default, InteractiveLogin interactiveLogin = InteractiveLogin.Default, IdentityMode identityMode = IdentityMode.Default)
         => GetBuilder(serverNameOrConnectionString, applicationName, databaseName, protocolFormat, interactiveLogin, identityMode).ToString();
 
     public static string GetConnectionString(string serverNameOrConnectionString, string applicationName, ProtocolFormat protocolFormat, InteractiveLogin interactiveLogin, IdentityMode identityMode, out string databaseName)

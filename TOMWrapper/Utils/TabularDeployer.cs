@@ -202,6 +202,13 @@ namespace TabularEditor.TOMWrapper.Utils
             }
         }
 
+        private static void ReplaceSharedExpressionsFromDestination(JObject sourceModel, TOM.Model destinationModel)
+        {
+            var sharedExpressions = new JArray();
+            sourceModel["expressions"] = sharedExpressions;
+            foreach (var sharedExpression in destinationModel.Expressions) sharedExpressions.Add(JObject.Parse(TOM.JsonSerializer.SerializeObject(sharedExpression)));
+        }
+
         private void ReplaceDataSourcesFromDestination(JObject sourceModel, TOM.Model destinationModel)
         {
             // Replace existing data sources with those in the target DB:
@@ -279,6 +286,8 @@ namespace TabularEditor.TOMWrapper.Utils
             {
                 model.CreateDummyPartitionOnIncrRefreshTables();
             }
+
+            if (db.CompatibilityLevel >= 1400 && !options.DeploySharedExpressions) ReplaceSharedExpressionsFromDestination(model, destDb.Model);
 
             return tmslJObj;
         }
@@ -429,6 +438,7 @@ namespace TabularEditor.TOMWrapper.Utils
         public bool DeployPartitions = false;
         public bool SkipRefreshPolicyPartitions = false;
         public bool DeployRoles = true;
+        public bool DeploySharedExpressions = false;
         public bool DeployRoleMembers = false;
         public bool ThrowIfEnterprise = false;
         public bool RemoveRoleMemberIds = false;
@@ -442,7 +452,7 @@ namespace TabularEditor.TOMWrapper.Utils
         /// <summary>
         /// Full deployment.
         /// </summary>
-        public static DeploymentOptions Full = new DeploymentOptions() { DeployConnections = true, DeployPartitions = true, DeployRoles = true, DeployRoleMembers = true, SkipRefreshPolicyPartitions = false };
+        public static DeploymentOptions Full = new DeploymentOptions() { DeployConnections = true, DeployPartitions = true, DeploySharedExpressions = true, DeployRoles = true, DeployRoleMembers = true, SkipRefreshPolicyPartitions = false };
 
         /// <summary>
         /// StructureOnly deployment. Does not overwrite roles or role members.
@@ -456,6 +466,7 @@ namespace TabularEditor.TOMWrapper.Utils
                 DeployMode = this.DeployMode,
                 DeployConnections = this.DeployConnections,
                 DeployPartitions = this.DeployPartitions,
+                DeploySharedExpressions = this.DeploySharedExpressions,
                 DeployRoleMembers = this.DeployRoleMembers,
                 DeployRoles = this.DeployRoles,
                 SkipRefreshPolicyPartitions = this.SkipRefreshPolicyPartitions,
