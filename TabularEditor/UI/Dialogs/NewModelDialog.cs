@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -30,7 +30,8 @@ namespace TabularEditor.UI.Dialogs
                     : comboBox1.SelectedIndex == 1 ? 1400
                     : comboBox1.SelectedIndex == 2 ? 1500
                     : comboBox1.SelectedIndex == 3 ? 1600
-                    : 1605;
+                    : comboBox1.SelectedIndex == 4 ? 1700
+                    : 1702;
             }
         }
         public bool PbiDatasetModel => comboBox1.SelectedIndex == 4;
