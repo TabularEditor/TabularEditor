@@ -62,6 +62,9 @@ namespace TabularEditor.UI.Actions
             // Import Table Wizard...:
             Add(new Action((s, m) => Governance.AllowCreate(typeof(DataColumn)) && s.DirectCount == 1 && s.DataSource is ProviderDataSource, (s, m) => ImportTablesWizard.ShowWizard(m, s.DataSource as ProviderDataSource), (s, m) => "Import Tables...", true, Context.DataSource));
 
+            // Import TMDL
+            Add(new Action((s, m) => true, ImportTmdl, (s, m) => "Import TMDL...", true, Context.Model | Context.Functions));
+
             // Apply Refresh Policy
             Add(new Action((s, m) => Governance.AllowCreate(typeof(Partition)) && s.DirectCount == 1 && s.Table.EnableRefreshPolicy, (s, m) => s.Table.ApplyRefreshPolicy(), (s, m) => "Apply Refresh Policy", true, Context.Table));
 
@@ -274,9 +277,6 @@ namespace TabularEditor.UI.Actions
                 sel.Rename(form.Pattern, form.ReplaceWith, form.RegEx, form.IncludeTranslations);
             }, (s, m) => "Batch Rename Children...", true, Context.DataObjects | Context.PartitionCollection, Keys.Shift | Keys.F2)
             { ToolTip = "Opens a dialog that lets you rename all children of the selected objects at once. Folders are not renamed, but objects inside folders are." });
-
-            // Import TMDL
-            Add(new Action((s, m) => true, ImportTmdl, (s, m) => "Import TMDL...", true, Context.Model | Context.Table | Context.Functions));
 
             // Delete Action
             Delete = new Action((s, m) => Governance.AllowDelete(s) && s.Count >= 1, 
