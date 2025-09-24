@@ -62,7 +62,7 @@ namespace TabularEditor.UI.Dialogs
         {
             if (_multiSelect)
             {
-                SelectedObjects = null;
+                SelectedObject = null;
                 if (listView1.SelectedIndices.Count > 0)
                 {
                     btnOK.Enabled = true;
@@ -71,7 +71,7 @@ namespace TabularEditor.UI.Dialogs
                 else
                 {
                     if (!_allowNoSelection) btnOK.Enabled = false;
-                    SelectedObject = null;
+                    SelectedObjects = Array.Empty<object>();
                 }
 
             }

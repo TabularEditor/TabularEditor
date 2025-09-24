@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TabularEditor.PropertyGridUI;
 using TabularEditor.Scripting;
 using TabularEditor.TOMWrapper;
 using TabularEditor.TOMWrapper.PowerBI;
@@ -71,6 +73,9 @@ namespace TabularEditor.UI.Actions
             // Schema check:
             Add(new Action((s, m) => Governance.AllowCreate(typeof(DataColumn)) && s.DirectCount == 1 && m.DataSources.Any(ds => ds.Type == DataSourceType.Provider) && s.DataSource is ProviderDataSource, (s, m) => ScriptHelper.SchemaCheck(s.DataSource as ProviderDataSource), (s, m) => "Refresh Table Metadata...", true, Context.DataSource));
             Add(new Action((s, m) => Governance.AllowCreate(typeof(DataColumn)) && s.DirectCount == 1 && m.DataSources.Any(ds => ds.Type == DataSourceType.Provider) && s.Partition.DataSource is ProviderDataSource, (s, m) => ScriptHelper.SchemaCheck(s.Partition), (s, m) => "Refresh Table Metadata...", true, Context.Partition));
+
+            // Edit column mappings:
+            Add(new Action((s, m) => s.DirectCount == 1, (s, m) => EditColumnMappings(s.Calendar), (s, m) => "Edit column mappings...", true, Context.Calendar));
 
             Add(new Separator());
 
@@ -367,6 +372,13 @@ namespace TabularEditor.UI.Actions
             if(mr == DialogResult.Cancel || string.IsNullOrEmpty(tmdlForm.Tmdl)) return;
 
             m.ImportTmdl(tmdlForm.Tmdl, new TmdlImportOptions { Replace = tmdlForm.Replace });
+        }
+
+        private void EditColumnMappings(Calendar c)
+        {
+            var editor = new CalendarColumnGroupCollectionEditor();
+            var context = TypeDescriptorHelper.GetContext(c, nameof(c.ColumnMappings));
+            editor.EditValue(context, context, c.ColumnMappings);
         }
 
         public static void SaveScriptToFile(string script)

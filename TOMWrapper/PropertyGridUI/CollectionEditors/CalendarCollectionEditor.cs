@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.Design;
 using TabularEditor.TOMWrapper;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
@@ -14,7 +15,7 @@ namespace TabularEditor.PropertyGridUI
     {
         public CalendarCollectionEditor(Type type) : base(type)
         {
-
+            
         }
 
         CalendarCollection Collection => Context.Instance as CalendarCollection ?? (Context.Instance as Table).Calendars;

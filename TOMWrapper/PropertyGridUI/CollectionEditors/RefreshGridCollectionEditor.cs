@@ -1,12 +1,14 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.Design;
 using TabularEditor.TOMWrapper;
 using TabularEditor.TOMWrapper.Utils;
 
@@ -21,9 +23,15 @@ namespace TabularEditor.PropertyGridUI
     {
         TabularModelHandler handler;
         bool cancelled = false;
-        protected bool Cancelled => cancelled;
+        protected internal bool Cancelled => cancelled;
         Type itemType = null;
         protected List<object> CurrentItems { get; private set; }
+
+        public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
+        {
+            var providerWrapper = new ServiceProviderWrapper(provider, this);
+            return base.EditValue(context, providerWrapper, value);
+        }
 
         public RefreshGridCollectionEditor(Type type) : base(typeof(IList))
         {
@@ -137,6 +145,39 @@ namespace TabularEditor.PropertyGridUI
             {
                 handler?.EndUpdate();
             }
+        }
+    }
+
+    class EditorServiceWrapper(IWindowsFormsEditorService baseEditorService, RefreshGridCollectionEditor collectionEditor): IWindowsFormsEditorService
+    {
+        public void CloseDropDown()
+        {
+            baseEditorService.CloseDropDown();
+        }
+        public void DropDownControl(Control control)
+        {
+            baseEditorService.DropDownControl(control);
+        }
+        public DialogResult ShowDialog(Form dialog)
+        {
+            // The default behavior of .ShowDialog is to return "DialogResult.Cancel", even if the user hit the "OK" button,
+            // when no properties on the edited object were changed. We want to override this behavior, because we also
+            // need to deal with read-only properties which may themselves be objects that could be modified.
+            var result = baseEditorService.ShowDialog(dialog);
+            if (collectionEditor.Cancelled) return DialogResult.Cancel;
+            return DialogResult.OK;
+        }
+    }
+
+    class ServiceProviderWrapper(IServiceProvider baseServiceProvider, RefreshGridCollectionEditor collectionEditor): IServiceProvider
+    {
+        public object GetService(Type serviceType)
+        {
+            if (serviceType == typeof(IWindowsFormsEditorService))
+            {
+                return new EditorServiceWrapper(baseServiceProvider.GetService(serviceType) as IWindowsFormsEditorService, collectionEditor);
+            }
+            return baseServiceProvider.GetService(serviceType);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
@@ -70,7 +70,20 @@ namespace TabularEditor.PropertyGridUI
             bool cancel;
             var newValue = CustomEditors.Edit(context.Instance, context.PropertyDescriptor.Name, value, out cancel);
             if (cancel) return value;
-            else return newValue;
+
+            if(context.PropertyDescriptor.IsReadOnly && value is ITabularObjectCollection collection && newValue is IEnumerable<object> typedNewValue)
+            {
+                // Manually add/remove items from the collection, instead of doing the default clear+add:
+                var newItems = typedNewValue.OfType<TabularObject>().Where(i => !collection.Contains(i)).ToList();
+                var removedItems = collection.Cast<TabularObject>().Where(i => !typedNewValue.Contains(i)).ToList();
+
+                removedItems.ForEach(i => collection.Remove(i));
+                newItems.ForEach(i => collection.Add(i));
+
+                return newValue;
+            }
+
+            return newValue;
         }
     }
 }

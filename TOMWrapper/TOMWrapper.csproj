@@ -118,6 +118,7 @@
     <Compile Include="PropertyGridUI\CollectionEditors\CalendarCollectionEditor.cs" />
     <Compile Include="PropertyGridUI\Converters\EnumBrowsableConverter.cs" />
     <Compile Include="PropertyGridUI\Converters\QueryGroupConverter.cs" />
+    <Compile Include="PropertyGridUI\Converters\TypeDescriptorHelper.cs" />
     <Compile Include="TOMWrapper\AssociatedColumnCollection.cs" />
     <Compile Include="TOMWrapper\BindingInfo.cs" />
     <Compile Include="TOMWrapper\Calendar.cs" />
