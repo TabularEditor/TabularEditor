@@ -661,6 +661,11 @@ public class ObjectJsonContainer: IReadOnlyDictionary<Type, JObject[]>
             .ToDictionary(t => t, t => (jObj[Serializer.TypeToJson(t)] as JArray).Cast<JObject>().ToArray());
     }
 
+    internal ObjectJsonContainer(IDictionary<Type, JObject[]> objects)
+    {
+        Dict = new Dictionary<Type, JObject[]>(objects);
+    }
+
     public JObject[] this[Type key] => Dict[key];
 
     public int Count => Dict.Count;

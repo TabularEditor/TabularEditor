@@ -275,6 +275,9 @@ namespace TabularEditor.UI.Actions
             }, (s, m) => "Batch Rename Children...", true, Context.DataObjects | Context.PartitionCollection, Keys.Shift | Keys.F2)
             { ToolTip = "Opens a dialog that lets you rename all children of the selected objects at once. Folders are not renamed, but objects inside folders are." });
 
+            // Import TMDL
+            Add(new Action((s, m) => true, ImportTmdl, (s, m) => "Import TMDL...", true, Context.Model | Context.Table | Context.Functions));
+
             // Delete Action
             Delete = new Action((s, m) => Governance.AllowDelete(s) && s.Count >= 1, 
                 (s, m) => {
@@ -355,6 +358,15 @@ namespace TabularEditor.UI.Actions
         {
             return Governance.AllowEditProperty(s.Concat(s.Tables.SelectMany(t => t.GetChildren())), TOMWrapper.Properties.NAME)
                 && (s.Context == Context.Table || s.Direct.Any(i => i is Folder) || s.Context == Context.PartitionCollection);
+        }
+
+        private void ImportTmdl(UITreeSelection s, Model m)
+        {
+            var tmdlForm = new TmdlInputForm();
+            var mr = tmdlForm.ShowDialog();
+            if(mr == DialogResult.Cancel || string.IsNullOrEmpty(tmdlForm.Tmdl)) return;
+
+            m.ImportTmdl(tmdlForm.Tmdl, s.FirstOrDefault() ?? m);
         }
 
         public static void SaveScriptToFile(string script)

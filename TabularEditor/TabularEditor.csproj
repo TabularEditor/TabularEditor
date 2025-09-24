@@ -233,6 +233,12 @@
     <Compile Include="Scripting\PropertySerializer.cs" />
     <Compile Include="Scripting\ScriptApi.cs" />
     <Compile Include="Scripting\ScriptMethodAttribute.cs" />
+    <Compile Include="Scripting\TmdlInputForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Scripting\TmdlInputForm.Designer.cs">
+      <DependentUpon>TmdlInputForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -639,6 +645,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="BestPracticeAnalyzer\MoveToCollectionDialog.resx">
       <DependentUpon>MoveToCollectionDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Scripting\TmdlInputForm.resx">
+      <DependentUpon>TmdlInputForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>

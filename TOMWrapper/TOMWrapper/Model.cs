@@ -1,9 +1,15 @@
+using Microsoft.AnalysisServices.Tabular;
+using Microsoft.AnalysisServices.Tabular.Serialization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Text;
 using TabularEditor.TOMWrapper.PowerBI;
+using TabularEditor.TOMWrapper.Serialization;
 using TabularEditor.TOMWrapper.Tests;
 using TOM = Microsoft.AnalysisServices.Tabular;
 
@@ -231,6 +237,29 @@ namespace TabularEditor.TOMWrapper
 
         [IntelliSense("Metadata related to the latest deployment performed on this model using Tabular Editor."),Category("Metadata")]
         public DeploymentMetadata DeploymentMetadata { get; set; }
+
+        public void ImportTmdl(string tmdl, ITabularNamedObject destination)
+        {
+            // Empty database as target
+
+            var db = new TOM.Database { CompatibilityLevel = Handler.CompatibilityLevel, CompatibilityMode = Handler.Database.CompatibilityMode, Model = new TOM.Model() };
+            var context = MetadataSerializationContext.Create(MetadataSerializationStyle.Tmdl);
+            using (var reader = new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(tmdl))))
+            {
+                context.ReadFromDocument(reader);
+            }
+            context.UpdateModel(db.Model);
+
+            var objectDictionary = new Dictionary<Type, JObject[]>();
+            if (db.Model.Functions.Any()) objectDictionary.Add(typeof(Function), db.Model.Functions.Select(f => JObject.Parse(TOM.JsonSerializer.SerializeObject(f))).ToArray());
+            if (db.Model.Tables.Any()) objectDictionary.Add(typeof(Table), db.Model.Tables.Select(f => JObject.Parse(TOM.JsonSerializer.SerializeObject(f))).ToArray());
+
+            var jsonContainer = new ObjectJsonContainer(objectDictionary);
+
+            Handler.Actions.InsertObjects(jsonContainer, destination);
+        }
+
+
         const string DM = "TabularEditor_DeploymentMetadata";
         private void InitDeploymentMetadata()
         {
