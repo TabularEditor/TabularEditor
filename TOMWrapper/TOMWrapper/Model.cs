@@ -238,7 +238,15 @@ namespace TabularEditor.TOMWrapper
         [IntelliSense("Metadata related to the latest deployment performed on this model using Tabular Editor."),Category("Metadata")]
         public DeploymentMetadata DeploymentMetadata { get; set; }
 
-        public void ImportTmdl(string tmdl, ITabularNamedObject destination)
+        /// <summary>
+        /// Imports the objects specified in the TMDL metadata into the model. Note, this only works with top-level
+        /// objects such as Functions, Perspectives, and Tables. To import columns, measures, hierarchies, etc. the
+        /// TMDL must include the parent table as well.
+        /// </summary>
+        /// <param name="tmdl"></param>
+        /// <param name="destination"></param>
+        [IntelliSense("Imports the objects specified in the TMDL metadata into the model.")]
+        public void ImportTmdl(string tmdl, TmdlImportOptions tmdlImportOptions)
         {
             // Empty database as target
 
@@ -251,12 +259,29 @@ namespace TabularEditor.TOMWrapper
             context.UpdateModel(db.Model);
 
             var objectDictionary = new Dictionary<Type, JObject[]>();
-            if (db.Model.Functions.Any()) objectDictionary.Add(typeof(Function), db.Model.Functions.Select(f => JObject.Parse(TOM.JsonSerializer.SerializeObject(f))).ToArray());
-            if (db.Model.Tables.Any()) objectDictionary.Add(typeof(Table), db.Model.Tables.Select(f => JObject.Parse(TOM.JsonSerializer.SerializeObject(f))).ToArray());
+            void Add(Type type, IEnumerable<TOM.MetadataObject> objects)
+            {
+                if (objects.Any())
+                    objectDictionary.Add(type, objects.Select(o => JObject.Parse(TOM.JsonSerializer.SerializeObject(o))).ToArray());
+            }
+
+            Add(typeof(StructuredDataSource), db.Model.DataSources.OfType<TOM.StructuredDataSource>());
+            Add(typeof(ProviderDataSource), db.Model.DataSources.OfType<TOM.ProviderDataSource>());
+            Add(typeof(ModelRole), db.Model.Roles);
+            Add(typeof(SingleColumnRelationship), db.Model.Relationships.OfType<TOM.SingleColumnRelationship>());
+            Add(typeof(NamedExpression), db.Model.Expressions);
+            Add(typeof(Culture), db.Model.Cultures);
+            Add(typeof(Function), db.Model.Functions);
+            Add(typeof(CalculatedTable), db.Model.Tables.Where(t => t.GetSourceType() == TOM.PartitionSourceType.Calculated));
+            Add(typeof(CalculationGroupTable), db.Model.Tables.Where(t => t.CalculationGroup != null));
+            Add(typeof(Table), db.Model.Tables.Where(t => t.GetSourceType() != TOM.PartitionSourceType.Calculated && t.CalculationGroup == null));
+            Add(typeof(Perspective), db.Model.Perspectives);
 
             var jsonContainer = new ObjectJsonContainer(objectDictionary);
 
-            Handler.Actions.InsertObjects(jsonContainer, destination);
+            if(jsonContainer.Count == 0) throw new Exception("The provided TMDL does not contain any objects that can be imported into the model.");
+
+            Handler.Actions.InsertObjects(jsonContainer, Model, tmdlImportOptions.Replace);
         }
 
 
@@ -393,5 +418,4 @@ namespace TabularEditor.TOMWrapper
         public const string LEGACYREDIRECTS = "LegacyRedirects";
         public const string RETURNERRORVALUESASNULL = "ReturnErrorValuesAsNull";
     }
-
 }

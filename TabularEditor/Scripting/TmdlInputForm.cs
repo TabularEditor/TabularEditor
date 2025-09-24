@@ -16,14 +16,8 @@ namespace TabularEditor.Scripting
             InitializeComponent();
         }
 
-        public string Tmdl
-        {
-            get => txtTmdl.Text;
-            set
-            {
-                txtTmdl.Text = value;
-                txtTmdl.Visible = true;
-            }
-        }
+        public bool Replace => chkReplace.Checked;
+
+        public string Tmdl => txtTmdl.Text;
     }
 }

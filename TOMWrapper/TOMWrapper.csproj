@@ -134,6 +134,7 @@
     <Compile Include="TOMWrapper\QueryGroup.cs" />
     <Compile Include="TOMWrapper\Serialization\ObjectSerializer.cs" />
     <Compile Include="TOMWrapper\TimeUnitColumnAssociation.cs" />
+    <Compile Include="TOMWrapper\TmdlImportOptions.cs" />
     <Compile Include="Utils\DbConnectionStringBuilderExtension.cs" />
     <Compile Include="PropertyGridUI\AlternateOfEditor.cs" />
     <Compile Include="PropertyGridUI\Converters\ConnectionStringConverter.cs" />

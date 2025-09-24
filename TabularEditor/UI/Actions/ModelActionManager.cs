@@ -366,7 +366,7 @@ namespace TabularEditor.UI.Actions
             var mr = tmdlForm.ShowDialog();
             if(mr == DialogResult.Cancel || string.IsNullOrEmpty(tmdlForm.Tmdl)) return;
 
-            m.ImportTmdl(tmdlForm.Tmdl, s.FirstOrDefault() ?? m);
+            m.ImportTmdl(tmdlForm.Tmdl, new TmdlImportOptions { Replace = tmdlForm.Replace });
         }
 
         public static void SaveScriptToFile(string script)

@@ -116,7 +116,7 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         /// <param name="objects"></param>
         /// <param name="destination"></param>
-        public List<TabularObject> InsertObjects(ObjectJsonContainer objectContainer, ITabularNamedObject destination = null)
+        public List<TabularObject> InsertObjects(ObjectJsonContainer objectContainer, ITabularNamedObject destination = null, bool replaceObjects = false)
         {
             // Possible destinations:
             var destHier = (destination as Level)?.Hierarchy ?? (destination as Hierarchy);
@@ -145,134 +145,141 @@ namespace TabularEditor.TOMWrapper
                 }
             }
 
-            Handler.BeginUpdate("Paste objects");
-
             var inserted = new List<TabularObject>();
 
-            if (destHier != null)
+            try
             {
-                // Levels can only be deserialized on a Hierarchy destination:
-                foreach (var obj in objectContainer.Get<Level>()) inserted.Add(Serializer.DeserializeLevel(obj, destHier));
-                destHier.CompactLevelOrdinals();
-            }
+                var serializer = new Serializer { Replace = replaceObjects };
+                Handler.BeginUpdate("Paste objects");
 
-            if (destTable?.GetType() == typeof(Table))
-            {
-                // DataColumns and Partitions can only be deserialized onto a Table destination (not CalculatedTable):
-                foreach (var obj in objectContainer.Get<DataColumn>().OrderBy(obj => obj["sortByColumn"] == null ? 0 : 1)) inserted.Add(Serializer.DeserializeDataColumn(obj, destTable));
-                foreach (var obj in objectContainer.Get<Partition>()) inserted.Add(Serializer.DeserializePartition(obj, destTable));
-                foreach (var obj in objectContainer.Get<MPartition>()) inserted.Add(Serializer.DeserializeMPartition(obj, destTable));
-                foreach (var obj in objectContainer.Get<PolicyRangePartition>()) inserted.Add(Serializer.DeserializePolicyRangePartition(obj, destTable));
-                foreach (var obj in objectContainer.Get<EntityPartition>()) inserted.Add(Serializer.DeserializeEntityPartition(obj, destTable));
-                foreach (var obj in objectContainer.Get<Calendar>()) inserted.Add(Serializer.DeserializeCalendar(obj, destTable));
-            }
-
-            if (destTable is Table)
-            {
-                // Measures, Hierarchies and CalculatedColumns can be deserialized onto a Table (or Table derived) destination:
-                foreach (var obj in objectContainer.Get<CalculatedColumn>().OrderBy(obj => obj["sortByColumn"] == null ? 0 : 1)) inserted.Add(Serializer.DeserializeCalculatedColumn(obj, destTable));
-                foreach (var obj in objectContainer.Get<Hierarchy>()) inserted.Add(Serializer.DeserializeHierarchy(obj, destTable));
-                foreach (var obj in objectContainer.Get<Measure>()) inserted.Add(Serializer.DeserializeMeasure(obj, destTable));
-            }
-
-            // Replace an existing table with the one from the clipboard:
-            if (replaceTable)
-            {
-                if (destTable.Name == replaceTableName)
+                if (destHier != null)
                 {
-                    // Similarly named tables - disable formula fixup:
-                    var fixupSetting = Handler.Settings.AutoFixup;
-                    Handler.Settings.AutoFixup = false;
-                    destTable.Name = destTable.Name + '-' + Guid.NewGuid().ToString();
-                    Handler.Settings.AutoFixup = true;
+                    // Levels can only be deserialized on a Hierarchy destination:
+                    foreach (var obj in objectContainer.Get<Level>()) inserted.Add(serializer.DeserializeLevel(obj, destHier));
+                    destHier.CompactLevelOrdinals();
+                }
+
+                if (destTable?.GetType() == typeof(Table))
+                {
+                    // DataColumns and Partitions can only be deserialized onto a Table destination (not CalculatedTable):
+                    foreach (var obj in objectContainer.Get<DataColumn>().OrderBy(obj => obj["sortByColumn"] == null ? 0 : 1)) inserted.Add(serializer.DeserializeDataColumn(obj, destTable));
+                    foreach (var obj in objectContainer.Get<Partition>()) inserted.Add(serializer.DeserializePartition(obj, destTable));
+                    foreach (var obj in objectContainer.Get<MPartition>()) inserted.Add(serializer.DeserializeMPartition(obj, destTable));
+                    foreach (var obj in objectContainer.Get<PolicyRangePartition>()) inserted.Add(serializer.DeserializePolicyRangePartition(obj, destTable));
+                    foreach (var obj in objectContainer.Get<EntityPartition>()) inserted.Add(serializer.DeserializeEntityPartition(obj, destTable));
+                    foreach (var obj in objectContainer.Get<Calendar>()) inserted.Add(serializer.DeserializeCalendar(obj, destTable));
+                }
+
+                if (destTable is Table)
+                {
+                    // Measures, Hierarchies and CalculatedColumns can be deserialized onto a Table (or Table derived) destination:
+                    foreach (var obj in objectContainer.Get<CalculatedColumn>().OrderBy(obj => obj["sortByColumn"] == null ? 0 : 1)) inserted.Add(serializer.DeserializeCalculatedColumn(obj, destTable));
+                    foreach (var obj in objectContainer.Get<Hierarchy>()) inserted.Add(serializer.DeserializeHierarchy(obj, destTable));
+                    foreach (var obj in objectContainer.Get<Measure>()) inserted.Add(serializer.DeserializeMeasure(obj, destTable));
+                }
+
+                // Replace an existing table with the one from the clipboard:
+                if (replaceTable)
+                {
+                    if (destTable.Name == replaceTableName)
+                    {
+                        // Similarly named tables - disable formula fixup:
+                        var fixupSetting = Handler.Settings.AutoFixup;
+                        Handler.Settings.AutoFixup = false;
+                        destTable.Name = destTable.Name + '-' + Guid.NewGuid().ToString();
+                        Handler.Settings.AutoFixup = true;
+                    }
+                    else
+                    {
+                        // Differently named tables:
+                        // First, let's rename the destTable to match the new table (fix-up will handle DAX references):
+                        if (destTable.Name != replaceTableName) destTable.Name = replaceTableName;
+
+                        // Secondly, let's rename the table to be inserted (to avoid naming conflicts):
+                        replaceTableJobj["name"] = replaceTableName + '-' + Guid.NewGuid().ToString();
+                    }
+
+                    // Insert the table:
+                    var newTable = replaceTableIsCalculated ?
+                        serializer.DeserializeCalculatedTable(replaceTableJobj, Handler.Model) :
+                        serializer.DeserializeTable(replaceTableJobj, Handler.Model);
+                    inserted.Add(newTable);
+
+                    // Update relationships to point to the inserted table:
+                    foreach (var rel in destTable.UsedInRelationships.ToList())
+                    {
+                        if (rel.FromTable == destTable && newTable.Columns.Contains(rel.FromColumn.Name) && rel.FromColumn.DataType == newTable.Columns[rel.FromColumn.Name].DataType) { rel.FromColumn = newTable.Columns[rel.FromColumn.Name]; }
+                        if (rel.ToTable == destTable && newTable.Columns.Contains(rel.ToColumn.Name) && rel.ToColumn.DataType == newTable.Columns[rel.ToColumn.Name].DataType) { rel.ToColumn = newTable.Columns[rel.ToColumn.Name]; }
+                    }
+
+                    // Delete original table:
+                    destTable.Delete();
+
+                    // Rename inserted table:
+                    newTable.Name = replaceTableName;
                 }
                 else
                 {
-                    // Differently named tables:
-                    // First, let's rename the destTable to match the new table (fix-up will handle DAX references):
-                    if (destTable.Name != replaceTableName) destTable.Name = replaceTableName;
-
-                    // Secondly, let's rename the table to be inserted (to avoid naming conflicts):
-                    replaceTableJobj["name"] = replaceTableName + '-' + Guid.NewGuid().ToString();
+                    foreach (var obj in objectContainer.Get<CalculatedTable>()) inserted.Add(serializer.DeserializeCalculatedTable(obj, Handler.Model));
+                    foreach (var obj in objectContainer.Get<Table>()) inserted.Add(serializer.DeserializeTable(obj, Handler.Model));
                 }
 
-                // Insert the table:
-                var newTable = replaceTableIsCalculated ?
-                    Serializer.DeserializeCalculatedTable(replaceTableJobj, Handler.Model) :
-                    Serializer.DeserializeTable(replaceTableJobj, Handler.Model);
-                inserted.Add(newTable);
-
-                // Update relationships to point to the inserted table:
-                foreach(var rel in destTable.UsedInRelationships.ToList())
-                {
-                    if (rel.FromTable == destTable && newTable.Columns.Contains(rel.FromColumn.Name) && rel.FromColumn.DataType == newTable.Columns[rel.FromColumn.Name].DataType) { rel.FromColumn = newTable.Columns[rel.FromColumn.Name]; }
-                    if (rel.ToTable == destTable && newTable.Columns.Contains(rel.ToColumn.Name) && rel.ToColumn.DataType == newTable.Columns[rel.ToColumn.Name].DataType) { rel.ToColumn = newTable.Columns[rel.ToColumn.Name]; }
-                }
-
-                // Delete original table:
-                destTable.Delete();
-
-                // Rename inserted table:
-                newTable.Name = replaceTableName;
-            }
-            else
-            {
-                foreach (var obj in objectContainer.Get<CalculatedTable>()) inserted.Add(Serializer.DeserializeCalculatedTable(obj, Handler.Model));
-                foreach (var obj in objectContainer.Get<Table>()) inserted.Add(Serializer.DeserializeTable(obj, Handler.Model));
-            }
-
-            foreach (var obj in objectContainer.Get<Function>()) inserted.Add(Serializer.DeserializeFunction(obj, Handler.Model));
-            foreach (var obj in objectContainer.Get<ModelRole>()) inserted.Add(Serializer.DeserializeModelRole(obj, Handler.Model));
-            foreach (var obj in objectContainer.Get<ProviderDataSource>()) inserted.Add(Serializer.DeserializeProviderDataSource(obj, Handler.Model));
-            foreach (var obj in objectContainer.Get<SingleColumnRelationship>()) inserted.Add(Serializer.DeserializeSingleColumnRelationship(obj, Handler.Model));
-            foreach (var obj in objectContainer.Get<Perspective>()) inserted.Add(Serializer.DeserializePerspective(obj, Handler.Model));
-            foreach (var obj in objectContainer.Get<Culture>()) inserted.Add(Serializer.DeserializeCulture(obj, Handler.Model));
-
-            if(Handler.CompatibilityLevel >= 1400)
-            {
-                foreach (var obj in objectContainer.Get<NamedExpression>()) inserted.Add(Serializer.DeserializeNamedExpression(obj, Handler.Model));
-                foreach (var obj in objectContainer.Get<StructuredDataSource>()) inserted.Add(Serializer.DeserializeStructuredDataSource(obj, Handler.Model));
-            }
-
-            if(Handler.CompatibilityLevel >= 1470)
-            {
-                CalculationGroupTable destCalcGroup = destination is CalculationGroupTable cgt ? cgt : 
-                    (destination is CalculationItem ci ? ci.CalculationGroupTable : null);
-                if (destCalcGroup != null)
-                {
-                    foreach (var obj in objectContainer.Get<CalculationItem>()) inserted.Add(Serializer.DeserializeCalculationItem(obj, destCalcGroup));
-                }
-                foreach (var obj in objectContainer.Get<CalculationGroupTable>()) inserted.Add(Serializer.DeserializeCalculationGroupTable(obj, Handler.Model));
-            }
-
-            foreach (var obj in inserted)
-            {
-                var tableObj = obj as Table;
-
-                (obj as ITranslatableObject)?.LoadTranslations(true);
-                (obj as ITabularPerspectiveObject)?.LoadPerspectives(true);
-                if (tableObj != null)
-                {
-                    tableObj.LoadRLS();
-                    Handler.Tree.RebuildFolderCacheForTable(tableObj);
-                }
-
-                if (!string.IsNullOrEmpty(folder) && obj is IFolderObject)
-                {
-                    (obj as IFolderObject).DisplayFolder = folder;
-                }
+                foreach (var obj in objectContainer.Get<Function>()) inserted.Add(serializer.DeserializeFunction(obj, Handler.Model));
+                foreach (var obj in objectContainer.Get<ModelRole>()) inserted.Add(serializer.DeserializeModelRole(obj, Handler.Model));
+                foreach (var obj in objectContainer.Get<ProviderDataSource>()) inserted.Add(serializer.DeserializeProviderDataSource(obj, Handler.Model));
+                foreach (var obj in objectContainer.Get<SingleColumnRelationship>()) inserted.Add(serializer.DeserializeSingleColumnRelationship(obj, Handler.Model));
+                foreach (var obj in objectContainer.Get<Perspective>()) inserted.Add(serializer.DeserializePerspective(obj, Handler.Model));
+                foreach (var obj in objectContainer.Get<Culture>()) inserted.Add(serializer.DeserializeCulture(obj, Handler.Model));
 
                 if (Handler.CompatibilityLevel >= 1400)
                 {
-                    if (tableObj != null) tableObj.LoadOLS(true);
-                    (obj as Column)?.LoadOLS();
+                    foreach (var obj in objectContainer.Get<NamedExpression>()) inserted.Add(serializer.DeserializeNamedExpression(obj, Handler.Model));
+                    foreach (var obj in objectContainer.Get<StructuredDataSource>()) inserted.Add(serializer.DeserializeStructuredDataSource(obj, Handler.Model));
                 }
 
-                (obj as IAnnotationObject)?.ClearTabularEditorAnnotations();
-            }
+                if (Handler.CompatibilityLevel >= 1470)
+                {
+                    CalculationGroupTable destCalcGroup = destination is CalculationGroupTable cgt ? cgt :
+                        (destination is CalculationItem ci ? ci.CalculationGroupTable : null);
+                    if (destCalcGroup != null)
+                    {
+                        foreach (var obj in objectContainer.Get<CalculationItem>()) inserted.Add(serializer.DeserializeCalculationItem(obj, destCalcGroup));
+                    }
+                    foreach (var obj in objectContainer.Get<CalculationGroupTable>()) inserted.Add(serializer.DeserializeCalculationGroupTable(obj, Handler.Model));
+                }
 
-            Handler.EndUpdate();
-            FormulaFixup.BuildDependencyTree();
+                foreach (var obj in inserted)
+                {
+                    var tableObj = obj as Table;
+
+                    (obj as ITranslatableObject)?.LoadTranslations(true);
+                    (obj as ITabularPerspectiveObject)?.LoadPerspectives(true);
+                    if (tableObj != null)
+                    {
+                        tableObj.LoadRLS();
+                        Handler.Tree.RebuildFolderCacheForTable(tableObj);
+                    }
+
+                    if (!string.IsNullOrEmpty(folder) && obj is IFolderObject)
+                    {
+                        (obj as IFolderObject).DisplayFolder = folder;
+                    }
+
+                    if (Handler.CompatibilityLevel >= 1400)
+                    {
+                        if (tableObj != null) tableObj.LoadOLS(true);
+                        (obj as Column)?.LoadOLS();
+                    }
+
+                    (obj as IAnnotationObject)?.ClearTabularEditorAnnotations();
+                }
+
+            }
+            finally
+            {
+                Handler.EndUpdate();
+                FormulaFixup.BuildDependencyTree();
+            }
 
             return inserted;
         }

@@ -15,8 +15,9 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace TabularEditor.TOMWrapper.Serialization;
 
-internal static class Serializer
+internal class Serializer
 {
+    public bool Replace { get; set; } = false;
     private const string ANN_SAVESENSITIVE = "TabularEditor_SaveSensitive";
 
     public static JArray SortArray(JObject parentObject, string arrayProperty, string sortProperty = "name")
@@ -293,10 +294,13 @@ internal static class Serializer
 
     // TODO: Below code could maybe be auto-generated, as we know from reflection which properties
     // hold references to other objects, that needs to be looked up.
-    public static Level DeserializeLevel(JObject json, Hierarchy target)
+    public Level DeserializeLevel(JObject json, Hierarchy target)
     {
         var tom = ObjectSerializer.DeserializeObject<TOM.Level>(json.ToString(Formatting.None), target.Model);
-        tom.Name = target.Levels.GetNewName(tom.Name);
+        if(Replace)
+            target.Levels.FindByName(tom.Name)?.Delete();
+        else
+            tom.Name = target.Levels.GetNewName(tom.Name);
         tom.Column = target.Table.MetadataObject.Columns[json.Value<string>("column")];
 
         var level = Level.CreateFromMetadata(target, tom);
@@ -304,10 +308,13 @@ internal static class Serializer
         return level;
     }
 
-    public static CalculatedColumn DeserializeCalculatedColumn(JObject json, Table target)
+    public CalculatedColumn DeserializeCalculatedColumn(JObject json, Table target)
     {
         var tom = ObjectSerializer.DeserializeObject<TOM.CalculatedColumn>(json.ToString(Formatting.None), target.Model);
-        tom.Name = target.Columns.GetNewName(tom.Name);
+        if(Replace)
+            target.Columns.FindByName(tom.Name)?.Delete();
+        else
+            tom.Name = target.Columns.GetNewName(tom.Name);
 
         if (json["sortByColumn"] != null)
         {
@@ -321,10 +328,13 @@ internal static class Serializer
         return column;
     }
 
-    public static DataColumn DeserializeDataColumn(JObject json, Table target)
+    public DataColumn DeserializeDataColumn(JObject json, Table target)
     {
         var tom = ObjectSerializer.DeserializeObject<TOM.DataColumn>(json.ToString(Formatting.None), target.Model);
-        tom.Name = target.Columns.GetNewName(tom.Name);
+        if(Replace)
+            target.Columns.FindByName(tom.Name)?.Delete();
+        else
+            tom.Name = target.Columns.GetNewName(tom.Name);
 
         if (json["sortByColumn"] != null)
         {
@@ -338,30 +348,39 @@ internal static class Serializer
         return column;
     }
 
-    public static Measure DeserializeMeasure(JObject json, Table target)
+    public Measure DeserializeMeasure(JObject json, Table target)
     {
         var tom = ObjectSerializer.DeserializeObject<TOM.Measure>(json.ToString(Formatting.None), target.Model);
-        tom.Name = target.Measures.GetNewName(tom.Name);
+        if(Replace)
+            target.Measures.FindByName(tom.Name)?.Delete();
+        else
+            tom.Name = target.Measures.GetNewName(tom.Name);
 
         var measure = Measure.CreateFromMetadata(target, tom);
 
         return measure;
     }
 
-    public static Calendar DeserializeCalendar(JObject json, Table target)
+    public Calendar DeserializeCalendar(JObject json, Table target)
     {
         EnsureCalendarColumnsExistOrRemoved(json, target);
         var tom = ObjectSerializer.DeserializeObject<TOM.Calendar>(json.ToString(Formatting.None), target.Model);
-        tom.Name = target.Calendars.GetNewName(tom.Name);
+        if (Replace)
+            target.Calendars.FindByName(tom.Name)?.Delete();
+        else
+            tom.Name = target.Calendars.GetNewName(tom.Name);
 
         var calendar = Calendar.CreateFromMetadata(target, tom);
         return calendar;
     }
 
-    public static Hierarchy DeserializeHierarchy(JObject json, Table target)
+    public Hierarchy DeserializeHierarchy(JObject json, Table target)
     {
         var tom = ObjectSerializer.DeserializeObject<TOM.Hierarchy>(json.ToString(Formatting.None), target.Model);
-        tom.Name = target.Hierarchies.GetNewName(tom.Name);
+        if(Replace)
+            target.Hierarchies.FindByName(tom.Name)?.Delete();
+        else
+            tom.Name = target.Hierarchies.GetNewName(tom.Name);
         for (var i = 0; i < tom.Levels.Count; i++)
         {
             var srcColumnName = json["levels"][i].Value<string>("column");
@@ -374,11 +393,14 @@ internal static class Serializer
         return hierarchy;
     }
 
-    public static Partition DeserializePartition(JObject json, Table target)
+    public Partition DeserializePartition(JObject json, Table target)
     {
         EnsureQueryGroupCreatedOrRemoved(json, target.Model);
         var tom = ObjectSerializer.DeserializeObject<TOM.Partition>(json.ToString(Formatting.None), target.Model);
-        tom.Name = target.Partitions.GetNewName(tom.Name);
+        if(Replace)
+            target.Partitions.FindByName(tom.Name)?.Delete();
+        else
+            tom.Name = target.Partitions.GetNewName(tom.Name);
         if (tom.Source is TOM.QueryPartitionSource) (tom.Source as TOM.QueryPartitionSource).DataSource = target.MetadataObject.Model.DataSources[json["source"].Value<string>("dataSource")];
 
         var partition = Partition.CreateFromMetadata(target, tom);
@@ -386,39 +408,51 @@ internal static class Serializer
         return partition;
     }
 
-    public static MPartition DeserializeMPartition(JObject json, Table target)
+    public MPartition DeserializeMPartition(JObject json, Table target)
     {
         EnsureQueryGroupCreatedOrRemoved(json, target.Model);
         var tom = ObjectSerializer.DeserializeObject<TOM.Partition>(json.ToString(Formatting.None), target.Model);
-        tom.Name = target.Partitions.GetNewName(tom.Name);
+        if(Replace)
+            target.Partitions.FindByName(tom.Name)?.Delete();
+        else
+            tom.Name = target.Partitions.GetNewName(tom.Name);
         var partition = MPartition.CreateFromMetadata(target, tom);
         return partition;
     }
 
-    public static PolicyRangePartition DeserializePolicyRangePartition(JObject json, Table target)
+    public PolicyRangePartition DeserializePolicyRangePartition(JObject json, Table target)
     {
         EnsureQueryGroupCreatedOrRemoved(json, target.Model);
         var tom = ObjectSerializer.DeserializeObject<TOM.Partition>(json.ToString(Formatting.None), target.Model);
-        tom.Name = target.Partitions.GetNewName(tom.Name);
+        if(Replace)
+            target.Partitions.FindByName(tom.Name)?.Delete();
+        else
+            tom.Name = target.Partitions.GetNewName(tom.Name);
         var partition = PolicyRangePartition.CreateFromMetadata(target, tom);
         return partition;
     }
 
-    public static EntityPartition DeserializeEntityPartition(JObject json, Table target)
+    public EntityPartition DeserializeEntityPartition(JObject json, Table target)
     {
         EnsureQueryGroupCreatedOrRemoved(json, target.Model);
         EnsureExpressionSourceExistsOrRemoved(json["source"], target.Model);
         var tom = ObjectSerializer.DeserializeObject<TOM.Partition>(json.ToString(Formatting.None), target.Model);
-        tom.Name = target.Partitions.GetNewName(tom.Name);
+        if(Replace)
+            target.Partitions.FindByName(tom.Name)?.Delete();
+        else
+            tom.Name = target.Partitions.GetNewName(tom.Name);
         var partition = EntityPartition.CreateFromMetadata(target, tom);
         return partition;
     }
 
-    public static CalculatedTable DeserializeCalculatedTable(JObject json, Model model)
+    public CalculatedTable DeserializeCalculatedTable(JObject json, Model model)
     {
         var tom = ObjectSerializer.DeserializeObject<TOM.Table>(json.ToString(Formatting.None), model);
         var tableOrgName = tom.Name;
-        tom.Name = model.Tables.GetNewName(tom.Name);
+        if(Replace)
+            model.Tables.FindByName(tom.Name)?.Delete();
+        else
+            tom.Name = model.Tables.GetNewName(tom.Name);
 
         // Make sure all measures in the table still have model-wide unique names:
         foreach (var m in tom.Measures.ToList()) m.Name = MeasureCollection.GetNewName(model, m.Name);
@@ -431,7 +465,7 @@ internal static class Serializer
 
     internal const string TableRenamedAnnotation = "TE3_TableRenamedFrom";
 
-    public static Table DeserializeTable(JObject json, Model model)
+    public Table DeserializeTable(JObject json, Model model)
     {
         if (json["partitions"] is JArray jPartitions)
         {
@@ -444,7 +478,10 @@ internal static class Serializer
 
         var tom = ObjectSerializer.DeserializeObject<TOM.Table>(json.ToString(Formatting.None), model);
         var tableOrgName = tom.Name;
-        tom.Name = model.Tables.GetNewName(tom.Name);
+        if(Replace)
+            model.Tables.FindByName(tom.Name)?.Delete();
+        else
+            tom.Name = model.Tables.GetNewName(tom.Name);
 
         // Make sure all measures in the table still have model-wide unique names:
         foreach (var m in tom.Measures.ToList()) m.Name = MeasureCollection.GetNewName(model, m.Name);
@@ -513,10 +550,15 @@ internal static class Serializer
         }
     }
 
-    public static SingleColumnRelationship DeserializeSingleColumnRelationship(JObject json, Model model)
+    public SingleColumnRelationship DeserializeSingleColumnRelationship(JObject json, Model model)
     {
         var tom = ObjectSerializer.DeserializeObject<TOM.SingleColumnRelationship>(json.ToString(Formatting.None), model);
-        if (model.Relationships.TOM_ContainsName(tom.Name))
+        if(Replace)
+        {
+            var existing = model.Relationships.FirstOrDefault(r => r.Name == tom.Name);
+            existing?.Delete();
+        }
+        else if (model.Relationships.TOM_ContainsName(tom.Name))
             tom.Name = Guid.NewGuid().ToString();
 
         var relationship = SingleColumnRelationship.CreateFromMetadata(model, tom);
@@ -524,12 +566,15 @@ internal static class Serializer
         return relationship;
     }
 
-    public static NamedExpression DeserializeNamedExpression(JObject json, Model model)
+    public NamedExpression DeserializeNamedExpression(JObject json, Model model)
     {
         EnsureQueryGroupCreatedOrRemoved(json, model);
         EnsureExpressionSourceExistsOrRemoved(json, model);
         var tom = ObjectSerializer.DeserializeObject<TOM.NamedExpression>(json.ToString(Formatting.None), model);
-        tom.Name = model.Expressions.GetNewName(tom.Name);
+        if(Replace)
+            model.Expressions.FindByName(tom.Name)?.Delete();
+        else
+            tom.Name = model.Expressions.GetNewName(tom.Name);
 
         var expr = NamedExpression.CreateFromMetadata(model, tom);
         model.Expressions.Add(expr);
@@ -537,30 +582,39 @@ internal static class Serializer
         return expr;
     }
 
-    public static ModelRole DeserializeModelRole(JObject json, Model model)
+    public ModelRole DeserializeModelRole(JObject json, Model model)
     {
         var tom = ObjectSerializer.DeserializeObject<TOM.ModelRole>(json.ToString(Formatting.None), model);
-        tom.Name = model.Roles.GetNewName(tom.Name);
+        if(Replace)
+            model.Roles.FindByName(tom.Name)?.Delete();
+        else
+            tom.Name = model.Roles.GetNewName(tom.Name);
 
         var role = ModelRole.CreateFromMetadata(model, tom);
 
         return role;
     }
 
-    public static Function DeserializeFunction(JObject json, Model model)
+    public Function DeserializeFunction(JObject json, Model model)
     {
         var tom = ObjectSerializer.DeserializeObject<TOM.Function>(json.ToString(Formatting.None), model);
-        tom.Name = model.Functions.GetNewName(tom.Name);
+        if (Replace)
+            model.Functions.FindByName(tom.Name)?.Delete();
+        else
+            tom.Name = model.Functions.GetNewName(tom.Name);
 
         var role = Function.CreateFromMetadata(model, tom);
 
         return role;
     }
 
-    public static Perspective DeserializePerspective(JObject json, Model model)
+    public Perspective DeserializePerspective(JObject json, Model model)
     {
         var tom = ObjectSerializer.DeserializeObject<TOM.Perspective>(json.ToString(Formatting.None), model);
-        tom.Name = model.Perspectives.GetNewName(tom.Name);
+        if (Replace)
+            model.Perspectives.FindByName(tom.Name)?.Delete();
+        else
+            tom.Name = model.Perspectives.GetNewName(tom.Name);
 
         var tomModel = model.MetadataObject;
         foreach (var pt in tom.PerspectiveTables.ToList())
@@ -582,50 +636,65 @@ internal static class Serializer
         return perspective;
     }
 
-    public static Culture DeserializeCulture(JObject json, Model model)
+    public Culture DeserializeCulture(JObject json, Model model)
     {
         var tom = ObjectSerializer.DeserializeObject<TOM.Culture>(json.ToString(Formatting.None), model);
         RemoveNullTranslations(tom);
-        tom.Name = model.Cultures.GetNewName();
+        if(Replace)
+            model.Cultures.FindByName(tom.Name)?.Delete();
+        else
+            tom.Name = model.Cultures.GetNewName();
         var culture = Culture.CreateFromMetadata(model, tom);
 
         return culture;
     }
 
-    public static ProviderDataSource DeserializeProviderDataSource(JObject json, Model model)
+    public ProviderDataSource DeserializeProviderDataSource(JObject json, Model model)
     {
         var tom = ObjectSerializer.DeserializeObject<TOM.ProviderDataSource>(json.ToString(Formatting.None), model);
-        tom.Name = model.DataSources.GetNewName(tom.Name);
+        if(Replace)
+            model.DataSources.FindByName(tom.Name)?.Delete();
+        else
+            tom.Name = model.DataSources.GetNewName(tom.Name);
 
         var dataSource = ProviderDataSource.CreateFromMetadata(model, tom);
 
         return dataSource;
     }
 
-    public static StructuredDataSource DeserializeStructuredDataSource(JObject json, Model model)
+    public StructuredDataSource DeserializeStructuredDataSource(JObject json, Model model)
     {
         var tom = ObjectSerializer.DeserializeObject<TOM.StructuredDataSource>(json.ToString(Formatting.None), model);
-        tom.Name = model.DataSources.GetNewName(tom.Name);
+        if(Replace)
+            model.DataSources.FindByName(tom.Name)?.Delete();
+        else
+            tom.Name = model.DataSources.GetNewName(tom.Name);
 
         var dataSource = StructuredDataSource.CreateFromMetadata(model, tom);
         return dataSource;
     }
 
-    public static CalculationItem DeserializeCalculationItem(JObject json, CalculationGroupTable calculationGroupTable)
+    public CalculationItem DeserializeCalculationItem(JObject json, CalculationGroupTable calculationGroupTable)
     {
         var tom = ObjectSerializer.DeserializeObject<TOM.CalculationItem>(json.ToString(Formatting.None), calculationGroupTable.Model);
-        tom.Name = calculationGroupTable.CalculationItems.GetNewName(tom.Name);
+        if(Replace)
+            calculationGroupTable.CalculationItems.FindByName(tom.Name)?.Delete();
+        else
+            tom.Name = calculationGroupTable.CalculationItems.GetNewName(tom.Name);
         tom.Ordinal = calculationGroupTable.CalculationItems.Any(i => i.Ordinal != -1) ? calculationGroupTable.CalculationItems.Max(i => i.Ordinal) + 1 : -1;
 
         var calculationItem = CalculationItem.CreateFromMetadata(calculationGroupTable.CalculationGroup, tom);
         return calculationItem;
     }
 
-    public static CalculationGroupTable DeserializeCalculationGroupTable(JObject json, Model model)
+    public CalculationGroupTable DeserializeCalculationGroupTable(JObject json, Model model)
     {
         var tom = ObjectSerializer.DeserializeObject<TOM.Table>(json.ToString(Formatting.None), model);
         var tableOrgName = tom.Name;
-        tom.Name = model.Tables.GetNewName(tom.Name);
+        if(Replace)
+            model.Tables.FindByName(tom.Name)?.Delete();
+        else
+            tom.Name = model.Tables.GetNewName(tom.Name);
 
         // Make sure all measures in the table still have model-wide unique names:
         foreach (var m in tom.Measures.ToList()) m.Name = MeasureCollection.GetNewName(model, m.Name);
