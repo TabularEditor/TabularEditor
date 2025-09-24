@@ -257,7 +257,7 @@ namespace TabularEditor.UI.Actions
                 if (res == DialogResult.Cancel) return;
                 // TODO: Add options for match case and whole word only
                 s.Direct.Rename(form.Pattern, form.ReplaceWith, form.RegEx, form.IncludeTranslations);
-            }, (s, m) => "Batch Rename...", true, Context.DataObjects | Context.Level | Context.CalculationItem | Context.Partition, Keys.F2) { ToolTip = "Opens a dialog that lets you rename all the selected objects at once. Folders are not renamed, but objects inside folders are."});
+            }, (s, m) => "Batch Rename...", true, Context.Function | Context.DataObjects | Context.Level | Context.CalculationItem | Context.Partition, Keys.F2) { ToolTip = "Opens a dialog that lets you rename all the selected objects at once. Folders are not renamed, but objects inside folders are."});
 
             // Batch Rename Children
             Add(new Action((s, m) => CanBatchRenameChildren(s, m), (s, m) =>
