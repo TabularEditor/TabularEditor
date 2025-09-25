@@ -31,6 +31,7 @@ namespace TabularEditor.UI.Dialogs
             initializing = true;
 
             Expression = rule.Expression;
+            FixExpression = rule.FixExpression ?? "";
             Scope = rule.Scope;
             nameBefore = rule.Name;
             txtName.Text = rule.Name;
@@ -47,6 +48,7 @@ namespace TabularEditor.UI.Dialogs
             if(ShowDialog() == DialogResult.OK)
             {
                 rule.Expression = Expression;
+                rule.FixExpression = FixExpression;
                 rule.Scope = Scope;
                 rule.Name = txtName.Text;
                 rule.ID = txtID.Text;
@@ -69,6 +71,7 @@ namespace TabularEditor.UI.Dialogs
             initializing = true;
 
             Expression = "";
+            FixExpression = "";
             Scope = RuleScope.Model;
             nameBefore = name;
             txtName.Text = name;
@@ -84,6 +87,7 @@ namespace TabularEditor.UI.Dialogs
             {
                 return new BestPracticeRule {
                     Expression = Expression,
+                    FixExpression = FixExpression,
                     Scope = Scope,
                     Name = txtName.Text,
                     ID = txtID.Text,
@@ -136,6 +140,7 @@ namespace TabularEditor.UI.Dialogs
         private CheckedListBox lb;
 
         public string Expression { get { return txtExpression.Text; } private set { txtExpression.Text = value; } }
+        public string FixExpression { get { return txtFixExpression.Text; } private set { txtFixExpression.Text = value; } }
         public IEnumerable<Type> ScopeTypes
         {
             get { return _scope.Enumerate().Select(s => s.GetScopeType()); }
