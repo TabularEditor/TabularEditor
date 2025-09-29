@@ -10,9 +10,9 @@ using TabularEditor.UI.Dialogs;
 using TabularEditor.UIServices;
 using System.Collections.Generic;
 using System.Threading;
-using Aga.Controls.Tree;
-using System.Threading.Tasks;
 using TabularEditor.BestPracticeAnalyzer;
+using TabularEditor.Scripting;
+using TabularEditor.TOMWrapper;
 
 namespace TabularEditor
 {
@@ -428,7 +428,7 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
 
             using (var hg = new Hourglass())
             {
-                var textToFormat = "x :=" + txtExpression.Text;
+                var textToFormat = ScriptHelper.PrepareForDaxFormatter(txtExpression.Text, UI.ExpressionEditor_Current is Function, out var firstComments);
                 var newline = txtExpression.Text.StartsWith("\n") || txtExpression.Text.StartsWith("\r\n");
                 try
                 {
@@ -439,7 +439,9 @@ Selected.Hierarchies.ForEach(item => item.TranslatedDisplayFolders.SetAll(item.D
                         return;
                     }
                     lblStatus.Text = "DAX formatted successfully";
-                    txtExpression.Text = (newline ? "\n" : "") + result.Substring(6).Trim();
+                    txtExpression.Text = (newline ? "\n" : "") +
+                        ScriptHelper.ExtractFromDaxFormatter(result, UI.ExpressionEditor_Current is Function, firstComments);
+                    result.Substring(6).Trim();
                 }
                 catch (Exception ex)
                 {

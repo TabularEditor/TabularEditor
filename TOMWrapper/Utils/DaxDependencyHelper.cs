@@ -42,10 +42,18 @@ namespace TabularEditor.TOMWrapper.Utils
         [IntelliSense("Return a list of tokens representing the specified DAX property on the current object.")]
         public static IList<DaxToken> Tokenize(this IDaxDependantObject obj, DAXProperty property, bool includeHidden)
         {
+            return Tokenize(obj.GetDAX(property), includeHidden);
+        }
+
+        /// <summary>
+        /// Return a list of tokens representing the specified DAX expression
+        /// </summary>
+        [IntelliSense("Return a list of tokens representing the specified DAX expression.")]
+        public static IList<DaxToken> Tokenize(string dax, bool includeHidden)
+        {
             var result = new List<DaxToken>();
-            var dax = obj.GetDAX(property);
-            if(string.IsNullOrEmpty(dax)) return result;
-            var lexer = new DAXLexer(new DAXCharStream(obj.GetDAX(property), false));
+            if (string.IsNullOrEmpty(dax)) return result;
+            var lexer = new DAXLexer(new DAXCharStream(dax, false));
             lexer.RemoveErrorListeners();
             var lexerTokens = lexer.GetAllTokens();
             if (includeHidden)

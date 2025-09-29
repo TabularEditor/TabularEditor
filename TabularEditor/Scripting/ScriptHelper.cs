@@ -1,10 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using TabularEditor.Dax;
 using TabularEditor.TextServices;
@@ -249,7 +247,7 @@ namespace TabularEditor.Scripting
             }
             daxFormatterLastCall = DateTime.Now;
 
-            var textToFormat = "x :=" + dax;
+            var textToFormat = PrepareForDaxFormatter(dax, false, out var firstComments);
             try
             {
                 var result = DaxFormatter.FormatDax(textToFormat, false, shortFormat, skipSpaceAfterFunctionName).FormattedDax;
@@ -257,7 +255,7 @@ namespace TabularEditor.Scripting
                 {
                     return dax;
                 }
-                return result.Substring(6).Trim();
+                return ExtractFromDaxFormatter(result, false, firstComments);
             }
             catch
             {
@@ -291,6 +289,44 @@ namespace TabularEditor.Scripting
             objectsFlaggedForFormatting.Add(obj);
         }
 
+        // As of September 2025, DaxFormatter.com cannot work with "isolated" UDF expressions, such as `() => 1`. As such,
+        // we need to wrap the expression in a `DEFINE FUNCTION x = <udf-expression> EVALUATE a` construct for formatting,
+        // and then unwrap it afterwards. Moreover, there is a bug in DaxFormatter where comments at the start of a UDF
+        // expression are lost, so we need to extract and re-attach those as well.
+        internal static string PrepareForDaxFormatter(string dax, bool isFunction, out string firstComment)
+        {
+            if (isFunction) {
+                var tokens = DaxDependencyHelper.Tokenize(dax, includeHidden: true);
+                firstComment = string.Join("", tokens.TakeWhile(t => t.CommentOrWhitespace).Select(t => t.Text)).Trim();
+                if(tokens.FirstOrDefault(t => !t.CommentOrWhitespace) is { } firstNonComment)
+                {
+                    dax = dax.Substring(firstNonComment.StartIndex);
+                }
+
+                return "DEFINE FUNCTION x = " + dax + " EVALUATE a";
+            }
+            else
+            {
+                firstComment = null;
+                return "x :=" + dax;
+            }
+        }
+        internal static string ExtractFromDaxFormatter(string formattedDax, bool isFunction, string firstComment)
+        {
+            if (isFunction)
+            {
+                var firstEqualIx = formattedDax.IndexOf('=');
+                var lastEvaluate = formattedDax.LastIndexOf("EVALUATE", StringComparison.OrdinalIgnoreCase);
+
+                var trimmed = formattedDax.Substring(firstEqualIx + 1, lastEvaluate - firstEqualIx - 1).Trim();
+                var result = string.Join("\n", trimmed.Split('\n').Select(l => l.StartsWith(new string(' ', 8)) ? l.Substring(8) : l));
+                if (!string.IsNullOrEmpty(firstComment)) return firstComment + Environment.NewLine + result;
+                return result;
+            }
+            else
+                return formattedDax.Substring(6).Trim();
+        }
+
         [ScriptMethod]
         public static void FormatDax(this IEnumerable<IDaxDependantObject> objects, bool shortFormat = false, bool? skipSpaceAfterFunctionName = null)
         {
@@ -298,6 +334,7 @@ namespace TabularEditor.Scripting
             // Call DAX Formatter with an array of all expressions to be formatted:
             var objectRefs = new List<Tuple<IDaxDependantObject, DAXProperty>>();
             var expressions = new List<string>();
+            var firstComments = new List<string>();
             foreach (var obj in objects)
             {
                 if (obj.IsRemoved) continue;
@@ -308,7 +345,8 @@ namespace TabularEditor.Scripting
                     if (!string.IsNullOrWhiteSpace(dax))
                     {
                         objectRefs.Add(new Tuple<IDaxDependantObject, DAXProperty>(obj, prop));
-                        expressions.Add("x :=" + dax);
+                        expressions.Add(PrepareForDaxFormatter(dax, obj is Function, out var firstComment));
+                        firstComments.Add(firstComment);
                     }
                 }
             }
@@ -328,7 +366,7 @@ namespace TabularEditor.Scripting
 
                     var obj = objectRefs[i].Item1;
                     var daxProperty = objectRefs[i].Item2;
-                    var formattedDax = result.FormattedDax.Substring(6).Trim();
+                    var formattedDax = ExtractFromDaxFormatter(result.FormattedDax, obj is Function, firstComments[i]);
 
                     obj.SetDAX(daxProperty, formattedDax);
                 }

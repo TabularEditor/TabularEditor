@@ -75,6 +75,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_4189406A03794F839FBDA173D3770486"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_42342055039F52116842364B5978E82E"
         "OwnerKey" = "8:_FC544BBFC4AE4FBCBA61AA486C697C6C"
         "MsmSig" = "8:_UNDEFINED"
@@ -112,6 +118,12 @@
         "Entry"
         {
         "MsmKey" = "8:_46C37DE1938D4448827B95AEC7F417F3"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_4E5756F4B0B24B558FE28333A8D5DB5E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -167,12 +179,6 @@
         {
         "MsmKey" = "8:_7656CB90795C2143B81EE9D1C8DFA08C"
         "OwnerKey" = "8:_FC544BBFC4AE4FBCBA61AA486C697C6C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_877D7C1FFE9E4C85C41CB17FD570F004"
-        "OwnerKey" = "8:_B868CB4F8BD9300C82FFED53B6CD3E50"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -401,6 +407,12 @@
         {
         "MsmKey" = "8:_DF5EA552E91F8F22C33EAC9CC4CD47AF"
         "OwnerKey" = "8:_A19F56118EB256EEF753BC9BE90FA82F"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E5131302563A4DB8976C34133BCE102F"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -989,6 +1001,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4189406A03794F839FBDA173D3770486"
+            {
+            "SourcePath" = "8:..\\tabulareditor\\bin\\release\\runtimes\\\\win-arm64\\native\\msalruntime_arm64.dll"
+            "TargetName" = "8:msalruntime_arm64.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_5B9C415B11324AF783FDCB0CB7EEAF0F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_42342055039F52116842364B5978E82E"
             {
             "AssemblyRegister" = "3:1"
@@ -1102,6 +1134,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4E5756F4B0B24B558FE28333A8D5DB5E"
+            {
+            "SourcePath" = "8:..\\tabulareditor\\bin\\release\\runtimes\\\\win-x86\\native\\msalruntime_x86.dll"
+            "TargetName" = "8:msalruntime_x86.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_B702CBDA0E97427DBEB3DA5C2FD6E0B6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_518D39ACCB782ED4979B1CF2C9FB4E14"
             {
             "AssemblyRegister" = "3:1"
@@ -1191,7 +1243,7 @@
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
-            "Exclude" = "11:FALSE"
+            "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
@@ -1417,7 +1469,7 @@
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
-            "Exclude" = "11:FALSE"
+            "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
@@ -1561,7 +1613,7 @@
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
-            "Exclude" = "11:FALSE"
+            "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
@@ -1620,7 +1672,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:TOMWrapper, Version=2.27.9399.17673, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:TOMWrapper, Version=2.27.9399.21052, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_C7266C3A0A44EC5323D56293A87A75FD"
@@ -1736,7 +1788,7 @@
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
-            "Exclude" = "11:FALSE"
+            "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
@@ -1800,6 +1852,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E5131302563A4DB8976C34133BCE102F"
+            {
+            "SourcePath" = "8:..\\tabulareditor\\bin\\release\\runtimes\\\\win-x64\\native\\msalruntime.dll"
+            "TargetName" = "8:msalruntime.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_BF73E3B3136C4833903A829A9A35D1E1"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E991311983F8955D4E1F056AEEFAA8DA"
@@ -1942,6 +2014,83 @@
             "Property" = "8:TARGETDIR"
                 "Folders"
                 {
+                    "{9EF0B969-E518-4E46-987F-47570745A589}:_1B545B7A78064DB5BD74C14B106E59E9"
+                    {
+                    "Name" = "8:runtimes"
+                    "AlwaysCreate" = "11:FALSE"
+                    "Condition" = "8:"
+                    "Transitive" = "11:FALSE"
+                    "Property" = "8:_B0E8F3D6F8EE40FEA4892718371FB882"
+                        "Folders"
+                        {
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_1B97BA2DA22746D1AF8DF272B84C6C6B"
+                            {
+                            "Name" = "8:win-x86"
+                            "AlwaysCreate" = "11:FALSE"
+                            "Condition" = "8:"
+                            "Transitive" = "11:FALSE"
+                            "Property" = "8:_F327C45B15DC4AEF933C5D101415913F"
+                                "Folders"
+                                {
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_B702CBDA0E97427DBEB3DA5C2FD6E0B6"
+                                    {
+                                    "Name" = "8:native"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "Condition" = "8:"
+                                    "Transitive" = "11:FALSE"
+                                    "Property" = "8:_7E64778788CB42FFBCCF111A5DA60082"
+                                        "Folders"
+                                        {
+                                        }
+                                    }
+                                }
+                            }
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_1ED6A6CC496F4274AA03ED513EF6D505"
+                            {
+                            "Name" = "8:win-x64"
+                            "AlwaysCreate" = "11:FALSE"
+                            "Condition" = "8:"
+                            "Transitive" = "11:FALSE"
+                            "Property" = "8:_06835687416A4C0E9AE8DE237473DBFF"
+                                "Folders"
+                                {
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_BF73E3B3136C4833903A829A9A35D1E1"
+                                    {
+                                    "Name" = "8:native"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "Condition" = "8:"
+                                    "Transitive" = "11:FALSE"
+                                    "Property" = "8:_57A96D86D048438598A5C54F2CA3A02A"
+                                        "Folders"
+                                        {
+                                        }
+                                    }
+                                }
+                            }
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_EEE585D8C2654E8F9EA3FFF607C02D91"
+                            {
+                            "Name" = "8:win-arm64"
+                            "AlwaysCreate" = "11:FALSE"
+                            "Condition" = "8:"
+                            "Transitive" = "11:FALSE"
+                            "Property" = "8:_2980FF0EC301460AB0F64590BBBACDBB"
+                                "Folders"
+                                {
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_5B9C415B11324AF783FDCB0CB7EEAF0F"
+                                    {
+                                    "Name" = "8:native"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "Condition" = "8:"
+                                    "Transitive" = "11:FALSE"
+                                    "Property" = "8:_B2C6D2B9B65A447AB90CC4B24FB5ED7D"
+                                        "Folders"
+                                        {
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
             "{1525181F-901A-416C-8A58-119130FE478E}:_EE072C80A4C44030A0D8F9200ADF85C4"
@@ -2027,7 +2176,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Tabular Editor"
         "ProductCode" = "8:{6EAA59EB-F658-41E9-94E7-BD7B47BB1389}"
-        "PackageCode" = "8:{D232FAE5-B078-413C-AF4D-E1D763082CED}"
+        "PackageCode" = "8:{D1C1AAF6-AB95-4224-BFC0-C66888BFE824}"
         "UpgradeCode" = "8:{E20734F5-CD2A-4A76-AB20-014819FCDE35}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"

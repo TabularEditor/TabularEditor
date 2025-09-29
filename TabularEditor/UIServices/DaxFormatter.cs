@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Parts of this code has been copied from the DAX Studio source code:
  * https://github.com/DaxStudio/DaxStudio
  * 
@@ -83,9 +83,9 @@ namespace TabularEditor.Dax
             this.SkipSpaceAfterFunctionName = skipSpaceAfterFunctionName;
 
             // Save caller app and version
-            var assemblyName = System.Reflection.Assembly.GetEntryAssembly().GetName();
-            this.CallerApp = assemblyName.Name;
-            this.CallerVersion = assemblyName.Version.ToString();
+            var assemblyName = System.Reflection.Assembly.GetEntryAssembly()?.GetName();
+            this.CallerApp = assemblyName?.Name;
+            this.CallerVersion = assemblyName?.Version.ToString();
 
             var telemetry = ModelTelemetry.Collect();
             if(telemetry != null) PopulateFromTelemetry(telemetry);

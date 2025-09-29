@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -45,6 +45,59 @@ namespace TabularEditor
             Assert.IsTrue((DateTime.Now - timer).TotalSeconds > 1.5, "Throttling after first 3 calls");
 
             mockCommandLine.Verify(c => c.Warning(It.IsAny<string>()), Times.Once, "Deprecation warning must have been called exactly once");
+        }
+
+        [TestMethod]
+        public void FormatDaxUdfTest()
+        {
+            var mockFormatter = new Mock<MockFormatter>() { CallBase = true };
+            ScriptHelper.DaxFormatter = mockFormatter.Object;
+
+            var model = new TabularModelHandler(compatibilityLevel: 1702).Model;
+            var udf = model.AddFunction("f1");
+
+            AssertFormat(udf, """
+                () =>
+                1
+                """);
+            AssertFormat(udf, """
+                // Comment
+                () =>
+                1
+                """);
+            AssertFormat(udf, """
+                // Comment line 1
+                // Comment line 2
+                () =>
+                1
+                """);
+            AssertFormat(udf, """
+                /* Comment */
+                () =>
+                1
+                """);
+            AssertFormat(udf, """
+                /* Comment line 1
+                comment line 2 */
+                () =>
+                1
+                """);
+        }
+
+        private void AssertFormat(Function function, string originalAndFormattedDax)
+        {
+            AssertFormat(function, originalAndFormattedDax, originalAndFormattedDax);
+        }
+
+        private void AssertFormat(Function function, string originalDax, string expectedFormattedDax)
+        {
+            function.Expression = originalDax;
+
+            ScriptHelper.BeforeScriptExecution();
+            function.FormatDax();
+            ScriptHelper.AfterScriptExecution();
+
+            Assert.AreEqual(expectedFormattedDax.Replace("\r",""), function.Expression.Replace("\r", ""));
         }
 
         [TestMethod]
