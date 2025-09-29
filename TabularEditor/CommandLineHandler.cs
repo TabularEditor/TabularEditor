@@ -147,7 +147,7 @@ namespace TabularEditor
 
             var doScript = upperArgList.IndexOf("-SCRIPT");
             if (doScript == -1) doScript = upperArgList.IndexOf("-S");
-            if (doScript > doDeploy) doScript = -1; // -S was used as a deployment option - not a script, so ignore it here
+            if (doScript > doDeploy && doDeploy > -1) doScript = -1; // -S was used as a deployment option - not a script, so ignore it here
             if (doScript > -1)
             {
                 if (upperArgList.Count <= doScript)
@@ -169,7 +169,7 @@ namespace TabularEditor
 
             var doSaveToFolder = upperArgList.IndexOf("-FOLDER");
             if (doSaveToFolder == -1) doSaveToFolder = upperArgList.IndexOf("-F");
-            if (doSaveToFolder > doDeploy) doSaveToFolder = -1; // -F was used as a deployment option - not a save option, so ignore it here
+            if (doSaveToFolder > doDeploy && doDeploy > -1) doSaveToFolder = -1; // -F was used as a deployment option - not a save option, so ignore it here
             if (doSaveToFolder > -1)
             {
                 if (upperArgList.Count <= doSaveToFolder)
