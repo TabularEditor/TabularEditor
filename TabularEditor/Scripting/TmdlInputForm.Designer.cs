@@ -71,6 +71,8 @@ namespace TabularEditor.Scripting
             this.txtTmdl.Name = "txtTmdl";
             this.txtTmdl.Size = new System.Drawing.Size(764, 435);
             this.txtTmdl.TabIndex = 0;
+            this.txtTmdl.MaxLength = 0;
+            this.txtTmdl.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             // 
             // btnCancel
             // 
@@ -86,6 +88,7 @@ namespace TabularEditor.Scripting
             // 
             // chkReplace
             // 
+            this.chkReplace.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.chkReplace.AutoSize = true;
             this.chkReplace.Location = new System.Drawing.Point(24, 502);
             this.chkReplace.Name = "chkReplace";
