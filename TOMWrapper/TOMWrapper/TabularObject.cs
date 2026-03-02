@@ -105,12 +105,12 @@ namespace TabularEditor.TOMWrapper
     /// 
     /// Protected constructor that takes a TOM MetadataObject as argument.
     /// </summary>
-    public abstract class TabularObject: ITabularObject, INotifyPropertyChanging, IDynamicPropertyObject
+    public abstract class TabularObject: IInternalTabularObject, INotifyPropertyChanging, IDynamicPropertyObject
     {
         internal JObject SerializedFrom = null;
         internal ITabularObjectCollection Collection;
 
-        void ITabularObject.ReapplyReferences() => ReapplyReferences();
+        void IInternalTabularObject.ReapplyReferences() => ReapplyReferences();
 
         protected void SetValue(object org, object value, Action<object> setter, [CallerMemberName] string propertyName = null)
         {

@@ -9,7 +9,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class DataCoverageDefinition: IExpressionObject, ITabularTableObject
+    public partial class DataCoverageDefinition: IInternalTabularNamedObject, IExpressionObject, ITabularTableObject
     {
         [Browsable(false)]
         public Table Table => Partition.Table;
@@ -25,7 +25,7 @@ namespace TabularEditor.TOMWrapper
             }
         }
 
-        void ITabularNamedObject.RemoveReferences() { }
+        void IInternalTabularNamedObject.RemoveReferences() { }
 
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {

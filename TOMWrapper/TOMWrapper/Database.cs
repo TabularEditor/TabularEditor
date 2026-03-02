@@ -13,7 +13,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 namespace TabularEditor.TOMWrapper
 {
     [TypeConverter(typeof(DynamicPropertyConverter))]
-    public sealed class Database : ITabularObject, INotifyPropertyChanged, INotifyPropertyChanging, IDynamicPropertyObject
+    public sealed class Database : IInternalTabularObject, INotifyPropertyChanged, INotifyPropertyChanging, IDynamicPropertyObject
     {
         public static readonly char[] InvalidNameCharacters = new[] { '.', ',', ';', '\'', '`', ':', '/', '\\', '*', '|', '?', '"', '&', '%', '$', '!', '+', '=', '(', ')', '[', ']', '{', '}', '<', '>' };
 
@@ -148,7 +148,7 @@ namespace TabularEditor.TOMWrapper
         {
             return TOMDatabase?.Server == null ? "(Metadata loaded from file)" : ServerName + "." + Name;
         }
-        void ITabularObject.ReapplyReferences() { }
+        void IInternalTabularObject.ReapplyReferences() { }
 
         public event PropertyChangedEventHandler PropertyChanged;
         public event PropertyChangingEventHandler PropertyChanging;

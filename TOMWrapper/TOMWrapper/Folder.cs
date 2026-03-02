@@ -15,7 +15,7 @@ namespace TabularEditor.TOMWrapper
     /// Implements IParentObject since a Folder can contain child objects.
     /// </summary>
     [DebuggerDisplay("{ObjectType} {Path}")]
-    public class Folder : IFolderObject, IFolder, ITabularTableObject, IErrorMessageObject, IHideableObject
+    public class Folder : IInternalTabularNamedObject, IFolderObject, IFolder, ITabularTableObject, IErrorMessageObject, IHideableObject
     {
         internal List<IFolderObject> Children { get; private set; } = new List<IFolderObject>();
         [Browsable(false)]
@@ -31,8 +31,8 @@ namespace TabularEditor.TOMWrapper
 
         bool ITabularNamedObject.CanEditName() { return Handler.PowerBIGovernance.AllowEditProperty(ObjectType.Measure, Properties.DISPLAYFOLDER); }
 
-        void ITabularObject.ReapplyReferences() { }
-        void ITabularNamedObject.RemoveReferences() { }
+        void IInternalTabularObject.ReapplyReferences() { }
+        void IInternalTabularNamedObject.RemoveReferences() { }
         public override int GetHashCode()
         {
             unchecked

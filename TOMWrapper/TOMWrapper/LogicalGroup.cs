@@ -56,7 +56,7 @@ namespace TabularEditor.TOMWrapper
     }
 
     [TypeConverter(typeof(DynamicPropertyConverter))]
-    public sealed class LogicalGroup: ITabularObjectContainer, IDynamicPropertyObject
+    public sealed class LogicalGroup: IInternalTabularNamedObject, ITabularObjectContainer, IDynamicPropertyObject
     {
         bool ITabularNamedObject.CanEditName() { return false; }
 
@@ -71,8 +71,8 @@ namespace TabularEditor.TOMWrapper
 
         public bool IsRemoved => false;
 
-        void ITabularObject.ReapplyReferences() { }
-        void ITabularNamedObject.RemoveReferences() { }
+        void IInternalTabularObject.ReapplyReferences() { }
+        void IInternalTabularNamedObject.RemoveReferences() { }
 
         public IEnumerable<ITabularNamedObject> GetChildren()
         {

@@ -299,10 +299,10 @@ namespace TabularEditor.TOMWrapper
         }
     }
 
-    public partial class PartitionCollection: ITabularObjectContainer, ITabularTableObject
+    public partial class PartitionCollection: IInternalTabularNamedObject, ITabularObjectContainer, ITabularTableObject
     {
-        void ITabularObject.ReapplyReferences() => ReapplyReferences();
-        void ITabularNamedObject.RemoveReferences() { }
+        void IInternalTabularObject.ReapplyReferences() => ReapplyReferences();
+        void IInternalTabularNamedObject.RemoveReferences() { }
 
         internal Type[] GetSupportedPartitionTypes()
         {

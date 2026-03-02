@@ -21,7 +21,11 @@ namespace TabularEditor.TOMWrapper
         ObjectType ObjectType { get; }
         Model Model { get; }
         bool IsRemoved { get; }
-        internal void ReapplyReferences();
+    }
+
+    internal interface IInternalTabularObject: ITabularObject
+    {
+        void ReapplyReferences();
     }
 
     public interface ILineageTagObject: ITabularNamedObject
@@ -43,7 +47,7 @@ namespace TabularEditor.TOMWrapper
         TranslationIndexer TranslatedDescriptions { get; }
     }
 
-    public interface ITabularNamedObject : ITabularObject
+    public interface ITabularNamedObject: ITabularObject
     {
         string Name { get; set; }
         int MetadataIndex { get; }
@@ -54,7 +58,11 @@ namespace TabularEditor.TOMWrapper
         bool CanEditName();
         bool CanDelete(out string message);
         void Delete();
-        internal void RemoveReferences();
+    }
+
+    internal interface IInternalTabularNamedObject: ITabularNamedObject, IInternalTabularObject
+    {
+        void RemoveReferences();
     }
 
     #region Common interfaces
@@ -152,7 +160,7 @@ namespace TabularEditor.TOMWrapper
     /// <summary>
     /// Object that belongs to a specific table.
     /// </summary>
-    public interface ITabularTableObject : ITabularNamedObject
+    public interface ITabularTableObject: ITabularNamedObject
     {
         Table Table { get; }
     }
@@ -182,7 +190,7 @@ namespace TabularEditor.TOMWrapper
     ///  - Hierarchies
     ///  - Folders
     /// </summary>
-    public interface IFolderObject : ITabularTableObject
+    public interface IFolderObject: ITabularTableObject
     {
         string DisplayFolder { get; set; }
         TranslationIndexer TranslatedDisplayFolders { get; }
@@ -193,7 +201,7 @@ namespace TabularEditor.TOMWrapper
     ///  - Folders
     ///  - Table
     /// </summary>
-    public interface IFolder : ITabularNamedObject, ITabularObjectContainer
+    public interface IFolder: ITabularNamedObject, ITabularObjectContainer
     {
         IEnumerable<IFolderObject> GetChildrenByFolders();
         Table ParentTable { get; }

@@ -162,7 +162,7 @@ namespace TabularEditor.TOMWrapper
         public string DaxTableName => DaxObjectName;
     }
 
-    public partial class CalendarCollection: ITabularTableObject, ITabularObjectContainer
+    public partial class CalendarCollection: IInternalTabularNamedObject, ITabularTableObject, ITabularObjectContainer
     {
         internal static string GetNewName(Table table, string prefix = null)
         {
@@ -200,8 +200,8 @@ namespace TabularEditor.TOMWrapper
         [Editor(typeof(CalendarCollectionEditor), typeof(UITypeEditor))]
         public CalendarCollection PropertyGridCalendars => this;
 
-        void ITabularObject.ReapplyReferences() => ReapplyReferences();
-        void ITabularNamedObject.RemoveReferences() { }
+        void IInternalTabularObject.ReapplyReferences() => ReapplyReferences();
+        void IInternalTabularNamedObject.RemoveReferences() { }
 
         bool ITabularNamedObject.CanEditName() => false;
 

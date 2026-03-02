@@ -10,7 +10,7 @@ using TOM = Microsoft.AnalysisServices.Tabular;
 
 namespace TabularEditor.TOMWrapper
 {
-    public partial class KPI: ITabularNamedObject, IDaxDependantObject, IExpressionObject, ITabularTableObject
+    public partial class KPI: IInternalTabularNamedObject, IDaxDependantObject, IExpressionObject, ITabularTableObject
     {
         [Browsable(false)]
         public Table Table => Measure.Table;
@@ -19,7 +19,7 @@ namespace TabularEditor.TOMWrapper
         public string MeasureName => Measure?.DaxObjectName;
 
         bool ITabularNamedObject.CanEditName() { return false; }
-        void ITabularNamedObject.RemoveReferences() { }
+        void IInternalTabularNamedObject.RemoveReferences() { }
         protected override void OnPropertyChanged(string propertyName, object oldValue, object newValue)
         {
             switch(propertyName)
