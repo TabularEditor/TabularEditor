@@ -148,8 +148,17 @@ namespace TabularEditor.PropertyGridUI
         }
     }
 
-    class EditorServiceWrapper(IWindowsFormsEditorService baseEditorService, RefreshGridCollectionEditor collectionEditor): IWindowsFormsEditorService
+    class EditorServiceWrapper : IWindowsFormsEditorService
     {
+        private readonly IWindowsFormsEditorService baseEditorService;
+        private readonly RefreshGridCollectionEditor collectionEditor;
+
+        public EditorServiceWrapper(IWindowsFormsEditorService baseEditorService, RefreshGridCollectionEditor collectionEditor)
+        {
+            this.baseEditorService = baseEditorService;
+            this.collectionEditor = collectionEditor;
+        }
+
         public void CloseDropDown()
         {
             baseEditorService.CloseDropDown();
@@ -169,8 +178,17 @@ namespace TabularEditor.PropertyGridUI
         }
     }
 
-    class ServiceProviderWrapper(IServiceProvider baseServiceProvider, RefreshGridCollectionEditor collectionEditor): IServiceProvider
+    class ServiceProviderWrapper : IServiceProvider
     {
+        private readonly IServiceProvider baseServiceProvider;
+        private readonly RefreshGridCollectionEditor collectionEditor;
+
+        public ServiceProviderWrapper(IServiceProvider baseServiceProvider, RefreshGridCollectionEditor collectionEditor)
+        {
+            this.baseServiceProvider = baseServiceProvider;
+            this.collectionEditor = collectionEditor;
+        }
+
         public object GetService(Type serviceType)
         {
             if (serviceType == typeof(IWindowsFormsEditorService))

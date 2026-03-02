@@ -20,7 +20,7 @@ namespace TabularEditor.PropertyGridUI
 
         protected override Type[] CreateNewItemTypes()
         {
-            return [typeof(TimeUnitColumnAssociation), typeof(TimeRelatedColumnGroup)];
+            return new[] { typeof(TimeUnitColumnAssociation), typeof(TimeRelatedColumnGroup) };
         }
 
         protected override object CreateInstance(Type itemType)

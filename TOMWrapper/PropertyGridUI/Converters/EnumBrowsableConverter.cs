@@ -5,9 +5,14 @@ using System.Reflection;
 
 namespace TabularEditor.PropertyGridUI.Converters
 {
-    internal class EnumBrowsableConverter(Type type): EnumConverter(type)
+    internal class EnumBrowsableConverter : EnumConverter
     {
-        private readonly Type _enumType = type;
+        private readonly Type _enumType;
+
+        public EnumBrowsableConverter(Type type) : base(type)
+        {
+            _enumType = type;
+        }
 
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
@@ -30,8 +35,13 @@ namespace TabularEditor.PropertyGridUI.Converters
     }
 
     [AttributeUsage(AttributeTargets.Field)]
-    internal class EnumBrowsableAttribute(bool browsable): Attribute
+    internal class EnumBrowsableAttribute : Attribute
     {
-        public bool Browsable { get; } = browsable;
+        public bool Browsable { get; }
+
+        public EnumBrowsableAttribute(bool browsable)
+        {
+            Browsable = browsable;
+        }
     }
 }

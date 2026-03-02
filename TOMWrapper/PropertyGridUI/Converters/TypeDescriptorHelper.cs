@@ -24,8 +24,17 @@ static class TypeDescriptorHelper
         return new CustomContext(instance, propertyDescriptor, host);
     }
 
-    private sealed class CustomContext(object instance, PropertyDescriptor propertyDescriptor, IDesignerHost host) : ITypeDescriptorContext
+    private sealed class CustomContext : ITypeDescriptorContext
     {
+        private readonly IDesignerHost _host;
+
+        public CustomContext(object instance, PropertyDescriptor propertyDescriptor, IDesignerHost host)
+        {
+            Instance = instance ?? throw new ArgumentNullException(nameof(instance));
+            PropertyDescriptor = propertyDescriptor ?? throw new ArgumentNullException(nameof(propertyDescriptor));
+            _host = host;
+        }
+
         public object GetService(Type serviceType)
         {
             if (serviceType == typeof(IWindowsFormsEditorService))
@@ -36,17 +45,17 @@ static class TypeDescriptorHelper
             if (serviceType == typeof(IDesignerHost))
             {
                 // Provide the designer host service
-                return host;
+                return _host;
             }
             return null;
         }
-        
+
         public void OnComponentChanged() { }
         public bool OnComponentChanging() => true;
 
         public IContainer Container => null;
-        public object Instance { get; } = instance ?? throw new ArgumentNullException(nameof(instance));
-        public PropertyDescriptor PropertyDescriptor { get; } = propertyDescriptor ?? throw new ArgumentNullException(nameof(propertyDescriptor));
+        public object Instance { get; }
+        public PropertyDescriptor PropertyDescriptor { get; }
     }
 
     // Provides IWindowsFormsEditorService so the editor can show a dialog
