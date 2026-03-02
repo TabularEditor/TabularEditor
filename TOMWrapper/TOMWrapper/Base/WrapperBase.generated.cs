@@ -57,6 +57,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string DEFAULTCOLUMN = "DefaultColumn";
 	    public const string DEFAULTDATAVIEW = "DefaultDataView";
 	    public const string DEFAULTDETAILROWSDEFINITION = "DefaultDetailRowsDefinition";
+	    public const string DEFAULTDIRECTLAKEINDEXINGBEHAVIOR = "DefaultDirectLakeIndexingBehavior";
 	    public const string DEFAULTHIERARCHY = "DefaultHierarchy";
 	    public const string DEFAULTMEASURE = "DefaultMeasure";
 	    public const string DEFAULTMODE = "DefaultMode";
@@ -64,6 +65,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string DESCRIPTION = "Description";
 	    public const string DETAILROWSDEFINITION = "DetailRowsDefinition";
 	    public const string DIRECTLAKEBEHAVIOR = "DirectLakeBehavior";
+	    public const string DIRECTLAKEINDEXINGBEHAVIOR = "DirectLakeIndexingBehavior";
 	    public const string DISABLEAUTOEXISTS = "DisableAutoExists";
 	    public const string DISCOURAGECOMPOSITEMODELS = "DiscourageCompositeModels";
 	    public const string DISCOURAGEIMPLICITMEASURES = "DiscourageImplicitMeasures";
@@ -72,11 +74,11 @@ namespace TabularEditor.TOMWrapper
 	    public const string DISPLAYORDINAL = "DisplayOrdinal";
 	    public const string ENCODINGHINT = "EncodingHint";
 	    public const string ERRORMESSAGE = "ErrorMessage";
-	    public const string EVALUATIONBEHAVIOR = "EvaluationBehavior";
 	    public const string EXCLUDEDARTIFACTS = "ExcludedArtifacts";
 	    public const string EXCLUDEFROMAUTOMATICAGGREGATIONS = "ExcludeFromAutomaticAggregations";
 	    public const string EXCLUDEFROMMODELREFRESH = "ExcludeFromModelRefresh";
 	    public const string EXPRESSION = "Expression";
+	    public const string EXPRESSIONCONTEXT = "ExpressionContext";
 	    public const string EXPRESSIONS = "Expressions";
 	    public const string EXPRESSIONSOURCE = "ExpressionSource";
 	    public const string EXTENDEDPROPERTIES = "ExtendedProperties";
@@ -128,6 +130,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string MEMBERNAME = "MemberName";
 	    public const string MEMBERS = "Members";
 	    public const string MEMBERTYPE = "MemberType";
+	    public const string METADATAACCESSPOLICY = "MetadataAccessPolicy";
 	    public const string METADATAPERMISSION = "MetadataPermission";
 	    public const string MODE = "Mode";
 	    public const string MODELPERMISSION = "ModelPermission";
@@ -176,6 +179,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string STATUSEXPRESSION = "StatusExpression";
 	    public const string STATUSGRAPHIC = "StatusGraphic";
 	    public const string STORAGELOCATION = "StorageLocation";
+	    public const string STRINGINDEXINGBEHAVIOR = "StringIndexingBehavior";
 	    public const string STRUCTUREMODIFIEDTIME = "StructureModifiedTime";
 	    public const string SUMMARIZATION = "Summarization";
 	    public const string SUMMARIZEBY = "SummarizeBy";
@@ -586,6 +590,27 @@ namespace TabularEditor.TOMWrapper
         DirectQueryOnly = 2,
 	}
     /// <summary>
+    /// Controls how the AnalysisServices engine builds and persists DirectLake specific indexes.
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at Preview or above.</remarks>
+	public enum DirectLakeIndexingBehavior {    
+        /// <summary>
+        /// The semantic model might build in-memory index during data load or query execution.
+        /// </summary>
+        Auto = 0,
+        /// <summary>
+        /// The semantic model will build and persist the index only when explicitly requested via a refresh indexes operation. Refresh types other than refresh indexes do not perform indexing.
+        /// </summary>
+        Explicit = 1,
+        /// <summary>
+        /// The semantic model builds and persists indexes as part of refresh full, refresh calculate and refresh indexes operations.
+        /// </summary>
+        Full = 2,
+        /// <summary>
+        /// Applies the semantic model default index building and persistence behavior.
+        /// </summary>
+        Default = 3,
+	}
+    /// <summary>
     /// Encoding hint to suggest whether a column should use hash encoding.
     /// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 	public enum EncodingHintType {    
@@ -603,21 +628,17 @@ namespace TabularEditor.TOMWrapper
         Value = 2,
 	}
     /// <summary>
-    /// Evaluation behavior for calculated column.
-    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at Preview or above.</remarks>
-	public enum EvaluationBehavior {    
+    /// Expression Context for calculated column.
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1705 or above.</remarks>
+	public enum ExpressionContext {    
         /// <summary>
-        /// Default value, used for backward compatibility. Maps to Static or Dynamic depending on the table properties.
+        /// Expression uses only standard functions.
         /// </summary>
-        Automatic = 1,
+        Standard = 1,
         /// <summary>
-        /// Evaluation is performed during processing and the result is materialized.
+        /// Expression can include user-context functions.
         /// </summary>
-        Static = 2,
-        /// <summary>
-        /// Evaluation is performed dynamically and the result is not materialized.
-        /// </summary>
-        Dynamic = 3,
+        UserContext = 2,
 	}
     /// <summary>
     /// Indicates the dialect of the query expression.
@@ -682,6 +703,44 @@ namespace TabularEditor.TOMWrapper
         /// Do not reference this member directly in your code. It supports the Analysis Services infrastructure.
         /// </summary>
         ImpersonateUnattendedAccount = 6,
+	}
+    /// <summary>
+    /// Controls how the AnalysisServices engine builds and persists indexes.
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at Preview or above.</remarks>
+	public enum IndexingBehavior {    
+        /// <summary>
+        /// Indexing is disabled. The semantic model will not perform indexing during refresh operations.
+        /// </summary>
+        Off = 0,
+        /// <summary>
+        /// The semantic model might build in-memory index during data load or query execution.
+        /// </summary>
+        Auto = 1,
+        /// <summary>
+        /// The semantic model will build and persist the index only when explicitly requested via a refresh indexes operation. Refresh types other than refresh indexes do not perform indexing.
+        /// </summary>
+        Explicit = 2,
+        /// <summary>
+        /// The semantic model builds and persists indexes as part of refresh full, refresh calculate and refresh indexes operations.
+        /// </summary>
+        Full = 3,
+	}
+    /// <summary>
+    /// Defines categories of metadata elements.
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1703 or above.</remarks>
+	public enum MetadataCategory {    
+        /// <summary>
+        /// Inherit the value from the system defined behavior.
+        /// </summary>
+        Inherited = 0,
+        /// <summary>
+        /// Read-only users cannot access sensitive metadata in the model, such as measure definitions or other calculation expressions.
+        /// </summary>
+        Basic = 1,
+        /// <summary>
+        /// Allow read of metadata elements related to definitions of calculations.
+        /// </summary>
+        CalculationDefinitions = 2,
 	}
     /// <summary>
     /// Access control to a data defined by a metadata object.
@@ -941,6 +1000,10 @@ namespace TabularEditor.TOMWrapper
         /// Defragment the data in the specified table. As data is added to or removed from a table, the dictionaries of each column can become polluted with values that no longer exist in the actual column values. The defragment option will clean up the values in the dictionaries that are no longer used.
         /// </summary>
         Defragment = 8,
+        /// <summary>
+        /// Refresh indexes.
+        /// </summary><remarks>This value is only supported when the compatibility level of the database is at Preview or above.</remarks>
+        Indexes = 9,
 	}
     /// <summary>
     /// An enumeration of possible values for defining cardinality on either side of a table relationship.
@@ -1015,7 +1078,7 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         BothDirections = 2,
         /// <summary>
-        /// No filtering will occur from either end of the relationship.
+        /// Blocks RLS filter propagation from the One side to the Many side of a table relationship. This only applies to limited relationships in which at least one table is from a Power BI semantic model or Analysis Services database and the other table is from a different data source.
         /// </summary><remarks>This value is only supported when the compatibility level of the database is at 1561 or above.</remarks>
         None = 3,
 	}
@@ -2069,29 +2132,29 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeExpression() { return false; }
 /// <summary>
-///             Evaluation behavior for calculated column.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at Preview or above.</remarks>
-		[DisplayName("Evaluation Behavior")]
-		[Category("Options"),Description(@"Evaluation behavior for calculated column."),IntelliSense(@"Evaluation behavior for calculated column.")]
-		public EvaluationBehavior EvaluationBehavior {
+///             Expression context for calculated column.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1705 or above.</remarks>
+		[DisplayName("Expression Context")]
+		[Category("Options"),Description(@"Expression context for calculated column."),IntelliSense(@"Expression context for calculated column.")]
+		public ExpressionContext ExpressionContext {
 			get {
-			    return (EvaluationBehavior)MetadataObject.EvaluationBehavior;
+			    return (ExpressionContext)MetadataObject.ExpressionContext;
 			}
 			set {
 				
-				var oldValue = EvaluationBehavior;
+				var oldValue = ExpressionContext;
 				var newValue = value;
 				if (oldValue == newValue) return;
 				bool undoable = true;
 				bool cancel = false;
-				OnPropertyChanging(Properties.EVALUATIONBEHAVIOR, newValue, ref undoable, ref cancel);
+				OnPropertyChanging(Properties.EXPRESSIONCONTEXT, newValue, ref undoable, ref cancel);
 				if (cancel) return;
-				if (!MetadataObject.IsRemoved) MetadataObject.EvaluationBehavior = (TOM.EvaluationBehavior)newValue;
-				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EVALUATIONBEHAVIOR, oldValue, newValue));
-				OnPropertyChanged(Properties.EVALUATIONBEHAVIOR, oldValue, newValue);
+				if (!MetadataObject.IsRemoved) MetadataObject.ExpressionContext = (TOM.ExpressionContext)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.EXPRESSIONCONTEXT, oldValue, newValue));
+				OnPropertyChanged(Properties.EXPRESSIONCONTEXT, oldValue, newValue);
 			}
 		}
-		private bool ShouldSerializeEvaluationBehavior() { return false; }
+		private bool ShouldSerializeExpressionContext() { return false; }
 
 		internal static CalculatedColumn CreateFromMetadata(Table parent, TOM.CalculatedColumn metadataObject) {
             // Generate a new LineageTag if an object with the provided lineage tag already exists:
@@ -2218,8 +2281,8 @@ namespace TabularEditor.TOMWrapper
 			switch (propertyName) {
 
 				// Hide properties based on compatibility requirements (inferred from TOM):
-				case Properties.EVALUATIONBEHAVIOR:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+				case Properties.EXPRESSIONCONTEXT:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1705 : Handler.CompatibilityLevel >= 1705;
 				case Properties.PARENT:
 					return false;
 				
@@ -3272,6 +3335,30 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeSourceLineageTag() { return false; }
+/// <summary>
+///             This property allows building and persisting of string column's index. A column may use one of the following values: Off, Auto, Explicit or Full. Default value for the property is Auto. Setting it to Auto will build an index but not persist it. Setting it to Explicit will build and persist an index by running command RefreshIndex. Setting it to Full will build and persist an index by running either RefreshRecalc, RefreshFull or RefreshIndex command.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at Preview or above.</remarks>
+		[DisplayName("String Indexing Behavior")]
+		[Category("Options"),Description(@"This property allows building and persisting of string column's index. A column may use one of the following values: Off, Auto, Explicit or Full. Default value for the property is Auto. Setting it to Auto will build an index but not persist it. Setting it to Explicit will build and persist an index by running command RefreshIndex. Setting it to Full will build and persist an index by running either RefreshRecalc, RefreshFull or RefreshIndex command."),IntelliSense(@"This property allows building and persisting of string column's index. A column may use one of the following values: Off, Auto, Explicit or Full. Default value for the property is Auto. Setting it to Auto will build an index but not persist it. Setting it to Explicit will build and persist an index by running command RefreshIndex. Setting it to Full will build and persist an index by running either RefreshRecalc, RefreshFull or RefreshIndex command.")]
+		public IndexingBehavior StringIndexingBehavior {
+			get {
+			    return (IndexingBehavior)MetadataObject.StringIndexingBehavior;
+			}
+			set {
+				
+				var oldValue = StringIndexingBehavior;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.STRINGINDEXINGBEHAVIOR, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.StringIndexingBehavior = (TOM.IndexingBehavior)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.STRINGINDEXINGBEHAVIOR, oldValue, newValue));
+				OnPropertyChanged(Properties.STRINGINDEXINGBEHAVIOR, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeStringIndexingBehavior() { return false; }
 		///<summary>The parent table of the current Column.</summary>
 		[Browsable(false)]
 		public Table Table
@@ -3471,6 +3558,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : false;
 				case Properties.SOURCELINEAGETAG:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1550 : Handler.CompatibilityLevel >= 1550;
+				case Properties.STRINGINDEXINGBEHAVIOR:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.VARIATIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1200 : Handler.CompatibilityLevel >= 1400;
 				case nameof(Synonyms):
@@ -3778,6 +3867,18 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("SourceLineageTag"));
 				this.ToList().ForEach(item => { item.SourceLineageTag = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the StringIndexingBehavior property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the StringIndexingBehavior property of all objects in the collection at once.")]
+		public IndexingBehavior StringIndexingBehavior {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("StringIndexingBehavior"));
+				this.ToList().ForEach(item => { item.StringIndexingBehavior = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}
@@ -9668,6 +9769,54 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeSelectionExpressionBehavior() { return false; }
 /// <summary>
+///             The policy applies to users with read permissions only and controls their access to various metadata elements.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1703 or above.</remarks>
+		[DisplayName("Metadata Access Policy")]
+		[Category("Options"),Description(@"The policy applies to users with read permissions only and controls their access to various metadata elements."),IntelliSense(@"The policy applies to users with read permissions only and controls their access to various metadata elements.")]
+		public MetadataCategory MetadataAccessPolicy {
+			get {
+			    return (MetadataCategory)MetadataObject.MetadataAccessPolicy;
+			}
+			set {
+				
+				var oldValue = MetadataAccessPolicy;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.METADATAACCESSPOLICY, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.MetadataAccessPolicy = (TOM.MetadataCategory)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.METADATAACCESSPOLICY, oldValue, newValue));
+				OnPropertyChanged(Properties.METADATAACCESSPOLICY, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeMetadataAccessPolicy() { return false; }
+/// <summary>
+///             The default indexing behavior for Direct Lake.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at Preview or above.</remarks>
+		[DisplayName("Default Direct Lake Indexing Behavior")]
+		[Category("Options"),Description(@"The default indexing behavior for Direct Lake."),IntelliSense(@"The default indexing behavior for Direct Lake.")]
+		public DirectLakeIndexingBehavior DefaultDirectLakeIndexingBehavior {
+			get {
+			    return (DirectLakeIndexingBehavior)MetadataObject.DefaultDirectLakeIndexingBehavior;
+			}
+			set {
+				
+				var oldValue = DefaultDirectLakeIndexingBehavior;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.DEFAULTDIRECTLAKEINDEXINGBEHAVIOR, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.DefaultDirectLakeIndexingBehavior = (TOM.DirectLakeIndexingBehavior)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DEFAULTDIRECTLAKEINDEXINGBEHAVIOR, oldValue, newValue));
+				OnPropertyChanged(Properties.DEFAULTDIRECTLAKEINDEXINGBEHAVIOR, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeDefaultDirectLakeIndexingBehavior() { return false; }
+/// <summary>
 ///             A reference to a default measure.
 ///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1400 or above.</remarks>
 		[DisplayName("Default Measure")]
@@ -9894,6 +10043,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1510 : Handler.CompatibilityLevel >= 1510;
 				case Properties.DATASOURCEVARIABLESOVERRIDEBEHAVIOR:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1475 : Handler.CompatibilityLevel >= 1475;
+				case Properties.DEFAULTDIRECTLAKEINDEXINGBEHAVIOR:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.DEFAULTMEASURE:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.DEFAULTPOWERBIDATASOURCEVERSION:
@@ -9924,6 +10075,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1569 : Handler.CompatibilityLevel >= 1569;
 				case Properties.MAXPARALLELISMPERREFRESH:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1568 : Handler.CompatibilityLevel >= 1568;
+				case Properties.METADATAACCESSPOLICY:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1703 : Handler.CompatibilityLevel >= 1703;
 				case Properties.QUERYGROUPS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1480 : Handler.CompatibilityLevel >= 1480;
 				case Properties.SELECTIONEXPRESSIONBEHAVIOR:
@@ -13735,10 +13888,10 @@ namespace TabularEditor.TOMWrapper
 		}
 		private bool ShouldSerializeState() { return false; }
 /// <summary>
-///             Indicates how relationships influence filtering of data when evaluating row-level security expressions. Possible values are as follows. OneDirection (1): The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2): Filters on either end of the relationship will automatically filter the other table.
+///             Indicates how relationships influence filtering of data when evaluating row-level security expressions. See SecurityFilteringBehavior enumeration for possible values and their descriptions.
 ///             </summary>
 		[DisplayName("Security Filtering Behavior")]
-		[Category("Options"),Description(@"Indicates how relationships influence filtering of data when evaluating row-level security expressions. Possible values are as follows. OneDirection (1): The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2): Filters on either end of the relationship will automatically filter the other table."),IntelliSense(@"Indicates how relationships influence filtering of data when evaluating row-level security expressions. Possible values are as follows. OneDirection (1): The rows selected in the 'To' end of the relationship will automatically filter scans of the table in the 'From' end of the relationship. BothDirections (2): Filters on either end of the relationship will automatically filter the other table.")]
+		[Category("Options"),Description(@"Indicates how relationships influence filtering of data when evaluating row-level security expressions. See SecurityFilteringBehavior enumeration for possible values and their descriptions."),IntelliSense(@"Indicates how relationships influence filtering of data when evaluating row-level security expressions. See SecurityFilteringBehavior enumeration for possible values and their descriptions.")]
 		public SecurityFilteringBehavior SecurityFilteringBehavior {
 			get {
 			    return (SecurityFilteringBehavior)MetadataObject.SecurityFilteringBehavior;
@@ -14785,6 +14938,30 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeExcludeFromAutomaticAggregations() { return false; }
+/// <summary>
+///             Table indexing behavior for Direct Lake.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at Preview or above.</remarks>
+		[DisplayName("Direct Lake Indexing Behavior")]
+		[Category("Options"),Description(@"Table indexing behavior for Direct Lake."),IntelliSense(@"Table indexing behavior for Direct Lake.")]
+		public DirectLakeIndexingBehavior DirectLakeIndexingBehavior {
+			get {
+			    return (DirectLakeIndexingBehavior)MetadataObject.DirectLakeIndexingBehavior;
+			}
+			set {
+				
+				var oldValue = DirectLakeIndexingBehavior;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.DIRECTLAKEINDEXINGBEHAVIOR, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.DirectLakeIndexingBehavior = (TOM.DirectLakeIndexingBehavior)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.DIRECTLAKEINDEXINGBEHAVIOR, oldValue, newValue));
+				OnPropertyChanged(Properties.DIRECTLAKEINDEXINGBEHAVIOR, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeDirectLakeIndexingBehavior() { return false; }
 		// Skipping property DefaultDetailRowsDefinition on object Table
 		// Skipping property RefreshPolicy on object Table
 		// Skipping property CalculationGroup on object Table
@@ -15065,6 +15242,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1567 : Handler.CompatibilityLevel >= 1567;
 				case Properties.DEFAULTDETAILROWSDEFINITION:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
+				case Properties.DIRECTLAKEINDEXINGBEHAVIOR:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.EXCLUDEDARTIFACTS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.EXCLUDEFROMAUTOMATICAGGREGATIONS:
@@ -15289,6 +15468,18 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("ExcludeFromAutomaticAggregations"));
 				this.ToList().ForEach(item => { item.ExcludeFromAutomaticAggregations = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the DirectLakeIndexingBehavior property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the DirectLakeIndexingBehavior property of all objects in the collection at once.")]
+		public DirectLakeIndexingBehavior DirectLakeIndexingBehavior {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("DirectLakeIndexingBehavior"));
+				this.ToList().ForEach(item => { item.DirectLakeIndexingBehavior = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}
