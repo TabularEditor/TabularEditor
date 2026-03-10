@@ -344,10 +344,9 @@ namespace TabularEditor.UI
 
         public UITreeSelection(IEnumerable<ITabularNamedObject> selection) : base(selection)
         {
-            Folders = this.OfType<Folder>();
             Groups = this.OfType<LogicalGroup>();
             Direct = new UISelectionList<ITabularNamedObject>(this.OfType<ITabularNamedObject>());
-            AssignCollections();
+            AssignCollections(this.OfType<Folder>());
         }
 
         public UITreeSelection(IReadOnlyCollection<TreeNodeAdv> selectedNodes)
@@ -362,18 +361,19 @@ namespace TabularEditor.UI
             else if (allNodes.Count == 1) Context = GetNodeContext(allNodes[0]);
             else Context = GetNodeContexts(allNodes);
 
-            Folders = selectedNodes.Select(n => n.Tag).OfType<Folder>();
             Groups = selectedNodes.Select(n => n.Tag).OfType<LogicalGroup>();
             Direct = new UISelectionList<ITabularNamedObject>(selectedNodes.Select(n => n.Tag).OfType<ITabularNamedObject>());
 
-            AssignCollections();
+            AssignCollections(selectedNodes.Select(n => n.Tag).OfType<Folder>());
         }
 
-        private void AssignCollections()
+        private void AssignCollections(IEnumerable<Folder> folders)
         {
+            Folders = new UISelectionList<Folder>(folders);
             Measures = new UISelectionList<Measure>(this.OfType<Measure>());
             Hierarchies = new UISelectionList<Hierarchy>(this.OfType<Hierarchy>());
             Levels = new UISelectionList<Level>(this.OfType<Level>());
+            KPIs = new UISelectionList<KPI>(this.OfType<KPI>());
             Columns = new UISelectionList<Column>(this.OfType<Column>());
             Cultures = new UISelectionList<Culture>(this.OfType<Culture>());
             Roles = new UISelectionList<ModelRole>(this.OfType<ModelRole>());
@@ -390,6 +390,7 @@ namespace TabularEditor.UI
             Tables = new UISelectionList<Table>(this.OfType<Table>());
             Partitions = new UISelectionList<Partition>(this.OfType<Partition>());
             Calendars = new UISelectionList<Calendar>(this.OfType<Calendar>());
+            Objects = new UISelectionList<ITabularNamedObject>(this.OfType<ITabularNamedObject>());
         }
 
         private T One<T>() where T: TabularObject
@@ -407,6 +408,18 @@ namespace TabularEditor.UI
         public int DirectCount { get { return _selectedNodes.Count; } }
 
         #region Sub collections
+        [IntelliSense("The currently selected item (if exactly one item is selected in the explorer tree).")]
+        public ITabularNamedObject SelectedItem
+        {
+            get
+            {
+                var obj = this.FirstOrDefault();
+                if (obj == null) throw new Exception("The selection does not contain any objects.");
+                if (this.Skip(1).Any()) throw new Exception("The selection contains more than one object.");
+                return obj;
+            }
+        }
+
         [IntelliSense("The currently selected measure (if exactly one measure is selected in the explorer tree).")]
         public Measure Measure { get { return One<Measure>(); } }
 
@@ -449,6 +462,9 @@ namespace TabularEditor.UI
         [IntelliSense("The currently selected KPI.")]
         public KPI KPI { get { return One<KPI>(); } }
 
+        [IntelliSense("All currently selected KPIs.")]
+        public UISelectionList<KPI> KPIs { get; private set; }
+
         [IntelliSense("The currently selected levels.")]
         public UISelectionList<Level> Levels { get; private set; }
 
@@ -470,8 +486,14 @@ namespace TabularEditor.UI
         [IntelliSense("All currently selected roles.")]
         public UISelectionList<ModelRole> Roles { get; private set; }
 
+        [IntelliSense("The currently selected role (if exactly one role is selected in the explorer tree).")]
+        public ModelRole Role { get { return One<ModelRole>(); } }
+
         [IntelliSense("All currently selected relationships.")]
         public UISelectionList<SingleColumnRelationship> SingleColumnRelationships { get; private set; }
+
+        [IntelliSense("The currently selected relationship (if exactly one relationship is selected in the explorer tree).")]
+        public SingleColumnRelationship SingleColumnRelationship { get { return One<SingleColumnRelationship>(); } }
 
         [IntelliSense("All currently selected perspectives.")]
         public UISelectionList<Perspective> Perspectives { get; private set; }
@@ -490,6 +512,10 @@ namespace TabularEditor.UI
 
         [IntelliSense("All currently selected table permissions.")]
         public UISelectionList<TablePermission> TablePermissions { get; private set; }
+
+        [IntelliSense("The currently selected table permission (if exactly one table permission is selected in the explorer tree).")]
+        public TablePermission TablePermission { get { return One<TablePermission>(); } }
+
         [IntelliSense("The currently selected calculation group (if exactly one calculation group is selected in the explorer tree.)")]
         public CalculationGroupTable CalculationGroup
         {
@@ -511,6 +537,9 @@ namespace TabularEditor.UI
 
         [IntelliSense("All currently selected calculated table columns (including calculated table columns within selected Display Folders).")]
         public UISelectionList<CalculatedTableColumn> CalculatedTableColumns { get; private set; }
+
+        [IntelliSense("The currently selected calculated table column (if exactly one calculated table column is selected in the explorer tree).")]
+        public CalculatedTableColumn CalculatedTableColumn { get { return One<CalculatedTableColumn>(); } }
 
         [IntelliSense("The currently selected data column (if exactly one data column is selected in the explorer tree).")]
         public DataColumn DataColumn { get { return One<DataColumn>(); } }
@@ -566,7 +595,24 @@ namespace TabularEditor.UI
         [IntelliSense("A collection of objects (including folders) that are directly selected in the explorer tree.")]
         public UISelectionList<ITabularNamedObject> Direct { get; private set; }
 
-        internal IEnumerable<Folder> Folders { get; private set; }
+        [IntelliSense("All currently selected objects.")]
+        public UISelectionList<ITabularNamedObject> Objects { get; private set; }
+
+        [IntelliSense("All currently selected display folders in the explorer tree.")]
+        public UISelectionList<Folder> Folders { get; private set; }
+
+        [IntelliSense("The currently selected folder (if exactly one folder is selected in the explorer tree).")]
+        public Folder Folder
+        {
+            get
+            {
+                var folder = Folders.FirstOrDefault();
+                if (folder == null) throw new Exception("The selection does not contain any objects of type Folder");
+                if (Folders.Skip(1).Any()) throw new Exception("The selection contains more than one object of type Folder");
+                return folder;
+            }
+        }
+
         internal IEnumerable<LogicalGroup> Groups { get; private set; }
         #endregion
 
