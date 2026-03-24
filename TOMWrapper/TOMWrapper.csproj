@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\Microsoft.Identity.Client.NativeInterop.0.20.2\build\net461\Microsoft.Identity.Client.NativeInterop.props" Condition="Exists('..\packages\Microsoft.Identity.Client.NativeInterop.0.20.2\build\net461\Microsoft.Identity.Client.NativeInterop.props')" />
-  <Import Project="..\packages\Microsoft.Identity.Client.NativeInterop.0.18.1\build\net461\Microsoft.Identity.Client.NativeInterop.props" Condition="Exists('..\packages\Microsoft.Identity.Client.NativeInterop.0.18.1\build\net461\Microsoft.Identity.Client.NativeInterop.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -65,7 +64,7 @@
     <Reference Include="Microsoft.Identity.Client.Broker, Version=4.82.1.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Identity.Client.Broker.4.82.1\lib\net462\Microsoft.Identity.Client.Broker.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Identity.Client.NativeInterop, Version=0.18.1.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Identity.Client.NativeInterop, Version=0.20.2.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Identity.Client.NativeInterop.0.20.2\lib\net461\Microsoft.Identity.Client.NativeInterop.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -106,7 +105,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\AntlrGrammars\obj\Debug\DAXLexer.cs">
+    <Compile Include="..\AntlrGrammars\obj\$(Configuration)\DAXLexer.cs">
       <Link>TextServices\DAXLexer.cs</Link>
     </Compile>
     <Compile Include="..\SharedAssemblyInfo.cs">
