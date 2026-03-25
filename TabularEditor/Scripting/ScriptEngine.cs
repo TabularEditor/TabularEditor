@@ -16,6 +16,9 @@ using TabularEditor.TextServices;
 using Newtonsoft.Json;
 using System.Runtime.InteropServices;
 using TabularEditor.UIServices;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Emit;
 
 namespace TabularEditor
 {
@@ -454,8 +457,8 @@ namespace TabularEditor.Scripting
                         continue;
                     }
                     
-                    // Next, probe GAC:
-                    var asmPath = GetAssemblyPath(asm);
+                    // Next, probe GAC when available:
+                    var asmPath = TryGetAssemblyPath(asm);
                     if (!string.IsNullOrEmpty(asmPath))
                     {
                         includeAssemblies.Add(asmPath);
@@ -475,7 +478,14 @@ namespace TabularEditor.Scripting
             using (var provider = GetProviderWithPreferences())
             {
                 var compilerParams = GetCompilerParametersWithPreferences(includeAssemblies);
-                result = provider.CompileAssemblyFromSource(compilerParams, source);
+                try
+                {
+                    result = provider.CompileAssemblyFromSource(compilerParams, source);
+                }
+                catch (PlatformNotSupportedException)
+                {
+                    result = CompileWithRoslyn(source, includeAssemblies, compilerParams);
+                }
             }
 
             if (result.Errors.Count > 0)
@@ -510,6 +520,117 @@ namespace TabularEditor.Scripting
             return compilerParameters;
         }
 
+        private static CompilerResults CompileWithRoslyn(string source, IEnumerable<string> includeAssemblies, CompilerParameters compilerParameters)
+        {
+            var references = new List<MetadataReference>();
+            var referencePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var referenceNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            var tpa = AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES") as string;
+            if (!string.IsNullOrEmpty(tpa))
+            {
+                foreach (var path in tpa.Split(Path.PathSeparator))
+                {
+                    if (!TryAddReference(path, referencePaths, referenceNames)) continue;
+                    references.Add(MetadataReference.CreateFromFile(path));
+                }
+            }
+
+            foreach (var asm in includeAssemblies.Where(a => !string.IsNullOrWhiteSpace(a)).Distinct(StringComparer.OrdinalIgnoreCase))
+            {
+                var referencePath = ResolveReferencePath(asm);
+                if (!TryAddReference(referencePath, referencePaths, referenceNames)) continue;
+                references.Add(MetadataReference.CreateFromFile(referencePath));
+            }
+
+            var assemblyName = Path.GetRandomFileName();
+            var parseOptions = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp10);
+            var compilation = CSharpCompilation.Create(
+                assemblyName,
+                new[] { CSharpSyntaxTree.ParseText(source, parseOptions) },
+                references,
+                new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
+            );
+
+            using var peStream = new MemoryStream();
+            EmitResult emitResult = compilation.Emit(peStream);
+
+            var tempFiles = compilerParameters.TempFiles ?? new TempFileCollection();
+            var results = new CompilerResults(tempFiles)
+            {
+                NativeCompilerReturnValue = emitResult.Success ? 0 : 1,
+                PathToAssembly = assemblyName + ".dll"
+            };
+
+            foreach (var diagnostic in emitResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error || d.Severity == DiagnosticSeverity.Warning))
+            {
+                var location = diagnostic.Location.GetLineSpan();
+                var line = location.StartLinePosition.Line + 1;
+                var col = location.StartLinePosition.Character + 1;
+                results.Errors.Add(new CompilerError(location.Path ?? string.Empty, line, col, diagnostic.Id, diagnostic.GetMessage())
+                {
+                    IsWarning = diagnostic.Severity == DiagnosticSeverity.Warning
+                });
+            }
+
+            if (emitResult.Success)
+            {
+                peStream.Position = 0;
+                var assemblyBytes = peStream.ToArray();
+                results.CompiledAssembly = Assembly.Load(assemblyBytes);
+            }
+
+            return results;
+        }
+
+        private static bool TryAddReference(string path, HashSet<string> referencePaths, HashSet<string> referenceNames)
+        {
+            if (!File.Exists(path) || !referencePaths.Add(path)) return false;
+
+            try
+            {
+                var asmName = AssemblyName.GetAssemblyName(path)?.Name;
+                if (!string.IsNullOrEmpty(asmName) && !referenceNames.Add(asmName))
+                {
+                    referencePaths.Remove(path);
+                    return false;
+                }
+            }
+            catch (BadImageFormatException)
+            {
+                // ignore metadata read issues and let Roslyn report invalid refs if needed
+            }
+            catch (FileLoadException)
+            {
+                // ignore metadata read issues and let Roslyn report invalid refs if needed
+            }
+            catch (IOException)
+            {
+                // ignore metadata read issues and let Roslyn report invalid refs if needed
+            }
+
+            return true;
+        }
+
+        private static string ResolveReferencePath(string assemblyRef)
+        {
+            if (Path.IsPathRooted(assemblyRef)) return assemblyRef;
+
+            var fileName = Path.GetFileName(assemblyRef);
+            var appPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
+            if (File.Exists(appPath)) return appPath;
+
+            var runtimePath = Path.Combine(RuntimeEnvironment.GetRuntimeDirectory(), fileName);
+            if (File.Exists(runtimePath)) return runtimePath;
+
+            var loaded = AppDomain.CurrentDomain.GetAssemblies()
+                .FirstOrDefault(a => !a.IsDynamic && !string.IsNullOrEmpty(a.Location) &&
+                                     string.Equals(Path.GetFileName(a.Location), fileName, StringComparison.OrdinalIgnoreCase));
+            if (loaded != null) return loaded.Location;
+
+            return assemblyRef;
+        }
+
         // See: https://stackoverflow.com/questions/6121276/is-it-possible-to-load-an-assembly-from-the-gac-without-the-fullname
         public static string GetAssemblyPath(string name)
         {
@@ -531,6 +652,22 @@ namespace TabularEditor.Scripting
             }
 
             return aInfo.currentAssemblyPath;
+        }
+
+        private static string TryGetAssemblyPath(string name)
+        {
+            try
+            {
+                return GetAssemblyPath(name);
+            }
+            catch (DllNotFoundException)
+            {
+                return null;
+            }
+            catch (EntryPointNotFoundException)
+            {
+                return null;
+            }
         }
 
 

@@ -62,13 +62,11 @@ namespace TabularEditor
             else
                 return null;
 
-            var tfc = new TOMWrapper.TabularFolderCollection(obj.Table, new TOMWrapper.TabularObjectCache(null), null, null);
-
             using (var folderSelection = new FormDisplayFolderSelect())
             {
                 folderSelection.FolderNodes.Clear();
 
-                foreach(var node in tfc.RootFolders)
+                foreach(var node in TOMWrapper.Folder.CreateFolder(obj.Table, "").GetChildrenByFolders().OfType<TOMWrapper.Folder>())
                 {
                     folderSelection.FolderNodes.Add(TabularFolderToTreeNode(node));
 
@@ -82,7 +80,7 @@ namespace TabularEditor
             return null;
         }
 
-        private TreeNode TabularFolderToTreeNode(TOMWrapper.TabularFolder folder)
+        private TreeNode TabularFolderToTreeNode(TOMWrapper.Folder folder)
         {
             var result = new TreeNode(folder.Name);
             result.Tag = folder.Path;

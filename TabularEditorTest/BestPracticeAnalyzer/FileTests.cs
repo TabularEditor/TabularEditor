@@ -270,6 +270,12 @@ namespace TabularEditor.BestPracticeAnalyzer
         [TestInitialize]
         public void BackupRuleFiles()
         {
+            var machineRulesDirectory = Path.GetDirectoryName(LocalMachineRules);
+            if (!string.IsNullOrEmpty(machineRulesDirectory) && !Directory.Exists(machineRulesDirectory))
+            {
+                Directory.CreateDirectory(machineRulesDirectory);
+            }
+
             backupLocalUsersFile = File.Exists(LocalUserRules);
             backupLocalMachineFile = File.Exists(LocalMachineRules);
 

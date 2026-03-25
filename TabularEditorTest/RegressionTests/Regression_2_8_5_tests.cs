@@ -9,9 +9,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace TabularEditor.RegressionTests
 {
     [TestClass]
+    [STATestClass]
     public class Regression_2_8_5_tests
     {
-        [TestMethod]
+        [STATestMethod]
         public void CreateNewMeasureSameTableUsingHandlerTest()
         {
             UiTester.EnsureCorrectExceptionMode();
@@ -49,7 +50,7 @@ namespace TabularEditor.RegressionTests
             }
         }
 
-        [TestMethod]
+        [STATestMethod]
         public void CreateNewMeasureOtherTableUsingHandlerTest()
         {
             UiTester.EnsureCorrectExceptionMode();
@@ -87,7 +88,7 @@ namespace TabularEditor.RegressionTests
             }
         }
         
-        [TestMethod]
+        [STATestMethod]
         public void CreateNewMeasureSameTableUsingUITest()
         {
             UiTester.EnsureCorrectExceptionMode();
@@ -127,7 +128,7 @@ namespace TabularEditor.RegressionTests
             }
         }
 
-        [TestMethod]
+        [STATestMethod]
         public void CreateNewMeasureSameTableUsingScriptTest()
         {
             UiTester.EnsureCorrectExceptionMode();

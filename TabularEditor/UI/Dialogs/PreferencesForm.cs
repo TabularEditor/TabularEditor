@@ -57,7 +57,7 @@ namespace TabularEditor.UI.Dialogs
         {
             if(cmbSerializationMode.SelectedIndex == 1 && !tmdlWarningShown)
             {
-                var td = new TaskDialog();
+                var td = new Microsoft.WindowsAPICodePack.Dialogs.TaskDialog();
                 td.HyperlinksEnabled = true;
                 td.Caption = "TMDL";
                 td.Text = "TMDL (Tabular Model Definition Language)\n\nUse TMDL as the default Save to Folder format in Tabular Editor?";

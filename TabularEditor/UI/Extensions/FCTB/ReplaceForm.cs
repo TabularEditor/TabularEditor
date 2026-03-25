@@ -48,7 +48,7 @@ namespace TabularEditor.UI.Extensions.FCTB
             }
         }
 
-        public List<Range> FindAll(string pattern)
+        public List<FastColoredTextBoxNS.Range> FindAll(string pattern)
         {
             var opt = cbMatchCase.Checked ? RegexOptions.None : RegexOptions.IgnoreCase;
             if (!cbRegex.Checked)
@@ -58,7 +58,7 @@ namespace TabularEditor.UI.Extensions.FCTB
             //
             var range = tb.Selection.IsEmpty ? tb.Range.Clone() : tb.Selection.Clone();
             //
-            var list = new List<Range>();
+            var list = new List<FastColoredTextBoxNS.Range>();
             foreach (var r in range.GetRangesByLines(pattern, opt))
                 list.Add(r);
 
@@ -73,7 +73,7 @@ namespace TabularEditor.UI.Extensions.FCTB
             if (cbWholeWord.Checked)
                 pattern = "\\b" + pattern + "\\b";
             //
-            Range range = tb.Selection.Clone();
+            FastColoredTextBoxNS.Range range = tb.Selection.Clone();
             range.Normalize();
             //
             if (firstSearch)

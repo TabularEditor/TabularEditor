@@ -1,354 +1,79 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Microsoft.Identity.Client.NativeInterop.0.20.2\build\net461\Microsoft.Identity.Client.NativeInterop.props" Condition="Exists('..\packages\Microsoft.Identity.Client.NativeInterop.0.20.2\build\net461\Microsoft.Identity.Client.NativeInterop.props')" />
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{19DDE9A0-227F-4E8B-849D-C91C25322826}</ProjectGuid>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TabularEditor</RootNamespace>
     <AssemblyName>TOMWrapper</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>LocateDeadCode.ruleset</CodeAnalysisRuleSet>
+    <UseWindowsForms>true</UseWindowsForms>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <LangVersion>10.0</LangVersion>
+    <Deterministic>false</Deterministic>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>
-    </DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet />
-    <DocumentationFile>bin\Release\TOMWrapper.XML</DocumentationFile>
-    <LangVersion>10.0</LangVersion>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
-      <HintPath>..\packages\Antlr4.Runtime.4.6.6\lib\net45\Antlr4.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AnalysisServices, Version=19.112.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.19.112.0\lib\net472\Microsoft.AnalysisServices.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Core, Version=19.112.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.19.112.0\lib\net472\Microsoft.AnalysisServices.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AnalysisServices.SPClient.Interfaces, Version=19.112.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.19.112.0\lib\net472\Microsoft.AnalysisServices.SPClient.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Tabular, Version=19.112.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.19.112.0\lib\net472\Microsoft.AnalysisServices.Tabular.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Tabular.Json, Version=19.112.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.19.112.0\lib\net472\Microsoft.AnalysisServices.Tabular.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Identity.Client, Version=4.82.1.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Identity.Client.4.82.1\lib\net472\Microsoft.Identity.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Identity.Client.Broker, Version=4.82.1.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Identity.Client.Broker.4.82.1\lib\net462\Microsoft.Identity.Client.Broker.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Identity.Client.NativeInterop, Version=0.20.2.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Identity.Client.NativeInterop.0.20.2\lib\net461\Microsoft.Identity.Client.NativeInterop.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel.Abstractions, Version=8.16.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Abstractions.8.16.0\lib\net472\Microsoft.IdentityModel.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.6.1\lib\net462\System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Core" />
-    <Reference Include="System.Design" />
-    <Reference Include="System.Diagnostics.DiagnosticSource, Version=7.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.7.0.2\lib\net462\System.Diagnostics.DiagnosticSource.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.IdentityModel" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.Memory, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Memory.4.6.3\lib\net462\System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Numerics.Vectors.4.6.1\lib\net462\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.1.2\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\AntlrGrammars\obj\$(Configuration)\DAXLexer.cs">
-      <Link>TextServices\DAXLexer.cs</Link>
+    <Compile Include="..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+    <Compile Update="Messages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Messages.resx</DependentUpon>
     </Compile>
-    <Compile Include="..\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="ConnectionStringProperties.cs" />
-    <Compile Include="EnumerableExtensions.cs" />
-    <Compile Include="ExpressionProperty.cs" />
-    <Compile Include="PropertyGridUI\CollectionEditors\BindingInfoCollectionEditor.cs" />
-    <Compile Include="PropertyGridUI\CollectionEditors\CalendarColumnGroupCollectionEditor.cs" />
-    <Compile Include="PropertyGridUI\CollectionEditors\CalendarCollectionEditor.cs" />
-    <Compile Include="PropertyGridUI\Converters\EnumBrowsableConverter.cs" />
-    <Compile Include="PropertyGridUI\Converters\QueryGroupConverter.cs" />
-    <Compile Include="PropertyGridUI\Converters\TypeDescriptorHelper.cs" />
-    <Compile Include="TOMWrapper\AssociatedColumnCollection.cs" />
-    <Compile Include="TOMWrapper\BindingInfo.cs" />
-    <Compile Include="TOMWrapper\Calendar.cs" />
-    <Compile Include="TOMWrapper\CalendarColumnGroup.cs" />
-    <Compile Include="TOMWrapper\Function.cs" />
-    <Compile Include="IsExternalInit.cs" />
-    <Compile Include="MetadataSerializationOptionsBuilderExtension.cs" />
-    <Compile Include="PowerBiCompatibilityModeHelper.cs" />
-    <Compile Include="Serialization\TmdlSerializeOptions.cs" />
-    <Compile Include="TextServices\DAXLexerExtensions.cs" />
-    <Compile Include="TOMWrapper\CalculationGroup.cs" />
-    <Compile Include="TOMWrapper\DataCoverageDefinition.cs" />
-    <Compile Include="TOMWrapper\ModelMetadataSourceInfo.cs" />
-    <Compile Include="TOMWrapper\QueryGroup.cs" />
-    <Compile Include="TOMWrapper\Serialization\ObjectSerializer.cs" />
-    <Compile Include="TOMWrapper\TimeUnitColumnAssociation.cs" />
-    <Compile Include="TOMWrapper\TmdlImportOptions.cs" />
-    <Compile Include="Utils\DbConnectionStringBuilderExtension.cs" />
-    <Compile Include="PropertyGridUI\AlternateOfEditor.cs" />
-    <Compile Include="PropertyGridUI\Converters\ConnectionStringConverter.cs" />
-    <Compile Include="PropertyGridUI\Converters\NamedExpressionConverter.cs" />
-    <Compile Include="PropertyGridUI\PropertyActionAttribute.cs" />
-    <Compile Include="TOMWrapper\TabularModelHandlerExtension.cs" />
-    <Compile Include="Utils\ITabularDeployer.cs" />
-    <Compile Include="TOMWrapper\PolicyRangePartition.cs" />
-    <Compile Include="TOMWrapper\EntityPartition.cs" />
-    <Compile Include="TOMWrapper\Indexers\SynonymIndexer.cs" />
-    <Compile Include="TOMWrapper\SynonymHelper.cs" />
-    <Compile Include="TOMWrapper\MPartition.cs" />
-    <Compile Include="PropertyGridUI\CollectionEditors\ConnectionAddressPropertyCollectionEditor.cs" />
-    <Compile Include="PropertyGridUI\CollectionEditors\DataSourceOptionsPropertyCollectionEditor.cs" />
-    <Compile Include="PropertyGridUI\CollectionEditors\CredentialPropertyCollectionEditor.cs" />
-    <Compile Include="PropertyGridUI\CollectionEditors\SetCollectionEditor.cs" />
-    <Compile Include="PropertyGridUI\CollectionEditors\CalculationItemCollectionEditor.cs" />
-    <Compile Include="PropertyGridUI\CollectionEditors\ColumnSetCollectionEditor.cs" />
-    <Compile Include="PropertyGridUI\Converters\ColumnDataCategoryConverter.cs" />
-    <Compile Include="PropertyGridUI\Converters\TableDataCategoryConverter.cs" />
-    <Compile Include="TOMWrapper\AlternateOf.cs" />
-    <Compile Include="PropertyGridUI\CollectionEditors\ExtendedPropertyCollectionEditor.cs" />
-    <Compile Include="PropertyGridUI\CollectionEditors\RoleMemberCollectionEditor.cs" />
-    <Compile Include="PropertyGridUI\Converters\CultureConverter.cs" />
-    <Compile Include="PropertyGridUI\Converters\HierarchyColumnConverter.cs" />
-    <Compile Include="PropertyGridUI\DataTypeEnumConverter.cs" />
-    <Compile Include="TextServices\DAXCharStream.cs" />
-    <Compile Include="TOMWrapper\CalculationGroupTable.cs" />
-    <Compile Include="TOMWrapper\CalculationItem.cs" />
-    <Compile Include="TOMWrapper\CollectionHelper.cs" />
-    <Compile Include="TOMWrapper\DeploymentMetadata.cs" />
-    <Compile Include="TOMWrapper\ExtendedPropertyCollection.cs" />
-    <Compile Include="TOMWrapper\Base\WrapperBase.generated.cs">
+    <Compile Update="TOMWrapper\Base\WrapperBase.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>WrapperBase.tt</DependentUpon>
     </Compile>
-    <Compile Include="TOMWrapper\ExternalChangeTrace.cs" />
-    <Compile Include="TOMWrapper\GroupingColumnCollection.cs" />
-    <Compile Include="TOMWrapper\Indexers\RoleColumnOLSIndexer.cs" />
-    <Compile Include="TOMWrapper\ModelRoleMember.cs" />
-    <Compile Include="TOMWrapper\Serialization\PerspectiveAnnotationSerializer.cs" />
-    <Compile Include="TOMWrapper\Serialization\ReferenceCulture.cs" />
-    <Compile Include="TOMWrapper\Serialization\SplitModelSerializer.cs" />
-    <Compile Include="TOMWrapper\Serialization\TranslationAnnotationSerializer.cs" />
-    <Compile Include="TOMWrapper\Serialization\RelationshipAnnotationSerializer.cs" />
-    <Compile Include="TOMWrapper\CalculatedTableColumn.cs" />
-    <Compile Include="TOMWrapper\Set.cs" />
-    <Compile Include="TOMWrapper\TablePermission.cs" />
-    <Compile Include="TOMWrapper\StructuredDataSource.cs" />
-    <Compile Include="TOMWrapper\TabularModelHandler.Database.cs" />
-    <Compile Include="TOMWrapper\TabularModelHandler.Events.cs" />
-    <Compile Include="TOMWrapper\TabularModelHandler.FileHandling.cs" />
-    <Compile Include="TOMWrapper\TabularObjectContainerHelper.cs" />
-    <Compile Include="UndoFramework\UndoConnectionAddressAction.cs" />
-    <Compile Include="UndoFramework\UndoDataSourceOptionsAction.cs" />
-    <Compile Include="UndoFramework\UndoCredentialAction.cs" />
-    <Compile Include="UndoFramework\UndoExtendedPropertyAction.cs" />
-    <Compile Include="UndoFramework\UndoCalculationItemsOrderAction.cs" />
-    <Compile Include="Utils\DaxDependencyHelper.cs" />
-    <Compile Include="TOMWrapper\Indexers\GenericIndexer.cs" />
-    <Compile Include="TOMWrapper\Relationship.cs" />
-    <Compile Include="TOMWrapper\Tests\GenerateTestAttribute.cs" />
-    <Compile Include="TOMWrapper\Tests\CompatibilityLevelAttribute.cs" />
-    <Compile Include="Utils\CTCBackup.cs" />
-    <Compile Include="Utils\DaxToken.cs" />
-    <Compile Include="Utils\DaxToken.Generated.cs">
+    <Compile Update="Utils\DaxToken.Generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>DaxToken.tt</DependentUpon>
     </Compile>
-    <Compile Include="Utils\DependencyList.cs" />
-    <Compile Include="TOMWrapper\NamedExpression.cs" />
-    <Compile Include="TOMWrapper\TabularModelHandlerSettings.cs" />
-    <Compile Include="IPlugin.cs" />
-    <Compile Include="Messages.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Messages.resx</DependentUpon>
-    </Compile>
-    <Compile Include="PropertyGridUI\CollectionEditors\VariationCollectionEditor.cs" />
-    <Compile Include="PropertyGridUI\Converters\AllRelationshipConverter.cs" />
-    <Compile Include="PropertyGridUI\Converters\AllHierarchyConverter.cs" />
-    <Compile Include="PropertyGridUI\CollectionEditors\AnnotationCollectionEditor.cs" />
-    <Compile Include="PropertyGridUI\CollectionEditors\ClonableObjectCollectionEditor.cs" />
-    <Compile Include="PropertyGridUI\DesignerHost.cs" />
-    <Compile Include="PropertyGridUI\Converters\FormatStringConverter.cs" />
-    <Compile Include="PropertyGridUI\Converters\KPITrendGraphicConverter.cs" />
-    <Compile Include="PropertyGridUI\Converters\KPIStatusGraphicConverter.cs" />
-    <Compile Include="PropertyGridUI\CustomDialogEditor.cs" />
-    <Compile Include="PropertyGridUI\CollectionEditors\PartitionCollectionEditor.cs" />
-    <Compile Include="PropertyGridUI\CollectionEditors\RefreshGridCollectionEditor.cs" />
-    <Compile Include="PropertyGridUI\CollectionEditors\CultureCollectionEditor.cs" />
-    <Compile Include="PropertyGridUI\DictionaryProperty.cs" />
-    <Compile Include="PropertyGridUI\DynamicPropertyObject.cs" />
-    <Compile Include="PropertyGridUI\NoMultiselectAttribute.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PropertyGridUI\Converters\AllColumnConverter.cs" />
-    <Compile Include="PropertyGridUI\Converters\DataSourceConverter.cs" />
-    <Compile Include="PropertyGridUI\Converters\TableColumnConverter.cs" />
-    <Compile Include="PropertyGridUI\Converters\VirtualObjectConverter.cs" />
-    <Compile Include="StringHelper.cs" />
-    <Compile Include="TOMWrapper\AnnotationCollection.cs" />
-    <Compile Include="TOMWrapper\CalculatedColumn.cs" />
-    <Compile Include="TOMWrapper\CalculatedTable.cs" />
-    <Compile Include="TOMWrapper\PowerBI\PowerBIGovernance.cs" />
-    <Compile Include="TOMWrapper\PowerBI\PowerBiTemplate.cs" />
-    <Compile Include="TOMWrapper\Indexers\TableOLSIndexer.cs" />
-    <Compile Include="TOMWrapper\Database.cs" />
-    <Compile Include="TOMWrapper\DataSource.cs" />
-    <Compile Include="TOMWrapper\MetadataObjectHelper.cs" />
-    <Compile Include="TOMWrapper\NullTree.cs" />
-    <Compile Include="TOMWrapper\ProviderDataSource.cs" />
-    <Compile Include="TOMWrapper\LogicalGroup.cs" />
-    <Compile Include="TOMWrapper\KPI.cs" />
-    <Compile Include="TOMWrapper\ModelRole.cs" />
-    <Compile Include="TOMWrapper\Partition.cs" />
-    <Compile Include="TOMWrapper\Column.cs" />
-    <Compile Include="TOMWrapper\Culture.cs" />
-    <Compile Include="TOMWrapper\Folder.cs" />
-    <Compile Include="TOMWrapper\FolderHelper.cs" />
-    <Compile Include="TOMWrapper\Hierarchy.cs" />
-    <Compile Include="TOMWrapper\Interfaces.cs" />
-    <Compile Include="TOMWrapper\Level.cs" />
-    <Compile Include="TOMWrapper\Measure.cs" />
-    <Compile Include="TOMWrapper\Model.cs" />
-    <Compile Include="TOMWrapper\Perspective.cs" />
-    <Compile Include="TOMWrapper\Indexers\RoleRLSIndexer.cs" />
-    <Compile Include="TOMWrapper\Indexers\RoleOLSIndexer.cs" />
-    <Compile Include="TOMWrapper\Indexers\ColumnOLSIndexer.cs" />
-    <Compile Include="TOMWrapper\Indexers\TableRLSIndexer.cs" />
-    <Compile Include="TOMWrapper\Indexers\PerspectiveIndexer.cs" />
-    <Compile Include="TOMWrapper\SingleColumnRelationship.cs" />
-    <Compile Include="TOMWrapper\Table.cs" />
-    <Compile Include="TOMWrapper\TabularCommonActions.cs" />
-    <Compile Include="TOMWrapper\TabularConnection.cs" />
-    <Compile Include="Utils\JObjectExtension.cs" />
-    <Compile Include="Utils\TabularDeployer.cs" />
-    <Compile Include="TOMWrapper\AnnotationHelper.cs" />
-    <Compile Include="TOMWrapper\Variation.cs" />
-    <Compile Include="UndoFramework\IUndoAction.cs" />
-    <Compile Include="UndoFramework\UndoAnnotationAction.cs" />
-    <Compile Include="UndoFramework\UndoPropertyChangedAction.cs" />
-    <Compile Include="UndoFramework\UndoClearAction.cs" />
-    <Compile Include="UndoFramework\UndoBatchAction.cs" />
-    <Compile Include="UndoFramework\UndoAddRemoveAction.cs" />
-    <Compile Include="UndoFramework\UndoHierarchyLevelOrderAction.cs" />
-    <Compile Include="UndoFramework\UndoManager.cs" />
-    <Compile Include="TOMWrapper\TabularCollectionHelper.cs" />
-    <Compile Include="TOMWrapper\TabularCultureHelper.cs" />
-    <Compile Include="TOMWrapper\TabularTree.cs" />
-    <Compile Include="TOMWrapper\TabularModelHandler.cs" />
-    <Compile Include="TOMWrapper\TabularNamedObject.cs" />
-    <Compile Include="TOMWrapper\TabularObject.cs" />
-    <Compile Include="TOMWrapper\TabularObjectCollection.cs" />
-    <Compile Include="TOMWrapper\TabularObjectComparer.cs" />
-    <Compile Include="TOMWrapper\TabularObjectHelper.cs" />
-    <Compile Include="TOMWrapper\Indexers\TranslationIndexer.cs" />
-    <Compile Include="Utils\FormulaFixup.cs" />
-    <Compile Include="Utils\Scripter.cs" />
-    <Compile Include="TOMWrapper\Serialization\SerializeOptions.cs" />
-    <Compile Include="TOMWrapper\Serialization\Serializer.cs" />
-    <Compile Include="Utils\Vb6.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="app.config" />
-    <None Include="LocateDeadCode.ruleset" />
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="TOMWrapper\Base\Rules.ttinclude">
-      <LastGenOutput>Rules.cs</LastGenOutput>
-    </None>
+    <EmbeddedResource Update="Messages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>TabularEditor</CustomToolNamespace>
+    </EmbeddedResource>
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="TOMWrapper\Base\WrapperBase.tt">
+    <None Update="TOMWrapper\Base\WrapperBase.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>WrapperBase.generated.cs</LastGenOutput>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Messages.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Utils\DaxToken.tt">
+    <None Update="Utils\DaxToken.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>DaxToken.Generated.cs</LastGenOutput>
-    </Content>
+    </None>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.Identity.Client.NativeInterop.0.20.2\build\net461\Microsoft.Identity.Client.NativeInterop.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Identity.Client.NativeInterop.0.20.2\build\net461\Microsoft.Identity.Client.NativeInterop.props'))" />
-  </Target>
+
+  <ItemGroup>
+    <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+    <PackageReference Include="Microsoft.AnalysisServices" Version="19.112.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.82.1" />
+    <PackageReference Include="Microsoft.Identity.Client.Broker" Version="4.82.1" />
+    <PackageReference Include="Microsoft.Identity.Client.NativeInterop" Version="0.20.2" />
+    <PackageReference Include="Microsoft.IdentityModel.Abstractions" Version="8.16.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Data.OleDb" Version="8.0.0" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="7.0.2" />
+    <PackageReference Include="System.Memory" Version="4.6.3" />
+    <PackageReference Include="System.Numerics.Vectors" Version="4.6.1" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Antlr4 Include="..\AntlrGrammars\DAXLexer.g4">
+      <Link>TextServices\DAXLexer.g4</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <CustomToolNamespace>TabularEditor.TextServices</CustomToolNamespace>
+      <Listener>False</Listener>
+      <Visitor>False</Visitor>
+    </Antlr4>
+  </ItemGroup>
 </Project>

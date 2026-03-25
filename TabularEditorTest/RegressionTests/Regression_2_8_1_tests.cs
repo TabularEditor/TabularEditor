@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace TabularEditor.RegressionTests
 {
     [TestClass]
+    [STATestClass]
     public class Regression_2_8_1_tests
     {
 
@@ -22,7 +23,7 @@ namespace TabularEditor.RegressionTests
         const int VK_DELETE = 0x2E;
         
 
-        [TestMethod]
+        [STATestMethod]
         public void DeleteColumnTest()
         {
             UiTester.EnsureCorrectExceptionMode();

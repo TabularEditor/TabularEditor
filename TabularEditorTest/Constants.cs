@@ -9,13 +9,13 @@ namespace TabularEditor
 {
     public static class Constants
     {
-        public static readonly string ServerName = GetServerName();
+        public static string ServerName => GetServerName();
 
         private static string GetServerName()
         {
             var serverName = Environment.GetEnvironmentVariable("TE_TestServer");
             if (string.IsNullOrEmpty(serverName))
-                Assert.Fail("Test Server not specified. Please set environment variable TE_TestServer with the connection string of the AS engine server to use for testing");
+                Assert.Inconclusive("Integration test server not specified. Set TE_TestServer to run server-dependent tests.");
             return serverName;
         }
     }

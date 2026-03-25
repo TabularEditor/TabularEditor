@@ -1,924 +1,102 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Microsoft.Identity.Client.NativeInterop.0.19.4\build\net461\Microsoft.Identity.Client.NativeInterop.props" Condition="Exists('..\packages\Microsoft.Identity.Client.NativeInterop.0.19.4\build\net461\Microsoft.Identity.Client.NativeInterop.props')" />
-  <Import Project="..\packages\Costura.Fody.3.3.2\build\Costura.Fody.props" Condition="Exists('..\packages\Costura.Fody.3.3.2\build\Costura.Fody.props')" />
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F7588159-3F24-4BFA-A6F6-551657896C34}</ProjectGuid>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <LangVersion>10.0</LangVersion>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TabularEditor</RootNamespace>
     <AssemblyName>TabularEditor</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
-    <PublishUrl>C:\Users\do\Documents\GitHubVisualStudio\TabularEditor\TabularEditor\publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>false</MapFileExtensions>
-    <WebPage>publish.htm</WebPage>
-    <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <AutorunEnabled>true</AutorunEnabled>
-    <ApplicationRevision>20654</ApplicationRevision>
-    <ApplicationVersion>2.7.6836.15674</ApplicationVersion>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <PublishWizardCompleted>true</PublishWizardCompleted>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <CodeAnalysisRuleSet>..\TOMWrapper\LocateDeadCode.ruleset</CodeAnalysisRuleSet>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
     <LangVersion>10.0</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <CodeAnalysisRuleSet />
-    <DebugSymbols>false</DebugSymbols>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>CubeBuilderView.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignManifests>false</SignManifests>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestCertificateThumbprint>2924833FC2B4A15FA13435D345A7AC19CE5C4FD5</ManifestCertificateThumbprint>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestKeyFile>
-    </ManifestKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <GenerateManifests>false</GenerateManifests>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <TargetZone>LocalIntranet</TargetZone>
-  </PropertyGroup>
-  <PropertyGroup />
-  <PropertyGroup />
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
-  <PropertyGroup>
+    <UseWindowsForms>true</UseWindowsForms>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+    <ApplicationIcon>CubeBuilderView.ico</ApplicationIcon>
+    <Deterministic>false</Deterministic>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateResourceWarnOnBinaryFormatterUse>false</GenerateResourceWarnOnBinaryFormatterUse>
   </PropertyGroup>
-  <PropertyGroup>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
-      <HintPath>..\packages\Antlr4.Runtime.4.6.6\lib\net45\Antlr4.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Costura, Version=3.3.2.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
-      <HintPath>..\packages\Costura.Fody.3.3.2\lib\net40\Costura.dll</HintPath>
-    </Reference>
-    <Reference Include="Antlr4.Runtime">
-      <HintPath>..\packages\Antlr4.Runtime.4.5.3\lib\net45\Antlr4.Runtime.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Crad.Windows.Forms.Actions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=81de48f2c6979a5b, processorArchitecture=MSIL">
-      <HintPath>..\packages\ActionListWinForms.2.0.0\lib\net45\Crad.Windows.Forms.Actions.dll</HintPath>
-    </Reference>
-    <Reference Include="FastColoredTextBox, Version=2.16.24.0, Culture=neutral, PublicKeyToken=fb8aa12b994ef61b, processorArchitecture=MSIL">
-      <HintPath>..\packages\FCTB.2.16.24\lib\FastColoredTextBox.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AnalysisServices, Version=19.112.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.19.112.0\lib\net472\Microsoft.AnalysisServices.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Core, Version=19.112.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.19.112.0\lib\net472\Microsoft.AnalysisServices.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AnalysisServices.SPClient.Interfaces, Version=19.112.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.19.112.0\lib\net472\Microsoft.AnalysisServices.SPClient.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Tabular, Version=19.112.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.19.112.0\lib\net472\Microsoft.AnalysisServices.Tabular.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Tabular.Json, Version=19.112.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.19.112.0\lib\net472\Microsoft.AnalysisServices.Tabular.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Data.ConnectionUI.Dialog, Version=0.0.0.0, Culture=neutral, PublicKeyToken=f4ca07f51760da93, processorArchitecture=MSIL">
-      <HintPath>..\packages\DataConnectionDialog.1.2\lib\Microsoft.Data.ConnectionUI.Dialog.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Identity.Client, Version=4.82.1.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Identity.Client.4.82.1\lib\net472\Microsoft.Identity.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Identity.Client.Broker, Version=4.82.1.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Identity.Client.Broker.4.82.1\lib\net462\Microsoft.Identity.Client.Broker.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Identity.Client.NativeInterop, Version=0.20.2.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Identity.Client.NativeInterop.0.20.2\lib\net461\Microsoft.Identity.Client.NativeInterop.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel.Abstractions, Version=8.16.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Abstractions.8.16.0\lib\net472\Microsoft.IdentityModel.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WindowsAPICodePack-Core.1.1.2\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WindowsAPICodePack-Shell.1.1.1\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.6.1\lib\net462\System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data.Linq" />
-    <Reference Include="System.Data.OracleClient" />
-    <Reference Include="System.Design" />
-    <Reference Include="System.Diagnostics.DiagnosticSource, Version=7.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.7.0.2\lib\net462\System.Diagnostics.DiagnosticSource.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.IdentityModel" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.Management" />
-    <Reference Include="System.Memory, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Memory.4.6.3\lib\net462\System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Numerics.Vectors.4.6.1\lib\net462\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.1.2\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Security" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="BestPracticeAnalyzer\Analyzer.cs" />
-    <Compile Include="BestPracticeAnalyzer\BestPracticeRule.cs" />
-    <Compile Include="BestPracticeAnalyzer\BPAManager.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="BestPracticeAnalyzer\BPAManager.Designer.cs">
-      <DependentUpon>BPAManager.cs</DependentUpon>
-    </Compile>
-    <Compile Include="BestPracticeAnalyzer\BPAManagerAddCollectionDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="BestPracticeAnalyzer\BPAManagerAddCollectionDialog.Designer.cs">
-      <DependentUpon>BPAManagerAddCollectionDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="BestPracticeAnalyzer\MoveToCollectionDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="BestPracticeAnalyzer\MoveToCollectionDialog.Designer.cs">
-      <DependentUpon>MoveToCollectionDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="BindingHelper.cs" />
-    <Compile Include="CommandLineHandler.cs" />
-    <Compile Include="ConsoleHandler.cs" />
-    <Compile Include="CustomCombobox\CustomComboBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="CustomCombobox\OldNewEvent.cs" />
-    <Compile Include="CustomCombobox\PopupControl.cs" />
-    <Compile Include="IsExternalInit.cs" />
-    <Compile Include="NUnit.cs" />
-    <Compile Include="Scripting\PropertySerializer.cs" />
-    <Compile Include="Scripting\ScriptApi.cs" />
-    <Compile Include="Scripting\ScriptMethodAttribute.cs" />
-    <Compile Include="Scripting\TmdlInputForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Scripting\TmdlInputForm.Designer.cs">
-      <DependentUpon>TmdlInputForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Strings.Designer.cs">
+    <Compile Include="..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+
+    <Compile Update="Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
-    <Compile Include="Scripting\ScriptHelper.cs" />
-    <Compile Include="Scripting\ScriptOutputForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Scripting\ScriptOutputForm.Designer.cs">
-      <DependentUpon>ScriptOutputForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="TreeViewAdv\GifDecoder.cs" />
-    <Compile Include="TreeViewAdv\Tree\NodeControls\ExpandingIcon.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TreeViewAdv\Tree\NodeControls\NodeCheckBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TreeViewAdv\Tree\NodeControls\NodeComboBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UIServices\ClipboardListener.cs" />
-    <Compile Include="UIServices\Crypto.cs" />
-    <Compile Include="UIServices\DeploymentMetadata.cs" />
-    <Compile Include="UIServices\DynamicLinq.cs" />
-    <Compile Include="UIServices\FileSystemHelper.cs" />
-    <Compile Include="UIServices\IDaxFormatterProxy.cs" />
-    <Compile Include="UIServices\LinqExtensions.cs" />
-    <Compile Include="UIServices\ManagedIpHelper.cs" />
-    <Compile Include="UIServices\Policies.cs" />
-    <Compile Include="UIServices\PowerBIHelper.cs" />
-    <Compile Include="UIServices\Preferences.cs" />
-    <Compile Include="UIServices\ProxyCache.cs" />
-    <Compile Include="UIServices\RecentFiles.cs" />
-    <Compile Include="UIServices\TableImport.cs" />
-    <Compile Include="UIServices\TableMetadata.cs" />
-    <Compile Include="UIServices\UpdateService.cs" />
-    <Compile Include="UIServices\DaxFormatter.cs" />
-    <Compile Include="Scripting\ScriptEngine.cs" />
-    <Compile Include="PropertyGrid\NavigatablePropertyGrid.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TextServices\CSharpLexer.cs" />
-    <Compile Include="TextServices\ExpressionParser.cs" />
-    <Compile Include="UIServices\ModelTelemetry.cs" />
-    <Compile Include="UIServices\WildcardMatch.cs" />
-    <Compile Include="UI\Actions\CreateRelationshipAction.cs" />
-    <Compile Include="UI\Actions\RefreshAction.cs" />
-    <Compile Include="UI\Actions\SelectAllAction.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Actions\PasteAction.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Actions\CutAction.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Actions\CopyAction.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Actions\MacroAction.cs" />
-    <Compile Include="UI\Actions\MacrosJson.cs" />
-    <Compile Include="UI\Actions\ITextBox.cs" />
-    <Compile Include="UI\Actions\ModelAction.cs" />
-    <Compile Include="UI\Actions\ModelActionManager.cs" />
-    <Compile Include="TextServices\ScriptParser.cs" />
-    <Compile Include="UI\Actions\TextboxAction.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Actions\TextBoxWrapper.cs" />
-    <Compile Include="BestPracticeAnalyzer\BPAEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="BestPracticeAnalyzer\BPAEditorForm.Designer.cs">
-      <DependentUpon>BPAEditorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="BestPracticeAnalyzer\BPAForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="BestPracticeAnalyzer\BPAForm.Designer.cs">
-      <DependentUpon>BPAForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\ControlHelper.cs" />
-    <Compile Include="UI\Dialogs\ClipForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\ClipForm.Designer.cs">
-      <DependentUpon>ClipForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\ConnectSqlForm.cs" />
-    <Compile Include="UI\Dialogs\ObjectSelectDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\ObjectSelectDialog.Designer.cs">
-      <DependentUpon>ObjectSelectDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\CultureSelectDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\CultureSelectDialog.Designer.cs">
-      <DependentUpon>CultureSelectDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\DeployForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\DeployForm.Designer.cs">
-      <DependentUpon>DeployForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\DeployingForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\DeployingForm.Designer.cs">
-      <DependentUpon>DeployingForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\DependencyForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\DependencyForm.Designer.cs">
-      <DependentUpon>DependencyForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\ImportTablesWizard.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\ImportTablesWizard.Designer.cs">
-      <DependentUpon>ImportTablesWizard.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\ImportTranslationsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\ImportTranslationsForm.Designer.cs">
-      <DependentUpon>ImportTranslationsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\MarkAsDateTableForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\MarkAsDateTableForm.Designer.cs">
-      <DependentUpon>MarkAsDateTableForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\NewModelDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\NewModelDialog.Designer.cs">
-      <DependentUpon>NewModelDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\Pages\ChooseDataSourcePage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\Pages\ChooseDataSourcePage.Designer.cs">
-      <DependentUpon>ChooseDataSourcePage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\Pages\ConnectPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\Pages\ConnectPage.Designer.cs">
-      <DependentUpon>ConnectPage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\Pages\DatabasePage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\Pages\DatabasePage.Designer.cs">
-      <DependentUpon>DatabasePage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\Pages\ImportTableFromMetadataPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\Pages\ImportTableFromMetadataPage.Designer.cs">
-      <DependentUpon>ImportTableFromMetadataPage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\Pages\ImportTablesPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\Pages\ImportTablesPage.Designer.cs">
-      <DependentUpon>ImportTablesPage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\UrlInputDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\UrlInputDialog.Designer.cs">
-      <DependentUpon>UrlInputDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\PasswordPromptForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\PasswordPromptForm.Designer.cs">
-      <DependentUpon>PasswordPromptForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\PreferencesForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\PreferencesForm.Designer.cs">
-      <DependentUpon>PreferencesForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\ReplaceForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\ReplaceForm.Designer.cs">
-      <DependentUpon>ReplaceForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\SaveMacroForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\SaveMacroForm.Designer.cs">
-      <DependentUpon>SaveMacroForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\SelectDatabaseForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\SelectDatabaseForm.Designer.cs">
-      <DependentUpon>SelectDatabaseForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\ValidationEventArgs.cs" />
-    <Compile Include="UI\Extensions\DoubleBufferedGridView.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Extensions\FCTB\FastColoredTextBox.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Extensions\FCTB\ReplaceForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Extensions\FCTB\ReplaceForm.Designer.cs">
-      <DependentUpon>ReplaceForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Extensions\WatermarkTextBox.cs" />
-    <Compile Include="UI\Hourglass.cs" />
-    <Compile Include="UI\SaveAsDialog.cs" />
-    <Compile Include="UI\Dialogs\SchemaDiffDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\SchemaDiffDialog.Designer.cs">
-      <DependentUpon>SchemaDiffDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\ToolStripSearchBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\UIController.cs" />
-    <Compile Include="UI\UIController_ContextMenu.cs" />
-    <Compile Include="UI\UIController_Database.cs" />
-    <Compile Include="UI\UIController_ExpressionEditor.cs" />
-    <Compile Include="UI\UIController_Files.cs" />
-    <Compile Include="UI\UIController_PropertyGrid.cs" />
-    <Compile Include="UI\UIController_ScriptEditor.cs" />
-    <Compile Include="UI\UIController_Translations.cs" />
-    <Compile Include="UI\UIController_Tree.cs" />
-    <Compile Include="UI\Dialogs\FormDisplayFolderSelect.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\FormDisplayFolderSelect.Designer.cs">
-      <DependentUpon>FormDisplayFolderSelect.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\ConnectForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Dialogs\ConnectForm.Designer.cs">
-      <DependentUpon>ConnectForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FormMain.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormMain.Designer.cs">
-      <DependentUpon>FormMain.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PropertyGrid\PropertyGridHelper.cs" />
-    <Compile Include="TreeViewAdvExtension\TabularIcon.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TreeViewAdvExtension\TabularName.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\TabularTreeHelper.cs" />
-    <Compile Include="UI\TabularUITree.cs" />
-    <Compile Include="TreeViewAdvExtension\NodeArrow.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TreeViewAdvExtension\TreeNodeAdvHelper.cs" />
-    <Compile Include="TreeViewAdvExtension\TVExtRessources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TVExtRessources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="TreeViewAdv\BitmapHelper.cs" />
-    <Compile Include="TreeViewAdv\NumericTextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TreeViewAdv\PerformanceAnalyzer.cs" />
-    <Compile Include="TreeViewAdv\StringCollectionEditor.cs" />
-    <Compile Include="TreeViewAdv\TextHelper.cs" />
-    <Compile Include="TreeViewAdv\Threading\AbortableThreadPool.cs" />
-    <Compile Include="TreeViewAdv\Threading\WorkItem.cs" />
-    <Compile Include="TreeViewAdv\Threading\WorkItemStatus.cs" />
-    <Compile Include="TreeViewAdv\TimeCounter.cs" />
-    <Compile Include="TreeViewAdv\Tree\AutoRowHeightLayout.cs" />
-    <Compile Include="TreeViewAdv\Tree\ColumnCollection.cs" />
-    <Compile Include="TreeViewAdv\Tree\DrawContext.cs" />
-    <Compile Include="TreeViewAdv\Tree\DropNodeValidatingEventArgs.cs" />
-    <Compile Include="TreeViewAdv\Tree\DropPosition.cs" />
-    <Compile Include="TreeViewAdv\Tree\EditorContext.cs" />
-    <Compile Include="TreeViewAdv\Tree\Enums.cs" />
-    <Compile Include="TreeViewAdv\Tree\FixedRowHeightLayout.cs" />
-    <Compile Include="TreeViewAdv\Tree\IncrementalSearch.cs" />
-    <Compile Include="TreeViewAdv\Tree\Input\ClickColumnState.cs" />
-    <Compile Include="TreeViewAdv\Tree\Input\ColumnState.cs" />
-    <Compile Include="TreeViewAdv\Tree\Input\InputState.cs" />
-    <Compile Include="TreeViewAdv\Tree\Input\InputWithControl.cs" />
-    <Compile Include="TreeViewAdv\Tree\Input\InputWithShift.cs" />
-    <Compile Include="TreeViewAdv\Tree\Input\NormalInputState.cs" />
-    <Compile Include="TreeViewAdv\Tree\Input\ReorderColumnState.cs" />
-    <Compile Include="TreeViewAdv\Tree\Input\ResizeColumnState.cs" />
-    <Compile Include="TreeViewAdv\Tree\IRowLayout.cs" />
-    <Compile Include="TreeViewAdv\Tree\IToolTipProvider.cs" />
-    <Compile Include="TreeViewAdv\Tree\ITreeModel.cs" />
-    <Compile Include="TreeViewAdv\Tree\Node.cs" />
-    <Compile Include="TreeViewAdv\Tree\NodeControlInfo.cs" />
-    <Compile Include="TreeViewAdv\Tree\NodeControls\BaseTextControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TreeViewAdv\Tree\NodeControls\BindableControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TreeViewAdv\Tree\NodeControls\DrawEventArgs.cs" />
-    <Compile Include="TreeViewAdv\Tree\NodeControls\EditableControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TreeViewAdv\Tree\NodeControls\EditEventArgs.cs" />
-    <Compile Include="TreeViewAdv\Tree\NodeControls\InteractiveControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TreeViewAdv\Tree\NodeControls\LabelEventArgs.cs" />
-    <Compile Include="TreeViewAdv\Tree\NodeControls\NodeControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TreeViewAdv\Tree\NodeControls\NodeControlsCollection.cs" />
-    <Compile Include="TreeViewAdv\Tree\NodeControls\NodeControlValueEventArgs.cs" />
-    <Compile Include="TreeViewAdv\Tree\NodeControls\NodeEventArgs.cs" />
-    <Compile Include="TreeViewAdv\Tree\NodeControls\NodeIcon.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TreeViewAdv\Tree\NodeControls\NodePlusMinus.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TreeViewAdv\Tree\NodeControls\NodeTextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TreeViewAdv\Tree\SortedTreeModel.cs" />
-    <Compile Include="TreeViewAdv\Tree\TreeColumn.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TreeViewAdv\Tree\TreeColumnCollection.cs" />
-    <Compile Include="TreeViewAdv\Tree\TreeColumnEventArgs.cs" />
-    <Compile Include="TreeViewAdv\Tree\TreeModel.cs" />
-    <Compile Include="TreeViewAdv\Tree\TreeModelBase.cs" />
-    <Compile Include="TreeViewAdv\Tree\TreeModelEventArgs.cs" />
-    <Compile Include="TreeViewAdv\Tree\TreeNodeAdv.cs" />
-    <Compile Include="TreeViewAdv\Tree\TreeNodeAdvMouseEventArgs.cs" />
-    <Compile Include="TreeViewAdv\Tree\TreePath.cs" />
-    <Compile Include="TreeViewAdv\Tree\TreePathEventArgs.cs" />
-    <Compile Include="TreeViewAdv\Tree\TreeViewAdv.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TreeViewAdv\Tree\TreeViewAdv.Designer.cs">
-      <DependentUpon>TreeViewAdv.cs</DependentUpon>
-    </Compile>
-    <Compile Include="TreeViewAdv\Tree\TreeViewAdv.Draw.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TreeViewAdv\Tree\TreeViewAdv.Editor.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TreeViewAdv\Tree\TreeViewAdv.Input.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TreeViewAdv\Tree\TreeViewAdv.Properties.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TreeViewAdv\Tree\TreeViewAdvCancelEventArgs.cs" />
-    <Compile Include="TreeViewAdv\Tree\TreeViewAdvEventArgs.cs" />
-    <Compile Include="TreeViewAdv\Tree\TreeViewRowDrawEventArgs.cs" />
-    <Compile Include="UI\Actions\UIUndoRedoAction.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Actions\UIDeleteAction.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Actions\UIModelAction.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\UIHelper.cs" />
-    <Compile Include="UI\UISelectionList.cs" />
-    <Compile Include="UI\UITreeSelection.cs" />
-    <EmbeddedResource Include="BestPracticeAnalyzer\BPAEditorForm.resx">
-      <DependentUpon>BPAEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="BestPracticeAnalyzer\BPAForm.resx">
-      <DependentUpon>BPAForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="BestPracticeAnalyzer\BPAManager.resx">
-      <DependentUpon>BPAManager.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="BestPracticeAnalyzer\BPAManagerAddCollectionDialog.resx">
-      <DependentUpon>BPAManagerAddCollectionDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="BestPracticeAnalyzer\MoveToCollectionDialog.resx">
-      <DependentUpon>MoveToCollectionDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Scripting\TmdlInputForm.resx">
-      <DependentUpon>TmdlInputForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Strings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Scripting\ScriptOutputForm.resx">
-      <DependentUpon>ScriptOutputForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\ObjectSelectDialog.resx">
-      <DependentUpon>ObjectSelectDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\CultureSelectDialog.resx">
-      <DependentUpon>CultureSelectDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\ClipForm.resx">
-      <DependentUpon>ClipForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\ConnectForm.resx">
-      <DependentUpon>ConnectForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\DependencyForm.resx">
-      <DependentUpon>DependencyForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\FormDisplayFolderSelect.resx">
-      <DependentUpon>FormDisplayFolderSelect.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormMain.resx">
-      <DependentUpon>FormMain.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-      <CustomToolNamespace>TabularEditor</CustomToolNamespace>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
+    <Compile Update="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="TreeViewAdvExtension\TVExtRessources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>TVExtRessources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="TreeViewAdv\Tree\TreeViewAdv.resx">
-      <DependentUpon>TreeViewAdv.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\DeployForm.resx">
-      <DependentUpon>DeployForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\DeployingForm.resx">
-      <DependentUpon>DeployingForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\ImportTablesWizard.resx">
-      <DependentUpon>ImportTablesWizard.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\ImportTranslationsForm.resx">
-      <DependentUpon>ImportTranslationsForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\MarkAsDateTableForm.resx">
-      <DependentUpon>MarkAsDateTableForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\NewModelDialog.resx">
-      <DependentUpon>NewModelDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\Pages\ChooseDataSourcePage.resx">
-      <DependentUpon>ChooseDataSourcePage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\Pages\ConnectPage.resx">
-      <DependentUpon>ConnectPage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\Pages\DatabasePage.resx">
-      <DependentUpon>DatabasePage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\Pages\ImportTableFromMetadataPage.resx">
-      <DependentUpon>ImportTableFromMetadataPage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\Pages\ImportTablesPage.resx">
-      <DependentUpon>ImportTablesPage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\UrlInputDialog.resx">
-      <DependentUpon>UrlInputDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\PasswordPromptForm.resx">
-      <DependentUpon>PasswordPromptForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\PreferencesForm.resx">
-      <DependentUpon>PreferencesForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\ReplaceForm.resx">
-      <DependentUpon>ReplaceForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\SaveMacroForm.resx">
-      <DependentUpon>SaveMacroForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\SchemaDiffDialog.resx">
-      <DependentUpon>SchemaDiffDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Dialogs\SelectDatabaseForm.resx">
-      <DependentUpon>SelectDatabaseForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Extensions\FCTB\ReplaceForm.resx">
-      <DependentUpon>ReplaceForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <None Include="app.config" />
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Properties\app.manifest">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
+    <Compile Update="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="tabulareditor.pbitool.json">
+    <Compile Update="TreeViewAdvExtension\TVExtRessources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TVExtRessources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="UI\UI_Deprecated.cs" />
+    <Compile Remove="PropertyGrid\DictionaryProperty.cs" />
+    <Compile Remove="TreeViewAdv\Tree\NodeControls\NodeStateIcon.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>TabularEditor</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Update="TreeViewAdvExtension\TVExtRessources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>TVExtRessources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="tabulareditor.pbitool.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TreeViewAdv\Tree\ClassDiagram.cd" />
-    <None Include="TreeViewAdv\Tree\NodeControls\ClassDiagram.cd" />
   </ItemGroup>
+
   <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.6">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.6 %28x86 and x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
+    <PackageReference Include="ActionListWinForms" Version="2.0.0" />
+    <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+    <PackageReference Include="DataConnectionDialog" Version="1.2" />
+    <PackageReference Include="FCTB" Version="2.16.24" />
+    <PackageReference Include="Microsoft.AnalysisServices" Version="19.112.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.82.1" />
+    <PackageReference Include="Microsoft.Identity.Client.Broker" Version="4.82.1" />
+    <PackageReference Include="Microsoft.Identity.Client.NativeInterop" Version="0.20.2" />
+    <PackageReference Include="Microsoft.IdentityModel.Abstractions" Version="8.16.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Buffers" Version="4.6.1" />
+    <PackageReference Include="System.Data.Odbc" Version="8.0.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="7.0.2" />
+    <PackageReference Include="System.Memory" Version="4.6.3" />
+    <PackageReference Include="System.Management" Version="8.0.0" />
+    <PackageReference Include="System.Numerics.Vectors" Version="4.6.1" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
+    <PackageReference Include="WindowsAPICodePack-Core" Version="1.1.2" />
+    <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
   </ItemGroup>
+
   <ItemGroup>
-    <Content Include="CubeBuilderView.ico" />
-    <Content Include="FodyWeavers.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <None Include="Resources\icon-dax-formatter-16.png" />
-    <None Include="Resources\clipboard-16.png" />
-    <None Include="Resources\Repair_16x.png" />
-    <None Include="Resources\CloakHide_16x.png" />
-    <None Include="Resources\Script_16x.png" />
-    <None Include="Resources\Checklist_16x.png" />
-    <None Include="Resources\Refresh_16x.png" />
-    <None Include="Resources\editdatatype.png" />
-    <None Include="Resources\Remove_16xLG.png" />
-    <None Include="Resources\GoToDefinition_16x.png" />
-    <None Include="Resources\FlatList_16x.png" />
-    <None Include="Resources\BranchRelationshipParent_16x.png" />
-    <None Include="Resources\BranchRelationshipChild_16x.png" />
-    <None Include="Resources\unknown.bmp" />
-    <None Include="Resources\uncheck.bmp" />
-    <None Include="Resources\check.bmp" />
-    <None Include="Resources\SaveToPBI.png" />
-    <None Include="Resources\AutoSum_16x.png" />
-    <None Include="Resources\SaveToFile.png" />
-    <None Include="Resources\SaveToDB.png" />
-    <None Include="Resources\SaveFolderTree2.png" />
-    <None Include="Resources\UncommentCode_16x.png" />
-    <None Include="Resources\CommentCode_16x.png" />
-    <None Include="Resources\SortAscending_16x.png" />
-    <None Include="Resources\ShowDetails_16x.png" />
-    <None Include="Resources\BuildSolution_48x.png" />
-    <None Include="Resources\spiffygif_64x64.gif" />
-    <None Include="Resources\spiffygif_40x40.gif" />
-    <None Include="Resources\BuildSolution_64x.png" />
-    <None Include="Resources\CubeOpen.png" />
-    <None Include="Resources\action_add_16xLG.png" />
-    <None Include="Resources\DatabaseMethod_16x.png" />
-    <None Include="Resources\AnalysisServerConnection_16x.png" />
-    <None Include="Resources\Cancel_16x.png" />
-    <None Include="Resources\Checkmark_16x.png" />
-    <None Include="Resources\Undo_grey_16x.png" />
-    <None Include="Resources\icon-delete.png" />
-    <None Include="Resources\ExpandAll_16x.png" />
-    <None Include="Resources\CollapseGroup_16x.png" />
-    <None Include="Resources\FolderOpen_exp_16x11.png" />
-    <None Include="Resources\FolderOpen_exp_16x1.png" />
-    <None Include="Resources\FolderOpen_exp_16x.png" />
+    <ProjectReference Include="..\TOMWrapper\TOMWrapper.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <PublishFile Include="FodyWeavers.xml">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>File</FileType>
-    </PublishFile>
-    <PublishFile Include="Microsoft.AnalysisServices.Server.Core">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Prerequisite</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>Assembly</FileType>
-    </PublishFile>
-    <PublishFile Include="Microsoft.AnalysisServices.Server.Tabular">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Prerequisite</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>Assembly</FileType>
-    </PublishFile>
-    <PublishFile Include="Microsoft.AnalysisServices.Server.Tabular.Json">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Prerequisite</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>Assembly</FileType>
-    </PublishFile>
-    <PublishFile Include="TOMWrapper">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Include</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>Assembly</FileType>
-    </PublishFile>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\TOMWrapper\TOMWrapper.csproj">
-      <Project>{19dde9a0-227f-4e8b-849d-c91c25322826}</Project>
-      <Name>TOMWrapper</Name>
-      <Private>True</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="AfterCompile">
-    <GetAssemblyIdentity AssemblyFiles="$(ProjectDir)obj\$(ConfigurationName)\$(TargetFileName)">
-      <Output TaskParameter="Assemblies" ItemName="AssemblyInfo" />
-    </GetAssemblyIdentity>
-    <PropertyGroup>
-      <ApplicationVersion>%(AssemblyInfo.Version)</ApplicationVersion>
-      <PublishVersion>%(AssemblyInfo.Version)</PublishVersion>
-    </PropertyGroup>
-  </Target>
-  <Import Project="..\packages\Fody.3.3.5\build\Fody.targets" Condition="Exists('..\packages\Fody.3.3.5\build\Fody.targets')" />
-  <PropertyGroup>
-    <!--
-    <PostBuildEvent Condition=" '$(Configuration)' == 'Release' ">powershell &amp; sign-binaries.ps1</PostBuildEvent>
-    -->
-  </PropertyGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.Identity.Client.NativeInterop.0.19.4\build\net461\Microsoft.Identity.Client.NativeInterop.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Identity.Client.NativeInterop.0.19.4\build\net461\Microsoft.Identity.Client.NativeInterop.props'))" />
-  </Target>
 </Project>

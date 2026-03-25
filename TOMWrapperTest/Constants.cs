@@ -9,23 +9,23 @@ namespace TOMWrapperTest
 {
     public static class Constants
     {
-        public static readonly string ServerName = GetServerName();
+        public static string ServerName => GetServerName();
 
         private static string GetServerName()
         {
             var serverName = Environment.GetEnvironmentVariable("TE_TestServer");
             if (string.IsNullOrEmpty(serverName))
-                Assert.Fail("Test Server not specified. Please set environment variable TE_TestServer with the connection string of the AS engine server to use for testing");
+                Assert.Inconclusive("Integration test server not specified. Set TE_TestServer to run server-dependent tests.");
             return serverName;
         }
 
-        public static readonly string AasServerName = AasGetServerName();
+        public static string AasServerName => AasGetServerName();
 
         private static string AasGetServerName()
         {
             var serverName = Environment.GetEnvironmentVariable("TE_AasTestServer");
             if (string.IsNullOrEmpty(serverName))
-                Assert.Fail("Test Server not specified. Please set environment variable TE_AasTestServer with the connection string of the Azure AS engine server to use for testing");
+                Assert.Inconclusive("Integration test server not specified. Set TE_AasTestServer to run Azure AS-dependent tests.");
             return serverName;
         }
     }

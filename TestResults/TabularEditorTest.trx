@@ -1,0 +1,774 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="05515b8b-ec13-4b2a-8f48-12e7decba12f" name="david@DAVID-G717 2026-03-24 18:43:30" runUser="DAVID-G717\david" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-03-24T18:43:30.2937401-05:00" queuing="2026-03-24T18:43:30.2937402-05:00" start="2026-03-24T18:43:29.5187377-05:00" finish="2026-03-24T18:43:45.5161831-05:00" />
+  <TestSettings name="default" id="3ea5ebf1-84d9-4fdf-95f8-a03ff2ea4d91">
+    <Deployment runDeploymentRoot="david_DAVID-G717_2026-03-24_18_43_30" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="b45c6bdf-9470-4a85-9906-e874a64a9a92" testId="d03a7667-eafd-0b2b-a539-06297ba44179" testName="FormatDaxUdfTest" computerName="DAVID-G717" duration="00:00:00.0146504" startTime="2026-03-24T18:43:44.9691252-05:00" endTime="2026-03-24T18:43:44.9839924-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b45c6bdf-9470-4a85-9906-e874a64a9a92" />
+    <UnitTestResult executionId="8f515f48-2273-4041-b4f3-25f6479a1419" testId="7288e46a-c6b9-c2f3-90f3-bb14cd4f4dff" testName="DeleteColumnTest" computerName="DAVID-G717" duration="00:00:00.2313197" startTime="2026-03-24T18:43:45.0757720-05:00" endTime="2026-03-24T18:43:45.3072253-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8f515f48-2273-4041-b4f3-25f6479a1419">
+      <Output>
+        <ErrorInfo>
+          <Message>Test method TabularEditor.RegressionTests.Regression_2_8_1_tests.DeleteColumnTest threw exception: &#xD;
+System.Threading.ThreadStateException: Current thread must be set to single thread apartment (STA) mode before OLE calls can be made. Ensure that your Main function has STAThreadAttribute marked on it.</Message>
+          <StackTrace>    at System.Windows.Forms.ComboBox.set_AutoCompleteMode(AutoCompleteMode value)&#xD;
+   at TabularEditor.FormMain.InitializeComponent() in C:\Users\david\source\repos\TabularEditor\TabularEditor\FormMain.Designer.cs:line 2214&#xD;
+   at TabularEditor.FormMain..ctor() in C:\Users\david\source\repos\TabularEditor\TabularEditor\FormMain.cs:line 31&#xD;
+   at TabularEditor.RegressionTests.Regression_2_8_1_tests.DeleteColumnTest() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\RegressionTests\Regression_2_8_1_tests.cs:line 30&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="60e87e79-20ed-45ab-adae-97e76e1aa38a" testId="088bccc1-ae25-f29d-1141-c008319905a6" testName="AddOutputLineNumbersNoArgsMultiline2" computerName="DAVID-G717" duration="00:00:00.1225180" startTime="2026-03-24T18:43:34.6701408-05:00" endTime="2026-03-24T18:43:34.7930156-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="60e87e79-20ed-45ab-adae-97e76e1aa38a">
+      <Output>
+        <StdOut>Debug Trace:&#xD;
+Value cannot be null. (Parameter 'stream')</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="91ca3b44-81a3-42aa-a920-8d04248d1781" testId="2814723f-64bc-4161-8e28-030a1b8a9449" testName="SimpleReferenceTest" computerName="DAVID-G717" duration="00:00:00.0002303" startTime="2026-03-24T18:43:45.0708494-05:00" endTime="2026-03-24T18:43:45.0711458-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="91ca3b44-81a3-42aa-a920-8d04248d1781" />
+    <UnitTestResult executionId="fc32b2fe-ad62-450f-8726-9da3f0b7d348" testId="baecfb99-99c4-7fa6-b148-76057339b1a2" testName="AddOutputLineNumbersNoArgsMultiline1" computerName="DAVID-G717" duration="00:00:00.0018595" startTime="2026-03-24T18:43:34.8539954-05:00" endTime="2026-03-24T18:43:34.8559808-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fc32b2fe-ad62-450f-8726-9da3f0b7d348">
+      <Output>
+        <StdOut>Debug Trace:&#xD;
+Value cannot be null. (Parameter 'stream')</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="2f23cfe1-fd51-4ba2-8466-4a554e4e9ebe" testId="73c76dad-d943-417c-f9bb-85408adffda7" testName="ScriptFromFilesWithError" computerName="DAVID-G717" duration="00:00:00.0351973" startTime="2026-03-24T18:43:34.5786894-05:00" endTime="2026-03-24T18:43:34.6140280-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2f23cfe1-fd51-4ba2-8466-4a554e4e9ebe">
+      <Output>
+        <ErrorInfo>
+          <Message>Test method TabularEditor.CLITests.ScriptFromFilesWithError threw exception: &#xD;
+System.PlatformNotSupportedException: Operation is not supported on this platform.</Message>
+          <StackTrace>    at Microsoft.CSharp.CSharpCodeGenerator.FromFileBatch(CompilerParameters options, String[] fileNames)&#xD;
+   at Microsoft.CSharp.CSharpCodeGenerator.FromSourceBatch(CompilerParameters options, String[] sources)&#xD;
+   at Microsoft.CSharp.CSharpCodeGenerator.System.CodeDom.Compiler.ICodeCompiler.CompileAssemblyFromSourceBatch(CompilerParameters options, String[] sources)&#xD;
+   at TabularEditor.ScriptEngine.Compile(String code, List`1 customAssemblies, Action`2 errorCallback) in C:\Users\david\source\repos\TabularEditor\TabularEditor\Scripting\ScriptEngine.cs:line 478&#xD;
+   at TabularEditor.ScriptEngine.CompileScript(String script, CompilerResults&amp; compilerResults) in C:\Users\david\source\repos\TabularEditor\TabularEditor\Scripting\ScriptEngine.cs:line 231&#xD;
+   at TabularEditor.CommandLineHandler.ExecuteScripts() in C:\Users\david\source\repos\TabularEditor\TabularEditor\CommandLineHandler.cs:line 880&#xD;
+   at TabularEditor.CommandLineHandler.InternalHandleCommandLine(String[] args) in C:\Users\david\source\repos\TabularEditor\TabularEditor\CommandLineHandler.cs:line 243&#xD;
+   at TabularEditor.CommandLineHandler.HandleCommandLine(String[] args) in C:\Users\david\source\repos\TabularEditor\TabularEditor\CommandLineHandler.cs:line 89&#xD;
+   at TabularEditor.CLITests.CommandLine(String[] args) in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\CLITests.cs:line 44&#xD;
+   at TabularEditor.CLITests.ScriptFromFilesWithError() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\CLITests.cs:line 148&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="f3d9cdda-4f08-46e0-8a74-ad69031ef3cd" testId="b2e54c7f-c85f-2265-12c7-1640f686c09e" testName="BasicTest" computerName="DAVID-G717" duration="00:00:00.0156894" startTime="2026-03-24T18:43:29.9120866-05:00" endTime="2026-03-24T18:43:29.9426863-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f3d9cdda-4f08-46e0-8a74-ad69031ef3cd">
+      <Output>
+        <ErrorInfo>
+          <Message>Test method TabularEditor.AnalyzerTests.BasicTest threw exception: &#xD;
+System.TypeInitializationException: The type initializer for 'TabularEditor.Constants' threw an exception. ---&gt; Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException: Assert.Fail failed. Test Server not specified. Please set environment variable TE_TestServer with the connection string of the AS engine server to use for testing</Message>
+          <StackTrace>   at TabularEditor.Constants.GetServerName() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\Constants.cs:line 18&#xD;
+   at TabularEditor.Constants..cctor() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\Constants.cs:line 12&#xD;
+--- End of inner exception stack trace ---&#xD;
+    at TabularEditor.AnalyzerTests.BasicTest() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\BestPracticeAnalyzer\AnalyzerTests.cs:line 17&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="72ba1424-6fe1-4e20-81c5-efecc8af5f3c" testId="075fda11-573b-afad-148c-fccbd2df2b08" testName="MultipleScripts" computerName="DAVID-G717" duration="00:00:00.1199824" startTime="2026-03-24T18:43:30.1059116-05:00" endTime="2026-03-24T18:43:30.2259825-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="72ba1424-6fe1-4e20-81c5-efecc8af5f3c">
+      <Output>
+        <ErrorInfo>
+          <Message>Test method TabularEditor.CLITests.MultipleScripts threw exception: &#xD;
+System.PlatformNotSupportedException: Operation is not supported on this platform.</Message>
+          <StackTrace>    at Microsoft.CSharp.CSharpCodeGenerator.FromFileBatch(CompilerParameters options, String[] fileNames)&#xD;
+   at Microsoft.CSharp.CSharpCodeGenerator.FromSourceBatch(CompilerParameters options, String[] sources)&#xD;
+   at Microsoft.CSharp.CSharpCodeGenerator.System.CodeDom.Compiler.ICodeCompiler.CompileAssemblyFromSourceBatch(CompilerParameters options, String[] sources)&#xD;
+   at TabularEditor.ScriptEngine.Compile(String code, List`1 customAssemblies, Action`2 errorCallback) in C:\Users\david\source\repos\TabularEditor\TabularEditor\Scripting\ScriptEngine.cs:line 478&#xD;
+   at TabularEditor.ScriptEngine.CompileScript(String script, CompilerResults&amp; compilerResults) in C:\Users\david\source\repos\TabularEditor\TabularEditor\Scripting\ScriptEngine.cs:line 231&#xD;
+   at TabularEditor.CommandLineHandler.ExecuteScripts() in C:\Users\david\source\repos\TabularEditor\TabularEditor\CommandLineHandler.cs:line 880&#xD;
+   at TabularEditor.CommandLineHandler.InternalHandleCommandLine(String[] args) in C:\Users\david\source\repos\TabularEditor\TabularEditor\CommandLineHandler.cs:line 243&#xD;
+   at TabularEditor.CommandLineHandler.HandleCommandLine(String[] args) in C:\Users\david\source\repos\TabularEditor\TabularEditor\CommandLineHandler.cs:line 89&#xD;
+   at TabularEditor.CLITests.CommandLine(String[] args) in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\CLITests.cs:line 44&#xD;
+   at TabularEditor.CLITests.MultipleScripts() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\CLITests.cs:line 55&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="edd85f0c-5ded-442b-a911-847d50b35855" testId="935d6ac1-7d65-6587-a083-9b221d0f1ebd" testName="ReplaceGlobalMethodCallsSingleLine" computerName="DAVID-G717" duration="00:00:00.0008453" startTime="2026-03-24T18:43:34.8713567-05:00" endTime="2026-03-24T18:43:34.8722624-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="edd85f0c-5ded-442b-a911-847d50b35855">
+      <Output>
+        <StdOut>Debug Trace:&#xD;
+Value cannot be null. (Parameter 'stream')</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="c8dafab2-16d6-48c9-9967-e35ba768c810" testId="4492c683-91f6-f924-908d-4588e94ebedd" testName="BasicLinqFilterTest" computerName="DAVID-G717" duration="00:00:00.0003660" startTime="2026-03-24T18:43:45.0608647-05:00" endTime="2026-03-24T18:43:45.0613269-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c8dafab2-16d6-48c9-9967-e35ba768c810">
+      <Output>
+        <ErrorInfo>
+          <Message>Test method TabularEditor.LinqFilterTests.BasicLinqFilterTest threw exception: &#xD;
+System.TypeInitializationException: The type initializer for 'TabularEditor.Constants' threw an exception. ---&gt; Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException: Assert.Fail failed. Test Server not specified. Please set environment variable TE_TestServer with the connection string of the AS engine server to use for testing</Message>
+          <StackTrace>   at TabularEditor.Constants.GetServerName() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\Constants.cs:line 18&#xD;
+   at TabularEditor.Constants..cctor() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\Constants.cs:line 12&#xD;
+--- End of inner exception stack trace ---&#xD;
+    at TabularEditor.LinqFilterTests.BasicLinqFilterTest() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\TabularUITree\LinqFilterTests.cs:line 17&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="973a6f47-29cf-4f5a-b4e0-9a23ab22f888" testId="a2f7faa7-ba1b-fc8f-4499-4f3c360dfda1" testName="TokenizeTest" computerName="DAVID-G717" duration="00:00:00.0005813" startTime="2026-03-24T18:43:29.9470614-05:00" endTime="2026-03-24T18:43:29.9476985-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="973a6f47-29cf-4f5a-b4e0-9a23ab22f888">
+      <Output>
+        <ErrorInfo>
+          <Message>Test method TabularEditor.AnalyzerTests.TokenizeTest threw exception: &#xD;
+System.TypeInitializationException: The type initializer for 'TabularEditor.Constants' threw an exception. ---&gt; Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException: Assert.Fail failed. Test Server not specified. Please set environment variable TE_TestServer with the connection string of the AS engine server to use for testing</Message>
+          <StackTrace>   at TabularEditor.Constants.GetServerName() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\Constants.cs:line 18&#xD;
+   at TabularEditor.Constants..cctor() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\Constants.cs:line 12&#xD;
+--- End of inner exception stack trace ---&#xD;
+    at TabularEditor.AnalyzerTests.TokenizeTest() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\BestPracticeAnalyzer\AnalyzerTests.cs:line 93&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="7454efd2-6065-49b0-b9be-e10290cdf168" testId="d47f1c2d-cc7f-99c4-11d1-719cd31933fb" testName="Issue606_PQCredentialScript" computerName="DAVID-G717" duration="00:00:00.0050372" startTime="2026-03-24T18:43:30.1007229-05:00" endTime="2026-03-24T18:43:30.1058571-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7454efd2-6065-49b0-b9be-e10290cdf168">
+      <Output>
+        <ErrorInfo>
+          <Message>Test method TabularEditor.CLITests.Issue606_PQCredentialScript threw exception: &#xD;
+System.PlatformNotSupportedException: Operation is not supported on this platform.</Message>
+          <StackTrace>    at Microsoft.CSharp.CSharpCodeGenerator.FromFileBatch(CompilerParameters options, String[] fileNames)&#xD;
+   at Microsoft.CSharp.CSharpCodeGenerator.FromSourceBatch(CompilerParameters options, String[] sources)&#xD;
+   at Microsoft.CSharp.CSharpCodeGenerator.System.CodeDom.Compiler.ICodeCompiler.CompileAssemblyFromSourceBatch(CompilerParameters options, String[] sources)&#xD;
+   at TabularEditor.ScriptEngine.Compile(String code, List`1 customAssemblies, Action`2 errorCallback) in C:\Users\david\source\repos\TabularEditor\TabularEditor\Scripting\ScriptEngine.cs:line 478&#xD;
+   at TabularEditor.ScriptEngine.CompileScript(String script, CompilerResults&amp; compilerResults) in C:\Users\david\source\repos\TabularEditor\TabularEditor\Scripting\ScriptEngine.cs:line 231&#xD;
+   at TabularEditor.CommandLineHandler.ExecuteScripts() in C:\Users\david\source\repos\TabularEditor\TabularEditor\CommandLineHandler.cs:line 880&#xD;
+   at TabularEditor.CommandLineHandler.InternalHandleCommandLine(String[] args) in C:\Users\david\source\repos\TabularEditor\TabularEditor\CommandLineHandler.cs:line 243&#xD;
+   at TabularEditor.CommandLineHandler.HandleCommandLine(String[] args) in C:\Users\david\source\repos\TabularEditor\TabularEditor\CommandLineHandler.cs:line 89&#xD;
+   at TabularEditor.CLITests.CommandLine(String[] args) in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\CLITests.cs:line 44&#xD;
+   at TabularEditor.CLITests.Issue606_PQCredentialScript() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\CLITests.cs:line 26&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="97af1363-2051-4e48-a6ed-580c029211ac" testId="8ee5629d-1793-bb7d-fda6-a2868e2215eb" testName="PerformanceTest" computerName="DAVID-G717" duration="00:00:00.0003088" startTime="2026-03-24T18:43:29.9466400-05:00" endTime="2026-03-24T18:43:29.9470282-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="97af1363-2051-4e48-a6ed-580c029211ac">
+      <Output>
+        <ErrorInfo>
+          <Message>Test method TabularEditor.AnalyzerTests.PerformanceTest threw exception: &#xD;
+System.TypeInitializationException: The type initializer for 'TabularEditor.Constants' threw an exception. ---&gt; Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException: Assert.Fail failed. Test Server not specified. Please set environment variable TE_TestServer with the connection string of the AS engine server to use for testing</Message>
+          <StackTrace>   at TabularEditor.Constants.GetServerName() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\Constants.cs:line 18&#xD;
+   at TabularEditor.Constants..cctor() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\Constants.cs:line 12&#xD;
+--- End of inner exception stack trace ---&#xD;
+    at TabularEditor.AnalyzerTests.PerformanceTest() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\BestPracticeAnalyzer\AnalyzerTests.cs:line 58&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="66325bb0-b78f-4c11-a669-797cb1cd1200" testId="17b0b4a5-2e91-5996-56b8-edff3c96da87" testName="ComplexTest" computerName="DAVID-G717" duration="00:00:00.0008146" startTime="2026-03-24T18:43:45.0713723-05:00" endTime="2026-03-24T18:43:45.0722391-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="66325bb0-b78f-4c11-a669-797cb1cd1200" />
+    <UnitTestResult executionId="d1f2db27-4cf0-4396-bca7-caf662a94eb1" testId="6681d346-827f-66a4-d4dd-7af32832c8d5" testName="AddOutputLineNumbersMultiline2" computerName="DAVID-G717" duration="00:00:00.0022012" startTime="2026-03-24T18:43:34.8560465-05:00" endTime="2026-03-24T18:43:34.8583453-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d1f2db27-4cf0-4396-bca7-caf662a94eb1">
+      <Output>
+        <StdOut>Debug Trace:&#xD;
+Value cannot be null. (Parameter 'stream')</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="6850adba-fe70-4cfb-9840-713c15426640" testId="316f5d40-2276-36b9-2429-bffe2b64236a" testName="ComplexTest1" computerName="DAVID-G717" duration="00:00:00.0005941" startTime="2026-03-24T18:43:29.9477269-05:00" endTime="2026-03-24T18:43:29.9483729-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6850adba-fe70-4cfb-9840-713c15426640">
+      <Output>
+        <ErrorInfo>
+          <Message>Test method TabularEditor.AnalyzerTests.ComplexTest1 threw exception: &#xD;
+System.TypeInitializationException: The type initializer for 'TabularEditor.Constants' threw an exception. ---&gt; Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException: Assert.Fail failed. Test Server not specified. Please set environment variable TE_TestServer with the connection string of the AS engine server to use for testing</Message>
+          <StackTrace>   at TabularEditor.Constants.GetServerName() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\Constants.cs:line 18&#xD;
+   at TabularEditor.Constants..cctor() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\Constants.cs:line 12&#xD;
+--- End of inner exception stack trace ---&#xD;
+    at TabularEditor.AnalyzerTests.ComplexTest1() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\BestPracticeAnalyzer\AnalyzerTests.cs:line 113&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="e93342f7-af69-43e6-9ec4-01867e74dfff" testId="c1668bf8-a251-b65c-014c-3d48138cc4df" testName="TestMethod1" computerName="DAVID-G717" duration="00:00:00.0024417" startTime="2026-03-24T18:43:45.4395878-05:00" endTime="2026-03-24T18:43:45.4431454-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e93342f7-af69-43e6-9ec4-01867e74dfff">
+      <Output>
+        <ErrorInfo>
+          <Message>Initialization method TabularEditor.BestPracticeAnalyzer.FileTests.BackupRuleFiles threw exception. System.IO.DirectoryNotFoundException: Could not find a part of the path 'C:\ProgramData\TabularEditor\BPARules.json'..&#xD;
+TestCleanup method TabularEditor.BestPracticeAnalyzer.FileTests.RestoreRuleFiles threw exception. System.IO.DirectoryNotFoundException: Could not find a part of the path 'C:\ProgramData\TabularEditor\BPARules.json'..</Message>
+          <StackTrace>    at Microsoft.Win32.SafeHandles.SafeFileHandle.CreateFile(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options)&#xD;
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)&#xD;
+   at System.IO.File.OpenHandle(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize)&#xD;
+   at System.IO.File.WriteToFile(String path, FileMode mode, String contents, Encoding encoding)&#xD;
+   at TabularEditor.BestPracticeAnalyzer.FileTests.BackupRuleFiles() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\BestPracticeAnalyzer\FileTests.cs:line 280&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+&#xD;
+TestCleanup Stack Trace&#xD;
+   at System.IO.FileSystem.DeleteFile(String fullPath)&#xD;
+   at TabularEditor.BestPracticeAnalyzer.FileTests.RestoreRuleFiles() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\BestPracticeAnalyzer\FileTests.cs:line 293&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="66f2405c-6675-4d14-bd1b-88e8cd48a112" testId="b8be3cfa-083a-8bbd-68b5-7f83312c2e3f" testName="TestDualSerialization" computerName="DAVID-G717" duration="00:00:00.0557740" startTime="2026-03-24T18:43:34.6141046-05:00" endTime="2026-03-24T18:43:34.6700459-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="66f2405c-6675-4d14-bd1b-88e8cd48a112" />
+    <UnitTestResult executionId="88f5c9d7-a61b-47bf-96fa-b4e1478101b6" testId="e76adee7-f480-1ed3-3158-cfeba9c469b0" testName="PerformanceTest" computerName="DAVID-G717" duration="00:00:00.0002581" startTime="2026-03-24T18:43:45.0617468-05:00" endTime="2026-03-24T18:43:45.0620520-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="88f5c9d7-a61b-47bf-96fa-b4e1478101b6">
+      <Output>
+        <ErrorInfo>
+          <Message>Test method TabularEditor.LinqFilterTests.PerformanceTest threw exception: &#xD;
+System.TypeInitializationException: The type initializer for 'TabularEditor.Constants' threw an exception. ---&gt; Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException: Assert.Fail failed. Test Server not specified. Please set environment variable TE_TestServer with the connection string of the AS engine server to use for testing</Message>
+          <StackTrace>   at TabularEditor.Constants.GetServerName() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\Constants.cs:line 18&#xD;
+   at TabularEditor.Constants..cctor() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\Constants.cs:line 12&#xD;
+--- End of inner exception stack trace ---&#xD;
+    at TabularEditor.LinqFilterTests.PerformanceTest() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\TabularUITree\LinqFilterTests.cs:line 49&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="a56f2095-3ca0-4e34-9572-2e76c5644c01" testId="00db8b70-92a7-165e-7a4d-376165aed5cb" testName="MultipleScriptsFileNotFound" computerName="DAVID-G717" duration="00:00:00.0355457" startTime="2026-03-24T18:43:30.2476654-05:00" endTime="2026-03-24T18:43:30.2833529-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a56f2095-3ca0-4e34-9572-2e76c5644c01" />
+    <UnitTestResult executionId="98ea25b4-48c3-4342-9f8e-bdc771965e5b" testId="fdee0433-f350-1982-ecc5-5c8f36eb4ff4" testName="FormatDaxEnumerableTest" computerName="DAVID-G717" duration="00:00:00.0262053" startTime="2026-03-24T18:43:44.9840529-05:00" endTime="2026-03-24T18:43:45.0103665-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="98ea25b4-48c3-4342-9f8e-bdc771965e5b" />
+    <UnitTestResult executionId="2abda1c0-796b-48bc-bb0f-fd01820e46a1" testId="ae4c37ba-f84c-f782-70f9-479f9a6e65f1" testName="ScriptFromFile" computerName="DAVID-G717" duration="00:00:00.0318722" startTime="2026-03-24T18:43:30.3182888-05:00" endTime="2026-03-24T18:43:30.3502878-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2abda1c0-796b-48bc-bb0f-fd01820e46a1">
+      <Output>
+        <ErrorInfo>
+          <Message>Test method TabularEditor.CLITests.ScriptFromFile threw exception: &#xD;
+System.PlatformNotSupportedException: Operation is not supported on this platform.</Message>
+          <StackTrace>    at Microsoft.CSharp.CSharpCodeGenerator.FromFileBatch(CompilerParameters options, String[] fileNames)&#xD;
+   at Microsoft.CSharp.CSharpCodeGenerator.FromSourceBatch(CompilerParameters options, String[] sources)&#xD;
+   at Microsoft.CSharp.CSharpCodeGenerator.System.CodeDom.Compiler.ICodeCompiler.CompileAssemblyFromSourceBatch(CompilerParameters options, String[] sources)&#xD;
+   at TabularEditor.ScriptEngine.Compile(String code, List`1 customAssemblies, Action`2 errorCallback) in C:\Users\david\source\repos\TabularEditor\TabularEditor\Scripting\ScriptEngine.cs:line 478&#xD;
+   at TabularEditor.ScriptEngine.CompileScript(String script, CompilerResults&amp; compilerResults) in C:\Users\david\source\repos\TabularEditor\TabularEditor\Scripting\ScriptEngine.cs:line 231&#xD;
+   at TabularEditor.CommandLineHandler.ExecuteScripts() in C:\Users\david\source\repos\TabularEditor\TabularEditor\CommandLineHandler.cs:line 880&#xD;
+   at TabularEditor.CommandLineHandler.InternalHandleCommandLine(String[] args) in C:\Users\david\source\repos\TabularEditor\TabularEditor\CommandLineHandler.cs:line 243&#xD;
+   at TabularEditor.CommandLineHandler.HandleCommandLine(String[] args) in C:\Users\david\source\repos\TabularEditor\TabularEditor\CommandLineHandler.cs:line 89&#xD;
+   at TabularEditor.CLITests.CommandLine(String[] args) in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\CLITests.cs:line 44&#xD;
+   at TabularEditor.CLITests.ScriptFromFile() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\CLITests.cs:line 99&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="1d0ef792-d86e-4930-a295-0a34c1fd5197" testId="b24690c6-ee0a-fabf-0b29-7d2956314543" testName="MultipleScriptsInvalidScript" computerName="DAVID-G717" duration="00:00:00.0346372" startTime="2026-03-24T18:43:30.2834223-05:00" endTime="2026-03-24T18:43:30.3182104-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1d0ef792-d86e-4930-a295-0a34c1fd5197">
+      <Output>
+        <ErrorInfo>
+          <Message>Test method TabularEditor.CLITests.MultipleScriptsInvalidScript threw exception: &#xD;
+System.PlatformNotSupportedException: Operation is not supported on this platform.</Message>
+          <StackTrace>    at Microsoft.CSharp.CSharpCodeGenerator.FromFileBatch(CompilerParameters options, String[] fileNames)&#xD;
+   at Microsoft.CSharp.CSharpCodeGenerator.FromSourceBatch(CompilerParameters options, String[] sources)&#xD;
+   at Microsoft.CSharp.CSharpCodeGenerator.System.CodeDom.Compiler.ICodeCompiler.CompileAssemblyFromSourceBatch(CompilerParameters options, String[] sources)&#xD;
+   at TabularEditor.ScriptEngine.Compile(String code, List`1 customAssemblies, Action`2 errorCallback) in C:\Users\david\source\repos\TabularEditor\TabularEditor\Scripting\ScriptEngine.cs:line 478&#xD;
+   at TabularEditor.ScriptEngine.CompileScript(String script, CompilerResults&amp; compilerResults) in C:\Users\david\source\repos\TabularEditor\TabularEditor\Scripting\ScriptEngine.cs:line 231&#xD;
+   at TabularEditor.CommandLineHandler.ExecuteScripts() in C:\Users\david\source\repos\TabularEditor\TabularEditor\CommandLineHandler.cs:line 880&#xD;
+   at TabularEditor.CommandLineHandler.InternalHandleCommandLine(String[] args) in C:\Users\david\source\repos\TabularEditor\TabularEditor\CommandLineHandler.cs:line 243&#xD;
+   at TabularEditor.CommandLineHandler.HandleCommandLine(String[] args) in C:\Users\david\source\repos\TabularEditor\TabularEditor\CommandLineHandler.cs:line 89&#xD;
+   at TabularEditor.CLITests.CommandLine(String[] args) in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\CLITests.cs:line 44&#xD;
+   at TabularEditor.CLITests.MultipleScriptsInvalidScript() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\CLITests.cs:line 85&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="87733fab-ae90-4976-a60c-26707a3fb632" testId="fb4d26d3-d957-5611-2eb5-dd6752e5e408" testName="AdvancedVariableTest" computerName="DAVID-G717" duration="00:00:00.0011499" startTime="2026-03-24T18:43:45.0694701-05:00" endTime="2026-03-24T18:43:45.0708042-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="87733fab-ae90-4976-a60c-26707a3fb632" />
+    <UnitTestResult executionId="f0362cd9-78f0-4975-8350-3f8a7507d472" testId="06243475-a537-8da7-8b6c-2f30423f1c42" testName="TestWithoutDisplayFolders" computerName="DAVID-G717" duration="00:00:00.0008481" startTime="2026-03-24T18:43:45.0599135-05:00" endTime="2026-03-24T18:43:45.0608311-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f0362cd9-78f0-4975-8350-3f8a7507d472" />
+    <UnitTestResult executionId="92907d21-9810-493f-9546-0431badec5b0" testId="fb2d2ffd-f9a9-fa7e-7835-c94af626b5bf" testName="CreateNewMeasureSameTableUsingScriptTest" computerName="DAVID-G717" duration="00:00:00.0333290" startTime="2026-03-24T18:43:45.4060541-05:00" endTime="2026-03-24T18:43:45.4395058-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="92907d21-9810-493f-9546-0431badec5b0">
+      <Output>
+        <ErrorInfo>
+          <Message>Test method TabularEditor.RegressionTests.Regression_2_8_5_tests.CreateNewMeasureSameTableUsingScriptTest threw exception: &#xD;
+System.Threading.ThreadStateException: Current thread must be set to single thread apartment (STA) mode before OLE calls can be made. Ensure that your Main function has STAThreadAttribute marked on it.</Message>
+          <StackTrace>    at System.Windows.Forms.ComboBox.set_AutoCompleteMode(AutoCompleteMode value)&#xD;
+   at TabularEditor.FormMain.InitializeComponent() in C:\Users\david\source\repos\TabularEditor\TabularEditor\FormMain.Designer.cs:line 2214&#xD;
+   at TabularEditor.FormMain..ctor() in C:\Users\david\source\repos\TabularEditor\TabularEditor\FormMain.cs:line 31&#xD;
+   at TabularEditor.RegressionTests.Regression_2_8_5_tests.CreateNewMeasureSameTableUsingScriptTest() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\RegressionTests\Regression_2_8_5_tests.cs:line 134&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="0d10bed5-e64f-4145-be72-413856950101" testId="2bf6d487-814a-3b9f-ed0f-351ad09bda58" testName="ScriptFromFiles" computerName="DAVID-G717" duration="00:00:00.0366586" startTime="2026-03-24T18:43:34.5416956-05:00" endTime="2026-03-24T18:43:34.5785873-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0d10bed5-e64f-4145-be72-413856950101">
+      <Output>
+        <ErrorInfo>
+          <Message>Test method TabularEditor.CLITests.ScriptFromFiles threw exception: &#xD;
+System.PlatformNotSupportedException: Operation is not supported on this platform.</Message>
+          <StackTrace>    at Microsoft.CSharp.CSharpCodeGenerator.FromFileBatch(CompilerParameters options, String[] fileNames)&#xD;
+   at Microsoft.CSharp.CSharpCodeGenerator.FromSourceBatch(CompilerParameters options, String[] sources)&#xD;
+   at Microsoft.CSharp.CSharpCodeGenerator.System.CodeDom.Compiler.ICodeCompiler.CompileAssemblyFromSourceBatch(CompilerParameters options, String[] sources)&#xD;
+   at TabularEditor.ScriptEngine.Compile(String code, List`1 customAssemblies, Action`2 errorCallback) in C:\Users\david\source\repos\TabularEditor\TabularEditor\Scripting\ScriptEngine.cs:line 478&#xD;
+   at TabularEditor.ScriptEngine.CompileScript(String script, CompilerResults&amp; compilerResults) in C:\Users\david\source\repos\TabularEditor\TabularEditor\Scripting\ScriptEngine.cs:line 231&#xD;
+   at TabularEditor.CommandLineHandler.ExecuteScripts() in C:\Users\david\source\repos\TabularEditor\TabularEditor\CommandLineHandler.cs:line 880&#xD;
+   at TabularEditor.CommandLineHandler.InternalHandleCommandLine(String[] args) in C:\Users\david\source\repos\TabularEditor\TabularEditor\CommandLineHandler.cs:line 243&#xD;
+   at TabularEditor.CommandLineHandler.HandleCommandLine(String[] args) in C:\Users\david\source\repos\TabularEditor\TabularEditor\CommandLineHandler.cs:line 89&#xD;
+   at TabularEditor.CLITests.CommandLine(String[] args) in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\CLITests.cs:line 44&#xD;
+   at TabularEditor.CLITests.ScriptFromFiles() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\CLITests.cs:line 131&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="1cd3a76d-043b-4357-978d-6ee31aca24cf" testId="fe32682e-e216-ada2-869f-ddf586bd74c5" testName="ReplaceGlobalMethodCallsMultiline2" computerName="DAVID-G717" duration="00:00:00.0008560" startTime="2026-03-24T18:43:34.8704019-05:00" endTime="2026-03-24T18:43:34.8713094-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1cd3a76d-043b-4357-978d-6ee31aca24cf">
+      <Output>
+        <StdOut>Debug Trace:&#xD;
+Value cannot be null. (Parameter 'stream')</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="7f9e04ad-b506-4e8f-9f23-44f8b8497a8f" testId="553c5b13-7d19-0f7f-66d2-d0fb1cd501f1" testName="FormatDaxDeprecatedTest" computerName="DAVID-G717" duration="00:00:10.0951361" startTime="2026-03-24T18:43:34.8734621-05:00" endTime="2026-03-24T18:43:44.9685748-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7f9e04ad-b506-4e8f-9f23-44f8b8497a8f" />
+    <UnitTestResult executionId="0f24c856-64ac-4684-8a38-6b89e9d47b50" testId="4774a7b4-2d4c-8609-1e1b-07d765fed125" testName="Test" computerName="DAVID-G717" duration="00:00:00.0001215" startTime="2026-03-24T18:43:45.0750062-05:00" endTime="2026-03-24T18:43:45.0752606-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0f24c856-64ac-4684-8a38-6b89e9d47b50">
+      <Output>
+        <StdOut>Deployment failed! The JSON DDL request failed with the following error: The 'Name' property cannot contain any of the following characters: . , ; ' ` : / \ * | ? " &amp; % $ !+ = ( )[ ] { } &lt; &gt;.&#xD;
+&#xD;
+Technical Details:&#xD;
+RootActivityId: 08de469b - 3d73 - 4313 - 89ac - f014f1bd84be&#xD;
+Date(UTC): 5 / 2 / 2020 8:21:06 PM&#xD;
+Deployment failed! The JSON DDL request failed with the following error: The 'Name' property cannot contain any of the following characters: . , ; ' ` : / \ * | ? " &amp; % $ !+ = ( )[ ] { } &lt; &gt;.&#xD;
+&#xD;
+Technical Details:&#xD;
+RootActivityId: 08de469b - 3d73 - 4313 - 89ac - f014f1bd84be&#xD;
+Date(UTC): 5 / 2 / 2020 8:21:06 PM</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="243f836f-eb0a-4932-80e9-72b567a9e1de" testId="edf29031-0a1a-090c-231f-28a237bc1290" testName="LambdaTest" computerName="DAVID-G717" duration="00:00:00.0019456" startTime="2026-03-24T18:43:45.0722674-05:00" endTime="2026-03-24T18:43:45.0742674-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="243f836f-eb0a-4932-80e9-72b567a9e1de" />
+    <UnitTestResult executionId="a9062fe7-564d-4aca-b765-3528c290c97d" testId="1eef6100-10cd-6573-a58e-1646b01431c1" testName="ReplaceGlobalMethodCallsNoArgsMultiline1" computerName="DAVID-G717" duration="00:00:00.0011020" startTime="2026-03-24T18:43:34.8692096-05:00" endTime="2026-03-24T18:43:34.8703727-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a9062fe7-564d-4aca-b765-3528c290c97d">
+      <Output>
+        <StdOut>Debug Trace:&#xD;
+Value cannot be null. (Parameter 'stream')</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="fa51a169-c9c6-4071-a699-bc2024c97b28" testId="8206c96e-263e-99a3-7913-f5677e762021" testName="AddOutputLineNumbersSingleLine" computerName="DAVID-G717" duration="00:00:00.0018668" startTime="2026-03-24T18:43:34.8584016-05:00" endTime="2026-03-24T18:43:34.8603570-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fa51a169-c9c6-4071-a699-bc2024c97b28">
+      <Output>
+        <StdOut>Debug Trace:&#xD;
+Value cannot be null. (Parameter 'stream')</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="f5f86eac-d456-4667-bc53-1b5951136d00" testId="3047c9f2-dd3c-5ae9-3bed-810ac53d3204" testName="ReplaceGlobalMethodCallsNoArgsSingleLine" computerName="DAVID-G717" duration="00:00:00.0014180" startTime="2026-03-24T18:43:34.8676895-05:00" endTime="2026-03-24T18:43:34.8691761-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f5f86eac-d456-4667-bc53-1b5951136d00">
+      <Output>
+        <StdOut>Debug Trace:&#xD;
+Value cannot be null. (Parameter 'stream')</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="63b1b30f-2889-42bd-b9b4-dcbbb596929c" testId="bb11c01f-1008-aebd-15d2-3d90cdd9d148" testName="TestVersionCompareLogic" computerName="DAVID-G717" duration="00:00:00.0008607" startTime="2026-03-24T18:43:45.0625561-05:00" endTime="2026-03-24T18:43:45.0638200-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="63b1b30f-2889-42bd-b9b4-dcbbb596929c" />
+    <UnitTestResult executionId="4908104b-06ba-4b08-8122-1698fd93a3c8" testId="38f015be-26b9-295c-0cb0-7a226c5d8802" testName="NullExpressionTest" computerName="DAVID-G717" duration="00:00:00.0006542" startTime="2026-03-24T18:43:29.9456513-05:00" endTime="2026-03-24T18:43:29.9464514-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4908104b-06ba-4b08-8122-1698fd93a3c8">
+      <Output>
+        <ErrorInfo>
+          <Message>Test method TabularEditor.AnalyzerTests.NullExpressionTest threw exception: &#xD;
+System.TypeInitializationException: The type initializer for 'TabularEditor.Constants' threw an exception. ---&gt; Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException: Assert.Fail failed. Test Server not specified. Please set environment variable TE_TestServer with the connection string of the AS engine server to use for testing</Message>
+          <StackTrace>   at TabularEditor.Constants.GetServerName() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\Constants.cs:line 18&#xD;
+   at TabularEditor.Constants..cctor() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\Constants.cs:line 12&#xD;
+--- End of inner exception stack trace ---&#xD;
+    at TabularEditor.AnalyzerTests.NullExpressionTest() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\BestPracticeAnalyzer\AnalyzerTests.cs:line 38&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="6973ab30-a594-4a7b-8c60-9f4ec732d67a" testId="2bee27a6-f47a-bc78-7725-862154bdcc85" testName="SimpleVariableTest" computerName="DAVID-G717" duration="00:00:00.0052247" startTime="2026-03-24T18:43:45.0641053-05:00" endTime="2026-03-24T18:43:45.0694421-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6973ab30-a594-4a7b-8c60-9f4ec732d67a" />
+    <UnitTestResult executionId="3d7ec0f7-0f96-43bf-a9e7-3c8f9504bd06" testId="89199700-376a-4fa1-cb76-c1cbb59fb8dc" testName="FormatDaxBatchingTest" computerName="DAVID-G717" duration="00:00:00.0214289" startTime="2026-03-24T18:43:45.0104458-05:00" endTime="2026-03-24T18:43:45.0320174-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3d7ec0f7-0f96-43bf-a9e7-3c8f9504bd06" />
+    <UnitTestResult executionId="0bdd5b56-380b-4b1d-9dc9-29967fedf185" testId="8c6ef4a6-8743-fd56-a7d8-85bfb714bee9" testName="CreateNewMeasureSameTableUsingUITest" computerName="DAVID-G717" duration="00:00:00.0318523" startTime="2026-03-24T18:43:45.3740205-05:00" endTime="2026-03-24T18:43:45.4059791-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0bdd5b56-380b-4b1d-9dc9-29967fedf185">
+      <Output>
+        <ErrorInfo>
+          <Message>Test method TabularEditor.RegressionTests.Regression_2_8_5_tests.CreateNewMeasureSameTableUsingUITest threw exception: &#xD;
+System.Threading.ThreadStateException: Current thread must be set to single thread apartment (STA) mode before OLE calls can be made. Ensure that your Main function has STAThreadAttribute marked on it.</Message>
+          <StackTrace>    at System.Windows.Forms.ComboBox.set_AutoCompleteMode(AutoCompleteMode value)&#xD;
+   at TabularEditor.FormMain.InitializeComponent() in C:\Users\david\source\repos\TabularEditor\TabularEditor\FormMain.Designer.cs:line 2214&#xD;
+   at TabularEditor.FormMain..ctor() in C:\Users\david\source\repos\TabularEditor\TabularEditor\FormMain.cs:line 31&#xD;
+   at TabularEditor.RegressionTests.Regression_2_8_5_tests.CreateNewMeasureSameTableUsingUITest() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\RegressionTests\Regression_2_8_5_tests.cs:line 94&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="c2f57826-2221-4a9b-b16b-f4319f27255f" testId="621e9332-d356-1cd3-a9b6-75d888eeef84" testName="AddOutputLineNumbersNoArgsSingleLine" computerName="DAVID-G717" duration="00:00:00.0600769" startTime="2026-03-24T18:43:34.7936261-05:00" endTime="2026-03-24T18:43:34.8538961-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c2f57826-2221-4a9b-b16b-f4319f27255f">
+      <Output>
+        <StdOut>Debug Trace:&#xD;
+Value cannot be null. (Parameter 'stream')</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="3f3f12fc-b035-4d52-947b-9c2aa6d674ac" testId="d4d9faf4-df41-2423-72ee-6b8af493484e" testName="NoScripts" computerName="DAVID-G717" duration="00:00:00.0355955" startTime="2026-03-24T18:43:34.5056252-05:00" endTime="2026-03-24T18:43:34.5416000-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3f3f12fc-b035-4d52-947b-9c2aa6d674ac" />
+    <UnitTestResult executionId="795b4425-90f5-40c9-8db4-78db22747e5d" testId="681a6544-6893-47f1-262d-82c2ef7699b1" testName="ComplexTest2" computerName="DAVID-G717" duration="00:00:00.0002926" startTime="2026-03-24T18:43:29.9483998-05:00" endTime="2026-03-24T18:43:29.9488006-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="795b4425-90f5-40c9-8db4-78db22747e5d">
+      <Output>
+        <ErrorInfo>
+          <Message>Test method TabularEditor.AnalyzerTests.ComplexTest2 threw exception: &#xD;
+System.TypeInitializationException: The type initializer for 'TabularEditor.Constants' threw an exception. ---&gt; Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException: Assert.Fail failed. Test Server not specified. Please set environment variable TE_TestServer with the connection string of the AS engine server to use for testing</Message>
+          <StackTrace>   at TabularEditor.Constants.GetServerName() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\Constants.cs:line 18&#xD;
+   at TabularEditor.Constants..cctor() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\Constants.cs:line 12&#xD;
+--- End of inner exception stack trace ---&#xD;
+    at TabularEditor.AnalyzerTests.ComplexTest2() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\BestPracticeAnalyzer\AnalyzerTests.cs:line 134&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="8a032cac-c805-4b59-ba72-1e10d4ec4fea" testId="f163fb18-7e64-af01-1f6e-0c815b70f4d9" testName="ReplaceGlobalMethodCallsNoChange" computerName="DAVID-G717" duration="00:00:00.0019074" startTime="2026-03-24T18:43:34.8656660-05:00" endTime="2026-03-24T18:43:34.8676503-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8a032cac-c805-4b59-ba72-1e10d4ec4fea">
+      <Output>
+        <StdOut>Debug Trace:&#xD;
+Value cannot be null. (Parameter 'stream')</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="3f7035c5-56b7-471f-ae1d-ef0853894ee4" testId="7104fec8-e187-1368-23eb-41155703726a" testName="IndexedPropertyTest" computerName="DAVID-G717" duration="00:00:00.0001213" startTime="2026-03-24T18:43:45.0711701-05:00" endTime="2026-03-24T18:43:45.0713319-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3f7035c5-56b7-471f-ae1d-ef0853894ee4" />
+    <UnitTestResult executionId="71a5dafa-02fc-48b7-82bd-7713037adad5" testId="2de81900-eee3-3360-60c3-fc8a8d25654f" testName="LinqReferenceTest" computerName="DAVID-G717" duration="00:00:00.0006119" startTime="2026-03-24T18:43:45.0743003-05:00" endTime="2026-03-24T18:43:45.0749774-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="71a5dafa-02fc-48b7-82bd-7713037adad5" />
+    <UnitTestResult executionId="bb521ffc-d571-48ad-912d-b0386caf170e" testId="ce22f4c5-4161-1e9c-8089-1d1987a5d7bc" testName="AddOutputLineNumbersMultiline1" computerName="DAVID-G717" duration="00:00:00.0031222" startTime="2026-03-24T18:43:34.8623805-05:00" endTime="2026-03-24T18:43:34.8656193-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bb521ffc-d571-48ad-912d-b0386caf170e">
+      <Output>
+        <StdOut>Debug Trace:&#xD;
+Value cannot be null. (Parameter 'stream')</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="5ff3df94-4b7c-44c9-8bb3-5ec21f9b0453" testId="a526b6b4-a1b8-4746-e59e-dfea488fa21a" testName="CreateNewMeasureSameTableUsingHandlerTest" computerName="DAVID-G717" duration="00:00:00.0340131" startTime="2026-03-24T18:43:45.3073191-05:00" endTime="2026-03-24T18:43:45.3415452-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5ff3df94-4b7c-44c9-8bb3-5ec21f9b0453">
+      <Output>
+        <ErrorInfo>
+          <Message>Test method TabularEditor.RegressionTests.Regression_2_8_5_tests.CreateNewMeasureSameTableUsingHandlerTest threw exception: &#xD;
+System.Threading.ThreadStateException: Current thread must be set to single thread apartment (STA) mode before OLE calls can be made. Ensure that your Main function has STAThreadAttribute marked on it.</Message>
+          <StackTrace>    at System.Windows.Forms.ComboBox.set_AutoCompleteMode(AutoCompleteMode value)&#xD;
+   at TabularEditor.FormMain.InitializeComponent() in C:\Users\david\source\repos\TabularEditor\TabularEditor\FormMain.Designer.cs:line 2214&#xD;
+   at TabularEditor.FormMain..ctor() in C:\Users\david\source\repos\TabularEditor\TabularEditor\FormMain.cs:line 31&#xD;
+   at TabularEditor.RegressionTests.Regression_2_8_5_tests.CreateNewMeasureSameTableUsingHandlerTest() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\RegressionTests\Regression_2_8_5_tests.cs:line 18&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="d5dc6e23-d76f-4ad0-8370-0da655a99d88" testId="c3ddbe47-f382-40c9-c2d3-d772d6db738f" testName="CreateNewMeasureOtherTableUsingHandlerTest" computerName="DAVID-G717" duration="00:00:00.0322390" startTime="2026-03-24T18:43:45.3416089-05:00" endTime="2026-03-24T18:43:45.3739567-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d5dc6e23-d76f-4ad0-8370-0da655a99d88">
+      <Output>
+        <ErrorInfo>
+          <Message>Test method TabularEditor.RegressionTests.Regression_2_8_5_tests.CreateNewMeasureOtherTableUsingHandlerTest threw exception: &#xD;
+System.Threading.ThreadStateException: Current thread must be set to single thread apartment (STA) mode before OLE calls can be made. Ensure that your Main function has STAThreadAttribute marked on it.</Message>
+          <StackTrace>    at System.Windows.Forms.ComboBox.set_AutoCompleteMode(AutoCompleteMode value)&#xD;
+   at TabularEditor.FormMain.InitializeComponent() in C:\Users\david\source\repos\TabularEditor\TabularEditor\FormMain.Designer.cs:line 2214&#xD;
+   at TabularEditor.FormMain..ctor() in C:\Users\david\source\repos\TabularEditor\TabularEditor\FormMain.cs:line 31&#xD;
+   at TabularEditor.RegressionTests.Regression_2_8_5_tests.CreateNewMeasureOtherTableUsingHandlerTest() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\RegressionTests\Regression_2_8_5_tests.cs:line 56&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="768c4dd6-2f14-4d45-8c71-1630bf62351c" testId="210b03ea-0605-8115-b12b-20836db34158" testName="BasicPQCredentialScript" computerName="DAVID-G717" duration="00:00:00.1516864" startTime="2026-03-24T18:43:29.9488256-05:00" endTime="2026-03-24T18:43:30.1006510-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="768c4dd6-2f14-4d45-8c71-1630bf62351c">
+      <Output>
+        <ErrorInfo>
+          <Message>Test method TabularEditor.CLITests.BasicPQCredentialScript threw exception: &#xD;
+System.PlatformNotSupportedException: Operation is not supported on this platform.</Message>
+          <StackTrace>    at Microsoft.CSharp.CSharpCodeGenerator.FromFileBatch(CompilerParameters options, String[] fileNames)&#xD;
+   at Microsoft.CSharp.CSharpCodeGenerator.FromSourceBatch(CompilerParameters options, String[] sources)&#xD;
+   at Microsoft.CSharp.CSharpCodeGenerator.System.CodeDom.Compiler.ICodeCompiler.CompileAssemblyFromSourceBatch(CompilerParameters options, String[] sources)&#xD;
+   at TabularEditor.ScriptEngine.Compile(String code, List`1 customAssemblies, Action`2 errorCallback) in C:\Users\david\source\repos\TabularEditor\TabularEditor\Scripting\ScriptEngine.cs:line 478&#xD;
+   at TabularEditor.ScriptEngine.CompileScript(String script, CompilerResults&amp; compilerResults) in C:\Users\david\source\repos\TabularEditor\TabularEditor\Scripting\ScriptEngine.cs:line 231&#xD;
+   at TabularEditor.CommandLineHandler.ExecuteScripts() in C:\Users\david\source\repos\TabularEditor\TabularEditor\CommandLineHandler.cs:line 880&#xD;
+   at TabularEditor.CommandLineHandler.InternalHandleCommandLine(String[] args) in C:\Users\david\source\repos\TabularEditor\TabularEditor\CommandLineHandler.cs:line 243&#xD;
+   at TabularEditor.CommandLineHandler.HandleCommandLine(String[] args) in C:\Users\david\source\repos\TabularEditor\TabularEditor\CommandLineHandler.cs:line 89&#xD;
+   at TabularEditor.CLITests.CommandLine(String[] args) in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\CLITests.cs:line 44&#xD;
+   at TabularEditor.CLITests.BasicPQCredentialScript() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\CLITests.cs:line 17&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="547e3490-eff4-4448-a5c5-cddb2ed23c8a" testId="637e3ea5-bbe5-a46d-99a9-f52202ef4e3f" testName="TestWithDisplayFoldersShowHidden" computerName="DAVID-G717" duration="00:00:00.0015464" startTime="2026-03-24T18:43:45.0582118-05:00" endTime="2026-03-24T18:43:45.0598633-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="547e3490-eff4-4448-a5c5-cddb2ed23c8a" />
+    <UnitTestResult executionId="ee05d4a9-d8f1-4a7b-9a3c-f0f5ff204c2b" testId="8fe5877d-a98a-2530-65c5-7ae310eaa870" testName="TestWithDisplayFolders" computerName="DAVID-G717" duration="00:00:00.0258221" startTime="2026-03-24T18:43:45.0320961-05:00" endTime="2026-03-24T18:43:45.0581483-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ee05d4a9-d8f1-4a7b-9a3c-f0f5ff204c2b" />
+    <UnitTestResult executionId="b0dd3ad5-0afe-412c-a3e8-e68e220dc56c" testId="9f17a308-06f5-6db6-e40f-fa5de76770b8" testName="ReplaceGlobalMethodCallsMultiline1" computerName="DAVID-G717" duration="00:00:00.0010685" startTime="2026-03-24T18:43:34.8722955-05:00" endTime="2026-03-24T18:43:34.8734290-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b0dd3ad5-0afe-412c-a3e8-e68e220dc56c">
+      <Output>
+        <StdOut>Debug Trace:&#xD;
+Value cannot be null. (Parameter 'stream')</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="7d5cfc96-c812-4e77-8eb8-82fe07b0bf87" testId="311980ba-4dce-043f-3ddd-2de14ff1fe22" testName="NullSafetyTest" computerName="DAVID-G717" duration="00:00:00.0003167" startTime="2026-03-24T18:43:45.0613587-05:00" endTime="2026-03-24T18:43:45.0617238-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7d5cfc96-c812-4e77-8eb8-82fe07b0bf87">
+      <Output>
+        <ErrorInfo>
+          <Message>Test method TabularEditor.LinqFilterTests.NullSafetyTest threw exception: &#xD;
+System.TypeInitializationException: The type initializer for 'TabularEditor.Constants' threw an exception. ---&gt; Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException: Assert.Fail failed. Test Server not specified. Please set environment variable TE_TestServer with the connection string of the AS engine server to use for testing</Message>
+          <StackTrace>   at TabularEditor.Constants.GetServerName() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\Constants.cs:line 18&#xD;
+   at TabularEditor.Constants..cctor() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\Constants.cs:line 12&#xD;
+--- End of inner exception stack trace ---&#xD;
+    at TabularEditor.LinqFilterTests.NullSafetyTest() in C:\Users\david\source\repos\TabularEditor\TabularEditorTest\TabularUITree\LinqFilterTests.cs:line 33&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="afa5bf33-97d4-49e2-8ed3-b11caa675133" testId="60446acb-ed4d-7888-858a-5f6083251340" testName="Deployment" computerName="DAVID-G717" duration="00:00:04.1542025" startTime="2026-03-24T18:43:30.3503583-05:00" endTime="2026-03-24T18:43:34.5046378-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="afa5bf33-97d4-49e2-8ed3-b11caa675133" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="DeleteColumnTest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="7288e46a-c6b9-c2f3-90f3-bb14cd4f4dff">
+      <Execution id="8f515f48-2273-4041-b4f3-25f6479a1419" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.RegressionTests.Regression_2_8_1_tests" name="DeleteColumnTest" />
+    </UnitTest>
+    <UnitTest name="TestWithDisplayFolders" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="8fe5877d-a98a-2530-65c5-7ae310eaa870">
+      <Execution id="ee05d4a9-d8f1-4a7b-9a3c-f0f5ff204c2b" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.GetPathTests" name="TestWithDisplayFolders" />
+    </UnitTest>
+    <UnitTest name="ReplaceGlobalMethodCallsNoArgsMultiline1" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="1eef6100-10cd-6573-a58e-1646b01431c1">
+      <Execution id="a9062fe7-564d-4aca-b765-3528c290c97d" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.ScriptEngineTests" name="ReplaceGlobalMethodCallsNoArgsMultiline1" />
+    </UnitTest>
+    <UnitTest name="ReplaceGlobalMethodCallsNoChange" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="f163fb18-7e64-af01-1f6e-0c815b70f4d9">
+      <Execution id="8a032cac-c805-4b59-ba72-1e10d4ec4fea" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.ScriptEngineTests" name="ReplaceGlobalMethodCallsNoChange" />
+    </UnitTest>
+    <UnitTest name="MultipleScriptsFileNotFound" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="00db8b70-92a7-165e-7a4d-376165aed5cb">
+      <Execution id="a56f2095-3ca0-4e34-9572-2e76c5644c01" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.CLITests" name="MultipleScriptsFileNotFound" />
+    </UnitTest>
+    <UnitTest name="NullExpressionTest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="38f015be-26b9-295c-0cb0-7a226c5d8802">
+      <Execution id="4908104b-06ba-4b08-8122-1698fd93a3c8" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.AnalyzerTests" name="NullExpressionTest" />
+    </UnitTest>
+    <UnitTest name="Issue606_PQCredentialScript" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="d47f1c2d-cc7f-99c4-11d1-719cd31933fb">
+      <Execution id="7454efd2-6065-49b0-b9be-e10290cdf168" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.CLITests" name="Issue606_PQCredentialScript" />
+    </UnitTest>
+    <UnitTest name="ReplaceGlobalMethodCallsSingleLine" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="935d6ac1-7d65-6587-a083-9b221d0f1ebd">
+      <Execution id="edd85f0c-5ded-442b-a911-847d50b35855" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.ScriptEngineTests" name="ReplaceGlobalMethodCallsSingleLine" />
+    </UnitTest>
+    <UnitTest name="BasicTest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="b2e54c7f-c85f-2265-12c7-1640f686c09e">
+      <Execution id="f3d9cdda-4f08-46e0-8a74-ad69031ef3cd" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.AnalyzerTests" name="BasicTest" />
+    </UnitTest>
+    <UnitTest name="ComplexTest1" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="316f5d40-2276-36b9-2429-bffe2b64236a">
+      <Execution id="6850adba-fe70-4cfb-9840-713c15426640" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.AnalyzerTests" name="ComplexTest1" />
+    </UnitTest>
+    <UnitTest name="AddOutputLineNumbersNoArgsMultiline1" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="baecfb99-99c4-7fa6-b148-76057339b1a2">
+      <Execution id="fc32b2fe-ad62-450f-8726-9da3f0b7d348" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.ScriptEngineTests" name="AddOutputLineNumbersNoArgsMultiline1" />
+    </UnitTest>
+    <UnitTest name="PerformanceTest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="8ee5629d-1793-bb7d-fda6-a2868e2215eb">
+      <Execution id="97af1363-2051-4e48-a6ed-580c029211ac" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.AnalyzerTests" name="PerformanceTest" />
+    </UnitTest>
+    <UnitTest name="CreateNewMeasureSameTableUsingUITest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="8c6ef4a6-8743-fd56-a7d8-85bfb714bee9">
+      <Execution id="0bdd5b56-380b-4b1d-9dc9-29967fedf185" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.RegressionTests.Regression_2_8_5_tests" name="CreateNewMeasureSameTableUsingUITest" />
+    </UnitTest>
+    <UnitTest name="Deployment" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="60446acb-ed4d-7888-858a-5f6083251340">
+      <Execution id="afa5bf33-97d4-49e2-8ed3-b11caa675133" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.CLITests" name="Deployment" />
+    </UnitTest>
+    <UnitTest name="TestWithDisplayFoldersShowHidden" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="637e3ea5-bbe5-a46d-99a9-f52202ef4e3f">
+      <Execution id="547e3490-eff4-4448-a5c5-cddb2ed23c8a" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.GetPathTests" name="TestWithDisplayFoldersShowHidden" />
+    </UnitTest>
+    <UnitTest name="LinqReferenceTest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="2de81900-eee3-3360-60c3-fc8a8d25654f">
+      <Execution id="71a5dafa-02fc-48b7-82bd-7713037adad5" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.TextServices.Tests.ScriptParserTests" name="LinqReferenceTest" />
+    </UnitTest>
+    <UnitTest name="ScriptFromFilesWithError" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="73c76dad-d943-417c-f9bb-85408adffda7">
+      <Execution id="2f23cfe1-fd51-4ba2-8466-4a554e4e9ebe" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.CLITests" name="ScriptFromFilesWithError" />
+    </UnitTest>
+    <UnitTest name="AddOutputLineNumbersMultiline2" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="6681d346-827f-66a4-d4dd-7af32832c8d5">
+      <Execution id="d1f2db27-4cf0-4396-bca7-caf662a94eb1" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.ScriptEngineTests" name="AddOutputLineNumbersMultiline2" />
+    </UnitTest>
+    <UnitTest name="SimpleVariableTest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="2bee27a6-f47a-bc78-7725-862154bdcc85">
+      <Execution id="6973ab30-a594-4a7b-8c60-9f4ec732d67a" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.TextServices.Tests.ScriptParserTests" name="SimpleVariableTest" />
+    </UnitTest>
+    <UnitTest name="FormatDaxUdfTest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="d03a7667-eafd-0b2b-a539-06297ba44179">
+      <Execution id="b45c6bdf-9470-4a85-9906-e874a64a9a92" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.ScriptHelperTests" name="FormatDaxUdfTest" />
+    </UnitTest>
+    <UnitTest name="IndexedPropertyTest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="7104fec8-e187-1368-23eb-41155703726a">
+      <Execution id="3f7035c5-56b7-471f-ae1d-ef0853894ee4" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.TextServices.Tests.ScriptParserTests" name="IndexedPropertyTest" />
+    </UnitTest>
+    <UnitTest name="AddOutputLineNumbersSingleLine" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="8206c96e-263e-99a3-7913-f5677e762021">
+      <Execution id="fa51a169-c9c6-4071-a699-bc2024c97b28" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.ScriptEngineTests" name="AddOutputLineNumbersSingleLine" />
+    </UnitTest>
+    <UnitTest name="TestWithoutDisplayFolders" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="06243475-a537-8da7-8b6c-2f30423f1c42">
+      <Execution id="f0362cd9-78f0-4975-8350-3f8a7507d472" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.GetPathTests" name="TestWithoutDisplayFolders" />
+    </UnitTest>
+    <UnitTest name="MultipleScripts" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="075fda11-573b-afad-148c-fccbd2df2b08">
+      <Execution id="72ba1424-6fe1-4e20-81c5-efecc8af5f3c" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.CLITests" name="MultipleScripts" />
+    </UnitTest>
+    <UnitTest name="ScriptFromFiles" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="2bf6d487-814a-3b9f-ed0f-351ad09bda58">
+      <Execution id="0d10bed5-e64f-4145-be72-413856950101" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.CLITests" name="ScriptFromFiles" />
+    </UnitTest>
+    <UnitTest name="ComplexTest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="17b0b4a5-2e91-5996-56b8-edff3c96da87">
+      <Execution id="66325bb0-b78f-4c11-a669-797cb1cd1200" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.TextServices.Tests.ScriptParserTests" name="ComplexTest" />
+    </UnitTest>
+    <UnitTest name="ReplaceGlobalMethodCallsMultiline2" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="fe32682e-e216-ada2-869f-ddf586bd74c5">
+      <Execution id="1cd3a76d-043b-4357-978d-6ee31aca24cf" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.ScriptEngineTests" name="ReplaceGlobalMethodCallsMultiline2" />
+    </UnitTest>
+    <UnitTest name="BasicLinqFilterTest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="4492c683-91f6-f924-908d-4588e94ebedd">
+      <Execution id="c8dafab2-16d6-48c9-9967-e35ba768c810" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.LinqFilterTests" name="BasicLinqFilterTest" />
+    </UnitTest>
+    <UnitTest name="CreateNewMeasureSameTableUsingHandlerTest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="a526b6b4-a1b8-4746-e59e-dfea488fa21a">
+      <Execution id="5ff3df94-4b7c-44c9-8bb3-5ec21f9b0453" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.RegressionTests.Regression_2_8_5_tests" name="CreateNewMeasureSameTableUsingHandlerTest" />
+    </UnitTest>
+    <UnitTest name="CreateNewMeasureSameTableUsingScriptTest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="fb2d2ffd-f9a9-fa7e-7835-c94af626b5bf">
+      <Execution id="92907d21-9810-493f-9546-0431badec5b0" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.RegressionTests.Regression_2_8_5_tests" name="CreateNewMeasureSameTableUsingScriptTest" />
+    </UnitTest>
+    <UnitTest name="Test" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="4774a7b4-2d4c-8609-1e1b-07d765fed125">
+      <Execution id="0f24c856-64ac-4684-8a38-6b89e9d47b50" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.ReportedIssues.Issue_0460" name="Test" />
+    </UnitTest>
+    <UnitTest name="ReplaceGlobalMethodCallsNoArgsSingleLine" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="3047c9f2-dd3c-5ae9-3bed-810ac53d3204">
+      <Execution id="f5f86eac-d456-4667-bc53-1b5951136d00" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.ScriptEngineTests" name="ReplaceGlobalMethodCallsNoArgsSingleLine" />
+    </UnitTest>
+    <UnitTest name="FormatDaxBatchingTest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="89199700-376a-4fa1-cb76-c1cbb59fb8dc">
+      <Execution id="3d7ec0f7-0f96-43bf-a9e7-3c8f9504bd06" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.ScriptHelperTests" name="FormatDaxBatchingTest" />
+    </UnitTest>
+    <UnitTest name="NullSafetyTest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="311980ba-4dce-043f-3ddd-2de14ff1fe22">
+      <Execution id="7d5cfc96-c812-4e77-8eb8-82fe07b0bf87" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.LinqFilterTests" name="NullSafetyTest" />
+    </UnitTest>
+    <UnitTest name="MultipleScriptsInvalidScript" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="b24690c6-ee0a-fabf-0b29-7d2956314543">
+      <Execution id="1d0ef792-d86e-4930-a295-0a34c1fd5197" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.CLITests" name="MultipleScriptsInvalidScript" />
+    </UnitTest>
+    <UnitTest name="NoScripts" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="d4d9faf4-df41-2423-72ee-6b8af493484e">
+      <Execution id="3f3f12fc-b035-4d52-947b-9c2aa6d674ac" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.CLITests" name="NoScripts" />
+    </UnitTest>
+    <UnitTest name="AddOutputLineNumbersMultiline1" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="ce22f4c5-4161-1e9c-8089-1d1987a5d7bc">
+      <Execution id="bb521ffc-d571-48ad-912d-b0386caf170e" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.ScriptEngineTests" name="AddOutputLineNumbersMultiline1" />
+    </UnitTest>
+    <UnitTest name="AdvancedVariableTest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="fb4d26d3-d957-5611-2eb5-dd6752e5e408">
+      <Execution id="87733fab-ae90-4976-a60c-26707a3fb632" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.TextServices.Tests.ScriptParserTests" name="AdvancedVariableTest" />
+    </UnitTest>
+    <UnitTest name="TestDualSerialization" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="b8be3cfa-083a-8bbd-68b5-7f83312c2e3f">
+      <Execution id="66f2405c-6675-4d14-bd1b-88e8cd48a112" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.CLITests" name="TestDualSerialization" />
+    </UnitTest>
+    <UnitTest name="ReplaceGlobalMethodCallsMultiline1" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="9f17a308-06f5-6db6-e40f-fa5de76770b8">
+      <Execution id="b0dd3ad5-0afe-412c-a3e8-e68e220dc56c" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.ScriptEngineTests" name="ReplaceGlobalMethodCallsMultiline1" />
+    </UnitTest>
+    <UnitTest name="ComplexTest2" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="681a6544-6893-47f1-262d-82c2ef7699b1">
+      <Execution id="795b4425-90f5-40c9-8db4-78db22747e5d" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.AnalyzerTests" name="ComplexTest2" />
+    </UnitTest>
+    <UnitTest name="FormatDaxEnumerableTest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="fdee0433-f350-1982-ecc5-5c8f36eb4ff4">
+      <Execution id="98ea25b4-48c3-4342-9f8e-bdc771965e5b" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.ScriptHelperTests" name="FormatDaxEnumerableTest" />
+    </UnitTest>
+    <UnitTest name="TestMethod1" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="c1668bf8-a251-b65c-014c-3d48138cc4df">
+      <Execution id="e93342f7-af69-43e6-9ec4-01867e74dfff" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.BestPracticeAnalyzer.FileTests" name="TestMethod1" />
+    </UnitTest>
+    <UnitTest name="LambdaTest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="edf29031-0a1a-090c-231f-28a237bc1290">
+      <Execution id="243f836f-eb0a-4932-80e9-72b567a9e1de" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.TextServices.Tests.ScriptParserTests" name="LambdaTest" />
+    </UnitTest>
+    <UnitTest name="TestVersionCompareLogic" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="bb11c01f-1008-aebd-15d2-3d90cdd9d148">
+      <Execution id="63b1b30f-2889-42bd-b9b4-dcbbb596929c" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.UpdateServiceTests" name="TestVersionCompareLogic" />
+    </UnitTest>
+    <UnitTest name="CreateNewMeasureOtherTableUsingHandlerTest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="c3ddbe47-f382-40c9-c2d3-d772d6db738f">
+      <Execution id="d5dc6e23-d76f-4ad0-8370-0da655a99d88" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.RegressionTests.Regression_2_8_5_tests" name="CreateNewMeasureOtherTableUsingHandlerTest" />
+    </UnitTest>
+    <UnitTest name="TokenizeTest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="a2f7faa7-ba1b-fc8f-4499-4f3c360dfda1">
+      <Execution id="973a6f47-29cf-4f5a-b4e0-9a23ab22f888" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.AnalyzerTests" name="TokenizeTest" />
+    </UnitTest>
+    <UnitTest name="SimpleReferenceTest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="2814723f-64bc-4161-8e28-030a1b8a9449">
+      <Execution id="91ca3b44-81a3-42aa-a920-8d04248d1781" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.TextServices.Tests.ScriptParserTests" name="SimpleReferenceTest" />
+    </UnitTest>
+    <UnitTest name="AddOutputLineNumbersNoArgsMultiline2" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="088bccc1-ae25-f29d-1141-c008319905a6">
+      <Execution id="60e87e79-20ed-45ab-adae-97e76e1aa38a" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.ScriptEngineTests" name="AddOutputLineNumbersNoArgsMultiline2" />
+    </UnitTest>
+    <UnitTest name="PerformanceTest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="e76adee7-f480-1ed3-3158-cfeba9c469b0">
+      <Execution id="88f5c9d7-a61b-47bf-96fa-b4e1478101b6" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.LinqFilterTests" name="PerformanceTest" />
+    </UnitTest>
+    <UnitTest name="FormatDaxDeprecatedTest" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="553c5b13-7d19-0f7f-66d2-d0fb1cd501f1">
+      <Execution id="7f9e04ad-b506-4e8f-9f23-44f8b8497a8f" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.ScriptHelperTests" name="FormatDaxDeprecatedTest" />
+    </UnitTest>
+    <UnitTest name="BasicPQCredentialScript" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="210b03ea-0605-8115-b12b-20836db34158">
+      <Execution id="768c4dd6-2f14-4d45-8c71-1630bf62351c" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.CLITests" name="BasicPQCredentialScript" />
+    </UnitTest>
+    <UnitTest name="ScriptFromFile" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="ae4c37ba-f84c-f782-70f9-479f9a6e65f1">
+      <Execution id="2abda1c0-796b-48bc-bb0f-fd01820e46a1" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.CLITests" name="ScriptFromFile" />
+    </UnitTest>
+    <UnitTest name="AddOutputLineNumbersNoArgsSingleLine" storage="c:\users\david\source\repos\tabulareditor\tabulareditortest\bin\debug\net8.0-windows\tabulareditortest.dll" id="621e9332-d356-1cd3-a9b6-75d888eeef84">
+      <Execution id="c2f57826-2221-4a9b-b16b-f4319f27255f" />
+      <TestMethod codeBase="C:\Users\david\source\repos\TabularEditor\TabularEditorTest\bin\Debug\net8.0-windows\TabularEditorTest.dll" adapterTypeName="executor://mstestadapter/v2" className="TabularEditor.ScriptEngineTests" name="AddOutputLineNumbersNoArgsSingleLine" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="d03a7667-eafd-0b2b-a539-06297ba44179" executionId="b45c6bdf-9470-4a85-9906-e874a64a9a92" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7288e46a-c6b9-c2f3-90f3-bb14cd4f4dff" executionId="8f515f48-2273-4041-b4f3-25f6479a1419" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="088bccc1-ae25-f29d-1141-c008319905a6" executionId="60e87e79-20ed-45ab-adae-97e76e1aa38a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2814723f-64bc-4161-8e28-030a1b8a9449" executionId="91ca3b44-81a3-42aa-a920-8d04248d1781" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="baecfb99-99c4-7fa6-b148-76057339b1a2" executionId="fc32b2fe-ad62-450f-8726-9da3f0b7d348" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="73c76dad-d943-417c-f9bb-85408adffda7" executionId="2f23cfe1-fd51-4ba2-8466-4a554e4e9ebe" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b2e54c7f-c85f-2265-12c7-1640f686c09e" executionId="f3d9cdda-4f08-46e0-8a74-ad69031ef3cd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="075fda11-573b-afad-148c-fccbd2df2b08" executionId="72ba1424-6fe1-4e20-81c5-efecc8af5f3c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="935d6ac1-7d65-6587-a083-9b221d0f1ebd" executionId="edd85f0c-5ded-442b-a911-847d50b35855" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4492c683-91f6-f924-908d-4588e94ebedd" executionId="c8dafab2-16d6-48c9-9967-e35ba768c810" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a2f7faa7-ba1b-fc8f-4499-4f3c360dfda1" executionId="973a6f47-29cf-4f5a-b4e0-9a23ab22f888" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d47f1c2d-cc7f-99c4-11d1-719cd31933fb" executionId="7454efd2-6065-49b0-b9be-e10290cdf168" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8ee5629d-1793-bb7d-fda6-a2868e2215eb" executionId="97af1363-2051-4e48-a6ed-580c029211ac" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="17b0b4a5-2e91-5996-56b8-edff3c96da87" executionId="66325bb0-b78f-4c11-a669-797cb1cd1200" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6681d346-827f-66a4-d4dd-7af32832c8d5" executionId="d1f2db27-4cf0-4396-bca7-caf662a94eb1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="316f5d40-2276-36b9-2429-bffe2b64236a" executionId="6850adba-fe70-4cfb-9840-713c15426640" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c1668bf8-a251-b65c-014c-3d48138cc4df" executionId="e93342f7-af69-43e6-9ec4-01867e74dfff" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b8be3cfa-083a-8bbd-68b5-7f83312c2e3f" executionId="66f2405c-6675-4d14-bd1b-88e8cd48a112" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e76adee7-f480-1ed3-3158-cfeba9c469b0" executionId="88f5c9d7-a61b-47bf-96fa-b4e1478101b6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="00db8b70-92a7-165e-7a4d-376165aed5cb" executionId="a56f2095-3ca0-4e34-9572-2e76c5644c01" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fdee0433-f350-1982-ecc5-5c8f36eb4ff4" executionId="98ea25b4-48c3-4342-9f8e-bdc771965e5b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ae4c37ba-f84c-f782-70f9-479f9a6e65f1" executionId="2abda1c0-796b-48bc-bb0f-fd01820e46a1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b24690c6-ee0a-fabf-0b29-7d2956314543" executionId="1d0ef792-d86e-4930-a295-0a34c1fd5197" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fb4d26d3-d957-5611-2eb5-dd6752e5e408" executionId="87733fab-ae90-4976-a60c-26707a3fb632" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="06243475-a537-8da7-8b6c-2f30423f1c42" executionId="f0362cd9-78f0-4975-8350-3f8a7507d472" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fb2d2ffd-f9a9-fa7e-7835-c94af626b5bf" executionId="92907d21-9810-493f-9546-0431badec5b0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2bf6d487-814a-3b9f-ed0f-351ad09bda58" executionId="0d10bed5-e64f-4145-be72-413856950101" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fe32682e-e216-ada2-869f-ddf586bd74c5" executionId="1cd3a76d-043b-4357-978d-6ee31aca24cf" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="553c5b13-7d19-0f7f-66d2-d0fb1cd501f1" executionId="7f9e04ad-b506-4e8f-9f23-44f8b8497a8f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4774a7b4-2d4c-8609-1e1b-07d765fed125" executionId="0f24c856-64ac-4684-8a38-6b89e9d47b50" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="edf29031-0a1a-090c-231f-28a237bc1290" executionId="243f836f-eb0a-4932-80e9-72b567a9e1de" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1eef6100-10cd-6573-a58e-1646b01431c1" executionId="a9062fe7-564d-4aca-b765-3528c290c97d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8206c96e-263e-99a3-7913-f5677e762021" executionId="fa51a169-c9c6-4071-a699-bc2024c97b28" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3047c9f2-dd3c-5ae9-3bed-810ac53d3204" executionId="f5f86eac-d456-4667-bc53-1b5951136d00" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="bb11c01f-1008-aebd-15d2-3d90cdd9d148" executionId="63b1b30f-2889-42bd-b9b4-dcbbb596929c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="38f015be-26b9-295c-0cb0-7a226c5d8802" executionId="4908104b-06ba-4b08-8122-1698fd93a3c8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2bee27a6-f47a-bc78-7725-862154bdcc85" executionId="6973ab30-a594-4a7b-8c60-9f4ec732d67a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="89199700-376a-4fa1-cb76-c1cbb59fb8dc" executionId="3d7ec0f7-0f96-43bf-a9e7-3c8f9504bd06" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8c6ef4a6-8743-fd56-a7d8-85bfb714bee9" executionId="0bdd5b56-380b-4b1d-9dc9-29967fedf185" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="621e9332-d356-1cd3-a9b6-75d888eeef84" executionId="c2f57826-2221-4a9b-b16b-f4319f27255f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d4d9faf4-df41-2423-72ee-6b8af493484e" executionId="3f3f12fc-b035-4d52-947b-9c2aa6d674ac" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="681a6544-6893-47f1-262d-82c2ef7699b1" executionId="795b4425-90f5-40c9-8db4-78db22747e5d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f163fb18-7e64-af01-1f6e-0c815b70f4d9" executionId="8a032cac-c805-4b59-ba72-1e10d4ec4fea" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7104fec8-e187-1368-23eb-41155703726a" executionId="3f7035c5-56b7-471f-ae1d-ef0853894ee4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2de81900-eee3-3360-60c3-fc8a8d25654f" executionId="71a5dafa-02fc-48b7-82bd-7713037adad5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ce22f4c5-4161-1e9c-8089-1d1987a5d7bc" executionId="bb521ffc-d571-48ad-912d-b0386caf170e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a526b6b4-a1b8-4746-e59e-dfea488fa21a" executionId="5ff3df94-4b7c-44c9-8bb3-5ec21f9b0453" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c3ddbe47-f382-40c9-c2d3-d772d6db738f" executionId="d5dc6e23-d76f-4ad0-8370-0da655a99d88" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="210b03ea-0605-8115-b12b-20836db34158" executionId="768c4dd6-2f14-4d45-8c71-1630bf62351c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="637e3ea5-bbe5-a46d-99a9-f52202ef4e3f" executionId="547e3490-eff4-4448-a5c5-cddb2ed23c8a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8fe5877d-a98a-2530-65c5-7ae310eaa870" executionId="ee05d4a9-d8f1-4a7b-9a3c-f0f5ff204c2b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9f17a308-06f5-6db6-e40f-fa5de76770b8" executionId="b0dd3ad5-0afe-412c-a3e8-e68e220dc56c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="311980ba-4dce-043f-3ddd-2de14ff1fe22" executionId="7d5cfc96-c812-4e77-8eb8-82fe07b0bf87" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="60446acb-ed4d-7888-858a-5f6083251340" executionId="afa5bf33-97d4-49e2-8ed3-b11caa675133" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="54" executed="54" passed="32" failed="22" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+  </ResultSummary>
+</TestRun>

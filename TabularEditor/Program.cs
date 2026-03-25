@@ -75,7 +75,7 @@ namespace TabularEditor
                 asmName.Name == "Microsoft.AnalysisServices.Tabular.Json"
                 )
             {
-                var td = new TaskDialog();
+                var td = new Microsoft.WindowsAPICodePack.Dialogs.TaskDialog();
                 td.Text = @"This version of Tabular Editor requires the SQL AS AMO library version 15.0.0 (or newer).
 
 Microsoft.AnalysisServices.Core.dll
