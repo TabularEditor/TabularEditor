@@ -3,7 +3,7 @@ Tabular Editor 2.x is a free, open-source, tool that lets you easily manipulate 
 
 ![](https://raw.githubusercontent.com/otykier/TabularEditor/master/Documentation/Main%20UI%202_1.png)
 
-* [Download Latest Tabular Editor 2.x for SQL Server Analysis Services, Azure Analysis Services or Power BI Premium](../../releases/latest)
+* [Download Latest Tabular Editor 2.x for SQL Server Analysis Services, Azure Analysis Services or Power BI Premium](https://github.com/TabularEditor/TabularEditor/releases/latest)
 
 Tabular Editor 2.x, when downloaded from GitHub, is digitally signed. The certificate is kindly funded by [twoday kapacity](https://www.kapacity.dk).
 
