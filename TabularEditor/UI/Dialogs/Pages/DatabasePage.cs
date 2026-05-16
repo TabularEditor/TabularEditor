@@ -18,6 +18,7 @@ namespace TabularEditor.UI.Dialogs.Pages
         public DatabasePage()
         {
             InitializeComponent();
+            dataGridView1.ColumnHeaderMouseClick += dataGridView1_ColumnHeaderMouseClick;
         }
 
         public bool ClearSelection { get; set; } = false;
@@ -37,7 +38,12 @@ namespace TabularEditor.UI.Dialogs.Pages
                 else
                 {
                     dataGridView1.DataBindingComplete += dataGridView1_DataBindingComplete;
-                    dataGridView1.DataSource = DatabaseInfo.GetDatabasesFromServer(_server);
+                    var dbList = DatabaseInfo.GetDatabasesFromServer(_server).OrderBy(db => db.Name).ToList();
+                    dataGridView1.DataSource = dbList;
+
+                    // Default sort
+                    sortedColumn = dataGridView1.Columns.Cast<DataGridViewColumn>().FirstOrDefault(c => c.DataPropertyName == "Name");
+                    sortOrder = SortOrder.Ascending;
                 }
             }
             get
@@ -190,6 +196,76 @@ namespace TabularEditor.UI.Dialogs.Pages
                 }
             }
 
+        }
+        private DataGridViewColumn sortedColumn;
+        private SortOrder sortOrder = SortOrder.None;
+
+        private void dataGridView1_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left) return;
+
+            var column = dataGridView1.Columns[e.ColumnIndex];
+
+            if (sortedColumn == column && sortOrder == SortOrder.Ascending)
+                sortOrder = SortOrder.Descending;
+            else
+                sortOrder = SortOrder.Ascending;
+
+            sortedColumn = column;
+
+            var list = dataGridView1.DataSource as List<DatabaseInfo>;
+            if (list == null) return;
+
+            Func<DatabaseInfo, object> keySelector = null;
+            var propName = column.DataPropertyName;
+            if (string.IsNullOrEmpty(propName)) propName = column.Name;
+
+            if (propName.Equals("ID", StringComparison.OrdinalIgnoreCase))
+                keySelector = db => db.ID;
+            else if (propName.Equals("Name", StringComparison.OrdinalIgnoreCase))
+                keySelector = db => db.Name;
+            else if (propName.Equals("CompatibilityLevel", StringComparison.OrdinalIgnoreCase))
+                keySelector = db => db.CompatibilityLevel;
+            else if (propName.Equals("LastUpdate", StringComparison.OrdinalIgnoreCase))
+                keySelector = db => db.LastUpdate;
+            else if (propName.Equals("Description", StringComparison.OrdinalIgnoreCase))
+                keySelector = db => db.Description;
+
+            if (keySelector != null)
+            {
+                // Preserve selection
+                string selectedName = null;
+                if (dataGridView1.SelectedRows.Count > 0)
+                {
+                    selectedName = (dataGridView1.SelectedRows[0].DataBoundItem as DatabaseInfo)?.Name;
+                }
+
+                if (sortOrder == SortOrder.Ascending)
+                    list = list.OrderBy(keySelector).ToList();
+                else
+                    list = list.OrderByDescending(keySelector).ToList();
+
+                dataGridView1.DataSource = list;
+
+                // Restore selection
+                if (selectedName != null)
+                {
+                    var index = list.FindIndex(db => db.Name == selectedName);
+                    if (index >= 0)
+                    {
+                        dataGridView1.ClearSelection();
+                        if (dataGridView1.Rows.Count > index)
+                        {
+                            dataGridView1.Rows[index].Selected = true;
+                            dataGridView1.FirstDisplayedScrollingRowIndex = index;
+                            dataGridView1.CurrentCell = dataGridView1.Rows[index].Cells[0];
+                        }
+                    }
+                }
+            }
+
+            foreach (DataGridViewColumn col in dataGridView1.Columns) col.HeaderCell.SortGlyphDirection = SortOrder.None;
+            column.HeaderCell.SortGlyphDirection = sortOrder;
         }
     }
 
