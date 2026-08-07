@@ -407,13 +407,21 @@ namespace TabularEditor.UI.Dialogs
             }
         }
 
+        /// <summary>
+        /// Root nodes use their Name as the serialization level (stored in SerializeOptions.Levels and
+        /// the TabularEditor_SerializeOptions annotation), so the displayed Text can differ from the
+        /// level string (the "Functions" level displays as "User Defined Functions (UDFs)").
+        /// </summary>
+        private static string GetNodeLevel(TreeNode node) =>
+            node.Parent == null && !string.IsNullOrEmpty(node.Name) ? node.Name : node.FullPath;
+
         private void SaveCheckedNodes(TreeNodeCollection nodes, ICollection<string> col)
         {
             foreach(TreeNode node in nodes)
             {
                 if (node.Checked)
                 {
-                    col.Add(node.FullPath);
+                    col.Add(GetNodeLevel(node));
                     SaveCheckedNodes(node.Nodes, col);
                 }
             }
@@ -423,7 +431,7 @@ namespace TabularEditor.UI.Dialogs
         {
             foreach(TreeNode node in nodes)
             {
-                if(col.Contains(node.FullPath))
+                if(col.Contains(GetNodeLevel(node)))
                 {
                     node.Checked = true;
                 } else

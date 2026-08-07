@@ -28,6 +28,7 @@ namespace TabularEditor.TOMWrapper.Serialization
                 var so = new SerializeOptions();
                 so.Levels = new HashSet<string> {
                     "Data Sources",
+                    "Functions",
                     "Shared Expressions",
                     "Perspectives",
                     "Relationships",
@@ -37,7 +38,7 @@ namespace TabularEditor.TOMWrapper.Serialization
                     "Tables/Hierarchies",
                     "Tables/Measures",
                     "Tables/Partitions",
-                    "Tables/CalculationItems",
+                    "Tables/Calculation Items",
                     "Translations"
                 };
                 return so;

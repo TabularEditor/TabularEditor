@@ -73,6 +73,7 @@ namespace TabularEditor.TOMWrapper.Serialization
                 var jModel = jobj["model"] as JObject;
                 var dataSources = options.Levels.Contains("Data Sources") ? PopArray(jModel, "dataSources") : null;
                 var expressions = options.Levels.Contains("Shared Expressions") ? PopArray(jModel, "expressions") : null;
+                var functions = options.Levels.Contains("Functions") ? PopArray(jModel, "functions") : null;
                 var tables = options.Levels.Contains("Tables") ? PopArray(jModel, "tables") : null;
                 var relationships = options.Levels.Contains("Relationships") || options.LocalRelationships ? PopArray(jModel, "relationships") : null;
                 var cultures = options.Levels.Contains("Translations") || options.LocalTranslations ? PopArray(jModel, "cultures") : null;
@@ -86,6 +87,7 @@ namespace TabularEditor.TOMWrapper.Serialization
                 if (cultures != null && !options.LocalTranslations) OutArray(path, "cultures", cultures, options);
                 if (dataSources != null) OutArray(path, "dataSources", dataSources, options);
                 if (expressions != null) OutArray(path, "expressions", expressions, options);
+                if (functions != null) OutArray(path, "functions", functions, options);
                 if (roles != null) OutArray(path, "roles", roles, options);
 
                 if (tables != null)
@@ -129,6 +131,7 @@ namespace TabularEditor.TOMWrapper.Serialization
                 RemoveUnusedFiles(path + "\\cultures", CurrentFiles);
                 RemoveUnusedFiles(path + "\\dataSources", CurrentFiles);
                 RemoveUnusedFiles(path + "\\expressions", CurrentFiles);
+                RemoveUnusedFiles(path + "\\functions", CurrentFiles);
                 RemoveUnusedFiles(path + "\\roles", CurrentFiles);
             }
 
@@ -213,6 +216,7 @@ namespace TabularEditor.TOMWrapper.Serialization
 
             InArray(path, "dataSources", model);
             InArray(path, "expressions", model);
+            InArray(path, "functions", model);
             if (Directory.Exists(path + "\\tables"))
             {
                 var tables = new JArray();

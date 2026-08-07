@@ -228,6 +228,10 @@ namespace TabularEditor.TOMWrapper
                 {
                     try
                     {
+                        // Previous versions of Tabular Editor had a bug with an inconsistency in the name of this serialization level tag
+                        // i.e. "Tables/CalculationItems" vs "Tables/Calculation Items", so we fix the string here so that the SplitModelSerializer
+                        // only sees the correct string:
+                        annotatedSerializeOptions = annotatedSerializeOptions.Replace("Tables/CalculationItems", "Tables/Calculation Items");
                         _serializeOptions = JsonConvert.DeserializeObject<SerializeOptions>(annotatedSerializeOptions);
                     }
                     catch { }

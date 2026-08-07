@@ -68,6 +68,8 @@ namespace TabularEditor.UI.Dialogs
             treeNode49,
             treeNode50});
             System.Windows.Forms.TreeNode treeNode52 = new System.Windows.Forms.TreeNode("Translations");
+            System.Windows.Forms.TreeNode treeNode53 = new System.Windows.Forms.TreeNode("User Defined Functions (UDFs)");
+            System.Windows.Forms.TreeNode treeNode54 = new System.Windows.Forms.TreeNode("User Defined Functions (UDFs)");
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
@@ -1391,6 +1393,9 @@ namespace TabularEditor.UI.Dialogs
             treeNode27.Checked = true;
             treeNode27.Name = "Data Sources";
             treeNode27.Text = "Data Sources";
+            treeNode53.Checked = true;
+            treeNode53.Name = "Functions";
+            treeNode53.Text = "User Defined Functions (UDFs)";
             treeNode28.Checked = true;
             treeNode28.Name = "Shared Expressions";
             treeNode28.Text = "Shared Expressions";
@@ -1428,6 +1433,7 @@ namespace TabularEditor.UI.Dialogs
             treeNode39.Text = "Translations";
             this.tvDefaultSerialization.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode27,
+            treeNode53,
             treeNode28,
             treeNode29,
             treeNode30,
@@ -1499,6 +1505,9 @@ namespace TabularEditor.UI.Dialogs
             treeNode40.Checked = true;
             treeNode40.Name = "Data Sources";
             treeNode40.Text = "Data Sources";
+            treeNode54.Checked = true;
+            treeNode54.Name = "Functions";
+            treeNode54.Text = "User Defined Functions (UDFs)";
             treeNode41.Checked = true;
             treeNode41.Name = "Shared Expressions";
             treeNode41.Text = "Shared Expressions";
@@ -1536,6 +1545,7 @@ namespace TabularEditor.UI.Dialogs
             treeNode52.Text = "Translations";
             this.treeView2.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode40,
+            treeNode54,
             treeNode41,
             treeNode42,
             treeNode43,
