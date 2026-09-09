@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -15,15 +15,30 @@ namespace TabularEditor.UI.Dialogs.Pages
         public event ValidationEventHandler Validation;
         public event EventHandler Accept;
 
+        //public DatabasePage()
+        //{
+        //    InitializeComponent();
+        //}
+
         public DatabasePage()
         {
             InitializeComponent();
+
+            foreach (DataGridViewColumn column in dataGridView1.Columns)
+            {
+                column.SortMode = DataGridViewColumnSortMode.Programmatic;
+            }
+
+            dataGridView1.ColumnHeaderMouseClick += dataGridView1_ColumnHeaderMouseClick;
         }
 
         public bool ClearSelection { get; set; } = false;
         public string PreselectDb { get; set; } = "";
 
         private TOM.Server _server;
+        private int sortColumnIndex = -1;
+        private SortOrder sortOrder = SortOrder.None;
+
         public TOM.Server Server
         {
             set
@@ -65,6 +80,76 @@ namespace TabularEditor.UI.Dialogs.Pages
                     txtDatabaseName.Text = PreselectDb;
                 }
             }
+        }
+
+        private void dataGridView1_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.ColumnIndex < 0) return;
+
+            var databaseList = dataGridView1.DataSource as List<DatabaseInfo>;
+            if (databaseList == null || databaseList.Count == 0) return;
+
+            if (sortColumnIndex == e.ColumnIndex)
+            {
+                sortOrder = sortOrder == SortOrder.Ascending
+                    ? SortOrder.Descending
+                    : SortOrder.Ascending;
+            }
+            else
+            {
+                sortColumnIndex = e.ColumnIndex;
+                sortOrder = SortOrder.Ascending;
+            }
+
+            var column = dataGridView1.Columns[e.ColumnIndex];
+            var propertyName = column.DataPropertyName;
+
+            IEnumerable<DatabaseInfo> sortedList;
+
+            switch (propertyName)
+            {
+                case nameof(DatabaseInfo.ID):
+                    sortedList = sortOrder == SortOrder.Ascending
+                        ? databaseList.OrderBy(x => x.ID)
+                        : databaseList.OrderByDescending(x => x.ID);
+                    break;
+
+                case nameof(DatabaseInfo.Name):
+                    sortedList = sortOrder == SortOrder.Ascending
+                        ? databaseList.OrderBy(x => x.Name)
+                        : databaseList.OrderByDescending(x => x.Name);
+                    break;
+
+                case nameof(DatabaseInfo.CompatibilityLevel):
+                    sortedList = sortOrder == SortOrder.Ascending
+                        ? databaseList.OrderBy(x => x.CompatibilityLevel)
+                        : databaseList.OrderByDescending(x => x.CompatibilityLevel);
+                    break;
+
+                case nameof(DatabaseInfo.LastUpdate):
+                    sortedList = sortOrder == SortOrder.Ascending
+                        ? databaseList.OrderBy(x => x.LastUpdate)
+                        : databaseList.OrderByDescending(x => x.LastUpdate);
+                    break;
+
+                case nameof(DatabaseInfo.Description):
+                    sortedList = sortOrder == SortOrder.Ascending
+                        ? databaseList.OrderBy(x => x.Description)
+                        : databaseList.OrderByDescending(x => x.Description);
+                    break;
+
+                default:
+                    return;
+            }
+
+            dataGridView1.DataSource = sortedList.ToList();
+
+            foreach (DataGridViewColumn col in dataGridView1.Columns)
+            {
+                col.HeaderCell.SortGlyphDirection = SortOrder.None;
+            }
+
+            column.HeaderCell.SortGlyphDirection = sortOrder;
         }
 
         private bool suspendAllEvents = true;
@@ -226,7 +311,8 @@ namespace TabularEditor.UI.Dialogs.Pages
                     });
                 }
             }
-            return result;
+            //return result;
+            return result.OrderBy(x => x.Name).ToList();
         }
     }
 
