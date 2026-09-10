@@ -194,6 +194,8 @@
     <Compile Include="RegressionTests\v2_9_3\ButcheredRelationships.cs" />
     <Compile Include="RegressionTests\v2_9_3\NewDeserializerTests.cs" />
     <Compile Include="RegressionTests\v2_9_6\FormatStringDefinitionTests.cs" />
+    <Compile Include="RegressionTests\v2_28\SerializeOptionsCompatibilityTests.cs" />
+    <Compile Include="RegressionTests\v2_28\UdfPerFileSerializationTests.cs" />
     <Compile Include="RegressionTests\v2_9_5\CalcGroupMetadataOrderingTests.cs" />
     <Compile Include="TabularModelHandlerTests.cs" />
     <Compile Include="TestGenerator.cs">

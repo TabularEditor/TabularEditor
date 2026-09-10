@@ -110,6 +110,7 @@ namespace TabularEditor.UIServices
 
         public HashSet<string> SaveToFolder_Levels = new HashSet<string>() {
                     "Data Sources",
+                    "Functions",
                     "Shared Expressions",
                     "Perspectives",
                     "Relationships",
