@@ -96,18 +96,10 @@ namespace TabularEditor.UIServices
             Type = icon;
             try
             {
-                var dashPos = name.LastIndexOf(" - ");
-                if (dashPos >= 0)
-                { Name = name.Substring(0, dashPos); }  // Strip "Power BI Designer" or "Power BI Desktop" off the end of the string
-                else
-                {
-                    //Log.Warning("{class} {method} {message} {dashPos}", "PowerBIInstance", "ctor", "Unable to find ' - ' in Power BI title", dashPos);
-                    Name = name;
-                }
+                Name = StripPowerBIDesktopSuffix(name);
             }
             catch (Exception)
             {
-                //Log.Error("{class} {method} {message} {stacktrace}", "PowerBIInstance", "ctor", ex.Message, ex.StackTrace);
                 Name = name;
             }
         }
@@ -115,6 +107,28 @@ namespace TabularEditor.UIServices
         public string Name { get; private set; }
 
         public LocalInstanceType Type { get; private set; }
+
+        private static string StripPowerBIDesktopSuffix(string windowTitle)
+        {
+            if (string.IsNullOrEmpty(windowTitle))
+                return windowTitle;
+
+            var knownSuffixes = new[]
+            {
+                " - Power BI Desktop",
+                " - Power BI Designer"
+            };
+
+            foreach (var suffix in knownSuffixes)
+            {
+                if (windowTitle.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+                {
+                    return windowTitle.Substring(0, windowTitle.Length - suffix.Length);
+                }
+            }
+
+            return windowTitle;
+        }
     }
 
     public class PowerBIHelper
