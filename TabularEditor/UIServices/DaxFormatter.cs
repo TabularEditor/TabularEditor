@@ -121,11 +121,8 @@ namespace TabularEditor.Dax
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         }
 
-        public const string DaxTextFormatUri = "https://www.daxformatter.com/api/daxformatter/daxtextformat";
-        public const string DaxTextFormatMultiUri = "https://www.daxformatter.com/api/daxformatter/daxtextformatmulti";
-
-        private string redirectUrl;  // cache the redirected URL
-        private string redirectHost;
+        public const string DaxTextFormatUri = "https://api.daxformatter.com/api/daxtextformat";
+        public const string DaxTextFormatMultiUri = "https://api.daxformatter.com/api/daxtextformatmulti";
 
         public DaxFormatterResult FormatDax(string query, bool useSemicolonsAsSeparators, bool shortFormat, bool skipSpaceAfterFunctionName)
         {
@@ -161,10 +158,6 @@ namespace TabularEditor.Dax
         {
             try
             {
-                PrimeConnection(uri);
-                var originalUri = new Uri(uri);
-                var actualUri = new UriBuilder(originalUri.Scheme, redirectHost, originalUri.Port, originalUri.PathAndQuery).ToString();
-
                 var req = new DaxFormatterRequestSingle(useSemicolonsAsSeparators, shortFormat, skipSpaceAfterFunctionName)
                 {
                     Dax = dax
@@ -179,8 +172,8 @@ namespace TabularEditor.Dax
                 // see: http://stackoverflow.com/questions/566437/http-post-returns-the-error-417-expectation-failed-c
                 //System.Net.ServicePointManager.Expect100Continue = false;
 
-                var wr = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(actualUri);
-                wr.Proxy = ProxyCache.GetProxy(actualUri);
+                var wr = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(uri);
+                wr.Proxy = ProxyCache.GetProxy(uri);
 
                 wr.Timeout = Preferences.Current.DaxFormatterRequestTimeout;
                 wr.Method = "POST";
@@ -221,10 +214,6 @@ namespace TabularEditor.Dax
         {
             try
             {
-                PrimeConnection(uri);
-                var originalUri = new Uri(uri);
-                var actualUri = new UriBuilder(originalUri.Scheme, redirectHost, originalUri.Port, originalUri.PathAndQuery).ToString();
-
                 var req = new DaxFormatterRequestMulti(useSemicolonsAsSeparators, shortFormat, skipSpaceAfterFunctionName)
                 {
                     Dax = dax
@@ -239,8 +228,8 @@ namespace TabularEditor.Dax
                 // see: http://stackoverflow.com/questions/566437/http-post-returns-the-error-417-expectation-failed-c
                 //System.Net.ServicePointManager.Expect100Continue = false;
 
-                var wr = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(actualUri);
-                wr.Proxy = ProxyCache.GetProxy(actualUri);
+                var wr = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(uri);
+                wr.Proxy = ProxyCache.GetProxy(uri);
 
                 wr.Timeout = Preferences.Current.DaxFormatterRequestTimeout;
                 wr.Method = "POST";
@@ -274,37 +263,6 @@ namespace TabularEditor.Dax
             }
             finally
             {
-            }
-        }
-
-        private void PrimeConnection(string uri)
-        {
-            if (redirectHost == null)
-            {
-                // www.daxformatter.com redirects request to another site.  HttpWebRequest does redirect with GET.  It fails, since the web service works only with POST
-                // The following 2 requests are doing manual POST re-direct
-                //var webRequestFactory = IoC.Get<WebRequestFactory>();
-                var redirectRequest = (HttpWebRequest)WebRequest.Create(uri);
-                redirectRequest.Proxy = ProxyCache.GetProxy(uri);
-
-                redirectRequest.AllowAutoRedirect = false;
-                redirectRequest.Timeout = Preferences.Current.DaxFormatterRequestTimeout;
-                try
-                {
-                    using (var netResponse = redirectRequest.GetResponse())
-                    {
-                        var redirectResponse = (HttpWebResponse)netResponse;
-                        redirectUrl = redirectResponse.Headers["Location"];
-                        var redirectUri = new Uri(redirectUrl);
-
-                        // set the shared redirectHost variable
-                        redirectHost = redirectUri.Host;
-                    }
-                }
-                catch
-                {
-                    
-                }
             }
         }
     }
