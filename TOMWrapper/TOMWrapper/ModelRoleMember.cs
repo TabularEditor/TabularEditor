@@ -27,7 +27,7 @@ namespace TabularEditor.TOMWrapper
         /// Creates a new ExternalModelRoleMember and adds it to the parent ModelRole.
         /// Also creates the underlying metadataobject and adds it to the TOM tree.
         /// </summary>
-        public static ExternalModelRoleMember CreateNew(ModelRole parent, string name, string identityProvider, string memberId)
+        public static ExternalModelRoleMember CreateNew(ModelRole parent, string name, string identityProvider, string memberId = null)
         {
             if (!parent.Handler.PowerBIGovernance.AllowCreate(typeof(ExternalModelRoleMember))) throw new InvalidOperationException(string.Format("Adding a {0} to a Power BI Semantic Model is not allowed.", typeof(ExternalModelRoleMember).GetTypeName()));
 

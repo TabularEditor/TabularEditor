@@ -90,6 +90,8 @@ namespace TabularEditor.TOMWrapper
 	    public const string FROMCARDINALITY = "FromCardinality";
 	    public const string FROMCOLUMN = "FromColumn";
 	    public const string FROMTABLE = "FromTable";
+	    public const string FULLTEXTINDEX = "FullTextIndex";
+	    public const string FULLTEXTINDEXINGBEHAVIOR = "FullTextIndexingBehavior";
 	    public const string FUNCTIONS = "Functions";
 	    public const string HASLOCALCHANGES = "HasLocalChanges";
 	    public const string HIDEMEMBERS = "HideMembers";
@@ -141,6 +143,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string OBJECTTRANSLATIONS = "ObjectTranslations";
 	    public const string OPTIONS = "Options";
 	    public const string ORDINAL = "Ordinal";
+	    public const string PACKAGES = "Packages";
 	    public const string PARAMETERVALUESCOLUMN = "ParameterValuesColumn";
 	    public const string PARTITION = "Partition";
 	    public const string PARTITIONS = "Partitions";
@@ -179,6 +182,7 @@ namespace TabularEditor.TOMWrapper
 	    public const string STATUSEXPRESSION = "StatusExpression";
 	    public const string STATUSGRAPHIC = "StatusGraphic";
 	    public const string STORAGELOCATION = "StorageLocation";
+	    public const string STRINGINDEX = "StringIndex";
 	    public const string STRINGINDEXINGBEHAVIOR = "StringIndexingBehavior";
 	    public const string STRUCTUREMODIFIEDTIME = "StructureModifiedTime";
 	    public const string SUMMARIZATION = "Summarization";
@@ -706,7 +710,7 @@ namespace TabularEditor.TOMWrapper
 	}
     /// <summary>
     /// Controls how the AnalysisServices engine builds and persists indexes.
-    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at Preview or above.</remarks>
+    /// </summary><remarks>This enum is only supported when the compatibility level of the database is at 1706 or above.</remarks>
 	public enum IndexingBehavior {    
         /// <summary>
         /// Indexing is disabled. The semantic model will not perform indexing during refresh operations.
@@ -1002,7 +1006,7 @@ namespace TabularEditor.TOMWrapper
         Defragment = 8,
         /// <summary>
         /// Refresh indexes.
-        /// </summary><remarks>This value is only supported when the compatibility level of the database is at Preview or above.</remarks>
+        /// </summary><remarks>This value is only supported when the compatibility level of the database is at 1706 or above.</remarks>
         Indexes = 9,
 	}
     /// <summary>
@@ -3337,7 +3341,7 @@ namespace TabularEditor.TOMWrapper
 		private bool ShouldSerializeSourceLineageTag() { return false; }
 /// <summary>
 ///             This property allows building and persisting of string column's index. A column may use one of the following values: Off, Auto, Explicit or Full. Default value for the property is Auto. Setting it to Auto will build an index but not persist it. Setting it to Explicit will build and persist an index by running command RefreshIndex. Setting it to Full will build and persist an index by running either RefreshRecalc, RefreshFull or RefreshIndex command.
-///             </summary><remarks>This property is only supported when the compatibility level of the database is at Preview or above.</remarks>
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1706 or above.</remarks>
 		[DisplayName("String Indexing Behavior")]
 		[Category("Options"),Description(@"This property allows building and persisting of string column's index. A column may use one of the following values: Off, Auto, Explicit or Full. Default value for the property is Auto. Setting it to Auto will build an index but not persist it. Setting it to Explicit will build and persist an index by running command RefreshIndex. Setting it to Full will build and persist an index by running either RefreshRecalc, RefreshFull or RefreshIndex command."),IntelliSense(@"This property allows building and persisting of string column's index. A column may use one of the following values: Off, Auto, Explicit or Full. Default value for the property is Auto. Setting it to Auto will build an index but not persist it. Setting it to Explicit will build and persist an index by running command RefreshIndex. Setting it to Full will build and persist an index by running either RefreshRecalc, RefreshFull or RefreshIndex command.")]
 		public IndexingBehavior StringIndexingBehavior {
@@ -3359,6 +3363,30 @@ namespace TabularEditor.TOMWrapper
 			}
 		}
 		private bool ShouldSerializeStringIndexingBehavior() { return false; }
+/// <summary>
+///             This property controls building and persisting of string column's full-text index powered by Tantivy. A column may use one of the following values: Off, Explicit or Full. Default value for the property is Off. Setting it to Explicit will build and persist an index by running command RefreshIndex. Setting it to Full will build and persist a full-text index during refresh operations. Both Explicit and Full enable TEXTCONTAINS and TEXTSIMILARITY DAX functions.
+///             </summary><remarks>This property is only supported when the compatibility level of the database is at 1708 or above.</remarks>
+		[DisplayName("Full Text Indexing Behavior")]
+		[Category("Options"),Description(@"This property controls building and persisting of string column's full-text index powered by Tantivy. A column may use one of the following values: Off, Explicit or Full. Default value for the property is Off. Setting it to Explicit will build and persist an index by running command RefreshIndex. Setting it to Full will build and persist a full-text index during refresh operations. Both Explicit and Full enable TEXTCONTAINS and TEXTSIMILARITY DAX functions."),IntelliSense(@"This property controls building and persisting of string column's full-text index powered by Tantivy. A column may use one of the following values: Off, Explicit or Full. Default value for the property is Off. Setting it to Explicit will build and persist an index by running command RefreshIndex. Setting it to Full will build and persist a full-text index during refresh operations. Both Explicit and Full enable TEXTCONTAINS and TEXTSIMILARITY DAX functions.")]
+		public IndexingBehavior FullTextIndexingBehavior {
+			get {
+			    return (IndexingBehavior)MetadataObject.FullTextIndexingBehavior;
+			}
+			set {
+				
+				var oldValue = FullTextIndexingBehavior;
+				var newValue = value;
+				if (oldValue == newValue) return;
+				bool undoable = true;
+				bool cancel = false;
+				OnPropertyChanging(Properties.FULLTEXTINDEXINGBEHAVIOR, newValue, ref undoable, ref cancel);
+				if (cancel) return;
+				if (!MetadataObject.IsRemoved) MetadataObject.FullTextIndexingBehavior = (TOM.IndexingBehavior)newValue;
+				if(undoable) Handler.UndoManager.Add(new UndoPropertyChangedAction(this, Properties.FULLTEXTINDEXINGBEHAVIOR, oldValue, newValue));
+				OnPropertyChanged(Properties.FULLTEXTINDEXINGBEHAVIOR, oldValue, newValue);
+			}
+		}
+		private bool ShouldSerializeFullTextIndexingBehavior() { return false; }
 		///<summary>The parent table of the current Column.</summary>
 		[Browsable(false)]
 		public Table Table
@@ -3402,6 +3430,8 @@ namespace TabularEditor.TOMWrapper
 		// Skipping property AttributeHierarchy on object Column
 		// Skipping property RelatedColumnDetails on object Column
 		// Skipping property AlternateOf on object Column
+		// Skipping property StringIndex on object Column
+		// Skipping property FullTextIndex on object Column
 /// <summary>
 ///             For a DataColumn, specifies the data type. See <see href="https://msdn.microsoft.com/library/gg492146.aspx" /> for a list of supported data types.
 ///             </summary>
@@ -3552,14 +3582,20 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
 				case Properties.EXTENDEDPROPERTIES:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : Handler.CompatibilityLevel >= 1400;
+				case Properties.FULLTEXTINDEX:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1708 : Handler.CompatibilityLevel >= 1708;
+				case Properties.FULLTEXTINDEXINGBEHAVIOR:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1708 : Handler.CompatibilityLevel >= 1708;
 				case Properties.LINEAGETAG:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1540 : Handler.CompatibilityLevel >= 1540;
 				case Properties.RELATEDCOLUMNDETAILS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1400 : false;
 				case Properties.SOURCELINEAGETAG:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1550 : Handler.CompatibilityLevel >= 1550;
+				case Properties.STRINGINDEX:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1707 : Handler.CompatibilityLevel >= 1707;
 				case Properties.STRINGINDEXINGBEHAVIOR:
-					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1706 : Handler.CompatibilityLevel >= 1706;
 				case Properties.VARIATIONS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1200 : Handler.CompatibilityLevel >= 1400;
 				case nameof(Synonyms):
@@ -3879,6 +3915,18 @@ namespace TabularEditor.TOMWrapper
 				if(Handler == null) return;
 				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("StringIndexingBehavior"));
 				this.ToList().ForEach(item => { item.StringIndexingBehavior = value; });
+				Handler.UndoManager.EndBatch();
+			}
+		}
+		/// <summary>
+		/// Sets the FullTextIndexingBehavior property of all objects in the collection at once.
+		/// </summary>
+		[Description("Sets the FullTextIndexingBehavior property of all objects in the collection at once.")]
+		public IndexingBehavior FullTextIndexingBehavior {
+			set {
+				if(Handler == null) return;
+				Handler.UndoManager.BeginBatch(UndoPropertyChangedAction.GetActionNameFromProperty("FullTextIndexingBehavior"));
+				this.ToList().ForEach(item => { item.FullTextIndexingBehavior = value; });
 				Handler.UndoManager.EndBatch();
 			}
 		}
@@ -8988,6 +9036,7 @@ namespace TabularEditor.TOMWrapper
 		// Skipping property AnalyticsAIMetadata on object Model
 		// Skipping property Functions on object Model
 		// Skipping property BindingInfoCollection on object Model
+		// Skipping property Packages on object Model
         private bool CanClearAnnotations() => GetAnnotationsCount() > 0;
         ///<summary>Removes all annotations from this object.</summary>
         [IntelliSense("Removes all annotations from this object.")]
@@ -10077,6 +10126,8 @@ namespace TabularEditor.TOMWrapper
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1568 : Handler.CompatibilityLevel >= 1568;
 				case Properties.METADATAACCESSPOLICY:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1703 : Handler.CompatibilityLevel >= 1703;
+				case Properties.PACKAGES:
+					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1000000 : Handler.CompatibilityLevel >= 1000000;
 				case Properties.QUERYGROUPS:
 					return Handler.PbiMode ? Handler.CompatibilityLevel >= 1480 : Handler.CompatibilityLevel >= 1480;
 				case Properties.SELECTIONEXPRESSIONBEHAVIOR:

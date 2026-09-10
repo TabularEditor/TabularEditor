@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Microsoft.Identity.Client.NativeInterop.0.20.2\build\net461\Microsoft.Identity.Client.NativeInterop.props" Condition="Exists('..\packages\Microsoft.Identity.Client.NativeInterop.0.20.2\build\net461\Microsoft.Identity.Client.NativeInterop.props')" />
+  <Import Project="..\packages\Microsoft.Identity.Client.NativeInterop.0.20.4\build\net462\Microsoft.Identity.Client.NativeInterop.props" Condition="Exists('..\packages\Microsoft.Identity.Client.NativeInterop.0.20.4\build\net462\Microsoft.Identity.Client.NativeInterop.props')" />
   <Import Project="..\packages\MSTest.TestAdapter.3.6.2\build\net462\MSTest.TestAdapter.props" Condition="Exists('..\packages\MSTest.TestAdapter.3.6.2\build\net462\MSTest.TestAdapter.props')" />
   <Import Project="..\packages\Microsoft.Testing.Extensions.Telemetry.1.4.2\build\netstandard2.0\Microsoft.Testing.Extensions.Telemetry.props" Condition="Exists('..\packages\Microsoft.Testing.Extensions.Telemetry.1.4.2\build\netstandard2.0\Microsoft.Testing.Extensions.Telemetry.props')" />
   <Import Project="..\packages\Microsoft.Testing.Platform.MSBuild.1.4.2\build\netstandard2.0\Microsoft.Testing.Platform.MSBuild.props" Condition="Exists('..\packages\Microsoft.Testing.Platform.MSBuild.1.4.2\build\netstandard2.0\Microsoft.Testing.Platform.MSBuild.props')" />
@@ -44,33 +44,41 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.AnalysisServices, Version=19.112.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.19.112.0\lib\net472\Microsoft.AnalysisServices.dll</HintPath>
+    <Reference Include="Microsoft.AnalysisServices, Version=19.117.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">
+      <HintPath>..\packages\Microsoft.AnalysisServices.19.117.0\lib\net472\Microsoft.AnalysisServices.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Core, Version=19.112.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.19.112.0\lib\net472\Microsoft.AnalysisServices.Core.dll</HintPath>
+    <Reference Include="Microsoft.AnalysisServices.Core, Version=19.117.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">
+      <HintPath>..\packages\Microsoft.AnalysisServices.19.117.0\lib\net472\Microsoft.AnalysisServices.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AnalysisServices.SPClient.Interfaces, Version=19.112.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.19.112.0\lib\net472\Microsoft.AnalysisServices.SPClient.Interfaces.dll</HintPath>
+    <Reference Include="Microsoft.AnalysisServices.SPClient.Interfaces, Version=19.117.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">
+      <HintPath>..\packages\Microsoft.AnalysisServices.19.117.0\lib\net472\Microsoft.AnalysisServices.SPClient.Interfaces.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Tabular, Version=19.112.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.19.112.0\lib\net472\Microsoft.AnalysisServices.Tabular.dll</HintPath>
+    <Reference Include="Microsoft.AnalysisServices.Tabular, Version=19.117.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">
+      <HintPath>..\packages\Microsoft.AnalysisServices.19.117.0\lib\net472\Microsoft.AnalysisServices.Tabular.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AnalysisServices.Tabular.Json, Version=19.112.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AnalysisServices.19.112.0\lib\net472\Microsoft.AnalysisServices.Tabular.Json.dll</HintPath>
+    <Reference Include="Microsoft.AnalysisServices.Tabular.Json, Version=19.117.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">
+      <HintPath>..\packages\Microsoft.AnalysisServices.19.117.0\lib\net472\Microsoft.AnalysisServices.Tabular.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.ApplicationInsights, Version=2.23.0.29, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ApplicationInsights.2.23.0\lib\net46\Microsoft.ApplicationInsights.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Identity.Client, Version=4.82.1.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Identity.Client.4.82.1\lib\net472\Microsoft.Identity.Client.dll</HintPath>
+    <Reference Include="Microsoft.Identity.Client, Version=4.83.3.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae">
+      <HintPath>..\packages\Microsoft.Identity.Client.4.83.3\lib\net472\Microsoft.Identity.Client.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Identity.Client.Broker, Version=4.82.1.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Identity.Client.Broker.4.82.1\lib\net462\Microsoft.Identity.Client.Broker.dll</HintPath>
+    <Reference Include="Microsoft.Identity.Client.Broker, Version=4.83.3.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae">
+      <HintPath>..\packages\Microsoft.Identity.Client.Broker.4.83.3\lib\net462\Microsoft.Identity.Client.Broker.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Identity.Client.NativeInterop, Version=0.20.2.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Identity.Client.NativeInterop.0.20.2\lib\net461\Microsoft.Identity.Client.NativeInterop.dll</HintPath>
+    <Reference Include="Microsoft.Identity.Client.NativeInterop, Version=0.20.4.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae">
+      <HintPath>..\packages\Microsoft.Identity.Client.NativeInterop.0.20.4\lib\net462\Microsoft.Identity.Client.NativeInterop.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.IdentityModel.Abstractions, Version=8.16.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.IdentityModel.Abstractions.8.16.0\lib\net472\Microsoft.IdentityModel.Abstractions.dll</HintPath>
@@ -298,7 +306,7 @@
     <Error Condition="!Exists('..\packages\Microsoft.Testing.Extensions.Telemetry.1.4.2\build\netstandard2.0\Microsoft.Testing.Extensions.Telemetry.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Testing.Extensions.Telemetry.1.4.2\build\netstandard2.0\Microsoft.Testing.Extensions.Telemetry.props'))" />
     <Error Condition="!Exists('..\packages\MSTest.TestAdapter.3.6.2\build\net462\MSTest.TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSTest.TestAdapter.3.6.2\build\net462\MSTest.TestAdapter.props'))" />
     <Error Condition="!Exists('..\packages\MSTest.TestAdapter.3.6.2\build\net462\MSTest.TestAdapter.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSTest.TestAdapter.3.6.2\build\net462\MSTest.TestAdapter.targets'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.Identity.Client.NativeInterop.0.20.2\build\net461\Microsoft.Identity.Client.NativeInterop.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Identity.Client.NativeInterop.0.20.2\build\net461\Microsoft.Identity.Client.NativeInterop.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Identity.Client.NativeInterop.0.20.4\build\net462\Microsoft.Identity.Client.NativeInterop.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Identity.Client.NativeInterop.0.20.4\build\net462\Microsoft.Identity.Client.NativeInterop.props'))" />
   </Target>
   <Import Project="..\packages\Microsoft.Testing.Platform.MSBuild.1.4.2\build\netstandard2.0\Microsoft.Testing.Platform.MSBuild.targets" Condition="Exists('..\packages\Microsoft.Testing.Platform.MSBuild.1.4.2\build\netstandard2.0\Microsoft.Testing.Platform.MSBuild.targets')" />
   <Import Project="..\packages\MSTest.TestAdapter.3.6.2\build\net462\MSTest.TestAdapter.targets" Condition="Exists('..\packages\MSTest.TestAdapter.3.6.2\build\net462\MSTest.TestAdapter.targets')" />
