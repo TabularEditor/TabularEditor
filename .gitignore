@@ -61,9 +61,9 @@
 /TOMWrapperTest/obj
 /AntlrGrammars/obj
 **/.vs
-/sign-binaries.ps1
-/sign-installer.ps1
 bin/
 obj/
 *.runsettings
 /.claude
+/TabularEditorInstaller/_previous
+/release-config.ps1
