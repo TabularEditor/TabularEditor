@@ -1,2 +1,4 @@
 TabularEditor\bin\Release\TabularEditor.exe
 TabularEditor\obj\Release\TabularEditor.exe
+TabularEditor\bin\Release\TOMWrapper.dll
+TOMWrapper\bin\Release\TOMWrapper.dll

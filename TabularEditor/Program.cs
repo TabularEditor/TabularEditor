@@ -115,12 +115,23 @@ The AMO library may be downloaded from <A HREF=""https://docs.microsoft.com/en-u
         {
             List<Assembly> pluginAssemblies = new List<Assembly>();
 
+            // Assemblies that Tabular Editor itself depends on (TOMWrapper, TOM, Newtonsoft.Json, etc.) are shipped
+            // alongside the .exe and are not plugins - skip them, to avoid loading a second copy of each:
+            var dependencyNames = new HashSet<string>(
+                typeof(Program).Assembly.GetReferencedAssemblies()
+                    .Concat(typeof(TabularModelHandler).Assembly.GetReferencedAssemblies())
+                    .Select(a => a.Name)
+                    .Concat(new[] { typeof(TabularModelHandler).Assembly.GetName().Name }),
+                StringComparer.OrdinalIgnoreCase);
+
             foreach (var dll in Directory.EnumerateFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll"))
             {
+                if (dependencyNames.Contains(Path.GetFileNameWithoutExtension(dll))) continue;
+
                 try
                 {
                     var pluginAssembly = Assembly.LoadFile(dll);
-                    if (pluginAssembly != null && !pluginAssembly.FullName.StartsWith("TOMWrapper"))
+                    if (pluginAssembly != null)
                     {
                         var pluginType = pluginAssembly.GetTypes().Where(t => typeof(ITabularEditorPlugin).IsAssignableFrom(t)).FirstOrDefault();
                         if (pluginType != null)

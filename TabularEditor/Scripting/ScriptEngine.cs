@@ -8,7 +8,6 @@ using TabularEditor.TOMWrapper;
 using TabularEditor.UI;
 using System.Reflection;
 using System.IO;
-using System.IO.Compression;
 using System.Diagnostics;
 using TabularEditor.UI.Actions;
 using TabularEditor.Scripting;
@@ -41,8 +40,8 @@ namespace TabularEditor
 
     public static class ScriptEngine
     {
-        static readonly string WrapperDllPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\TOMWrapper14.dll";
-        static readonly string NewtonsoftJsonDllPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\newtonsoft.json.dll";
+        static readonly string WrapperDllPath = Assembly.GetAssembly(typeof(TabularModelHandler)).Location;
+        static readonly string NewtonsoftJsonDllPath = Assembly.GetAssembly(typeof(JsonConvert)).Location;
         static readonly string TomDllPath = Assembly.GetAssembly(typeof(Microsoft.AnalysisServices.Tabular.Database)).Location;
         public static readonly string CustomActionsJsonPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\CustomActions.json";
         public static readonly string MacrosJsonPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\TabularEditor\MacroActions.json";
@@ -575,46 +574,6 @@ namespace TabularEditor.Scripting
         {
             Plugins = plugins;
             _pluginNamespaces = plugins.SelectMany(p => p.GetExportedTypes()).Select(t => new AssemblyNamespace { Assembly = t.Assembly, Namespace = t.Namespace }).Distinct().ToList();
-            try
-            {
-
-                if (!File.Exists(WrapperDllPath))
-                {
-                    (new FileInfo(WrapperDllPath)).Directory.Create();
-                    OutputWrapperDll();
-                }
-                else
-                {
-                    // Check if WrapperDll is of same version as the TabularEditor.exe and same Compatibility Level. If not, output a new one:
-                    var wrapperVersion = FileVersionInfo.GetVersionInfo(WrapperDllPath);
-                    var currentVersion = Assembly.GetAssembly(typeof(TabularModelHandler)).GetName().Version;
-                    if (wrapperVersion.FileVersion != currentVersion.ToString())
-                    {
-                        OutputWrapperDll();
-                    }
-                }
-
-                if (!File.Exists(NewtonsoftJsonDllPath))
-                {
-                    (new FileInfo(NewtonsoftJsonDllPath)).Directory.Create();
-                    OutputNewtonsoftJsonDll();
-                }
-                else
-                {
-                    // Check if Newtonsoft.Json.dll is of same version as that used within TabularEditor.exe. If not, output a new one:
-                    var wrapperVersion = FileVersionInfo.GetVersionInfo(NewtonsoftJsonDllPath);
-                    var currentVersion = Assembly.GetAssembly(typeof(JsonConvert)).GetName().Version;
-                    if (wrapperVersion.FileVersion != currentVersion.ToString())
-                    {
-                        OutputNewtonsoftJsonDll();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-                ScriptEngineStatus = "Error: " + ex.Message;
-            }
         }
 
         public static MacrosJson GetMacrosJson()
@@ -663,8 +622,7 @@ namespace TabularEditor.Scripting
         }
 
         /// <summary>
-        /// This method ensures that the TOMWrapper.dll file exists (needed for Advanced scripting).
-        /// Furthermore, if a MacroActions.json file is provided, it is compiled into memory and
+        /// Initializes plugins and script methods. Furthermore, if a MacroActions.json file is provided, it is compiled into memory and
         /// loaded to the action manager.
         /// </summary>
         public static void InitScriptEngine(IList<Assembly> plugins)
@@ -677,40 +635,6 @@ namespace TabularEditor.Scripting
         }
 
         public static string ScriptEngineStatus { get; private set; }
-
-        private static void OutputWrapperDll()
-        {
-            // Export the TOMWrapper library to a .DLL for use with the custom script execution:
-            MemoryStream memory = new MemoryStream();
-            var currentAssembly = Assembly.GetAssembly(typeof(TabularEditor.Program));
-            DeflateStream stream = new DeflateStream(currentAssembly.GetManifestResourceStream("costura.tomwrapper.dll.compressed"), CompressionMode.Decompress);
-            if (stream != null)
-            {
-                using (stream)
-                {
-                    stream.CopyTo(memory);
-                    byte[] data = memory.ToArray();
-                    File.WriteAllBytes(WrapperDllPath, data);
-                }
-            }
-        }
-
-        private static void OutputNewtonsoftJsonDll()
-        {
-            // Export the TOMWrapper library to a .DLL for use with the custom script execution:
-            MemoryStream memory = new MemoryStream();
-            var currentAssembly = Assembly.GetAssembly(typeof(TabularEditor.Program));
-            DeflateStream stream = new DeflateStream(currentAssembly.GetManifestResourceStream("costura.newtonsoft.json.dll.compressed"), CompressionMode.Decompress);
-            if (stream != null)
-            {
-                using (stream)
-                {
-                    stream.CopyTo(memory);
-                    byte[] data = memory.ToArray();
-                    File.WriteAllBytes(NewtonsoftJsonDllPath, data);
-                }
-            }
-        }
     }
 
     /// <summary>

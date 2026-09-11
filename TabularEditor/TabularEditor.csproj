@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\Microsoft.Identity.Client.NativeInterop.0.20.4\build\net462\Microsoft.Identity.Client.NativeInterop.props" Condition="Exists('..\packages\Microsoft.Identity.Client.NativeInterop.0.20.4\build\net462\Microsoft.Identity.Client.NativeInterop.props')" />
-  <Import Project="..\packages\Costura.Fody.3.3.2\build\Costura.Fody.props" Condition="Exists('..\packages\Costura.Fody.3.3.2\build\Costura.Fody.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -105,9 +104,6 @@
   <ItemGroup>
     <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
       <HintPath>..\packages\Antlr4.Runtime.4.6.6\lib\net45\Antlr4.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Costura, Version=3.3.2.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
-      <HintPath>..\packages\Costura.Fody.3.3.2\lib\net40\Costura.dll</HintPath>
     </Reference>
     <Reference Include="Antlr4.Runtime">
       <HintPath>..\packages\Antlr4.Runtime.4.5.3\lib\net45\Antlr4.Runtime.dll</HintPath>
@@ -806,9 +802,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="CubeBuilderView.ico" />
-    <Content Include="FodyWeavers.xml">
-      <SubType>Designer</SubType>
-    </Content>
     <None Include="Resources\icon-dax-formatter-16.png" />
     <None Include="Resources\clipboard-16.png" />
     <None Include="Resources\Repair_16x.png" />
@@ -853,16 +846,6 @@
     <None Include="Resources\FolderOpen_exp_16x.png" />
   </ItemGroup>
   <ItemGroup>
-    <PublishFile Include="FodyWeavers.xml">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>File</FileType>
-    </PublishFile>
     <PublishFile Include="Microsoft.AnalysisServices.Server.Core">
       <Visible>False</Visible>
       <Group>
@@ -924,7 +907,6 @@
       <PublishVersion>%(AssemblyInfo.Version)</PublishVersion>
     </PropertyGroup>
   </Target>
-  <Import Project="..\packages\Fody.3.3.5\build\Fody.targets" Condition="Exists('..\packages\Fody.3.3.5\build\Fody.targets')" />
   <PropertyGroup>
     <!--
     <PostBuildEvent Condition=" '$(Configuration)' == 'Release' ">powershell &amp; sign-binaries.ps1</PostBuildEvent>
