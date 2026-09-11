@@ -36,7 +36,9 @@ namespace TabularEditor.BestPracticeAnalyzer
         TablePermission         = 0x80000,
         CalculationGroup        = 0x100000,
         CalculationItem         = 0x200000,
-        ModelRoleMember         = 0x400000
+        ModelRoleMember         = 0x400000,
+        UserDefinedFunction     = 0x800000,
+        Calendar                = 0x1000000
     }
 
     public static class RuleScopeHelper
@@ -91,6 +93,8 @@ namespace TabularEditor.BestPracticeAnalyzer
                 case RuleScope.CalculationItem: return typeof(CalculationItem);
                 case RuleScope.TablePermission: return typeof(TablePermission);
                 case RuleScope.ModelRoleMember: return typeof(ModelRoleMember);
+                case RuleScope.UserDefinedFunction: return typeof(Function);
+                case RuleScope.Calendar: return typeof(Calendar);
                 default:
                     throw new InvalidOperationException("Unknown scope type");
             }
@@ -182,7 +186,7 @@ namespace TabularEditor.BestPracticeAnalyzer
         public string FixExpression { get; set; }
         public bool ShouldSerializeFixExpression()
         {
-            return !string.IsNullOrEmpty(FixExpression);
+            return !string.IsNullOrWhiteSpace(FixExpression);
         }
         public int CompatibilityLevel { get; set; }
 
@@ -319,13 +323,13 @@ namespace TabularEditor.BestPracticeAnalyzer
             ObjectCount = other.ObjectCount;
             Scope = other.Scope;
             Severity = other.Severity;
-            Remarks = other.Remarks;
+            LearnMoreUrl = other.LearnMoreUrl;
         }
 
-        public string Remarks { get; set; }
-        public bool ShouldSerializeRemarks()
+        public string LearnMoreUrl { get; set; }
+        public bool ShouldSerializeLearnMoreUrl()
         {
-            return !string.IsNullOrEmpty(Remarks);
+            return !string.IsNullOrEmpty(LearnMoreUrl);
         }
 
     }

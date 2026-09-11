@@ -558,6 +558,10 @@ namespace TabularEditor.BestPracticeAnalyzer
                     return model.CalculationGroups.SelectMany(cg => cg.CalculationItems).AsQueryable();
                 case RuleScope.ModelRoleMember:
                     return model.Roles.SelectMany(r => r.Members).AsQueryable();
+                case RuleScope.UserDefinedFunction:
+                    return model.Functions.AsQueryable();
+                case RuleScope.Calendar:
+                    return model.AllCalendars.AsQueryable();
                 default:
                     return Enumerable.Empty<TabularNamedObject>().AsQueryable();
             }
