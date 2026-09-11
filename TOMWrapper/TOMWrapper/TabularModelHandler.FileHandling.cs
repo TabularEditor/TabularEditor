@@ -64,47 +64,56 @@ namespace TabularEditor.TOMWrapper
         /// <param name="path"></param>
         public TabularModelHandler(string path, TabularModelHandlerSettings settings = null): this(settings)
         {
-            _disableUpdates = true;
-
-            var file = new FileInfo(path);
-
-            // If the file is a .pbip, find the actual dataset:
-            if (file.Exists && file.Extension.EqualsI(".pbip"))
+            try
             {
-                path = GetDatasetFromPbip(path);
-                file = new FileInfo(path);
-            }
-            else if (Directory.Exists(path))
-            {
-                var pbipFiles = Directory.EnumerateFiles(path, "*.pbip", SearchOption.TopDirectoryOnly).ToList();
-                if (pbipFiles.Count == 1)
+                _disableUpdates = true;
+
+                var file = new FileInfo(path);
+
+                // If the file is a .pbip, find the actual dataset:
+                if (file.Exists && file.Extension.EqualsI(".pbip"))
                 {
-                    path = GetDatasetFromPbip(pbipFiles[0]);
+                    path = GetDatasetFromPbip(path);
                     file = new FileInfo(path);
                 }
-                else if (pbipFiles.Count > 1) throw new Exception("The PBIP project folder contains multiple .pbip files. Please open the .bim file directly.");
+                else if (Directory.Exists(path))
+                {
+                    var pbipFiles = Directory.EnumerateFiles(path, "*.pbip", SearchOption.TopDirectoryOnly).ToList();
+                    if (pbipFiles.Count == 1)
+                    {
+                        path = GetDatasetFromPbip(pbipFiles[0]);
+                        file = new FileInfo(path);
+                    }
+                    else if (pbipFiles.Count > 1) throw new Exception("The PBIP project folder contains multiple .pbip files. Please open the .bim file directly.");
+                }
+
+                // If the file extension is .pbit, assume Power BI template:
+                if (file.Exists && file.Extension.EqualsI(".pbit")) LoadPowerBiTemplateFile(path);
+
+                // TMDL:
+                else if ((Directory.Exists(path) || IsTmdlFile(file)) && FindRootTmdlPath(path) is string rootTmdlPath) LoadTMDL(rootTmdlPath);
+
+                // If the file name is "database.json" or path is a directory, assume Split Model:
+                else if ((file.Exists && file.Name.EqualsI("database.json")) || Directory.Exists(path)) LoadSplitModelFiles(path);
+
+                // In any other case, assume this is just a regular Model.bim file:
+                else LoadModelFile(path);
+
+                Model.MetadataSource = new ModelMetadataSourceInfo(Source, SourceType, PbipInfo.GetFromPath(Source));
+
+                UndoManager.Suspend();
+                Model.ClearTabularEditorAnnotations();
+                _disableUpdates = false;
+
+                UndoManager.Resume();
+                PowerBIGovernance.UpdateGovernanceMode(path);
+                ConstructionSucceeded();
             }
-
-            // If the file extension is .pbit, assume Power BI template:
-            if (file.Exists && file.Extension.EqualsI(".pbit")) LoadPowerBiTemplateFile(path);
-
-            // TMDL:
-            else if ((Directory.Exists(path) || IsTmdlFile(file)) && FindRootTmdlPath(path) is string rootTmdlPath) LoadTMDL(rootTmdlPath);
-
-            // If the file name is "database.json" or path is a directory, assume Split Model:
-            else if ((file.Exists && file.Name.EqualsI("database.json")) || Directory.Exists(path)) LoadSplitModelFiles(path);
-
-            // In any other case, assume this is just a regular Model.bim file:
-            else LoadModelFile(path);
-
-            Model.MetadataSource = new ModelMetadataSourceInfo(Source, SourceType, PbipInfo.GetFromPath(Source));
-
-            UndoManager.Suspend();
-            Model.ClearTabularEditorAnnotations();
-            _disableUpdates = false;
-
-            UndoManager.Resume();
-            PowerBIGovernance.UpdateGovernanceMode(path);
+            catch
+            {
+                ConstructionFailed();
+                throw;
+            }
         }
 
         private static string FindRootTmdlPath(string path)

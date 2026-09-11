@@ -111,7 +111,36 @@ namespace TabularEditor.TOMWrapper
         {
             this.PowerBIGovernance = new PowerBIGovernance(this);
             Settings = settings ?? TabularModelHandlerSettings.Default;
+
+            // The singleton must point to this instance while the model is being loaded, as wrapper
+            // objects created during Init() pick up their handler from the singleton. Remember the
+            // previous singleton so it can be restored if construction fails (see ConstructionFailed).
+            previousSingleton = Singleton;
             Singleton = this;
+        }
+
+        /// <summary>
+        /// Holds the singleton that was active before this handler was constructed. Only used to
+        /// restore the singleton if construction fails. Cleared once construction succeeds.
+        /// </summary>
+        private TabularModelHandler previousSingleton;
+
+        /// <summary>
+        /// Must be called from the catch-block of every public constructor. Restores the previously
+        /// active singleton (if any) and releases the server connection, so that a failed load does
+        /// not leave a half-constructed handler as the active singleton (GitHub issue #1339).
+        /// </summary>
+        private void ConstructionFailed()
+        {
+            if (Singleton == this) Singleton = previousSingleton;
+            previousSingleton = null;
+            server?.Dispose();
+            server = null;
+        }
+
+        private void ConstructionSucceeded()
+        {
+            previousSingleton = null;
         }
 
         /// <summary>
@@ -119,22 +148,31 @@ namespace TabularEditor.TOMWrapper
         /// </summary>
         public TabularModelHandler(int compatibilityLevel = 1200, TabularModelHandlerSettings settings = null, bool pbiDatasetModel = false): this(settings)
         {
-            server = null;
+            try
+            {
+                server = null;
 
-            database = new TOM.Database("SemanticModel") { CompatibilityLevel = compatibilityLevel,
-                CompatibilityMode = pbiDatasetModel ? Microsoft.AnalysisServices.CompatibilityMode.PowerBI : Microsoft.AnalysisServices.CompatibilityMode.AnalysisServices };
+                database = new TOM.Database("SemanticModel") { CompatibilityLevel = compatibilityLevel,
+                    CompatibilityMode = pbiDatasetModel ? Microsoft.AnalysisServices.CompatibilityMode.PowerBI : Microsoft.AnalysisServices.CompatibilityMode.AnalysisServices };
 
-            database.Model = new TOM.Model();
-            if (pbiDatasetModel) database.Model.DefaultPowerBIDataSourceVersion = TOM.PowerBIDataSourceVersion.PowerBI_V3;
+                database.Model = new TOM.Model();
+                if (pbiDatasetModel) database.Model.DefaultPowerBIDataSourceVersion = TOM.PowerBIDataSourceVersion.PowerBI_V3;
 
-             SourceType = ModelSourceType.File;
-            Source = "Model.bim";
+                SourceType = ModelSourceType.File;
+                Source = "Model.bim";
 
-            Status = "Successfully created new model.";
-            Init();
-            Model.MetadataSource = new ModelMetadataSourceInfo("SemanticModel", ModelSourceType.UnsavedFile);
+                Status = "Successfully created new model.";
+                Init();
+                Model.MetadataSource = new ModelMetadataSourceInfo("SemanticModel", ModelSourceType.UnsavedFile);
 
-            PowerBIGovernance.UpdateGovernanceMode();
+                PowerBIGovernance.UpdateGovernanceMode();
+                ConstructionSucceeded();
+            }
+            catch
+            {
+                ConstructionFailed();
+                throw;
+            }
         }
         internal PowerBIGovernance PowerBIGovernance { get; }
 
@@ -220,53 +258,62 @@ namespace TabularEditor.TOMWrapper
         /// <param name="databaseName"></param>
         public TabularModelHandler(string serverName, string databaseName, TabularModelHandlerSettings settings = null): this(settings)
         {
-            this.serverName = serverName;
-            _disableUpdates = true;
-
-            server = new TOM.Server();
-
-            var connectionString = TabularConnection.GetConnectionString(serverName, applicationName, databaseName);
-            server.Connect(connectionString);
-
-            if (string.IsNullOrEmpty(databaseName))
-            {
-                if (server.Databases.Count >= 1) database = server.Databases[0];
-                else throw new InvalidOperationException("This instance does not contain any databases, or the user does not have access.");
-            }
-            else
-            {
-                database = server.Databases.FindByName(databaseName);
-                if (database == null)
-                    database = server.Databases[databaseName];
-            }
-            if (CompatibilityLevel < 1200) throw new InvalidOperationException("Only databases with Compatibility Level 1200 or higher can be loaded in Tabular Editor.");
-
-            SourceType = ModelSourceType.Database;
-            Source = database.Server.Name + "." + database.Name;
-
-            Status = "Connected successfully.";
-            Version = database.Version;
-            Init();
-            Model.MetadataSource = new ModelMetadataSourceInfo(Source, SourceType);
-
-            UndoManager.Suspend();
-
-            Model.ClearTabularEditorAnnotations();
-
-            _disableUpdates = false;
-            UndoManager.Resume();
-            PowerBIGovernance.UpdateGovernanceMode();
-            CheckErrors();
-
             try
             {
-                ExternalChangeTrace.Cleanup();
-                trace = new ExternalChangeTrace(database, applicationName, XEventCallback);
-                if (Settings.ChangeDetectionLocalServers) trace.Start();
+                this.serverName = serverName;
+                _disableUpdates = true;
+
+                server = new TOM.Server();
+
+                var connectionString = TabularConnection.GetConnectionString(serverName, applicationName, databaseName);
+                server.Connect(connectionString);
+
+                if (string.IsNullOrEmpty(databaseName))
+                {
+                    if (server.Databases.Count >= 1) database = server.Databases[0];
+                    else throw new InvalidOperationException("This instance does not contain any databases, or the user does not have access.");
+                }
+                else
+                {
+                    database = server.Databases.FindByName(databaseName);
+                    if (database == null)
+                        database = server.Databases[databaseName];
+                }
+                if (CompatibilityLevel < 1200) throw new InvalidOperationException("Only databases with Compatibility Level 1200 or higher can be loaded in Tabular Editor.");
+
+                SourceType = ModelSourceType.Database;
+                Source = database.Server.Name + "." + database.Name;
+
+                Status = "Connected successfully.";
+                Version = database.Version;
+                Init();
+                Model.MetadataSource = new ModelMetadataSourceInfo(Source, SourceType);
+
+                UndoManager.Suspend();
+
+                Model.ClearTabularEditorAnnotations();
+
+                _disableUpdates = false;
+                UndoManager.Resume();
+                PowerBIGovernance.UpdateGovernanceMode();
+                CheckErrors();
+
+                try
+                {
+                    ExternalChangeTrace.Cleanup();
+                    trace = new ExternalChangeTrace(database, applicationName, XEventCallback);
+                    if (Settings.ChangeDetectionLocalServers) trace.Start();
+                }
+                catch (Exception ex)
+                {
+                    Log("Exception while configuring AS trace: " + ex.Message);
+                }
+                ConstructionSucceeded();
             }
-            catch (Exception ex)
+            catch
             {
-                Log("Exception while configuring AS trace: " + ex.Message);
+                ConstructionFailed();
+                throw;
             }
         }
 

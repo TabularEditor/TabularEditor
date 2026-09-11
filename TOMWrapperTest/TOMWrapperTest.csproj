@@ -172,6 +172,7 @@
     <Compile Include="DeserializerTests.cs" />
     <Compile Include="FixUpTests.cs" />
     <Compile Include="FluentPropertyGridTest.cs" />
+    <Compile Include="HandlerConstructionFailureTests.cs" />
     <Compile Include="ObjectCreationTests.cs" />
     <Compile Include="ObjectHandlingTests.cs" />
     <Compile Include="PowerBITests.cs" />
