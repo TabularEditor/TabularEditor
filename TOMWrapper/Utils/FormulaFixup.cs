@@ -1,4 +1,3 @@
-using Antlr4.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -42,24 +41,22 @@ namespace TabularEditor.TOMWrapper.Utils
 
         private static void ParseExpression(string dax, IDaxDependantObject expressionObj, DAXProperty prop, DependsOnList dependsOn = null)
         {
-            var lexer = new DAXLexer(new DAXCharStream(dax, false));
-            lexer.RemoveErrorListeners();
-            var tokens = lexer.GetDefaultTokens().ToList();
+            var tokens = DaxTokenizer.GetDefaultTokens(dax);
 
-            IToken lastTableRef = null;
+            string lastTableRef = null;
             int startTableIndex = 0;
 
             for (var i = 0; i < tokens.Count; i++)
             {
                 var tok = tokens[i];
 
-                var isTableOrVariableRef = tok.Type == DAXLexer.TABLE
-                    || tok.Type == DAXLexer.TABLE_OR_VARIABLE
-                    || (tok.Channel == DAXLexer.KEYWORD_CHANNEL && i < tokens.Count - 1 && tokens[i + 1].Type != DAXLexer.OPEN_PARENS);
+                var isTableOrVariableRef = tok.Type == DaxToken.TABLE
+                    || tok.Type == DaxToken.TABLE_OR_VARIABLE
+                    || (tok.Channel == DaxTokenizer.KeywordChannel && i < tokens.Count - 1 && tokens[i + 1].Type != DaxToken.OPEN_PARENS);
 
                 if (isTableOrVariableRef)
                 {
-                    if (i < tokens.Count - 1 && tokens[i + 1].Type == DAXLexer.OPEN_PARENS)
+                    if (i < tokens.Count - 1 && tokens[i + 1].Type == DaxToken.OPEN_PARENS)
                     {
                         // function call
                         if (Model.Functions.FindByName(tok.Text) is Function f)
@@ -71,10 +68,11 @@ namespace TabularEditor.TOMWrapper.Utils
                     }
                     else
                     {
-                        if (i < tokens.Count - 1 && tokens[i + 1].Type == DAXLexer.COLUMN_OR_MEASURE)
+                        var tokText = tok.Text;
+                        if (i < tokens.Count - 1 && tokens[i + 1].Type == DaxToken.COLUMN_OR_MEASURE)
                         {
                             // Keep the token reference, as the next token should be column (fully qualified).
-                            lastTableRef = tok;
+                            lastTableRef = tokText;
                             startTableIndex = tok.StartIndex;
                         }
                         else
@@ -83,7 +81,7 @@ namespace TabularEditor.TOMWrapper.Utils
                             lastTableRef = null;
                         }
 
-                        var tableOrCalendar = Model.FindTableOrCalendar(tok.Text);
+                        var tableOrCalendar = Model.FindTableOrCalendar(tokText);
                         if (tableOrCalendar is Table table)
                         {
                             if (dependsOn != null)
@@ -104,27 +102,29 @@ namespace TabularEditor.TOMWrapper.Utils
                         }
                     }
                 }
-                else if (tok.Type == DAXLexer.COLUMN_OR_MEASURE)
+                else if (tok.Type == DaxToken.COLUMN_OR_MEASURE)
                 {
+                    var tokText = tok.Text;
+
                     // Referencing a table just before the object reference
                     if (lastTableRef != null)
                     {
-                        var tableName = lastTableRef.Text;
+                        var tableName = lastTableRef;
                         lastTableRef = null;
                         if (!Model.Tables.Contains(tableName)) return; // Invalid reference (no table with that name)
 
                         var table = Model.Tables[tableName];
                         // Referencing a column on a specific table
-                        if (table.Columns.Contains(tok.Text))
+                        if (table.Columns.Contains(tokText))
                         {
-                            if (dependsOn != null) dependsOn.Add(table.Columns[tok.Text], prop, startTableIndex, tok.StopIndex, true);
-                            else expressionObj.AddDep(table.Columns[tok.Text], prop, startTableIndex, tok.StopIndex, true);
+                            if (dependsOn != null) dependsOn.Add(table.Columns[tokText], prop, startTableIndex, tok.StopIndex, true);
+                            else expressionObj.AddDep(table.Columns[tokText], prop, startTableIndex, tok.StopIndex, true);
                         }
                         // Referencing a measure on a specific table
-                        else if (table.Measures.Contains(tok.Text))
+                        else if (table.Measures.Contains(tokText))
                         {
-                            if (dependsOn != null) dependsOn.Add(table.Measures[tok.Text], prop, startTableIndex, tok.StopIndex, true);
-                            else expressionObj.AddDep(table.Measures[tok.Text], prop, startTableIndex, tok.StopIndex, true);
+                            if (dependsOn != null) dependsOn.Add(table.Measures[tokText], prop, startTableIndex, tok.StopIndex, true);
+                            else expressionObj.AddDep(table.Measures[tokText], prop, startTableIndex, tok.StopIndex, true);
                         }
                     }
                     // No table reference before the object reference
@@ -132,18 +132,18 @@ namespace TabularEditor.TOMWrapper.Utils
                     {
                         var table = (expressionObj as ITabularTableObject)?.Table ?? (expressionObj as TablePermission)?.Table;
                         // Referencing a column without specifying a table (assume column in same table):
-                        if (table != null && table.Columns.Contains(tok.Text))
+                        if (table != null && table.Columns.Contains(tokText))
                         {
-                            if (dependsOn != null) dependsOn.Add(table.Columns[tok.Text], prop, tok.StartIndex, tok.StopIndex, false);
-                            else expressionObj.AddDep(table.Columns[tok.Text], prop, tok.StartIndex, tok.StopIndex, false);
+                            if (dependsOn != null) dependsOn.Add(table.Columns[tokText], prop, tok.StartIndex, tok.StopIndex, false);
+                            else expressionObj.AddDep(table.Columns[tokText], prop, tok.StartIndex, tok.StopIndex, false);
                         }
                         // Referencing a measure or column without specifying a table
                         else
                         {
                             Measure m = null;
-                            if (table != null && table.Measures.Contains(tok.Text)) m = table.Measures[tok.Text];
+                            if (table != null && table.Measures.Contains(tokText)) m = table.Measures[tokText];
                             else
-                                m = Model.Tables.FirstOrDefault(t => t.Measures.Contains(tok.Text))?.Measures[tok.Text];
+                                m = FindMeasure(tokText);
 
                             if (m != null)
                             {
@@ -158,6 +158,11 @@ namespace TabularEditor.TOMWrapper.Utils
                     lastTableRef = null;
                 }
             }
+        }
+
+        private static Measure FindMeasure(string name)
+        {
+            return Model.Tables.FirstOrDefault(t => t.Measures.Contains(name))?.Measures[name];
         }
 
         public static void ClearDependsOn(IDaxDependantObject expressionObj)

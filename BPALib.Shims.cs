@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Globalization;
 
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("DaxLexerBenchmarks")]
+
 #if NETSTANDARD || NETFRAMEWORK
 
 using System.ComponentModel;

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Antlr4.Runtime;
 using FastColoredTextBoxNS;
 using System.Drawing;
+using TabularEditor.TOMWrapper.Utils;
 using TabularEditor.UIServices;
 using TabularEditor.UI;
 using System.Windows.Forms;
@@ -17,11 +17,10 @@ namespace TabularEditor.TextServices
         public static string SemicolonsToCommas(string input)
         {
             var sb = new StringBuilder(input);
-            var lexer = new DAXLexer(new DAXCharStream(input ,true));
-            foreach(var token in lexer.GetAllTokens())
+            foreach(var token in DaxTokenizer.GetAllTokens(input, true))
             {
-                if (token.Type == DAXLexer.COMMA) sb[token.StartIndex] = ',';
-                else if (token.Type == DAXLexer.REAL_LITERAL)
+                if (token.Type == DaxToken.COMMA) sb[token.StartIndex] = ',';
+                else if (token.Type == DaxToken.REAL_LITERAL)
                 {
                     for (var i = token.StartIndex; i <= token.StopIndex; i++)
                     {
@@ -39,11 +38,10 @@ namespace TabularEditor.TextServices
         public static string CommasToSemicolons(string input)
         {
             var sb = new StringBuilder(input);
-            var lexer = new DAXLexer(new DAXCharStream(input, false));
-            foreach (var token in lexer.GetAllTokens().ToList())
+            foreach (var token in DaxTokenizer.GetAllTokens(input))
             {
-                if (token.Type == DAXLexer.COMMA) sb[token.StartIndex] = ';';
-                else if (token.Type == DAXLexer.REAL_LITERAL)
+                if (token.Type == DaxToken.COMMA) sb[token.StartIndex] = ';';
+                else if (token.Type == DaxToken.REAL_LITERAL)
                 {
                     for (var i = token.StartIndex; i <= token.StopIndex; i++)
                     {
@@ -64,117 +62,35 @@ namespace TabularEditor.TextServices
         public static Style LiteralStyle = new TextStyle(FromHex("#EE7F18"), null, FontStyle.Regular);
         public static Style ParensStyle = new TextStyle(Brushes.Gray, null, FontStyle.Regular);
 
-        class SearchToken : IToken
+        public static DaxLexerToken? GetTokenAtPos(List<DaxLexerToken> tokens, int charIndex)
         {
-            public SearchToken(int charIndex)
+            var low = 0;
+            var high = tokens.Count - 1;
+            while (low <= high)
             {
-                StartIndex = charIndex;
+                var middle = low + (high - low) / 2;
+                var token = tokens[middle];
+                if (charIndex < token.StartIndex) high = middle - 1;
+                else if (charIndex > token.StopIndex) low = middle + 1;
+                else return token;
             }
-            public int Channel
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public int Column
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public ICharStream InputStream
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public int Line
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public int StartIndex { get; private set; }
-
-            public int StopIndex => StartIndex;
-
-            public string Text
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public int TokenIndex
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public ITokenSource TokenSource
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public int Type
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-        }
-        class TokenComparer : IComparer<IToken>
-        {
-            public int Compare(IToken x, IToken y)
-            {
-                if (x.StartIndex >= y.StartIndex && x.StartIndex <= y.StopIndex) return 0;
-                if (y.StartIndex >= x.StartIndex && y.StartIndex <= x.StopIndex) return 0;
-                if (x.StartIndex < y.StartIndex) return -1;
-                else return 1;
-            }
-
-            public static readonly TokenComparer Default = new TokenComparer();
+            return null;
         }
 
-        public static IToken GetTokenAtPos(List<IToken> tokens, int charIndex)
+        public static List<DaxLexerToken> SyntaxHighlight(FastColoredTextBox textbox)
         {
-            var searchToken = new SearchToken(charIndex);
-            var index = tokens.BinarySearch(searchToken, TokenComparer.Default);
-            if (index < 0) return null;
-            return tokens[index];
-        }
-
-        public static List<IToken> SyntaxHighlight(FastColoredTextBox textbox)
-        {
-            List<IToken> tokens;
+            List<DaxLexerToken> tokens;
 
             // TODO: This is slow on a large DAX expression and may cause flickering...
             //textbox.SuspendDrawing(); // Doesn't work as we might be on a different thread
             try
             {
-                var lexer = new DAXLexer(new DAXCharStream(textbox.Text, Preferences.Current.UseSemicolonsAsSeparators));
-                lexer.RemoveErrorListeners();
-                tokens = lexer.GetAllTokens().ToList();
+                tokens = DaxTokenizer.GetAllTokens(textbox.Text, Preferences.Current.UseSemicolonsAsSeparators);
             }
             catch
             {
                 textbox.ClearStyle(StyleIndex.All);
-                return new List<IToken>();
+                return new List<DaxLexerToken>();
             }
 
             textbox.BeginInvoke((MethodInvoker)(() =>
@@ -183,18 +99,17 @@ namespace TabularEditor.TextServices
                 textbox.ClearStyle(StyleIndex.All);
                 foreach (var tok in tokens)
                 {
-                    if (tok.Type == DAXLexer.Eof) break;
                     var range = textbox.GetRange(tok.StartIndex, tok.StopIndex + 1);
-                    if (tok.Channel == DAXLexer.KEYWORD_CHANNEL) range.SetStyle(KeywordStyle);
-                    else if (tok.Channel == DAXLexer.COMMENTS_CHANNEL) range.SetStyle(CommentStyle);
+                    if (tok.Channel == DaxTokenizer.KeywordChannel) range.SetStyle(KeywordStyle);
+                    else if (tok.Channel == DaxTokenizer.CommentsChannel) range.SetStyle(CommentStyle);
                     else switch (tok.Type)
                         {
-                            case DAXLexer.INTEGER_LITERAL:
-                            case DAXLexer.REAL_LITERAL:
-                            case DAXLexer.STRING_LITERAL:
+                            case DaxToken.INTEGER_LITERAL:
+                            case DaxToken.REAL_LITERAL:
+                            case DaxToken.STRING_LITERAL:
                                 range.SetStyle(LiteralStyle); break;
-                            case DAXLexer.OPEN_PARENS:
-                            case DAXLexer.CLOSE_PARENS:
+                            case DaxToken.OPEN_PARENS:
+                            case DaxToken.CLOSE_PARENS:
                                 range.SetStyle(ParensStyle); break;
                             default:
                                 range.SetStyle(PlainStyle); break;

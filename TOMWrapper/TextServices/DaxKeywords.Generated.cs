@@ -1,4 +1,4 @@
-// Derived from the DAXLexer.g4 grammar. test/DaxLexerTests checks it against the grammar.
+// Derived from the DAXLexer.g4 grammar. DaxLexerTests checks it against the grammar.
 
 namespace TabularEditor.TextServices
 {

@@ -1,5 +1,4 @@
-﻿using Antlr4.Runtime;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TabularEditor.TextServices;
 
 namespace TabularEditor.TOMWrapper.Utils
@@ -49,21 +48,21 @@ namespace TabularEditor.TOMWrapper.Utils
 
         public bool CommentOrWhitespace { get; private set; }
 
-        internal DaxToken(IToken antlrToken, IList<DaxToken> collection, int index)
+        internal DaxToken(DaxLexerToken lexerToken, IList<DaxToken> collection, int index)
         {
-            Type = antlrToken.Type;
+            Type = lexerToken.Type;
             TokenIndex = index;
-            StartIndex = antlrToken.StartIndex;
-            StopIndex = antlrToken.StopIndex;
-            Text = antlrToken.Text;
-            CommentOrWhitespace = antlrToken.Channel == DAXLexer.COMMENTS_CHANNEL || antlrToken.Channel == DAXLexer.Hidden;
+            StartIndex = lexerToken.StartIndex;
+            StopIndex = lexerToken.StopIndex;
+            Text = lexerToken.Text;
+            CommentOrWhitespace = lexerToken.Channel == DaxTokenizer.CommentsChannel || lexerToken.Channel == DaxTokenizer.HiddenChannel;
             Collection = collection;
         }
 
         public override string ToString()
         {
             var cow = CommentOrWhitespace ? "*** " : "";
-            return $"Token #{TokenIndex}, {cow}{StartIndex}-{StopIndex}: DaxToken.{DAXLexer.DefaultVocabulary.GetSymbolicName(Type)}: \"{Text}\"";
+            return $"Token #{TokenIndex}, {cow}{StartIndex}-{StopIndex}: DaxToken.{DaxTokenizer.GetSymbolicName(Type)}: \"{Text}\"";
         }
     }
 }

@@ -108,6 +108,9 @@
     <Reference Include="Antlr4.Runtime">
       <HintPath>..\packages\Antlr4.Runtime.4.5.3\lib\net45\Antlr4.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="Parlot">
+      <HintPath>..\packages\Parlot.2.2.1\lib\net472\Parlot.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AnalysisServices, Version=19.117.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">
       <HintPath>..\packages\Microsoft.AnalysisServices.19.117.0\lib\net472\Microsoft.AnalysisServices.dll</HintPath>
       <Private>True</Private>

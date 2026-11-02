@@ -54,11 +54,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Parlot" Version="2.2.1" />
     <PackageReference Include="System.CodeDom" Version="8.0.0" />
@@ -73,11 +68,6 @@
     <PackageReference Include="Microsoft.AnalysisServices" Version="$(TOMNugetVersion)" />
   </ItemGroup>
   <ItemGroup>
-    <Antlr4 Remove="AntlrGrammars\*.g4" />
-    <Antlr4 Include="AntlrGrammars\DAXLexer.g4">
-      <Generator>MSBuild:Compile</Generator>
-      <CustomToolNamespace>TabularEditor.TextServices</CustomToolNamespace>
-    </Antlr4>
     <None Include="Properties\PublishProfiles\net*.pubxml" />
   </ItemGroup>
 </Project>

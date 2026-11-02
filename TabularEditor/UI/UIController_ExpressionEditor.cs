@@ -83,7 +83,7 @@ namespace TabularEditor.UI
             }
         }
 
-        private List<Antlr4.Runtime.IToken> currentTokens = new List<Antlr4.Runtime.IToken>();
+        private List<DaxLexerToken> currentTokens = new List<DaxLexerToken>();
 
         private void ExpressionEditor_ExpressionSelectorChanged(object sender, EventArgs e)
         {
@@ -138,7 +138,7 @@ namespace TabularEditor.UI
                 var token = ExpressionParser.GetTokenAtPos(currentTokens, UI.ExpressionEditor.SelectionStart);
                 if (token != null)
                 {
-                    if (token.Channel == DAXLexer.KEYWORD_CHANNEL) Process.Start(string.Format(DAX_GUIDE_URL, token.Text.ToLowerInvariant()));
+                    if (token.Value.Channel == DaxTokenizer.KeywordChannel) Process.Start(string.Format(DAX_GUIDE_URL, token.Value.Text.ToLowerInvariant()));
                 }
                 else
                     UI.StatusLabel.Text = "Cannot navigate to symbol under cursor.";

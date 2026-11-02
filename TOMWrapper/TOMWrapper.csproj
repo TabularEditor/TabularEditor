@@ -41,8 +41,8 @@
     <LangVersion>10.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
-      <HintPath>..\packages\Antlr4.Runtime.4.6.6\lib\net45\Antlr4.Runtime.dll</HintPath>
+    <Reference Include="Parlot">
+      <HintPath>..\packages\Parlot.2.2.1\lib\net472\Parlot.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AnalysisServices, Version=19.117.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">
       <HintPath>..\packages\Microsoft.AnalysisServices.19.117.0\lib\net472\Microsoft.AnalysisServices.dll</HintPath>
@@ -117,9 +117,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\AntlrGrammars\obj\Debug\DAXLexer.cs">
-      <Link>TextServices\DAXLexer.cs</Link>
-    </Compile>
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
@@ -141,7 +138,10 @@
     <Compile Include="MetadataSerializationOptionsBuilderExtension.cs" />
     <Compile Include="PowerBiCompatibilityModeHelper.cs" />
     <Compile Include="Serialization\TmdlSerializeOptions.cs" />
-    <Compile Include="TextServices\DAXLexerExtensions.cs" />
+    <Compile Include="TextServices\DaxKeywords.cs" />
+    <Compile Include="TextServices\DaxKeywords.Generated.cs" />
+    <Compile Include="TextServices\DaxLexerToken.cs" />
+    <Compile Include="TextServices\DaxTokenizer.cs" />
     <Compile Include="TOMWrapper\CalculationGroup.cs" />
     <Compile Include="TOMWrapper\DataCoverageDefinition.cs" />
     <Compile Include="TOMWrapper\ModelMetadataSourceInfo.cs" />
@@ -175,7 +175,6 @@
     <Compile Include="PropertyGridUI\Converters\CultureConverter.cs" />
     <Compile Include="PropertyGridUI\Converters\HierarchyColumnConverter.cs" />
     <Compile Include="PropertyGridUI\DataTypeEnumConverter.cs" />
-    <Compile Include="TextServices\DAXCharStream.cs" />
     <Compile Include="TOMWrapper\CalculationGroupTable.cs" />
     <Compile Include="TOMWrapper\CalculationItem.cs" />
     <Compile Include="TOMWrapper\CollectionHelper.cs" />
@@ -215,11 +214,7 @@
     <Compile Include="TOMWrapper\Tests\CompatibilityLevelAttribute.cs" />
     <Compile Include="Utils\CTCBackup.cs" />
     <Compile Include="Utils\DaxToken.cs" />
-    <Compile Include="Utils\DaxToken.Generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DaxToken.tt</DependentUpon>
-    </Compile>
+    <Compile Include="Utils\DaxToken.Generated.cs" />
     <Compile Include="Utils\DependencyList.cs" />
     <Compile Include="TOMWrapper\NamedExpression.cs" />
     <Compile Include="TOMWrapper\TabularModelHandlerSettings.cs" />
@@ -338,12 +333,6 @@
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Utils\DaxToken.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>DaxToken.Generated.cs</LastGenOutput>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

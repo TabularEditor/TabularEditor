@@ -58,12 +58,6 @@
     </Antlr4>
   </ItemGroup>
   <ItemGroup>
-    <Antlr4 Include="DAXLexer.g4">
-      <Generator>MSBuild:Compile</Generator>
-      <CustomToolNamespace>TabularEditor.TextServices</CustomToolNamespace>
-    </Antlr4>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

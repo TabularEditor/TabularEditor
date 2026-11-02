@@ -53,9 +53,7 @@ namespace TabularEditor.TOMWrapper.Utils
         {
             var result = new List<DaxToken>();
             if (string.IsNullOrEmpty(dax)) return result;
-            var lexer = new DAXLexer(new DAXCharStream(dax, false));
-            lexer.RemoveErrorListeners();
-            var lexerTokens = lexer.GetAllTokens();
+            var lexerTokens = DaxTokenizer.GetAllTokens(dax);
             if (includeHidden)
             {
                 for (int i = 0; i < lexerTokens.Count; i++)
@@ -68,7 +66,7 @@ namespace TabularEditor.TOMWrapper.Utils
                 var i = 0;
                 foreach (var token in lexerTokens)
                 {
-                    if (token.Channel == DAXLexer.COMMENTS_CHANNEL || token.Type == DAXLexer.WHITESPACES) continue;
+                    if (token.Channel == DaxTokenizer.CommentsChannel || token.Type == DaxToken.WHITESPACES) continue;
                     result.Add(new DaxToken(token, result, i++));
                 }
             }
