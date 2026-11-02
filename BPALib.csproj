@@ -4,7 +4,7 @@
     <TargetFrameworks>net472;net8.0;net9.0</TargetFrameworks>
     <RootNamespace>TabularEditor</RootNamespace>
     <LangVersion>10.0</LangVersion>
-    <TOMNugetVersion>19.90.0</TOMNugetVersion>
+    <TOMNugetVersion>19.117.0</TOMNugetVersion>
     <DefineConstants>$(DefineConstants);BPALib</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
@@ -28,6 +28,9 @@
     <Compile Include="TabularEditor\UIServices\ProxyCache.cs" />
     <Compile Include="TabularEditor\UIServices\Crypto.cs" />
     <Compile Include="TabularEditor\NUnit.cs" />
+    <Compile Include="TOMWrapper\ConnectionStringProperties.cs" />
+    <Compile Include="TOMWrapper\PropertyGridUI\Converters\EnumBrowsableConverter.cs" />
+    <Compile Include="TOMWrapper\EnumerableExtensions.cs" />
     <Compile Include="TOMWrapper\StringHelper.cs" />
     <Compile Include="TOMWrapper\PowerBiCompatibilityModeHelper.cs" />
     <Compile Include="TOMWrapper\PropertyGridUI\*Attribute.cs" />
@@ -36,6 +39,7 @@
     <Compile Include="TOMWrapper\TextServices\**\*.cs" />
     <Compile Include="TOMWrapper\TOMWrapper\**\*.cs" Exclude="TOMWrapper\TOMWrapper\TabularCommonActions.cs;TOMWrapper\TOMWrapper\TabularModelHandler.Events.cs" />
     <Compile Include="TOMWrapper\UndoFramework\**\*.cs" />
+    <Compile Include="TOMWrapper\Utils\DbConnectionStringBuilderExtension.cs" />
     <Compile Include="TOMWrapper\Utils\DaxDependencyHelper.cs" />
     <Compile Include="TOMWrapper\Utils\DaxToken.cs" />
     <Compile Include="TOMWrapper\Utils\DependencyList.cs" />

@@ -34,6 +34,9 @@ namespace TabularEditor.PropertyGridUI
 {
     namespace CollectionEditors { }
 
+    internal class CalendarCollectionEditor { }
+    internal class CalendarColumnGroupCollectionEditor { }
+    internal class BindingInfoCollectionEditor { }
     internal class AnnotationCollectionEditor { }
     internal class CalculationItemCollectionEditor { }
     internal class CultureCollectionEditor { }
@@ -52,6 +55,7 @@ namespace TabularEditor.PropertyGridUI
     internal class SetCollectionEditor { }
     internal class ClonableObjectCollectionEditor<T> { }
 
+    internal class QueryGroupConverter { }
     internal class AllColumnConverter { }
     internal class AllOtherTablesColumnConverter { }
     internal class AllHierarchyConverter { }
@@ -103,6 +107,8 @@ namespace TabularEditor.TOMWrapper
         {
             
         }
+
+        public List<TabularObject> InsertObjects(Serialization.ObjectJsonContainer objectContainer, ITabularNamedObject destination = null, bool replaceObjects = false) => throw new System.NotSupportedException();
     }
 
     public partial class TabularModelHandler
