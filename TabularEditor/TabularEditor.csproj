@@ -299,6 +299,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="TextServices\CSharpLexer.cs" />
+    <Compile Include="TextServices\CSharpLexerToken.cs" />
+    <Compile Include="TextServices\CSharpToken.cs" />
+    <Compile Include="TextServices\CSharpTokenizer.cs" />
     <Compile Include="TextServices\ExpressionParser.cs" />
     <Compile Include="UIServices\ModelTelemetry.cs" />
     <Compile Include="UIServices\WildcardMatch.cs" />

@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- The ANTLR lexer of C#, generated from the original grammar. It is the reference the Parlot lexer is compared to in CSharpLexerTests and CSharpLexerBenchmarks, and isn't part of the product. -->
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net472</TargetFrameworks>
+    <LangVersion>10.0</LangVersion>
+    <NoWarn>$(NoWarn);CS3021</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <Antlr4 Remove="**\*.g4" />
+    <Antlr4 Include="CSharpLexer.g4">
+      <Generator>MSBuild:Compile</Generator>
+      <CustomToolNamespace>CSharpLexerOracle</CustomToolNamespace>
+      <Listener>False</Listener>
+      <Visitor>False</Visitor>
+    </Antlr4>
+  </ItemGroup>
+</Project>
