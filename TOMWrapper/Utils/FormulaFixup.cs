@@ -41,22 +41,24 @@ namespace TabularEditor.TOMWrapper.Utils
 
         private static void ParseExpression(string dax, IDaxDependantObject expressionObj, DAXProperty prop, DependsOnList dependsOn = null)
         {
-            var tokens = DaxTokenizer.GetDefaultTokens(dax);
+            var tokenizer = new DaxTokenizer(dax);
+            var hasNext = tokenizer.ReadDefault(out var next);
 
             string lastTableRef = null;
             int startTableIndex = 0;
 
-            for (var i = 0; i < tokens.Count; i++)
+            while (hasNext)
             {
-                var tok = tokens[i];
+                var tok = next;
+                hasNext = tokenizer.ReadDefault(out next);
 
                 var isTableOrVariableRef = tok.Type == DaxToken.TABLE
                     || tok.Type == DaxToken.TABLE_OR_VARIABLE
-                    || (tok.Channel == DaxTokenizer.KeywordChannel && i < tokens.Count - 1 && tokens[i + 1].Type != DaxToken.OPEN_PARENS);
+                    || (tok.Channel == DaxTokenizer.KeywordChannel && hasNext && next.Type != DaxToken.OPEN_PARENS);
 
                 if (isTableOrVariableRef)
                 {
-                    if (i < tokens.Count - 1 && tokens[i + 1].Type == DaxToken.OPEN_PARENS)
+                    if (hasNext && next.Type == DaxToken.OPEN_PARENS)
                     {
                         // function call
                         if (Model.Functions.FindByName(tok.Text) is Function f)
@@ -69,7 +71,7 @@ namespace TabularEditor.TOMWrapper.Utils
                     else
                     {
                         var tokText = tok.Text;
-                        if (i < tokens.Count - 1 && tokens[i + 1].Type == DaxToken.COLUMN_OR_MEASURE)
+                        if (hasNext && next.Type == DaxToken.COLUMN_OR_MEASURE)
                         {
                             // Keep the token reference, as the next token should be column (fully qualified).
                             lastTableRef = tokText;

@@ -48,23 +48,10 @@ namespace TabularEditor.TextServices
         /// </summary>
         public static List<DaxLexerToken> GetAllTokens(string dax, bool convertFromNonUs = false)
         {
-            var tokens = new List<DaxLexerToken>(dax.Length / 4 + 1);
+            // Expressions have about one token, white space included, every 3.5 chars
+            var tokens = new List<DaxLexerToken>(dax.Length / 3 + 1);
             var tokenizer = new DaxTokenizer(dax, convertFromNonUs);
             while (tokenizer.Read(out var token)) tokens.Add(token);
-            return tokens;
-        }
-
-        /// <summary>
-        /// Returns all the tokens of an expression that aren't white space or comments.
-        /// </summary>
-        public static List<DaxLexerToken> GetDefaultTokens(string dax)
-        {
-            var tokens = new List<DaxLexerToken>(dax.Length / 8 + 1);
-            var tokenizer = new DaxTokenizer(dax);
-            while (tokenizer.Read(out var token))
-            {
-                if (token.Type >= DaxToken.ABS) tokens.Add(token);
-            }
             return tokens;
         }
 
@@ -98,14 +85,26 @@ namespace TabularEditor.TextServices
                 var length = Scan(cursor.Span, out var type);
                 if (type != 0)
                 {
-                    var position = cursor.Position;
-                    token = new DaxLexerToken(cursor.Buffer, type, position.Offset, length, position.Line, position.Column - 1);
+                    token = new DaxLexerToken(cursor.Buffer, type, cursor.Offset, length);
                     cursor.Advance(length);
                     return true;
                 }
                 cursor.Advance(length);
             }
             token = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Reads the next token that isn't white space or a comment.
+        /// </summary>
+        /// <returns><see langword="false"/> at the end of the expression.</returns>
+        public bool ReadDefault(out DaxLexerToken token)
+        {
+            while (Read(out token))
+            {
+                if (token.Type >= DaxToken.ABS) return true;
+            }
             return false;
         }
 
