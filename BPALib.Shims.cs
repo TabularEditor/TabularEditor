@@ -2,11 +2,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Globalization;
 
+#if NETSTANDARD || NETFRAMEWORK
+using System.ComponentModel;
+#endif
+
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("DaxLexerBenchmarks")]
 
 #if NETSTANDARD || NETFRAMEWORK
-
-using System.ComponentModel;
 
 namespace System.Runtime.CompilerServices
 {
